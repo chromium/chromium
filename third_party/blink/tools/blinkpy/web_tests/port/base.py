@@ -212,6 +212,14 @@ class Port(object):
     WPT_REGEX = re.compile(
         r'^(?:virtual/[^/]+/)?(external/wpt|wpt_internal)/(.*)$')
 
+    # This regex parses the WPT-style style fuzzy match syntax. For actual WPT
+    # tests, this is not needed since this information is contained in the
+    # manifest. However, we reuse this syntax for some non-WPT tests as well.
+    WPT_FUZZY_REGEX = re.compile(
+        r'<(?:html:)?meta\s+name=(?:fuzzy|"fuzzy")\s+content='
+        r'"(?:(.+):)?(?:maxDifference=)?(?:(\d+)-)?(\d+);(?:totalPixels=)?(?:(\d+)-)?(\d+)"\s*/?>'
+    )
+
     # Because this is an abstract base class, arguments to functions may be
     # unused in this class - pylint: disable=unused-argument
 
@@ -1134,20 +1142,47 @@ class Port(object):
         return self.wpt_manifest(wpt_path).is_slow_test(path_in_wpt)
 
     def get_wpt_fuzzy_metadata(self, test_name):
-        """Returns the fuzzy metadata for the given WPT test.
+        """Returns the WPT-style fuzzy metadata for the given test.
 
         The metadata is a pair of lists, (maxDifference, totalPixels), where
-        each list is a [min, max] range, inclusive. If the test is not a WPT
-        test or has no fuzzy metadata, returns (None, None).
+        each list is a [min, max] range, inclusive. If the test has no fuzzy metadata,
+        returns (None, None).
 
         See https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
         """
         match = self.WPT_REGEX.match(test_name)
-        if not match:
-            return None, None
-        wpt_path = match.group(1)
-        path_in_wpt = match.group(2)
-        return self.wpt_manifest(wpt_path).extract_fuzzy_metadata(path_in_wpt)
+
+        if match:
+            # This is an actual WPT test, so we can get the metadata from the manifest.
+            wpt_path = match.group(1)
+            path_in_wpt = match.group(2)
+            return self.wpt_manifest(wpt_path).extract_fuzzy_metadata(
+                path_in_wpt)
+
+        # This is not a WPT test, so we will parse the metadata ourselves.
+        if not self.test_isfile(test_name):
+            return (None, None)
+
+        # We use a safe encoding because some test files are incompatible with utf-8.
+        test_file = self.read_test(test_name, "latin-1")
+        if not test_file:
+            return (None, None)
+
+        # We only take the first match which is in line with what we do for WPT tests.
+        fuzzy_match = self.WPT_FUZZY_REGEX.search(test_file)
+        if not fuzzy_match:
+            return (None, None)
+
+        _, max_diff_min, max_diff_max, tot_pix_min, tot_pix_max = \
+            fuzzy_match.groups()
+        if not max_diff_min:
+            max_diff_min = max_diff_max
+        if not tot_pix_min:
+            tot_pix_min = tot_pix_max
+
+        return ([int(max_diff_min),
+                 int(max_diff_max)], [int(tot_pix_min),
+                                      int(tot_pix_max)])
 
     def get_file_path_for_wpt_test(self, test_name):
         """Returns the real file path for the given WPT test.
@@ -1202,6 +1237,24 @@ class Port(object):
             d for d in fs.listdir(web_tests_dir)
             if fs.isdir(fs.join(web_tests_dir, d))
         ]
+
+    def read_test(self, test_name, encoding="utf8"):
+        """Returns the contents of the given test according to the given encoding.
+        If no corresponding file can be found, returns None instead.
+        Warning: some tests are in utf8-incompatible encodings.
+        """
+        path = self.abspath_for_test(test_name)
+        if self._filesystem.isfile(path):
+            return self._filesystem.read_binary_file(path).decode(encoding)
+
+        base = self.lookup_virtual_test_base(test_name)
+        if not base:
+            return None
+        path = self.abspath_for_test(base)
+        if self._filesystem.isfile(path):
+            return self._filesystem.read_binary_file(path).decode(encoding)
+
+        return None
 
     @memoized
     def test_isfile(self, test_name):

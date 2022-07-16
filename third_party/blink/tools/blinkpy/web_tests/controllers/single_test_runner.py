@@ -623,8 +623,13 @@ class SingleTestRunner(object):
                 e)
 
         if driver_output.image_hash != expected_driver_output.image_hash:
-            diff, err_str = self._port.diff_image(expected_driver_output.image,
-                                                  driver_output.image)
+            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+                self._test_name)
+            diff, err_str = self._port.diff_image(
+                expected_driver_output.image,
+                driver_output.image,
+                max_channel_diff=max_channel_diff,
+                max_pixels_diff=max_pixels_diff)
 
             if diff:
                 driver_output.image_diff = diff
@@ -640,7 +645,7 @@ class SingleTestRunner(object):
                     test_failures.FailureImageHashMismatch(
                         driver_output, expected_driver_output)
                 ]
-            else:
+            elif not max_pixels_diff:
                 # See https://bugs.webkit.org/show_bug.cgi?id=69444 for why this
                 # isn't a full failure.
                 _log.warning('  %s -> pixel hash failed (but diff passed)',
@@ -773,7 +778,7 @@ class SingleTestRunner(object):
             elif err_str:
                 # TODO(rmhasan) Should we include this error message in the artifacts ?
                 _log.error('  %s : %s', self._test_name, err_str)
-            else:
+            elif not max_pixels_diff:
                 _log.warning(
                     "  %s -> ref test hashes didn't match but diff passed",
                     self._test_name)
