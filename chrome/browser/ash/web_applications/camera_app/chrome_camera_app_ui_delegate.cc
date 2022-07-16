@@ -36,7 +36,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -239,7 +239,7 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = {path};
-  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  params.launch_source = apps::LaunchSource::kFromOtherApp;
   ash::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
                                ash::SystemWebAppType::MEDIA, params);
 }

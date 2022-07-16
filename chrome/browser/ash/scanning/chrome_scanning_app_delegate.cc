@@ -30,7 +30,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/window_open_disposition.h"
@@ -102,7 +102,7 @@ void ChromeScanningAppDelegate::OpenFilesInMediaApp(
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = file_paths;
-  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  params.launch_source = apps::LaunchSource::kFromOtherApp;
   ash::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
                                ash::SystemWebAppType::MEDIA, params);
 }

@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {
   navigation_observer.StartWatchingNewWebContents();
 
   ash::SystemAppLaunchParams params;
-  params.launch_source = apps::mojom::LaunchSource::kFromAppListGrid;
+  params.launch_source = apps::LaunchSource::kFromAppListGrid;
   LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
 
   navigation_observer.Wait();
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = {temp_file_path};
-  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  params.launch_source = apps::LaunchSource::kFromOtherApp;
   LaunchSystemWebAppAsync(browser()->profile(), GetMockAppType(), params);
 
   navigation_observer.Wait();

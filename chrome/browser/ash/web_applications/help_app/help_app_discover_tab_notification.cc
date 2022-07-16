@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -54,8 +55,7 @@ void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
       kShowHelpAppDiscoverTabNotificationId);
   ash::SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/discover");
-  params.launch_source =
-      apps::mojom::LaunchSource::kFromDiscoverTabNotification;
+  params.launch_source = apps::LaunchSource::kFromDiscoverTabNotification;
   LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP, params);
 
   base::RecordAction(

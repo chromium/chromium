@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -93,7 +94,7 @@ void HelpAppResult::Open(int event_flags) {
   // Launch list result.
   ash::SystemAppLaunchParams params;
   params.url = GURL(ash::kChromeUIHelpAppURL + url_path_);
-  params.launch_source = apps::mojom::LaunchSource::kFromAppListQuery;
+  params.launch_source = apps::LaunchSource::kFromAppListQuery;
   ash::LaunchSystemWebAppAsync(
       profile_, ash::SystemWebAppType::HELP, params,
       apps::MakeWindowInfo(display::kDefaultDisplayId));

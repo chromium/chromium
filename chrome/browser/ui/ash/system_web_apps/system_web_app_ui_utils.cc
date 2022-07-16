@@ -167,20 +167,25 @@ void LaunchSystemWebAppAsync(Profile* profile,
     DCHECK(!params.url.has_value())
         << "Launch URL can't be used with launch_paths.";
     app_service->LaunchAppWithFiles(
-        *app_id, event_flags, params.launch_source,
+        *app_id, event_flags,
+        apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
         apps::mojom::FilePaths::New(params.launch_paths));
     return;
   }
 
   if (params.url) {
     DCHECK(params.url->is_valid());
-    app_service->LaunchAppWithUrl(*app_id, event_flags, *params.url,
-                                  params.launch_source, std::move(window_info));
+    app_service->LaunchAppWithUrl(
+        *app_id, event_flags, *params.url,
+        apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+        std::move(window_info));
     return;
   }
 
-  app_service->Launch(*app_id, event_flags, params.launch_source,
-                      std::move(window_info));
+  app_service->Launch(
+      *app_id, event_flags,
+      apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+      std::move(window_info));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,

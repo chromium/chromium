@@ -57,6 +57,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -634,7 +635,7 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   params.url = GURL(
       std::string(ash::personalization_app::kChromeUIPersonalizationAppURL) +
       ash::personalization_app::kWallpaperSubpageRelativeUrl);
-  params.launch_source = apps::mojom::LaunchSource::kFromShelf;
+  params.launch_source = apps::LaunchSource::kFromShelf;
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PERSONALIZATION,
                                params);
 }

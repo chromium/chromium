@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,8 +50,7 @@ struct SystemAppLaunchParams {
   absl::optional<GURL> url;
 
   // Where the app is launched from.
-  apps::mojom::LaunchSource launch_source =
-      apps::mojom::LaunchSource::kFromChromeInternal;
+  apps::LaunchSource launch_source = apps::LaunchSource::kFromChromeInternal;
 
   // If non-empty, specifies files passed to Web File Handling. Apps need to
   // have "FileHandling" origin trial in its SystemAppInfo, and file handlers

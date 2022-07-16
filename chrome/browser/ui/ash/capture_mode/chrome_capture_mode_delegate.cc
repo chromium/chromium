@@ -31,6 +31,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/service_process_host.h"
@@ -124,7 +125,7 @@ void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = {file_path};
-  params.launch_source = apps::mojom::LaunchSource::kFromFileManager;
+  params.launch_source = apps::LaunchSource::kFromFileManager;
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::MEDIA, params);
 }
 

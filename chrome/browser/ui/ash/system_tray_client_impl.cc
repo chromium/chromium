@@ -67,6 +67,7 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/network/network_util.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -507,7 +508,7 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
 
   ash::SystemAppLaunchParams params;
   params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
-  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+  params.launch_source = apps::LaunchSource::kFromOtherApp;
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }
 

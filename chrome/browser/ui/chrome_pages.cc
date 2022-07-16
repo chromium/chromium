@@ -41,6 +41,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -231,7 +232,7 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
   ash::SystemAppLaunchParams params;
-  params.launch_source = apps::mojom::LaunchSource::kUnknown;
+  params.launch_source = apps::LaunchSource::kUnknown;
   ash::LaunchSystemWebAppAsync(profile, type, params);
 }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -110,6 +110,7 @@
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -2333,7 +2334,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     GURL fileAppURL(base::StrCat({baseURL, search}));
     ash::SystemAppLaunchParams params;
     params.url = fileAppURL;
-    params.launch_source = apps::mojom::LaunchSource::kFromTest;
+    params.launch_source = apps::LaunchSource::kFromTest;
 
     WebContentCapturingObserver observer(fileAppURL);
     observer.StartWatchingNewWebContents();

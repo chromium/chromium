@@ -28,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -111,8 +112,7 @@ void HelpAppZeroStateResult::Open(int event_flags) {
     // Launch discover tab suggestion chip.
     ash::SystemAppLaunchParams params;
     params.url = GURL("chrome://help-app/discover");
-    params.launch_source =
-        apps::mojom::LaunchSource::kFromAppListRecommendation;
+    params.launch_source = apps::LaunchSource::kFromAppListRecommendation;
     ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
         apps::MakeWindowInfo(display::kDefaultDisplayId));
@@ -125,8 +125,7 @@ void HelpAppZeroStateResult::Open(int event_flags) {
 
     ash::SystemAppLaunchParams params;
     params.url = GURL("chrome://help-app/updates");
-    params.launch_source =
-        apps::mojom::LaunchSource::kFromAppListRecommendation;
+    params.launch_source = apps::LaunchSource::kFromAppListRecommendation;
     ash::LaunchSystemWebAppAsync(
         profile_, ash::SystemWebAppType::HELP, params,
         apps::MakeWindowInfo(display::kDefaultDisplayId));
