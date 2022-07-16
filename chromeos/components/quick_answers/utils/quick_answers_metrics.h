@@ -67,7 +67,7 @@ void RecordActiveImpression(ResultType result_type,
 void RecordIntentType(IntentType intent_type);
 
 // Record the intent type when network error occurs.
-void RecordNetworkError(IntentType intent_type);
+void RecordNetworkError(IntentType intent_type, int response_code);
 
 // Record the TTS engine event types as they occur in quick answers.
 void RecordTtsEngineEvent(TtsEngineEvent event);

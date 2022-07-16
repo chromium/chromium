@@ -96,8 +96,13 @@ void ResultLoader::OnSimpleURLLoaderComplete(
 
   if (!response_body || loader_->NetError() != net::OK ||
       !loader_->ResponseInfo() || !loader_->ResponseInfo()->headers) {
+    int response_code = -1;
+    if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {
+      response_code = loader_->ResponseInfo()->headers->response_code();
+    }
     RecordLoadingStatus(LoadStatus::kNetworkError, duration);
-    RecordNetworkError(preprocessed_output.intent_info.intent_type);
+    RecordNetworkError(preprocessed_output.intent_info.intent_type,
+                       response_code);
     delegate_->OnNetworkError();
     return;
   }

@@ -178,6 +178,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickAnswers.NetworkError.ResponseCode.{IntentType}"
+    enum="HttpResponseCode" expires_after="2023-03-21">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Records the Http response codes when network error occurs when fetching
+    {IntentType} results. ChromeOS only.
+  </summary>
+  <token key="IntentType">
+    <variant name="Definition" summary="definition"/>
+    <variant name="Translation" summary="translation"/>
+    <variant name="UnitConversion" summary="unit conversion"/>
+  </token>
+</histogram>
+
 <histogram name="QuickAnswers.RequestTextLength.{IntentType}"
     units="characters" expires_after="2022-09-01">
   <owner>updowndota@chromium.org</owner>

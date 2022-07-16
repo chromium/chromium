@@ -12,6 +12,7 @@
 namespace quick_answers {
 
 namespace {
+
 const char kQuickAnswerActiveImpression[] = "QuickAnswers.ActiveImpression";
 const char kQuickAnswerClick[] = "QuickAnswers.Click";
 const char kQuickAnswerResult[] = "QuickAnswers.Result";
@@ -25,12 +26,14 @@ const char kQuickAnswersTtsEngineEvent[] =
     "QuickAnswers.TextToSpeech.EngineEvent";
 const char kQuickAnswersDictionaryIntentSource[] =
     "QuickAnswers.DictionaryIntent.Source";
+const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
+const char kQuickAnswersNetworkResponseCode[] =
+    "QuickAnswers.NetworkError.ResponseCode";
 
 const char kDurationSuffix[] = ".Duration";
 const char kDefinitionSuffix[] = ".Definition";
 const char kTranslationSuffix[] = ".Translation";
 const char kUnitConversionSuffix[] = ".UnitConversion";
-const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
 
 std::string ResultTypeToString(ResultType result_type) {
   switch (result_type) {
@@ -121,8 +124,25 @@ void RecordIntentType(IntentType intent_type) {
   base::UmaHistogramEnumeration(kQuickAnswerIntent, intent_type);
 }
 
-void RecordNetworkError(IntentType intent_type) {
+void RecordNetworkError(IntentType intent_type, int response_code) {
   base::UmaHistogramEnumeration(kQuickAnswersNetworkError, intent_type);
+
+  std::string histogram_name = kQuickAnswersNetworkResponseCode;
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      histogram_name += kDefinitionSuffix;
+      break;
+    case IntentType::kTranslation:
+      histogram_name += kTranslationSuffix;
+      break;
+    case IntentType::kUnit:
+      histogram_name += kUnitConversionSuffix;
+      break;
+    case IntentType::kUnknown:
+      return;
+  }
+
+  base::UmaHistogramSparse(histogram_name, response_code);
 }
 
 void RecordTtsEngineEvent(TtsEngineEvent event) {
