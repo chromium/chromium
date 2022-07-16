@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #include "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -49,6 +48,7 @@
 #endif
 
 using password_manager::InsecureType;
+using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::MockBulkLeakCheckService;
 using ::testing::Return;
@@ -149,7 +149,14 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   void ChangePasswordCheckState(PasswordCheckUIState state) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
-    NSInteger count = GetTestStore().insecure_credentials().size();
+    NSInteger count = 0;
+    for (const auto& signon_realm_forms : GetTestStore().stored_passwords()) {
+      count += base::ranges::count_if(signon_realm_forms.second,
+                                      [](const PasswordForm& form) {
+                                        return !form.password_issues.empty();
+                                      });
+    }
+
     [passwords_controller setPasswordCheckUIState:state
                         compromisedPasswordsCount:count];
   }
@@ -160,8 +167,9 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     RunUntilIdle();
   }
 
-  // Creates and adds a saved password form.
-  void AddSavedForm1() {
+  // Creates and adds a saved password form.  If `is_leaked` is true it marks
+  // the credential as leaked.
+  void AddSavedForm1(bool is_leaked = false) {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
@@ -173,11 +181,13 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
-    // TODO(crbug.com/1223022): Once all places that operate changes on forms
-    // via UpdateLogin properly set |password_issues|, setting them to an empty
-    // map should be part of the default constructor.
-    form->password_issues =
-        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
+
+    if (is_leaked) {
+      form->password_issues = {
+          {InsecureType::kLeaked,
+           password_manager::InsecurityMetadata(
+               base::Time::Now(), password_manager::IsMuted(false))}};
+    }
     AddPasswordForm(std::move(form));
   }
 
@@ -194,11 +204,6 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.example2.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
-    // TODO(crbug.com/1223022): Once all places that operate changes on forms
-    // via UpdateLogin properly set |password_issues|, setting them to an empty
-    // map should be part of the default constructor.
-    form->password_issues =
-        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
   }
 
@@ -216,11 +221,6 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.secret.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
-    // TODO(crbug.com/1223022): Once all places that operate changes on forms
-    // via UpdateLogin properly set |password_issues|, setting them to an empty
-    // map should be part of the default constructor.
-    form->password_issues =
-        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
   }
 
@@ -238,19 +238,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->signon_realm = "http://www.secret2.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
-    // TODO(crbug.com/1223022): Once all places that operate changes on forms
-    // via UpdateLogin properly set |password_issues|, setting them to an empty
-    // map should be part of the default constructor.
-    form->password_issues =
-        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
     AddPasswordForm(std::move(form));
-  }
-
-  void AddCompromisedCredential() {
-    GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
-        "http://www.example.com/", u"test@egmail.com", base::Time::Now(),
-        InsecureType::kLeaked, password_manager::IsMuted(false)));
-    RunUntilIdle();
   }
 
   // Deletes the item at (row, section) and wait util idle.
@@ -273,6 +261,13 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
                     IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, count)),
                 [cell detailText]);
+  }
+
+  // Enables/Disables the edit mode based on |editing|.
+  void SetEditing(bool editing) {
+    PasswordsTableViewController* passwords_controller =
+        static_cast<PasswordsTableViewController*>(controller());
+    [passwords_controller setEditing:editing animated:NO];
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -426,7 +421,7 @@ TEST_F(PasswordsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS,
                           GetSectionIndex(SavedPasswords), 0);
 
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 
@@ -434,7 +429,7 @@ TEST_F(PasswordsTableViewControllerTest,
   AddBlockedForm1();
   // The export button should still be disabled as exporting blocked forms
   // is not currently supported.
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -471,7 +466,7 @@ TEST_F(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
 
   [passwords_controller setEditing:YES animated:NO];
 
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -495,6 +490,31 @@ TEST_F(PasswordsTableViewControllerTest,
 
   EXPECT_NSEQ([UIColor colorNamed:kBlueColor], exportButton.textColor);
   EXPECT_FALSE(exportButton.accessibilityTraits &
+               UIAccessibilityTraitNotEnabled);
+}
+
+// Tests that the "Check Now" button is greyed out in edit mode.
+TEST_F(PasswordsTableViewControllerTest,
+       TestCheckPasswordButtonDisabledEditMode) {
+  PasswordsTableViewController* passwords_controller =
+      static_cast<PasswordsTableViewController*>(controller());
+  AddSavedForm1();
+
+  TableViewDetailTextItem* checkPasswordButton =
+      GetTableViewItem(GetSectionIndex(PasswordCheck), 1);
+  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
+                          GetSectionIndex(PasswordCheck), 1);
+
+  [passwords_controller setEditing:YES animated:NO];
+
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
+              checkPasswordButton.textColor);
+  EXPECT_TRUE(checkPasswordButton.accessibilityTraits &
+              UIAccessibilityTraitNotEnabled);
+
+  [passwords_controller setEditing:NO animated:NO];
+  EXPECT_NSEQ([UIColor colorNamed:kBlueColor], checkPasswordButton.textColor);
+  EXPECT_FALSE(checkPasswordButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
 }
 
@@ -558,6 +578,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateDisabled) {
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
 }
 
 // Test verifies default state of password check cell.
@@ -572,6 +597,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateDefault) {
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(PasswordCheck), 0);
   EXPECT_TRUE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
 }
@@ -590,12 +620,16 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_TRUE(checkPassword.trailingImage);
 }
 
 // Test verifies unsafe state of password check cell.
 TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
-  AddSavedForm1();
-  AddCompromisedCredential();
+  AddSavedForm1(/*has_password_issues=*/true);
   ChangePasswordCheckState(PasswordCheckStateUnSafe);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -606,6 +640,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(PasswordCheck), 0);
   EXPECT_TRUE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_TRUE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
 }
@@ -624,6 +663,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateRunning) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_FALSE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_FALSE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
 }
 
 // Test verifies error state of password check cell.
@@ -638,6 +682,12 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateError) {
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(PasswordCheck), 0);
   EXPECT_TRUE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.infoButtonHidden);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.infoButtonHidden);

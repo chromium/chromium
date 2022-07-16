@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace browser_switcher {
@@ -14,12 +13,15 @@ namespace browser_switcher {
 // redirect, may open an alternative browser and close the tab.
 class BrowserSwitcherNavigationThrottle {
  public:
+  BrowserSwitcherNavigationThrottle() = delete;
+  BrowserSwitcherNavigationThrottle(const BrowserSwitcherNavigationThrottle&) =
+      delete;
+  BrowserSwitcherNavigationThrottle& operator=(
+      const BrowserSwitcherNavigationThrottle&) = delete;
+
   // Creates a |NavigationThrottle| if needed for the navigation.
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherNavigationThrottle);
 };
 
 }  // namespace browser_switcher

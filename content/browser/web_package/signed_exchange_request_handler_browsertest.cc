@@ -36,7 +36,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -83,7 +82,7 @@ namespace content {
 namespace {
 
 constexpr char kExpectedSXGEnabledAcceptHeaderForPrefetch[] =
-    "application/signed-exchange;v=b3;q=0.9,*/*;q=0.8";
+    "application/signed-exchange;v=b3;q=0.7,*/*;q=0.8";
 
 constexpr char kLoadResultHistogram[] = "SignedExchange.LoadResult2";
 constexpr char kPrefetchResultHistogram[] =
@@ -94,6 +93,10 @@ class RedirectObserver : public WebContentsObserver {
  public:
   explicit RedirectObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  RedirectObserver(const RedirectObserver&) = delete;
+  RedirectObserver& operator=(const RedirectObserver&) = delete;
+
   ~RedirectObserver() override = default;
 
   void DidRedirectNavigation(NavigationHandle* handle) override {
@@ -106,22 +109,23 @@ class RedirectObserver : public WebContentsObserver {
 
  private:
   absl::optional<int> response_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(RedirectObserver);
 };
 
 class AssertNavigationHandleFlagObserver : public WebContentsObserver {
  public:
   explicit AssertNavigationHandleFlagObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  AssertNavigationHandleFlagObserver(
+      const AssertNavigationHandleFlagObserver&) = delete;
+  AssertNavigationHandleFlagObserver& operator=(
+      const AssertNavigationHandleFlagObserver&) = delete;
+
   ~AssertNavigationHandleFlagObserver() override = default;
 
   void DidFinishNavigation(NavigationHandle* handle) override {
     EXPECT_TRUE(handle->IsSignedExchangeInnerResponse());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssertNavigationHandleFlagObserver);
 };
 
 class FinishNavigationObserver : public WebContentsObserver {
@@ -129,6 +133,9 @@ class FinishNavigationObserver : public WebContentsObserver {
   FinishNavigationObserver(WebContents* contents,
                            base::OnceClosure done_closure)
       : WebContentsObserver(contents), done_closure_(std::move(done_closure)) {}
+
+  FinishNavigationObserver(const FinishNavigationObserver&) = delete;
+  FinishNavigationObserver& operator=(const FinishNavigationObserver&) = delete;
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     error_code_ = navigation_handle->GetNetErrorCode();
@@ -140,8 +147,6 @@ class FinishNavigationObserver : public WebContentsObserver {
  private:
   base::OnceClosure done_closure_;
   absl::optional<net::Error> error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(FinishNavigationObserver);
 };
 
 class MockContentBrowserClient final : public ContentBrowserClient {
@@ -168,6 +173,11 @@ class SignedExchangeRequestHandlerBrowserTestBase
     net::EmbeddedTestServer::RegisterTestCerts();
     feature_list_.InitWithFeatures({features::kSignedHTTPExchange}, {});
   }
+
+  SignedExchangeRequestHandlerBrowserTestBase(
+      const SignedExchangeRequestHandlerBrowserTestBase&) = delete;
+  SignedExchangeRequestHandlerBrowserTestBase& operator=(
+      const SignedExchangeRequestHandlerBrowserTestBase&) = delete;
 
   void SetUp() override {
     sxg_test_helper_.SetUp();
@@ -223,8 +233,6 @@ class SignedExchangeRequestHandlerBrowserTestBase
 
   base::test::ScopedFeatureList feature_list_;
   SignedExchangeBrowserTestHelper sxg_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeRequestHandlerBrowserTestBase);
 };
 
 class SignedExchangeRequestHandlerBrowserTest
@@ -244,6 +252,12 @@ class SignedExchangeRequestHandlerBrowserTest
     }
     feature_list_.InitWithFeatures(enable_features, disabled_features);
   }
+
+  SignedExchangeRequestHandlerBrowserTest(
+      const SignedExchangeRequestHandlerBrowserTest&) = delete;
+  SignedExchangeRequestHandlerBrowserTest& operator=(
+      const SignedExchangeRequestHandlerBrowserTest&) = delete;
+
   ~SignedExchangeRequestHandlerBrowserTest() = default;
 
  protected:
@@ -272,6 +286,10 @@ class SignedExchangeRequestHandlerBrowserTest
    public:
     CacheObserver(const GURL& outer_url, base::OnceClosure quit_closure)
         : outer_url_(outer_url), quit_closure_(std::move(quit_closure)) {}
+
+    CacheObserver(const CacheObserver&) = delete;
+    CacheObserver& operator=(const CacheObserver&) = delete;
+
     ~CacheObserver() override = default;
 
     void OnStored(PrefetchedSignedExchangeCache* cache,
@@ -284,17 +302,12 @@ class SignedExchangeRequestHandlerBrowserTest
    private:
     const GURL outer_url_;
     base::OnceClosure quit_closure_;
-
-    DISALLOW_COPY_AND_ASSIGN(CacheObserver);
   };
 
   void WaitUntilSXGIsCached(const GURL& url) {
     scoped_refptr<PrefetchedSignedExchangeCache> cache =
-        static_cast<RenderFrameHostImpl*>(shell()
-                                              ->web_contents()
-                                              ->GetMainFrame()
-                                              ->GetRenderViewHost()
-                                              ->GetMainFrame())
+        static_cast<RenderFrameHostImpl*>(
+            shell()->web_contents()->GetMainFrame())
             ->EnsurePrefetchedSignedExchangeCache();
 
     if (cache->GetExchanges().find(url) != cache->GetExchanges().end())
@@ -310,8 +323,6 @@ class SignedExchangeRequestHandlerBrowserTest
   bool use_prefetch_ = false;
   bool sxg_subresource_prefetch_enabled_ = false;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeRequestHandlerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
@@ -514,8 +525,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Expired) {
   signed_exchange_utils::SetVerificationTimeForTesting(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(
-          SignedExchangeBrowserTestHelper::kSignatureHeaderExpires + 1));
+      base::Seconds(SignedExchangeBrowserTestHelper::kSignatureHeaderExpires +
+                    1));
 
   InstallMockCertChainInterceptor();
   InstallUrlInterceptor(GURL("https://test.example.org/test/"),
@@ -578,13 +589,11 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       UsePrefetch() ? 2 : 1);
 }
 
-#if defined(OS_ANDROID)
-// https://crbug.com/966820. Fails pretty often on Android.
-#define MAYBE_BadMICE DISABLED_BadMICE
-#else
-#define MAYBE_BadMICE BadMICE
-#endif
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, MAYBE_BadMICE) {
+// TODO(crbug.com/966820): Fails pretty often on Android.
+// TODO(crbug.com/1258886): Fails flakily on all platforms with Synchronous HTML
+// Parsing enabled.
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       DISABLED_BadMICE) {
   InstallMockCertChainInterceptor();
   InstallMockCert();
 
@@ -1439,7 +1448,7 @@ class SignedExchangeExpectCTReportBrowserTest
             ->GetDefaultStoragePartition()
             ->GetNetworkContext();
     network_context->AddExpectCT(
-        domain, base::Time::Now() + base::TimeDelta::FromDays(1) /* expiry */,
+        domain, base::Time::Now() + base::Days(1) /* expiry */,
         true /* enforce */, report_uri, network_isolation_key,
         base::BindLambdaForTesting([&](bool success) {
           EXPECT_TRUE(success);

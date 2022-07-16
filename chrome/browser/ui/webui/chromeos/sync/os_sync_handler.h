@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -25,6 +24,10 @@ class OSSyncHandler : public content::WebUIMessageHandler,
                       public syncer::SyncServiceObserver {
  public:
   explicit OSSyncHandler(Profile* profile);
+
+  OSSyncHandler(const OSSyncHandler&) = delete;
+  OSSyncHandler& operator=(const OSSyncHandler&) = delete;
+
   ~OSSyncHandler() override;
 
   // content::WebUIMessageHandler:
@@ -68,8 +71,6 @@ class OSSyncHandler : public content::WebUIMessageHandler,
 
   // Prevents messages to JS layer while data type prefs are being set.
   bool is_setting_prefs_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OSSyncHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_

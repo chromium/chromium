@@ -23,6 +23,10 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#endif
+
 namespace crashpad {
 namespace test {
 namespace {
@@ -39,8 +43,14 @@ TEST(ProcessMemoryRange, Basic) {
   constexpr bool is_64_bit = false;
 #endif  // ARCH_CPU_64_BITS
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  FakePtraceConnection connection;
+  ASSERT_TRUE(connection.Initialize(GetSelfProcess()));
+  ProcessMemoryLinux memory(&connection);
+#else
   ProcessMemoryNative memory;
   ASSERT_TRUE(memory.Initialize(GetSelfProcess()));
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 
   ProcessMemoryRange range;
   ASSERT_TRUE(range.Initialize(&memory, is_64_bit));

@@ -2,15 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/util/java_action.gni")
-
 declare_args() {
   # Control whether the JavaScript files shipped with Chrome on iOS are
   # compiled with closure_compiler or not. Useful for debugging.
   compile_javascript = true
 }
 
-closure_compiler_path = "//third_party/closure_compiler/compiler/compiler.jar"
+closure_compiler_path = "//ios/third_party/native_closure_compiler/compiler"
 
 # Defines a target that create a JavaScript bundle using the closure compiler.
 #
@@ -45,10 +43,10 @@ template("js_compile_bundle") {
   _target_name = target_name
   compile_js_target_name = target_name + "_compile_js"
 
-  java_action(compile_js_target_name) {
+  action(compile_js_target_name) {
     visibility = [ ":$_target_name" ]
     forward_variables_from(invoker, [ "testonly" ])
-    script = closure_compiler_path
+    script = "//build/gn_run_binary.py"
     sources = invoker.sources
     outputs = [ "$target_gen_dir/$_target_name.js" ]
 
@@ -60,6 +58,7 @@ template("js_compile_bundle") {
     }
 
     args = _additional_args + [
+             rebase_path(closure_compiler_path, root_build_dir),
              "--compilation_level",
              "SIMPLE_OPTIMIZATIONS",
              "--js_output_file",
@@ -120,10 +119,10 @@ template("js_compile_checked") {
     _target_name = target_name
     compile_js_target_name = target_name + "_compile_js"
 
-    java_action_foreach(compile_js_target_name) {
+    action_foreach(compile_js_target_name) {
       visibility = [ ":$_target_name" ]
       forward_variables_from(invoker, [ "testonly" ])
-      script = closure_compiler_path
+      script = "//build/gn_run_binary.py"
       sources = invoker.sources
       _js_modules = []
       if (defined(invoker.js_modules)) {
@@ -133,6 +132,7 @@ template("js_compile_checked") {
       outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 
       args = [
+        rebase_path(closure_compiler_path, root_build_dir),
         "--compilation_level",
         "SIMPLE_OPTIMIZATIONS",
         "--jscomp_error=checkTypes",
@@ -232,14 +232,15 @@ template("js_compile_unchecked") {
     _target_name = target_name
     compile_js_target_name = target_name + "_compile_js"
 
-    java_action_foreach(compile_js_target_name) {
+    action_foreach(compile_js_target_name) {
       visibility = [ ":$_target_name" ]
       forward_variables_from(invoker, [ "testonly" ])
-      script = closure_compiler_path
+      script = "//build/gn_run_binary.py"
       sources = invoker.sources
       outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 
       args = [
+        rebase_path(closure_compiler_path, root_build_dir),
         "--compilation_level",
         "SIMPLE_OPTIMIZATIONS",
         "--js",

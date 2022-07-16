@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h"
+#include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h"
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -15,7 +15,7 @@
 
 namespace policy {
 
-void ChromeBrowserCloudManagementBrowserTestDelegate::
+void ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
     MaybeCheckDialogClosingAfterPolicyRegistration(bool popup_expected) const {
   if (popup_expected) {
     MaybeCheckTotalBrowserCount(0u);
@@ -28,7 +28,7 @@ void ChromeBrowserCloudManagementBrowserTestDelegate::
   }
 }
 
-bool ChromeBrowserCloudManagementBrowserTestDelegate::
+bool ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
     ExpectManagerImmediatelyInitialized(bool enrollment_succeeded) const {
   // If enrollment fails, the manager should be marked as initialized
   // immediately. Otherwise, this will be done after the policy data is
@@ -36,19 +36,22 @@ bool ChromeBrowserCloudManagementBrowserTestDelegate::
   return !enrollment_succeeded;
 }
 
-bool ChromeBrowserCloudManagementBrowserTestDelegate::
+bool ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
     AcceptEmptyMachineNameOnBrowserRegistration() const {
   return false;
 }
 
-bool ChromeBrowserCloudManagementBrowserTestDelegate::ExpectOnStoreEventFired()
-    const {
+bool ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
+    ExpectOnStoreEventFired() const {
   return false;
 }
 
-void ChromeBrowserCloudManagementBrowserTestDelegate::
+void ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
     MaybeCheckTotalBrowserCount(size_t expected_browser_count) const {
   EXPECT_EQ(chrome::GetTotalBrowserCount(), expected_browser_count);
 }
+
+void ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
+    MaybeWaitForEnrollmentConfirmation(const std::string& enrollment_token) {}
 
 }  // namespace policy

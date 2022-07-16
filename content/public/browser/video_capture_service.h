@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_VIDEO_CAPTURE_SERVICE_H_
 
 #include "content/common/content_export.h"
-#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom-forward.h"
 
 namespace content {
 

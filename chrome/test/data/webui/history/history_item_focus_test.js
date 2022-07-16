@@ -5,7 +5,7 @@
 import {BrowserService} from 'chrome://history/history.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createHistoryEntry} from 'chrome://test/history/test_util.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('<history-item> focus test', function() {
   let item;

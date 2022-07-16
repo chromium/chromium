@@ -20,6 +20,7 @@ namespace ash {
 struct LocaleInfo;
 class SystemTrayClient;
 enum class NotificationStyle;
+struct RelaunchNotificationState;
 enum class UpdateSeverity;
 enum class UpdateType;
 
@@ -81,21 +82,14 @@ class ASH_PUBLIC_EXPORT SystemTray {
                               bool rollback,
                               UpdateType update_type) = 0;
 
-  // Sets new strings for update notification in the unified system menu,
+  // Changes the update notification in the unified system menu,
   // according to different policies, when there is an update available
   // (it may be recommended or required, from Relaunch Notification policy,
   // for example).
-  // Providing these strings allows the update countdown logic to remain in
-  // //chrome/browser, where it is shared with other platforms.
-  // |style| specifies the type of notification, according to the policy
-  // (default, recommended or required).
-  // |notification_title| the title of the notification, which overwrites
-  // the default.
-  // |notification_body| the new notification body which overwrites the default.
-  virtual void SetUpdateNotificationState(
-      NotificationStyle style,
-      const std::u16string& notification_title,
-      const std::u16string& notification_body) = 0;
+  // Providing the `RelaunchNotificationState` allows the update countdown logic
+  // to remain in //chrome/browser, where it is shared with other platforms.
+  virtual void SetRelaunchNotificationState(
+      const RelaunchNotificationState& relaunch_notification_state) = 0;
 
   // Resets update state to hide the update icon and notification. It is called
   // when a new update starts before the current update is applied.

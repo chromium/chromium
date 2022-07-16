@@ -1,0 +1,59 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
+[Stable, Extensible]
+struct UsbDetachableAllowlist {
+  array<UsbDeviceId> usb_device_ids@0;
+};
+
+// Copy of UsbDeviceIdInclusiveProto from chrome_device_policy.proto.
+[Stable, Extensible]
+struct UsbDeviceId {
+  // USB Vendor Identifier (aka idVendor).
+  bool has_vendor_id@0;
+  int32 vendor_id@1;
+  // USB Product Identifier (aka idProduct).
+  bool has_product_id@2;
+  int32 product_id@3;
+};
+
+// All the device settings data that are needed in Lacros should be here.
+[Stable, Extensible]
+struct DeviceSettings {
+  // The value of AttestationForContentProtectionEnabled device setting.
+  OptionalBool attestation_for_content_protection_enabled@0;
+
+  // The value of DeviceSystemWideTracingEnabled device policy.
+  OptionalBool device_system_wide_tracing_enabled@1;
+
+  // The value of UsbDetachableAllowlist device policy.
+  UsbDetachableAllowlist? usb_detachable_allow_list@2;
+
+  [Stable]
+  enum OptionalBool {
+    kUnset,
+    kFalse,
+    kTrue,
+  };
+};
+
+// Interface for device settings observers. Implemented by lacros-chrome. Used
+// by ash-chrome to send device settings updates.
+[Stable, Uuid="c2d2367e-1179-42ca-97ab-426a0c3cd265"]
+interface DeviceSettingsObserver {
+  // Called when device settings have changed.
+  UpdateDeviceSettings@0(DeviceSettings device_settings);
+};
+
+// This interface is implemented by Ash-Chrome.
+// It includes the device policy and other device settings configurable by the
+// user that are needed in Lacros.
+[Stable, Uuid="7ce66db5-5d91-4b45-b7aa-4fcfd8a53985"]
+interface DeviceSettingsService {
+  // Adds an observer for device settings updates.
+  AddDeviceSettingsObserver@0(pending_remote<DeviceSettingsObserver> observer);
+};

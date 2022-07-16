@@ -52,7 +52,7 @@ public class CastWebContentsComponent {
     }
 
     /**
-     * Params to start WebContents in activity, fragment or service.
+     * Params to start WebContents in activity or service.
      */
     static class StartParams {
         public final Context context;
@@ -111,30 +111,10 @@ public class CastWebContentsComponent {
         }
     }
 
-    private class FragmentDelegate implements Delegate {
-        private static final String TAG = "CastWebContent_FD";
-
-        @Override
-        public void start(StartParams params) {
-            if (!sendIntent(CastWebContentsIntentUtils.requestStartCastFragment(params.webContents,
-                        params.appId, params.visibilityPriority, mEnableTouchInput, mSessionId,
-                        mIsRemoteControlMode, mTurnOnScreen))) {
-                // No intent receiver to handle SHOW_WEB_CONTENT in fragment
-                startCastActivity(params.context, params.webContents, mEnableTouchInput,
-                        mIsRemoteControlMode, mTurnOnScreen);
-            }
-        }
-
-        @Override
-        public void stop(Context context) {
-            sendStopWebContentEvent();
-        }
-    }
-
     private void startCastActivity(Context context, WebContents webContents, boolean enableTouch,
             boolean isRemoteControlMode, boolean turnOnScreen) {
-        Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(context, webContents,
-                enableTouch, isRemoteControlMode, turnOnScreen, mKeepScreenOn, mSessionId);
+        Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
+                context, webContents, enableTouch, isRemoteControlMode, turnOnScreen, mSessionId);
         if (DEBUG) Log.d(TAG, "start activity by intent: " + intent);
         sResumeIntent.set(intent);
 
@@ -200,14 +180,13 @@ public class CastWebContentsComponent {
     private boolean mEnableTouchInput;
     private final boolean mIsRemoteControlMode;
     private final boolean mTurnOnScreen;
-    private final boolean mKeepScreenOn;
 
     private final Controller<CastAudioFocusRequest> mAudioFocusRequestState = new Controller<>();
 
     public CastWebContentsComponent(String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
             SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput,
-            boolean isRemoteControlMode, boolean turnOnScreen, boolean keepScreenOn) {
+            boolean isRemoteControlMode, boolean turnOnScreen) {
         if (DEBUG) {
             Log.d(TAG,
                     "New CastWebContentsComponent. Instance ID: " + sessionId
@@ -221,7 +200,6 @@ public class CastWebContentsComponent {
         mSurfaceEventHandler = surfaceEventHandler;
         mIsRemoteControlMode = isRemoteControlMode;
         mTurnOnScreen = turnOnScreen;
-        mKeepScreenOn = keepScreenOn;
 
         mHasWebContentsState.subscribe(x -> {
             final IntentFilter filter = new IntentFilter();
@@ -286,9 +264,6 @@ public class CastWebContentsComponent {
         if (BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE || isHeadless) {
             if (DEBUG) Log.d(TAG, "Creating service delegate...");
             start(params, new ServiceDelegate());
-        } else if (BuildConfig.ENABLE_CAST_FRAGMENT) {
-            if (DEBUG) Log.d(TAG, "Creating fragment delegate...");
-            start(params, new FragmentDelegate());
         } else {
             if (DEBUG) Log.d(TAG, "Creating activity delegate...");
             start(params, new ActivityDelegate());

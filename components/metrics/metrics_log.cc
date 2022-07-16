@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstring>
 #include <string>
 
 #include "base/build_time.h"
@@ -21,7 +22,10 @@
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -34,6 +38,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/user_action_event.pb.h"
@@ -74,6 +79,10 @@ namespace {
 class IndependentFlattener : public base::HistogramFlattener {
  public:
   explicit IndependentFlattener(MetricsLog* log) : log_(log) {}
+
+  IndependentFlattener(const IndependentFlattener&) = delete;
+  IndependentFlattener& operator=(const IndependentFlattener&) = delete;
+
   ~IndependentFlattener() override {}
 
   // base::HistogramFlattener:
@@ -84,13 +93,48 @@ class IndependentFlattener : public base::HistogramFlattener {
 
  private:
   MetricsLog* const log_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndependentFlattener);
 };
 
 // Convenience function to return the given time at a resolution in seconds.
 static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
   return (time_ticks - base::TimeTicks()).InSeconds();
+}
+
+// Populates |time| with information about the current time and, if
+// |record_time_zone| is true, the time zone.
+void RecordCurrentTime(
+    const base::Clock* clock,
+    const network_time::NetworkTimeTracker* network_time_tracker,
+    bool record_time_zone,
+    metrics::ChromeUserMetricsExtension::RealLocalTime* time) {
+  // Record the current time and the clock used to determine the time.
+  base::Time now;
+  // TODO(http://crbug.com/1257449): Enable network time on Android.
+  now = clock->Now();
+  time->set_time_source(
+      metrics::ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  time->set_time_sec(now.ToTimeT());
+
+  if (record_time_zone) {
+    // Determine time zone offset from GMT and store it.
+    int32_t raw_offset, dst_offset;
+    UErrorCode status = U_ZERO_ERROR;
+    // Ask for a new time zone object each time; don't cache it, as time zones
+    // may change while Chrome is running.
+    std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
+    time_zone->getOffset(now.ToDoubleT() * base::Time::kMillisecondsPerSecond,
+                         false,  // interpret |now| as from UTC/GMT
+                         raw_offset, dst_offset, status);
+    base::TimeDelta time_zone_offset =
+        base::Milliseconds(raw_offset + dst_offset);
+    if (U_FAILURE(status)) {
+      DVLOG(1) << "Failed to get time zone offset, error code: " << status;
+      // The fallback case is to get the raw timezone offset ignoring the
+      // daylight saving time.
+      time_zone_offset = base::Milliseconds(time_zone->getRawOffset());
+    }
+    time->set_time_zone_offset_from_gmt_sec(time_zone_offset.InSeconds());
+  }
 }
 
 }  // namespace
@@ -131,13 +175,37 @@ MetricsLog::MetricsLog(const std::string& client_id,
                        int session_id,
                        LogType log_type,
                        MetricsServiceClient* client)
+    : MetricsLog(client_id,
+                 session_id,
+                 log_type,
+                 base::DefaultClock::GetInstance(),
+                 client->GetNetworkTimeTracker(),
+                 client) {}
+
+MetricsLog::MetricsLog(const std::string& client_id,
+                       int session_id,
+                       LogType log_type,
+                       base::Clock* clock,
+                       const network_time::NetworkTimeTracker* network_clock,
+                       MetricsServiceClient* client)
     : closed_(false),
       log_type_(log_type),
       client_(client),
       creation_time_(base::TimeTicks::Now()),
-      has_environment_(false) {
+      has_environment_(false),
+      clock_(clock),
+      network_clock_(network_clock) {
   uma_proto_.set_client_id(Hash(client_id));
   uma_proto_.set_session_id(session_id);
+
+  if (log_type == MetricsLog::ONGOING_LOG) {
+    // Don't record the time when creating a log because creating a log happens
+    // on startups and setting the timezone requires ICU initialization that is
+    // too expensive to run during this critical time.
+    RecordCurrentTime(clock_, network_clock_,
+                      /*record_time_zone=*/false,
+                      uma_proto_.mutable_time_log_created());
+  }
 
   const int32_t product = client_->GetProduct();
   // Only set the product if it differs from the default value.
@@ -244,7 +312,16 @@ void MetricsLog::RecordCoreSystemProfile(
   if (!app_os_arch.empty())
     hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
+#if defined(OS_IOS)
+  // Remove any trailing null characters.
+  // TODO(crbug/1247379): Verify that this is WAI. If so, inline this into
+  // iOS's implementation of HardwareModelName().
+  const std::string hardware_class = base::SysInfo::HardwareModelName();
+  hardware->set_hardware_class(
+      hardware_class.substr(0, strlen(hardware_class.c_str())));
+#else
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
+#endif  // defined(OS_IOS)
 #if defined(OS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
@@ -383,22 +460,30 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   return *system_profile;
 }
 
-bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state,
-                                               std::string* app_version) {
+bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state) {
   DCHECK(!has_environment_);
   has_environment_ = true;
-  app_version->clear();
 
   SystemProfileProto* system_profile = uma_proto()->mutable_system_profile();
   EnvironmentRecorder recorder(local_state);
-  bool success = recorder.LoadEnvironmentFromPrefs(system_profile);
-  if (success)
-    *app_version = system_profile->app_version();
-  return success;
+  return recorder.LoadEnvironmentFromPrefs(system_profile);
+}
+
+void MetricsLog::RecordLogWrittenByAppVersionIfNeeded() {
+  DCHECK(!closed_);
+  std::string current_version = client_->GetVersionString();
+  if (uma_proto()->system_profile().app_version() != current_version)
+    uma_proto()->mutable_system_profile()->set_log_written_by_app_version(
+        current_version);
 }
 
 void MetricsLog::CloseLog() {
   DCHECK(!closed_);
+  if (log_type_ == MetricsLog::ONGOING_LOG) {
+    RecordCurrentTime(clock_, network_clock_,
+                      /*record_time_zone=*/true,
+                      uma_proto_.mutable_time_log_closed());
+  }
   closed_ = true;
 }
 

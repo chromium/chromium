@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of goog.net.NetworkTester.
@@ -37,6 +29,7 @@ goog.require('goog.log');
  * @final
  */
 goog.net.NetworkTester = function(callback, opt_handler, opt_uri) {
+  'use strict';
   /**
    * Callback that is called when the test completes.
    * The callback takes a single boolean parameter. True indicates the URL was
@@ -153,6 +146,7 @@ goog.net.NetworkTester.prototype.image_;
  * @return {number} Timeout in milliseconds.
  */
 goog.net.NetworkTester.prototype.getTimeout = function() {
+  'use strict';
   return this.timeoutMs_;
 };
 
@@ -162,6 +156,7 @@ goog.net.NetworkTester.prototype.getTimeout = function() {
  * @param {number} timeoutMs Timeout in milliseconds.
  */
 goog.net.NetworkTester.prototype.setTimeout = function(timeoutMs) {
+  'use strict';
   this.timeoutMs_ = timeoutMs;
 };
 
@@ -171,6 +166,7 @@ goog.net.NetworkTester.prototype.setTimeout = function(timeoutMs) {
  * @return {number} Number of retries to attempt.
  */
 goog.net.NetworkTester.prototype.getNumRetries = function() {
+  'use strict';
   return this.retries_;
 };
 
@@ -180,6 +176,7 @@ goog.net.NetworkTester.prototype.getNumRetries = function() {
  * @param {number} retries Number of retries to attempt.
  */
 goog.net.NetworkTester.prototype.setNumRetries = function(retries) {
+  'use strict';
   this.retries_ = retries;
 };
 
@@ -189,6 +186,7 @@ goog.net.NetworkTester.prototype.setNumRetries = function(retries) {
  * @return {number} Pause between retries in milliseconds.
  */
 goog.net.NetworkTester.prototype.getPauseBetweenRetries = function() {
+  'use strict';
   return this.pauseBetweenRetriesMs_;
 };
 
@@ -198,6 +196,7 @@ goog.net.NetworkTester.prototype.getPauseBetweenRetries = function() {
  * @param {number} pauseMs Pause between retries in milliseconds.
  */
 goog.net.NetworkTester.prototype.setPauseBetweenRetries = function(pauseMs) {
+  'use strict';
   this.pauseBetweenRetriesMs_ = pauseMs;
 };
 
@@ -207,6 +206,7 @@ goog.net.NetworkTester.prototype.setPauseBetweenRetries = function(pauseMs) {
  * @return {goog.Uri} The uri for the test.
  */
 goog.net.NetworkTester.prototype.getUri = function() {
+  'use strict';
   return this.uri_;
 };
 
@@ -216,6 +216,7 @@ goog.net.NetworkTester.prototype.getUri = function() {
  * @return {number} The attempt count.
  */
 goog.net.NetworkTester.prototype.getAttemptCount = function() {
+  'use strict';
   return this.attempt_;
 };
 
@@ -225,6 +226,7 @@ goog.net.NetworkTester.prototype.getAttemptCount = function() {
  * @param {goog.Uri} uri The uri for the test.
  */
 goog.net.NetworkTester.prototype.setUri = function(uri) {
+  'use strict';
   this.uri_ = uri;
 };
 
@@ -234,6 +236,7 @@ goog.net.NetworkTester.prototype.setUri = function(uri) {
  * @return {boolean} True if it's running, false if it's not running.
  */
 goog.net.NetworkTester.prototype.isRunning = function() {
+  'use strict';
   return this.running_;
 };
 
@@ -242,6 +245,7 @@ goog.net.NetworkTester.prototype.isRunning = function() {
  * Starts the process of testing the network.
  */
 goog.net.NetworkTester.prototype.start = function() {
+  'use strict';
   if (this.running_) {
     throw new Error('NetworkTester.start called when already running');
   }
@@ -257,6 +261,7 @@ goog.net.NetworkTester.prototype.start = function() {
  * Stops the testing of the network. This is a noop if not running.
  */
 goog.net.NetworkTester.prototype.stop = function() {
+  'use strict';
   this.cleanupCallbacks_();
   this.running_ = false;
 };
@@ -267,6 +272,7 @@ goog.net.NetworkTester.prototype.stop = function() {
  * @private
  */
 goog.net.NetworkTester.prototype.startNextAttempt_ = function() {
+  'use strict';
   this.attempt_++;
 
   if (goog.net.NetworkTester.getNavigatorOffline_()) {
@@ -294,6 +300,7 @@ goog.net.NetworkTester.prototype.startNextAttempt_ = function() {
  * @private
  */
 goog.net.NetworkTester.getNavigatorOffline_ = function() {
+  'use strict';
   return navigator !== null && 'onLine' in navigator && !navigator.onLine;
 };
 
@@ -303,6 +310,7 @@ goog.net.NetworkTester.getNavigatorOffline_ = function() {
  * @private
  */
 goog.net.NetworkTester.prototype.onImageLoad_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'Image loaded');
   this.onResult(true);
 };
@@ -313,6 +321,7 @@ goog.net.NetworkTester.prototype.onImageLoad_ = function() {
  * @private
  */
 goog.net.NetworkTester.prototype.onImageError_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'Image load error');
   this.onResult(false);
 };
@@ -323,6 +332,7 @@ goog.net.NetworkTester.prototype.onImageError_ = function() {
  * @private
  */
 goog.net.NetworkTester.prototype.onImageAbort_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'Image load aborted');
   this.onResult(false);
 };
@@ -333,6 +343,7 @@ goog.net.NetworkTester.prototype.onImageAbort_ = function() {
  * @private
  */
 goog.net.NetworkTester.prototype.onImageTimeout_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'Image load timed out');
   this.onResult(false);
 };
@@ -343,6 +354,7 @@ goog.net.NetworkTester.prototype.onImageTimeout_ = function() {
  * @param {boolean} succeeded Whether the image load succeeded.
  */
 goog.net.NetworkTester.prototype.onResult = function(succeeded) {
+  'use strict';
   this.cleanupCallbacks_();
 
   if (succeeded) {
@@ -369,6 +381,7 @@ goog.net.NetworkTester.prototype.onResult = function(succeeded) {
  * @private
  */
 goog.net.NetworkTester.prototype.onPauseFinished_ = function() {
+  'use strict';
   this.pauseTimer_ = null;
   this.startNextAttempt_();
 };
@@ -379,6 +392,7 @@ goog.net.NetworkTester.prototype.onPauseFinished_ = function() {
  * @private
  */
 goog.net.NetworkTester.prototype.cleanupCallbacks_ = function() {
+  'use strict';
   // clear handlers to avoid memory leaks
   // NOTE(user): Nullified individually to avoid compiler warnings
   // (BUG 658126)

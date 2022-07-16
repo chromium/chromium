@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/metadata/view_factory.h"
@@ -28,6 +27,10 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
 
   RoundedImageView();
   RoundedImageView(int corner_radius, Alignment alignment);
+
+  RoundedImageView(const RoundedImageView&) = delete;
+  RoundedImageView& operator=(const RoundedImageView&) = delete;
+
   ~RoundedImageView() override;
 
   // Set the image that should be displayed. The image contents is copied to the
@@ -62,8 +65,6 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
   int corner_radius_[4];
 
   const Alignment alignment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedImageView);
 };
 
 BEGIN_VIEW_BUILDER(ASH_PUBLIC_EXPORT, RoundedImageView, views::View)

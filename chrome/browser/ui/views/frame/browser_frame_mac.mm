@@ -32,6 +32,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -434,4 +435,20 @@ bool BrowserFrameMac::HandleKeyboardEvent(
 
 bool BrowserFrameMac::ShouldRestorePreviousBrowserWidgetState() const {
   return true;
+}
+
+void BrowserFrameMac::AnnounceTextInInProcessWindow(
+    const std::u16string& text) {
+  NSAccessibilityPriorityLevel priority = NSAccessibilityPriorityHigh;
+  NSDictionary* notification_info = @{
+    NSAccessibilityAnnouncementKey : base::SysUTF16ToNSString(text),
+    NSAccessibilityPriorityKey : @(priority)
+  };
+
+  NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+  if (ns_window) {
+    NSAccessibilityPostNotificationWithUserInfo(
+        ns_window, NSAccessibilityAnnouncementRequestedNotification,
+        notification_info);
+  }
 }

@@ -30,12 +30,25 @@ PrintViewManagerBasic::~PrintViewManagerBasic() {
 #endif
 }
 
+// static
+void PrintViewManagerBasic::BindPrintManagerHost(
+    mojo::PendingAssociatedReceiver<mojom::PrintManagerHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* print_manager = PrintViewManagerBasic::FromWebContents(web_contents);
+  if (!print_manager)
+    return;
+  print_manager->BindReceiver(std::move(receiver), rfh);
+}
+
 #if defined(OS_ANDROID)
 void PrintViewManagerBasic::PdfWritingDone(int page_count) {
   pdf_writing_done_callback().Run(page_count);
 }
 #endif
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerBasic)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerBasic);
 
 }  // namespace printing

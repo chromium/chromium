@@ -20,6 +20,10 @@
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_linux.h"
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#endif
+
 namespace crashpad {
 namespace test {
 namespace {
@@ -27,11 +31,12 @@ namespace {
 class AllowedAnnotationsTest : public testing::Test {
  public:
   void SetUp() override {
-    ASSERT_TRUE(memory_.Initialize(getpid()));
+    ASSERT_TRUE(connection_.Initialize(getpid()));
+
 #if defined(ARCH_CPU_64_BITS)
-    ASSERT_TRUE(range_.Initialize(&memory_, true));
+    ASSERT_TRUE(range_.Initialize(connection_.Memory(), true));
 #else
-    ASSERT_TRUE(range_.Initialize(&memory_, false));
+    ASSERT_TRUE(range_.Initialize(connection_.Memory(), false));
 #endif
   }
 
@@ -41,7 +46,7 @@ class AllowedAnnotationsTest : public testing::Test {
         range_, FromPointerCast<VMAddress>(address), &allowed_annotations_);
   }
 
-  ProcessMemoryLinux memory_;
+  FakePtraceConnection connection_;
   ProcessMemoryRange range_;
   std::vector<std::string> allowed_annotations_;
 };

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/notification_blocker.h"
 
@@ -25,6 +24,12 @@ class ASH_EXPORT SessionStateNotificationBlocker
  public:
   explicit SessionStateNotificationBlocker(
       message_center::MessageCenter* message_center);
+
+  SessionStateNotificationBlocker(const SessionStateNotificationBlocker&) =
+      delete;
+  SessionStateNotificationBlocker& operator=(
+      const SessionStateNotificationBlocker&) = delete;
+
   ~SessionStateNotificationBlocker() override;
 
   static void SetUseLoginNotificationDelayForTest(bool use_delay);
@@ -48,8 +53,6 @@ class ASH_EXPORT SessionStateNotificationBlocker
   base::OneShotTimer login_delay_timer_;
   bool should_show_notification_ = false;
   bool should_show_popup_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStateNotificationBlocker);
 };
 
 }  // namespace ash

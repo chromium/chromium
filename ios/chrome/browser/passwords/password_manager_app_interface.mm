@@ -9,8 +9,8 @@
 #include "base/test/ios/wait_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -26,12 +26,16 @@
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::PasswordStoreConsumer;
 
 class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
  public:
   PasswordStoreConsumerHelper() {}
+
+  PasswordStoreConsumerHelper(const PasswordStoreConsumerHelper&) = delete;
+  PasswordStoreConsumerHelper& operator=(const PasswordStoreConsumerHelper&) =
+      delete;
 
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override {
@@ -48,8 +52,6 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 
  private:
   std::vector<std::unique_ptr<PasswordForm>> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
 @implementation PasswordManagerAppInterface
@@ -58,7 +60,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
                                password:(NSString*)password
                                     URL:(NSURL*)URL {
   // Obtain a PasswordStore.
-  scoped_refptr<password_manager::PasswordStore> passwordStore =
+  scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
       IOSChromePasswordStoreFactory::GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)
@@ -72,7 +74,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   password_manager::PasswordForm passwordCredentialForm;
   passwordCredentialForm.username_value = base::SysNSStringToUTF16(username);
   passwordCredentialForm.password_value = base::SysNSStringToUTF16(password);
-  passwordCredentialForm.url = net::GURLWithNSURL(URL).GetOrigin();
+  passwordCredentialForm.url =
+      net::GURLWithNSURL(URL).DeprecatedGetOriginAsURL();
   passwordCredentialForm.signon_realm = passwordCredentialForm.url.spec();
   passwordCredentialForm.scheme = password_manager::PasswordForm::Scheme::kHtml;
   passwordStore->AddLogin(passwordCredentialForm);
@@ -90,7 +93,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 }
 
 + (void)clearCredentials {
-  scoped_refptr<password_manager::PasswordStore> passwordStore =
+  scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
       IOSChromePasswordStoreFactory::GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)
@@ -102,7 +105,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 
 + (int)storedCredentialsCount {
   // Obtain a PasswordStore.
-  scoped_refptr<PasswordStore> passwordStore =
+  scoped_refptr<PasswordStoreInterface> passwordStore =
       IOSChromePasswordStoreFactory::GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)

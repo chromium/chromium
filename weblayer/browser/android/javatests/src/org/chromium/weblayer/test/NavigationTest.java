@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.Browser;
@@ -40,6 +41,7 @@ import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NavigationState;
+import org.chromium.weblayer.NewTabCallback;
 import org.chromium.weblayer.Page;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
@@ -82,15 +84,27 @@ public class NavigationTest {
     // A URL with a custom scheme/host that is handled by WebLayer Shell.
     private static final String CUSTOM_SCHEME_URL_WITH_DEFAULT_EXTERNAL_HANDLER =
             "weblayer://weblayertest/intent";
-    // An intent that opens Chrome to view a specified URL.
-    private static final String INTENT_TO_CHROME_URL =
-            "intent://play.google.com/store/apps/details?id=com.facebook.katana/#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end";
+    // An intent that sends an url with a custom scheme that is handled by WebLayer Shell.
+    private static final String INTENT_TO_CUSTOM_SCHEME_URL =
+            "intent://weblayertest/intent#Intent;scheme=weblayer;"
+            + "action=android.intent.action.VIEW;end";
 
     // An IntentInterceptor that simply drops intents to ensure that intent launches don't interfere
     // with running of tests.
     private class IntentInterceptor implements InstrumentationActivity.IntentInterceptor {
         @Override
         public void interceptIntent(Intent intent, int requestCode, Bundle options) {}
+    }
+
+    private <E extends Throwable> void assertThrows(Class<E> exceptionType, Runnable runnable) {
+        Throwable actualException = null;
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            actualException = e;
+        }
+        assertNotNull("Exception not thrown", actualException);
+        assertEquals(exceptionType, actualException.getClass());
     }
 
     private class Callback extends NavigationCallback {
@@ -639,6 +653,95 @@ public class NavigationTest {
                 curRedirectedCount, Arrays.asList(Uri.parse(url), Uri.parse(finalUrl)));
     }
 
+    /**
+     * This test verifies that calling getPage() from within onNavigationFailed for a
+     * navigation that results in an error page returns a non-null Page object, and that an
+     * onPageDestroyed() callback is triggered for that page when the user navigates away.
+     */
+    @MinWebLayerVersion(93)
+    @Test
+    @SmallTest
+    public void testPageCallbacksForNavigationResultingInErrorPage() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        CallbackHelper navigationFailedCallbackHelper = new CallbackHelper();
+        CallbackHelper pageDestroyedCallbackHelper = new CallbackHelper();
+        final Page[] pageForFailedNavigation = {null};
+        runOnUiThreadBlocking(() -> {
+            NavigationController navigationController = activity.getTab().getNavigationController();
+            navigationController.registerNavigationCallback(new NavigationCallback() {
+                @Override
+                public void onNavigationFailed(Navigation navigation) {
+                    assertTrue(navigation.isErrorPage());
+                    pageForFailedNavigation[0] = navigation.getPage();
+                    assertNotNull(pageForFailedNavigation[0]);
+                    navigationFailedCallbackHelper.notifyCalled();
+                }
+                @Override
+                public void onPageDestroyed(Page page) {
+                    assertEquals(pageForFailedNavigation[0], page);
+                    navigationController.unregisterNavigationCallback(this);
+                    pageDestroyedCallbackHelper.notifyCalled();
+                }
+            });
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Do a navigation that will result in an error page.
+            activity.getTab().getNavigationController().navigate(
+                    Uri.parse("http://localhost:7/non_existent"));
+        });
+        navigationFailedCallbackHelper.waitForFirst();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.getTab().getNavigationController().navigate(Uri.parse(URL1)); });
+        pageDestroyedCallbackHelper.waitForFirst();
+    }
+
+    /**
+     * This test verifies that initial renderer-initiated navigations to about:blank in WebLayer get
+     * marked as failing due to the fact that such navigations are not committed within //content.
+     * It additionally verifies that calling Navigation#getPage() on such a failed navigation raises
+     * an exception rather than crashing the browser (regression test for crbug.com/1233480).
+     */
+    @MinWebLayerVersion(96)
+    @Test
+    @SmallTest
+    public void testInitialRendererInitiatedNavigationToAboutBlankFails() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
+
+        // Setup a callback for when the navigation in a new tab fails.
+        CallbackHelper callbackHelper = new CallbackHelper();
+        NewTabCallback newTabCallback = new NewTabCallback() {
+            @Override
+            public void onNewTab(Tab tab, int mode) {
+                NavigationController navigationController = tab.getNavigationController();
+                navigationController.registerNavigationCallback(new NavigationCallback() {
+                    @Override
+                    public void onNavigationFailed(Navigation navigation) {
+                        assertEquals(NavigationState.FAILED, navigation.getState());
+
+                        // Calling Navigation#getPage() should throw an exception here because the
+                        // navigation has not committed.
+                        assertThrows(IllegalStateException.class, () -> { navigation.getPage(); });
+
+                        navigationController.unregisterNavigationCallback(this);
+                        callbackHelper.notifyCalled();
+                    }
+                });
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.getBrowser().getActiveTab().setNewTabCallback(newTabCallback); });
+
+        // Click on the document to invoke window.open(), which results in a renderer-initiated
+        // navigation to about:blank in a new tab.
+        mActivityTestRule.executeScriptSync(
+                "document.onclick = () => window.open();", true /* useSeparateIsolate */);
+        EventUtils.simulateTouchCenterOfView(activity.getWindow().getDecorView());
+
+        callbackHelper.waitForFirst();
+    }
+
     @Test
     @SmallTest
     public void testNavigationList() throws Exception {
@@ -712,7 +815,7 @@ public class NavigationTest {
         assertEquals(true, mCallback.onCompletedCallback.isKnownProtocol());
 
         // Test external protocol cases.
-        mActivityTestRule.navigateAndWaitForFailure(activity.getTab(), INTENT_TO_CHROME_URL,
+        mActivityTestRule.navigateAndWaitForFailure(activity.getTab(), INTENT_TO_CUSTOM_SCHEME_URL,
                 /*waitForPaint=*/false);
         assertEquals(false, mCallback.onStartedCallback.isKnownProtocol());
         assertEquals(false, mCallback.onFailedCallback.isKnownProtocol());
@@ -1318,6 +1421,7 @@ public class NavigationTest {
                 curFailedCount, STREAM_URL, LoadError.CONNECTIVITY_ERROR);
     }
 
+    @DisabledTest(message = "https://crbug.com/1238151")
     @Test
     @SmallTest
     public void testWebResponseExpired() throws Exception {
@@ -1580,7 +1684,7 @@ public class NavigationTest {
         assertEquals(2, mCallback.onCompletedCallback.getNavigationEntryOffset());
     }
 
-    @MinWebLayerVersion(94)
+    @MinWebLayerVersion(93)
     @Test
     @SmallTest
     public void testOnPageLanguageDetermined() throws Exception {

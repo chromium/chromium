@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_DRIVER_FAKE_DATA_TYPE_CONTROLLER_H__
 #define COMPONENTS_SYNC_DRIVER_FAKE_DATA_TYPE_CONTROLLER_H__
 
+#include <memory>
+
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/test/model/fake_model_type_controller_delegate.h"
@@ -29,8 +31,7 @@ class FakeDataTypeController : public ModelTypeController {
 
   // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;
-  ActivateDataTypeResult ActivateDataType(
-      ModelTypeConfigurer* configurer) override;
+  std::unique_ptr<DataTypeActivationResponse> Connect() override;
 
  private:
   PreconditionState precondition_state_ = PreconditionState::kPreconditionsMet;

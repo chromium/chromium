@@ -12,11 +12,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -118,11 +118,14 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // nogncheck because dependency on //printing is conditional upon
@@ -337,8 +340,9 @@ bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
     default:
       return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void PrintPDFOutput(PP_Resource print_output,
@@ -363,7 +367,7 @@ void PrintPDFOutput(PP_Resource print_output,
 constexpr char kChromePrint[] = "chrome://print/";
 
 bool IsPrintPreviewUrl(const GURL& document_url) {
-  return url::Origin::Create(document_url.GetOrigin()) ==
+  return url::Origin::Create(document_url.DeprecatedGetOriginAsURL()) ==
          url::Origin::Create(GURL(kChromePrint));
 }
 
@@ -655,9 +659,7 @@ void PepperPluginInstanceImpl::Delete() {
     original_instance_interface_->DidDestroy(pp_instance());
     UMA_HISTOGRAM_CUSTOM_TIMES("NaCl.Perf.ShutdownTime.Total",
                                base::TimeTicks::Now() - start,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromSeconds(20),
-                               100);
+                               base::Milliseconds(1), base::Seconds(20), 100);
   } else {
     instance_interface_->DidDestroy(pp_instance());
   }
@@ -1201,12 +1203,11 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.css_scale *= viewport_to_dip_scale_;
   view_data_.device_scale /= viewport_to_dip_scale_;
 
-  gfx::ScrollOffset scroll_offset =
+  gfx::Vector2dF scroll_offset =
       container_->GetDocument().GetFrame()->GetScrollOffset();
   scroll_offset.Scale(viewport_to_dip_scale_);
 
-  gfx::Vector2d floored_scroll_offset =
-      ScrollOffsetToFlooredVector2d(scroll_offset);
+  gfx::Vector2d floored_scroll_offset = gfx::ToFlooredVector2d(scroll_offset);
   view_data_.scroll_offset =
       PP_MakePoint(floored_scroll_offset.x(), floored_scroll_offset.y());
 
@@ -2575,7 +2576,11 @@ void PepperPluginInstanceImpl::UpdateCaretPosition(
     const PP_Rect& bounding_box) {
   if (!render_frame_)
     return;
-  TextInputCaretInfo info = {PP_ToGfxRect(caret), PP_ToGfxRect(bounding_box)};
+  PP_Rect caret_dip(caret), bounding_box_dip(bounding_box);
+  ConvertRectToDIP(&caret_dip);
+  ConvertRectToDIP(&bounding_box_dip);
+  TextInputCaretInfo info = {PP_ToGfxRect(caret_dip),
+                             PP_ToGfxRect(bounding_box_dip)};
   text_input_caret_info_ = std::move(info);
   render_frame_->PepperCaretPositionChanged(this);
 }

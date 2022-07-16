@@ -13,6 +13,10 @@ namespace remoting {
 class FakeMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   FakeMouseCursorMonitor();
+
+  FakeMouseCursorMonitor(const FakeMouseCursorMonitor&) = delete;
+  FakeMouseCursorMonitor& operator=(const FakeMouseCursorMonitor&) = delete;
+
   ~FakeMouseCursorMonitor() override;
 
   void Init(Callback* callback, Mode mode) override;
@@ -20,8 +24,6 @@ class FakeMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
  private:
   Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMouseCursorMonitor);
 };
 
 }  // namespace remoting

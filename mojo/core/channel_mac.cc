@@ -22,6 +22,7 @@
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
+#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/typed_macros.h"
@@ -68,6 +69,9 @@ class ChannelMac : public Channel,
       NOTREACHED();
     }
   }
+
+  ChannelMac(const ChannelMac&) = delete;
+  ChannelMac& operator=(const ChannelMac&) = delete;
 
   void Start() override {
     io_task_runner_->PostTask(
@@ -284,19 +288,20 @@ class ChannelMac : public Channel,
       return false;
     }
 
+    send_port_ = base::mac::ScopedMachSendRight(message->msgh_remote_port);
+
+    if (!RequestSendDeadNameNotification()) {
+      send_port_.reset();
+      OnError(Error::kConnectionFailed);
+      return false;
+    }
+
     // Record the audit token of the sender. All messages received by the
     // channel must be from this same sender.
     auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
     peer_audit_token_ = std::make_unique<audit_token_t>();
     memcpy(peer_audit_token_.get(), &trailer->msgh_audit,
            sizeof(audit_token_t));
-
-    send_port_ = base::mac::ScopedMachSendRight(message->msgh_remote_port);
-
-    if (!RequestSendDeadNameNotification()) {
-      OnError(Error::kConnectionFailed);
-      return false;
-    }
 
     base::AutoLock lock(write_lock_);
     handshake_done_ = true;
@@ -707,8 +712,6 @@ class ChannelMac : public Channel,
   // When |handshake_done_| is false or |send_buffer_contains_message_| is true,
   // calls to Write() will enqueue messages here.
   base::circular_deque<MessagePtr> pending_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMac);
 };
 
 }  // namespace

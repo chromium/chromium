@@ -4,14 +4,16 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../localized_link/localized_link.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
 <link rel="import" href="os_sync_browser_proxy.html">
 <link rel="import" href="../../people_page/sync_browser_proxy.html">
 
@@ -39,8 +41,9 @@
       /* Similar to browser settings-sync-account-control styling. */
       #syncIconContainer {
         align-items: center;
-        background: var(--google-green-700);
-        border: var(--sync-icon-border-size) solid white;
+        background: var(--cros-icon-color-positive);
+        border: var(--sync-icon-border-size) solid
+            var(--cros-bg-color-elevation-1);
         border-radius: 50%;
         display: flex;
         height: var(--sync-icon-size);
@@ -57,19 +60,19 @@
       }
 
       #syncIconContainer.sync-problem {
-        background: var(--settings-error-color);
+        background: var(--cros-icon-color-alert);
       }
 
       #syncIconContainer.sync-paused {
-        background: var(--google-blue-500);
+        background: var(--cros-icon-color-prominent);
       }
 
       #syncIconContainer.sync-disabled {
-        background: var(--google-grey-400);
+        background: var(--cros-icon-color-disabled);
       }
 
       #syncIconContainer iron-icon {
-        fill: white;
+        fill: var(--cros-bg-color-elevation-1);
         height: 12px;
         margin: auto;
         width: 12px;
@@ -121,21 +124,23 @@
         </div>
       </div>
 
-      <cr-button id="syncOnOffButton"
-          class="action-button"
-          on-click="onSyncOnOffButtonClick_"
-          aria-labelledby="syncOnOffButton accountTitle accountSubtitle"
-          aria-describedby="featureLabel"
-          deep-link-focus-id$="[[Setting.kSplitSyncOnOff]]">
-        [[getSyncOnOffButtonLabel_(osSyncFeatureEnabled)]]
-      </cr-button>
+      <template is="dom-if" if="[[syncConsentOptionalEnabled_]]" restamp>
+        <cr-button id="syncOnOffButton"
+            class="action-button"
+            on-click="onSyncOnOffButtonClick_"
+            aria-labelledby="syncOnOffButton accountTitle accountSubtitle"
+            aria-describedby="featureLabel"
+            deep-link-focus-id$="[[Setting.kSplitSyncOnOff]]">
+          [[getSyncOnOffButtonLabel_(osSyncFeatureEnabled)]]
+        </cr-button>
+      </template>
     </div>
 
     <div id="featureLabel" class="settings-box">
-      <settings-localized-link class="secondary"
+      <localized-link class="secondary"
           localized-string="$i18n{osSyncFeatureLabel}"
           link-url="$i18n{browserSettingsSyncSetupUrl}">
-      </settings-localized-link>
+      </localized-link>
     </div>
 
     <div class="settings-box">

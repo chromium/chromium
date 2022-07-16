@@ -40,7 +40,7 @@ void ResetVirtualKeyboard() {
     // extension from accidentally loading the default keyset while it's
     // shutting down. See https://crbug.com/875456.
     Shell::Get()->ime_controller()->OverrideKeyboardKeyset(
-        chromeos::input_method::ImeKeyset::kNone);
+        input_method::ImeKeyset::kNone);
   }
 }
 
@@ -61,11 +61,11 @@ VirtualKeyboardController::VirtualKeyboardController()
           chromeos::features::kImeSystemEmojiPicker)) {
     ui::SetShowEmojiKeyboardCallback(base::BindRepeating(
         &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
-        base::Unretained(this), chromeos::input_method::ImeKeyset::kEmoji));
+        base::Unretained(this), input_method::ImeKeyset::kEmoji));
   }
   ui::SetTabletModeShowEmojiKeyboardCallback(base::BindRepeating(
       &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
-      base::Unretained(this), chromeos::input_method::ImeKeyset::kEmoji));
+      base::Unretained(this), input_method::ImeKeyset::kEmoji));
   keyboard::KeyboardUIController::Get()->AddObserver(this);
 
   bluetooth_devices_observer_ =
@@ -88,7 +88,7 @@ VirtualKeyboardController::~VirtualKeyboardController() {
 }
 
 void VirtualKeyboardController::ForceShowKeyboardWithKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+    input_method::ImeKeyset keyset) {
   Shell::Get()->ime_controller()->OverrideKeyboardKeyset(
       keyset, base::BindOnce(&VirtualKeyboardController::ForceShowKeyboard,
                              base::Unretained(this)));
@@ -171,7 +171,7 @@ void VirtualKeyboardController::OnKeyboardEnabledChanged(bool is_enabled) {
     // TODO(shend/shuchen): Consider moving this logic to ImeController.
     // https://crbug.com/896284.
     Shell::Get()->ime_controller()->OverrideKeyboardKeyset(
-        chromeos::input_method::ImeKeyset::kNone);
+        input_method::ImeKeyset::kNone);
   }
 }
 

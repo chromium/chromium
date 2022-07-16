@@ -14,6 +14,9 @@ per-file chromeos_strings.grd=*
 # Tast test control
 per-file tast_control.gni=*
 
+per-file LACROS_OWNERS=file://chromeos/LACROS_OWNERS
+per-file LACROS_OWNERS=set noparent
+
 # PST
 achuith@chromium.org
 alemate@chromium.org

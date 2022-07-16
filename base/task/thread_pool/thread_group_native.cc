@@ -181,5 +181,7 @@ void ThreadGroupNative::DidUpdateCanRunPolicy() {
   EnsureEnoughWorkersLockRequired(&executor);
 }
 
+void ThreadGroupNative::OnShutdownStarted() {}
+
 }  // namespace internal
 }  // namespace base

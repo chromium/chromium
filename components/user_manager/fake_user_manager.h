@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
@@ -21,6 +20,10 @@ namespace user_manager {
 class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
  public:
   FakeUserManager();
+
+  FakeUserManager(const FakeUserManager&) = delete;
+  FakeUserManager& operator=(const FakeUserManager&) = delete;
+
   ~FakeUserManager() override;
 
   // Create and add a new user. Created user is not affiliated with the domain,
@@ -28,6 +31,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   const User* AddUser(const AccountId& account_id);
   const User* AddChildUser(const AccountId& account_id);
   const User* AddGuestUser(const AccountId& account_id);
+  const User* AddKioskAppUser(const AccountId& account_id);
 
   // The same as AddUser() but allows to specify user affiliation with the
   // domain, that owns the device.
@@ -84,6 +88,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   const AccountId& GetOwnerAccountId() const override;
   void OnSessionStarted() override {}
   void RemoveUser(const AccountId& account_id,
+                  UserRemovalReason reason,
                   RemoveUserDelegate* delegate) override {}
   void RemoveUserFromList(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
@@ -179,8 +184,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
   // return true.
   std::set<AccountId> accounts_with_ephemeral_non_cryptohome_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUserManager);
 };
 
 }  // namespace user_manager

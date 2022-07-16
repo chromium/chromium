@@ -5,11 +5,37 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace mojo {
+
+namespace {
+
+absl::optional<SkBitmap> ToSkBitmapN32(
+    const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image) {
+  const sk_sp<SkImage> image =
+      static_bitmap_image->PaintImageForCurrentFrame().GetSwSkImage();
+  if (!image)
+    return absl::nullopt;
+
+  SkBitmap sk_bitmap;
+  if (!image->asLegacyBitmap(&sk_bitmap,
+                             SkImage::LegacyBitmapMode::kRO_LegacyBitmapMode)) {
+    return absl::nullopt;
+  }
+
+  SkBitmap sk_bitmap_n32;
+  if (!skia::SkBitmapToN32OpaqueOrPremul(sk_bitmap, &sk_bitmap_n32)) {
+    return absl::nullopt;
+  }
+
+  return sk_bitmap_n32;
+}
+
+}  // namespace
 
 Vector<SkBitmap>
 StructTraits<blink::mojom::blink::TransferableMessage::DataView,
@@ -19,11 +45,13 @@ StructTraits<blink::mojom::blink::TransferableMessage::DataView,
   out.ReserveInitialCapacity(
       input.message->GetImageBitmapContentsArray().size());
   for (auto& bitmap_contents : input.message->GetImageBitmapContentsArray()) {
-    absl::optional<SkBitmap> bitmap = blink::ToSkBitmap(bitmap_contents);
-    if (!bitmap) {
+    // TransferableMessage::image_bitmap_contents_array is an array of
+    // skia.mojom.BitmapN32, so SkBitmap should be in N32 format.
+    auto bitmap_n32 = ToSkBitmapN32(bitmap_contents);
+    if (!bitmap_n32) {
       return Vector<SkBitmap>();
     }
-    out.push_back(std::move(bitmap.value()));
+    out.push_back(std::move(bitmap_n32.value()));
   }
   return out;
 }

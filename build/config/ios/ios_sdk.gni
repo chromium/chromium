@@ -5,7 +5,7 @@
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
-import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -62,6 +62,19 @@ declare_args() {
   # You can also pass the value via "--args" parameter for "gn gen" command by
   # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
   additional_target_cpus = []
+
+  # Set to true if all test apps should use the same bundle id.
+  ios_use_shared_bundle_id_for_test_apps = false
+
+  # Enabling this option makes clang compile to an intermediate
+  # representation ("bitcode"), and not to native code. This is preferred
+  # when including WebRTC in the apps that will be sent to Apple's App Store
+  # and mandatory for the apps that run on watchOS or tvOS.
+  #
+  # Mimicking how Xcode handles it, the production builds (is_debug = false)
+  # get real bitcode sections added, while the debug builds (is_debug = true)
+  # only get bitcode-section "markers" added in them.
+  enable_ios_bitcode = false
 }
 
 declare_args() {
@@ -75,9 +88,9 @@ declare_args() {
 }
 
 # Official builds may not use goma.
-assert(!(use_goma && is_chrome_branded && is_official_build &&
-             target_cpu == "arm64"),
-       "goma use is forbidden for official iOS builds.")
+assert(!((use_goma || use_remoteexec) && is_chrome_branded &&
+             is_official_build && target_cpu == "arm64"),
+       "goma/re-client use is forbidden for official iOS builds.")
 
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
@@ -139,7 +152,7 @@ if (ios_sdk_path == "") {
       ios_sdk_developer_dir,
     ]
   }
-  if (use_system_xcode && use_goma) {
+  if (use_system_xcode && (use_goma || use_remoteexec)) {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",

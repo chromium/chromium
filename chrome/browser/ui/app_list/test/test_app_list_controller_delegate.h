@@ -26,7 +26,8 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
   bool IsAppOpen(const std::string& app_id) const override;
   void DoShowAppInfoFlow(Profile* profile,
                          const std::string& extension_id) override;
-  void CreateNewWindow(bool incognito) override;
+  void CreateNewWindow(bool incognito,
+                       bool should_trigger_session_restore) override;
   void OpenURL(Profile* profile,
                const GURL& url,
                ui::PageTransition transition,

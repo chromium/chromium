@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_POLICY_CONTROLLER_FACTORY_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_POLICY_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,11 @@ class AccountManagerPolicyController;
 class AccountManagerPolicyControllerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  AccountManagerPolicyControllerFactory(
+      const AccountManagerPolicyControllerFactory&) = delete;
+  AccountManagerPolicyControllerFactory& operator=(
+      const AccountManagerPolicyControllerFactory&) = delete;
+
   // Gets the instance of the service associated with |context|.
   static AccountManagerPolicyController* GetForBrowserContext(
       content::BrowserContext* context);
@@ -31,8 +35,6 @@ class AccountManagerPolicyControllerFactory
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyControllerFactory);
 };
 
 }  // namespace ash

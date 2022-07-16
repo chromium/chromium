@@ -54,8 +54,11 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace chrome_service_worker_browser_test {
 
@@ -97,6 +100,10 @@ static void ExpectResultAndRun(T expected,
 }
 
 class ChromeServiceWorkerTest : public InProcessBrowserTest {
+ public:
+  ChromeServiceWorkerTest(const ChromeServiceWorkerTest&) = delete;
+  ChromeServiceWorkerTest& operator=(const ChromeServiceWorkerTest&) = delete;
+
  protected:
   ChromeServiceWorkerTest() {
     EXPECT_TRUE(service_worker_dir_.CreateUniqueTempDir());
@@ -118,8 +125,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     const std::u16string expected_title1 = u"READY";
     content::TitleWatcher title_watcher1(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title1);
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(path)));
     EXPECT_EQ(expected_title1, title_watcher1.WaitAndGetTitle());
   }
 
@@ -148,8 +155,9 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
 
-    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-        url::Origin::Create(embedded_test_server()->base_url()));
+    GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
+        blink::StorageKey(
+            url::Origin::Create(embedded_test_server()->base_url())));
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                    CONTENT_SETTING_BLOCK);
@@ -157,8 +165,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     const std::u16string expected_title = u"Done";
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/scope/done.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/scope/done.html")));
 
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -182,22 +190,15 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
     msg.encoded_message = msg.owned_encoded_message;
 
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&content::ServiceWorkerContext::
-                           StartServiceWorkerAndDispatchMessage,
-                       base::Unretained(GetServiceWorkerContext()),
-                       embedded_test_server()->GetURL("/scope/"),
-                       std::move(msg),
-                       base::BindRepeating(&ExpectResultAndRun<bool>, true,
-                                           run_loop.QuitClosure())));
+    GURL url = embedded_test_server()->GetURL("/scope/");
+    GetServiceWorkerContext()->StartServiceWorkerAndDispatchMessage(
+        url, blink::StorageKey(url::Origin::Create(url)), std::move(msg),
+        base::BindRepeating(&ExpectResultAndRun<bool>, true,
+                            run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   base::ScopedTempDir service_worker_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerTest);
 };
 
 // http://crbug.com/368570
@@ -213,8 +214,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/service_worker.js"), options,
+      embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
@@ -241,15 +243,16 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/service_worker.js"), options,
+      embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
   run_loop.Run();
 
-  ui_test_utils::NavigateToURL(incognito,
-                               embedded_test_server()->GetURL("/test.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito, embedded_test_server()->GetURL("/test.html")));
 
   CloseBrowserSynchronously(incognito);
 
@@ -269,8 +272,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/service_worker.js"), options,
+      embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kErrorDisallowed,
                      run_loop.QuitClosure()));
@@ -303,6 +307,11 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 }
 
 class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
+ public:
+  ChromeServiceWorkerFetchTest(const ChromeServiceWorkerFetchTest&) = delete;
+  ChromeServiceWorkerFetchTest& operator=(const ChromeServiceWorkerFetchTest&) =
+      delete;
+
  protected:
   ChromeServiceWorkerFetchTest() {}
   ~ChromeServiceWorkerFetchTest() override {}
@@ -402,12 +411,10 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
     const std::u16string expected_title = u"READY";
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL("/test.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/test.html")));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerFetchTest);
 };
 
 class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
@@ -416,6 +423,10 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
     scoped_observation_.Observe(
         favicon::ContentFaviconDriver::FromWebContents(web_contents));
   }
+
+  FaviconUpdateWaiter(const FaviconUpdateWaiter&) = delete;
+  FaviconUpdateWaiter& operator=(const FaviconUpdateWaiter&) = delete;
+
   ~FaviconUpdateWaiter() override = default;
 
   void Wait() {
@@ -443,11 +454,15 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
                           favicon::FaviconDriverObserver>
       scoped_observation_{this};
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconUpdateWaiter);
 };
 
 class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
+ public:
+  ChromeServiceWorkerLinkFetchTest(const ChromeServiceWorkerLinkFetchTest&) =
+      delete;
+  ChromeServiceWorkerLinkFetchTest& operator=(
+      const ChromeServiceWorkerLinkFetchTest&) = delete;
+
  protected:
   ChromeServiceWorkerLinkFetchTest() {}
   ~ChromeServiceWorkerLinkFetchTest() override {}
@@ -530,11 +545,9 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
 
   static void ManifestCallbackAndRun(base::OnceClosure continuation,
                                      const GURL&,
-                                     const blink::Manifest&) {
+                                     blink::mojom::ManifestPtr) {
     std::move(continuation).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerLinkFetchTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestSameOrigin) {
@@ -595,6 +608,12 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, FaviconOtherOrigin) {
 // expect that the the service worker only see the navigation request for the
 // iframe.
 class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
+ public:
+  ChromeServiceWorkerFetchPPAPITest(const ChromeServiceWorkerFetchPPAPITest&) =
+      delete;
+  ChromeServiceWorkerFetchPPAPITest& operator=(
+      const ChromeServiceWorkerFetchPPAPITest&) = delete;
+
  protected:
   ChromeServiceWorkerFetchPPAPITest() {}
   ~ChromeServiceWorkerFetchPPAPITest() override {}
@@ -633,8 +652,6 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
 
  private:
   std::string test_page_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerFetchPPAPITest);
 };
 
 // Flaky on Windows and Linux ASan. https://crbug.com/1113802
@@ -659,8 +676,9 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
       content::StartServiceWorkerForNavigationHintResult expected_result,
       bool expected_started) {
     base::RunLoop run_loop;
+    GURL url = embedded_test_server()->GetURL(scope);
     GetServiceWorkerContext()->StartServiceWorkerForNavigationHint(
-        embedded_test_server()->GetURL(scope),
+        url, blink::StorageKey(url::Origin::Create(url)),
         base::BindOnce(&ExpectResultAndRun<
                            content::StartServiceWorkerForNavigationHintResult>,
                        expected_result, run_loop.QuitClosure()));
@@ -678,9 +696,6 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
       histogram_tester_.ExpectTotalCount(
           "ServiceWorker.StartWorker.StatusByPurpose_NAVIGATION_HINT", 0);
     }
-    histogram_tester_.ExpectBucketCount(
-        "ServiceWorker.StartForNavigationHint.Result",
-        static_cast<int>(expected_result), 1);
   }
 
   void TestStarted(const char* test_script) {
@@ -688,8 +703,9 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
-    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-        url::Origin::Create(embedded_test_server()->base_url()));
+    GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
+        blink::StorageKey(
+            url::Origin::Create(embedded_test_server()->base_url())));
     RunNavigationHintTest(
         "/scope/", content::StartServiceWorkerForNavigationHintResult::STARTED,
         true);
@@ -711,8 +727,9 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
-    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-        url::Origin::Create(embedded_test_server()->base_url()));
+    GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
+        blink::StorageKey(
+            url::Origin::Create(embedded_test_server()->base_url())));
     RunNavigationHintTest(
         "/scope/",
         content::StartServiceWorkerForNavigationHintResult::NO_FETCH_HANDLER,
@@ -761,8 +778,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
       embedded_test_server()->GetURL("/scope/"),
       blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/sw.js"), options,
+      embedded_test_server()->GetURL("/sw.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
@@ -787,6 +805,10 @@ class StaticURLDataSource : public content::URLDataSource {
  public:
   StaticURLDataSource(const std::string& source, const std::string& content)
       : source_(source), content_(content) {}
+
+  StaticURLDataSource(const StaticURLDataSource&) = delete;
+  StaticURLDataSource& operator=(const StaticURLDataSource&) = delete;
+
   ~StaticURLDataSource() override = default;
 
   // content::URLDataSource:
@@ -805,8 +827,6 @@ class StaticURLDataSource : public content::URLDataSource {
  private:
   const std::string source_;
   const std::string content_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticURLDataSource);
 };
 
 // Copied from devtools_browsertest.cc.
@@ -815,6 +835,10 @@ class MockWebUIProvider
  public:
   MockWebUIProvider(const std::string& source, const std::string& content)
       : source_(source), content_(content) {}
+
+  MockWebUIProvider(const MockWebUIProvider&) = delete;
+  MockWebUIProvider& operator=(const MockWebUIProvider&) = delete;
+
   ~MockWebUIProvider() override = default;
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
@@ -828,7 +852,6 @@ class MockWebUIProvider
  private:
   const std::string source_;
   const std::string content_;
-  DISALLOW_COPY_AND_ASSIGN(MockWebUIProvider);
 };
 
 // Tests that registering a service worker with a chrome:// URL fails.
@@ -848,8 +871,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DisallowChromeScheme) {
   blink::mojom::ServiceWorkerRegistrationOptions options(
       kScope, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      kScript, options,
+      kScript, key, options,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              blink::ServiceWorkerStatusCode* out_result,
@@ -889,6 +913,11 @@ enum class ServicifiedFeatures { kNone, kServiceWorker, kNetwork };
 class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
  public:
   ChromeServiceWorkerNavigationPreloadTest() = default;
+
+  ChromeServiceWorkerNavigationPreloadTest(
+      const ChromeServiceWorkerNavigationPreloadTest&) = delete;
+  ChromeServiceWorkerNavigationPreloadTest& operator=(
+      const ChromeServiceWorkerNavigationPreloadTest&) = delete;
 
   void SetUp() override {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
@@ -955,8 +984,6 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
 
   // The request that hit the "test" endpoint.
   absl::optional<net::test_server::HttpRequest> received_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerNavigationPreloadTest);
 };
 
 // Tests navigation preload during a navigation in the top-level frame
@@ -971,9 +998,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
   // Load a page that registers a service worker.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('navigation_preload_worker.js');"));
 
@@ -983,8 +1010,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
                    "document.cookie = 'foo=bar'; document.cookie;"));
 
   // Load the test page.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/service_worker/test"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/service_worker/test")));
 
   // The navigation preload request should have occurred and included cookies.
   ASSERT_TRUE(has_received_request());
@@ -1005,9 +1032,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
   // Load a page that registers a service worker.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('navigation_preload_worker.js');"));
 
@@ -1025,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
 
   // Navigate to the page and embed a third-party iframe to the test
   // page.
-  ui_test_utils::NavigateToURL(browser(), top_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame_url));
   GURL iframe_url = embedded_test_server()->GetURL("/service_worker/test");
   EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                          "addIframe('" + iframe_url.spec() + "');"));

@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/memory/weak_ptr.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,8 +38,6 @@ class OmniboxPopupContentsView : public views::View,
   OmniboxPopupContentsView& operator=(const OmniboxPopupContentsView&) = delete;
   ~OmniboxPopupContentsView() override;
 
-  OmniboxPopupModel* model() const { return model_.get(); }
-
   // Opens a match from the list specified by |index| with the type of tab or
   // window specified by |disposition|.
   void OpenMatch(WindowOpenDisposition disposition,
@@ -58,7 +56,12 @@ class OmniboxPopupContentsView : public views::View,
   virtual void SetSelectedIndex(size_t index);
 
   // Returns the selected line.
+  // Note: This and `SetSelectedIndex` above are used by property
+  // metadata and must follow the metadata conventions.
   virtual size_t GetSelectedIndex() const;
+
+  // Returns current popup selection (includes line index).
+  virtual OmniboxPopupSelection GetSelection() const;
 
   // Called by the active result view to inform model (due to mouse event).
   void UnselectButton();
@@ -76,8 +79,8 @@ class OmniboxPopupContentsView : public views::View,
   // OmniboxPopupView:
   bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
-  void OnSelectionChanged(OmniboxPopupModel::Selection old_selection,
-                          OmniboxPopupModel::Selection new_selection) override;
+  void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                          OmniboxPopupSelection new_selection) override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
   void OnMatchIconUpdated(size_t match_index) override;
@@ -106,12 +109,12 @@ class OmniboxPopupContentsView : public views::View,
   // Returns true if the model has a match at the specified index.
   bool HasMatchAt(size_t index) const;
 
-  // Returns the match at the specified index within the popup model.
+  // Returns the match at the specified index within the model.
   const AutocompleteMatch& GetMatchAtIndex(size_t index) const;
 
   // Find the index of the match under the given |point|, specified in window
-  // coordinates. Returns OmniboxPopupModel::kNoMatch if there isn't a match at
-  // the specified point.
+  // coordinates. Returns OmniboxPopupSelection::kNoMatch if there isn't a match
+  // at the specified point.
   size_t GetIndexForPoint(const gfx::Point& point);
 
   // Update which result views are visible when the group visibility changes.
@@ -119,9 +122,6 @@ class OmniboxPopupContentsView : public views::View,
 
   // Gets the pref service for this view. May return nullptr in tests.
   PrefService* GetPrefService() const;
-
-  // Our model that contains our business logic.
-  std::unique_ptr<OmniboxPopupModel> model_;
 
   // The popup that contains this view.  We create this, but it deletes itself
   // when its window is destroyed.  This is a WeakPtr because it's possible for
@@ -141,6 +141,8 @@ class OmniboxPopupContentsView : public views::View,
 
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;
+
+  OmniboxEditModel* edit_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CONTENTS_VIEW_H_

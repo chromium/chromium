@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef URL_IPC_EXPORT_H_
-#define URL_IPC_EXPORT_H_
+#ifndef URL_IPC_URL_IPC_EXPORT_H_
+#define URL_IPC_URL_IPC_EXPORT_H_
 
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
@@ -26,4 +26,4 @@
 #define URL_IPC_EXPORT
 #endif
 
-#endif  // URL_IPC_EXPORT_H_
+#endif  // URL_IPC_URL_IPC_EXPORT_H_

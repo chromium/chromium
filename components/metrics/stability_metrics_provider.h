@@ -20,6 +20,10 @@ class SystemProfileProto;
 class StabilityMetricsProvider : public MetricsProvider {
  public:
   explicit StabilityMetricsProvider(PrefService* local_state);
+
+  StabilityMetricsProvider(const StabilityMetricsProvider&) = delete;
+  StabilityMetricsProvider& operator=(const StabilityMetricsProvider&) = delete;
+
   ~StabilityMetricsProvider() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -52,8 +56,6 @@ class StabilityMetricsProvider : public MetricsProvider {
       SystemProfileProto* system_profile_proto) override;
 
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsProvider);
 };
 
 }  // namespace metrics

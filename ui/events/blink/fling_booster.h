@@ -20,6 +20,9 @@ class FlingBooster {
  public:
   FlingBooster() = default;
 
+  FlingBooster(const FlingBooster&) = delete;
+  FlingBooster& operator=(const FlingBooster&) = delete;
+
   gfx::Vector2dF GetVelocityForFlingStart(
       const blink::WebGestureEvent& gesture_start);
   void ObserveGestureEvent(const blink::WebGestureEvent& gesture_event);
@@ -55,8 +58,6 @@ class FlingBooster {
   // as a boost. This is used to calculate the velocity; if it's too slow we'll
   // avoid boosting.
   base::TimeTicks previous_boosting_scroll_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlingBooster);
 };
 
 }  // namespace ui

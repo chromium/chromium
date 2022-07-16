@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_notification_controller.h"
-#include "base/macros.h"
 
 namespace message_center {
 class MessageCenter;
@@ -21,6 +20,10 @@ class ASH_EXPORT BatteryNotification {
   BatteryNotification(
       message_center::MessageCenter* message_center,
       PowerNotificationController::NotificationState notification_state);
+
+  BatteryNotification(const BatteryNotification&) = delete;
+  BatteryNotification& operator=(const BatteryNotification&) = delete;
+
   ~BatteryNotification();
 
   static const char kNotificationId[];
@@ -31,8 +34,6 @@ class ASH_EXPORT BatteryNotification {
 
  private:
   message_center::MessageCenter* message_center_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryNotification);
 };
 
 }  // namespace ash

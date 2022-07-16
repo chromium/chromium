@@ -39,7 +39,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
@@ -113,7 +112,7 @@ void AddEduStrings(content::WebUIDataSource* source,
 
 content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   content::WebUIDataSource* source =
-        content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
+      content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
@@ -158,8 +157,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"edu_coexistence_ui.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_UI_JS},
     {"edu_coexistence_controller.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CONTROLLER_JS},
-    {"chromeos/add_supervision/post_message_api.js",
-     IDR_ADD_SUPERVISION_POST_MESSAGE_API_JS},
     {"edu_coexistence_browser_proxy.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BROWSER_PROXY_JS},
     {"edu_coexistence_button.js",
@@ -207,14 +204,12 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddLocalizedStrings(kLocalizedStrings);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddBoolean("isAccountManagementFlowsV2Enabled",
-                     chromeos::features::IsAccountManagementFlowsV2Enabled());
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
   bool is_incognito_enabled =
       (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-       IncognitoModePrefs::DISABLED);
+       IncognitoModePrefs::Availability::kDisabled);
   int message_id =
       is_incognito_enabled
           ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
@@ -237,6 +232,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
                     chrome::GetOSSettingsUrl(
                         chromeos::settings::mojom::kMyAccountsSubpagePath)
                         .spec());
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
 #endif
 
   return source;
@@ -293,20 +291,11 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
           base::BindRepeating(&WebDialogUIBase::CloseDialog,
                               weak_factory_.GetWeakPtr(), nullptr /* args */)));
   if (profile->IsChild()) {
-    if (!base::FeatureList::IsEnabled(
-            ::supervised_users::kEduCoexistenceFlowV2)) {
-      web_ui->AddMessageHandler(
-          std::make_unique<chromeos::EduAccountLoginHandler>(
-              base::BindRepeating(&WebDialogUIBase::CloseDialog,
-                                  weak_factory_.GetWeakPtr(),
-                                  nullptr /* args */)));
-    } else {
-      web_ui->AddMessageHandler(
-          std::make_unique<chromeos::EduCoexistenceLoginHandler>(
-              base::BindRepeating(&WebDialogUIBase::CloseDialog,
-                                  weak_factory_.GetWeakPtr(),
-                                  nullptr /* args */)));
-    }
+    web_ui->AddMessageHandler(
+        std::make_unique<chromeos::EduCoexistenceLoginHandler>(
+            base::BindRepeating(&WebDialogUIBase::CloseDialog,
+                                weak_factory_.GetWeakPtr(),
+                                nullptr /* args */)));
   }
 
 #else

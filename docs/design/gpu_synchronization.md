@@ -39,7 +39,7 @@ native GL fence, usable for cross-process synchronization.
 
 ## Use case overview
 
-The core scenario is synchronizing read and write access to a shared resorce,
+The core scenario is synchronizing read and write access to a shared resource,
 for example drawing an image into an offscreen texture and compositing the
 result into a final image. The drawing operations need to be completed before
 reading to ensure correct output. A typical effect of wrong synchronization is

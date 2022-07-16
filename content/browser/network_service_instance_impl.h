@@ -65,10 +65,6 @@ void PingNetworkService(base::OnceClosure closure);
 // process one, allowing it to shut down.
 CONTENT_EXPORT void ShutDownNetworkService();
 
-// Returns whether the network sandbox should be enabled for the current
-// platform configuration.
-bool IsNetworkSandboxEnabled();
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_NETWORK_SERVICE_INSTANCE_IMPL_H_

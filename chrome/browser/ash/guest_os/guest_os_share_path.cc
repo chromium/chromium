@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/arc/arc_util.h"
@@ -33,7 +33,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -264,12 +264,14 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
                  .AppendRelativePath(path, &drivefs_path) &&
              fuse_fs_root_path.AppendRelativePath(drivefs_mount_point_path,
                                                   &drivefs_mount_name)) {
-    // Allow subdirs of DriveFS (/media/fuse/drivefs-*) except .Trash.
+    // Allow subdirs of DriveFS (/media/fuse/drivefs-*) except .Trash-1000.
     request.set_drivefs_mount_name(drivefs_mount_name.value());
     base::FilePath root("root");
     base::FilePath team_drives("team_drives");
     base::FilePath computers("Computers");
-    base::FilePath trash(".Trash");  // Not to be shared!
+    base::FilePath files_by_id(".files-by-id");
+    base::FilePath shortcut_targets_by_id(".shortcut-targets-by-id");
+    base::FilePath trash(".Trash-1000");  // Not to be shared!
     if (AppendRelativePath(root, drivefs_path, &relative_path)) {
       // My Drive and subdirs.
       allowed_path = true;
@@ -293,10 +295,22 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       if (components.size() < 2) {
         allowed_path = false;
       }
+    } else if (AppendRelativePath(files_by_id, drivefs_path, &relative_path)) {
+      // Shared (.files-by-id) and subdirs.
+      allowed_path = true;
+      request.set_storage_location(
+          vm_tools::seneschal::SharePathRequest::DRIVEFS_FILES_BY_ID);
+    } else if (AppendRelativePath(shortcut_targets_by_id, drivefs_path,
+                                  &relative_path)) {
+      // Shared (.shortcut-targets-by-id) and subdirs.
+      allowed_path = true;
+      request.set_storage_location(vm_tools::seneschal::SharePathRequest::
+                                       DRIVEFS_SHORTCUT_TARGETS_BY_ID);
     } else if (trash == drivefs_path || trash.IsParent(drivefs_path)) {
-      // Note: Do not expose .Trash which would allow linux apps to make
+      // Note: Do not expose .Trash-1000 which would allow linux apps to make
       // permanent deletes from Drive.  This branch is not especially required,
-      // but is included to make it explicit that .Trash should not be shared.
+      // but is included to make it explicit that .Trash-1000 should not be
+      // shared.
       allowed_path = false;
     }
   } else if (AppendRelativePath(android_files, path, &relative_path)) {
@@ -440,7 +454,7 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
   bool result = mount_points->GetVirtualPath(path, &virtual_path);
   if (result) {
     storage::FileSystemURL url = mount_points->CreateCrackedFileSystemURL(
-        url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+        blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
     result = file_manager::util::ConvertFileSystemURLToPathInsideVM(
         profile_, url, dummy_vm_mount,
         /*map_crostini_home=*/vm_name == crostini::kCrostiniDefaultVmName,

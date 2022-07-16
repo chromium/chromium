@@ -18,6 +18,10 @@ namespace media {
 class SaturatedGain : public AudioPostProcessor2 {
  public:
   SaturatedGain(const std::string& config, int channels);
+
+  SaturatedGain(const SaturatedGain&) = delete;
+  SaturatedGain& operator=(const SaturatedGain&) = delete;
+
   ~SaturatedGain() override;
 
   // AudioPostProcessor implementation:
@@ -31,8 +35,6 @@ class SaturatedGain : public AudioPostProcessor2 {
   float last_volume_dbfs_;
   SlewVolume slew_volume_;
   float gain_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaturatedGain);
 };
 
 }  // namespace media

@@ -41,6 +41,9 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   static bool IsSupportedByVP9(
       const WebrtcVideoEncoderSelector::Profile& profile);
 
+  WebrtcVideoEncoderVpx(const WebrtcVideoEncoderVpx&) = delete;
+  WebrtcVideoEncoderVpx& operator=(const WebrtcVideoEncoderVpx&) = delete;
+
   ~WebrtcVideoEncoderVpx() override;
 
   void SetTickClockForTests(const base::TickClock* tick_clock);
@@ -105,8 +108,6 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   const base::TickClock* clock_;
 
   EncoderBitrateFilter bitrate_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcVideoEncoderVpx);
 };
 
 }  // namespace remoting

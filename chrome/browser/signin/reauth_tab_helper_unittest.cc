@@ -74,7 +74,8 @@ TEST_P(ReauthTabHelperTest, MultipleNavigationReauth) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url(), web_contents());
   simulator->Start();
-  simulator->Redirect(reauth_url().GetOrigin().Resolve("/login"));
+  simulator->Redirect(
+      reauth_url().DeprecatedGetOriginAsURL().Resolve("/login"));
   simulator->Commit();
 
   auto simulator2 = content::NavigationSimulator::CreateRendererInitiated(
@@ -152,7 +153,8 @@ TEST_P(ReauthTabHelperTest, WebContentsDestroyed) {
 // Tests ShouldAllowNavigation() for a navigation within the reauth origin.
 TEST_P(ReauthTabHelperTest, ShouldAllowNavigationSameOrigin) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      reauth_url().GetOrigin().Resolve("/login"), web_contents());
+      reauth_url().DeprecatedGetOriginAsURL().Resolve("/login"),
+      web_contents());
   simulator->Start();
   EXPECT_TRUE(
       tab_helper()->ShouldAllowNavigation(simulator->GetNavigationHandle()));

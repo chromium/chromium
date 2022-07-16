@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -48,6 +48,10 @@ class MockLeScanManagerObserver : public LeScanManager::Observer {
 };
 
 class LeScanManagerTest : public ::testing::Test {
+ public:
+  LeScanManagerTest(const LeScanManagerTest&) = delete;
+  LeScanManagerTest& operator=(const LeScanManagerTest&) = delete;
+
  protected:
   LeScanManagerTest()
       : io_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -71,9 +75,6 @@ class LeScanManagerTest : public ::testing::Test {
   bluetooth_v2_shlib::MockLeScanner le_scanner_;
   LeScanManagerImpl le_scan_manager_;
   MockLeScanManagerObserver mock_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LeScanManagerTest);
 };
 
 }  // namespace

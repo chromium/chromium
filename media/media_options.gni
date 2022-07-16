@@ -74,6 +74,9 @@ declare_args() {
   # Enable browser managed persistent metadata storage for EME persistent
   # session and persistent usage record session.
   enable_media_drm_storage = is_android || is_chromecast
+
+  # Enable HLS manifest parser and demuxer.
+  enable_hls_demuxer = false
 }
 
 declare_args() {
@@ -85,11 +88,22 @@ declare_args() {
   enable_platform_hevc =
       proprietary_codecs &&
       (is_chromecast || use_fuzzing_engine || enable_platform_encrypted_hevc)
+
+  # Enable HEVC/H265 decoding with hardware acceleration assist. Enabled by
+  # default for fuzzer builds and protected video on ChromeOS. It is also
+  # enabled for Chromecast by default so the unit tests get run in Chrome CQ.
+  enable_platform_hevc_decoding =
+      proprietary_codecs &&
+      (is_chromecast || use_fuzzing_engine || use_chromeos_protected_media)
 }
 
 assert(
     !enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
     "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_sample_aes=true.")
+
+assert(
+    !enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
+    "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_demuxer=true.")
 
 assert(!enable_platform_hevc || proprietary_codecs,
        "proprietary_codecs=true is required for enable_platform_hevc=true.")
@@ -222,7 +236,6 @@ declare_args() {
   # Valid options are:
   # - "browser": Use mojo media service hosted in the browser process.
   # - "gpu": Use mojo media service hosted in the gpu process.
-  # - "utility": Use mojo media service hosted in the utility process.
   # - "": Do not use mojo media service.
   mojo_media_host = _default_mojo_media_host
 }

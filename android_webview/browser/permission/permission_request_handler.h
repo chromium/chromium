@@ -30,6 +30,10 @@ class PermissionRequestHandler : public content::WebContentsObserver {
  public:
   PermissionRequestHandler(PermissionRequestHandlerClient* client,
                            content::WebContents* aw_contents);
+
+  PermissionRequestHandler(const PermissionRequestHandler&) = delete;
+  PermissionRequestHandler& operator=(const PermissionRequestHandler&) = delete;
+
   ~PermissionRequestHandler() override;
 
   // Send the given |request| to PermissionRequestHandlerClient.
@@ -75,8 +79,6 @@ class PermissionRequestHandler : public content::WebContentsObserver {
   // The unique id of the active NavigationEntry of the WebContents that we were
   // opened for. Used to help expire on requests.
   int contents_unique_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestHandler);
 };
 
 }  // namespace android_webview

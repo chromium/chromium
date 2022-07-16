@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_BLOCKED_ACTION_BUBBLE_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 
 // The delegate for the bubble to ask the user if they want to refresh the page
@@ -15,6 +14,11 @@ class BlockedActionBubbleDelegate : public ToolbarActionsBarBubbleDelegate {
  public:
   BlockedActionBubbleDelegate(base::OnceCallback<void(CloseAction)> callback,
                               const std::string& extension_id);
+
+  BlockedActionBubbleDelegate(const BlockedActionBubbleDelegate&) = delete;
+  BlockedActionBubbleDelegate& operator=(const BlockedActionBubbleDelegate&) =
+      delete;
+
   ~BlockedActionBubbleDelegate() override;
 
  private:
@@ -35,8 +39,6 @@ class BlockedActionBubbleDelegate : public ToolbarActionsBarBubbleDelegate {
 
   base::OnceCallback<void(CloseAction)> callback_;
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedActionBubbleDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_BLOCKED_ACTION_BUBBLE_DELEGATE_H_

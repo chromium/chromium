@@ -471,7 +471,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   size_t n_new_reject_calls = 0;
 
   {
-    ScriptState::Scope scope(MainScriptState());
+    ScriptState::Scope scope2(MainScriptState());
     GetProperty()->Resolve(old_value);
     old_promise = GetProperty()->Promise(MainWorld());
     old_promise.Then(
@@ -482,7 +482,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   GetProperty()->Reset();
 
   {
-    ScriptState::Scope scope(MainScriptState());
+    ScriptState::Scope scope2(MainScriptState());
     new_promise = GetProperty()->Promise(MainWorld());
     new_promise.Then(
         NotReached(CurrentScriptState()),

@@ -79,6 +79,10 @@ struct Suggestion {
 class AddressSuggestions {
  public:
   AddressSuggestions() {}
+
+  AddressSuggestions(const AddressSuggestions&) = delete;
+  AddressSuggestions& operator=(const AddressSuggestions&) = delete;
+
   ~AddressSuggestions() {}
 
   // Marks all regions at |address_field| level as matching user input.
@@ -218,8 +222,6 @@ class AddressSuggestions {
 
   // Suggestions at ADMIN_AREA, LOCALITY, and DEPENDENT_LOCALITY levels.
   std::map<AddressField, std::vector<Suggestion> > suggestions_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSuggestions);
 };
 
 }  // namespace

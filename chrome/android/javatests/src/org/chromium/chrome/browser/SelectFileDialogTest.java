@@ -184,8 +184,9 @@ public class SelectFileDialogTest {
 
     private void resetActivityWindowAndroidForTest() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityWindowAndroidForTest.lastCallback.onIntentCompleted(
-                                mActivityWindowAndroidForTest, Activity.RESULT_CANCELED, null));
+                ()
+                        -> mActivityWindowAndroidForTest.lastCallback.onIntentCompleted(
+                                Activity.RESULT_CANCELED, null));
         mActivityWindowAndroidForTest.lastCallback = null;
         mActivityWindowAndroidForTest.lastIntent = null;
     }

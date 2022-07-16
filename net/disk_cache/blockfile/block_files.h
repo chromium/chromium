@@ -94,6 +94,10 @@ typedef std::vector<BlockHeader> BlockFilesBitmaps;
 class NET_EXPORT_PRIVATE BlockFiles {
  public:
   explicit BlockFiles(const base::FilePath& path);
+
+  BlockFiles(const BlockFiles&) = delete;
+  BlockFiles& operator=(const BlockFiles&) = delete;
+
   ~BlockFiles();
 
   // Performs the object initialization. create_files indicates if the backing
@@ -157,8 +161,6 @@ class NET_EXPORT_PRIVATE BlockFiles {
   FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_TruncatedFile);
   FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_InvalidFile);
   FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_Stats);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockFiles);
 };
 
 }  // namespace disk_cache

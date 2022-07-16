@@ -82,18 +82,17 @@
             "name": "filter",
             "$ref": "Filter",
             "description": "Fill out the fields that you want to search for in the database."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "ActivityResultSet"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "ActivityResultSet"
+            }
+          ]
+        }
       },
       {
         "name": "deleteActivities",
@@ -105,13 +104,13 @@
             "type": "array",
             "items": { "type": "string" },
             "description": "Erases only the activities which IDs are listed in the array."
-          }, {
-            "type": "function",
-            "name": "callback",
-            "parameters": [],
-            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "deleteActivitiesByExtension",
@@ -122,13 +121,13 @@
             "name": "extensionId",
             "type": "string",
             "description": "The ID of the extension to delete activities for."
-          }, {
-            "type": "function",
-            "name": "callback",
-            "parameters": [],
-            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "deleteDatabase",

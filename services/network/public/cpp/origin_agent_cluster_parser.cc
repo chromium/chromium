@@ -7,9 +7,14 @@
 
 namespace network {
 
-bool ParseOriginAgentCluster(const std::string& header_value) {
+mojom::OriginAgentClusterValue ParseOriginAgentCluster(
+    const std::string& header_value) {
   const auto item = net::structured_headers::ParseItem(header_value);
-  return item && item->item.is_boolean() && item->item.GetBoolean();
+  if (!item || !item->item.is_boolean())
+    return mojom::OriginAgentClusterValue::kAbsent;
+  if (item->item.GetBoolean())
+    return mojom::OriginAgentClusterValue::kTrue;
+  return mojom::OriginAgentClusterValue::kFalse;
 }
 
 }  // namespace network

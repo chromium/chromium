@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that a line-level CPU profile is shown in the text editor.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadLegacyModule("perf_ui");
   await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');

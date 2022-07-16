@@ -38,8 +38,6 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
   ChildPendingURLLoaderFactoryBundle(
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_default_factory,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          pending_default_network_factory,
       SchemeMap pending_scheme_specific_factories,
       OriginMap pending_isolated_world_factories,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -58,7 +56,6 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
     std::unique_ptr<ChildPendingURLLoaderFactoryBundle> pending_bundle(
         new ChildPendingURLLoaderFactoryBundle(
             std::move(pending_default_factory),
-            {},       // pending_default_network_factory
             {},       // pending_scheme_specific_factories
             {},       // pending_isolated_world_factories
             {},       // pending_prefetch_loader_factory
@@ -100,13 +97,6 @@ class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
       override;
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
 
-  // Does the same as Clone(), but without cloning the appcache_factory_.
-  // This is used for creating a bundle for network fallback loading with
-  // Service Workers (where AppCache must be skipped), and only when
-  // claim() is called.
-  virtual std::unique_ptr<network::PendingSharedURLLoaderFactory>
-  CloneWithoutAppCacheFactory();
-
   std::unique_ptr<ChildPendingURLLoaderFactoryBundle> PassInterface();
 
   void Update(
@@ -124,9 +114,6 @@ class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
   ~ChildURLLoaderFactoryBundle() override;
 
  private:
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> CloneInternal(
-      bool include_appcache);
-
   mojo::Remote<network::mojom::URLLoaderFactory> prefetch_loader_factory_;
 
   std::map<GURL, mojom::TransferrableURLLoaderPtr> subresource_overrides_;

@@ -54,6 +54,9 @@ class AutofillAgentTests : public web::WebTest {
  public:
   AutofillAgentTests() {}
 
+  AutofillAgentTests(const AutofillAgentTests&) = delete;
+  AutofillAgentTests& operator=(const AutofillAgentTests&) = delete;
+
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
     web::WebFrame* frame_ptr = frame.get();
     fake_web_frames_manager_->AddWebFrame(std::move(frame));
@@ -116,8 +119,6 @@ class AutofillAgentTests : public web::WebTest {
   autofill::TestAutofillClient client_;
   std::unique_ptr<PrefService> prefs_;
   AutofillAgent* autofill_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillAgentTests);
 };
 
 // Tests that form's name and fields' identifiers, values, and whether they are

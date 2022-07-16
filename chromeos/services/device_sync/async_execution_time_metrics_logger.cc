@@ -12,8 +12,7 @@ namespace device_sync {
 
 namespace {
 
-constexpr const base::TimeDelta kMinAsyncExecutionTime =
-    base::TimeDelta::FromMilliseconds(1);
+constexpr const base::TimeDelta kMinAsyncExecutionTime = base::Milliseconds(1);
 
 // Provide enough granularity so that durations <10s are assigned to buckets in
 // the hundreds of milliseconds.

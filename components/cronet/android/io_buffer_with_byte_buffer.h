@@ -30,6 +30,9 @@ class IOBufferWithByteBuffer : public net::WrappedIOBuffer {
       jint position,
       jint limit);
 
+  IOBufferWithByteBuffer(const IOBufferWithByteBuffer&) = delete;
+  IOBufferWithByteBuffer& operator=(const IOBufferWithByteBuffer&) = delete;
+
   jint initial_position() const { return initial_position_; }
   jint initial_limit() const { return initial_limit_; }
 
@@ -44,8 +47,6 @@ class IOBufferWithByteBuffer : public net::WrappedIOBuffer {
 
   const jint initial_position_;
   const jint initial_limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOBufferWithByteBuffer);
 };
 
 // Represents a Java direct ByteBuffer backed by a net::IOBuffer. Keeps both the
@@ -55,6 +56,9 @@ class ByteBufferWithIOBuffer {
   ByteBufferWithIOBuffer(JNIEnv* env,
                          scoped_refptr<net::IOBuffer> io_buffer,
                          int io_buffer_len);
+
+  ByteBufferWithIOBuffer(const ByteBufferWithIOBuffer&) = delete;
+  ByteBufferWithIOBuffer& operator=(const ByteBufferWithIOBuffer&) = delete;
 
   ~ByteBufferWithIOBuffer();
   const net::IOBuffer* io_buffer() const { return io_buffer_.get(); }
@@ -69,8 +73,6 @@ class ByteBufferWithIOBuffer {
   int io_buffer_len_;
 
   base::android::ScopedJavaGlobalRef<jobject> byte_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ByteBufferWithIOBuffer);
 };
 
 }  // namespace cronet

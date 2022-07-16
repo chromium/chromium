@@ -15,7 +15,7 @@
   void close();
 
   [RaisesException] unsigned long allocationSize(AudioDataCopyToOptions options);
-  [RaisesException] void copyTo([AllowShared] BufferSource destination,
+  [RaisesException] void copyTo(AllowSharedBufferSource destination,
                                 AudioDataCopyToOptions options);
 
   readonly attribute AudioSampleFormat format;

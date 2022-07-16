@@ -16,8 +16,8 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -26,6 +26,8 @@
 #include "net/base/net_info_source_list.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_delegate.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -49,25 +51,19 @@
 #elif defined(OS_MAC)
 #include "net/proxy_resolution/proxy_config_service_mac.h"
 #include "net/proxy_resolution/proxy_resolver_mac.h"
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
 #include "net/proxy_resolution/proxy_config_service_linux.h"
 #elif defined(OS_ANDROID)
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #endif
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {
 
 namespace {
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_APPLE) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX)
 constexpr net::NetworkTrafficAnnotationTag kSystemProxyConfigTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("proxy_config_system", R"(
       semantics {
@@ -166,9 +162,12 @@ class DefaultPollPolicy
  public:
   DefaultPollPolicy() = default;
 
+  DefaultPollPolicy(const DefaultPollPolicy&) = delete;
+  DefaultPollPolicy& operator=(const DefaultPollPolicy&) = delete;
+
   Mode GetNextDelay(int initial_error,
-                    TimeDelta current_delay,
-                    TimeDelta* next_delay) const override {
+                    base::TimeDelta current_delay,
+                    base::TimeDelta* next_delay) const override {
     if (initial_error != OK) {
       // Re-try policy for failures.
       const int kDelay1Seconds = 8;
@@ -177,30 +176,27 @@ class DefaultPollPolicy
       const int kDelay4Seconds = 4 * 60 * 60;  // 4 Hours
 
       // Initial poll.
-      if (current_delay < TimeDelta()) {
-        *next_delay = TimeDelta::FromSeconds(kDelay1Seconds);
+      if (current_delay.is_negative()) {
+        *next_delay = base::Seconds(kDelay1Seconds);
         return MODE_USE_TIMER;
       }
       switch (current_delay.InSeconds()) {
         case kDelay1Seconds:
-          *next_delay = TimeDelta::FromSeconds(kDelay2Seconds);
+          *next_delay = base::Seconds(kDelay2Seconds);
           return MODE_START_AFTER_ACTIVITY;
         case kDelay2Seconds:
-          *next_delay = TimeDelta::FromSeconds(kDelay3Seconds);
+          *next_delay = base::Seconds(kDelay3Seconds);
           return MODE_START_AFTER_ACTIVITY;
         default:
-          *next_delay = TimeDelta::FromSeconds(kDelay4Seconds);
+          *next_delay = base::Seconds(kDelay4Seconds);
           return MODE_START_AFTER_ACTIVITY;
       }
     } else {
       // Re-try policy for succeses.
-      *next_delay = TimeDelta::FromHours(12);
+      *next_delay = base::Hours(12);
       return MODE_START_AFTER_ACTIVITY;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultPollPolicy);
 };
 
 // Config getter that always returns direct settings.
@@ -260,6 +256,10 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
       : MultiThreadedProxyResolverFactory(max_num_threads,
                                           false /*expects_pac_bytes*/) {}
 
+  ProxyResolverFactoryForSystem(const ProxyResolverFactoryForSystem&) = delete;
+  ProxyResolverFactoryForSystem& operator=(
+      const ProxyResolverFactoryForSystem&) = delete;
+
   std::unique_ptr<ProxyResolverFactory> CreateProxyResolverFactory() override {
 #if defined(OS_WIN)
     return std::make_unique<ProxyResolverFactoryWinHttp>();
@@ -278,14 +278,16 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
     return false;
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryForSystem);
 };
 
 class ProxyResolverFactoryForNullResolver : public ProxyResolverFactory {
  public:
   ProxyResolverFactoryForNullResolver() : ProxyResolverFactory(false) {}
+
+  ProxyResolverFactoryForNullResolver(
+      const ProxyResolverFactoryForNullResolver&) = delete;
+  ProxyResolverFactoryForNullResolver& operator=(
+      const ProxyResolverFactoryForNullResolver&) = delete;
 
   // ProxyResolverFactory overrides.
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
@@ -295,15 +297,17 @@ class ProxyResolverFactoryForNullResolver : public ProxyResolverFactory {
     *resolver = std::make_unique<ProxyResolverNull>();
     return OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryForNullResolver);
 };
 
 class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
  public:
   explicit ProxyResolverFactoryForPacResult(const std::string& pac_string)
       : ProxyResolverFactory(false), pac_string_(pac_string) {}
+
+  ProxyResolverFactoryForPacResult(const ProxyResolverFactoryForPacResult&) =
+      delete;
+  ProxyResolverFactoryForPacResult& operator=(
+      const ProxyResolverFactoryForPacResult&) = delete;
 
   // ProxyResolverFactory override.
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
@@ -316,8 +320,6 @@ class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
 
  private:
   const std::string pac_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryForPacResult);
 };
 
 // Returns NetLog parameters describing a proxy configuration change.
@@ -417,8 +419,11 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   InitProxyResolver()
       : proxy_resolver_factory_(nullptr),
         proxy_resolver_(nullptr),
-        next_state_(STATE_NONE),
+        next_state_(State::kNone),
         quick_check_enabled_(true) {}
+
+  InitProxyResolver(const InitProxyResolver&) = delete;
+  InitProxyResolver& operator=(const InitProxyResolver&) = delete;
 
   // Note that the destruction of PacFileDecider will automatically cancel
   // any outstanding work.
@@ -433,9 +438,9 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
             DhcpPacFileFetcher* dhcp_pac_file_fetcher,
             NetLog* net_log,
             const ProxyConfigWithAnnotation& config,
-            TimeDelta wait_delay,
+            base::TimeDelta wait_delay,
             CompletionOnceCallback callback) {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     proxy_resolver_ = proxy_resolver;
     proxy_resolver_factory_ = proxy_resolver_factory;
 
@@ -446,7 +451,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     wait_delay_ = wait_delay;
     callback_ = std::move(callback);
 
-    next_state_ = STATE_DECIDE_PAC_FILE;
+    next_state_ = State::kDecidePacFile;
     return DoLoop(OK);
   }
 
@@ -461,7 +466,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
                        int decider_result,
                        const PacFileDataWithSource& script_data,
                        CompletionOnceCallback callback) {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     proxy_resolver_ = proxy_resolver;
     proxy_resolver_factory_ = proxy_resolver_factory;
 
@@ -472,26 +477,26 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     if (decider_result != OK)
       return decider_result;
 
-    next_state_ = STATE_CREATE_RESOLVER;
+    next_state_ = State::kCreateResolver;
     return DoLoop(OK);
   }
 
   // Returns the proxy configuration that was selected by PacFileDecider.
   // Should only be called upon completion of the initialization.
   const ProxyConfigWithAnnotation& effective_config() const {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     return effective_config_;
   }
 
   // Returns the PAC script data that was selected by PacFileDecider.
   // Should only be called upon completion of the initialization.
   const PacFileDataWithSource& script_data() {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     return script_data_;
   }
 
   LoadState GetLoadState() const {
-    if (next_state_ == STATE_DECIDE_PAC_FILE_COMPLETE) {
+    if (next_state_ == State::kDecidePacFileComplete) {
       // In addition to downloading, this state may also include the stall time
       // after network change events (kDelayAfterNetworkChangesMs).
       return LOAD_STATE_DOWNLOADING_PAC_FILE;
@@ -509,46 +514,46 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   bool quick_check_enabled() const { return quick_check_enabled_; }
 
  private:
-  enum State {
-    STATE_NONE,
-    STATE_DECIDE_PAC_FILE,
-    STATE_DECIDE_PAC_FILE_COMPLETE,
-    STATE_CREATE_RESOLVER,
-    STATE_CREATE_RESOLVER_COMPLETE,
+  enum class State {
+    kNone,
+    kDecidePacFile,
+    kDecidePacFileComplete,
+    kCreateResolver,
+    kCreateResolverComplete,
   };
 
   int DoLoop(int result) {
-    DCHECK_NE(next_state_, STATE_NONE);
+    DCHECK_NE(next_state_, State::kNone);
     int rv = result;
     do {
       State state = next_state_;
-      next_state_ = STATE_NONE;
+      next_state_ = State::kNone;
       switch (state) {
-        case STATE_DECIDE_PAC_FILE:
+        case State::kDecidePacFile:
           DCHECK_EQ(OK, rv);
           rv = DoDecidePacFile();
           break;
-        case STATE_DECIDE_PAC_FILE_COMPLETE:
+        case State::kDecidePacFileComplete:
           rv = DoDecidePacFileComplete(rv);
           break;
-        case STATE_CREATE_RESOLVER:
+        case State::kCreateResolver:
           DCHECK_EQ(OK, rv);
           rv = DoCreateResolver();
           break;
-        case STATE_CREATE_RESOLVER_COMPLETE:
+        case State::kCreateResolverComplete:
           rv = DoCreateResolverComplete(rv);
           break;
         default:
-          NOTREACHED() << "bad state: " << state;
+          NOTREACHED() << "bad state: " << static_cast<int>(state);
           rv = ERR_UNEXPECTED;
           break;
       }
-    } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
+    } while (rv != ERR_IO_PENDING && next_state_ != State::kNone);
     return rv;
   }
 
   int DoDecidePacFile() {
-    next_state_ = STATE_DECIDE_PAC_FILE_COMPLETE;
+    next_state_ = State::kDecidePacFileComplete;
 
     return decider_->Start(config_, wait_delay_,
                            proxy_resolver_factory_->expects_pac_bytes(),
@@ -563,14 +568,14 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     effective_config_ = decider_->effective_config();
     script_data_ = decider_->script_data();
 
-    next_state_ = STATE_CREATE_RESOLVER;
+    next_state_ = State::kCreateResolver;
     return OK;
   }
 
   int DoCreateResolver() {
     DCHECK(script_data_.data);
     // TODO(eroman): Should log this latency to the NetLog.
-    next_state_ = STATE_CREATE_RESOLVER_COMPLETE;
+    next_state_ = State::kCreateResolverComplete;
     return proxy_resolver_factory_->CreateProxyResolver(
         script_data_.data, proxy_resolver_,
         base::BindOnce(&InitProxyResolver::OnIOCompletion,
@@ -585,7 +590,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   }
 
   void OnIOCompletion(int result) {
-    DCHECK_NE(STATE_NONE, next_state_);
+    DCHECK_NE(State::kNone, next_state_);
     int rv = DoLoop(result);
     if (rv != ERR_IO_PENDING)
       std::move(callback_).Run(result);
@@ -594,7 +599,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   ProxyConfigWithAnnotation config_;
   ProxyConfigWithAnnotation effective_config_;
   PacFileDataWithSource script_data_;
-  TimeDelta wait_delay_;
+  base::TimeDelta wait_delay_;
   std::unique_ptr<PacFileDecider> decider_;
   ProxyResolverFactory* proxy_resolver_factory_;
   std::unique_ptr<ProxyResolverFactory::Request> create_resolver_request_;
@@ -602,8 +607,6 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   CompletionOnceCallback callback_;
   State next_state_;
   bool quick_check_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitProxyResolver);
 };
 
 // ConfiguredProxyResolutionService::PacFileDeciderPoller
@@ -654,12 +657,16 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
         dhcp_pac_file_fetcher_(dhcp_pac_file_fetcher),
         last_error_(init_net_error),
         last_script_data_(init_script_data),
-        last_poll_time_(TimeTicks::Now()) {
+        last_poll_time_(TimeTicks::Now()),
+        net_log_(net_log) {
     // Set the initial poll delay.
     next_poll_mode_ = poll_policy()->GetNextDelay(
-        last_error_, TimeDelta::FromSeconds(-1), &next_poll_delay_);
+        last_error_, base::Seconds(-1), &next_poll_delay_);
     TryToStartNextPoll(false);
   }
+
+  PacFileDeciderPoller(const PacFileDeciderPoller&) = delete;
+  PacFileDeciderPoller& operator=(const PacFileDeciderPoller&) = delete;
 
   void OnLazyPoll() {
     // We have just been notified of network activity. Use this opportunity to
@@ -704,7 +711,7 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
 
       case PacPollPolicy::MODE_START_AFTER_ACTIVITY:
         if (triggered_by_activity && !decider_.get()) {
-          TimeDelta elapsed_time = TimeTicks::Now() - last_poll_time_;
+          base::TimeDelta elapsed_time = TimeTicks::Now() - last_poll_time_;
           if (elapsed_time >= next_poll_delay_)
             DoPoll();
         }
@@ -716,12 +723,11 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
     last_poll_time_ = TimeTicks::Now();
 
     // Start the PAC file decider to see if anything has changed.
-    // TODO(eroman): Pass a proper NetLog rather than nullptr.
     decider_ = std::make_unique<PacFileDecider>(
-        pac_file_fetcher_, dhcp_pac_file_fetcher_, nullptr);
+        pac_file_fetcher_, dhcp_pac_file_fetcher_, net_log_);
     decider_->set_quick_check_enabled(quick_check_enabled_);
     int result = decider_->Start(
-        config_, TimeDelta(), proxy_resolver_expects_pac_bytes_,
+        config_, base::TimeDelta(), proxy_resolver_expects_pac_bytes_,
         base::BindOnce(&PacFileDeciderPoller::OnPacFileDeciderCompleted,
                        base::Unretained(this)));
 
@@ -796,10 +802,12 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
   PacFileDataWithSource last_script_data_;
 
   std::unique_ptr<PacFileDecider> decider_;
-  TimeDelta next_poll_delay_;
+  base::TimeDelta next_poll_delay_;
   PacPollPolicy::Mode next_poll_mode_;
 
   TimeTicks last_poll_time_;
+
+  NetLog* const net_log_;
 
   // Polling policy injected by unit-tests. Otherwise this is nullptr and the
   // default policy will be used.
@@ -810,8 +818,6 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
   bool quick_check_enabled_;
 
   base::WeakPtrFactory<PacFileDeciderPoller> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacFileDeciderPoller);
 };
 
 // static
@@ -833,7 +839,7 @@ ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
       permanent_error_(OK),
       net_log_(net_log),
       stall_proxy_auto_config_delay_(
-          TimeDelta::FromMilliseconds(kDelayAfterNetworkChangesMs)),
+          base::Milliseconds(kDelayAfterNetworkChangesMs)),
       quick_check_enabled_(quick_check_enabled) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddDNSObserver(this);
@@ -1130,7 +1136,7 @@ void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
           base::Unretained(this)),
       fetched_config_.value(), resolver_factory_->expects_pac_bytes(),
       pac_file_fetcher_.get(), dhcp_pac_file_fetcher_.get(), result,
-      init_proxy_resolver_->script_data(), nullptr);
+      init_proxy_resolver_->script_data(), net_log_);
   script_poller_->set_quick_check_enabled(quick_check_enabled_);
 
   init_proxy_resolver_.reset();
@@ -1182,7 +1188,7 @@ void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
       proxy_retry_info_[iter.first] = iter.second;
       if (proxy_delegate_) {
         const ProxyServer& bad_proxy =
-            ProxyServer::FromURI(iter.first, ProxyServer::SCHEME_HTTP);
+            ProxyUriToProxyServer(iter.first, ProxyServer::SCHEME_HTTP);
         const ProxyRetryInfo& proxy_retry_info = iter.second;
         proxy_delegate_->OnFallback(bad_proxy, proxy_retry_info.net_error);
       }
@@ -1415,7 +1421,7 @@ ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
              << "profile_io_data.cc::CreateProxyConfigService and this should "
              << "be used only for examples.";
   return std::make_unique<UnsetProxyConfigService>();
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
   std::unique_ptr<ProxyConfigServiceLinux> linux_config_service(
       new ProxyConfigServiceLinux());
 
@@ -1520,7 +1526,7 @@ void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
   current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
 
   // If we changed networks recently, we should delay running proxy auto-config.
-  TimeDelta wait_delay = stall_proxy_autoconfig_until_ - TimeTicks::Now();
+  base::TimeDelta wait_delay = stall_proxy_autoconfig_until_ - TimeTicks::Now();
 
   init_proxy_resolver_ = std::make_unique<InitProxyResolver>();
   init_proxy_resolver_->set_quick_check_enabled(quick_check_enabled_);

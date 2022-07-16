@@ -10,10 +10,6 @@
 namespace web {
 namespace features {
 
-// Reduces the size of the session to persist when enabled. Specific size is
-// obtained from "session-size" Finch parameter.
-extern const base::Feature kReduceSessionSize;
-
 // Used to crash the browser if unexpected URL change is detected.
 // https://crbug.com/841105.
 extern const base::Feature kCrashOnUnexpectedURLChange;
@@ -56,14 +52,40 @@ extern const base::Feature kIOSLegacyTLSInterstitial;
 // generate PDF when Page Snapshot is taken just to record PDF size.
 extern const base::Feature kRecordSnapshotSize;
 
-// When enabled, use the native context menu in web content, for the iOS version
-// that supports it.
+// When enabled, the |attribution| property of NSMutableURLRequests passed to
+// WKWebView is set as NSURLRequestAttributionUser on iOS 15.
+extern const base::Feature kSetRequestAttribution;
+
+// When enabled, use the native context menu in web content.
 extern const base::Feature kWebViewNativeContextMenu;
 
-// Parameter name and values for the native context menu.
-extern const char kWebViewNativeContextMenuName[];
-extern const char kWebViewNativeContextMenuParameterSystem[];
-extern const char kWebViewNativeContextMenuParameterWeb[];
+// When enabled, display non-live preview for context menus in web content.
+extern const base::Feature kWebViewNativeContextMenuPhase2;
+
+// When enabled, the default context menu from WKWebView is used.
+extern const base::Feature kDefaultWebViewContextMenu;
+
+// Disables the screenshots of non-HTML pages on iOS15.
+extern const base::Feature kDisableNonHTMLScreenshotOnIOS15;
+
+// Feature flag that enable Shared Highlighting color change in iOS.
+extern const base::Feature kIOSSharedHighlightingColorChange;
+
+// Feature flag that enables creating pending item on POST form submission.
+// Also, for GET form submissions with same page navigation, retains the
+// transition type of new navigation item.
+extern const base::Feature kCreatePendingItemForPostFormSubmission;
+
+// Enable the new download API if available.
+extern const base::Feature kEnableNewDownloadAPI;
+
+// Feature flag that enables native session restoration with a synthesized
+// interaction state.
+extern const base::Feature kSynthesizedRestoreSession;
+
+// Enable support for unrealized WebState upon session restoration.
+// See //docs/ios/unrealized_web_state.md for more information.
+extern const base::Feature kEnableUnrealizedWebStates;
 
 // When true, for each navigation, the default user agent is chosen by the
 // WebClient GetDefaultUserAgent() method. If it is false, the mobile version
@@ -77,13 +99,11 @@ bool UseWebViewNativeContextMenuWeb();
 // for the web content is used.
 bool UseWebViewNativeContextMenuSystem();
 
-// Feature flag that enable Shared Highlighting color change in iOS.
-extern const base::Feature kIOSSharedHighlightingColorChange;
+// When true, screenshots of non-HTML (e.g. PDF) pages should be taken.
+bool ShouldTakeScreenshotOnNonHTMLContent();
 
-// Feature flag that enables creating pending item on POST form submission.
-// Also, for GET form submissions with same page navigation, retains the
-// transition type of new navigation item.
-extern const base::Feature kCreatePendingItemForPostFormSubmission;
+// When true, the new download API should be used.
+bool IsNewDownloadAPIEnabled();
 
 }  // namespace features
 }  // namespace web

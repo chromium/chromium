@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_ANDROID_STREAM_TEXTURE_WRAPPER_H_
 #define MEDIA_BASE_ANDROID_STREAM_TEXTURE_WRAPPER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "media/base/video_frame.h"
 

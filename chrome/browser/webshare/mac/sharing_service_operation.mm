@@ -55,7 +55,7 @@ SharingServiceOperation::SharingServiceOperation(
     const GURL& url,
     std::vector<blink::mojom::SharedFilePtr> files,
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       title_(title),
       text_(text),
       url_(url),
@@ -68,7 +68,7 @@ void SharingServiceOperation::Share(
   callback_ = std::move(callback);
 
   Profile* const profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   DCHECK(profile);
 
   // File sharing is denied in incognito, as files are written to disk.
@@ -78,25 +78,25 @@ void SharingServiceOperation::Share(
   if (profile->IsIncognitoProfile() && !shared_files_.empty()) {
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
-    VisibilityTimerTabHelper::CreateForWebContents(web_contents());
-    VisibilityTimerTabHelper::FromWebContents(web_contents())
+    VisibilityTimerTabHelper::CreateForWebContents(web_contents_.get());
+    VisibilityTimerTabHelper::FromWebContents(web_contents_.get())
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
             base::BindOnce(std::move(callback_),
                            blink::mojom::ShareError::CANCELED),
-            base::TimeDelta::FromSecondsD(delay_seconds));
+            base::Seconds(delay_seconds));
     return;
   }
 
   if (shared_files_.size() == 0) {
     GetSharePickerCallback().Run(
-        web_contents(), file_paths_, text_, title_, url_,
+        web_contents_.get(), file_paths_, text_, title_, url_,
         base::BindOnce(&SharingServiceOperation::OnShowSharePicker,
                        weak_factory_.GetWeakPtr()));
     return;
   }
 
-  BrowserContext* browser_context = web_contents()->GetBrowserContext();
+  BrowserContext* browser_context = web_contents_->GetBrowserContext();
   StoragePartition* const partition =
       browser_context->GetDefaultStoragePartition();
   directory_ = partition->GetPath().Append(kWebShareDirname);
@@ -117,7 +117,7 @@ void SharingServiceOperation::SetSharePickerCallbackForTesting(
 
 void SharingServiceOperation::OnPrepareDirectory(
     blink::mojom::ShareError error) {
-  if (!web_contents() || error != blink::mojom::ShareError::OK) {
+  if (!web_contents_ || error != blink::mojom::ShareError::OK) {
     std::move(callback_).Run(error);
     return;
   }
@@ -141,7 +141,7 @@ void SharingServiceOperation::OnPrepareDirectory(
 
 void SharingServiceOperation::OnPrepareSubDirectory(
     blink::mojom::ShareError error) {
-  if (!web_contents() || error != blink::mojom::ShareError::OK) {
+  if (!web_contents_ || error != blink::mojom::ShareError::OK) {
     std::move(callback_).Run(error);
     return;
   }
@@ -156,15 +156,15 @@ void SharingServiceOperation::OnPrepareSubDirectory(
 }
 
 void SharingServiceOperation::OnStoreFiles(blink::mojom::ShareError error) {
-  if (!web_contents() || error != blink::mojom::ShareError::OK) {
-    PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(file_paths_), base::TimeDelta::FromMinutes(0));
+  if (!web_contents_ || error != blink::mojom::ShareError::OK) {
+    PrepareDirectoryTask::ScheduleSharedFileDeletion(std::move(file_paths_),
+                                                     base::Minutes(0));
     std::move(callback_).Run(error);
     return;
   }
 
   GetSharePickerCallback().Run(
-      web_contents(), file_paths_, text_, title_, url_,
+      web_contents_.get(), file_paths_, text_, title_, url_,
       base::BindOnce(&SharingServiceOperation::OnShowSharePicker,
                      weak_factory_.GetWeakPtr()));
 }
@@ -172,8 +172,8 @@ void SharingServiceOperation::OnStoreFiles(blink::mojom::ShareError error) {
 void SharingServiceOperation::OnShowSharePicker(
     blink::mojom::ShareError error) {
   if (file_paths_.size() > 0) {
-    PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(file_paths_), base::TimeDelta::FromMinutes(0));
+    PrepareDirectoryTask::ScheduleSharedFileDeletion(std::move(file_paths_),
+                                                     base::Minutes(0));
   }
   std::move(callback_).Run(error);
 }

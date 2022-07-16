@@ -6,7 +6,7 @@
 #define BASE_ANDROID_TASK_SCHEDULER_TASK_RUNNER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 
@@ -19,6 +19,10 @@ class TaskRunnerAndroid {
  public:
   explicit TaskRunnerAndroid(scoped_refptr<TaskRunner> task_runner,
                              TaskRunnerType type);
+
+  TaskRunnerAndroid(const TaskRunnerAndroid&) = delete;
+  TaskRunnerAndroid& operator=(const TaskRunnerAndroid&) = delete;
+
   ~TaskRunnerAndroid();
 
   void Destroy(JNIEnv* env);
@@ -33,8 +37,6 @@ class TaskRunnerAndroid {
  private:
   const scoped_refptr<TaskRunner> task_runner_;
   const TaskRunnerType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerAndroid);
 };
 
 }  // namespace base

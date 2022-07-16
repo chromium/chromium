@@ -23,6 +23,10 @@ class TestAppWindowContents : public AppWindowContents {
  public:
   explicit TestAppWindowContents(
       std::unique_ptr<content::WebContents> web_contents);
+
+  TestAppWindowContents(const TestAppWindowContents&) = delete;
+  TestAppWindowContents& operator=(const TestAppWindowContents&) = delete;
+
   ~TestAppWindowContents() override;
 
   // apps:AppWindowContents:
@@ -37,8 +41,6 @@ class TestAppWindowContents : public AppWindowContents {
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindowContents);
 };
 
 }  // namespace extensions

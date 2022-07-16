@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -47,13 +48,21 @@ void RemoveCommandObserver(Browser*, int command, CommandObserver* observer);
 
 int GetContentRestrictions(const Browser* browser);
 
-// Opens a new window with the default blank tab.
-void NewEmptyWindow(Profile* profile);
+// Opens a new window. If the |should_trigger_session_restore| is true, a new
+// window opening should be treated like the start of a session (with potential
+// session restore, startup URLs, etc.). Otherwise, don't restore the session,
+// opens a new window with the default blank tab.
+void NewEmptyWindow(Profile* profile,
+                    bool should_trigger_session_restore = true);
 
-// Opens a new window with the default blank tab. This bypasses metrics and
+// Opens a new window. If the |should_trigger_session_restore| is true, a new
+// window opening should be treated like the start of a session (with potential
+// session restore, startup URLs, etc.). Otherwise, don't restore the session,
+// opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
 // Returns nullptr if browser creation is not possible.
-Browser* OpenEmptyWindow(Profile* profile);
+Browser* OpenEmptyWindow(Profile* profile,
+                         bool should_trigger_session_restore = true);
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
 void OpenWindowWithRestoredTabs(Profile* profile);
@@ -74,7 +83,7 @@ void Reload(Browser* browser, WindowOpenDisposition disposition);
 void ReloadBypassingCache(Browser* browser, WindowOpenDisposition disposition);
 bool CanReload(const Browser* browser);
 void Home(Browser* browser, WindowOpenDisposition disposition);
-void OpenCurrentURL(Browser* browser);
+base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser);
 void Stop(Browser* browser);
 void NewWindow(Browser* browser);
 void NewIncognitoWindow(Profile* profile);
@@ -159,6 +168,7 @@ void ManagePasswordsForPage(Browser* browser);
 void SendTabToSelfFromPageAction(Browser* browser);
 void GenerateQRCodeFromPageAction(Browser* browser);
 void SharingHubFromPageAction(Browser* browser);
+void ScreenshotCaptureFromPageAction(Browser* browser);
 void SavePage(Browser* browser);
 bool CanSavePage(const Browser* browser);
 void Print(Browser* browser);
@@ -188,9 +198,9 @@ void FocusSearch(Browser* browser);
 void FocusAppMenu(Browser* browser);
 void FocusBookmarksToolbar(Browser* browser);
 void FocusInactivePopupForAccessibility(Browser* browser);
-void FocusHelpBubble(Browser* browser);
 void FocusNextPane(Browser* browser);
 void FocusPreviousPane(Browser* browser);
+void FocusWebContentsPane(Browser* browser);
 void ToggleDevToolsWindow(Browser* browser,
                           DevToolsToggleAction action,
                           DevToolsOpenedByAction opened_by);
@@ -231,6 +241,7 @@ void ExecuteUIDebugCommand(int id, const Browser* browser);
 absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
 void ShowIncognitoClearBrowsingDataDialog(Browser* browser);
+void ShowIncognitoHistoryDisclaimerDialog(Browser* browser);
 bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
                                                    const GURL& url);
 void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,

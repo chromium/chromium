@@ -110,11 +110,17 @@ bool SVGResource::FindCycle(SVGResourceClient& client) const {
       entry.cached_cycle_check = has_cycle ? kHasCycle : kNoCycle;
       return false;
     }
+    case kNoCycle: {
+      entry.cached_cycle_check = kPerformingCheck;
+      bool has_cycle = container->FindCycle();
+      DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
+      entry.cached_cycle_check = kNoCycle;
+      return has_cycle;
+    }
     case kPerformingCheck:
       // If we're on the current checking path, signal a cycle.
       return true;
     case kHasCycle:
-    case kNoCycle:
       // We have a cached result, but don't signal a cycle since
       // ResourceContainer() will consider the resource invalid if one is
       // present.

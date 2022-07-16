@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 
 namespace ui {
@@ -15,14 +14,15 @@ namespace ui {
 class StubOverlayManager : public OverlayManagerOzone {
  public:
   StubOverlayManager();
+
+  StubOverlayManager(const StubOverlayManager&) = delete;
+  StubOverlayManager& operator=(const StubOverlayManager&) = delete;
+
   ~StubOverlayManager() override;
 
   // OverlayManagerOzone:
   std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubOverlayManager);
 };
 
 }  // namespace ui

@@ -60,10 +60,8 @@ void SyncSessionsRouterTabHelper::WebContentsDestroyed() {
 void SyncSessionsRouterTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Only notify when the main frame finishes loading; only the main frame
-  // doesn't have a parent.
-  if (render_frame_host && !render_frame_host->GetParent() &&
-      render_frame_host->GetPage().IsPrimary()) {
+  // Only notify when the primary main frame finishes loading.
+  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
     NotifyRouter(true);
   }
 }
@@ -104,6 +102,6 @@ void SyncSessionsRouterTabHelper::OnFaviconUpdated(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncSessionsRouterTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncSessionsRouterTabHelper);
 
 }  // namespace sync_sessions

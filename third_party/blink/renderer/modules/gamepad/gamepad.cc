@@ -153,8 +153,7 @@ void Gamepad::SetVibrationActuatorInfo(
 void Gamepad::SetTimestamp(const device::Gamepad& device_gamepad,
                            bool cross_origin_isolated_capability) {
   base::TimeTicks last_updated =
-      base::TimeTicks() +
-      base::TimeDelta::FromMicroseconds(device_gamepad.timestamp);
+      base::TimeTicks() + base::Microseconds(device_gamepad.timestamp);
   if (last_updated < time_floor_)
     last_updated = time_floor_;
 

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_connection_request.h"
@@ -29,6 +28,10 @@ class FakePendingConnectionRequest
       : PendingConnectionRequest<FailureDetailType>(delegate,
                                                     connection_priority),
         id_(base::UnguessableToken::Create()) {}
+
+  FakePendingConnectionRequest(const FakePendingConnectionRequest&) = delete;
+  FakePendingConnectionRequest& operator=(const FakePendingConnectionRequest&) =
+      delete;
 
   ~FakePendingConnectionRequest() override = default;
 
@@ -65,8 +68,6 @@ class FakePendingConnectionRequest
   std::vector<FailureDetailType> handled_failure_details_;
 
   std::unique_ptr<ClientConnectionParameters> client_data_for_extraction_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionRequest);
 };
 
 }  // namespace secure_channel

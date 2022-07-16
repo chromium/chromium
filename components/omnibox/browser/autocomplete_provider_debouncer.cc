@@ -14,7 +14,7 @@ void AutocompleteProviderDebouncer::RequestRun(
     base::OnceCallback<void()> callback) {
   callback_ = std::move(callback);
 
-  base::TimeDelta delay(base::TimeDelta::FromMilliseconds(delay_ms_));
+  base::TimeDelta delay(base::Milliseconds(delay_ms_));
   if (from_last_run_)
     delay -= base::TimeTicks::Now() - time_last_run_;
 

@@ -7,21 +7,24 @@ module content.mojom;
 import "content/common/frame_messages.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
+import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
+import "third_party/blink/public/mojom/loader/code_cache.mojom";
+import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom";
+import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
+import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
-import "third_party/blink/public/mojom/frame/policy_container.mojom";
-import "third_party/blink/public/mojom/loader/referrer.mojom";
-import "third_party/blink/public/mojom/loader/code_cache.mojom";
-import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
-import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -77,20 +80,11 @@ struct DidCommitProvisionalLoadParams {
   // Contents MIME type of main frame.
   string contents_mime_type;
 
-  // This is the value from the browser (copied from the navigation request)
-  // indicating whether it intended to make a new entry. TODO(avi): Remove this
-  // when the pending entry situation is made sane and the browser keeps them
-  // around long enough to match them via nav_entry_id.
-  bool intended_as_new_entry;
-
   // Whether this commit created a new entry.
   bool did_create_new_entry;
 
   // Whether this commit should replace the current entry.
   bool should_replace_current_entry;
-
-  // The gesture that initiated this navigation.
-  NavigationGesture gesture;
 
   // The HTTP method used by the navigation.
   string method;
@@ -173,13 +167,32 @@ struct DidCommitProvisionalLoadParams {
 struct DidCommitSameDocumentNavigationParams {
   // Will be true if the navigation is the result of history.pushState or
   // history.replaceState.
-  // TODO(crbug.com/1131832): Port SameDocumentNavigationSource enum to mojo
-  // and use that instead of bool here.
-  bool is_history_api_navigation = false;
+  blink.mojom.SameDocumentNavigationType same_document_navigation_type;
 
   // Whether the navigation is a result of a client redirect (e.g. a
   // script-initiated navigation) or not (e.g. a link click).
   bool is_client_redirect = false;
+
+  // Whether the navigation is started by a transient user activation or not.
+  // TODO(mustaq): Figure out if we can drop this and use the user activation
+  // state tracked in the browser instead.
+  bool started_with_transient_activation = false;
+};
+
+struct CookieManagerInfo {
+  // The origin |cookie_manager| is associated with.
+  url.mojom.Origin origin;
+
+  // A cookie manager which can be used for |origin|.
+  pending_remote<network.mojom.RestrictedCookieManager> cookie_manager;
+};
+
+struct StorageInfo {
+  // A storage area which can be used for local storage.
+  pending_remote<blink.mojom.StorageArea>? local_storage_area;
+
+  // A storage area which can be used for session storage.
+  pending_remote<blink.mojom.StorageArea>? session_storage_area;
 };
 
 interface NavigationClient {
@@ -218,6 +231,12 @@ interface NavigationClient {
   // cases, and thus shouldn't be trusted.
   // TODO(crbug.com/783506): Replace devtools navigation token with the generic
   // navigation token that can be passed from renderer to the browser.
+  //
+  // |code_cache_host|, |cookie_manager_info|, and |storage_info| are sent as
+  // optimizations so the renderer doesn't need to request them from the
+  // browser. These may be null if the NavigationThreadingOptimizations feature
+  // is disabled. |cookie_manager_info| may also be null for non HTTP/HTTPS
+  // navigations, or if the origin is opaque.
   CommitNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -231,7 +250,9 @@ interface NavigationClient {
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       blink.mojom.PolicyContainer policy_container,
-      pending_remote<blink.mojom.CodeCacheHost>? code_cache_host)
+      pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
+      CookieManagerInfo? cookie_manager_info,
+      StorageInfo? storage_info)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 

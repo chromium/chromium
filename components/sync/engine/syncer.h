@@ -8,10 +8,9 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 
@@ -32,6 +31,10 @@ class SyncCycle;
 class Syncer {
  public:
   explicit Syncer(CancelationSignal* cancelation_signal);
+
+  Syncer(const Syncer&) = delete;
+  Syncer& operator=(const Syncer&) = delete;
+
   virtual ~Syncer();
 
   // Whether the syncer is in the middle of a sync cycle.
@@ -89,8 +92,6 @@ class Syncer {
 
   // Whether the syncer is in the middle of a sync attempt.
   bool is_syncing_;
-
-  DISALLOW_COPY_AND_ASSIGN(Syncer);
 };
 
 }  // namespace syncer

@@ -3,7 +3,7 @@
 # them. Otherwise, send the CL to chromium-metrics-reviews@google.com. Googlers
 # can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
 per-file actions.xml=file://base/metrics/OWNERS
-per-file actions.xml=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
+per-file actions.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 # Metrics changes should always be reviewed by owners.
 per-file actions.xml=set noparent

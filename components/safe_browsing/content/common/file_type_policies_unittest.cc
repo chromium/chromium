@@ -21,12 +21,13 @@ namespace safe_browsing {
 class MockFileTypePolicies : public FileTypePolicies {
  public:
   MockFileTypePolicies() {}
+
+  MockFileTypePolicies(const MockFileTypePolicies&) = delete;
+  MockFileTypePolicies& operator=(const MockFileTypePolicies&) = delete;
+
   ~MockFileTypePolicies() override {}
 
   MOCK_METHOD2(RecordUpdateMetrics, void(UpdateResult, const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFileTypePolicies);
 };
 
 class FileTypePoliciesTest : public testing::Test {

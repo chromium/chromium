@@ -200,7 +200,7 @@ MCSClientTest::MCSClientTest()
   run_loop_ = std::make_unique<base::RunLoop>();
 
   // Advance the clock to a non-zero time.
-  clock_.Advance(base::TimeDelta::FromSeconds(1));
+  clock_.Advance(base::Seconds(1));
 }
 
 MCSClientTest::~MCSClientTest() {}
@@ -438,7 +438,7 @@ TEST_F(MCSClientTest, SendMessageRMQWhileDisconnected) {
   EXPECT_EQ("X", sent_message_id());
   EXPECT_FALSE(GetFakeHandler()->AllOutgoingMessagesReceived());
   GetFakeHandler()->set_fail_send(false);
-  clock()->Advance(base::TimeDelta::FromSeconds(kTTLValue - 1));
+  clock()->Advance(base::Seconds(kTTLValue - 1));
   connection_factory()->Connect();
   WaitForMCSEvent();  // Wait for the login to finish.
   PumpLoop();         // Wait for the send to happen.
@@ -477,7 +477,7 @@ TEST_F(MCSClientTest, SendMessageRMQOnRestart) {
   BuildMCSClient();
   InitializeClient();
 
-  clock()->Advance(base::TimeDelta::FromSeconds(kTTLValue - 1));
+  clock()->Advance(base::Seconds(kTTLValue - 1));
   MCSMessage message2(BuildDataMessage("from", "category", "X", 1, "1",
                                        kTTLValue, 1, kTTLValue - 1, "", 0,
                                        IMMEDIATE_ACK_NO));
@@ -793,7 +793,7 @@ TEST_F(MCSClientTest, ExpiredTTLOnSend) {
                                       IMMEDIATE_ACK_NO));
 
   // Advance time to after the TTL.
-  clock()->Advance(base::TimeDelta::FromSeconds(kTTLValue + 2));
+  clock()->Advance(base::Seconds(kTTLValue + 2));
   EXPECT_TRUE(sent_message_id().empty());
   mcs_client()->SendMessage(message);
 
@@ -821,7 +821,7 @@ TEST_F(MCSClientTest, ExpiredTTLOnRestart) {
 
   // Move the clock forward and rebuild the client, which should fail the
   // message send on restart.
-  clock()->Advance(base::TimeDelta::FromSeconds(kTTLValue + 2));
+  clock()->Advance(base::Seconds(kTTLValue + 2));
   StoreCredentials();
   BuildMCSClient();
   InitializeClient();

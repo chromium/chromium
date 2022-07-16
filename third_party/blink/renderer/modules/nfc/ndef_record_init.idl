@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/web-nfc/#idl-def-ndefrecorddatasource
-
-typedef (DOMString or BufferSource or NDEFMessageInit) NDEFRecordDataSource;
-
 // https://w3c.github.io/web-nfc/#dom-ndefrecordinit
-
 dictionary NDEFRecordInit {
     required USVString recordType;
     USVString mediaType;
@@ -16,5 +11,5 @@ dictionary NDEFRecordInit {
     USVString encoding;
     USVString lang;
 
-    NDEFRecordDataSource data;
+    any data;  // DOMString or BufferSource or NDEFMessageInit
 };

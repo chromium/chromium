@@ -14,3 +14,10 @@ The component has the following structure:
     *  common/: Code shared by the browser and the renderer
     *  renderer/: Renderer process code
 * ios/: iOS-specific code layered above core/ that integrates with //ios/web
+
+A note for //content-based embedders of this component:
+
+//content-based embedders should use the SafeBrowsingBlockingPage,
+SafeBrowsingUIManager, and SafeBrowsingNavigationThrottle classes.
+BaseBlockingPage and BaseUIManager exist for Android WebView and should not be
+used further (crbug.com/1234027).

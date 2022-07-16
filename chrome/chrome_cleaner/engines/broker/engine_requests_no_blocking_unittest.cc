@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
@@ -40,7 +41,6 @@
 #include "chrome/chrome_cleaner/test/test_scoped_service_handle.h"
 #include "chrome/chrome_cleaner/test/test_task_scheduler.h"
 #include "components/chrome_cleaner/test/test_name_helper.h"
-#include "sandbox/win/src/sid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -136,7 +136,8 @@ class TestEngineRequestInvoker {
 
     // This is static because it needs to exist for the entire life of an async
     // request.
-    static const sandbox::Sid kDummySid(WinSelfSid);
+    static const absl::optional<base::win::Sid> kDummySid =
+        base::win::Sid::FromKnownSid(base::win::WellKnownSid::kSelf);
 
     if (request_name == "FindFirstFile") {
       file_requests_proxy_->task_runner()->PostTask(
@@ -214,7 +215,7 @@ class TestEngineRequestInvoker {
           FROM_HERE,
           BindOnce(IgnoreResult(&EngineProxy::SandboxGetUserInfoFromSID),
                    engine_requests_proxy_,
-                   static_cast<SID*>(kDummySid.GetPSID()),
+                   static_cast<SID*>(kDummySid->GetPSID()),
                    BindOnce(&GetUserInfoFromSIDCallback,
                             std::move(result_closure))));
     } else if (request_name == "OpenReadOnlyRegistry") {

@@ -8,15 +8,16 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
@@ -24,6 +25,7 @@
 #include "media/base/overlay_info.h"
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -31,6 +33,7 @@
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace media {
@@ -69,6 +72,10 @@ class MojoVideoFrameHandleReleaser
             std::move(task_runner));
   }
 
+  MojoVideoFrameHandleReleaser(const MojoVideoFrameHandleReleaser&) = delete;
+  MojoVideoFrameHandleReleaser& operator=(const MojoVideoFrameHandleReleaser&) =
+      delete;
+
   void ReleaseVideoFrame(const base::UnguessableToken& release_token,
                          const gpu::SyncToken& release_sync_token) {
     DVLOG(3) << __func__ << "(" << release_token << ")";
@@ -92,8 +99,6 @@ class MojoVideoFrameHandleReleaser
 
   mojo::SharedRemote<mojom::VideoFrameHandleReleaser>
       video_frame_handle_releaser_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoFrameHandleReleaser);
 };
 
 MojoVideoDecoder::MojoVideoDecoder(
@@ -106,11 +111,10 @@ MojoVideoDecoder::MojoVideoDecoder(
     : task_runner_(task_runner),
       pending_remote_decoder_(std::move(pending_remote_decoder)),
       gpu_factories_(gpu_factories),
+      media_log_(media_log),
       timestamps_(128),
       writer_capacity_(
           GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO)),
-      media_log_service_(media_log),
-      media_log_receiver_(&media_log_service_),
       request_overlay_info_cb_(std::move(request_overlay_info_cb)),
       target_color_space_(target_color_space) {
   DVLOG(1) << __func__;
@@ -134,6 +138,12 @@ bool MojoVideoDecoder::SupportsDecryption() const {
   // Currently only the Android backends and specific ChromeOS configurations
   // support decryption.
 #if defined(OS_ANDROID) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;
 #else
   return false;
@@ -183,20 +193,30 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (!remote_decoder_bound_) {
-    BindRemoteDecoder();
-    get_mojo_instance_counter()++;
-  }
-
-  if (has_connection_error_) {
-    FailInit(std::move(init_cb), StatusCode::kMojoDecoderNoConnection);
-    return;
-  }
-
   initialized_ = false;
   init_cb_ = std::move(init_cb);
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
+
+  if (!remote_decoder_bound_) {
+    InitAndBindRemoteDecoder(
+        base::BindOnce(&MojoVideoDecoder::InitializeRemoteDecoder, weak_this_,
+                       config, low_delay, std::move(cdm_id)));
+    return;
+  }
+
+  InitializeRemoteDecoder(config, low_delay, std::move(cdm_id));
+}
+
+void MojoVideoDecoder::InitializeRemoteDecoder(
+    const VideoDecoderConfig& config,
+    bool low_delay,
+    absl::optional<base::UnguessableToken> cdm_id) {
+  if (has_connection_error_) {
+    DCHECK(init_cb_);
+    FailInit(std::move(init_cb_), StatusCode::kMojoDecoderNoConnection);
+    return;
+  }
 
   remote_decoder_->Initialize(
       config, low_delay, cdm_id,
@@ -353,12 +373,7 @@ int MojoVideoDecoder::GetMaxDecodeRequests() const {
   return max_decode_requests_;
 }
 
-bool MojoVideoDecoder::IsOptimizedForRTC() const {
-  DVLOG(3) << __func__;
-  return true;
-}
-
-void MojoVideoDecoder::BindRemoteDecoder() {
+void MojoVideoDecoder::InitAndBindRemoteDecoder(base::OnceClosure complete_cb) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!remote_decoder_bound_);
@@ -369,6 +384,38 @@ void MojoVideoDecoder::BindRemoteDecoder() {
   remote_decoder_.set_disconnect_handler(
       base::BindOnce(&MojoVideoDecoder::Stop, base::Unretained(this)));
 
+  // Generate |command_buffer_id|.
+  media::mojom::CommandBufferIdPtr command_buffer_id;
+
+  if (gpu_factories_) {
+    DCHECK(complete_cb);
+    gpu_factories_->GetChannelToken(
+        base::BindOnce(&MojoVideoDecoder::OnChannelTokenReady, weak_this_,
+                       std::move(command_buffer_id), std::move(complete_cb)));
+    return;
+  }
+
+  DCHECK(complete_cb);
+  InitAndConstructRemoteDecoder(std::move(command_buffer_id),
+                                std::move(complete_cb));
+}
+
+void MojoVideoDecoder::OnChannelTokenReady(
+    media::mojom::CommandBufferIdPtr command_buffer_id,
+    base::OnceClosure complete_cb,
+    const base::UnguessableToken& channel_token) {
+  if (channel_token) {
+    command_buffer_id = media::mojom::CommandBufferId::New();
+    command_buffer_id->channel_token = std::move(channel_token);
+    command_buffer_id->route_id = gpu_factories_->GetCommandBufferRouteId();
+  }
+  InitAndConstructRemoteDecoder(std::move(command_buffer_id),
+                                std::move(complete_cb));
+}
+
+void MojoVideoDecoder::InitAndConstructRemoteDecoder(
+    media::mojom::CommandBufferIdPtr command_buffer_id,
+    base::OnceClosure complete_cb) {
   // Create |video_frame_handle_releaser| interface receiver, and bind
   // |mojo_video_frame_handle_releaser_| to it.
   mojo::PendingRemote<mojom::VideoFrameHandleReleaser>
@@ -385,22 +432,22 @@ void MojoVideoDecoder::BindRemoteDecoder() {
   mojo_decoder_buffer_writer_ = MojoDecoderBufferWriter::Create(
       writer_capacity_, &remote_consumer_handle);
 
-  // Generate |command_buffer_id|.
-  media::mojom::CommandBufferIdPtr command_buffer_id;
-  if (gpu_factories_) {
-    base::UnguessableToken channel_token = gpu_factories_->GetChannelToken();
-    if (channel_token) {
-      command_buffer_id = media::mojom::CommandBufferId::New();
-      command_buffer_id->channel_token = std::move(channel_token);
-      command_buffer_id->route_id = gpu_factories_->GetCommandBufferRouteId();
-    }
-  }
+  // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
+  // after `MojoVideoDecoder` is destructed.
+  mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
+  auto media_log_pending_remote =
+      media_log_pending_receiver.InitWithNewPipeAndPassRemote();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MojoMediaLogService>(media_log_->Clone()),
+      std::move(media_log_pending_receiver));
 
   remote_decoder_->Construct(client_receiver_.BindNewEndpointAndPassRemote(),
-                             media_log_receiver_.BindNewEndpointAndPassRemote(),
+                             std::move(media_log_pending_remote),
                              std::move(video_frame_handle_releaser_receiver),
                              std::move(remote_consumer_handle),
                              std::move(command_buffer_id), target_color_space_);
+  get_mojo_instance_counter()++;
+  std::move(complete_cb).Run();
 }
 
 void MojoVideoDecoder::OnWaiting(WaitingReason reason) {

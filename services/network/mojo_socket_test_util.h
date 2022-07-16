@@ -18,6 +18,10 @@ namespace network {
 class TestSocketObserver : public mojom::SocketObserver {
  public:
   TestSocketObserver();
+
+  TestSocketObserver(const TestSocketObserver&) = delete;
+  TestSocketObserver& operator=(const TestSocketObserver&) = delete;
+
   ~TestSocketObserver() override;
 
   // Returns a mojo pending remote. This can only be called once.
@@ -37,8 +41,6 @@ class TestSocketObserver : public mojom::SocketObserver {
   base::RunLoop read_loop_;
   base::RunLoop write_loop_;
   mojo::Receiver<mojom::SocketObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketObserver);
 };
 
 }  // namespace network

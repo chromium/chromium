@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_INSTALL_LIMITER_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -23,6 +22,9 @@ class InstallLimiterFactory : public BrowserContextKeyedServiceFactory {
 
   static InstallLimiterFactory* GetInstance();
 
+  InstallLimiterFactory(const InstallLimiterFactory&) = delete;
+  InstallLimiterFactory& operator=(const InstallLimiterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<InstallLimiterFactory>;
 
@@ -32,8 +34,6 @@ class InstallLimiterFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallLimiterFactory);
 };
 
 }  // namespace extensions

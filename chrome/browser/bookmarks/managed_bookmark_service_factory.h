@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -27,9 +26,14 @@ class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static bookmarks::ManagedBookmarkService* GetForProfile(Profile* profile);
   static ManagedBookmarkServiceFactory* GetInstance();
+
+  ManagedBookmarkServiceFactory(const ManagedBookmarkServiceFactory&) = delete;
+  ManagedBookmarkServiceFactory& operator=(
+      const ManagedBookmarkServiceFactory&) = delete;
+
   static TestingFactory GetDefaultFactory();
 
-  static std::string GetManagedBookmarksDomain(Profile* profile);
+  static std::string GetManagedBookmarksManager(Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<ManagedBookmarkServiceFactory>;
@@ -43,8 +47,6 @@ class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_MANAGED_BOOKMARK_SERVICE_FACTORY_H_

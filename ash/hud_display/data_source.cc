@@ -8,6 +8,7 @@
 
 #include "ash/hud_display/memory_status.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -73,6 +74,8 @@ uint64_t Sum(const CpuStats& stats) {
 
 DataSource::Snapshot::Snapshot() = default;
 DataSource::Snapshot::Snapshot(const Snapshot&) = default;
+DataSource::Snapshot& DataSource::Snapshot::operator=(const Snapshot&) =
+    default;
 
 DataSource::DataSource() {
   cpu_stats_base_ = {0};
@@ -95,7 +98,7 @@ DataSource::Snapshot DataSource::GetSnapshotAndReset() {
     // Makes sure that the given value is between 0 and 1 and converts to
     // float.
     auto to_0_1 = [](const double& value) -> float {
-      return std::min(1.0f, std::max(0.0f, static_cast<float>(value)));
+      return base::clamp(static_cast<float>(value), 0.0f, 1.0f);
     };
 
     snapshot.cpu_idle_part = cpu_stats_delta.idle / cpu_ticks_total;

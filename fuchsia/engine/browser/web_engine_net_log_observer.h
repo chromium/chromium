@@ -20,12 +20,14 @@ class FileNetLogObserver;
 class WebEngineNetLogObserver {
  public:
   explicit WebEngineNetLogObserver(const base::FilePath& log_path);
+
+  WebEngineNetLogObserver(const WebEngineNetLogObserver&) = delete;
+  WebEngineNetLogObserver& operator=(const WebEngineNetLogObserver&) = delete;
+
   ~WebEngineNetLogObserver();
 
  private:
   std::unique_ptr<net::FileNetLogObserver> file_net_log_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineNetLogObserver);
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_NET_LOG_OBSERVER_H_

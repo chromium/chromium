@@ -666,6 +666,12 @@ void MapperSteelSeriesStratusBt(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
+void MapperSteelSeriesProtonBt(const Gamepad& input, Gamepad* mapped) {
+  MapperSteelSeriesStratusBt(input, mapped);
+  mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
+  mapped->buttons_length = BUTTON_INDEX_COUNT;
+}
+
 void MapperLogitechDInput(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[1];
@@ -940,6 +946,8 @@ constexpr struct MappingData {
     {GamepadId::kSteelSeriesBtProduct1419, MapperSteelSeriesStratusBt},
     // SteelSeries Stratus Duo Bluetooth
     {GamepadId::kSteelSeriesBtProduct1431, MapperSteelSeriesStratusBt},
+    // SteelSeries "Proton" Bluetooth
+    {GamepadId::kSteelSeriesBtProduct1434, MapperSteelSeriesProtonBt},
     // Razer Serval Controller
     {GamepadId::kRazer1532Product0900, MapperRazerServal},
     // ADT-1 Controller
@@ -947,17 +955,17 @@ constexpr struct MappingData {
     // Stadia Controller
     {GamepadId::kGoogleProduct9400, MapperStadiaController},
     // Moga Pro Controller (HID mode)
-    {GamepadId::kVendor20d6Product6271, MapperMoga},
+    {GamepadId::kBdaProduct6271, MapperMoga},
     // Moga 2 HID
-    {GamepadId::kVendor20d6Product89e5, MapperMoga},
+    {GamepadId::kBdaProduct89e5, MapperMoga},
     // OnLive Controller (Bluetooth)
-    {GamepadId::kVendor2378Product1008, MapperOnLiveWireless},
+    {GamepadId::kOnLiveProduct1008, MapperOnLiveWireless},
     // OnLive Controller (Wired)
-    {GamepadId::kVendor2378Product100a, MapperOnLiveWireless},
+    {GamepadId::kOnLiveProduct100a, MapperOnLiveWireless},
     // OUYA Controller
-    {GamepadId::kVendor2836Product0001, MapperOUYA},
+    {GamepadId::kOuyaProduct0001, MapperOUYA},
     // SCUF Vantage, SCUF Vantage 2
-    {GamepadId::kVendor2e95Product7725, MapperDualshock4},
+    {GamepadId::kScufProduct7725, MapperDualshock4},
     // boom PSX+N64 USB Converter
     {GamepadId::kPrototypeVendorProduct0667, MapperBoomN64Psx},
     // Stadia Controller prototype

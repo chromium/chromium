@@ -23,6 +23,10 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
                                 SigninErrorController* signin_error_controller,
                                 const base::FilePath& browser_state_path);
 
+  SigninBrowserStateInfoUpdater(const SigninBrowserStateInfoUpdater&) = delete;
+  SigninBrowserStateInfoUpdater& operator=(
+      const SigninBrowserStateInfoUpdater&) = delete;
+
   ~SigninBrowserStateInfoUpdater() override;
 
  private:
@@ -48,8 +52,6 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
   base::ScopedObservation<SigninErrorController,
                           SigninErrorController::Observer>
       signin_error_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninBrowserStateInfoUpdater);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_STATE_INFO_UPDATER_H_

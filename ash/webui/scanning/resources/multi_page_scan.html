@@ -7,7 +7,6 @@
   .container {
     align-items: center;
     color: var(--scanning-done-section-option-text-color);
-    cursor: pointer;
     display: flex;
     font-family: var(--scanning-done-section-option-font-family);
     font-size: var(--scanning-done-section-option-font-size);
@@ -40,16 +39,31 @@
     margin-inline-start: 8px;
   }
 </style>
-<div class="container">
-  <span class="label">
+<div id="multiPageScanText" class="container">
+  <span class="label" hidden$="[[showCancelButton_]]">
     [[i18n('multiPageScanInstructionsText')]]
   </span>
+  <div hidden$="[[!showCancelButton_]]">
+    <span class="label" hidden$="[[showCancelingText_]]">
+      [[getProgressText_(pageNumber)]]
+    </span>
+    <span class="label" hidden$="[[!showCancelingText_]]">
+      [[i18n('multiPageCancelingScanningText')]]
+    </span>
+  </div>
 </div>
 <div id="buttonContainer">
-  <cr-button id="saveButton">
-    [[i18n('saveButtonLabel')]]
-  </cr-button>
-  <cr-button id="scanButton" class="action-button">
-    [[scanButtonText_]]
+  <div hidden$="[[showCancelButton_]]">
+    <cr-button id="saveButton" on-click="onSaveClick_">
+      [[i18n('saveButtonLabel')]]
+    </cr-button>
+    <cr-button id="scanButton" class="action-button" on-click="onScanClick_">
+      [[scanButtonText_]]
+    </cr-button>
+  </div>
+  <cr-button id="cancelButton" on-click="onCancelClick_"
+      hidden$="[[!showCancelButton_]]"
+      disabled$="[[cancelButtonDisabled_]]">
+    [[i18n('cancelButtonText')]]
   </cr-button>
 </div>

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -59,6 +58,10 @@ class OAuth2LoginManager : public KeyedService,
   };
 
   explicit OAuth2LoginManager(Profile* user_profile);
+
+  OAuth2LoginManager(const OAuth2LoginManager&) = delete;
+  OAuth2LoginManager& operator=(const OAuth2LoginManager&) = delete;
+
   ~OAuth2LoginManager() override;
 
   void AddObserver(OAuth2LoginManager::Observer* observer);
@@ -188,8 +191,6 @@ class OAuth2LoginManager : public KeyedService,
   // TODO(zelidrag|gspencer): Figure out how to get rid of ProfileHelper so we
   // can change the line below to base::ObserverList<Observer, true>.
   base::ObserverList<Observer, false>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManager);
 };
 
 }  // namespace ash

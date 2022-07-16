@@ -19,10 +19,13 @@ const char background_metric_name[] =
 class AndroidIncognitoSessionDurationsServiceTest : public testing::Test {
  public:
   AndroidIncognitoSessionDurationsServiceTest() = default;
-  ~AndroidIncognitoSessionDurationsServiceTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidIncognitoSessionDurationsServiceTest);
+  AndroidIncognitoSessionDurationsServiceTest(
+      const AndroidIncognitoSessionDurationsServiceTest&) = delete;
+  AndroidIncognitoSessionDurationsServiceTest& operator=(
+      const AndroidIncognitoSessionDurationsServiceTest&) = delete;
+
+  ~AndroidIncognitoSessionDurationsServiceTest() override = default;
 };
 
 TEST_F(AndroidIncognitoSessionDurationsServiceTest, RegularIncognitoClose) {
@@ -96,7 +99,7 @@ TEST_F(AndroidIncognitoSessionDurationsServiceTest, MultipleStateChange) {
 
   // Assume session start was 1 hour ago and go background.
   service->SetSessionStartTimeForTesting(base::Time::Now() -
-                                         base::TimeDelta::FromSeconds(60) * 60);
+                                         base::Seconds(60) * 60);
   service->OnAppEnterBackground(base::TimeDelta());
   histograms.ExpectBucketCount(background_metric_name, 60, 1);
 

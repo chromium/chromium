@@ -17,6 +17,10 @@ class LeakyBucket {
   // |depth| specifies depth of the bucket in drops. kUnlimitedDepth indicate
   // that bucket size is unlimited. |rate| is specified in drops per second.
   LeakyBucket(int depth, int rate);
+
+  LeakyBucket(const LeakyBucket&) = delete;
+  LeakyBucket& operator=(const LeakyBucket&) = delete;
+
   ~LeakyBucket();
 
   // If the bucket can fit |drops| then adds them and returns true. Otherwise
@@ -42,8 +46,6 @@ class LeakyBucket {
   // UpdateLevel(), which is called from RefillOrSpill() and UpdateRate().
   int current_level_;
   base::TimeTicks level_updated_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(LeakyBucket);
 };
 
 }  // namespace remoting

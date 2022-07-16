@@ -22,6 +22,9 @@ class DebugLogsManagerFactory : public BrowserContextKeyedServiceFactory {
   static DebugLogsManager* GetForProfile(Profile* profile);
   static DebugLogsManagerFactory* GetInstance();
 
+  DebugLogsManagerFactory(const DebugLogsManagerFactory&) = delete;
+  DebugLogsManagerFactory& operator=(const DebugLogsManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<DebugLogsManagerFactory>;
 
@@ -33,8 +36,6 @@ class DebugLogsManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugLogsManagerFactory);
 };
 
 }  // namespace bluetooth

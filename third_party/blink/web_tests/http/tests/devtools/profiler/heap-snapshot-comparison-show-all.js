@@ -36,9 +36,9 @@
     var countA;
     var countB;
     function step3(row) {
-      countA = row._addedCount;
+      countA = row.addedCount;
       TestRunner.assertEquals(true, countA > 0, 'countA > 0');
-      countB = row._removedCount;
+      countB = row.removedCount;
       TestRunner.assertEquals(true, countB > 0, 'countB > 0');
 
       var buttonsNode = HeapProfilerTestRunner.findButtonsNode(row);
@@ -48,7 +48,7 @@
         var maybeNumber = parseInt(words[i], 10);
         if (!isNaN(maybeNumber))
           TestRunner.assertEquals(
-              countA + countB - row._dataGrid.defaultPopulateCount(), maybeNumber, buttonsNode.showAll.textContent);
+              countA + countB - row.dataGrid.defaultPopulateCount(), maybeNumber, buttonsNode.showAll.textContent);
       }
       HeapProfilerTestRunner.clickShowMoreButton('showAll', buttonsNode, step4);
     }
@@ -59,7 +59,7 @@
       });
       TestRunner.assertEquals(countA, rowsShown, 'after showAll click 1');
 
-      countB = row._removedCount;
+      countB = row.removedCount;
       TestRunner.assertEquals(true, countB > 0, 'countB > 0');
       var buttonsNode = HeapProfilerTestRunner.findButtonsNode(row);
       TestRunner.assertEquals(false, !!buttonsNode, 'buttons node (deleted)');

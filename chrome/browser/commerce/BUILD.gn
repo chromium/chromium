@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 source_set("feature_list") {
   sources = [
@@ -10,5 +12,9 @@ source_set("feature_list") {
     "commerce_feature_list.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/re2:re2",
+    "//url:url",
+  ]
 }

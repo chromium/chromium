@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
-#include "components/captive_portal/core/captive_portal_metrics.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -154,8 +153,7 @@ CaptivePortalService::~CaptivePortalService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void CaptivePortalService::DetectCaptivePortal(
-    CaptivePortalProbeReason probe_reason) {
+void CaptivePortalService::DetectCaptivePortal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Detection should be disabled only in tests.
@@ -173,11 +171,10 @@ void CaptivePortalService::DetectCaptivePortal(
   check_captive_portal_timer_.Start(
       FROM_HERE, time_until_next_check,
       base::BindOnce(&CaptivePortalService::DetectCaptivePortalInternal,
-                     base::Unretained(this), probe_reason));
+                     base::Unretained(this)));
 }
 
-void CaptivePortalService::DetectCaptivePortalInternal(
-    CaptivePortalProbeReason probe_reason) {
+void CaptivePortalService::DetectCaptivePortalInternal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(state_ == STATE_TIMER_RUNNING || state_ == STATE_IDLE);
   DCHECK(!TimerRunning());
@@ -222,8 +219,6 @@ void CaptivePortalService::DetectCaptivePortalInternal(
           }
         })");
 
-  captive_portal::CaptivePortalMetrics::LogCaptivePortalProbeReason(
-      probe_reason);
   captive_portal_detector_->DetectCaptivePortal(
       test_url_,
       base::BindOnce(&CaptivePortalService::OnPortalDetectionCompleted,
@@ -323,7 +318,7 @@ void CaptivePortalService::UpdateEnabledState() {
 
     // Since a captive portal request was queued or running, something may be
     // expecting to receive a captive portal result.
-    DetectCaptivePortal(CaptivePortalProbeReason::kUnspecified);
+    DetectCaptivePortal();
   }
 }
 

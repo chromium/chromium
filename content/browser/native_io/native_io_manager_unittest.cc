@@ -13,14 +13,18 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/native_io/native_io_manager.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
@@ -345,6 +349,33 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
   scoped_refptr<storage::QuotaManager> quota_manager_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 };
+
+TEST_P(NativeIOManagerTest, DefaultBucketCreatedOnBindReceiver) {
+  EXPECT_THAT(google_host_->GetAllFileNames(), testing::SizeIs(0));
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy());
+
+  // Check default bucket exists for https://example.com.
+  storage::QuotaErrorOr<storage::BucketInfo> result =
+      quota_manager_proxy_sync.GetBucket(
+          StorageKey::CreateFromStringForTesting(kExampleStorageKey),
+          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(result->name, storage::kDefaultBucketName);
+  EXPECT_EQ(result->storage_key,
+            StorageKey::CreateFromStringForTesting(kExampleStorageKey));
+  EXPECT_GT(result->id.value(), 0);
+
+  // Check default bucket exists for https://google.com.
+  result = quota_manager_proxy_sync.GetBucket(
+      StorageKey::CreateFromStringForTesting(kGoogleStorageKey),
+      storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(result->name, storage::kDefaultBucketName);
+  EXPECT_EQ(result->storage_key,
+            StorageKey::CreateFromStringForTesting(kGoogleStorageKey));
+  EXPECT_GT(result->id.value(), 0);
+}
 
 TEST_P(NativeIOManagerTest, OpenFile_Names) {
   for (const Filename& filename : filenames_) {
@@ -689,7 +720,7 @@ TEST_P(NativeIOManagerTest, StorageKeyIsolation) {
 TEST_P(NativeIOManagerTest, BindReceiver_UntrustworthyStorageKey) {
   mojo::Remote<blink::mojom::NativeIOHost> insecure_host_remote_;
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   manager_->BindReceiver(
       StorageKey::CreateFromStringForTesting("http://insecure.com"),
@@ -744,29 +775,41 @@ TEST_P(NativeIOManagerTest, DeleteStorageKeyData_StorageKeyWithNoData) {
 }
 
 TEST_P(NativeIOManagerTest, DeleteStorageKeyData_ConcurrentDeletion) {
-  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
-  base::File example_file =
-      example_host_
-          ->OpenFile("test_file",
-                     example_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-  EXPECT_TRUE(example_file.IsValid());
-  example_file.Close();
-  NativeIOFileHostSync example_file_host(example_host_remote.get());
-  example_file_host.Close();
+  {
+    mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+    base::File example_file =
+        example_host_
+            ->OpenFile("test_file",
+                       example_host_remote.BindNewPipeAndPassReceiver())
+            .file;
+    EXPECT_TRUE(example_file.IsValid());
+    example_file.Close();
+    NativeIOFileHostSync example_file_host(example_host_remote.get());
+    example_file_host.Close();
+  }
+
+  // Reset the last mojo connection to the example host, so the host remains
+  // without connections during deletion.
+  example_host_ = nullptr;
+  example_host_remote_.reset();
 
   StorageKey example_storage_key =
       StorageKey::CreateFromStringForTesting(kExampleStorageKey);
 
+  base::RunLoop delete_run_loop;
+  blink::mojom::QuotaStatusCode delete_status;
   manager_->DeleteStorageKeyData(
       example_storage_key,
-      base::BindLambdaForTesting(
-          [&](blink::mojom::QuotaStatusCode returned_status) {
-            EXPECT_EQ(returned_status, blink::mojom::QuotaStatusCode::kOk);
-          }));
+      base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode status) {
+        delete_run_loop.Quit();
+        delete_status = status;
+      }));
 
   EXPECT_EQ(sync_manager_->DeleteStorageKeyData(example_storage_key),
             blink::mojom::QuotaStatusCode::kOk);
+
+  delete_run_loop.Run();
+  EXPECT_EQ(delete_status, blink::mojom::QuotaStatusCode::kOk);
 
   EXPECT_TRUE(
       !base::PathExists(manager_->RootPathForStorageKey(example_storage_key)));
@@ -817,29 +860,6 @@ TEST_P(NativeIOManagerTest, GetStorageKeysByType_ReturnsActiveStorageKeys) {
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
   example_file_host.Close();
-}
-
-TEST_P(NativeIOManagerTest,
-       GetStorageKeysByType_EmptyForUnimplementedStorageTypes) {
-  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
-  base::File example_file =
-      example_host_
-          ->OpenFile("test_file",
-                     example_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-  example_file.Close();
-  NativeIOFileHostSync example_file_host(example_host_remote.get());
-  example_file_host.Close();
-
-  std::vector<StorageKey> storage_keys = sync_manager_->GetStorageKeysForType(
-      blink::mojom::StorageType::kPersistent);
-  EXPECT_EQ(0u, storage_keys.size());
-  storage_keys = sync_manager_->GetStorageKeysForType(
-      blink::mojom::StorageType::kSyncable);
-  EXPECT_EQ(0u, storage_keys.size());
-  storage_keys = sync_manager_->GetStorageKeysForType(
-      blink::mojom::StorageType::kQuotaNotManaged);
-  EXPECT_EQ(0u, storage_keys.size());
 }
 
 TEST_P(NativeIOManagerTest, GetStorageKeysByHost_ReturnsActiveStorageKeys) {

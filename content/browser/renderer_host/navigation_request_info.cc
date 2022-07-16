@@ -11,6 +11,7 @@ namespace content {
 NavigationRequestInfo::NavigationRequestInfo(
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::BeginNavigationParamsPtr begin_params,
+    network::mojom::WebSandboxFlags sandbox_flags,
     const net::IsolationInfo& isolation_info,
     bool is_main_frame,
     bool are_ancestors_secure,
@@ -25,9 +26,11 @@ NavigationRequestInfo::NavigationRequestInfo(
     net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const absl::optional<std::vector<net::SourceStream::SourceType>>&
-        devtools_accepted_stream_types)
+        devtools_accepted_stream_types,
+    bool is_pdf)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
+      sandbox_flags(sandbox_flags),
       isolation_info(isolation_info),
       is_main_frame(is_main_frame),
       are_ancestors_secure(are_ancestors_secure),
@@ -40,7 +43,8 @@ NavigationRequestInfo::NavigationRequestInfo(
       obey_origin_policy(obey_origin_policy),
       cors_exempt_headers(std::move(cors_exempt_headers)),
       client_security_state(std::move(client_security_state)),
-      devtools_accepted_stream_types(devtools_accepted_stream_types) {}
+      devtools_accepted_stream_types(devtools_accepted_stream_types),
+      is_pdf(is_pdf) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}
 

@@ -7,15 +7,33 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 
+class Browser;
 class Profile;
 class TabStripModel;
+class TabMenuModelDelegate;
+
+namespace ui {
+class Accelerator;
+}  // namespace ui
 
 class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
  public:
-  ExistingWindowSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
+  // Factory function for creating a platform-specific
+  // ExistingWindowSubMenuModel.
+  static std::unique_ptr<ExistingWindowSubMenuModel> Create(
+      ui::SimpleMenuModel::Delegate* parent_delegate,
+      TabMenuModelDelegate* tab_menu_model_delegate,
+      TabStripModel* model,
+      int context_index);
+
+  // Clients shouldn't directly create instances of ExistingWindowSubMenuModel,
+  // but rather use ExistingWindowSubMenuModel::Create().
+  ExistingWindowSubMenuModel(base::PassKey<ExistingWindowSubMenuModel> passkey,
+                             ui::SimpleMenuModel::Delegate* parent_delegate,
+                             TabMenuModelDelegate* tab_menu_model_delegate,
                              TabStripModel* model,
                              int context_index);
   ExistingWindowSubMenuModel(const ExistingWindowSubMenuModel&) = delete;
@@ -23,11 +41,11 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
       delete;
   ~ExistingWindowSubMenuModel() override;
 
-  // ui::SimpleMenuModel
+  // ui::SimpleMenuModel:
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
-  // ui::SimpleMenuModel::Delegate
+  // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
 
@@ -36,10 +54,20 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
   // |model|; |model| must outlive this instance.
   static bool ShouldShowSubmenu(Profile* profile);
 
+ protected:
+  // Retrieves a base::Passkey which can be used to construct an instance of
+  // ExistingWindowSubMenuModel.
+  static base::PassKey<ExistingWindowSubMenuModel> GetPassKey();
+
+  // Builds a vector of MenuItemInfo structs for the given browsers.
+  static std::vector<ExistingWindowSubMenuModel::MenuItemInfo>
+  BuildMenuItemInfoVectorForBrowsers(
+      const std::vector<Browser*>& existing_browsers);
+
  private:
-  // ExistingBaseSubMenuModel
+  // ExistingBaseSubMenuModel:
   void ExecuteNewCommand(int event_flags) override;
-  void ExecuteExistingCommand(int command_index) override;
+  void ExecuteExistingCommand(int target_index) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_EXISTING_WINDOW_SUB_MENU_MODEL_H_

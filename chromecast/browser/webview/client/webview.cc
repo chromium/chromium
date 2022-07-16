@@ -129,15 +129,17 @@ void WebviewClient::Run(const InitParams& params,
 }
 
 void WebviewClient::AllocateBuffers(const InitParams& params) {
-  static wl_buffer_listener buffer_listener = {BufferReleaseCallback};
   for (size_t i = 0; i < params.num_buffers; ++i) {
-    auto buffer_callback = std::make_unique<BufferCallback>();
-    auto buffer = CreateBuffer(size_, params.drm_format, params.bo_usage,
-                               &buffer_listener, buffer_callback.get());
+    auto buffer =
+        CreateBuffer(size_, params.drm_format, params.bo_usage, false);
     if (!buffer) {
       LOG(ERROR) << "Failed to create buffer";
       return;
     }
+    static wl_buffer_listener buffer_listener = {BufferReleaseCallback};
+    auto buffer_callback = std::make_unique<BufferCallback>();
+    wl_buffer_add_listener(buffer->buffer.get(), &buffer_listener,
+                           buffer_callback.get());
     buffer_callback->client = this;
     buffer_callback->buffer = buffer.get();
     buffer_callbacks_.push_back(std::move(buffer_callback));

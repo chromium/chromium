@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_tick_clock.h"
@@ -39,6 +38,9 @@ constexpr char kUserActionContinue[] = "HIDDetectionOnContinue";
 
 // Standard length of pincode for pairing BT keyboards.
 constexpr int kPincodeLength = 6;
+
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "HID Detection Screen";
 
 bool DeviceIsPointing(device::BluetoothDeviceType device_type) {
   return device_type == device::BluetoothDeviceType::MOUSE ||
@@ -73,7 +75,6 @@ std::string HIDDetectionScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
-    case Result::SKIP:
     case Result::SKIPPED_FOR_TESTS:
       return BaseScreen::kNotApplicable;
   }
@@ -109,17 +110,6 @@ void HIDDetectionScreen::OverrideInputDeviceManagerBinderForTesting(
 }
 
 void HIDDetectionScreen::OnContinueButtonClicked() {
-  ContinueScenarioType scenario_type;
-  if (!pointing_device_id_.empty() && !keyboard_device_id_.empty())
-    scenario_type = All_DEVICES_DETECTED;
-  else if (pointing_device_id_.empty())
-    scenario_type = KEYBOARD_DEVICE_ONLY_DETECTED;
-  else
-    scenario_type = POINTING_DEVICE_ONLY_DETECTED;
-
-  UMA_HISTOGRAM_ENUMERATION("HIDDetection.OOBEDevicesDetectedOnContinuePressed",
-                            scenario_type, CONTINUE_SCENARIO_TYPE_SIZE);
-
   CleanupOnExit();
   Exit(Result::NEXT);
 }
@@ -156,18 +146,12 @@ void HIDDetectionScreen::CheckIsScreenRequired(
 }
 
 bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
-  const auto* skip_screen_key = context->configuration.FindKeyOfType(
-      configuration::kSkipHIDDetection, base::Value::Type::BOOLEAN);
-  const bool skip_screen = skip_screen_key && skip_screen_key->GetBool();
-
-  if (skip_screen) {
-    Exit(Result::SKIP);
-    return true;
-  }
-
   if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableHIDDetectionOnOOBEForTesting)) {
+    // Store the flag inside the local state so it persists restart for the
+    // autoupdate tests.
+    StartupUtils::DisableHIDDetectionScreenForTests();
     Exit(Result::SKIPPED_FOR_TESTS);
     return true;
   }
@@ -512,6 +496,7 @@ void HIDDetectionScreen::InitializeAdapter(
 
 void HIDDetectionScreen::StartBTDiscoverySession() {
   adapter_->StartDiscoverySession(
+      kScanClientName,
       base::BindOnce(&HIDDetectionScreen::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&HIDDetectionScreen::FindDevicesError,
@@ -591,8 +576,6 @@ void HIDDetectionScreen::OnGetInputDevicesListForCheck(
   // Screen is not required if both devices are present.
   const bool all_devices_autodetected =
       !pointing_device_id.empty() && !keyboard_device_id.empty();
-  UMA_HISTOGRAM_BOOLEAN("HIDDetection.OOBEDialogShown",
-                        !all_devices_autodetected);
 
   std::move(on_check_done).Run(!all_devices_autodetected);
 }

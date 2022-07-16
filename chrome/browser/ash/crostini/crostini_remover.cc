@@ -55,7 +55,7 @@ void CrostiniRemover::StopVmFinished(CrostiniResult result) {
       ->ClearMimeTypes(vm_name_, "");
   VLOG(1) << "Destroying disk image";
   CrostiniManager::GetForProfile(profile_)->DestroyDiskImage(
-      base::FilePath(vm_name_),
+      vm_name_,
       base::BindOnce(&CrostiniRemover::DestroyDiskImageFinished, this));
 }
 

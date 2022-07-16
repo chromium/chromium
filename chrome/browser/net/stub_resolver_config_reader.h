@@ -25,7 +25,7 @@ class SecureDnsConfig;
 class StubResolverConfigReader {
  public:
   static constexpr base::TimeDelta kParentalControlsCheckDelay =
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 
   // |local_state| must outlive the created reader.
   explicit StubResolverConfigReader(PrefService* local_state,

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -52,6 +51,12 @@ class SafeBrowsingTriggeredPopupBlockerTest
     : public content::RenderViewHostTestHarness {
  public:
   SafeBrowsingTriggeredPopupBlockerTest() = default;
+
+  SafeBrowsingTriggeredPopupBlockerTest(
+      const SafeBrowsingTriggeredPopupBlockerTest&) = delete;
+  SafeBrowsingTriggeredPopupBlockerTest& operator=(
+      const SafeBrowsingTriggeredPopupBlockerTest&) = delete;
+
   ~SafeBrowsingTriggeredPopupBlockerTest() override {
     settings_map_->ShutdownOnUIThread();
   }
@@ -156,8 +161,6 @@ class SafeBrowsingTriggeredPopupBlockerTest
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredPopupBlockerTest);
 };
 
 struct RedirectSamplesAndResults {

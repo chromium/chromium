@@ -23,11 +23,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -35,13 +35,13 @@ class Node;
 class LocalFrame;
 
 bool FindBestClickableCandidate(Node*& target_node,
-                                IntPoint& target_point,
-                                const IntPoint& touch_hotspot,
+                                gfx::Point& target_point,
+                                const gfx::Point& touch_hotspot,
                                 const IntRect& touch_area,
                                 const HeapVector<Member<Node>>&);
 bool FindBestContextMenuCandidate(Node*& target_node,
-                                  IntPoint& target_point,
-                                  const IntPoint& touch_hotspot,
+                                  gfx::Point& target_point,
+                                  const gfx::Point& touch_hotspot,
                                   const IntRect& touch_area,
                                   const HeapVector<Member<Node>>&);
 

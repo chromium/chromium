@@ -38,6 +38,7 @@
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
 #include "chrome/chrome_cleaner/logging/scoped_logging.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
+#include "chrome/chrome_cleaner/os/file_remover_allowlist.h"
 #include "chrome/chrome_cleaner/os/initializer.h"
 #include "chrome/chrome_cleaner/os/post_reboot_registration.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
@@ -45,7 +46,6 @@
 #include "chrome/chrome_cleaner/os/scoped_disable_wow64_redirection.h"
 #include "chrome/chrome_cleaner/os/system_util_cleaner.h"
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
-#include "chrome/chrome_cleaner/os/whitelisted_directory.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 #include "chrome/chrome_cleaner/strings/string_util.h"
@@ -99,7 +99,7 @@ bool SetupTestConfigsWithCatalogs(const PUPData::UwSCatalogs& catalogs) {
   PreFetchedPaths::GetInstance()->DisableForTesting();
   base::PathService::DisableCache();
 
-  WhitelistedDirectory::GetInstance()->DisableCache();
+  FileRemoverAllowlist::GetInstance()->DisableCache();
 
   return true;
 }
@@ -121,7 +121,7 @@ int RunChromeCleanerTestSuite(int argc,
   // IS_INTERNAL_CHROME_CLEANER_BUILD is only set on the Chrome Cleaner
   // builders, not the chromium builders, so this will not slow down the
   // general commit queue.
-  constexpr base::TimeDelta kInternalTimeout = base::TimeDelta::FromMinutes(10);
+  constexpr base::TimeDelta kInternalTimeout = base::Minutes(10);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTestLauncherTimeout,
       base::NumberToString(kInternalTimeout.InMilliseconds()));

@@ -1,0 +1,17 @@
+CONSOLE WARNING: Failed to decode downloaded font: invalidfont.png
+CONSOLE WARNING: OTS parsing error: invalid sfntVersion: -1991225785
+CONSOLE WARNING: Failed to decode downloaded font: data:application/x-truetype-font,
+CONSOLE WARNING: Failed to decode downloaded font: data:application/x-truetype-font,
+Test download error cases.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS event.fontfaces.length is 1
+PASS event.fontfaces[0].family is "myfont4"
+PASS event.fontfaces.length is 4
+PASS failedFonts is ['myfont1', 'myfont2', 'myfont3', 'myfont5']
+PASS firedEvents is ['loading', 'loadingdone', 'loadingerror']
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

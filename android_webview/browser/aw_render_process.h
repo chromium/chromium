@@ -30,6 +30,10 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
       const base::android::JavaParamRef<jobject>& obj);
 
   explicit AwRenderProcess(content::RenderProcessHost* render_process_host);
+
+  AwRenderProcess(const AwRenderProcess&) = delete;
+  AwRenderProcess& operator=(const AwRenderProcess&) = delete;
+
   ~AwRenderProcess() override;
 
   void ClearCache();
@@ -57,7 +61,6 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   mojo::AssociatedRemote<mojom::Renderer> renderer_remote_;
 
   base::WeakPtrFactory<AwRenderProcess> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AwRenderProcess);
 };
 
 }  // namespace android_webview

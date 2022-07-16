@@ -25,7 +25,6 @@ import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
@@ -127,16 +126,14 @@ class TouchToFillViewBinder {
         } else if (propertyKey == FORMATTED_ORIGIN) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(model.get(FORMATTED_ORIGIN));
-            pslOriginText.setVisibility(
-                    credential.isPublicSuffixMatch() ? View.VISIBLE : View.GONE);
+            pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
         } else if (propertyKey == CREDENTIAL) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             String formattedOrigin = stripScheme(credential.getOriginUrl());
             formattedOrigin =
                     formattedOrigin.replaceFirst("/$", ""); // Strip possibly trailing slash.
             pslOriginText.setText(formattedOrigin);
-            pslOriginText.setVisibility(
-                    credential.isPublicSuffixMatch() ? View.VISIBLE : View.GONE);
+            pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
 
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getFormattedUsername());
@@ -177,12 +174,6 @@ class TouchToFillViewBinder {
      */
     private static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
         if (key == SINGLE_CREDENTIAL || key == FORMATTED_URL || key == ORIGIN_SECURE) {
-            if (!ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.USE_NEW_HEADER_FOR_LEGACY_SAVE_PASSWORD_BUBBLE)) {
-                final ImageView headerImage =
-                        view.findViewById(R.id.touch_to_fill_sheet_header_image);
-                headerImage.setImageResource(R.drawable.touch_to_fill_header_image);
-            } // Needs no else branch since features only change with a restart.
             TextView sheetTitleText = view.findViewById(R.id.touch_to_fill_sheet_title);
             @StringRes
             int titleStringId;

@@ -96,8 +96,7 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
     generator->PressTouch();
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(2));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
 
     gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);

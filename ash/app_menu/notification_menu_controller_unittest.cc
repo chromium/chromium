@@ -42,11 +42,12 @@ class TestAppMenuModelAdapter : public AppMenuModelAdapter {
                             base::OnceClosure(),
                             false /* is_tablet_mode */) {}
 
+  TestAppMenuModelAdapter(const TestAppMenuModelAdapter&) = delete;
+  TestAppMenuModelAdapter& operator=(const TestAppMenuModelAdapter&) = delete;
+
  private:
   // AppMenuModelAdapter overrides:
   void RecordHistogramOnMenuClosed() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppMenuModelAdapter);
 };
 
 }  // namespace
@@ -54,6 +55,12 @@ class TestAppMenuModelAdapter : public AppMenuModelAdapter {
 class NotificationMenuControllerTest : public AshTestBase {
  public:
   NotificationMenuControllerTest() = default;
+
+  NotificationMenuControllerTest(const NotificationMenuControllerTest&) =
+      delete;
+  NotificationMenuControllerTest& operator=(
+      const NotificationMenuControllerTest&) = delete;
+
   ~NotificationMenuControllerTest() override {}
 
   // Overridden from AshTestBase:
@@ -94,8 +101,6 @@ class NotificationMenuControllerTest : public AshTestBase {
   std::unique_ptr<views::View> host_view_;
   std::unique_ptr<NotificationMenuController> notification_menu_controller_;
   std::unique_ptr<TestAppMenuModelAdapter> test_app_menu_model_adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuControllerTest);
 };
 
 // Tests that NotificationMenuController does not add the

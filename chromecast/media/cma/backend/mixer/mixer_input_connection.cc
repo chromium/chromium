@@ -16,15 +16,15 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"
 #include "chromecast/media/audio/audio_provider.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/audio/rate_adjuster.h"
 #include "chromecast/media/cma/backend/mixer/channel_layout.h"
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
@@ -44,11 +44,9 @@ namespace media {
 namespace {
 
 constexpr int kDefaultQueueSize = 8192;
-constexpr base::TimeDelta kDefaultFillTime =
-    base::TimeDelta::FromMilliseconds(5);
-constexpr base::TimeDelta kDefaultFadeTime =
-    base::TimeDelta::FromMilliseconds(5);
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDefaultFillTime = base::Milliseconds(5);
+constexpr base::TimeDelta kDefaultFadeTime = base::Milliseconds(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Seconds(5);
 constexpr int64_t kDefaultMaxTimestampError = 2000;
 // Max absolute value for timestamp errors, to avoid overflow/underflow.
 constexpr int64_t kTimestampErrorLimit = 1000000;
@@ -176,9 +174,10 @@ float* GetAudioData(net::IOBuffer* buffer) {
   return reinterpret_cast<float*>(buffer->data() + kAudioMessageHeaderSize);
 }
 
-::media::ChannelLayout GetChannelLayout(mixer_service::ChannelLayout layout,
+::media::ChannelLayout GetChannelLayout(audio_service::ChannelLayout layout,
                                         int num_channels) {
-  if (layout == mixer_service::CHANNEL_LAYOUT_NONE) {
+  DCHECK_NE(layout, audio_service::CHANNEL_LAYOUT_BITSTREAM);
+  if (layout == audio_service::CHANNEL_LAYOUT_NONE) {
     return mixer::GuessChannelLayout(num_channels);
   }
   return DecoderConfigAdapter::ToMediaChannelLayout(
@@ -191,12 +190,11 @@ std::unique_ptr<RateAdjuster> CreateRateAdjuster(
   const auto& c = params.timestamped_audio_config();
   media::RateAdjuster::Config config;
   if (c.has_rate_change_interval()) {
-    config.rate_change_interval =
-        base::TimeDelta::FromMicroseconds(c.rate_change_interval());
+    config.rate_change_interval = base::Microseconds(c.rate_change_interval());
   }
   if (c.has_linear_regression_window()) {
     config.linear_regression_window =
-        base::TimeDelta::FromMicroseconds(c.linear_regression_window());
+        base::Microseconds(c.linear_regression_window());
   }
   if (c.has_max_ignored_current_error()) {
     config.max_ignored_current_error = c.max_ignored_current_error();
@@ -363,9 +361,9 @@ MixerInputConnection::MixerInputConnection(
       device_id_(params.has_device_id()
                      ? params.device_id()
                      : ::media::AudioDeviceDescription::kDefaultDeviceId),
-      content_type_(mixer_service::ConvertContentType(params.content_type())),
+      content_type_(audio_service::ConvertContentType(params.content_type())),
       focus_type_(params.has_focus_type()
-                      ? mixer_service::ConvertContentType(params.focus_type())
+                      ? audio_service::ConvertContentType(params.focus_type())
                       : content_type_),
       playout_channel_(params.channel_selection()),
       pts_is_timestamp_(params.has_timestamped_audio_config()),
@@ -448,7 +446,7 @@ void MixerInputConnection::CreateBufferPool(int frame_count) {
       converted_buffer_size, std::numeric_limits<size_t>::max(),
       true /* threadsafe */);
   buffer_pool_->Preallocate(start_threshold_frames_ / frame_count + 1);
-  if (sample_format_ == mixer_service::SAMPLE_FORMAT_FLOAT_P) {
+  if (sample_format_ == audio_service::SAMPLE_FORMAT_FLOAT_P) {
     // No format conversion needed, so just use the received buffers directly.
     socket_->UseBufferPool(buffer_pool_);
   }
@@ -496,7 +494,7 @@ bool MixerInputConnection::HandleAudioData(char* data,
   }
 
   const int frame_size =
-      num_channels_ * mixer_service::GetSampleSizeBytes(sample_format_);
+      num_channels_ * audio_service::GetSampleSizeBytes(sample_format_);
   if (size % frame_size != 0) {
     LOG(ERROR) << this
                << ": audio data size is not an integer number of frames";
@@ -520,25 +518,25 @@ bool MixerInputConnection::HandleAudioData(char* data,
   float* dest =
       reinterpret_cast<float*>(buffer->data() + kAudioMessageHeaderSize);
   switch (sample_format_) {
-    case mixer_service::SAMPLE_FORMAT_INT16_I:
+    case audio_service::SAMPLE_FORMAT_INT16_I:
       ConvertInterleavedData<::media::SignedInt16SampleTypeTraits>(
           num_channels_, data, size, dest);
       break;
-    case mixer_service::SAMPLE_FORMAT_INT32_I:
+    case audio_service::SAMPLE_FORMAT_INT32_I:
       ConvertInterleavedData<::media::SignedInt32SampleTypeTraits>(
           num_channels_, data, size, dest);
       break;
-    case mixer_service::SAMPLE_FORMAT_FLOAT_I:
+    case audio_service::SAMPLE_FORMAT_FLOAT_I:
       ConvertInterleavedData<::media::Float32SampleTypeTraits>(
           num_channels_, data, size, dest);
       break;
-    case mixer_service::SAMPLE_FORMAT_INT16_P:
+    case audio_service::SAMPLE_FORMAT_INT16_P:
       ConvertPlanarData<::media::SignedInt16SampleTypeTraits>(data, size, dest);
       break;
-    case mixer_service::SAMPLE_FORMAT_INT32_P:
+    case audio_service::SAMPLE_FORMAT_INT32_P:
       ConvertPlanarData<::media::SignedInt32SampleTypeTraits>(data, size, dest);
       break;
-    case mixer_service::SAMPLE_FORMAT_FLOAT_P:
+    case audio_service::SAMPLE_FORMAT_FLOAT_P:
       memcpy(dest, data, size);
       break;
     default:
@@ -560,7 +558,7 @@ bool MixerInputConnection::HandleAudioBuffer(
   }
 
   DCHECK_EQ(data - buffer->data(), kAudioMessageHeaderSize);
-  if (sample_format_ != mixer_service::SAMPLE_FORMAT_FLOAT_P) {
+  if (sample_format_ != audio_service::SAMPLE_FORMAT_FLOAT_P) {
     return HandleAudioData(data, size, timestamp);
   }
 
@@ -965,7 +963,7 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
   if (drop_us >= 0) {
     AUDIO_LOG(INFO) << this << " Dropping audio, duration = " << drop_us;
     DropAudio(::media::AudioTimestampHelper::TimeToFrames(
-        base::TimeDelta::FromMicroseconds(drop_us), input_samples_per_second_));
+        base::Microseconds(drop_us), input_samples_per_second_));
     // Only start if we still have enough data to do so.
     started_ = (queued_frames_ >= start_threshold_frames_);
 
@@ -982,8 +980,7 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
     AUDIO_LOG(INFO) << this
                     << " Adding silence. Duration = " << silence_duration;
     remaining_silence_frames_ = ::media::AudioTimestampHelper::TimeToFrames(
-        base::TimeDelta::FromMicroseconds(silence_duration),
-        input_samples_per_second_);
+        base::Microseconds(silence_duration), input_samples_per_second_);
     // Round to nearest multiple of 4 to preserve buffer alignment.
     remaining_silence_frames_ = ((remaining_silence_frames_ + 2) / 4) * 4;
     started_ = true;
@@ -1132,6 +1129,13 @@ int MixerInputConnection::FillAudio(int num_frames,
     return 0;
   }
 
+  if (in_underrun_ &&
+      (queued_frames_ < std::min(start_threshold_frames_,
+                                 num_frames + mixer_read_size_ + fill_size_))) {
+    // Allow buffer to refill a bit to prevent continuous underrun.
+    return 0;
+  }
+
   int num_filled = 0;
   int frames_left = num_frames;
   while (frames_left && !queue_.empty()) {
@@ -1221,7 +1225,7 @@ int MixerInputConnection::FillTimestampedAudio(int num_frames,
         queued_frames_ -= frames_to_crop;
       }
 
-      if (!after_silence) {
+      if (!after_silence && !never_crop_) {
         timestamped_fader_->AddSilence(0);
         return filled;  // Fade out.
       }

@@ -36,10 +36,10 @@
 
   const violatingFrameId = issue.params.issue.details.attributionReportingIssueDetails.frame.frameId;
   const reportingFrameId = params.targetInfo.targetId;
-  if (violatingFrameId !== reportingFrameId) {
-    testRunner.log("Success: violating frame and reporting frame do not match");
+  if (violatingFrameId === reportingFrameId) {
+    testRunner.log("Success: violating frame and reporting frame match");
   } else {
-    testRunner.log("Failure: violating frame and reporting frame match, but are expected to be different");
+    testRunner.log("Failure: violating frame and reporting frame do not match, but are expected to be the same");
   }
   testRunner.completeTest();
 })

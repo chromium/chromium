@@ -19,11 +19,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -57,6 +60,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
     public void testConsistentHeader() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs.
@@ -83,7 +87,8 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    public void testPermission() {
+    @DisableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
+    public void testPermissionWithAutogrant() {
         long now = setMockLocationNow();
 
         // X-Geo shouldn't be sent when location is disallowed for the origin.
@@ -98,7 +103,23 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    @EnableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
+    public void testPermissionWithoutAutogrant() {
+        long now = setMockLocationNow();
+
+        // X-Geo should be sent if DSE autogrant is enabled only if the user has explicitly allowed
+        // geolocation.
+        checkHeaderWithPermission(ContentSettingValues.ALLOW, now, false);
+        checkHeaderWithPermission(ContentSettingValues.BLOCK, now, true);
+        checkHeaderWithPermission(ContentSettingValues.DEFAULT, now, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Location"})
     public void testProtoEncoding() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs using proto encoding.
@@ -109,6 +130,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallback() {
+        setPermission(ContentSettingValues.ALLOW);
         // Only GPS location, should be sent when flag is on.
         long now = System.currentTimeMillis();
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
@@ -121,6 +143,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallbackYounger() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = System.currentTimeMillis();
         // GPS location is younger.
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now + 100);
@@ -136,6 +159,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallbackOlder() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = System.currentTimeMillis();
         // GPS location is older.
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now - 100);
@@ -242,5 +266,13 @@ public class GeolocationHeaderTest {
                 locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
         String expectedHeader = "X-Geo: w " + locationProto;
         Assert.assertEquals(expectedHeader, header);
+    }
+
+    private void setPermission(final @ContentSettingValues int setting) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PermissionInfo infoHttps =
+                    new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
+            infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+        });
     }
 }

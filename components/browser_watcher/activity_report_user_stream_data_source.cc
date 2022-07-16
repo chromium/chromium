@@ -69,6 +69,11 @@ class BufferExtensionStreamDataSource final
  public:
   explicit BufferExtensionStreamDataSource(uint32_t stream_type);
 
+  BufferExtensionStreamDataSource(const BufferExtensionStreamDataSource&) =
+      delete;
+  BufferExtensionStreamDataSource& operator=(
+      const BufferExtensionStreamDataSource&) = delete;
+
   bool Init(const StabilityReport& report);
 
   size_t StreamDataSize() override;
@@ -76,8 +81,6 @@ class BufferExtensionStreamDataSource final
 
  private:
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferExtensionStreamDataSource);
 };
 
 BufferExtensionStreamDataSource::BufferExtensionStreamDataSource(

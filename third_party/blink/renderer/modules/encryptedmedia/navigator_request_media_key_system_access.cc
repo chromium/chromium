@@ -51,6 +51,12 @@ class MediaKeySystemAccessInitializer final
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations);
+
+  MediaKeySystemAccessInitializer(const MediaKeySystemAccessInitializer&) =
+      delete;
+  MediaKeySystemAccessInitializer& operator=(
+      const MediaKeySystemAccessInitializer&) = delete;
+
   ~MediaKeySystemAccessInitializer() override = default;
 
   // EncryptedMediaRequest implementation.
@@ -63,9 +69,6 @@ class MediaKeySystemAccessInitializer final
   void Trace(Visitor* visitor) const override {
     MediaKeySystemAccessInitializerBase::Trace(visitor);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaKeySystemAccessInitializer);
 };
 
 MediaKeySystemAccessInitializer::MediaKeySystemAccessInitializer(

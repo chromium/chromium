@@ -4,13 +4,20 @@
 
 #include "ash/system/tray/tray_utils.h"
 
+#include <string>
+
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check.h"
+#include "base/strings/string_number_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
 
@@ -23,6 +30,38 @@ void SetupLabelForTray(views::Label* label) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetFontList(gfx::FontList().Derive(
       kTrayTextFontSizeIncrease, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+}
+
+void SetupConnectedScrollListItem(HoverHighlightView* view) {
+  SetupConnectedScrollListItem(view, absl::nullopt /* battery_percentage */);
+}
+
+void SetupConnectedScrollListItem(HoverHighlightView* view,
+                                  absl::optional<uint8_t> battery_percentage) {
+  DCHECK(view->is_populated());
+
+  std::u16string status;
+
+  if (battery_percentage) {
+    view->SetSubText(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_LABEL,
+        base::NumberToString16(battery_percentage.value())));
+  } else {
+    view->SetSubText(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED));
+  }
+
+  view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPositive));
+}
+
+void SetupConnectingScrollListItem(HoverHighlightView* view) {
+  DCHECK(view->is_populated());
+
+  view->SetSubText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING));
 }
 
 SkColor TrayIconColor(session_manager::SessionState session_state) {

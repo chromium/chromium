@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 

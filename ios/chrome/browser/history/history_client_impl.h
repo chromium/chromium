@@ -26,6 +26,10 @@ class HistoryClientImpl : public history::HistoryClient,
                           public bookmarks::BaseBookmarkModelObserver {
  public:
   explicit HistoryClientImpl(bookmarks::BookmarkModel* bookmark_model);
+
+  HistoryClientImpl(const HistoryClientImpl&) = delete;
+  HistoryClientImpl& operator=(const HistoryClientImpl&) = delete;
+
   ~HistoryClientImpl() override;
 
  private:
@@ -60,8 +64,6 @@ class HistoryClientImpl : public history::HistoryClient,
 
   // Subscription for notifications of changes to favicons.
   base::CallbackListSubscription favicons_changed_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryClientImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_HISTORY_CLIENT_IMPL_H_

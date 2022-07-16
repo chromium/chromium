@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/media_router.h"
@@ -29,6 +28,9 @@ namespace media_router {
 
 class MediaRouterBase : public MediaRouter {
  public:
+  MediaRouterBase(const MediaRouterBase&) = delete;
+  MediaRouterBase& operator=(const MediaRouterBase&) = delete;
+
   ~MediaRouterBase() override;
 
   // Must be called before invoking any other method.
@@ -115,8 +117,6 @@ class MediaRouterBase : public MediaRouter {
 
   std::unique_ptr<InternalMediaRoutesObserver> internal_routes_observer_;
   bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterBase);
 };
 
 }  // namespace media_router

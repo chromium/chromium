@@ -500,10 +500,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsDoneButtonId);
 }
 
-+ (id<GREYMatcher>)syncSettingsConfirmButton {
-  return grey_accessibilityID(kSyncSettingsConfirmButtonId);
-}
-
 + (id<GREYMatcher>)autofillCreditCardEditTableView {
   return grey_accessibilityID(kAutofillCreditCardEditTableViewId);
 }
@@ -584,20 +580,21 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kPrivacyTableViewId);
 }
 
-+ (id<GREYMatcher>)accountsSyncButton {
-  return grey_allOf(grey_accessibilityID(kSettingsAccountsTableViewSyncCellId),
-                    grey_sufficientlyVisible(), nil);
-}
-
 + (id<GREYMatcher>)contentSettingsButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_SETTINGS_TITLE)];
 }
 
 + (id<GREYMatcher>)googleServicesSettingsButton {
-  return grey_allOf(
-      grey_kindOfClass([UITableViewCell class]), grey_sufficientlyVisible(),
-      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId), nil);
+  return grey_allOf(grey_kindOfClass([UITableViewCell class]),
+                    grey_accessibilityID(kSettingsGoogleServicesCellId),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)manageSyncSettingsButton {
+  return grey_allOf(grey_kindOfClass([UITableViewCell class]),
+                    grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)googleServicesSettingsView {
@@ -661,7 +658,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsCollectionView {
-  return grey_accessibilityID(kSettingsTableViewId);
+  return grey_allOf(grey_accessibilityID(kSettingsTableViewId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)clearBrowsingHistoryButton {
@@ -1123,8 +1121,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 #pragma mark - Tab Grid Selection Mode
 + (id<GREYMatcher>)tabGridEditButton {
-  return grey_allOf(grey_accessibilityID(kTabGridEditButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
+  return grey_accessibilityID(kTabGridEditButtonIdentifier);
+}
+
++ (id<GREYMatcher>)tabGridEditMenuCloseAllButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)],
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)tabGridSelectTabsMenuButton {
@@ -1146,6 +1150,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridEditSelectAllButton {
   return grey_allOf(grey_accessibilityID(kTabGridEditSelectAllButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditShareButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditShareButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
 }
 

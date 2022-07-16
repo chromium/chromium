@@ -4,7 +4,6 @@
 
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/string_matching/sequence_matcher.h"
 #include "chromeos/components/string_matching/tokenized_string.h"

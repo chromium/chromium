@@ -22,8 +22,8 @@
 #include "base/test/task_environment.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/drive/service/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using google_apis::AboutResource;

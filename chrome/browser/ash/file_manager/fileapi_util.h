@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -94,6 +95,10 @@ typedef base::OnceCallback<void(FileChooserFileInfoList)>
 // of the system File Manager, call host() method on the returned URL.
 // TODO(crbug/1184927): Replace with dynamic listener URL.
 const GURL GetFileManagerURL();
+
+// Returns whether the given URL identifies the File Manager as a source. This
+// can be used to see if a private API calls come from the File Manager or not.
+bool IsFileManagerURL(const GURL& source_url);
 
 // Returns the default file system context for Files app. This is a convenience
 // method that should be used only if you are ABSOLUTELY CERTAIN that you are
@@ -192,6 +197,17 @@ FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const storage::FileSystemContext& context,
     const GURL& origin,
     const base::FilePath& virtual_path);
+
+// Given a |destination_folder| and a |filename|, returns a suitable path inside
+// folder that does not already exist. First it checks whether |filename| exists
+// inside |destination_folder|. If it does, it adds a parenthesised number (e.g.
+// " (1)" before the extension to deduplicate the filename.
+void GenerateUnusedFilename(
+    storage::FileSystemURL destination_folder,
+    base::FilePath filename,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
+        callback);
 
 }  // namespace util
 }  // namespace file_manager

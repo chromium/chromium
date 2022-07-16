@@ -55,6 +55,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   struct DEVICE_BLUETOOTH_EXPORT ServiceRecordState {
     ServiceRecordState();
+
+    ServiceRecordState(const ServiceRecordState&) = delete;
+    ServiceRecordState& operator=(const ServiceRecordState&) = delete;
+
     ~ServiceRecordState();
     // Properties common to Bluetooth Classic and LE devices.
     std::string name;
@@ -68,13 +72,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     // service must use service device path instead of resident device device
     // path.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ServiceRecordState);
   };
 
   struct DEVICE_BLUETOOTH_EXPORT DeviceState {
     DeviceState();
+
+    DeviceState(const DeviceState&) = delete;
+    DeviceState& operator=(const DeviceState&) = delete;
+
     ~DeviceState();
 
     bool is_bluetooth_classic() const { return path.empty(); }
@@ -90,9 +95,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     uint32_t bluetooth_class;
     // Properties specific to Bluetooth LE devices.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DeviceState);
   };
 
   class DEVICE_BLUETOOTH_EXPORT Observer {
@@ -115,6 +117,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   explicit BluetoothTaskManagerWin(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  BluetoothTaskManagerWin(const BluetoothTaskManagerWin&) = delete;
+  BluetoothTaskManagerWin& operator=(const BluetoothTaskManagerWin&) = delete;
 
   static scoped_refptr<BluetoothTaskManagerWin> CreateForTesting(
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
@@ -345,8 +350,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   // Wrapper around the Windows Bluetooth APIs. Owns the radio handle.
   std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper_;
   std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothTaskManagerWin);
 };
 
 }  // namespace device

@@ -43,8 +43,7 @@ std::vector<SiteDataFeatureProto*> GetAllFeaturesFromProto(
 
 // Observations windows have a default value of 2 hours, 95% of backgrounded
 // tabs don't use any of these features in this time window.
-static constexpr base::TimeDelta kObservationWindowLength =
-    base::TimeDelta::FromHours(2);
+static constexpr base::TimeDelta kObservationWindowLength = base::Hours(2);
 
 }  // namespace
 
@@ -169,7 +168,7 @@ SiteDataImpl::GetFeatureObservationWindowLengthForTesting() {
 }
 
 SiteDataImpl::SiteDataImpl(const url::Origin& origin,
-                           OnDestroyDelegate* delegate,
+                           base::WeakPtr<OnDestroyDelegate> delegate,
                            SiteDataStore* data_store)
     : load_duration_(kSampleWeightFactor),
       cpu_usage_estimate_(kSampleWeightFactor),
@@ -198,13 +197,19 @@ SiteDataImpl::~SiteDataImpl() {
   DCHECK(!IsLoaded());
   DCHECK_EQ(0U, loaded_tabs_in_background_count_);
 
-  DCHECK(delegate_);
-  delegate_->OnSiteDataImplDestroyed(this);
+  // Make sure not to dispatch a notification to a deleted delegate, and gate
+  // the DB write on it too, as the delegate and the data store have the
+  // same lifetime.
+  // TODO(https://crbug.com/1231933): Fix this properly and restore the end of
+  //     life write here.
+  if (delegate_) {
+    delegate_->OnSiteDataImplDestroyed(this);
 
-  // TODO(sebmarchand): Some data might be lost here if the read operation has
-  // not completed, add some metrics to measure if this is really an issue.
-  if (is_dirty_ && fully_initialized_)
-    data_store_->WriteSiteDataIntoStore(origin_, FlushStateToProto());
+    // TODO(sebmarchand): Some data might be lost here if the read operation has
+    // not completed, add some metrics to measure if this is really an issue.
+    if (is_dirty_ && fully_initialized_)
+      data_store_->WriteSiteDataIntoStore(origin_, FlushStateToProto());
+  }
 }
 
 base::TimeDelta SiteDataImpl::FeatureObservationDuration(
@@ -306,7 +311,7 @@ void SiteDataImpl::NotifyFeatureUsage(SiteDataFeatureProto* feature_proto,
             feature_name),
         InternalRepresentationToTimeDelta(
             feature_proto->observation_duration()),
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+        base::Seconds(1), base::Days(1), 100);
   }
 
   feature_proto->Clear();

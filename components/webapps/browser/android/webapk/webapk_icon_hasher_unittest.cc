@@ -14,7 +14,11 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -40,9 +44,11 @@ class WebApkIconHasherRunner {
   WebApkIconHasherRunner& operator=(const WebApkIconHasherRunner&) = delete;
 
   void Run(network::mojom::URLLoaderFactory* url_loader_factory,
+           content::WebContents* web_contents,
            const GURL& icon_url) {
     WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-        url_loader_factory, url::Origin::Create(icon_url), icon_url, 300,
+        url_loader_factory, web_contents->GetWeakPtr(),
+        url::Origin::Create(icon_url), icon_url, /*timeout_ms=*/300,
         base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
                        base::Unretained(this)));
 
@@ -53,11 +59,13 @@ class WebApkIconHasherRunner {
 
   std::map<std::string, WebApkIconHasher::Icon> RunMultiple(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      content::WebContents* web_contents,
       const std::set<GURL>& icon_urls) {
     std::map<std::string, WebApkIconHasher::Icon> result;
     base::RunLoop run_loop;
     WebApkIconHasher::DownloadAndComputeMurmur2Hash(
-        url_loader_factory, url::Origin::Create(*icon_urls.begin()), icon_urls,
+        url_loader_factory, web_contents->GetWeakPtr(),
+        url::Origin::Create(*icon_urls.begin()), icon_urls,
         base::BindLambdaForTesting(
             [&](absl::optional<std::map<std::string, WebApkIconHasher::Icon>>
                     hashes) {
@@ -69,14 +77,15 @@ class WebApkIconHasherRunner {
     return result;
   }
 
+  void OnCompleted(WebApkIconHasher::Icon icon) {
+    icon_ = std::move(icon);
+    if (!on_completed_callback_.is_null())
+      std::move(on_completed_callback_).Run();
+  }
+
   const WebApkIconHasher::Icon& icon() { return icon_; }
 
  private:
-  void OnCompleted(WebApkIconHasher::Icon icon) {
-    icon_ = std::move(icon);
-    std::move(on_completed_callback_).Run();
-  }
-
   // Fake factory that can be primed to return fake data.
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -91,8 +100,9 @@ class WebApkIconHasherRunner {
 
 class WebApkIconHasherTest : public ::testing::Test {
  public:
-  WebApkIconHasherTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+  WebApkIconHasherTest() {
+    web_contents_ = web_contents_factory_.CreateWebContents(&browser_context_);
+  }
   ~WebApkIconHasherTest() override = default;
   WebApkIconHasherTest(const WebApkIconHasherTest&) = delete;
   WebApkIconHasherTest& operator=(const WebApkIconHasherTest&) = delete;
@@ -102,9 +112,14 @@ class WebApkIconHasherTest : public ::testing::Test {
     return &test_url_loader_factory_;
   }
 
+  content::WebContents* web_contents() { return web_contents_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  content::TestBrowserContext browser_context_;
+  content::TestWebContentsFactory web_contents_factory_;
+  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
 };
 
 TEST_F(WebApkIconHasherTest, Success) {
@@ -123,7 +138,7 @@ TEST_F(WebApkIconHasherTest, Success) {
   test_url_loader_factory()->AddResponse(icon_url, icon_data);
 
   WebApkIconHasherRunner runner;
-  runner.Run(test_url_loader_factory(), GURL(icon_url));
+  runner.Run(test_url_loader_factory(), web_contents(), GURL(icon_url));
   EXPECT_EQ(kIconMurmur2Hash, runner.icon().hash);
   EXPECT_FALSE(runner.icon().unsafe_data.empty());
 }
@@ -134,7 +149,7 @@ TEST_F(WebApkIconHasherTest, DataUri) {
       "AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO"
       "9TXL0Y4OHwAAAABJRU5ErkJggg==");
   WebApkIconHasherRunner runner;
-  runner.Run(test_url_loader_factory(), icon_url);
+  runner.Run(test_url_loader_factory(), web_contents(), icon_url);
   EXPECT_EQ("536500236142107998", runner.icon().hash);
   EXPECT_FALSE(runner.icon().unsafe_data.empty());
 }
@@ -162,15 +177,16 @@ TEST_F(WebApkIconHasherTest, MultipleIconUrls) {
 
   WebApkIconHasherRunner runner;
   {
-    auto result = runner.RunMultiple(test_url_loader_factory(), {icon_url1});
+    auto result = runner.RunMultiple(test_url_loader_factory(), web_contents(),
+                                     {icon_url1});
     ASSERT_EQ(result.size(), 1u);
     EXPECT_EQ(result[icon_url1.spec()].hash, kIconMurmur2Hash);
     EXPECT_FALSE(result[icon_url1.spec()].unsafe_data.empty());
   }
 
   {
-    auto result =
-        runner.RunMultiple(test_url_loader_factory(), {icon_url1, icon_url2});
+    auto result = runner.RunMultiple(test_url_loader_factory(), web_contents(),
+                                     {icon_url1, icon_url2});
     ASSERT_EQ(result.size(), 2u);
     EXPECT_EQ(result[icon_url1.spec()].hash, kIconMurmur2Hash);
     EXPECT_FALSE(result[icon_url1.spec()].unsafe_data.empty());
@@ -180,10 +196,53 @@ TEST_F(WebApkIconHasherTest, MultipleIconUrls) {
   }
 }
 
+TEST_F(WebApkIconHasherTest, SVGImage) {
+  GURL icon_url("http://www.google.com/chrome/test/data/android/icon.svg");
+  base::FilePath source_path;
+  base::FilePath icon_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  icon_path = source_path.AppendASCII("components")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("webapps")
+                  .AppendASCII("icon.svg");
+  std::string icon_data;
+  ASSERT_TRUE(base::ReadFileToString(icon_path, &icon_data));
+  auto head = network::mojom::URLResponseHead::New();
+  std::string headers("HTTP/1.1 200 OK\nContent-type: image/svg+xml\n\n");
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "image/svg+xml";
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = icon_data.size();
+  test_url_loader_factory()->AddResponse(icon_url, std::move(head), icon_data,
+                                         status);
+
+  WebApkIconHasherRunner runner;
+  WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
+      test_url_loader_factory(), web_contents()->GetWeakPtr(),
+      url::Origin::Create(icon_url), icon_url, /*timeout_ms=*/300,
+      base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
+                     base::Unretained(&runner)));
+  base::RunLoop().RunUntilIdle();
+
+  SkBitmap dummy_bitmap;
+  dummy_bitmap.allocN32Pixels(10, 10);
+  dummy_bitmap.setImmutable();
+  EXPECT_TRUE(content::WebContentsTester::For(web_contents())
+                  ->TestDidDownloadImage(
+                      icon_url, 200, std::vector<SkBitmap>{dummy_bitmap},
+                      std::vector<gfx::Size>{gfx::Size(10, 10)}));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ("16586085245996049349", runner.icon().hash);
+  EXPECT_FALSE(runner.icon().unsafe_data.empty());
+}
+
 TEST_F(WebApkIconHasherTest, DataUriInvalid) {
   GURL icon_url("data:image/png;base64");
   WebApkIconHasherRunner runner;
-  runner.Run(test_url_loader_factory(), icon_url);
+  runner.Run(test_url_loader_factory(), web_contents(), icon_url);
   EXPECT_TRUE(runner.icon().hash.empty());
   EXPECT_TRUE(runner.icon().unsafe_data.empty());
 }
@@ -191,7 +250,7 @@ TEST_F(WebApkIconHasherTest, DataUriInvalid) {
 TEST_F(WebApkIconHasherTest, InvalidUrl) {
   GURL icon_url("http::google.com");
   WebApkIconHasherRunner runner;
-  runner.Run(test_url_loader_factory(), icon_url);
+  runner.Run(test_url_loader_factory(), web_contents(), icon_url);
   EXPECT_TRUE(runner.icon().hash.empty());
   EXPECT_TRUE(runner.icon().unsafe_data.empty());
 }
@@ -199,7 +258,7 @@ TEST_F(WebApkIconHasherTest, InvalidUrl) {
 TEST_F(WebApkIconHasherTest, DownloadTimedOut) {
   std::string icon_url = "http://www.google.com/timeout";
   WebApkIconHasherRunner runner;
-  runner.Run(test_url_loader_factory(), GURL(icon_url));
+  runner.Run(test_url_loader_factory(), web_contents(), GURL(icon_url));
   EXPECT_TRUE(runner.icon().hash.empty());
   EXPECT_TRUE(runner.icon().unsafe_data.empty());
 }
@@ -219,7 +278,7 @@ TEST_F(WebApkIconHasherTest, HTTPError) {
                                          status);
 
   WebApkIconHasherRunner runner;
-  runner.Run(test_url_loader_factory(), GURL(icon_url));
+  runner.Run(test_url_loader_factory(), web_contents(), GURL(icon_url));
   EXPECT_TRUE(runner.icon().hash.empty());
   EXPECT_TRUE(runner.icon().unsafe_data.empty());
 }

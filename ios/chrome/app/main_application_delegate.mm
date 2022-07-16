@@ -83,7 +83,6 @@ const int kMainIntentCheckDelay = 1;
 #pragma mark - UIApplicationDelegate methods -
 
 #pragma mark Responding to App State Changes and System Events
-
 // Called by the OS to create the UI for display.  The UI will not be displayed,
 // even if it is ready, until this function returns.
 // The absolute minimum work should be done here, to ensure that the application
@@ -92,6 +91,7 @@ const int kMainIntentCheckDelay = 1;
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   self.didFinishLaunching = YES;
 
+  _appState.startupInformation.didFinishLaunchingTime = base::TimeTicks::Now();
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
   BOOL requiresHandling =

@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1016,6 +1015,10 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class PaymentRequestIframeTest : public PaymentRequestJourneyLoggerTestBase {
+ public:
+  PaymentRequestIframeTest(const PaymentRequestIframeTest&) = delete;
+  PaymentRequestIframeTest& operator=(const PaymentRequestIframeTest&) = delete;
+
  protected:
   PaymentRequestIframeTest() {}
 
@@ -1026,9 +1029,6 @@ class PaymentRequestIframeTest : public PaymentRequestJourneyLoggerTestBase {
   }
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestIframeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
 
   GURL main_frame_url =
       https_server()->GetURL("a.com", "/payment_request_main.html");
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   // The iframe calls show() immediately.
   content::WebContents* tab =

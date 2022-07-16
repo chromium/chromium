@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chromeos/network/onc/certificate_scope.h"
@@ -43,6 +42,10 @@ class PolicyMap;
 class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
                                     public PolicyService::Observer {
  public:
+  NetworkConfigurationUpdater(const NetworkConfigurationUpdater&) = delete;
+  NetworkConfigurationUpdater& operator=(const NetworkConfigurationUpdater&) =
+      delete;
+
   ~NetworkConfigurationUpdater() override;
 
   // PolicyService::Observer overrides
@@ -166,8 +169,6 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
   // changes.
   base::ObserverList<chromeos::PolicyCertificateProvider::Observer,
                      true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationUpdater);
 };
 
 }  // namespace policy

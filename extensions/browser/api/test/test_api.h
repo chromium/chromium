@@ -100,6 +100,9 @@ class TestGetConfigFunction : public TestExtensionFunction {
   // state, owned by the test code.
   class TestConfigState {
    public:
+    TestConfigState(const TestConfigState&) = delete;
+    TestConfigState& operator=(const TestConfigState&) = delete;
+
     static TestConfigState* GetInstance();
 
     void set_config_state(base::DictionaryValue* config_state) {
@@ -113,8 +116,6 @@ class TestGetConfigFunction : public TestExtensionFunction {
     TestConfigState();
 
     base::DictionaryValue* config_state_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestConfigState);
   };
 
   ~TestGetConfigFunction() override;

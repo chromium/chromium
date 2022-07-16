@@ -40,6 +40,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -81,7 +83,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/form_submission.h"
@@ -96,7 +97,6 @@
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -243,6 +243,28 @@ LocalFrameClient* FrameLoader::Client() const {
   return frame_->Client();
 }
 
+ClientRedirectPolicy CalculateClientRedirectPolicy(
+    ClientNavigationReason client_navigation_reason,
+    WebFrameLoadType frame_load_type) {
+  if (client_navigation_reason == ClientNavigationReason::kNone ||
+      client_navigation_reason == ClientNavigationReason::kFormSubmissionGet ||
+      client_navigation_reason == ClientNavigationReason::kFormSubmissionPost ||
+      client_navigation_reason == ClientNavigationReason::kAnchorClick) {
+    return ClientRedirectPolicy::kNotClientRedirect;
+  }
+  // If the ClientRedirectReason is kFrameNavigation, only treat as a client
+  // redirect if the WebFrameLoadType is kReplaceCurrentItem. If this check is
+  // not applied, an anchor location change is classified as client redirect
+  // and an incorrect redirect chain is formed. On deleting one entry of this
+  // redirect chain, the whole chain gets deleted. This result in
+  // deletion of multiple items on deleting one item in history.
+  // https://crbug.com/1138096
+  if (client_navigation_reason == ClientNavigationReason::kFrameNavigation &&
+      frame_load_type != WebFrameLoadType::kReplaceCurrentItem)
+    return ClientRedirectPolicy::kNotClientRedirect;
+  return ClientRedirectPolicy::kClientRedirect;
+}
+
 void FrameLoader::SetDefersLoading(LoaderFreezeMode mode) {
   if (frame_->GetDocument())
     frame_->GetDocument()->Fetcher()->SetDefersLoading(mode);
@@ -296,7 +318,7 @@ void FrameLoader::SaveScrollState() {
   if (ScrollableArea* layout_scrollable_area = frame_->View()->LayoutViewport())
     history_item->SetScrollOffset(layout_scrollable_area->GetScrollOffset());
   history_item->SetVisualViewportScrollOffset(ToScrollOffset(
-      frame_->GetPage()->GetVisualViewport().VisibleRect().Location()));
+      frame_->GetPage()->GetVisualViewport().VisibleRect().origin()));
 
   if (frame_->IsMainFrame())
     history_item->SetPageScaleFactor(frame_->GetPage()->PageScaleFactor());
@@ -316,8 +338,11 @@ void FrameLoader::DispatchUnloadEvent(
 
 void FrameLoader::DidExplicitOpen() {
   probe::DidOpenDocument(frame_, GetDocumentLoader());
-  if (empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty)
-    empty_document_status_ = EmptyDocumentStatus::kOnlyEmptyButExplicitlyOpened;
+  if (initial_empty_document_status_ ==
+      InitialEmptyDocumentStatus::kInitialOrSynchronousAboutBlank) {
+    initial_empty_document_status_ = InitialEmptyDocumentStatus::
+        kInitialOrSynchronousAboutBlankButExplicitlyOpened;
+  }
 
   // Only model a document.open() as part of a navigation if its parent is not
   // done or in the process of completing.
@@ -337,11 +362,11 @@ void FrameLoader::FinishedParsing() {
 
   progress_tracker_->FinishedParsing();
 
-  frame_->GetLocalFrameHostRemote().DidFinishDocumentLoad();
+  frame_->GetLocalFrameHostRemote().DidDispatchDOMContentLoadedEvent();
 
   if (Client()) {
     ScriptForbiddenScope forbid_scripts;
-    Client()->DispatchDidFinishDocumentLoad();
+    Client()->DispatchDidDispatchDOMContentLoadedEvent();
   }
 
   if (Client()) {
@@ -450,22 +475,26 @@ void FrameLoader::DidFinishSameDocumentNavigation(
   TakeObjectSnapshot();
 }
 
-WebFrameLoadType FrameLoader::DetermineFrameLoadType(
+WebFrameLoadType FrameLoader::HandleInitialEmptyDocumentReplacementIfNeeded(
     const KURL& url,
     WebFrameLoadType frame_load_type) {
-  // TODO(dgozman): this method is rewriting the load type, which makes it hard
-  // to reason about various navigations and their desired load type. We should
-  // untangle it and detect the load type at the proper place. See, for example,
-  // location.assign() block below.
-  // Achieving that is complicated due to similar conditions in many places
-  // both in the renderer and in the browser.
+  // Converts navigations from the initial empty document to do replacement if
+  // needed.
   if (frame_load_type == WebFrameLoadType::kStandard ||
       frame_load_type == WebFrameLoadType::kReplaceCurrentItem) {
-    if (frame_->Tree().Parent() &&
-        empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty) {
+    if (frame_->Tree().Parent() && IsOnInitialEmptyDocument()) {
+      // Subframe navigations from the initial empty document should always do
+      // replacement.
       return WebFrameLoadType::kReplaceCurrentItem;
     }
     if (!frame_->Tree().Parent() && !Client()->BackForwardLength()) {
+      // For main frames, currently only empty-URL navigations will be converted
+      // to do replacement. Note that this will cause the navigation to be
+      // ignored in the browser side, so no NavigationEntry will be added.
+      // TODO(https://crbug.com/1215096, https://crbug.com/524208): Make the
+      // main frame case follow the behavior of subframes (always replace when
+      // navigating from the initial empty document), and that a NavigationEntry
+      // will always be created.
       if (Opener() && url.IsEmpty())
         return WebFrameLoadType::kReplaceCurrentItem;
       return WebFrameLoadType::kStandard;
@@ -626,8 +655,13 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
-  frame_load_type =
-      DetermineFrameLoadType(resource_request.Url(), frame_load_type);
+  if (url.ProtocolIs("filesystem")) {
+    document_loader_->CountUse(
+        mojom::blink::WebFeature::kFileSystemUrlNavigation);
+  }
+
+  frame_load_type = HandleInitialEmptyDocumentReplacementIfNeeded(
+      resource_request.Url(), frame_load_type);
 
   bool same_document_navigation =
       request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
@@ -638,15 +672,19 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   if (same_document_navigation) {
     DCHECK(origin_window);
     document_loader_->CommitSameDocumentNavigation(
-        url, frame_load_type, nullptr, request.ClientRedirect(),
+        url, frame_load_type, nullptr,
+        CalculateClientRedirectPolicy(request.ClientRedirectReason(),
+                                      frame_load_type),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
         /*is_synchronously_committed=*/true, request.GetTriggeringEventInfo(),
-        nullptr /* extra_data */);
+        false /* is_browser_initiated */, nullptr /* extra_data */);
     return;
   }
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab) {
+    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
+        (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
+                               frame_->DomWindow()->GetSecurityOrigin()))) {
       if (app_history->DispatchNavigateEvent(
               url, request.Form(), NavigateEventType::kCrossDocument,
               frame_load_type,
@@ -759,14 +797,15 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // plumbing the correct CSP to the browser.
   using CSPDisposition = network::mojom::CSPDisposition;
   CSPDisposition should_check_main_world_csp =
-      ContentSecurityPolicy::ShouldBypassMainWorld(
+      ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
           request.JavascriptWorld().get())
           ? CSPDisposition::DO_NOT_CHECK
           : CSPDisposition::CHECK;
 
-  // If this is a subframe load to a urn: URL, allow loading from a Web Bundle
-  // attached to the parent document.
-  if (url.Protocol() == "urn") {
+  // If this is a subframe load to a urn: / uuid-in-package: URL, allow loading
+  // from a Web Bundle attached to the parent document.
+  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+  if (url.Protocol() == "urn" || url.Protocol() == "uuid-in-package") {
     auto* parent_local_frame = DynamicTo<LocalFrame>(frame_->Tree().Parent());
     if (parent_local_frame &&
         parent_local_frame->DomWindow() == origin_window &&
@@ -779,7 +818,9 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       resource_request, request.GetFrameType(), origin_window,
       nullptr /* document_loader */, navigation_type,
       request.GetNavigationPolicy(), frame_load_type,
-      request.ClientRedirect() == ClientRedirectPolicy::kClientRedirect,
+      CalculateClientRedirectPolicy(request.ClientRedirectReason(),
+                                    frame_load_type) ==
+          ClientRedirectPolicy::kClientRedirect,
       request.GetTriggeringEventInfo(), request.Form(),
       should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
@@ -880,6 +921,11 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
   //
   // Similar to the missing archive resource case above, synthesise a resource
   // to commit.
+  //
+  // WebNavigationParams::FillStaticResponse() fills the response of |params|
+  // using |params|'s |url| which is the initial URL even after redirections. So
+  // updates the URL to the current URL before calling FillStaticResponse().
+  params->url = params->response.CurrentRequestUrl();
   WebNavigationParams::FillStaticResponse(
       params, "text/html", "UTF-8",
       "<html><body>"
@@ -940,9 +986,6 @@ void FrameLoader::CommitNavigation(
   if (frame_owner)
     frame_owner->CancelPendingLazyLoad();
 
-  navigation_params->frame_load_type = DetermineFrameLoadType(
-      navigation_params->url, navigation_params->frame_load_type);
-
   // Note: we might actually classify this navigation as same document
   // right here in the following circumstances:
   // - the loader has already committed a navigation and notified the browser
@@ -954,6 +997,21 @@ void FrameLoader::CommitNavigation(
 
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
+
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
+      auto result = app_history->DispatchNavigateEvent(
+          navigation_params->url, nullptr, NavigateEventType::kCrossDocument,
+          WebFrameLoadType::kBackForward,
+          navigation_params->is_browser_initiated
+              ? UserNavigationInvolvement::kBrowserUI
+              : UserNavigationInvolvement::kNone,
+          nullptr, navigation_params->history_item);
+      DCHECK_EQ(result, AppHistory::DispatchResult::kContinue);
+      if (!document_loader_)
+        return;
+    }
+  }
 
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
   AssertCanNavigate(navigation_params.get(), frame_);
@@ -1019,8 +1077,27 @@ void FrameLoader::CommitNavigation(
 
   tls_version_warning_origins_.clear();
 
-  if (!DocumentLoader::WillLoadUrlAsEmpty(navigation_params->url))
-    empty_document_status_ = EmptyDocumentStatus::kNonEmpty;
+  if (!navigation_params->is_synchronous_commit_for_bug_778318 ||
+      (!navigation_params->url.IsEmpty() &&
+       !KURL(navigation_params->url).IsAboutBlankURL())) {
+    // The new document is not the synchronously committed about:blank document,
+    // so lose the initial empty document status.
+    // Note 1: The actual initial empty document commit (with commit_reason set
+    // to CommitReason::kInitialization) won't go through this path since it
+    // immediately commits the DocumentLoader, so we only check for the
+    // synchronous about:blank commit here.
+    // Note 2: Even if the navigation is a synchronous one, it might be a
+    // non-about:blank/empty URL commit that is accidentally got caught by the
+    // synchronous about:blank path but can't easily be removed due to failing
+    // tests/compatibility risk (e.g. about:mumble).
+    // TODO(https://crbug.com/1215096): Tighten the conditions in
+    // RenderFrameImpl::BeginNavigation() for a navigation to enter the
+    // synchronous commit path to only accept about:blank or an empty URL which
+    // defaults to about:blank, per the spec:
+    // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank
+    DCHECK_NE(commit_reason, CommitReason::kInitialization);
+    SetIsNotOnInitialEmptyDocument();
+  }
 
   // TODO(dgozman): navigation type should probably be passed by the caller.
   // It seems incorrect to pass |false| for |have_event| and then use
@@ -1084,7 +1161,7 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
 
   frame_->GetDocument()->CancelParsing();
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
-    app_history->CancelOngoingNavigateEvent();
+    app_history->InformAboutCanceledNavigation();
   if (document_loader_)
     document_loader_->StopLoading();
   if (abort_client)
@@ -1103,7 +1180,7 @@ void FrameLoader::DidAccessInitialDocument() {
     // Forbid script execution to prevent re-entering V8, since this is called
     // from a binding security check.
     ScriptForbiddenScope forbid_scripts;
-    frame_->GetLocalFrameHostRemote().DidAccessInitialDocument();
+    frame_->GetPage()->GetChromeClient().DidAccessInitialMainDocument();
   }
 }
 
@@ -1168,6 +1245,7 @@ void FrameLoader::CommitDocumentLoader(
     const absl::optional<Document::UnloadEventTiming>& unload_timing,
     HistoryItem* previous_history_item,
     CommitReason commit_reason) {
+  TRACE_EVENT("blink", "FrameLoader::CommitDocumentLoader");
   document_loader_ = document_loader;
   CHECK(document_loader_);
 
@@ -1244,6 +1322,13 @@ void FrameLoader::RestoreScrollPositionAndViewState(
 
 String FrameLoader::UserAgent() const {
   String user_agent = Client()->UserAgent();
+  probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
+                                &user_agent);
+  return user_agent;
+}
+
+String FrameLoader::ReducedUserAgent() const {
+  String user_agent = Client()->ReducedUserAgent();
   probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
                                 &user_agent);
   return user_agent;
@@ -1649,6 +1734,13 @@ inline void FrameLoader::TakeObjectSnapshot() const {
     return;
   }
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID("loading", "FrameLoader", this, this);
+}
+
+mojo::PendingRemote<blink::mojom::CodeCacheHost>
+FrameLoader::CreateWorkerCodeCacheHost() {
+  if (!document_loader_)
+    return mojo::NullRemote();
+  return document_loader_->CreateWorkerCodeCacheHost();
 }
 
 }  // namespace blink

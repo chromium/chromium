@@ -42,14 +42,17 @@ class ChromeBrowserMainExtraPartsChecker : public ChromeBrowserMainExtraParts {
       : expected_metrics_reporting_enabled_(
             expected_metrics_reporting_enabled) {}
 
+  ChromeBrowserMainExtraPartsChecker(
+      const ChromeBrowserMainExtraPartsChecker&) = delete;
+  ChromeBrowserMainExtraPartsChecker& operator=(
+      const ChromeBrowserMainExtraPartsChecker&) = delete;
+
   // ChromeBrowserMainExtraParts:
   void PostEarlyInitialization() override;
 
  private:
   // Expected value of reporting state.
   const bool expected_metrics_reporting_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsChecker);
 };
 
 // This class is used to verify the value for
@@ -60,6 +63,11 @@ class MetricsReportingStateTest : public InProcessBrowserTest,
                                   public testing::WithParamInterface<bool> {
  public:
   MetricsReportingStateTest() = default;
+
+  MetricsReportingStateTest(const MetricsReportingStateTest&) = delete;
+  MetricsReportingStateTest& operator=(const MetricsReportingStateTest&) =
+      delete;
+
   ~MetricsReportingStateTest() override = default;
 
   static bool IsMetricsAndCrashReportingEnabled() {
@@ -105,8 +113,6 @@ class MetricsReportingStateTest : public InProcessBrowserTest,
 
  private:
   base::FilePath local_state_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsReportingStateTest);
 };
 
 void ChromeBrowserMainExtraPartsChecker::PostEarlyInitialization() {

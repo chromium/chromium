@@ -18,7 +18,6 @@ component("user_manager") {
 
   public_deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/account_id",
     "//ui/gfx",
   ]

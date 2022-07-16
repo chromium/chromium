@@ -28,6 +28,9 @@ class ArcCameraClientImpl : public ArcCameraClient {
             arc_camera::kArcCameraServiceName,
             dbus::ObjectPath(arc_camera::kArcCameraServicePath))) {}
 
+  ArcCameraClientImpl(const ArcCameraClientImpl&) = delete;
+  ArcCameraClientImpl& operator=(const ArcCameraClientImpl&) = delete;
+
   ~ArcCameraClientImpl() override = default;
 
   // ArcCameraClient overrides:
@@ -52,8 +55,6 @@ class ArcCameraClientImpl : public ArcCameraClient {
 
   dbus::ObjectProxy* proxy_;
   base::WeakPtrFactory<ArcCameraClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCameraClientImpl);
 };
 
 }  // namespace

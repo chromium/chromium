@@ -100,6 +100,10 @@ END_METADATA
 class ViewElementTest : public views::ViewsTestBase {
  public:
   ViewElementTest() {}
+
+  ViewElementTest(const ViewElementTest&) = delete;
+  ViewElementTest& operator=(const ViewElementTest&) = delete;
+
   ~ViewElementTest() override {}
 
  protected:
@@ -121,8 +125,6 @@ class ViewElementTest : public views::ViewsTestBase {
   std::unique_ptr<MockNamedTestView> view_;
   std::unique_ptr<ViewElement> element_;
   std::unique_ptr<MockUIElementDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewElementTest);
 };
 
 TEST_F(ViewElementTest, SettingsBoundsOnViewCallsDelegate) {

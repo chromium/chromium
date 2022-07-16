@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,7 +29,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -51,6 +50,9 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
   CertificateTableModel(const net::ClientCertIdentityList& identities,
                         const std::vector<std::string>& provider_names);
 
+  CertificateTableModel(const CertificateTableModel&) = delete;
+  CertificateTableModel& operator=(const CertificateTableModel&) = delete;
+
   // ui::TableModel:
   int RowCount() override;
   std::u16string GetText(int index, int column_id) override;
@@ -64,8 +66,6 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
     std::u16string serial;
   };
   std::vector<Row> rows_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateTableModel);
 };
 
 CertificateSelector::CertificateTableModel::CertificateTableModel(
@@ -209,22 +209,14 @@ void CertificateSelector::Show() {
 
 void CertificateSelector::InitWithText(
     std::unique_ptr<views::View> text_label) {
-  views::GridLayout* const layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  const int kColumnSetId = 0;
-  views::ColumnSet* const column_set = layout->AddColumnSet(kColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  layout->AddView(std::move(text_label));
-
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const int vertical_spacing = provider->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int vertical_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      vertical_spacing));
 
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
+  AddChildView(std::move(text_label));
 
   std::vector<ui::TableColumn> columns;
   columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SUBJECT_COLUMN,
@@ -241,12 +233,9 @@ void CertificateSelector::InitWithText(
       model_.get(), columns, views::TEXT_ONLY, true /* single_selection */);
   table_ = table.get();
   table->set_observer(this);
-  layout->StartRow(1.0, kColumnSetId);
-  layout->AddView(views::TableView::CreateScrollViewWithTable(std::move(table)),
-                  1, 1, views::GridLayout::FILL, views::GridLayout::FILL,
-                  kTableViewWidth, kTableViewHeight);
 
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
+  AddChildView(views::TableView::CreateScrollViewWithTable(std::move(table)))
+      ->SetPreferredSize(gfx::Size(kTableViewWidth, kTableViewHeight));
 }
 
 ui::TableModel* CertificateSelector::table_model_for_testing() const {

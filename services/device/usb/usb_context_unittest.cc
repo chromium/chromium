@@ -5,7 +5,6 @@
 #include "services/device/usb/usb_context.h"
 #include "base/macros.h"
 #include "base/threading/platform_thread.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libusb/src/libusb/libusb.h"
 
@@ -20,25 +19,17 @@ class UsbContextTest : public testing::Test {
     explicit UsbContextForTest(PlatformUsbContext context)
         : UsbContext(context) {}
 
+    UsbContextForTest(const UsbContextForTest&) = delete;
+    UsbContextForTest& operator=(const UsbContextForTest&) = delete;
+
    private:
     ~UsbContextForTest() override {}
-    DISALLOW_COPY_AND_ASSIGN(UsbContextForTest);
   };
 };
 
 }  // namespace
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Linux trybot does not support usb.
-#define MAYBE_GracefulShutdown DISABLED_GracefulShutdown
-#elif defined(OS_ANDROID)
-// Android build does not include usb support.
-#define MAYBE_GracefulShutdown DISABLED_GracefulShutdown
-#else
-#define MAYBE_GracefulShutdown GracefulShutdown
-#endif
-
-TEST_F(UsbContextTest, MAYBE_GracefulShutdown) {
+TEST_F(UsbContextTest, GracefulShutdown) {
   base::TimeTicks start = base::TimeTicks::Now();
   {
     PlatformUsbContext platform_context;
@@ -47,7 +38,7 @@ TEST_F(UsbContextTest, MAYBE_GracefulShutdown) {
         new UsbContextForTest(platform_context));
   }
   base::TimeDelta elapse = base::TimeTicks::Now() - start;
-  if (elapse > base::TimeDelta::FromSeconds(2)) {
+  if (elapse > base::Seconds(2)) {
     FAIL();
   }
 }

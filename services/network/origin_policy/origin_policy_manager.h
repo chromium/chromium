@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyManager
   // The |owner_network_context| is the owner of this object and it needs to
   // always outlive this object.
   explicit OriginPolicyManager(NetworkContext* owner_network_context);
+
+  OriginPolicyManager(const OriginPolicyManager&) = delete;
+  OriginPolicyManager& operator=(const OriginPolicyManager&) = delete;
+
   ~OriginPolicyManager() override;
 
   // Bind a receiver to this object.  Mojo messages coming through the
@@ -95,8 +99,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyManager
   // of origin_policy_fetchers_ will be destroyed before the receiver they are
   // on is destroyed.
   mojo::ReceiverSet<mojom::OriginPolicyManager> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyManager);
 };
 
 }  // namespace network

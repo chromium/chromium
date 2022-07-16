@@ -17,10 +17,15 @@ namespace enterprise_reporting {
 class ExtensionRequestObserver
     : public extensions::ExtensionManagement::Observer {
  public:
+  using ReportTrigger = base::RepeatingCallback<void(Profile*)>;
   explicit ExtensionRequestObserver(Profile* profile);
   ~ExtensionRequestObserver() override;
   ExtensionRequestObserver(const ExtensionRequestObserver&) = delete;
   ExtensionRequestObserver& operator=(const ExtensionRequestObserver&) = delete;
+
+  bool IsReportEnabled();
+  void EnableReport(ReportTrigger trigger);
+  void DisableReport();
 
  private:
   // extensions::ExtensionManagement::Observer
@@ -49,6 +54,7 @@ class ExtensionRequestObserver
 
   PrefChangeRegistrar pref_change_registrar_;
   bool closing_notification_and_deleting_requests_ = false;
+  ReportTrigger report_trigger_;
 
   base::WeakPtrFactory<ExtensionRequestObserver> weak_factory_{this};
 };

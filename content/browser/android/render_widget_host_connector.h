@@ -23,6 +23,11 @@ namespace content {
 class RenderWidgetHostConnector {
  public:
   explicit RenderWidgetHostConnector(WebContents* web_contents);
+
+  RenderWidgetHostConnector(const RenderWidgetHostConnector&) = delete;
+  RenderWidgetHostConnector& operator=(const RenderWidgetHostConnector&) =
+      delete;
+
   virtual ~RenderWidgetHostConnector();
 
   // Establish initial connection to rwhva if it is present.
@@ -53,8 +58,6 @@ class RenderWidgetHostConnector {
  private:
   class Observer;
   std::unique_ptr<Observer> render_widget_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostConnector);
 };
 
 }  // namespace content

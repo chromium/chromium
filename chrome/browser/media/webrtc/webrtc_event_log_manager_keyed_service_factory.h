@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_MANAGER_KEYED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_MANAGER_KEYED_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -23,6 +22,11 @@ class WebRtcEventLogManagerKeyedServiceFactory
  public:
   static WebRtcEventLogManagerKeyedServiceFactory* GetInstance();
 
+  WebRtcEventLogManagerKeyedServiceFactory(
+      const WebRtcEventLogManagerKeyedServiceFactory&) = delete;
+  WebRtcEventLogManagerKeyedServiceFactory& operator=(
+      const WebRtcEventLogManagerKeyedServiceFactory&) = delete;
+
  protected:
   bool ServiceIsCreatedWithBrowserContext() const override;
 
@@ -35,8 +39,6 @@ class WebRtcEventLogManagerKeyedServiceFactory
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManagerKeyedServiceFactory);
 };
 
 }  // namespace webrtc_event_logging

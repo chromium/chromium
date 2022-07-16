@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -47,6 +46,9 @@ class VideoSender : public FrameSender {
               CastTransport* const transport_sender,
               PlayoutDelayChangeCB playout_delay_change_cb,
               media::VideoCaptureFeedbackCB feedback_callback);
+
+  VideoSender(const VideoSender&) = delete;
+  VideoSender& operator=(const VideoSender&) = delete;
 
   ~VideoSender() override;
 
@@ -114,8 +116,6 @@ class VideoSender : public FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoSender);
 };
 
 }  // namespace cast

@@ -32,6 +32,9 @@ class TranslateClientImpl
       public content::WebContentsObserver,
       public content::WebContentsUserData<TranslateClientImpl> {
  public:
+  TranslateClientImpl(const TranslateClientImpl&) = delete;
+  TranslateClientImpl& operator=(const TranslateClientImpl&) = delete;
+
   ~TranslateClientImpl() override;
 
   // Gets the LanguageState associated with the page.
@@ -94,8 +97,6 @@ class TranslateClientImpl
       observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateClientImpl);
 };
 
 }  // namespace weblayer

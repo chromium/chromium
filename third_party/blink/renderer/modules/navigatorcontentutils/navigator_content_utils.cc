@@ -28,6 +28,7 @@
 
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -60,7 +61,7 @@ static bool VerifyCustomHandlerURLSecurity(
   bool has_valid_scheme =
       full_url.ProtocolIsInHTTPFamily() ||
       (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
-       SchemeRegistry::IsExtensionScheme(full_url.Protocol()));
+       CommonSchemeRegistry::IsExtensionScheme(full_url.Protocol().Ascii()));
   if (!has_valid_scheme || !network::IsUrlPotentiallyTrustworthy(full_url)) {
     error_message = "The scheme of the url provided must be HTTP(S).";
     return false;

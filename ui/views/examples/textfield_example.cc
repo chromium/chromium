@@ -20,7 +20,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
 using l10n_util::GetStringUTF16;
@@ -29,81 +29,71 @@ using l10n_util::GetStringUTF8;
 namespace views {
 namespace examples {
 
-namespace {
-
-template <class K, class T>
-T* MakeRow(GridLayout* layout,
-           std::unique_ptr<K> view1,
-           std::unique_ptr<T> view2) {
-  layout->StartRowWithPadding(0, 0, 0, 5);
-  if (view1)
-    layout->AddView(std::move(view1));
-  return layout->AddView(std::move(view2));
-}
-
-}  // namespace
-
 TextfieldExample::TextfieldExample()
     : ExampleBase(GetStringUTF8(IDS_TEXTFIELD_SELECT_LABEL).c_str()) {}
 
 TextfieldExample::~TextfieldExample() = default;
 
 void TextfieldExample::CreateExampleView(View* container) {
-  auto name = std::make_unique<Textfield>();
-  name->set_controller(this);
-  auto password = std::make_unique<Textfield>();
-  password->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  password->SetPlaceholderText(
-      GetStringUTF16(IDS_TEXTFIELD_PASSWORD_PLACEHOLDER));
-  password->set_controller(this);
-  auto disabled = std::make_unique<Textfield>();
-  disabled->SetEnabled(false);
-  disabled->SetText(GetStringUTF16(IDS_TEXTFIELD_DISABLED_PLACEHOLDER));
-  auto read_only = std::make_unique<Textfield>();
-  read_only->SetReadOnly(true);
-  read_only->SetText(GetStringUTF16(IDS_TEXTFFIELD_READ_ONLY_PLACEHOLDER));
-  auto invalid = std::make_unique<Textfield>();
-  invalid->SetInvalid(true);
-  auto rtl = std::make_unique<Textfield>();
-  rtl->ChangeTextDirectionAndLayoutAlignment(base::i18n::RIGHT_TO_LEFT);
+  TableLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout
+      ->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch, 0.2f,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 0.8f,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  for (int i = 0; i < 12; ++i) {
+    layout->AddPaddingRow(TableLayout::kFixedSize, 5)
+        .AddRows(1, TableLayout::kFixedSize);
+  }
 
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL, 0.2f,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 0.8f,
-                        GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  name_ = MakeRow(
-      layout, std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL)),
-      std::move(name));
-  password_ = MakeRow(
-      layout,
-      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL)),
-      std::move(password));
-  disabled_ = MakeRow(
-      layout,
-      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_DISABLED_LABEL)),
-      std::move(disabled));
-  read_only_ = MakeRow(
-      layout,
-      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_LABEL)),
-      std::move(read_only));
-  invalid_ = MakeRow(
-      layout,
-      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL)),
-      std::move(invalid));
-  rtl_ = MakeRow(
-      layout, std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL)),
-      std::move(rtl));
-  MakeRow<View, Label>(
-      layout, nullptr,
+  container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL)));
-  show_password_ = MakeRow<View, LabelButton>(
-      layout, nullptr,
-      std::make_unique<LabelButton>(
+  name_ = container->AddChildView(std::make_unique<Textfield>());
+  name_->set_controller(this);
+  name_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL));
+
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL)));
+  password_ = container->AddChildView(std::make_unique<Textfield>());
+  password_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  password_->SetPlaceholderText(
+      GetStringUTF16(IDS_TEXTFIELD_PASSWORD_PLACEHOLDER));
+  password_->set_controller(this);
+  password_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL));
+
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_DISABLED_LABEL)));
+  disabled_ = container->AddChildView(std::make_unique<Textfield>());
+  disabled_->SetEnabled(false);
+  disabled_->SetText(GetStringUTF16(IDS_TEXTFIELD_DISABLED_PLACEHOLDER));
+  disabled_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_DISABLED_LABEL));
+
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_LABEL)));
+  read_only_ = container->AddChildView(std::make_unique<Textfield>());
+  read_only_->SetReadOnly(true);
+  read_only_->SetText(GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_PLACEHOLDER));
+  read_only_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_LABEL));
+
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL)));
+  invalid_ = container->AddChildView(std::make_unique<Textfield>());
+  invalid_->SetInvalid(true);
+  invalid_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL));
+
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL)));
+  rtl_ = container->AddChildView(std::make_unique<Textfield>());
+  rtl_->ChangeTextDirectionAndLayoutAlignment(base::i18n::RIGHT_TO_LEFT);
+  rtl_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL));
+
+  show_password_ =
+      container->AddChildView(std::make_unique<LabelButton>(
           base::BindRepeating(
               [](TextfieldExample* example) {
                 PrintStatus(
@@ -112,36 +102,31 @@ void TextfieldExample::CreateExampleView(View* container) {
               },
               base::Unretained(this)),
           GetStringUTF16(IDS_TEXTFIELD_SHOW_PASSWORD_LABEL)));
-  set_background_ = MakeRow<View, LabelButton>(
-      layout, nullptr,
-      std::make_unique<LabelButton>(
-          base::BindRepeating(&Textfield::SetBackgroundColor,
-                              base::Unretained(password_), gfx::kGoogleRed300),
-          GetStringUTF16(IDS_TEXTFIELD_BACKGROUND_LABEL)));
-  clear_all_ = MakeRow<View, LabelButton>(
-      layout, nullptr,
-      std::make_unique<LabelButton>(
-          base::BindRepeating(&TextfieldExample::ClearAllButtonPressed,
-                              base::Unretained(this)),
-          GetStringUTF16(IDS_TEXTFIELD_CLEAR_LABEL)));
-  append_ = MakeRow<View, LabelButton>(
-      layout, nullptr,
-      std::make_unique<LabelButton>(
-          base::BindRepeating(&TextfieldExample::AppendButtonPressed,
-                              base::Unretained(this)),
-          GetStringUTF16(IDS_TEXTFIELD_APPEND_LABEL)));
-  set_ = MakeRow<View, LabelButton>(
-      layout, nullptr,
-      std::make_unique<LabelButton>(
-          base::BindRepeating(&TextfieldExample::SetButtonPressed,
-                              base::Unretained(this)),
-          GetStringUTF16(IDS_TEXTFIELD_SET_LABEL)));
-  set_style_ = MakeRow<View, LabelButton>(
-      layout, nullptr,
-      std::make_unique<LabelButton>(
-          base::BindRepeating(&TextfieldExample::SetStyleButtonPressed,
-                              base::Unretained(this)),
-          GetStringUTF16(IDS_TEXTFIELD_SET_STYLE_LABEL)));
+  container->AddChildView(std::make_unique<View>());
+  set_background_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&Textfield::SetBackgroundColor,
+                          base::Unretained(password_), gfx::kGoogleRed300),
+      GetStringUTF16(IDS_TEXTFIELD_BACKGROUND_LABEL)));
+  container->AddChildView(std::make_unique<View>());
+  clear_all_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TextfieldExample::ClearAllButtonPressed,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TEXTFIELD_CLEAR_LABEL)));
+  container->AddChildView(std::make_unique<View>());
+  append_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TextfieldExample::AppendButtonPressed,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TEXTFIELD_APPEND_LABEL)));
+  container->AddChildView(std::make_unique<View>());
+  set_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TextfieldExample::SetButtonPressed,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TEXTFIELD_SET_LABEL)));
+  container->AddChildView(std::make_unique<View>());
+  set_style_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&TextfieldExample::SetStyleButtonPressed,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TEXTFIELD_SET_STYLE_LABEL)));
 }
 
 bool TextfieldExample::HandleKeyEvent(Textfield* sender,

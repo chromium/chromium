@@ -16,16 +16,16 @@ class SystemDisplayChromeOSApiTest
     : public extensions::ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  SystemDisplayChromeOSApiTest() = default;
+  SystemDisplayChromeOSApiTest() : ExtensionApiTest(GetParam()) {}
   ~SystemDisplayChromeOSApiTest() override = default;
+  SystemDisplayChromeOSApiTest(const SystemDisplayChromeOSApiTest&) = delete;
+  SystemDisplayChromeOSApiTest& operator=(const SystemDisplayChromeOSApiTest&) =
+      delete;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
     extensions::ExtensionApiTest::SetUpDefaultCommandLine(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemDisplayChromeOSApiTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -39,9 +39,8 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayChromeOSApiTest,
                        CheckOnDisplayChangedEvent) {
   ExtensionTestMessageListener listener_for_extension_ready(
       "ready", /*will_reply=*/false);
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("system_display_chromeos"),
-      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("system_display_chromeos")));
   ASSERT_TRUE(listener_for_extension_ready.WaitUntilSatisfied());
   // Give the mojo CrosDisplayConfig.AddObserver() call a chance to go through.
   base::RunLoop().RunUntilIdle();

@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
@@ -24,6 +24,11 @@ void ClientProcessImpl::CreateInstance(
     mojo::PendingReceiver<mojom::ClientProcess> receiver,
     mojo::PendingRemote<mojom::Coordinator> coordinator,
     bool is_browser_process) {
+  // Intentionally disallow non-browser processes from ever holding a
+  // Coordinator.
+  if (!is_browser_process)
+    coordinator.reset();
+
   static ClientProcessImpl* instance = nullptr;
   if (!instance) {
     instance = new ClientProcessImpl(
@@ -39,10 +44,12 @@ ClientProcessImpl::ClientProcessImpl(
     mojo::PendingRemote<mojom::Coordinator> coordinator,
     bool is_browser_process,
     bool initialize_memory_instrumentation)
-    : receiver_(this, std::move(receiver)) {
+    : receiver_(this, std::move(receiver)),
+      is_browser_process_(is_browser_process) {
   if (initialize_memory_instrumentation) {
     // Initialize the public-facing MemoryInstrumentation helper.
-    MemoryInstrumentation::CreateInstance(std::move(coordinator));
+    MemoryInstrumentation::CreateInstance(std::move(coordinator),
+                                          is_browser_process);
   } else {
     coordinator_.Bind(std::move(coordinator));
   }
@@ -110,6 +117,8 @@ void ClientProcessImpl::OnChromeMemoryDumpDone(
 void ClientProcessImpl::RequestGlobalMemoryDump_NoCallback(
     base::trace_event::MemoryDumpType dump_type,
     base::trace_event::MemoryDumpLevelOfDetail level_of_detail) {
+  CHECK(is_browser_process_);
+
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
         FROM_HERE,

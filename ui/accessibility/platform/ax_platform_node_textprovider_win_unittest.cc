@@ -324,8 +324,8 @@ TEST_F(AXPlatformNodeTextProviderTest,
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(base::WideToUTF16(text_content.Get()),
-            u"Dialog label.Dialog description." + kEmbeddedCharacterAsString +
-                u"ok.Some more detail " + u"about dialog.");
+            u"Dialog label.Dialog description.\n" + kEmbeddedCharacterAsString +
+                u"\nok.Some more detail " + u"about dialog.");
 
   // Check the reverse relationship that GetEnclosingElement on the text range
   // gives back the dialog.
@@ -414,6 +414,116 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRange) {
   ComPtr<ITextRangeProvider> text_range_provider;
   EXPECT_HRESULT_SUCCEEDED(
       text_provider->get_DocumentRange(&text_range_provider));
+}
+
+TEST_F(AXPlatformNodeTextProviderTest,
+       ITextProviderDocumentRangeTrailingIgnored) {
+  // ++1 root
+  // ++++2 kGenericContainer
+  // ++++++3 kStaticText "Hello"
+  // ++++4 kGenericContainer
+  // ++++++5 kGenericContainer
+  // ++++++++6 kStaticText "3.14"
+  // ++++7 kGenericContainer (ignored)
+  // ++++++8 kGenericContainer (ignored)
+  // ++++++++9 kStaticText "ignored"
+  AXNodeData root_1;
+  AXNodeData gc_2;
+  AXNodeData static_text_3;
+  AXNodeData gc_4;
+  AXNodeData gc_5;
+  AXNodeData static_text_6;
+  AXNodeData gc_7_ignored;
+  AXNodeData gc_8_ignored;
+  AXNodeData static_text_9_ignored;
+
+  root_1.id = 1;
+  gc_2.id = 2;
+  static_text_3.id = 3;
+  gc_4.id = 4;
+  gc_5.id = 5;
+  static_text_6.id = 6;
+  gc_7_ignored.id = 7;
+  gc_8_ignored.id = 8;
+  static_text_9_ignored.id = 9;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {gc_2.id, gc_4.id, gc_7_ignored.id};
+  root_1.SetName("Document");
+
+  gc_2.role = ax::mojom::Role::kGenericContainer;
+  gc_2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                           {static_text_3.id});
+  gc_2.child_ids = {static_text_3.id};
+
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("Hello");
+
+  gc_4.role = ax::mojom::Role::kGenericContainer;
+  gc_4.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                           {gc_5.id});
+  gc_4.child_ids = {gc_5.id};
+
+  gc_5.role = ax::mojom::Role::kGenericContainer;
+  gc_5.child_ids = {static_text_6.id};
+
+  static_text_6.role = ax::mojom::Role::kStaticText;
+  static_text_6.SetName("3.14");
+
+  gc_7_ignored.role = ax::mojom::Role::kGenericContainer;
+  gc_7_ignored.child_ids = {gc_8_ignored.id};
+  gc_7_ignored.AddState(ax::mojom::State::kIgnored);
+
+  gc_8_ignored.role = ax::mojom::Role::kGenericContainer;
+  gc_8_ignored.child_ids = {static_text_9_ignored.id};
+  gc_8_ignored.AddState(ax::mojom::State::kIgnored);
+
+  static_text_9_ignored.role = ax::mojom::Role::kStaticText;
+  static_text_9_ignored.SetName("ignored");
+  static_text_9_ignored.AddState(ax::mojom::State::kIgnored);
+
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1,       gc_2,         static_text_3,
+                  gc_4,         gc_5,         static_text_6,
+                  gc_7_ignored, gc_8_ignored, static_text_9_ignored};
+
+  Init(update);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ComPtr<ITextProvider> text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &text_provider));
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->get_DocumentRange(&text_range_provider));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range;
+  text_range_provider->QueryInterface(IID_PPV_ARGS(&text_range));
+
+  ComPtr<ITextProvider> root_text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &root_text_provider));
+  ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
+  root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
+  AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
+
+  AXNodePosition::AXPositionInstance expected_start =
+      owner->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
+  AXNodePosition::AXPositionInstance expected_end =
+      owner->GetDelegate()
+          ->CreateTextPositionAt(0)
+          ->CreatePositionAtEndOfAnchor()
+          ->AsLeafTextPosition();
+  EXPECT_EQ(*GetStart(text_range.Get()), *expected_start);
+  EXPECT_EQ(*GetEnd(text_range.Get()), *expected_end);
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderDocumentRangeNested) {

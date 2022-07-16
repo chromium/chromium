@@ -5,7 +5,7 @@
 #ifndef BASE_PROFILER_SUSPENDABLE_THREAD_DELEGATE_H_
 #define BASE_PROFILER_SUSPENDABLE_THREAD_DELEGATE_H_
 
-#include <vector>
+#include <memory>
 
 #include "base/base_export.h"
 #include "base/profiler/register_context.h"

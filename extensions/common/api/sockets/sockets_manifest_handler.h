@@ -22,6 +22,10 @@ namespace extensions {
 class SocketsManifestHandler : public ManifestHandler {
  public:
   SocketsManifestHandler();
+
+  SocketsManifestHandler(const SocketsManifestHandler&) = delete;
+  SocketsManifestHandler& operator=(const SocketsManifestHandler&) = delete;
+
   ~SocketsManifestHandler() override;
 
   // ManifestHandler overrides.
@@ -33,8 +37,6 @@ class SocketsManifestHandler : public ManifestHandler {
  private:
   // ManifestHandler overrides.
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketsManifestHandler);
 };
 
 }  // namespace extensions

@@ -5,8 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <list>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -59,6 +62,9 @@ class ProvidedService : public Service,
         receiver_(std::move(receiver)) {
     Start();
   }
+
+  ProvidedService(const ProvidedService&) = delete;
+  ProvidedService& operator=(const ProvidedService&) = delete;
 
   ~ProvidedService() override {
     Join();
@@ -197,8 +203,6 @@ class ProvidedService : public Service,
   mojo::ReceiverSet<test::mojom::AlwaysAllowedInterface>
       always_allowed_receivers_;
   mojo::ReceiverSet<test::mojom::IdentityTest> identity_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProvidedService);
 };
 
 class ConnectTestService : public Service,
@@ -207,6 +211,10 @@ class ConnectTestService : public Service,
   explicit ConnectTestService(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  ConnectTestService(const ConnectTestService&) = delete;
+  ConnectTestService& operator=(const ConnectTestService&) = delete;
+
   ~ConnectTestService() override = default;
 
  private:
@@ -269,8 +277,6 @@ class ConnectTestService : public Service,
   BinderRegistry registry_;
   mojo::ReceiverSet<test::mojom::ConnectTestService> receivers_;
   std::list<std::unique_ptr<ProvidedService>> provided_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestService);
 };
 
 }  // namespace service_manager

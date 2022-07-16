@@ -13,7 +13,7 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 // #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // clang-format on
 
@@ -169,7 +169,7 @@ suite('CellularNetworksList', function() {
         await flushAsync();
         const esimNoNetworkAnchor =
             cellularNetworkList.$$('#eSimNoNetworkFound')
-                .querySelector('settings-localized-link')
+                .querySelector('localized-link')
                 .shadowRoot.querySelector('a');
         assertTrue(!!esimNoNetworkAnchor);
 
@@ -233,7 +233,7 @@ suite('CellularNetworksList', function() {
     eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
     assertFalse(!!eSimNetworkList);
     const esimNoNetworkAnchor = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                    .querySelector('settings-localized-link')
+                                    .querySelector('localized-link')
                                     .shadowRoot.querySelector('a');
     assertTrue(!!esimNoNetworkAnchor);
   });
@@ -346,7 +346,7 @@ suite('CellularNetworksList', function() {
     };
     addESimSlot();
     cellularNetworkList.globalPolicy = {
-      allowOnlyPolicyNetworksToConnect: true,
+      allowOnlyPolicyCellularNetworks: true,
     };
     await flushAsync();
 
@@ -355,7 +355,7 @@ suite('CellularNetworksList', function() {
     assertFalse(!!addESimButton);
 
     cellularNetworkList.globalPolicy = {
-      allowOnlyPolicyNetworksToConnect: false,
+      allowOnlyPolicyCellularNetworks: false,
     };
 
     await flushAsync();
@@ -405,7 +405,7 @@ suite('CellularNetworksList', function() {
     await flushAsync();
 
     const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                  .querySelector('settings-localized-link');
+                                  .querySelector('localized-link');
     assertFalse(esimLocalizedLink.linkDisabled);
 
     cellularNetworkList.cellularDeviceState = {

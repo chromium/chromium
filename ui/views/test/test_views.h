@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/view.h"
 
@@ -18,6 +17,10 @@ namespace views {
 class StaticSizedView : public View {
  public:
   explicit StaticSizedView(const gfx::Size& preferred_size = gfx::Size());
+
+  StaticSizedView(const StaticSizedView&) = delete;
+  StaticSizedView& operator=(const StaticSizedView&) = delete;
+
   ~StaticSizedView() override;
 
   void set_minimum_size(const gfx::Size& minimum_size) {
@@ -37,14 +40,16 @@ class StaticSizedView : public View {
   gfx::Size preferred_size_;
   gfx::Size minimum_size_;
   gfx::Size maximum_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticSizedView);
 };
 
 // A view that accomodates testing layouts that use GetHeightForWidth.
 class ProportionallySizedView : public View {
  public:
   explicit ProportionallySizedView(int factor);
+
+  ProportionallySizedView(const ProportionallySizedView&) = delete;
+  ProportionallySizedView& operator=(const ProportionallySizedView&) = delete;
+
   ~ProportionallySizedView() override;
 
   void SetPreferredWidth(int width);
@@ -59,8 +64,6 @@ class ProportionallySizedView : public View {
 
   // The width used as the preferred size. -1 if not used.
   int preferred_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProportionallySizedView);
 };
 
 // Class that closes the widget (which ends up deleting it immediately) when the
@@ -69,13 +72,14 @@ class CloseWidgetView : public View {
  public:
   explicit CloseWidgetView(ui::EventType event_type);
 
+  CloseWidgetView(const CloseWidgetView&) = delete;
+  CloseWidgetView& operator=(const CloseWidgetView&) = delete;
+
   // ui::EventHandler override:
   void OnEvent(ui::Event* event) override;
 
  private:
   const ui::EventType event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseWidgetView);
 };
 
 // A view that keeps track of the events it receives, optionally consuming them.
@@ -87,6 +91,10 @@ class EventCountView : public View {
   enum HandleMode { PROPAGATE_EVENTS, CONSUME_EVENTS };
 
   EventCountView();
+
+  EventCountView(const EventCountView&) = delete;
+  EventCountView& operator=(const EventCountView&) = delete;
+
   ~EventCountView() override;
 
   int GetEventCount(ui::EventType type);
@@ -112,8 +120,6 @@ class EventCountView : public View {
   std::map<ui::EventType, int> event_count_;
   int last_flags_ = 0;
   HandleMode handle_mode_ = PROPAGATE_EVENTS;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCountView);
 };
 
 // A view which reacts to PreferredSizeChanged() from its children and calls
@@ -122,11 +128,11 @@ class ResizeAwareParentView : public View {
  public:
   ResizeAwareParentView();
 
+  ResizeAwareParentView(const ResizeAwareParentView&) = delete;
+  ResizeAwareParentView& operator=(const ResizeAwareParentView&) = delete;
+
   // Overridden from View:
   void ChildPreferredSizeChanged(View* child) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResizeAwareParentView);
 };
 
 }  // namespace views

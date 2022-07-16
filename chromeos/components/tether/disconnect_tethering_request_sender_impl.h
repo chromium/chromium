@@ -49,6 +49,11 @@ class DisconnectTetheringRequestSenderImpl
     static Factory* factory_instance_;
   };
 
+  DisconnectTetheringRequestSenderImpl(
+      const DisconnectTetheringRequestSenderImpl&) = delete;
+  DisconnectTetheringRequestSenderImpl& operator=(
+      const DisconnectTetheringRequestSenderImpl&) = delete;
+
   ~DisconnectTetheringRequestSenderImpl() override;
 
   // DisconnectTetheringRequestSender:
@@ -79,8 +84,6 @@ class DisconnectTetheringRequestSenderImpl
 
   base::WeakPtrFactory<DisconnectTetheringRequestSenderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringRequestSenderImpl);
 };
 
 }  // namespace tether

@@ -950,10 +950,16 @@ FourCC ColorParameterInformation::BoxType() const {
 }
 
 bool ColorParameterInformation::Parse(BoxReader* reader) {
+  fully_parsed = false;
+
   FourCC type;
   RCHECK(reader->ReadFourCC(&type));
-  // TODO: Support 'nclc', 'rICC', and 'prof'.
-  RCHECK(type == FOURCC_NCLX);
+
+  if (type != FOURCC_NCLX) {
+    // Ignore currently unsupported color information metadata parsing.
+    // TODO: Support 'nclc', 'rICC', and 'prof'.
+    return true;
+  }
 
   uint8_t full_range_byte;
   RCHECK(reader->Read2(&colour_primaries) &&
@@ -961,6 +967,7 @@ bool ColorParameterInformation::Parse(BoxReader* reader) {
          reader->Read2(&matrix_coefficients) &&
          reader->Read1(&full_range_byte));
   full_range = full_range_byte & 0x80;
+  fully_parsed = true;
 
   return true;
 }
@@ -1049,7 +1056,7 @@ VideoSampleEntry::VideoSampleEntry()
       data_reference_index(0),
       width(0),
       height(0),
-      video_codec(kUnknownVideoCodec),
+      video_codec(VideoCodec::kUnknown),
       video_codec_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
       video_codec_level(kNoVideoCodecLevel) {}
 
@@ -1095,7 +1102,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       std::unique_ptr<AVCDecoderConfigurationRecord> avcConfig(
           new AVCDecoderConfigurationRecord());
       RCHECK(reader->ReadChild(avcConfig.get()));
-      video_codec = kCodecH264;
+      video_codec = VideoCodec::kH264;
       video_codec_profile = H264Parser::ProfileIDCToVideoCodecProfile(
           avcConfig->profile_indication);
 
@@ -1106,7 +1113,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       auto dv_config = ParseDOVIConfig(reader);
       if (dv_config.has_value()) {
         DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
-        video_codec = kCodecDolbyVision;
+        video_codec = VideoCodec::kDolbyVision;
         video_codec_profile = dv_config->codec_profile;
         video_codec_level = dv_config->dv_level;
       }
@@ -1120,7 +1127,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       std::unique_ptr<HEVCDecoderConfigurationRecord> hevcConfig(
           new HEVCDecoderConfigurationRecord());
       RCHECK(reader->ReadChild(hevcConfig.get()));
-      video_codec = kCodecHEVC;
+      video_codec = VideoCodec::kHEVC;
       video_codec_profile = hevcConfig->GetVideoProfile();
       frame_bitstream_converter =
           base::MakeRefCounted<HEVCBitstreamConverter>(std::move(hevcConfig));
@@ -1129,7 +1136,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       auto dv_config = ParseDOVIConfig(reader);
       if (dv_config.has_value()) {
         DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
-        video_codec = kCodecDolbyVision;
+        video_codec = VideoCodec::kDolbyVision;
         video_codec_profile = dv_config->codec_profile;
         video_codec_level = dv_config->dv_level;
       }
@@ -1150,7 +1157,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
       auto dv_config = ParseDOVIConfig(reader);
       RCHECK(dv_config.has_value());
-      video_codec = kCodecDolbyVision;
+      video_codec = VideoCodec::kDolbyVision;
       video_codec_profile = dv_config->codec_profile;
       video_codec_level = dv_config->dv_level;
       break;
@@ -1167,7 +1174,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       DVLOG(2) << __func__ << " reading DolbyVisionConfiguration (dvcC/dvvC)";
       auto dv_config = ParseDOVIConfig(reader);
       RCHECK(dv_config.has_value());
-      video_codec = kCodecDolbyVision;
+      video_codec = VideoCodec::kDolbyVision;
       video_codec_profile = dv_config->codec_profile;
       video_codec_level = dv_config->dv_level;
       break;
@@ -1181,21 +1188,21 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
           new VPCodecConfigurationRecord());
       RCHECK(reader->ReadChild(vp_config.get()));
       frame_bitstream_converter = nullptr;
-      video_codec = kCodecVP9;
+      video_codec = VideoCodec::kVP9;
       video_codec_profile = vp_config->profile;
       video_color_space = vp_config->color_space;
       video_codec_level = vp_config->level;
 
-      SMPTE2086MasteringDisplayMetadataBox mastering_display_color_volume;
-      if (reader->HasChild(&mastering_display_color_volume)) {
-        RCHECK(reader->ReadChild(&mastering_display_color_volume));
-        this->mastering_display_color_volume = mastering_display_color_volume;
+      SMPTE2086MasteringDisplayMetadataBox color_volume;
+      if (reader->HasChild(&color_volume)) {
+        RCHECK(reader->ReadChild(&color_volume));
+        mastering_display_color_volume = color_volume;
       }
 
-      ContentLightLevel content_light_level_information;
-      if (reader->HasChild(&content_light_level_information)) {
-        RCHECK(reader->ReadChild(&content_light_level_information));
-        this->content_light_level_information = content_light_level_information;
+      ContentLightLevel level_information;
+      if (reader->HasChild(&level_information)) {
+        RCHECK(reader->ReadChild(&level_information));
+        content_light_level_information = level_information;
       }
       break;
     }
@@ -1205,7 +1212,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       AV1CodecConfigurationRecord av1_config;
       RCHECK(reader->ReadChild(&av1_config));
       frame_bitstream_converter = nullptr;
-      video_codec = kCodecAV1;
+      video_codec = VideoCodec::kAV1;
       video_codec_profile = av1_config.profile;
       break;
     }
@@ -1221,20 +1228,22 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
   ColorParameterInformation color_parameter_information;
   if (reader->HasChild(&color_parameter_information)) {
     RCHECK(reader->ReadChild(&color_parameter_information));
-    video_color_space = ConvertColorParameterInformationToColorSpace(
-        color_parameter_information);
+    if (color_parameter_information.fully_parsed) {
+      video_color_space = ConvertColorParameterInformationToColorSpace(
+          color_parameter_information);
+    }
   }
 
-  MasteringDisplayColorVolume mastering_display_color_volume;
-  if (reader->HasChild(&mastering_display_color_volume)) {
-    RCHECK(reader->ReadChild(&mastering_display_color_volume));
-    this->mastering_display_color_volume = mastering_display_color_volume;
+  MasteringDisplayColorVolume color_volume;
+  if (reader->HasChild(&color_volume)) {
+    RCHECK(reader->ReadChild(&color_volume));
+    mastering_display_color_volume = color_volume;
   }
 
-  ContentLightLevelInformation content_light_level_information;
-  if (reader->HasChild(&content_light_level_information)) {
-    RCHECK(reader->ReadChild(&content_light_level_information));
-    this->content_light_level_information = content_light_level_information;
+  ContentLightLevelInformation level_information;
+  if (reader->HasChild(&level_information)) {
+    RCHECK(reader->ReadChild(&level_information));
+    content_light_level_information = level_information;
   }
 
   if (video_codec_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
@@ -1377,8 +1386,7 @@ bool FlacSpecificBox::Parse(BoxReader* reader) {
 }
 
 OpusSpecificBox::OpusSpecificBox()
-    : seek_preroll(base::TimeDelta::FromMilliseconds(80)),
-      codec_delay_in_frames(0) {}
+    : seek_preroll(base::Milliseconds(80)), codec_delay_in_frames(0) {}
 
 OpusSpecificBox::OpusSpecificBox(const OpusSpecificBox& other) = default;
 

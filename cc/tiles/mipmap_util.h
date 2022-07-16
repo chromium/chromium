@@ -7,7 +7,7 @@
 
 #include "cc/cc_export.h"
 #include "third_party/skia/include/core/SkSize.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 

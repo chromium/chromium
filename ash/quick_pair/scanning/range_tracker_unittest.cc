@@ -8,12 +8,16 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+const std::string kAddress = "Test address";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -23,7 +27,7 @@ class FakeBluetoothAdapter
   }
 
  private:
-  ~FakeBluetoothAdapter() = default;
+  ~FakeBluetoothAdapter() override = default;
 };
 
 }  // namespace
@@ -39,9 +43,12 @@ class RangeTrackerTest : public testing::Test {
         static_cast<scoped_refptr<device::BluetoothAdapter>>(adapter_));
     device_ = std::make_unique<device::MockBluetoothDevice>(
         adapter_.get(),
-        /*bluetooth_class=*/0, "Test device name", "Test address",
+        /*bluetooth_class=*/0, "Test device name", kAddress,
         /*paired=*/false,
         /*connected=*/false);
+
+    ON_CALL(*(adapter_.get()), GetDevice(kAddress))
+        .WillByDefault(testing::Return(device_.get()));
   }
 
  protected:
@@ -52,6 +59,8 @@ class RangeTrackerTest : public testing::Test {
         .WillOnce(testing::Return(tx_power));
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<device::MockBluetoothDevice> device_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   std::unique_ptr<RangeTracker> tracker_;
@@ -118,6 +127,12 @@ TEST_F(RangeTrackerTest, StopTracking) {
 
   tracker_->StopTracking(device_.get());
   adapter_->NotifiyDeviceChanged(device_.get());
+}
+
+TEST_F(RangeTrackerTest, Timeout) {
+  EXPECT_CALL(callback_, Run(device_.get()));
+  tracker_->Track(device_.get(), 3, callback_.Get());
+  task_environment_.FastForwardUntilNoTasksRemain();
 }
 
 }  // namespace quick_pair

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/update_client/unzipper.h"
@@ -20,7 +19,11 @@ class UnzipChromiumFactory : public UnzipperFactory {
  public:
   using Callback =
       base::RepeatingCallback<mojo::PendingRemote<unzip::mojom::Unzipper>()>;
+
   explicit UnzipChromiumFactory(Callback callback);
+
+  UnzipChromiumFactory(const UnzipChromiumFactory&) = delete;
+  UnzipChromiumFactory& operator=(const UnzipChromiumFactory&) = delete;
 
   std::unique_ptr<Unzipper> Create() const override;
 
@@ -29,8 +32,6 @@ class UnzipChromiumFactory : public UnzipperFactory {
 
  private:
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnzipChromiumFactory);
 };
 
 }  // namespace update_client

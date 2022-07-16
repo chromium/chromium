@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "components/sync/protocol/app_list_specifics.pb.h"
 
 class AppListControllerDelegate;
 class ChromeAppListItem;

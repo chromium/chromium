@@ -16,8 +16,7 @@ namespace device {
 namespace {
 // Time to wait before issuing a network geolocation request in response to
 // network change notification. Network changes tend to occur in clusters.
-constexpr base::TimeDelta kNetworkChangeReactionDelay =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kNetworkChangeReactionDelay = base::Minutes(5);
 }  // namespace
 
 PublicIpAddressLocationNotifier::PublicIpAddressLocationNotifier(

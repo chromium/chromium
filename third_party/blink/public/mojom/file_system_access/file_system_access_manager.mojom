@@ -31,9 +31,9 @@ struct ChooseFileSystemEntryAcceptsOption {
   array<string> extensions;
 };
 
-// If |include_accepts_all| is true, an "all files" option is included in the
-// dialog displayed to the user. If no valid options are present in |accepts|
-// |include_accepts_all| is treated as if it was true.
+// If `include_accepts_all` is true, an "all files" option is included in the
+// dialog displayed to the user. If no valid options are present in `accepts`
+// `include_accepts_all` is treated as if it was true.
 struct AcceptsTypesInfo {
   array<ChooseFileSystemEntryAcceptsOption> accepts;
   bool include_accepts_all;
@@ -63,15 +63,15 @@ union FilePickerOptions {
 
 // See the documentation for how the `starting_directory` fields interact:
 // https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
-// |starting_directory_id| allows for specification of the "purpose" of a file
+// `starting_directory_id` allows for specification of the "purpose" of a file
 // picker invocation. When an ID is specified, the picker will remember the
 // picked directory. The next time the matching ID is specified, the picker
 // will default to this directory. The ID cannot exceed 32 characters in
 // length and may only contain alphanumeric characters, '-', and '_'.
 // A maximum of 32 custom IDs is allowed per origin (LRU eviction).
-// |well_known_starting_directory| opens the file picker at a well-known
+// `well_known_starting_directory` opens the file picker at a well-known
 // directory.
-// |starting_directory_token| is resolved into a file or directory by the
+// `starting_directory_token` is resolved into a file or directory by the
 // FileSystemAccessManager to be used as the starting directory for the file
 // picker. If the token is a file, its parent directory is used.
 // See the FileSystemAccessManager's ResolveDefaultDirectory() method for

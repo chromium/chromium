@@ -23,7 +23,7 @@ struct FileSystemAccessEntry {
 
 interface FileSystemAccessDirectoryEntriesListener {
   // Called by FileSystemAccessDirectoryHandle.GetEntries when some entries
-  // have been obtained. |has_more_entries| is false when all the entries have
+  // have been obtained. `has_more_entries` is false when all the entries have
   // been obtained, and  indicates that the callback will not be called again.
   DidReadDirectory(FileSystemAccessError result,
                    array<FileSystemAccessEntry> entries,
@@ -47,15 +47,15 @@ interface FileSystemAccessDirectoryHandle {
   // permission status for this handle.
   RequestPermission(bool writable) => (FileSystemAccessError result, PermissionStatus status);
 
-  // Returns a file with the given |basename| that is a child of this
-  // directory. If no such file exists, and |create| is true, the file is first
+  // Returns a file with the given `basename` that is a child of this
+  // directory. If no such file exists, and `create` is true, the file is first
   // created. Returns an error if the operation fails, or a handle to the newly
   // created file if the operation succeeds.
   GetFile(string basename, bool create) =>
       (FileSystemAccessError result, pending_remote<FileSystemAccessFileHandle>? file);
 
-  // Returns a directory with the given |basename| that is a child of this
-  // directory. If no such directory exists, and |create| is true, the directory
+  // Returns a directory with the given `basename` that is a child of this
+  // directory. If no such directory exists, and `create` is true, the directory
   // is first created.
   // Returns an error if the operation fails, or a handle to the newly created
   // directory if the operation succeeds.
@@ -66,21 +66,35 @@ interface FileSystemAccessDirectoryHandle {
   // Returns all the direct children of this directory.
   GetEntries(pending_remote<FileSystemAccessDirectoryEntriesListener> listener);
 
+  // Renames the directory represented by this handle to `new_entry_name`, which
+  // cannot be empty. This is guaranteed to be atomic.
+  // Returns an error if the directory does not exist.
+  Rename(string new_entry_name) => (FileSystemAccessError result);
+
+  // Same as above, but `destination_directory` is resolved into a directory to
+  // be used as the destination directory for the move operation. This is only
+  // guaranteed to be atomic if the directory is moved within the same file
+  // system. Moving across file systems may result in partially written data if
+  // the move fails. Returns an error if the directory does not exist or the
+  // move operation fails.
+  Move(pending_remote<FileSystemAccessTransferToken> destination_directory,
+                      string new_entry_name) => (FileSystemAccessError result);
+
   // Deletes the directory represented by this handle.
-  // To delete recursively, set |recurse| to true.
+  // To delete recursively, set `recurse` to true.
   // Returns an error if the directory does not exist or is not empty and
-  // |recurse| is not specified.
+  // `recurse` is not specified.
   Remove(bool recurse) => (FileSystemAccessError result);
 
   // Deletes an entry which is a child of this directory.
-  // To delete recursively, set |recurse| to true.
+  // To delete recursively, set `recurse` to true.
   RemoveEntry(string basename, bool recurse) => (FileSystemAccessError result);
 
-  // If |possible_child| is not a descendant of this directory, |path| will be
-  // null. If |possible_child| is equal to this directory, |path| will be an
-  // empty array. And if |possible_child| is a descendant of this directory,
-  // |path| will contain the path components making up the path of
-  // |possible_child| relative to this directory.
+  // If `possible_child` is not a descendant of this directory, `path` will be
+  // null. If `possible_child` is equal to this directory, `path` will be an
+  // empty array. And if `possible_child` is a descendant of this directory,
+  // `path` will contain the path components making up the path of
+  // `possible_child` relative to this directory.
   Resolve(pending_remote<FileSystemAccessTransferToken> possible_child) =>
       (FileSystemAccessError result, array<string>? path);
 

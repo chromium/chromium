@@ -50,6 +50,7 @@ source_set("browser_prefs") {
     "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
+    "//components/optimization_guide/core",
     "//components/password_manager/core/browser",
     "//components/payments/core",
     "//components/policy/core/browser",

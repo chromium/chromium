@@ -7,9 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 
 namespace blink {
+
+class NGPhysicalFragment;
 
 // Class representing the offset of a child fragment relative to the
 // parent fragment. Fragments themselves have no position information

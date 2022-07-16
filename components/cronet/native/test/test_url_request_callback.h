@@ -12,7 +12,6 @@
 
 #include "cronet_c.h"
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"

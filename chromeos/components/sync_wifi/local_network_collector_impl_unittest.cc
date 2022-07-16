@@ -7,7 +7,6 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -57,6 +56,11 @@ class LocalNetworkCollectorImplTest : public testing::Test {
     ash::GetNetworkConfigService(
         remote_cros_network_config_.BindNewPipeAndPassReceiver());
   }
+
+  LocalNetworkCollectorImplTest(const LocalNetworkCollectorImplTest&) = delete;
+  LocalNetworkCollectorImplTest& operator=(
+      const LocalNetworkCollectorImplTest&) = delete;
+
   ~LocalNetworkCollectorImplTest() override = default;
 
   void SetUp() override {
@@ -137,8 +141,6 @@ class LocalNetworkCollectorImplTest : public testing::Test {
       remote_cros_network_config_;
 
   size_t on_get_all_syncable_networks_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalNetworkCollectorImplTest);
 };
 
 TEST_F(LocalNetworkCollectorImplTest, TestGetAllSyncableNetworks) {

@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,6 +34,10 @@ namespace media {
 class DemuxerStreamAdapterTest : public testing::Test {
  public:
   DemuxerStreamAdapterTest();
+
+  DemuxerStreamAdapterTest(const DemuxerStreamAdapterTest&) = delete;
+  DemuxerStreamAdapterTest& operator=(const DemuxerStreamAdapterTest&) = delete;
+
   ~DemuxerStreamAdapterTest() override;
 
   void Initialize(::media::DemuxerStream* demuxer_stream);
@@ -65,8 +69,6 @@ class DemuxerStreamAdapterTest : public testing::Test {
   std::unique_ptr<DemuxerStreamForTest> demuxer_stream_;
 
   std::unique_ptr<CodedFrameProvider> coded_frame_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapterTest);
 };
 
 DemuxerStreamAdapterTest::DemuxerStreamAdapterTest()
@@ -94,7 +96,7 @@ void DemuxerStreamAdapterTest::Start() {
       FROM_HERE,
       base::BindOnce(&DemuxerStreamAdapterTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
 
   coded_frame_provider_->Read(base::BindOnce(
       &DemuxerStreamAdapterTest::OnNewFrame, base::Unretained(this)));
@@ -117,8 +119,8 @@ void DemuxerStreamAdapterTest::OnNewFrame(
   }
 
   ASSERT_TRUE(buffer.get() != NULL);
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(buffer->timestamp()),
-            base::TimeDelta::FromMilliseconds(40 * frame_received_count_));
+  ASSERT_EQ(base::Microseconds(buffer->timestamp()),
+            base::Milliseconds(40 * frame_received_count_));
   frame_received_count_++;
 
   if (frame_received_count_ >= total_frames_) {

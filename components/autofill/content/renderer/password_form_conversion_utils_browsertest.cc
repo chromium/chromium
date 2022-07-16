@@ -34,6 +34,9 @@ class PasswordFormBuilder {
         &html_, "<FORM name=\"Test\" action=\"%s\" method=\"post\">", action);
   }
 
+  PasswordFormBuilder(const PasswordFormBuilder&) = delete;
+  PasswordFormBuilder& operator=(const PasswordFormBuilder&) = delete;
+
   // Appends a new text-type field at the end of the form, having the specified
   // |name_and_id|, |value|, and |autocomplete| attributes. The |autocomplete|
   // argument can take two special values, namely:
@@ -79,13 +82,17 @@ class PasswordFormBuilder {
 
  private:
   std::string html_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormBuilder);
 };
 
 class PasswordFormConversionUtilsTest : public content::RenderViewTest {
  public:
   PasswordFormConversionUtilsTest() = default;
+
+  PasswordFormConversionUtilsTest(const PasswordFormConversionUtilsTest&) =
+      delete;
+  PasswordFormConversionUtilsTest& operator=(
+      const PasswordFormConversionUtilsTest&) = delete;
+
   ~PasswordFormConversionUtilsTest() override = default;
 
  protected:
@@ -113,8 +120,6 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
 
     *form = forms[0];
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormConversionUtilsTest);
 };
 
 }  // namespace

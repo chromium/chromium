@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
-#include "components/signin/public/base/account_consistency_method.h"
+#import "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/ui/logo_vendor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,18 +48,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 }  // namespace
 
-@interface ContentSuggestionsHeaderViewController (Pointer) <
-    UIPointerInteractionDelegate>
-@end
-
-#if defined(__IPHONE_14_0)
-@interface ContentSuggestionsHeaderViewController (Scribble) <
-    UIIndirectScribbleInteractionDelegate>
-@end
-#endif  // defined(__IPHONE14_0)
-
 @interface ContentSuggestionsHeaderViewController () <
     DoodleObserver,
+    UIIndirectScribbleInteractionDelegate,
+    UIPointerInteractionDelegate,
     UserAccountImageUpdateDelegate>
 
 // If YES the animations of the fake omnibox triggered when the collection is
@@ -110,7 +101,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @synthesize logoFetched = _logoFetched;
 
 - (instancetype)init {
-  return [super initWithNibName:nil bundle:nil];
+  if (self = [super initWithNibName:nil bundle:nil]) {
+    _focusOmniboxWhenViewAppears = YES;
+  }
+  return self;
 }
 
 #pragma mark - Public
@@ -229,8 +223,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.fakeOmnibox);
+
+  if (self.focusOmniboxWhenViewAppears && !self.omniboxFocused) {
+    [self focusAccessibilityOnOmnibox];
+  }
 }
 
 - (CGFloat)headerHeight {
@@ -322,20 +318,14 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
 
-  if (@available(iOS 13.4, *)) {
-      [self.fakeOmnibox
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  }
+  [self.fakeOmnibox
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
   [self.headerView addViewsToSearchField:self.fakeOmnibox];
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    UIIndirectScribbleInteraction* scribbleInteraction =
-        [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
-    [self.fakeOmnibox addInteraction:scribbleInteraction];
-  }
-#endif  // defined(__IPHONE_14_0)
+  UIIndirectScribbleInteraction* scribbleInteraction =
+      [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
+  [self.fakeOmnibox addInteraction:scribbleInteraction];
 
   [self.headerView.voiceSearchButton addTarget:self
                                         action:@selector(loadVoiceSearch:)
@@ -380,23 +370,21 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-      self.identityDiscButton.pointerInteractionEnabled = YES;
-      self.identityDiscButton.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        // The identity disc button is oversized to the avatar image to meet the
-        // minimum touch target dimensions. The hover pointer effect should
-        // match the avatar image dimensions, not the button dimensions.
-        CGFloat singleInset =
-            (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
-        CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
-        UIPointerShape* shape =
-            [UIPointerShape shapeWithRoundedRect:rect
-                                    cornerRadius:rect.size.width / 2];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  self.identityDiscButton.pointerInteractionEnabled = YES;
+  self.identityDiscButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    // The identity disc button is oversized to the avatar image to meet the
+    // minimum touch target dimensions. The hover pointer effect should
+    // match the avatar image dimensions, not the button dimensions.
+    CGFloat singleInset =
+        (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+    CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:rect
+                                cornerRadius:rect.size.width / 2];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 
     // TODO(crbug.com/965958): Set action on button to launch into Settings.
     [self.headerView setIdentityDiscView:self.identityDiscButton];
@@ -446,13 +434,14 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self shiftTilesUp];
 }
 
+- (void)focusAccessibilityOnOmnibox {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.fakeOmnibox);
+}
+
 - (void)identityDiscTapped {
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    [self.dispatcher showSettingsFromViewController:self];
-  } else {
-    [self.dispatcher showGoogleServicesSettingsFromViewController:nil];
-  }
+  [self.dispatcher showSettingsFromViewController:self.baseViewController];
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread
@@ -617,8 +606,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-
 - (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
               requestElementsInRect:(CGRect)rect
                          completion:
@@ -667,8 +654,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return YES;
 }
-
-#endif  // defined(__IPHONE_14_0)
 
 #pragma mark - LogoAnimationControllerOwnerOwner
 
@@ -740,6 +725,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)updateAccountImage:(UIImage*)image {
   self.identityDiscButton.hidden = !image;
+  DCHECK(image == nil ||
+         (image.size.width == ntp_home::kIdentityAvatarDimension &&
+          image.size.height == ntp_home::kIdentityAvatarDimension))
+      << base::SysNSStringToUTF8([image description]);
   [self.identityDiscButton setImage:image forState:UIControlStateNormal];
   self.identityDiscButton.imageView.layer.cornerRadius = image.size.width / 2;
   self.identityDiscButton.imageView.layer.masksToBounds = YES;

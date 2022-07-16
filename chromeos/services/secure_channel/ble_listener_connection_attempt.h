@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/connection_attempt_base.h"
 
@@ -41,6 +40,10 @@ class BleListenerConnectionAttempt
     static Factory* test_factory_;
   };
 
+  BleListenerConnectionAttempt(const BleListenerConnectionAttempt&) = delete;
+  BleListenerConnectionAttempt& operator=(const BleListenerConnectionAttempt&) =
+      delete;
+
   ~BleListenerConnectionAttempt() override;
 
  private:
@@ -64,8 +67,6 @@ class BleListenerConnectionAttempt
       const base::TimeDelta& duration) override;
 
   BleConnectionManager* ble_connection_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleListenerConnectionAttempt);
 };
 
 }  // namespace secure_channel

@@ -53,6 +53,10 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                public IPC::Sender {
  public:
   WorkerThreadDispatcher();
+
+  WorkerThreadDispatcher(const WorkerThreadDispatcher&) = delete;
+  WorkerThreadDispatcher& operator=(const WorkerThreadDispatcher&) = delete;
+
   ~WorkerThreadDispatcher() override;
 
   // Thread safe.
@@ -185,8 +189,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   base::Lock task_runner_map_lock_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadDispatcher);
 };
 
 }  // namespace extensions

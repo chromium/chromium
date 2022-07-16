@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* `unload` event handling matches what the specification expects. The current
+  specification expects that the unload event handler is never fired, and the
+  test passes whether or not it is fired.
+* `pageshow` and `pagehide` behaviors during prerendering is clearly defined
+  in the specification. This test just checks current behaviors.
+  (https://crbug.com/1222551)
+-->
+<title>unload event handlers</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/unload-utils.js"></script>
+<script>
+promise_test(async t => {
+  const gotMessages = waitChannelMessage('Done');
+  const url = 'resources/unload-on-prerender-remove-subframe.html';
+  window.open(url, '_blank', 'noopener');
+  const result = await gotMessages;
+
+  const expected = [
+    'load start',
+    'load prerendering',
+    'load frame',
+    'request removal',
+    'pageshow frame in prerendering',
+    'pagehide frame in prerendering',
+    'unload frame in prerendering',
+    'Done',
+  ];
+  assert_array_equals(result, expected, 'gotMessages');
+}, 'unload on removing subframe');
+</script>

@@ -163,10 +163,12 @@ void BudgetDatabase::GetBudgetAfterSync(const url::Origin& origin,
   double total = GetBudget(origin);
 
   // Always add one entry at the front of the list for the total budget now.
-  BudgetState prediction;
-  prediction.budget_at = total;
-  prediction.time = clock_->Now().ToJsTime();
-  predictions.push_back(prediction);
+  {
+    BudgetState prediction;
+    prediction.budget_at = total;
+    prediction.time = clock_->Now().ToJsTime();
+    predictions.push_back(prediction);
+  }
 
   // Starting with the soonest expiring chunks, add entries for the
   // expiration times going forward.
@@ -329,7 +331,7 @@ void BudgetDatabase::AddEngagementBudget(const url::Origin& origin) {
   // time elapsed since the last award and the SES score.
   // By default, give the origin kBudgetDurationInDays worth of budget, but
   // reduce that if budget has already been given during that period.
-  base::TimeDelta elapsed = base::TimeDelta::FromDays(kBudgetDurationInDays);
+  base::TimeDelta elapsed = base::Days(kBudgetDurationInDays);
   if (IsCached(origin)) {
     elapsed = clock_->Now() - budget_map_[origin].last_engagement_award;
     // Don't give engagement awards for periods less than an hour.
@@ -337,7 +339,7 @@ void BudgetDatabase::AddEngagementBudget(const url::Origin& origin) {
       return;
     // Cap elapsed time to the budget duration.
     if (elapsed.InDays() > kBudgetDurationInDays)
-      elapsed = base::TimeDelta::FromDays(kBudgetDurationInDays);
+      elapsed = base::Days(kBudgetDurationInDays);
   }
 
   // Get the current SES score, and calculate the hourly budget for that score.
@@ -350,8 +352,7 @@ void BudgetDatabase::AddEngagementBudget(const url::Origin& origin) {
   budget_map_[origin].last_engagement_award = clock_->Now();
 
   // Add a new chunk of budget for the origin at the default expiration time.
-  base::Time expiration =
-      clock_->Now() + base::TimeDelta::FromDays(kBudgetDurationInDays);
+  base::Time expiration = clock_->Now() + base::Days(kBudgetDurationInDays);
   budget_map_[origin].chunks.emplace_back(elapsed.InHours() * hourly_budget,
                                           expiration);
 
@@ -377,9 +378,8 @@ bool BudgetDatabase::CleanupExpiredBudget(const url::Origin& origin) {
 
   // If the entire budget is empty now AND there have been no engagements
   // in the last kBudgetDurationInDays days, remove this from the cache.
-  if (chunks.empty() &&
-      budget_map_[origin].last_engagement_award <
-          clock_->Now() - base::TimeDelta::FromDays(kBudgetDurationInDays)) {
+  if (chunks.empty() && budget_map_[origin].last_engagement_award <
+                            clock_->Now() - base::Days(kBudgetDurationInDays)) {
     budget_map_.erase(origin);
     return true;
   }

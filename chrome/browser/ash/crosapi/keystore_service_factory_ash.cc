@@ -8,9 +8,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -45,9 +45,8 @@ KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
     : BrowserContextKeyedServiceFactory(
           "KeystoreServiceFactoryAsh",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance());
-  DependsOn(
-      chromeos::platform_keys::KeyPermissionsServiceFactory::GetInstance());
+  DependsOn(ash::platform_keys::PlatformKeysServiceFactory::GetInstance());
+  DependsOn(ash::platform_keys::KeyPermissionsServiceFactory::GetInstance());
 }
 
 KeyedService* KeystoreServiceFactoryAsh::BuildServiceInstanceFor(

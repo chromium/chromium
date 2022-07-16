@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -24,6 +26,28 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+class Waiter : public BrowserListObserver {
+ public:
+  static void WaitForNewBrowser() {
+    base::RunLoop loop;
+    Waiter waiter(loop.QuitClosure());
+    loop.Run();
+  }
+
+ private:
+  explicit Waiter(base::OnceClosure callback) : callback_{std::move(callback)} {
+    BrowserList::AddObserver(this);
+  }
+
+  ~Waiter() override { BrowserList::RemoveObserver(this); }
+
+  void OnBrowserAdded(Browser*) override { std::move(callback_).Run(); }
+
+  base::OnceClosure callback_;
+};
+}  // namespace
 
 class CrostiniUpdateComponentViewBrowserTest
     : public CrostiniDialogBrowserTest {
@@ -118,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
                        LaunchAppOffline_UpgradeNeeded) {
   // Ensure Terminal System App is installed.
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
@@ -132,6 +156,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
   UnregisterTermina();
   crostini::LaunchCrostiniApp(browser()->profile(),
                               crostini::kCrostiniTerminalSystemAppId, 0);
+  Waiter::WaitForNewBrowser();
 
   // For Terminal System App, we must wait for browser to load.
   Browser* terminal_browser = web_app::FindSystemWebAppBrowser(

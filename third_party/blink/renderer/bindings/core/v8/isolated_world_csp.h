@@ -24,6 +24,9 @@ class CORE_EXPORT IsolatedWorldCSP {
  public:
   static IsolatedWorldCSP& Get();
 
+  IsolatedWorldCSP(const IsolatedWorldCSP&) = delete;
+  IsolatedWorldCSP& operator=(const IsolatedWorldCSP&) = delete;
+
   // Associated an isolated world with a Content Security Policy. Resources
   // embedded into the main world's DOM from script executed in an isolated
   // world should be restricted based on the isolated world's CSP, not the
@@ -52,8 +55,6 @@ class CORE_EXPORT IsolatedWorldCSP {
 
   // Map from the isolated world |world_id| to its PolicyInfo.
   HashMap<int, PolicyInfo> csp_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedWorldCSP);
 };
 
 }  // namespace blink

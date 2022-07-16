@@ -35,6 +35,12 @@ class FakeErrorTolerantBleAdvertisementFactory
       BleSynchronizerBase* ble_synchronizer_base)
       : bluetooth_helper_(bluetooth_helper),
         ble_synchronizer_base_(ble_synchronizer_base) {}
+
+  FakeErrorTolerantBleAdvertisementFactory(
+      const FakeErrorTolerantBleAdvertisementFactory&) = delete;
+  FakeErrorTolerantBleAdvertisementFactory& operator=(
+      const FakeErrorTolerantBleAdvertisementFactory&) = delete;
+
   ~FakeErrorTolerantBleAdvertisementFactory() override = default;
 
   const absl::optional<DeviceIdPair>& last_created_device_id_pair() const {
@@ -89,8 +95,6 @@ class FakeErrorTolerantBleAdvertisementFactory
   base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>
       device_id_pair_to_active_advertisement_map_;
   size_t num_instances_created_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeErrorTolerantBleAdvertisementFactory);
 };
 
 const int64_t kDefaultStartTimestamp = 1337;
@@ -99,6 +103,12 @@ const int64_t kDefaultEndTimestamp = 13337;
 }  // namespace
 
 class SecureChannelBleAdvertiserImplTest : public testing::Test {
+ public:
+  SecureChannelBleAdvertiserImplTest(
+      const SecureChannelBleAdvertiserImplTest&) = delete;
+  SecureChannelBleAdvertiserImplTest& operator=(
+      const SecureChannelBleAdvertiserImplTest&) = delete;
+
  protected:
   SecureChannelBleAdvertiserImplTest() = default;
   ~SecureChannelBleAdvertiserImplTest() override = default;
@@ -179,9 +189,9 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
 
     // The timer should have been started.
     EXPECT_TRUE(fake_timer->IsRunning());
-    EXPECT_EQ(base::TimeDelta::FromSeconds(
-                  BleAdvertiserImpl::kNumSecondsPerAdvertisementTimeslot),
-              fake_timer->GetCurrentDelay());
+    EXPECT_EQ(
+        base::Seconds(BleAdvertiserImpl::kNumSecondsPerAdvertisementTimeslot),
+        fake_timer->GetCurrentDelay());
 
     return fake_timer;
   }
@@ -279,8 +289,6 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> test_runner_;
 
   std::unique_ptr<BleAdvertiser> advertiser_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleAdvertiserImplTest);
 };
 
 TEST_F(SecureChannelBleAdvertiserImplTest, OneAdvertisement_TimerFires) {
@@ -494,7 +502,6 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   AddAdvertisementRequest(pair_1, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_1 =
       GetLastCreatedAdvertisement(pair_1);
-  FakeOneShotTimer* timer_1 = GetLastCreatedTimer();
 
   AddAdvertisementRequest(pair_2, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_2 =
@@ -521,7 +528,6 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   // stopping is asynchronous.
   EXPECT_EQ(2u, GetNumAdvertisementsCreated());
   EXPECT_EQ(3u, GetNumTimersCreated());
-  timer_1 = GetLastCreatedTimer();
   VerifyDelegateNotifiedOnAdvertisingSlotEnded(
       pair_1, true /* expected_replaced_by_higher_priority_advertisement */,
       0u /* expected_index */);
@@ -635,7 +641,6 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   EXPECT_EQ(7u, GetNumAdvertisementsCreated());
   EXPECT_EQ(8u, GetNumTimersCreated());
   EXPECT_EQ(4u, GetNumSlotEndedDelegateCallbacks());
-  timer_1 = GetLastCreatedTimer();
   advertisement_1->InvokeStopCallback();
   EXPECT_EQ(8u, GetNumAdvertisementsCreated());
   advertisement_1 = GetLastCreatedAdvertisement(pair_2);

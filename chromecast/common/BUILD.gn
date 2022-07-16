@@ -83,6 +83,8 @@ cast_source_set("common") {
     "global_descriptors.h",
     "identification_settings_manager.cc",
     "identification_settings_manager.h",
+    "user_agent.cc",
+    "user_agent.h",
   ]
 
   public_deps = [ "//base" ]
@@ -95,6 +97,7 @@ cast_source_set("common") {
     "//chromecast/common/mojom",
     "//components/cast/common:constants",
     "//components/cdm/common:common",
+    "//components/version_info",
     "//content/public/common",
     "//media:media_buildflags",
     "//mojo/public/cpp/bindings",
@@ -137,6 +140,5 @@ cast_source_set("common") {
   if (enable_library_cdms) {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
-
-  defines = [ "DEVICE_CAPABILITIES=\"${device_capabilities}\"" ]
+  defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
 }

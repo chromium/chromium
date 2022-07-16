@@ -58,7 +58,8 @@ class AX_EXPORT AXTreeFormatter {
   // web node (i.e. without children).
   virtual base::Value BuildNode(AXPlatformNodeDelegate* node) const = 0;
 
-  // Build an accessibility tree for any window.
+  // Build an accessibility tree for any window or pattern supplied by
+  // the selector object.
   //
   // Returns a dictionary value with the accessibility tree populated.
   // The dictionary contains a key/value pair for each attribute of a node,
@@ -80,11 +81,6 @@ class AX_EXPORT AXTreeFormatter {
   //     "children": [ ]
   //   } ]
   // }
-  virtual base::Value BuildTreeForWindow(
-      gfx::AcceleratedWidget widget) const = 0;
-
-  // Build an accessibility tree for an application with a name matching the
-  // given pattern.
   virtual base::Value BuildTreeForSelector(const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for an application with |node| as the root.

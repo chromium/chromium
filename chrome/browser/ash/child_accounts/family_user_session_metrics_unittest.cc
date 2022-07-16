@@ -24,9 +24,9 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kTenMinutes = base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kTenMinutes = base::Minutes(10);
+constexpr base::TimeDelta kOneHour = base::Hours(1);
+constexpr base::TimeDelta kOneDay = base::Days(1);
 
 void SetScreenOff(bool is_screen_off) {
   power_manager::ScreenIdleState screen_idle_state;
@@ -200,7 +200,7 @@ TEST_F(FamilyUserSessionMetricsTest, ScreenStateChange) {
   // Test screen on on 4 Jan 2020 0:10:00.
   SetScreenOff(false);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(25));
+  task_environment_.FastForwardBy(base::Hours(25));
   // Test screen off on 5 Jan 2020 1:10:00.
   SetScreenOff(true);
 
@@ -297,7 +297,7 @@ TEST_F(FamilyUserSessionMetricsTest, SuspendStateChange) {
   // Duration metric result:
   histogram_tester.ExpectTotalCount(
       FamilyUserSessionMetrics::kSessionEngagementDurationHistogramName, 0);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(20),
+  EXPECT_EQ(base::Minutes(20),
             pref_service()->GetTimeDelta(
                 prefs::kFamilyUserMetricsSessionEngagementDuration));
 }
@@ -394,7 +394,7 @@ TEST_F(FamilyUserSessionMetricsTest,
   // Duration metric result:
   histogram_tester.ExpectTotalCount(
       prefs::kFamilyUserMetricsSessionEngagementDuration, 0);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(20),
+  EXPECT_EQ(base::Minutes(20),
             pref_service()->GetTimeDelta(
                 prefs::kFamilyUserMetricsSessionEngagementDuration));
 }

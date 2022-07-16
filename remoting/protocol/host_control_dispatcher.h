@@ -27,6 +27,10 @@ class HostControlDispatcher : public ChannelDispatcherBase,
                               public ClientStub {
  public:
   HostControlDispatcher();
+
+  HostControlDispatcher(const HostControlDispatcher&) = delete;
+  HostControlDispatcher& operator=(const HostControlDispatcher&) = delete;
+
   ~HostControlDispatcher() override;
 
   // ClientStub implementation.
@@ -72,8 +76,6 @@ class HostControlDispatcher : public ChannelDispatcherBase,
   // 64 KiB is the default message size expected to be supported in absence of
   // a higher value negotiated via SDP.
   std::size_t max_message_size_ = 64 * 1024;
-
-  DISALLOW_COPY_AND_ASSIGN(HostControlDispatcher);
 };
 
 }  // namespace protocol

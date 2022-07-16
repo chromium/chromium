@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
@@ -40,6 +39,9 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
   static void AddLoadTimeKerberosStrings(
       content::WebUIDataSource* html_source,
       KerberosCredentialsManager* kerberos_credentials_manager);
+
+  KerberosAccountsHandler(const KerberosAccountsHandler&) = delete;
+  KerberosAccountsHandler& operator=(const KerberosAccountsHandler&) = delete;
 
   ~KerberosAccountsHandler() override;
 
@@ -100,8 +102,6 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
   KerberosCredentialsManager* kerberos_credentials_manager_;
 
   base::WeakPtrFactory<KerberosAccountsHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KerberosAccountsHandler);
 };
 
 }  // namespace settings

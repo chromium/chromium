@@ -45,6 +45,9 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
       const quic::ParsedQuicVersionVector& supported_versions,
       quic::QuicSimpleServerBackend* quic_simple_server_backend);
 
+  QuicSimpleServer(const QuicSimpleServer&) = delete;
+  QuicSimpleServer& operator=(const QuicSimpleServer&) = delete;
+
   ~QuicSimpleServer() override;
 
   // QuicSpdyServerBase methods:
@@ -122,8 +125,6 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
   quic::QuicSimpleServerBackend* quic_simple_server_backend_;
 
   base::WeakPtrFactory<QuicSimpleServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicSimpleServer);
 };
 
 }  // namespace net

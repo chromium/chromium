@@ -5,6 +5,6 @@
 // https://wicg.github.io/web-transport/#dictdef-webtransportcloseinfo
 
 dictionary WebTransportCloseInfo {
-  unsigned short errorCode = 0;
-  DOMString reason = "";
+  unsigned long closeCode;
+  DOMString reason;
 };

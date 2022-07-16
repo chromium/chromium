@@ -39,6 +39,6 @@ void NoStatePrefetchTabHelper::DidFinishNavigation(
   no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NoStatePrefetchTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NoStatePrefetchTabHelper);
 
 }  // namespace prerender

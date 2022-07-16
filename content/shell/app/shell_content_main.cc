@@ -24,6 +24,6 @@ int ContentMain(int argc,
   content::ContentMainParams params(&delegate);
   params.argc = argc;
   params.argv = argv;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 #endif  // OS_MAC

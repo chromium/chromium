@@ -19,6 +19,11 @@ namespace payments {
 namespace {
 
 class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestShowPromiseTest(const PaymentRequestShowPromiseTest&) = delete;
+  PaymentRequestShowPromiseTest& operator=(
+      const PaymentRequestShowPromiseTest&) = delete;
+
  protected:
   PaymentRequestShowPromiseTest() {}
   ~PaymentRequestShowPromiseTest() override {}
@@ -116,9 +121,6 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
         {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
     ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestShowPromiseTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, SingleOptionShipping) {

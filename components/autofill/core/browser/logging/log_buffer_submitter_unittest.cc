@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"

@@ -120,6 +120,18 @@
           assert_approx_equals(spaceAfter("merror2"), 2 * emToPx, epsilon);
       }, "non-space-like merror");
 
+      test(function() {
+          assert_true(MathMLFeatureDetection.has_operator_spacing());
+          assert_approx_equals(spaceBefore("menclose1"), emToPx, epsilon);
+          assert_approx_equals(spaceAfter("menclose1"), emToPx, epsilon);
+      }, "space-like menclose");
+
+      test(function() {
+          assert_true(MathMLFeatureDetection.has_operator_spacing());
+          assert_approx_equals(spaceBefore("menclose2"), 0, epsilon);
+          assert_approx_equals(spaceAfter("menclose2"), 2 * emToPx, epsilon);
+      }, "non-space-like menclose");
+
       done();
   }
 </script>
@@ -289,6 +301,36 @@
           <mn>X</mn>
           <mspace width="25px" height="10px"></mspace>
         </merror>
+        <mo lspace="1em" rspace="0em">X</mo>
+      </mrow>
+      <mn>X</mn>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mn>X</mn>
+      <mrow>
+        <!-- menclose is space-like when it contains only space-like
+             elements. -->
+        <menclose id="menclose1" class="testedElement">
+          <mtext>X</mtext>
+          <mspace width="25px" height="10px"></mspace>
+        </menclose>
+        <mo lspace="1em" rspace="0em">X</mo>
+      </mrow>
+      <mn>X</mn>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mn>X</mn>
+      <mrow>
+        <!-- menclose is not space-like when it contains a non space-like
+             element such as "mn". -->
+        <menclose id="menclose2" class="testedElement">
+          <mn>X</mn>
+          <mspace width="25px" height="10px"></mspace>
+        </menclose>
         <mo lspace="1em" rspace="0em">X</mo>
       </mrow>
       <mn>X</mn>

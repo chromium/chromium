@@ -22,7 +22,6 @@
 #include <string>
 
 #include "base/mac/scoped_mach_vm.h"
-#include "base/macros.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory.h"
@@ -37,6 +36,9 @@ class ProcessMemoryMac : public ProcessMemory {
   //! The mapping is maintained until this object is destroyed.
   class MappedMemory {
    public:
+    MappedMemory(const MappedMemory&) = delete;
+    MappedMemory& operator=(const MappedMemory&) = delete;
+
     ~MappedMemory();
 
     //! \brief Returns a pointer to the data requested by the user.
@@ -86,11 +88,13 @@ class ProcessMemoryMac : public ProcessMemory {
 
     // The outer class needs to be able to call this class’ private constructor.
     friend class ProcessMemoryMac;
-
-    DISALLOW_COPY_AND_ASSIGN(MappedMemory);
   };
 
   ProcessMemoryMac();
+
+  ProcessMemoryMac(const ProcessMemoryMac&) = delete;
+  ProcessMemoryMac& operator=(const ProcessMemoryMac&) = delete;
+
   ~ProcessMemoryMac() {}
 
   //! \brief Initializes this object to read the memory of a task with the
@@ -126,8 +130,6 @@ class ProcessMemoryMac : public ProcessMemory {
 
   task_t task_;  // weak
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMac);
 };
 
 }  // namespace crashpad

@@ -15,23 +15,24 @@ namespace cast_streaming {
 
 // Wrapper for a cast MessagePort that provides an Open Screen MessagePort
 // implementation.
-class CastMessagePortImpl : public openscreen::cast::MessagePort,
-                            public cast_api_bindings::MessagePort::Receiver {
+class CastMessagePortImpl final
+    : public openscreen::cast::MessagePort,
+      public cast_api_bindings::MessagePort::Receiver {
  public:
   CastMessagePortImpl(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
       base::OnceClosure on_close);
-  ~CastMessagePortImpl() final;
+  ~CastMessagePortImpl() override;
 
   CastMessagePortImpl(const CastMessagePortImpl&) = delete;
   CastMessagePortImpl& operator=(const CastMessagePortImpl&) = delete;
 
   // openscreen::cast::MessagePort implementation.
-  void SetClient(Client* client, std::string client_sender_id) final;
-  void ResetClient() final;
+  void SetClient(Client* client, std::string client_sender_id) override;
+  void ResetClient() override;
   void PostMessage(const std::string& sender_id,
                    const std::string& message_namespace,
-                   const std::string& message) final;
+                   const std::string& message) override;
 
  private:
   // Resets |message_port_| if it is open and signals an error to |client_| if
@@ -43,11 +44,16 @@ class CastMessagePortImpl : public openscreen::cast::MessagePort,
   void SendInjectResponse(const std::string& sender_id,
                           const std::string& message);
 
+  // Handles messages from the media namespace. Ignores play/pause requests and
+  // sends the media status as continuously playing.
+  void HandleMediaMessage(const std::string& sender_id,
+                          const std::string& message);
+
   // cast_api_bindings::MessagePort::Receiver implementation.
-  bool OnMessage(
-      base::StringPiece message,
-      std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) final;
-  void OnPipeError() final;
+  bool OnMessage(base::StringPiece message,
+                 std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
+                     ports) override;
+  void OnPipeError() override;
 
   Client* client_ = nullptr;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;

@@ -16,7 +16,8 @@
 #include "base/files/scoped_file.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
 namespace wl {
@@ -65,18 +66,17 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
   if (!viewporter_.Initialize(display_.get()))
     return false;
+  if (!alpha_compositing_.Initialize(display_.get()))
+    return false;
   if (!output_.Initialize(display_.get()))
     return false;
   SetupOutputs();
 
   if (!data_device_manager_.Initialize(display_.get()))
     return false;
-  if (config.primary_selection_protocol != PrimarySelectionProtocol::kNone) {
-    // TODO(crbug.com/1204670): Support gtk primary selection.
-    primary_selection_device_manager_.reset(CreateTestSelectionManagerZwp());
-    if (!primary_selection_device_manager_->Initialize(display_.get()))
-      return false;
-  }
+  if (!SetupPrimarySelectionManager(config.primary_selection_protocol))
+    return false;
+
   if (!seat_.Initialize(display_.get()))
     return false;
   if (config.shell_version == ShellVersion::kV6) {
@@ -86,11 +86,17 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     if (!xdg_shell_.Initialize(display_.get()))
       return false;
   }
+  if (!zcr_text_input_extension_v1_.Initialize(display_.get()))
+    return false;
   if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
     return false;
   if (!zwp_linux_explicit_synchronization_v1_.Initialize(display_.get()))
     return false;
   if (!zwp_linux_dmabuf_v1_.Initialize(display_.get()))
+    return false;
+  if (!overlay_prioritizer_.Initialize(display_.get()))
+    return false;
+  if (!surface_augmenter_.Initialize(display_.get()))
     return false;
 
   client_ = wl_client_create(display_.get(), server_fd.release());
@@ -138,6 +144,21 @@ void TestWaylandServerThread::SetupOutputs() {
   }
   if (output_.GetRect().IsEmpty())
     output_.SetRect(gfx::Rect{0, 0, 800, 600});
+}
+
+bool TestWaylandServerThread::SetupPrimarySelectionManager(
+    PrimarySelectionProtocol protocol) {
+  switch (protocol) {
+    case PrimarySelectionProtocol::kNone:
+      return true;
+    case PrimarySelectionProtocol::kZwp:
+      primary_selection_device_manager_.reset(CreateTestSelectionManagerZwp());
+      break;
+    case PrimarySelectionProtocol::kGtk:
+      primary_selection_device_manager_.reset(CreateTestSelectionManagerGtk());
+      break;
+  }
+  return primary_selection_device_manager_->Initialize(display_.get());
 }
 
 void TestWaylandServerThread::DoPause() {

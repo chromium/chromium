@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/continue_browsing_chip.h"
 
+#include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -17,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/phonehub/user_action_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/focus_ring.h"
@@ -141,8 +141,8 @@ void ContinueBrowsingChip::ButtonPressed() {
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
   user_action_recorder_->RecordBrowserTabOpened();
 
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      url_, /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(url_,
+                                            /*from_user_interaction=*/true);
 
   // Close Phone Hub bubble in current display.
   views::Widget* const widget = GetWidget();

@@ -20,9 +20,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
@@ -51,6 +51,11 @@ class DlcserviceErrorResponseHandler {
     VerifyAndSetErrorMessage(err_response);
     VLOG(1) << "Handling err=" << err_ << " err_msg=" << err_msg_;
   }
+
+  DlcserviceErrorResponseHandler(const DlcserviceErrorResponseHandler&) =
+      delete;
+  DlcserviceErrorResponseHandler& operator=(
+      const DlcserviceErrorResponseHandler&) = delete;
 
   ~DlcserviceErrorResponseHandler() = default;
 
@@ -91,8 +96,6 @@ class DlcserviceErrorResponseHandler {
 
   // Holds the entire error message from error response.
   std::string err_msg_;
-
-  DISALLOW_COPY_AND_ASSIGN(DlcserviceErrorResponseHandler);
 };
 
 }  // namespace
@@ -101,6 +104,9 @@ class DlcserviceErrorResponseHandler {
 class DlcserviceClientImpl : public DlcserviceClient {
  public:
   DlcserviceClientImpl() : dlcservice_proxy_(nullptr) {}
+
+  DlcserviceClientImpl(const DlcserviceClientImpl&) = delete;
+  DlcserviceClientImpl& operator=(const DlcserviceClientImpl&) = delete;
 
   ~DlcserviceClientImpl() override = default;
 
@@ -454,8 +460,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DlcserviceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DlcserviceClientImpl);
 };
 
 DlcserviceClient::DlcserviceClient() {

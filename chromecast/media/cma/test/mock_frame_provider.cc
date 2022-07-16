@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
@@ -50,7 +50,7 @@ void MockFrameProvider::Read(ReadCB read_cb) {
         FROM_HERE,
         base::BindOnce(&MockFrameProvider::DoRead, base::Unretained(this),
                        std::move(read_cb)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&MockFrameProvider::DoRead,
@@ -61,7 +61,7 @@ void MockFrameProvider::Read(ReadCB read_cb) {
 void MockFrameProvider::Flush(base::OnceClosure flush_cb) {
   if (delay_flush_) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, std::move(flush_cb), base::TimeDelta::FromMilliseconds(10));
+        FROM_HERE, std::move(flush_cb), base::Milliseconds(10));
   } else {
     std::move(flush_cb).Run();
   }
@@ -80,14 +80,14 @@ void MockFrameProvider::DoRead(ReadCB read_cb) {
     gfx::Rect visible_rect(640, 480);
     gfx::Size natural_size(640, 480);
     video_config = ::media::VideoDecoderConfig(
-        ::media::kCodecH264, ::media::VIDEO_CODEC_PROFILE_UNKNOWN,
+        ::media::VideoCodec::kH264, ::media::VIDEO_CODEC_PROFILE_UNKNOWN,
         ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
         ::media::VideoColorSpace(), ::media::kNoTransformation, coded_size,
         visible_rect, natural_size, ::media::EmptyExtraData(),
         ::media::EncryptionScheme::kUnencrypted);
 
     audio_config = ::media::AudioDecoderConfig(
-        ::media::kCodecAAC, ::media::kSampleFormatS16,
+        ::media::AudioCodec::kAAC, ::media::kSampleFormatS16,
         ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
         ::media::EncryptionScheme::kUnencrypted);
   }

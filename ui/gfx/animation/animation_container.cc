@@ -8,7 +8,6 @@
 #include "ui/gfx/animation/animation_container_element.h"
 #include "ui/gfx/animation/animation_container_observer.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace gfx {
@@ -118,7 +117,7 @@ void AnimationContainer::RestartTimer(base::TimeDelta elapsed) {
       base::BindRepeating(&AnimationContainer::Run, base::Unretained(this)));
 }
 
-std::pair<TimeDelta, size_t> AnimationContainer::GetMinIntervalAndCount()
+std::pair<base::TimeDelta, size_t> AnimationContainer::GetMinIntervalAndCount()
     const {
   DCHECK(is_running());
 
@@ -127,7 +126,7 @@ std::pair<TimeDelta, size_t> AnimationContainer::GetMinIntervalAndCount()
   // make this O(log n) instead of O(n). However, profiling shows that this
   // offers no practical performance gain (the most common case is that all
   // elements in the set share the same interval).
-  TimeDelta min;
+  base::TimeDelta min;
   size_t count = 1;
   auto i = elements_.begin();
   min = (*i)->GetTimerInterval();

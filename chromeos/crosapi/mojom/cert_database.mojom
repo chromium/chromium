@@ -6,8 +6,20 @@ module crosapi.mojom;
 
 [Stable, Extensible]
 struct GetCertDatabaseInfoResult {
-  string software_nss_db_path@0;
+  // Deprecated on 10/2021. Use `user_nss_database` from
+  // crosapi.BrowserInitParams instead.
+  // TODO(b/191958831): Delete the field when possible.
+  [RenamedFrom="software_nss_db_path"]
+  string DEPRECATED_software_nss_db_path@0;
   bool should_load_chaps@1;
+
+  [MinVersion=1]
+  uint32 private_slot_id@2;
+
+  [MinVersion=1]
+  bool enable_system_slot@3;
+  [MinVersion=1]
+  uint32 system_slot_id@4;
 };
 
 // This interface is implemented by Ash-Chrome.
@@ -15,5 +27,6 @@ struct GetCertDatabaseInfoResult {
 interface CertDatabase {
   // Waits until Ash-Chrome finishes certificate database initialization and
   // returns necessary data for Lacros-Chrome to connect to it.
+  [MinVersion=1]
   GetCertDatabaseInfo@0() => (GetCertDatabaseInfoResult? result);
 };

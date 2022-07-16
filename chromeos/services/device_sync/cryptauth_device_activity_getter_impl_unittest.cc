@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
@@ -85,6 +84,12 @@ const cryptauthv2::GetDevicesActivityStatusResponse& GetResponse() {
 class DeviceSyncCryptAuthDeviceActivityGetterImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthDeviceActivityGetterImplTest(
+      const DeviceSyncCryptAuthDeviceActivityGetterImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceActivityGetterImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceActivityGetterImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthDeviceActivityGetterImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -203,8 +208,6 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   base::MockOneShotTimer* timer_;
 
   std::unique_ptr<CryptAuthDeviceActivityGetter> device_activity_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceActivityGetterImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest, Success) {

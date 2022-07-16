@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/retry_verifier.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -24,6 +24,11 @@ using syncer::SyncCycleSnapshot;
 class SyncExponentialBackoffTest : public SyncTest {
  public:
   SyncExponentialBackoffTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SyncExponentialBackoffTest(const SyncExponentialBackoffTest&) = delete;
+  SyncExponentialBackoffTest& operator=(const SyncExponentialBackoffTest&) =
+      delete;
+
   ~SyncExponentialBackoffTest() override {}
 
   void SetUp() override {
@@ -31,9 +36,6 @@ class SyncExponentialBackoffTest : public SyncTest {
     net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
     SyncTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncExponentialBackoffTest);
 };
 
 // Helper class that checks if a sync client has successfully gone through
@@ -46,6 +48,10 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
         service()->GetLastCycleSnapshotForDebugging();
     retry_verifier_.Initialize(snap);
   }
+
+  ExponentialBackoffChecker(const ExponentialBackoffChecker&) = delete;
+  ExponentialBackoffChecker& operator=(const ExponentialBackoffChecker&) =
+      delete;
 
   // Checks if backoff is complete. Called repeatedly each time SyncServiceImpl
   // notifies observers of a state change.
@@ -63,8 +69,6 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
   // Keeps track of the number of attempts at exponential backoff and its
   // related bookkeeping information for verification.
   RetryVerifier retry_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExponentialBackoffChecker);
 };
 
 // Flaky on ChromeOS, crbug.com/1170609
@@ -123,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
   base::TimeDelta recovery_time =
       GetSyncService(0)->GetLastCycleSnapshotForDebugging().sync_start_time() -
       network_notification_time;
-  EXPECT_LE(recovery_time, base::TimeDelta::FromSeconds(2));
+  EXPECT_LE(recovery_time, base::Seconds(2));
 }
 
 IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, ServerRedirect) {

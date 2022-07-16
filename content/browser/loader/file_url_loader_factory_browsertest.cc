@@ -20,7 +20,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -74,6 +73,11 @@ class TestFileAccessContentBrowserClient : public TestContentBrowserClient {
     blocked_path_ = AbsoluteFilePath(blocked_path);
   }
 
+  TestFileAccessContentBrowserClient(
+      const TestFileAccessContentBrowserClient&) = delete;
+  TestFileAccessContentBrowserClient& operator=(
+      const TestFileAccessContentBrowserClient&) = delete;
+
   ~TestFileAccessContentBrowserClient() override {
     EXPECT_EQ(this, SetBrowserClientForTesting(old_content_browser_client_));
   }
@@ -100,8 +104,6 @@ class TestFileAccessContentBrowserClient : public TestContentBrowserClient {
   base::FilePath blocked_path_;
 
   std::vector<FileAccessAllowedArgs> access_allowed_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileAccessContentBrowserClient);
 };
 
 // This class contains integration tests for file URLs.

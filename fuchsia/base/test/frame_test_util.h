@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_BASE_TEST_FRAME_TEST_UTIL_H_
 #define FUCHSIA_BASE_TEST_FRAME_TEST_UTIL_H_
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "base/strings/string_piece.h"

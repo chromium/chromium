@@ -11,6 +11,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/policy_constants.h"
@@ -24,7 +25,7 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkService(
   return std::make_unique<bookmarks::ManagedBookmarkService>(
       profile->GetPrefs(),
       base::BindRepeating(
-          &ManagedBookmarkServiceFactory::GetManagedBookmarksDomain,
+          &ManagedBookmarkServiceFactory::GetManagedBookmarksManager,
           base::Unretained(profile)));
 }
 
@@ -49,13 +50,16 @@ ManagedBookmarkServiceFactory::GetDefaultFactory() {
 }
 
 // static
-std::string ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(
+std::string ManagedBookmarkServiceFactory::GetManagedBookmarksManager(
     Profile* profile) {
   policy::ProfilePolicyConnector* connector =
       profile->GetProfilePolicyConnector();
   if (connector->IsManaged() &&
       connector->IsProfilePolicy(policy::key::kManagedBookmarks)) {
-    return gaia::ExtractDomainName(profile->GetProfileUserName());
+    absl::optional<std::string> account_manager =
+        chrome::GetAccountManagerIdentity(profile);
+    if (account_manager)
+      return *account_manager;
   }
   return std::string();
 }

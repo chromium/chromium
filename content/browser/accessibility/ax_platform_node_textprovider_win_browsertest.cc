@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
   auto* node =
       FindNode(ax::mojom::Role::kStaticText, "AAA BBB\nCCCCCC\nDDDDDD");
   ASSERT_NE(nullptr, node);
-  EXPECT_TRUE(node->PlatformIsLeaf());
+  EXPECT_TRUE(node->IsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());
 
   ComPtr<ITextProvider> text_provider;

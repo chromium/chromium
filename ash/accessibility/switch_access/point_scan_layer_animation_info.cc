@@ -5,7 +5,7 @@
 #include "ash/accessibility/switch_access/point_scan_layer_animation_info.h"
 
 namespace {
-constexpr base::TimeDelta kLingerDelay = base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kLingerDelay = base::Milliseconds(250);
 }
 
 namespace ash {

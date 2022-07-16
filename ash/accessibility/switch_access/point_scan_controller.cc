@@ -31,6 +31,10 @@ void PointScanController::Start() {
   HideAll();
   ResetAnimation();
   StartHorizontalRangeScan();
+  point_scan_animation_ = std::make_unique<AccessibilityAnimationOneShot>(
+      gfx::Rect(0, 0, 0, 0),
+      base::BindRepeating(&PointScanController::AnimateLine,
+                          base::Unretained(this)));
 }
 
 void PointScanController::StartHorizontalRangeScan() {
@@ -90,6 +94,7 @@ void PointScanController::Stop() {
   state_ = PointScanState::kOff;
   vertical_line_layer_->Pause();
   vertical_range_layer_->SetOpacity(0);
+  point_scan_animation_.reset();
 }
 
 void PointScanController::HideAll() {
@@ -176,11 +181,6 @@ void PointScanController::SetSpeedDipsPerSecond(int speed_dips_per_second) {
 
 void PointScanController::OnDeviceScaleFactorChanged() {}
 
-bool PointScanController::OnAnimationStep(base::TimeTicks timestamp) {
-  AnimateLine(timestamp);
-  return state_ == PointScanState::kOff;
-}
-
 void PointScanController::UpdateTimeInfo(
     PointScanLayerAnimationInfo* animation_info,
     base::TimeTicks timestamp) {
@@ -188,7 +188,7 @@ void PointScanController::UpdateTimeInfo(
   animation_info->change_time = timestamp;
 }
 
-void PointScanController::AnimateLine(base::TimeTicks timestamp) {
+bool PointScanController::AnimateLine(base::TimeTicks timestamp) {
   if (horizontal_range_layer_->IsMoving()) {
     ComputeOffset(&horizontal_range_layer_info_, timestamp);
     horizontal_range_layer_->SetSubpixelPositionOffset(
@@ -210,6 +210,8 @@ void PointScanController::AnimateLine(base::TimeTicks timestamp) {
         gfx::Vector2dF(0.0, vertical_line_layer_info_.offset));
     UpdateTimeInfo(&vertical_line_layer_info_, timestamp);
   }
+
+  return false;
 }
 
 }  // namespace ash

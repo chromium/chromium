@@ -26,6 +26,10 @@ class DisassemblerWin32X86 : public DisassemblerWin32 {
   }
 
   DisassemblerWin32X86(const uint8_t* start, size_t length);
+
+  DisassemblerWin32X86(const DisassemblerWin32X86&) = delete;
+  DisassemblerWin32X86& operator=(const DisassemblerWin32X86&) = delete;
+
   ~DisassemblerWin32X86() override = default;
 
   // Disassembler interfaces.
@@ -47,9 +51,6 @@ class DisassemblerWin32X86 : public DisassemblerWin32 {
   uint16_t RelativeOffsetOfDataDirectories() const override {
     return kOffsetOfDataDirectoryFromImageOptionalHeader32;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerWin32X86);
 };
 
 }  // namespace courgette

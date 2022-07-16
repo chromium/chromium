@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -189,6 +188,11 @@ class ASH_EXPORT TouchExplorationController
       aura::Window* root_window,
       TouchExplorationControllerDelegate* delegate,
       base::WeakPtr<TouchAccessibilityEnabler> touch_accessibility_enabler);
+
+  TouchExplorationController(const TouchExplorationController&) = delete;
+  TouchExplorationController& operator=(const TouchExplorationController&) =
+      delete;
+
   ~TouchExplorationController() override;
 
   // Make synthesized touch events are anchored at this point. This is
@@ -554,8 +558,6 @@ class ASH_EXPORT TouchExplorationController
 
   // The maximum touch points seen in the current gesture.
   size_t max_gesture_touch_points_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationController);
 };
 
 }  // namespace ash

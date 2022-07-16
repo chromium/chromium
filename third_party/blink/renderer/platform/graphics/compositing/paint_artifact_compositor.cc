@@ -135,12 +135,12 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     return nullptr;
 
   cc::Layer* layer = nullptr;
-  FloatPoint layer_offset;
+  gfx::Vector2dF layer_offset;
   if (pending_layer.GetCompositingType() == PendingLayer::kPreCompositedLayer) {
     DCHECK(pending_layer.GetGraphicsLayer());
     DCHECK(!pending_layer.GetGraphicsLayer()->ShouldCreateLayersAfterPaint());
     layer = &pending_layer.GetGraphicsLayer()->CcLayer();
-    layer_offset = FloatPoint(
+    layer_offset = gfx::Vector2dF(
         pending_layer.GetGraphicsLayer()->GetOffsetFromTransformNode());
   } else {
     DCHECK_EQ(pending_layer.GetCompositingType(), PendingLayer::kForeignLayer);
@@ -152,11 +152,11 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     const auto& foreign_layer_display_item =
         To<ForeignLayerDisplayItem>(pending_layer.FirstDisplayItem());
     layer = foreign_layer_display_item.GetLayer();
-    layer_offset =
-        FloatPoint(foreign_layer_display_item.VisualRect().Location());
+    layer_offset = gfx::Vector2dF(
+        foreign_layer_display_item.VisualRect().OffsetFromOrigin());
   }
-  layer->SetOffsetToTransformParent(gfx::Vector2dF(
-      layer_offset + pending_layer.OffsetOfDecompositedTransforms()));
+  layer->SetOffsetToTransformParent(
+      layer_offset + pending_layer.OffsetOfDecompositedTransforms());
   return layer;
 }
 
@@ -180,7 +180,7 @@ PaintArtifactCompositor::ScrollHitTestLayerForPendingLayer(
     return nullptr;
 
   // We shouldn't decomposite scroll transform nodes.
-  DCHECK_EQ(FloatPoint(), pending_layer.OffsetOfDecompositedTransforms());
+  DCHECK_EQ(gfx::Vector2dF(), pending_layer.OffsetOfDecompositedTransforms());
 
   const auto& scroll_node =
       *pending_layer.ScrollTranslationForScrollHitTestLayer().ScrollNode();
@@ -203,16 +203,14 @@ PaintArtifactCompositor::ScrollHitTestLayerForPendingLayer(
   }
 
   scroll_layer->SetOffsetToTransformParent(
-      gfx::Vector2dF(FloatPoint(scroll_node.ContainerRect().Location())));
+      gfx::Vector2dF(scroll_node.ContainerRect().OffsetFromOrigin()));
   // TODO(pdr): The scroll layer's bounds are currently set to the clipped
   // container bounds but this does not include the border. We may want to
   // change this behavior to make non-composited and composited hit testing
   // match (see: crbug.com/753124). To do this, use
-  // |scroll_hit_test->scroll_container_bounds|.
-  auto bounds = scroll_node.ContainerRect().Size();
-  // Set the layer's bounds equal to the container because the scroll layer
-  // does not scroll.
-  scroll_layer->SetBounds(static_cast<gfx::Size>(bounds));
+  // |scroll_hit_test->scroll_container_bounds|. Set the layer's bounds equal
+  // to the container because the scroll layer does not scroll.
+  scroll_layer->SetBounds(scroll_node.ContainerRect().size());
 
   if (scroll_node.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
     scroll_layer->SetNeedsPushProperties();
@@ -289,8 +287,8 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   std::unique_ptr<ContentLayerClientImpl> content_layer_client =
       ClientForPaintChunk(pending_layer.FirstPaintChunk());
 
-  FloatPoint layer_offset = pending_layer.LayerOffset();
-  IntSize layer_bounds = pending_layer.LayerBounds();
+  gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
+  gfx::Size layer_bounds = pending_layer.LayerBounds();
   auto cc_layer = content_layer_client->UpdateCcPictureLayer(
       pending_layer.Chunks(), layer_offset, layer_bounds,
       pending_layer.GetPropertyTreeState());
@@ -301,7 +299,8 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   // here to avoid changing foreign layers. This includes things set by
   // GraphicsLayer on the ContentsLayer() or by video clients etc.
   bool contents_opaque = pending_layer.RectKnownToBeOpaque().Contains(
-      FloatRect(layer_offset, FloatSize(layer_bounds)));
+      gfx::RectF(gfx::PointAtOffsetFromOrigin(layer_offset),
+                 gfx::SizeF(layer_bounds)));
   cc_layer->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_layer->SetContentsOpaqueForText(
@@ -342,6 +341,16 @@ bool NeedsFullUpdateAfterPaintingChunk(
     DCHECK_EQ(previous.text_known_to_be_on_opaque_background,
               repainted.text_known_to_be_on_opaque_background);
     DCHECK_EQ(previous.has_text, repainted.has_text);
+
+    // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
+    // Before returning that a full update is not needed, check that the
+    // properties are changed, which would indicate a missing call to
+    // SetNeedsUpdate.
+    if (previous.properties != repainted.properties) {
+      NOTREACHED();
+      return true;
+    }
+
     // Not checking ForeignLayer() here because the old ForeignDisplayItem
     // was set to 0 when we moved the cached subsequence. This is also the
     // reason why we check is_moved_from_cached_subsequence before checking
@@ -376,6 +385,15 @@ bool NeedsFullUpdateAfterPaintingChunk(
   // |PendingLayer::MergeInternal|).
   if (previous.has_text != repainted.has_text)
     return true;
+
+  // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
+  // Before returning that a full update is not needed, check that the
+  // properties are changed, which would indicate a missing call to
+  // SetNeedsUpdate.
+  if (previous.properties != repainted.properties) {
+    NOTREACHED();
+    return true;
+  }
 
   return false;
 }
@@ -573,7 +591,7 @@ void PaintArtifactCompositor::LayerizeGroup(
 }
 
 void PaintArtifactCompositor::CollectPendingLayers(
-    const Vector<PreCompositedLayerInfo>& pre_composited_layers) {
+    const HeapVector<PreCompositedLayerInfo>& pre_composited_layers) {
   // Shrink, but do not release the backing. Re-use it from the last frame.
   pending_layers_.Shrink(0);
   for (auto& layer : pre_composited_layers) {
@@ -606,20 +624,20 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
   }
 
   const RefCountedPath* path = clip.ClipPath();
-  SkRRect new_rrect = clip.PixelSnappedClipRect();
-  IntRect layer_bounds = EnclosingIntRect(clip.PixelSnappedClipRect().Rect());
+  SkRRect new_rrect = clip.PaintClipRect();
+  IntRect layer_bounds = EnclosingIntRect(clip.PaintClipRect().Rect());
   bool needs_display = false;
 
   auto new_translation_2d_or_matrix =
       GeometryMapper::SourceToDestinationProjection(clip.LocalTransformSpace(),
                                                     transform);
   new_translation_2d_or_matrix.MapRect(layer_bounds);
-  new_translation_2d_or_matrix.PostTranslate(-layer_bounds.X(),
-                                             -layer_bounds.Y());
+  new_translation_2d_or_matrix.PostTranslate(-layer_bounds.x(),
+                                             -layer_bounds.y());
 
   if (!path && new_translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
     const auto& translation = new_translation_2d_or_matrix.Translation2D();
-    new_rrect.offset(translation.Width(), translation.Height());
+    new_rrect.offset(translation.x(), translation.y());
     needs_display = !rrect_is_local_ || new_rrect != rrect_;
     translation_2d_or_matrix_ = GeometryMapper::Translation2DOrMatrix();
     rrect_is_local_ = true;
@@ -635,8 +653,8 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
     layer_->SetNeedsDisplay();
 
   layer_->SetOffsetToTransformParent(
-      gfx::Vector2dF(layer_bounds.X(), layer_bounds.Y()));
-  layer_->SetBounds(gfx::Size(layer_bounds.Size()));
+      gfx::Vector2dF(layer_bounds.x(), layer_bounds.y()));
+  layer_->SetBounds(ToGfxSize(layer_bounds.size()));
   rrect_ = new_rrect;
   path_ = path;
 }
@@ -654,7 +672,7 @@ SynthesizedClip::PaintContentsToDisplayList() {
     cc_list->push<cc::SaveOp>();
     if (translation_2d_or_matrix_.IsIdentityOr2DTranslation()) {
       const auto& translation = translation_2d_or_matrix_.Translation2D();
-      cc_list->push<cc::TranslateOp>(translation.Width(), translation.Height());
+      cc_list->push<cc::TranslateOp>(translation.x(), translation.y());
     } else {
       cc_list->push<cc::ConcatOp>(
           TransformationMatrix::ToSkM44(translation_2d_or_matrix_.Matrix()));
@@ -712,7 +730,7 @@ static void UpdateCompositorViewportProperties(
   DCHECK(!properties.outer_clip ||
          static_cast<bool>(properties.inner_scroll_translation));
 
-  cc::LayerTreeHost::ViewportPropertyIds ids;
+  cc::ViewportPropertyIds ids;
   if (properties.overscroll_elasticity_transform) {
     ids.overscroll_elasticity_transform =
         property_tree_manager.EnsureCompositorTransformNode(
@@ -744,7 +762,7 @@ static void UpdateCompositorViewportProperties(
 }
 
 void PaintArtifactCompositor::Update(
-    const Vector<PreCompositedLayerInfo>& pre_composited_layers,
+    const HeapVector<PreCompositedLayerInfo>& pre_composited_layers,
     const ViewportProperties& viewport_properties,
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
     Vector<std::unique_ptr<cc::DocumentTransitionRequest>>
@@ -809,7 +827,8 @@ void PaintArtifactCompositor::Update(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,
         new_scrollbar_layers);
 
-    UpdateLayerProperties(*layer, pending_layer, layer_selection);
+    UpdateLayerProperties(*layer, pending_layer);
+    UpdateLayerSelection(*layer, pending_layer, layer_selection);
 
     layer->SetLayerTreeHost(root_layer_->layer_tree_host());
 
@@ -882,7 +901,8 @@ void PaintArtifactCompositor::Update(
   auto* new_end = std::remove_if(
       synthesized_clip_cache_.begin(), synthesized_clip_cache_.end(),
       [](const auto& entry) { return !entry.in_use; });
-  synthesized_clip_cache_.Shrink(new_end - synthesized_clip_cache_.begin());
+  synthesized_clip_cache_.Shrink(
+      static_cast<wtf_size_t>(new_end - synthesized_clip_cache_.begin()));
 
   // This should be done before UpdateRenderSurfaceForEffects() for which to
   // get property tree node ids from the layers.
@@ -915,8 +935,7 @@ void PaintArtifactCompositor::Update(
 
 void PaintArtifactCompositor::UpdateLayerProperties(
     cc::Layer& layer,
-    const PendingLayer& pending_layer,
-    cc::LayerSelection& layer_selection) {
+    const PendingLayer& pending_layer) {
   // Properties of foreign layers are managed by their owners.
   if (pending_layer.GetCompositingType() == PendingLayer::kForeignLayer)
     return;
@@ -927,9 +946,30 @@ void PaintArtifactCompositor::UpdateLayerProperties(
                                 ->GetPaintController()
                                 .GetPaintArtifactShared());
     PaintChunksToCcLayer::UpdateLayerProperties(
-        layer, pending_layer.GetPropertyTreeState(), chunks, layer_selection);
+        layer, pending_layer.GetPropertyTreeState(), chunks);
   } else {
     PaintChunksToCcLayer::UpdateLayerProperties(
+        layer, pending_layer.GetPropertyTreeState(), pending_layer.Chunks());
+  }
+}
+
+void PaintArtifactCompositor::UpdateLayerSelection(
+    cc::Layer& layer,
+    const PendingLayer& pending_layer,
+    cc::LayerSelection& layer_selection) {
+  // Foreign layers cannot contain selection.
+  if (pending_layer.GetCompositingType() == PendingLayer::kForeignLayer)
+    return;
+
+  if (pending_layer.GetGraphicsLayer() &&
+      pending_layer.GetGraphicsLayer()->PaintsContentOrHitTest()) {
+    PaintChunkSubset chunks(pending_layer.GetGraphicsLayer()
+                                ->GetPaintController()
+                                .GetPaintArtifactShared());
+    PaintChunksToCcLayer::UpdateLayerSelection(
+        layer, pending_layer.GetPropertyTreeState(), chunks, layer_selection);
+  } else {
+    PaintChunksToCcLayer::UpdateLayerSelection(
         layer, pending_layer.GetPropertyTreeState(), pending_layer.Chunks(),
         layer_selection);
   }
@@ -937,19 +977,12 @@ void PaintArtifactCompositor::UpdateLayerProperties(
 
 void PaintArtifactCompositor::UpdateRepaintedContentLayerClient(
     const PendingLayer& pending_layer,
+    bool pending_layer_chunks_unchanged,
     ContentLayerClientImpl& content_layer_client) {
-  bool all_moved_from_cached_subsequence = true;
-  for (const auto& chunk : pending_layer.Chunks()) {
-    if (!chunk.is_moved_from_cached_subsequence) {
-      all_moved_from_cached_subsequence = false;
-      break;
-    }
-  }
-
-  // Checking |all_moved_from_cached_subsequence| is an optimization to
-  // avoid the expensive call to |UpdateCcPictureLayer| when no repainting
-  // occurs for this PendingLayer.
-  if (all_moved_from_cached_subsequence) {
+  // Checking |pending_layer_chunks_unchanged| is an optimization to avoid the
+  // expensive call to |UpdateCcPictureLayer| when no repainting occurs for this
+  // PendingLayer.
+  if (pending_layer_chunks_unchanged) {
     // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
     content_layer_client.GetRasterInvalidator().SetOldPaintArtifact(
         &pending_layer.Chunks().GetPaintArtifact());
@@ -969,7 +1002,7 @@ class PreCompositedLayerPaintChunkFinder {
 
  public:
   explicit PreCompositedLayerPaintChunkFinder(
-      Vector<PreCompositedLayerInfo>& pre_composited_layers)
+      HeapVector<PreCompositedLayerInfo>& pre_composited_layers)
       : pre_composited_layers_(pre_composited_layers),
         pre_composited_layer_it_(pre_composited_layers_.begin()),
         subset_iterator_(pre_composited_layer_it_->chunks.begin()) {}
@@ -1002,15 +1035,15 @@ class PreCompositedLayerPaintChunkFinder {
   }
 
  private:
-  Vector<PreCompositedLayerInfo>& pre_composited_layers_;
-  Vector<PreCompositedLayerInfo>::iterator pre_composited_layer_it_;
+  HeapVector<PreCompositedLayerInfo>& pre_composited_layers_;
+  HeapVector<PreCompositedLayerInfo>::iterator pre_composited_layer_it_;
   PaintChunkSubset::Iterator subset_iterator_;
 };
 
 }  // namespace
 
 void PaintArtifactCompositor::UpdateRepaintedLayers(
-    Vector<PreCompositedLayerInfo>& pre_composited_layers) {
+    HeapVector<PreCompositedLayerInfo>& pre_composited_layers) {
   // |Update| should be used for full updates.
   DCHECK(!needs_update_);
 
@@ -1045,12 +1078,14 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
         !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       // These layers are fully managed externally and do not need an update.
     } else if (compositing_type == PendingLayer::kPreCompositedLayer) {
-      // These are Pre-CompositeAfterPaint layers where the raster invalidation
-      // has already occurred and we just need to update the layer properties.
+      // These are Pre-CompositeAfterPaint layers where raster invalidation has
+      // already occurred and we just need to update layer properties&selection.
       DCHECK(pending_layer_it->GetGraphicsLayer());
       if (pending_layer_it->GetGraphicsLayer()->Repainted()) {
         UpdateLayerProperties(pending_layer_it->GetGraphicsLayer()->CcLayer(),
-                              *pending_layer_it, layer_selection);
+                              *pending_layer_it);
+        UpdateLayerSelection(pending_layer_it->GetGraphicsLayer()->CcLayer(),
+                             *pending_layer_it, layer_selection);
       }
     } else {
       // These are CompositeAfterPaint (or CompositeSVG) layers and we need to
@@ -1082,6 +1117,14 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
                 repainted_artifact.PaintChunks().size());
       pending_layer_it->SetPaintArtifact(&repainted_artifact);
 
+      bool pending_layer_chunks_unchanged = true;
+      for (const auto& chunk : pending_layer_it->Chunks()) {
+        if (!chunk.is_moved_from_cached_subsequence) {
+          pending_layer_chunks_unchanged = false;
+          break;
+        }
+      }
+
       cc::Layer* cc_layer = nullptr;
       switch (pending_layer_it->GetCompositingType()) {
         case PendingLayer::kPreCompositedLayer:
@@ -1099,13 +1142,17 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
           break;
         default:
           UpdateRepaintedContentLayerClient(*pending_layer_it,
+                                            pending_layer_chunks_unchanged,
                                             **content_layer_client_it);
           cc_layer = &(*content_layer_client_it)->Layer();
           ++content_layer_client_it;
           break;
       }
       DCHECK(cc_layer);
-      UpdateLayerProperties(*cc_layer, *pending_layer_it, layer_selection);
+
+      if (!pending_layer_chunks_unchanged)
+        UpdateLayerProperties(*cc_layer, *pending_layer_it);
+      UpdateLayerSelection(*cc_layer, *pending_layer_it, layer_selection);
     }
   }
 
@@ -1187,9 +1234,9 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
   auto* property_trees = root_layer_->layer_tree_host()->property_trees();
   if (!property_trees->element_id_to_scroll_node_index.contains(element_id))
     return false;
-  PropertyTreeManager::DirectlySetScrollOffset(
-      *root_layer_->layer_tree_host(), element_id,
-      gfx::ScrollOffset(scroll_offset));
+  PropertyTreeManager::DirectlySetScrollOffset(*root_layer_->layer_tree_host(),
+                                               element_id,
+                                               ToGfxVector2dF(scroll_offset));
   return true;
 }
 
@@ -1231,7 +1278,7 @@ void PaintArtifactCompositor::UpdateRenderSurfaceForEffects(
     const Vector<const EffectPaintPropertyNode*>& blink_effects) {
   // This vector is indexed by effect node id. The value is the number of
   // layers and sub-render-surfaces controlled by this effect.
-  Vector<int> effect_layer_counts(effect_tree.size());
+  Vector<int> effect_layer_counts(static_cast<wtf_size_t>(effect_tree.size()));
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
     if (layer->DrawsContent())
@@ -1241,7 +1288,7 @@ void PaintArtifactCompositor::UpdateRenderSurfaceForEffects(
   // In the effect tree, parent always has lower id than children, so the
   // following loop will check descendants before parents and accumulate
   // effect_layer_counts.
-  for (auto id = effect_tree.size() - 1;
+  for (int id = static_cast<int>(effect_tree.size() - 1);
        id > cc::EffectTree::kSecondaryRootNodeId; id--) {
     auto* effect = effect_tree.Node(id);
     if (effect_layer_counts[id] > 1) {
@@ -1289,11 +1336,13 @@ void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
 static void UpdateLayerDebugInfo(
     cc::Layer& layer,
     const PaintChunk::Id& id,
+    const String& name,
+    DOMNodeId owner_node_id,
     CompositingReasons compositing_reasons,
     RasterInvalidationTracking* raster_invalidation_tracking) {
   cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
 
-  debug_info.name = id.client.DebugName().Utf8();
+  debug_info.name = name.Utf8();
   if (id.type == DisplayItem::kForeignLayerContentsWrapper) {
     // This is for backward compatibility in pre-CompositeAfterPaint mode.
     DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
@@ -1304,13 +1353,24 @@ static void UpdateLayerDebugInfo(
       CompositingReason::Descriptions(compositing_reasons);
   debug_info.compositing_reason_ids =
       CompositingReason::ShortNames(compositing_reasons);
-  debug_info.owner_node_id = id.client.OwnerNodeId();
+  debug_info.owner_node_id = owner_node_id;
 
   if (RasterInvalidationTracking::IsTracingRasterInvalidations() &&
       raster_invalidation_tracking) {
     raster_invalidation_tracking->AddToLayerDebugInfo(debug_info);
     raster_invalidation_tracking->ClearInvalidations();
   }
+}
+
+static void UpdateLayerDebugInfo(
+    cc::Layer& layer,
+    const PaintChunk::Id& id,
+    const PaintArtifact& paint_artifact,
+    CompositingReasons compositing_reasons,
+    RasterInvalidationTracking* raster_invalidation_tracking) {
+  UpdateLayerDebugInfo(layer, id, paint_artifact.ClientDebugName(id.client_id),
+                       paint_artifact.ClientOwnerNodeId(id.client_id),
+                       compositing_reasons, raster_invalidation_tracking);
 }
 
 void PaintArtifactCompositor::UpdateDebugInfo() const {
@@ -1349,13 +1409,22 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
         ++content_layer_client_it;
         break;
     }
-    UpdateLayerDebugInfo(
-        *layer,
-        pending_layer.GetGraphicsLayer()
-            ? PaintChunk::Id(*pending_layer.GetGraphicsLayer(),
-                             DisplayItem::kUninitializedType)
-            : pending_layer.FirstPaintChunk().id,
-        GetCompositingReasons(pending_layer, previous_pending_layer), tracking);
+    if (pending_layer.GetGraphicsLayer()) {
+      UpdateLayerDebugInfo(
+          *layer,
+          PaintChunk::Id(pending_layer.GetGraphicsLayer()->Id(),
+                         DisplayItem::kUninitializedType),
+          pending_layer.GetGraphicsLayer()->DebugName(),
+          pending_layer.GetGraphicsLayer()->OwnerNodeId(),
+          GetCompositingReasons(pending_layer, previous_pending_layer),
+          tracking);
+    } else {
+      UpdateLayerDebugInfo(
+          *layer, pending_layer.FirstPaintChunk().id,
+          pending_layer.Chunks().GetPaintArtifact(),
+          GetCompositingReasons(pending_layer, previous_pending_layer),
+          tracking);
+    }
     previous_pending_layer = &pending_layer;
   }
 }

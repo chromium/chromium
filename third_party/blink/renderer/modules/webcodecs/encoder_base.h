@@ -16,9 +16,14 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
+#include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace blink {
 
@@ -29,6 +34,7 @@ template <typename Traits>
 class MODULES_EXPORT EncoderBase
     : public ScriptWrappable,
       public ActiveScriptWrappable<EncoderBase<Traits>>,
+      public ReclaimableCodec,
       public ExecutionContextLifecycleObserver {
  public:
   using InitType = typename Traits::Init;
@@ -112,6 +118,7 @@ class MODULES_EXPORT EncoderBase
   virtual void HandleError(DOMException* ex);
   virtual void EnqueueRequest(Request* request);
   virtual void ProcessRequests();
+  virtual bool ReadyToProcessNextRequest();
   virtual void ProcessEncode(Request* request) = 0;
   virtual void ProcessConfigure(Request* request) = 0;
   virtual void ProcessReconfigure(Request* request) = 0;
@@ -123,6 +130,9 @@ class MODULES_EXPORT EncoderBase
   virtual InternalConfigType* ParseConfig(const ConfigType*,
                                           ExceptionState&) = 0;
   virtual bool VerifyCodecSupport(InternalConfigType*, ExceptionState&) = 0;
+
+  // ReclaimableCodec implementation.
+  void OnCodecReclaimed(DOMException*) override;
 
   void TraceQueueSizes() const;
 
@@ -145,14 +155,18 @@ class MODULES_EXPORT EncoderBase
   uint32_t reset_count_ = 0;
 
   // Some kConfigure and kFlush requests can't be executed in parallel with
-  // kEncode. This flag stops processing of new requests in the requests_ queue
-  // till the current requests are finished.
-  bool stall_request_processing_ = false;
+  // kEncode. Even some kEncode might have synchronous parts like readback.
+  // This flag stops processing of new requests in the requests_ queue
+  // till the current request is finished.
+  bool blocking_request_in_progress_ = false;
 
   bool first_output_after_configure_ = true;
 
   // Used to differentiate Encoders' counters during tracing.
   int trace_counter_id_;
+
+  // A runner for callbacks and deleting objects.
+  scoped_refptr<base::SingleThreadTaskRunner> callback_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -12,10 +12,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
@@ -453,6 +453,9 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
+  AudioPowerObserver(const AudioPowerObserver&) = delete;
+  AudioPowerObserver& operator=(const AudioPowerObserver&) = delete;
+
   ~AudioPowerObserver() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (!is_monitoring_)
@@ -491,8 +494,8 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     DVLOG(1) << "OnResume";
     ++num_resume_notifications_;
     is_suspending_ = false;
-    earliest_start_time_ = base::TimeTicks::Now() +
-        base::TimeDelta::FromSeconds(kStartDelayInSecsForPowerEvents);
+    earliest_start_time_ =
+        base::TimeTicks::Now() + base::Seconds(kStartDelayInSecsForPowerEvents);
   }
 
   bool is_suspending_;
@@ -500,8 +503,6 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
   base::TimeTicks earliest_start_time_;
   base::ThreadChecker thread_checker_;
   size_t num_resume_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPowerObserver);
 };
 
 AudioManagerMac::AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
@@ -669,10 +670,12 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   std::vector<AudioObjectID> related_device_ids =
       core_audio_mac::GetRelatedDeviceIDs(input_device_id);
 
-  std::vector<AudioObjectID> related_output_device_ids;
+  // Defined as a set as device IDs might be duplicated in
+  // GetRelatedDeviceIDs().
+  base::flat_set<AudioObjectID> related_output_device_ids;
   for (AudioObjectID device_id : related_device_ids) {
     if (core_audio_mac::GetNumStreams(device_id, false /* is_input */) > 0)
-      related_output_device_ids.push_back(device_id);
+      related_output_device_ids.insert(device_id);
   }
 
   // Return the device ID if there is only one associated device.
@@ -681,7 +684,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   // to an endpoint, so we cannot randomly pick a device.
   if (related_output_device_ids.size() == 1) {
     absl::optional<std::string> related_unique_id =
-        core_audio_mac::GetDeviceUniqueID(related_output_device_ids[0]);
+        core_audio_mac::GetDeviceUniqueID(*related_output_device_ids.begin());
     if (related_unique_id)
       return std::move(*related_unique_id);
   }
@@ -1122,7 +1125,7 @@ base::TimeDelta AudioManagerMac::GetHardwareLatency(
         << "Could not get audio device stream ids size.";
   }
 
-  return base::TimeDelta::FromSecondsD(audio_unit_latency_sec) +
+  return base::Seconds(audio_unit_latency_sec) +
          AudioTimestampHelper::FramesToTime(
              device_latency_frames + stream_latency_frames, sample_rate);
 }
@@ -1147,7 +1150,7 @@ bool AudioManagerMac::SuppressNoiseReduction(AudioDeviceID device_id) {
 
     if (initially_enabled) {
       const UInt32 disable = 0;
-      OSStatus result =
+      result =
           AudioObjectSetPropertyData(device_id, &kNoiseReductionPropertyAddress,
                                      0, nullptr, sizeof(disable), &disable);
       if (result != noErr) {

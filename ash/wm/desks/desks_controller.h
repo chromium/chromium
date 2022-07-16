@@ -11,16 +11,16 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/autotest_desks_api.h"
-#include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/app_restore/restore_data.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -31,13 +31,17 @@ namespace ash {
 
 class Desk;
 class DeskAnimationBase;
+class DeskTemplate;
 
 // Defines a controller for creating, destroying and managing virtual desks and
 // their windows.
-class ASH_EXPORT DesksController : public DesksHelper,
+class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                    public wm::ActivationChangeObserver,
                                    public SessionObserver {
  public:
+  using GetDeskTemplateCallback =
+      base::OnceCallback<void(std::unique_ptr<DeskTemplate>)>;
+
   class Observer {
    public:
     // Called when |desk| has been created and added to
@@ -63,15 +67,23 @@ class ASH_EXPORT DesksController : public DesksHelper,
     // Called when the desk switch animations on all root windows finish.
     virtual void OnDeskSwitchAnimationFinished() = 0;
 
+    // Called when the desk's name is changed, including when the name is set on
+    // a newly created desk if we are not using name user nudges.
+    virtual void OnDeskNameChanged(const Desk* desk,
+                                   const std::u16string& new_name) = 0;
+
    protected:
     virtual ~Observer() = default;
   };
 
   DesksController();
+
+  DesksController(const DesksController&) = delete;
+  DesksController& operator=(const DesksController&) = delete;
+
   ~DesksController() override;
 
-  // Convenience method for returning the DesksController instance. The actual
-  // instance is created and owned by Shell.
+  // Convenience method for returning the DesksController instance.
   static DesksController* Get();
 
   // Returns the default name for a desk at |desk_index|.
@@ -187,6 +199,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Notifies each desk in |desks_| that their contents has changed.
   void NotifyAllDesksForContentChanged();
 
+  void NotifyDeskNameChanged(const Desk* desk, const std::u16string& new_name);
+
   // Reverts the name of the given |desk| to the default value (i.e. "Desk 1",
   // "Desk 2", ... etc.) according to its position in the |desks_| list, as if
   // it was never modified by users.
@@ -232,16 +246,34 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // |target_root|. If desk_index is invalid, it returns nullptr.
   aura::Window* GetDeskContainer(aura::Window* target_root, int desk_index);
 
-  // DesksHelper:
+  // chromeos::DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
   int GetActiveDeskIndex() const override;
   std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
-  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const override;
+
+  // Captures the active desk and returns it as a desk template containing
+  // necessary information that can be used to create a same desk via provided
+  // `callback`.
+  void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback) const;
+
+  // Creates and activates a new desk for a template with name `template_name`
+  // or `template_name ({counter})` to resolve naming conflicts. Runs `callback`
+  // with true if creation was successful, false otherwise.
   void CreateAndActivateNewDeskForTemplate(
       const std::u16string& template_name,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(bool)> callback);
+
+  // Called when an app with `app_id` is a single instance app which is about to
+  // get launched from a saved template. Moves the existing app instance to the
+  // active desk without animation if it exists. Returns true if we should
+  // launch the app (i.e. the app was not found and thus should be launched),
+  // and false otherwise. Optional launch parameters may be present in
+  // `launch_list`.
+  bool OnSingleInstanceAppLaunchingFromTemplate(
+      const std::string& app_id,
+      const app_restore::RestoreData::LaunchList& launch_list);
 
   // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
   // desks. This is called when desks are added, removed or reordered to update
@@ -323,7 +355,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Stores the per-user last active desk index.
   base::flat_map<AccountId, int> user_to_active_desk_index_;
 
-  // Stores the visible on all desks windows.
+  // Stores visible on all desks windows, that is normal type windows with
+  // normal z-ordering and are visible on all workspaces. Store here to prevent
+  // repeatedly retrieving these windows on desk switches.
   base::flat_set<aura::Window*> visible_on_all_desks_windows_;
 
   // True when desks addition, removal, or activation change are in progress.
@@ -347,8 +381,6 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   // Scheduler for reporting the weekly active desks metric.
   base::OneShotTimer weekly_active_desks_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesksController);
 };
 
 }  // namespace ash

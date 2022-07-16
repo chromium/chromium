@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/content_suggestion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,6 +33,8 @@ class RemoteSuggestion {
 
   enum class ContentType { UNKNOWN, VIDEO };
 
+  RemoteSuggestion(const RemoteSuggestion&) = delete;
+  RemoteSuggestion& operator=(const RemoteSuggestion&) = delete;
   ~RemoteSuggestion();
 
   // Creates a RemoteSuggestion from a dictionary, as returned by Chrome Content
@@ -157,8 +158,6 @@ class RemoteSuggestion {
 
   // The time when the remote suggestion was fetched from the server.
   base::Time fetch_date_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestion);
 };
 
 }  // namespace ntp_snippets

@@ -61,69 +61,8 @@ bool CheckUrlAgainstAllowlist(
   return (url.is_valid() && database_manager->MatchDownloadAllowlistUrl(url));
 }
 
-bool IsCertificateChainAllowlisted(
-    const ClientDownloadRequest_CertificateChain& chain,
-    SafeBrowsingDatabaseManager* database_manager) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (chain.element_size() < 2) {
-    // We need to have both a signing certificate and its issuer certificate
-    // present to construct a allowlist entry.
-    return false;
-  }
-  scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(chain.element(0).certificate())));
-  if (!cert.get()) {
-    return false;
-  }
-
-  for (int i = 1; i < chain.element_size(); ++i) {
-    scoped_refptr<net::X509Certificate> issuer =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(chain.element(i).certificate())));
-    if (!issuer.get()) {
-      return false;
-    }
-    std::vector<std::string> allowlist_strings;
-    GetCertificateAllowlistStrings(*cert.get(), *issuer.get(),
-                                   &allowlist_strings);
-    for (size_t j = 0; j < allowlist_strings.size(); ++j) {
-      if (database_manager->MatchDownloadAllowlistString(
-              allowlist_strings[j])) {
-        DVLOG(2) << "Certificate matched allowlist, cert="
-                 << cert->subject().GetDisplayName()
-                 << " issuer=" << issuer->subject().GetDisplayName();
-        return true;
-      }
-    }
-    cert = issuer;
-  }
-  return false;
-}
-
-bool CheckCertificateChainAgainstAllowlist(
-    const ClientDownloadRequest_SignatureInfo& signature_info,
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!database_manager.get()) {
-    return false;
-  }
-
-  if (signature_info.trusted()) {
-    for (int i = 0; i < signature_info.certificate_chain_size(); ++i) {
-      if (IsCertificateChainAllowlisted(signature_info.certificate_chain(i),
-                                        database_manager.get())) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 std::string SanitizeUrl(const std::string& url) {
-  return GURL(url).GetOrigin().spec();
+  return GURL(url).DeprecatedGetOriginAsURL().spec();
 }
 
 }  // namespace
@@ -195,7 +134,7 @@ void CheckClientDownloadRequestBase::FinishRequest(
 
   auto settings = ShouldUploadBinary(reason);
   if (settings.has_value()) {
-    UploadBinary(reason, std::move(settings.value()));
+    UploadBinary(result, reason, std::move(settings.value()));
   } else {
     // Post a task to avoid reentrance issue. http://crbug.com//1152451.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -206,7 +145,7 @@ void CheckClientDownloadRequestBase::FinishRequest(
                             REASON_MAX);
 
   NotifyRequestFinished(result, reason);
-  service()->RequestFinished(this);
+  service()->RequestFinished(this, GetBrowserContext(), result);
   // DownloadProtectionService::RequestFinished may delete us.
 }
 
@@ -338,50 +277,12 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CheckCertificateChainAgainstAllowlist,
-                     client_download_request_->signature(), database_manager_),
-      base::BindOnce(
-          &CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone,
-          GetWeakPtr()));
-
   // We wait until after the file checks finish to start the timeout, as
   // windows can cause permissions errors if the timeout fired while we were
   // checking the file signature and we tried to complete the download.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
                                 GetWeakPtr()));
-}
-
-// Start a timeout to cancel the request if it takes too long.
-// This should only be called after we have finished accessing the file.
-void CheckClientDownloadRequestBase::StartTimeout() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  timeout_start_time_ = base::TimeTicks::Now();
-  timeout_closure_.Reset(base::BindOnce(
-      &CheckClientDownloadRequestBase::FinishRequest, GetWeakPtr(),
-      DownloadCheckResult::UNKNOWN, REASON_REQUEST_CANCELED));
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, timeout_closure_.callback(),
-      base::TimeDelta::FromMilliseconds(
-          service_->download_request_timeout_ms()));
-}
-
-void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
-    bool is_allowlisted) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!skipped_url_whitelist_ && is_allowlisted) {
-    if (ShouldSampleAllowlistedDownload()) {
-      skipped_certificate_whitelist_ = true;
-    } else {
-      // TODO(grt): Continue processing without uploading so that
-      // ClientDownloadRequest callbacks can be run even for this type of
-      // safe download.
-      FinishRequest(DownloadCheckResult::SAFE, REASON_TRUSTED_EXECUTABLE);
-      return;
-    }
-  }
 
   if (!pingback_enabled_) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_PING_DISABLED);
@@ -395,6 +296,19 @@ void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
   }
 
   SendRequest();
+}
+
+// Start a timeout to cancel the request if it takes too long.
+// This should only be called after we have finished accessing the file.
+void CheckClientDownloadRequestBase::StartTimeout() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  timeout_start_time_ = base::TimeTicks::Now();
+  timeout_closure_.Reset(base::BindOnce(
+      &CheckClientDownloadRequestBase::FinishRequest, GetWeakPtr(),
+      DownloadCheckResult::UNKNOWN, REASON_REQUEST_CANCELED));
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE, timeout_closure_.callback(),
+      base::Milliseconds(service_->download_request_timeout_ms()));
 }
 
 void CheckClientDownloadRequestBase::OnGotAccessToken(
@@ -484,9 +398,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
 
   if (!access_token_.empty()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({kAuthHeaderBearer, access_token_}));
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token_);
   }
 
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
@@ -596,9 +509,19 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     MaybeStorePingsForDownload(result, upload_requested,
                                client_download_request_data_,
                                *response_body.get());
-    if (ShouldPromptForDeepScanning(response.request_deep_scan())) {
+
+    bool should_prompt =
+        ShouldPromptForDeepScanning(response.request_deep_scan());
+    if (should_prompt) {
       result = DownloadCheckResult::PROMPT_FOR_SCANNING;
       reason = DownloadCheckResultReason::REASON_ADVANCED_PROTECTION_PROMPT;
+    }
+
+    // Only record the UMA metric if we're in a population that potentially
+    // could prompt for deep scanning.
+    if (ShouldPromptForDeepScanning(/*server_requests_prompt=*/true)) {
+      base::UmaHistogramBoolean(
+          "SBClientDownload.ServerRequestsDeepScanningPrompt", should_prompt);
     }
   }
 

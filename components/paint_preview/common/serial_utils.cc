@@ -6,6 +6,7 @@
 
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/paint_preview/common/subset_font.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -52,24 +53,43 @@ sk_sp<SkData> SerializePictureAsRectData(SkPicture* picture, void* ctx) {
 }
 
 // De-duplicates and subsets used typefaces and discards any unused typefaces.
+// If subsetting fails (or on Android) this returns data only for non-system
+// fonts. This means the resulting SkPicture is not portable across devices.
 sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
   TRACE_EVENT0("paint_preview", "SerializeTypeface");
   TypefaceSerializationContext* context =
       reinterpret_cast<TypefaceSerializationContext*>(ctx);
 
-  if (context->finished.count(typeface->uniqueID()))
+  if (context->finished.count(typeface->uniqueID())) {
     return typeface->serialize(SkTypeface::SerializeBehavior::kDontIncludeData);
+  }
   context->finished.insert(typeface->uniqueID());
 
   auto usage_it = context->usage->find(typeface->uniqueID());
-  if (usage_it == context->usage->end())
+  if (usage_it == context->usage->end()) {
     return typeface->serialize(SkTypeface::SerializeBehavior::kDontIncludeData);
+  }
+
+#if defined(OS_ANDROID)
+  {
+    SkString familyName;
+    typeface->getFamilyName(&familyName);
+    // On Android MakeFromName will return nullptr rather than falling back to
+    // an alternative font if a system font doesn't match. As such, we can use
+    // this to check if the SkTypeface is for a system font. If it is a system
+    // font we don't need to subset/serialize it.
+    if (SkTypeface::MakeFromName(familyName.c_str(), typeface->fontStyle())) {
+      return typeface->serialize(
+          SkTypeface::SerializeBehavior::kIncludeDataIfLocal);
+    }
+  }
+#endif
 
   auto subset_data = SubsetFont(typeface, *usage_it->second);
-  // This will fail if the font cannot be subsetted properly. In such cases
-  // all typeface data should be added for portability.
-  if (!subset_data)
-    return typeface->serialize(SkTypeface::SerializeBehavior::kDoIncludeData);
+  if (!subset_data) {
+    return typeface->serialize(
+        SkTypeface::SerializeBehavior::kIncludeDataIfLocal);
+  }
   return subset_data;
 }
 
@@ -177,9 +197,9 @@ PictureSerializationContext::PictureSerializationContext() = default;
 PictureSerializationContext::~PictureSerializationContext() = default;
 
 PictureSerializationContext::PictureSerializationContext(
-    PictureSerializationContext&&) = default;
+    PictureSerializationContext&&) noexcept = default;
 PictureSerializationContext& PictureSerializationContext::operator=(
-    PictureSerializationContext&&) = default;
+    PictureSerializationContext&&) noexcept = default;
 
 TypefaceSerializationContext::TypefaceSerializationContext(
     TypefaceUsageMap* usage)

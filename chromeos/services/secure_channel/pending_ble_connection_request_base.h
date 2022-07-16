@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/pending_connection_request_base.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -22,6 +21,11 @@ class PendingBleConnectionRequestBase
     : public PendingConnectionRequestBase<BleFailureDetailType>,
       public device::BluetoothAdapter::Observer {
  public:
+  PendingBleConnectionRequestBase(const PendingBleConnectionRequestBase&) =
+      delete;
+  PendingBleConnectionRequestBase& operator=(
+      const PendingBleConnectionRequestBase&) = delete;
+
   ~PendingBleConnectionRequestBase() override {
     bluetooth_adapter_->RemoveObserver(this);
   }
@@ -67,8 +71,6 @@ class PendingBleConnectionRequestBase
   }
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingBleConnectionRequestBase);
 };
 
 }  // namespace secure_channel

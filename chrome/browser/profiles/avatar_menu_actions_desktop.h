@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/avatar_menu_actions.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 
@@ -18,6 +17,10 @@ class Profile;
 class AvatarMenuActionsDesktop : public AvatarMenuActions {
  public:
   AvatarMenuActionsDesktop();
+
+  AvatarMenuActionsDesktop(const AvatarMenuActionsDesktop&) = delete;
+  AvatarMenuActionsDesktop& operator=(const AvatarMenuActionsDesktop&) = delete;
+
   ~AvatarMenuActionsDesktop() override;
 
   // AvatarMenuActions overrides:
@@ -33,8 +36,6 @@ class AvatarMenuActionsDesktop : public AvatarMenuActions {
 
   // Special "override" logout URL used to let tests work.
   std::string logout_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarMenuActionsDesktop);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_AVATAR_MENU_ACTIONS_DESKTOP_H_

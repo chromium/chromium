@@ -45,7 +45,7 @@ project will need to be able to resolve when it compiles against it.
 each exported constant just points to a css variable. Before you can use these
 constants you need to include the css variables in your app. The recommended way
 in chromium is to add a `<link>` in `<head>` which points to
-`chrome://resources/chromeos/colors/cros_colors.generated.css`.
+`chrome://resources/chromeos/colors/cros_styles.css`.
 
 If you are using semantic colors in a situation where relying on
 `chrome://resources` is infeasible you can specify

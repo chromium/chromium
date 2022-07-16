@@ -24,6 +24,10 @@ class ImmersiveFocusWatcher
       public ::wm::ActivationChangeObserver {
  public:
   explicit ImmersiveFocusWatcher(ImmersiveFullscreenController* controller);
+
+  ImmersiveFocusWatcher(const ImmersiveFocusWatcher&) = delete;
+  ImmersiveFocusWatcher& operator=(const ImmersiveFocusWatcher&) = delete;
+
   ~ImmersiveFocusWatcher() override;
 
   // Forces updating the status of the lock. That is, this determines whether
@@ -72,8 +76,6 @@ class ImmersiveFocusWatcher
   // Manages bubbles which are anchored to a child of
   // |ImmersiveFullscreenController::top_container_|.
   std::unique_ptr<BubbleObserver> bubble_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveFocusWatcher);
 };
 
 }  // namespace chromeos

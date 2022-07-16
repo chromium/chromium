@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
@@ -49,9 +48,16 @@ class PpapiThread : public ChildThreadImpl,
                     public ppapi::proxy::PluginDispatcher::PluginDelegate,
                     public ppapi::proxy::PluginProxyDelegate {
  public:
+  PpapiThread() = delete;
+
   PpapiThread(base::RepeatingClosure quit_closure,
               const base::CommandLine& command_line);
+
+  PpapiThread(const PpapiThread&) = delete;
+  PpapiThread& operator=(const PpapiThread&) = delete;
+
   ~PpapiThread() override;
+
   void Shutdown() override;
 
  private:
@@ -95,8 +101,6 @@ class PpapiThread : public ChildThreadImpl,
                        int renderer_child_id,
                        bool incognito);
   void OnSetNetworkState(bool online);
-  void OnCrash();
-  void OnHang();
 
   // Sets up the channel to the given renderer. If |renderer_pid| is
   // base::kNullProcessId, the channel is set up to the browser. On success,
@@ -140,8 +144,6 @@ class PpapiThread : public ChildThreadImpl,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PpapiThread);
 };
 
 }  // namespace content

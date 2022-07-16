@@ -184,6 +184,9 @@ class URLDownloaderTest : public PlatformTest {
         new MockURLDownloader(data_dir, test_shared_url_loader_factory_));
   }
 
+  URLDownloaderTest(const URLDownloaderTest&) = delete;
+  URLDownloaderTest& operator=(const URLDownloaderTest&) = delete;
+
   ~URLDownloaderTest() override {}
 
   void TearDown() override {
@@ -201,9 +204,6 @@ class URLDownloaderTest : public PlatformTest {
       test_shared_url_loader_factory_;
 
   std::unique_ptr<MockURLDownloader> downloader_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(URLDownloaderTest);
 };
 
 TEST_F(URLDownloaderTest, SingleDownload) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,6 +27,10 @@ class TimeLimitNotifier {
   enum class LimitType { kScreenTime, kBedTime, kOverride };
 
   explicit TimeLimitNotifier(content::BrowserContext* context);
+
+  TimeLimitNotifier(const TimeLimitNotifier&) = delete;
+  TimeLimitNotifier& operator=(const TimeLimitNotifier&) = delete;
+
   ~TimeLimitNotifier();
 
   // Schedules warning and/or exit notifications based on the time remaining.
@@ -53,8 +56,6 @@ class TimeLimitNotifier {
   // Called to show warning and exit notifications.
   base::OneShotTimer warning_notification_timer_;
   base::OneShotTimer exit_notification_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeLimitNotifier);
 };
 
 }  // namespace ash

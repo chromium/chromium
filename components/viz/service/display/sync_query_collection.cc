@@ -26,6 +26,10 @@ class SyncQuery {
       : gl_(gl), query_id_(0u), is_pending_(false) {
     gl_->GenQueriesEXT(1, &query_id_);
   }
+
+  SyncQuery(const SyncQuery&) = delete;
+  SyncQuery& operator=(const SyncQuery&) = delete;
+
   virtual ~SyncQuery() { gl_->DeleteQueriesEXT(1, &query_id_); }
 
   scoped_refptr<ResourceFence> Begin() {
@@ -83,6 +87,9 @@ class SyncQuery {
    public:
     explicit Fence(base::WeakPtr<SyncQuery> query) : query_(query) {}
 
+    Fence(const Fence&) = delete;
+    Fence& operator=(const Fence&) = delete;
+
     // ResourceFence implementation.
     void Set() override {
       DCHECK(query_);
@@ -94,16 +101,12 @@ class SyncQuery {
     ~Fence() override {}
 
     base::WeakPtr<SyncQuery> query_;
-
-    DISALLOW_COPY_AND_ASSIGN(Fence);
   };
 
   gpu::gles2::GLES2Interface* gl_;
   unsigned query_id_;
   bool is_pending_;
   base::WeakPtrFactory<SyncQuery> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncQuery);
 };
 
 SyncQueryCollection::SyncQueryCollection(gpu::gles2::GLES2Interface* gl)

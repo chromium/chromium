@@ -310,6 +310,9 @@ class NET_EXPORT HostResolver {
     virtual int Start(Delegate* delegate) = 0;
   };
 
+  HostResolver(const HostResolver&) = delete;
+  HostResolver& operator=(const HostResolver&) = delete;
+
   // If any completion callbacks are pending when the resolver is destroyed,
   // the host resolutions are cancelled, and the completion callbacks will not
   // be called.
@@ -406,9 +409,6 @@ class NET_EXPORT HostResolver {
   // immediately on start.
   static std::unique_ptr<ResolveHostRequest> CreateFailingRequest(int error);
   static std::unique_ptr<ProbeRequest> CreateFailingProbeRequest(int error);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostResolver);
 };
 
 }  // namespace net

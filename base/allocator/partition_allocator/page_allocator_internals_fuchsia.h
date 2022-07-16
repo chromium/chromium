@@ -17,8 +17,8 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/notreached.h"
 
 namespace base {
 
@@ -55,7 +55,7 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     default:
-      NOTREACHED();
+      PA_NOTREACHED();
       FALLTHROUGH;
     case PageInaccessible:
       return 0;
@@ -192,6 +192,15 @@ void DecommitSystemPagesInternal(
 
   // TODO(https://crbug.com/1022062): Review whether this implementation is
   // still appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
+  // discardable API.
+  DiscardSystemPagesInternal(address, length);
+}
+
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  SetSystemPagesAccess(address, length, PageInaccessible);
+
+  // TODO(https://crbug.com/1022062): this implementation will likely no longer
+  // be appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
   // discardable API.
   DiscardSystemPagesInternal(address, length);
 }

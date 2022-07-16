@@ -116,11 +116,9 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     }
   }
 
-  web_contents_ = contents;
   find_in_page::FindTabHelper* find_tab_helper =
-      web_contents_
-          ? find_in_page::FindTabHelper::FromWebContents(web_contents_)
-          : nullptr;
+      contents ? find_in_page::FindTabHelper::FromWebContents(contents)
+               : nullptr;
   if (find_tab_helper)
     find_tab_observation_.Observe(find_tab_helper);
 
@@ -130,6 +128,8 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
       (!find_tab_helper || !find_tab_helper->find_ui_active())) {
     find_bar_->Hide(false);
   }
+
+  web_contents_ = contents;
 
   if (!web_contents_)
     return;

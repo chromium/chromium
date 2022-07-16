@@ -5,15 +5,15 @@
     padding: 0 var(--cr-section-padding);
   }
 </style>
-<settings-localized-link id="pageDescription"
+<localized-link id="pageDescription"
     localized-string="[[getTitleInnerHtml_(topicSource)]]">
-</settings-localized-link>
+</localized-link>
 
 <template is="dom-if" if="[[hasNoAlbums_(albums)]]">
-  <settings-localized-link class="cr-row first"
+  <localized-link class="cr-row first"
       localized-string=
           $i18nPolymer{ambientModeAlbumsSubpageGooglePhotosNoAlbum}
-  </settings-localized-link>
+  </localized-link>
 </template>
 
 <template is="dom-if" if="[[showArtAlbumDialog_]]" restamp>

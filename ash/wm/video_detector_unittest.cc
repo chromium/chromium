@@ -30,6 +30,9 @@ class TestObserver : public VideoDetector::Observer {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   bool empty() const { return states_.empty(); }
   void reset() { states_.clear(); }
 
@@ -49,13 +52,15 @@ class TestObserver : public VideoDetector::Observer {
  private:
   // States in the order they were received.
   base::circular_deque<VideoDetector::State> states_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class VideoDetectorTest : public AshTestBase {
  public:
   VideoDetectorTest() = default;
+
+  VideoDetectorTest(const VideoDetectorTest&) = delete;
+  VideoDetectorTest& operator=(const VideoDetectorTest&) = delete;
+
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
@@ -82,9 +87,6 @@ class VideoDetectorTest : public AshTestBase {
 
   VideoDetector* detector_;  // not owned
   std::unique_ptr<TestObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);
 };
 
 // Verify that the video detector can distinguish fullscreen and windowed video

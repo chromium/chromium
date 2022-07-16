@@ -16,6 +16,7 @@ to set the default value. Can also be accessed through `ci.defaults`.
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builders", "os", "os_category")
+load("./listify.star", "listify")
 
 defaults = args.defaults(
     extends = builders.defaults,
@@ -27,9 +28,11 @@ def ci_builder(
         *,
         name,
         branch_selector = branches.MAIN,
+        bootstrap = True,
         console_view_entry = None,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
+        sheriff_rotations = None,
         tree_closing = False,
         notifies = None,
         resultdb_bigquery_exports = None,
@@ -42,6 +45,13 @@ def ci_builder(
       branch_selector - A branch selector value controlling whether the
         builder definition is executed. See branches.star for more
         information.
+      bootstrap - a boolean indicating whether the builder should have its
+        properties bootstrapped. If True, the builder's properties will be
+        written to a separate file and its definition will be updated with
+        new properties and executable that cause a bootstrapping binary to
+        be used. The build's default values for properties will be taken
+        from the properties file at the version that the build will check
+        out.
       console_view_entry - A `consoles.console_view_entry` struct or a list of
         them describing console view entries to create for the builder.
         See `consoles.console_view_entry` for details.
@@ -63,13 +73,17 @@ def ci_builder(
         specifying additional parameters for exporting test results to BigQuery.
         Will always upload to the following tables in addition to any tables
         specified by the list's elements:
-          luci-resultdb.chromium.ci_test_results
-          luci-resultdb.chromium.gpu_ci_test_results
+          chrome-luci-data.chromium.ci_test_results
+          chrome-luci-data.chromium.gpu_ci_test_results
       experiments - a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
     """
     if not branches.matches(branch_selector):
         return
+
+    try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]
+    if try_only_kwargs:
+        fail("CI builders cannot specify the following try-only arguments: {}".format(try_only_kwargs))
 
     # Branch builders should never close the tree, only builders from the main
     # "ci" bucket.
@@ -79,10 +93,10 @@ def ci_builder(
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.ci_test_results",
+            bq_table = "chrome-luci-data.chromium.ci_test_results",
         ),
         resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.gpu_ci_test_results",
+            bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",
             predicate = resultdb.test_result_predicate(
                 # Only match the telemetry_gpu_integration_test and
                 # fuchsia_telemetry_gpu_integration_test targets.
@@ -103,11 +117,12 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    # Enable "chromium.resultdb.result_sink" on ci builders.
-    experiments = experiments or {}
-    experiments.setdefault("chromium.resultdb.result_sink", 100)
-    experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
-    experiments.setdefault("chromium.resultdb.result_sink.gtests_local", 100)
+    sheriff_rotations = listify(
+        sheriff_rotations,
+        # All CI builders on standard branches should be part of the
+        # chrome_browser_release sheriff rotation
+        branches.value({branches.STANDARD_BRANCHES: "chrome_browser_release"}),
+    )
 
     goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
     if goma_enable_ats == args.COMPUTE:
@@ -122,8 +137,10 @@ def ci_builder(
     builders.builder(
         name = name,
         branch_selector = branch_selector,
+        bootstrap = bootstrap,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
+        sheriff_rotations = sheriff_rotations,
         notifies = notifies,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
@@ -172,6 +189,7 @@ def ci_builder(
 def android_builder(
         *,
         name,
+        goma_backend = builders.goma.backend.RBE_PROD,
         # TODO(tandrii): migrate to this gradually (current value of
         # goma.jobs.MANY_JOBS_FOR_CI is 500).
         # goma_jobs=goma.jobs.MANY_JOBS_FOR_CI
@@ -181,8 +199,9 @@ def android_builder(
     return ci_builder(
         name = name,
         builder_group = "chromium.android",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         goma_jobs = goma_jobs,
+        sheriff_rotations = builders.sheriff_rotations.ANDROID,
         **kwargs
     )
 
@@ -278,16 +297,23 @@ def chromium_builder(*, name, tree_closing = True, **kwargs):
         name = name,
         builder_group = "chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
         **kwargs
     )
 
-def chromiumos_builder(*, name, tree_closing = True, **kwargs):
+def chromiumos_builder(
+        *,
+        name,
+        tree_closing = True,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        **kwargs):
     kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return ci_builder(
         name = name,
         builder_group = "chromium.chromiumos",
         goma_backend = builders.goma.backend.RBE_PROD,
+        sheriff_rotations = sheriff_rotations,
         tree_closing = tree_closing,
         **kwargs
     )
@@ -307,6 +333,7 @@ def clang_builder(*, name, builderless = True, cores = 32, properties = None, **
         # CFI builds will take even longer - around 11h.
         execution_timeout = 14 * time.hour,
         properties = properties,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_CLANG,
         **kwargs
     )
 
@@ -314,7 +341,7 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
     return clang_builder(
         name = name,
         cores = cores,
-        os = builders.os.MAC_10_15,
+        os = builders.os.MAC_DEFAULT,
         ssd = True,
         properties = {
             # The Chromium build doesn't need system Xcode, but the ToT clang
@@ -382,11 +409,15 @@ def dawn_windows_builder(*, name, **kwargs):
         **kwargs
     )
 
-def fuzz_builder(*, name, **kwargs):
+def fuzz_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.fuzz",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         notifies = ["chromesec-lkgr-failures"],
         **kwargs
     )
@@ -405,6 +436,7 @@ def fyi_builder(
         goma_backend = builders.goma.backend.RBE_PROD,
         **kwargs):
     kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
+
     return ci.builder(
         name = name,
         builder_group = "chromium.fyi",
@@ -467,10 +499,11 @@ def fyi_mac_builder(
         cores = 4,
         os = builders.os.MAC_DEFAULT,
         **kwargs):
+    if not "goma_backend" in kwargs:
+        kwargs["goma_backend"] = builders.goma.backend.RBE_PROD
     return fyi_builder(
         name = name,
         cores = cores,
-        goma_backend = builders.goma.backend.RBE_PROD,
         os = os,
         **kwargs
     )
@@ -492,6 +525,7 @@ def gpu_fyi_builder(*, name, **kwargs):
         builder_group = "chromium.gpu.fyi",
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_GPU,
         properties = {
             "perf_dashboard_machine_group": "ChromiumGPUFYI",
         },
@@ -557,6 +591,7 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.gpu",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_GPU,
         tree_closing = tree_closing,
         notifies = notifies,
         **kwargs
@@ -637,6 +672,7 @@ def linux_builder(
         builder_group = "chromium.linux",
         goma_backend = goma_backend,
         goma_jobs = goma_jobs,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
         notifies = list(notifies) + (extra_notifies or []),
         **kwargs
@@ -648,6 +684,7 @@ def mac_builder(
         cores = None,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_DEFAULT,
+        sheriff_rotations = None,
         tree_closing = True,
         **kwargs):
     return ci.builder(
@@ -656,6 +693,7 @@ def mac_builder(
         cores = cores,
         goma_backend = goma_backend,
         os = os,
+        sheriff_rotations = listify(builders.sheriff_rotations.CHROMIUM, sheriff_rotations),
         tree_closing = tree_closing,
         **kwargs
     )
@@ -673,15 +711,31 @@ def mac_ios_builder(
         goma_backend = goma_backend,
         executable = executable,
         os = os,
+        sheriff_rotations = builders.sheriff_rotations.IOS,
         xcode = xcode,
+        **kwargs
+    )
+
+def mac_thin_tester(
+        *,
+        name,
+        triggered_by,
+        **kwargs):
+    return thin_tester(
+        name = name,
+        builder_group = "chromium.mac",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        triggered_by = triggered_by,
         **kwargs
     )
 
 def memory_builder(
         *,
         name,
+        goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = builders.goma.jobs.MANY_JOBS_FOR_CI,
         notifies = None,
+        sheriff_rotations = None,
         tree_closing = True,
         **kwargs):
     if name.startswith("Linux"):
@@ -691,9 +745,10 @@ def memory_builder(
     return ci.builder(
         name = name,
         builder_group = "chromium.memory",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         goma_jobs = goma_jobs,
         notifies = notifies,
+        sheriff_rotations = listify(builders.sheriff_rotations.CHROMIUM, sheriff_rotations),
         tree_closing = tree_closing,
         **kwargs
     )
@@ -712,6 +767,17 @@ def mojo_builder(
         **kwargs
     )
 
+def rust_builder(
+        *,
+        name,
+        **kwargs):
+    return ci.builder(
+        name = name,
+        builder_group = "chromium.rust",
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs
+    )
+
 def swangle_builder(*, name, builderless = True, pinned = True, **kwargs):
     builder_args = dict(kwargs)
     builder_args.update(
@@ -720,6 +786,7 @@ def swangle_builder(*, name, builderless = True, pinned = True, **kwargs):
         builderless = builderless,
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM_GPU,
     )
     if pinned:
         builder_args.update(executable = "recipe:angle_chromium")
@@ -800,7 +867,17 @@ def win_builder(
         builder_group = "chromium.win",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = os,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
         tree_closing = tree_closing,
+        **kwargs
+    )
+
+def win_thin_tester(*, name, triggered_by, **kwargs):
+    return thin_tester(
+        name = name,
+        builder_group = "chromium.win",
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        triggered_by = triggered_by,
         **kwargs
     )
 
@@ -848,17 +925,26 @@ ci = struct(
     linux_builder = linux_builder,
     mac_builder = mac_builder,
     mac_ios_builder = mac_ios_builder,
+    mac_thin_tester = mac_thin_tester,
     memory_builder = memory_builder,
     mojo_builder = mojo_builder,
+    rust_builder = rust_builder,
     swangle_linux_builder = swangle_linux_builder,
     swangle_mac_builder = swangle_mac_builder,
     swangle_windows_builder = swangle_windows_builder,
     thin_tester = thin_tester,
     updater_builder = updater_builder,
     win_builder = win_builder,
+    win_thin_tester = win_thin_tester,
 )
 
 rbe_instance = struct(
     DEFAULT = "rbe-chromium-trusted",
     GVISOR_SHADOW = "rbe-chromium-gvisor-shadow",
+)
+
+rbe_jobs = struct(
+    DEFAULT = 250,
+    LOW_JOBS_FOR_CI = 80,
+    HIGH_JOBS_FOR_CI = 500,
 )

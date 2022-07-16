@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 
@@ -47,6 +46,9 @@ class TestBlocklist {
   TestBlocklist();
 
   explicit TestBlocklist(Blocklist* blocklist);
+
+  TestBlocklist(const TestBlocklist&) = delete;
+  TestBlocklist& operator=(const TestBlocklist&) = delete;
 
   ~TestBlocklist();
 
@@ -87,8 +89,6 @@ class TestBlocklist {
   scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db_;
 
   Blocklist::ScopedDatabaseManagerForTest scoped_blocklist_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBlocklist);
 };
 
 }  // namespace extensions

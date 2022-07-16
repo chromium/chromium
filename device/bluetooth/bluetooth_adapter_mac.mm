@@ -24,8 +24,8 @@
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -599,7 +599,7 @@ void BluetoothAdapterMac::PollAdapter() {
       FROM_HERE,
       base::BindOnce(&BluetoothAdapterMac::PollAdapter,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kPollIntervalMs));
+      base::Milliseconds(kPollIntervalMs));
 }
 
 void BluetoothAdapterMac::ClassicDeviceAdded(IOBluetoothDevice* device) {

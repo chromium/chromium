@@ -17,6 +17,10 @@ namespace ipc_fuzzer {
 class MessageNames {
  public:
   MessageNames();
+
+  MessageNames(const MessageNames&) = delete;
+  MessageNames& operator=(const MessageNames&) = delete;
+
   ~MessageNames();
   static MessageNames* GetInstance();
 
@@ -52,8 +56,6 @@ class MessageNames {
   NameToTypeMap type_map_;
 
   static MessageNames* all_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageNames);
 };
 
 }  // namespace ipc_fuzzer

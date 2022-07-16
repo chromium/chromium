@@ -136,8 +136,9 @@ NewTabPageThirdPartyUI::~NewTabPageThirdPartyUI() = default;
 
 // static
 bool NewTabPageThirdPartyUI::IsNewTabPageOrigin(const GURL& url) {
-  return url.GetOrigin() ==
-         GURL(chrome::kChromeUINewTabPageThirdPartyURL).GetOrigin();
+  return url.DeprecatedGetOriginAsURL() ==
+         GURL(chrome::kChromeUINewTabPageThirdPartyURL)
+             .DeprecatedGetOriginAsURL();
 }
 
 void NewTabPageThirdPartyUI::BindInterface(

@@ -17,6 +17,6 @@ void NetworkMetadataObserver::OnNetworkCreated(const std::string& guid) {}
 
 void NetworkMetadataObserver::OnNetworkUpdate(
     const std::string& guid,
-    base::DictionaryValue* set_properties) {}
+    const base::Value* set_properties) {}
 
 }  // namespace chromeos

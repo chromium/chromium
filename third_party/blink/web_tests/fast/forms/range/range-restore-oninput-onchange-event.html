@@ -25,8 +25,8 @@
             setTimeout(function() {form.submit();}, 0);
         } else {
             restorationEventTest.step(function() {
-                assert_true(seenOnInput);
-                assert_true(seenOnChange);
+                assert_false(seenOnInput);
+                assert_false(seenOnChange);
             });
             restorationEventTest.done();
         }

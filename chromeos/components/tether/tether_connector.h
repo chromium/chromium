@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_CONNECTOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/network/network_connection_handler.h"
 
 namespace chromeos {
@@ -24,6 +23,10 @@ class TetherConnector {
       NetworkConnectionHandler::TetherDelegate::StringErrorCallback;
 
   TetherConnector() {}
+
+  TetherConnector(const TetherConnector&) = delete;
+  TetherConnector& operator=(const TetherConnector&) = delete;
+
   virtual ~TetherConnector() {}
 
   virtual void ConnectToNetwork(const std::string& tether_network_guid,
@@ -33,9 +36,6 @@ class TetherConnector {
   // Returns whether the connection attempt was successfully canceled.
   virtual bool CancelConnectionAttempt(
       const std::string& tether_network_guid) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherConnector);
 };
 
 }  // namespace tether

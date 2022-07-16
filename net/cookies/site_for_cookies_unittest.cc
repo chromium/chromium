@@ -602,4 +602,30 @@ TEST(SiteForCookiesTest, SameSchemeOpaque) {
   }
 }
 
+// Quick correctness check that the less-than operator works as expected.
+TEST(SiteForCookiesTest, LessThan) {
+  SiteForCookies first = SiteForCookies::FromUrl(GURL("https://example.com"));
+  SiteForCookies second =
+      SiteForCookies::FromUrl(GURL("https://examplelonger.com"));
+  SiteForCookies third =
+      SiteForCookies::FromUrl(GURL("https://examplelongerstill.com"));
+
+  SiteForCookies null1 = SiteForCookies();
+  SiteForCookies null2 =
+      SiteForCookies::FromUrl(GURL("https://examplelongerstillstill.com"));
+  null2.SetSchemefullySameForTesting(false);
+
+  EXPECT_LT(first, second);
+  EXPECT_LT(second, third);
+  EXPECT_LT(first, third);
+  EXPECT_LT(null1, first);
+  EXPECT_LT(null2, first);
+
+  EXPECT_FALSE(second < first);
+  EXPECT_FALSE(first < null1);
+  EXPECT_FALSE(first < null2);
+  EXPECT_FALSE(null1 < null2);
+  EXPECT_FALSE(null2 < null1);
+}
+
 }  // namespace net

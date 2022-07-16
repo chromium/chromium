@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.events.KeyEventTest');
 goog.setTestOnly();
@@ -160,6 +152,7 @@ function fireKeyUp(
   return fakeEvent.returnValue_;
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function createFakeKeyEvent(
     type, keyCode, opt_charCode, opt_keyIdentifier, opt_ctrlKey, opt_altKey,
     opt_shiftKey) {
@@ -171,60 +164,70 @@ function createFakeKeyEvent(
     ctrlKey: opt_ctrlKey || false,
     altKey: opt_altKey || false,
     shiftKey: opt_shiftKey || false,
-    timeStamp: goog.now(),
+    timeStamp: Date.now(),
   };
   return new BrowserEvent(event);
 }
 testSuite({
   setUp() {
     // Have this based on a fictitious DOCUMENT_MODE constant.
+    /**
+     * @suppress {strictPrimitiveOperators} suppression added to enable type
+     * checking
+     */
     userAgent.isDocumentMode = (mode) => mode <= userAgent.DOCUMENT_MODE;
   },
 
-  /** Tests the key handler for the IE 8 and lower behavior. */
+  /**
+   * Tests the key handler for the IE 8 and lower behavior.
+   * @suppress {const}
+   */
   testIe8StyleKeyHandling() {
-    userAgent.OPERA = false;
     userAgent.IE = true;
     userAgent.GECKO = false;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
+    /** @suppress {checkTypes} suppression added to enable type checking */
     userAgent.VERSION = 8;
     userAgent.DOCUMENT_MODE = 8;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     assertIe8StyleKeyHandling();
   },
 
   /** Tests the key handler for the IE 8 and lower behavior. */
   testIe8StyleKeyHandlingInIe9DocumentMode() {
-    userAgent.OPERA = false;
     userAgent.IE = true;
     userAgent.GECKO = false;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
+    /** @suppress {checkTypes} suppression added to enable type checking */
     userAgent.VERSION = 9;  // Try IE9 in IE8 document mode.
+    /**
+     * @suppress {constantProperty} suppression added to enable type checking
+     */
     userAgent.DOCUMENT_MODE = 8;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     assertIe8StyleKeyHandling();
   },
 
   /** Tests special cases for IE9. */
   testIe9StyleKeyHandling() {
-    userAgent.OPERA = false;
     userAgent.IE = true;
     userAgent.GECKO = false;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
+    /** @suppress {checkTypes} suppression added to enable type checking */
     userAgent.VERSION = 9;
+    /**
+     * @suppress {constantProperty} suppression added to enable type checking
+     */
     userAgent.DOCUMENT_MODE = 9;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     let keyEvent;
     const keyHandler = new KeyHandler();
@@ -252,14 +255,12 @@ testSuite({
    *    See: https://github.com/google/closure-library/issues/932
    */
   testGeckoStyleKeyHandling_legacyBehavior() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     let eventsFired = 0;
     let keyEvent;
@@ -367,14 +368,12 @@ testSuite({
    *    See: https://github.com/google/closure-library/issues/883
    */
   testGeckoStyleKeyHandling_noKeyPressEventsOnNonPrintable() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     let eventsFired = 0;
     let keyEvent;
@@ -481,14 +480,12 @@ testSuite({
    *    See: https://github.com/google/closure-library/issues/932
    */
   testGeckoStyleKeyHandling_includeBothExperiments() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     let eventsFired = 0;
     let keyEvent;
@@ -587,14 +584,13 @@ testSuite({
 
   /** Tests the key handler for the Safari 3 behavior. */
   testSafari3StyleKeyHandling() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = false;
     userAgent.WEBKIT = true;
     userAgent.MAC = true;
     userAgent.WINDOWS = false;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
+    /** @suppress {checkTypes} suppression added to enable type checking */
     userAgent.VERSION = 525.3;
 
     let keyEvent;
@@ -716,101 +712,7 @@ testSuite({
         1092, keyEvent.charCode);
   },
 
-  /** Tests the key handler for the Opera behavior. */
-  testOperaStyleKeyHandling() {
-    userAgent.OPERA = true;
-    userAgent.IE = false;
-    userAgent.GECKO = false;
-    userAgent.WEBKIT = false;
-    userAgent.MAC = false;
-    userAgent.WINDOWS = true;
-    userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = false;
-
-    let keyEvent;
-    const keyHandler = new KeyHandler();
-
-    events.listen(keyHandler, KeyHandler.EventType.KEY, (e) => {
-      keyEvent = e;
-    });
-
-    fireKeyDown(keyHandler, KeyCodes.ENTER);
-    fireKeyPress(keyHandler, KeyCodes.ENTER);
-    assertEquals(
-        'Enter should fire a key event with the keycode 13', KeyCodes.ENTER,
-        keyEvent.keyCode);
-    assertEquals(
-        'Enter should fire a key event with the charcode 0', 0,
-        keyEvent.charCode);
-
-    fireKeyDown(keyHandler, KeyCodes.ESC);
-    fireKeyPress(keyHandler, KeyCodes.ESC);
-    assertEquals(
-        'Esc should fire a key event with the keycode 27', KeyCodes.ESC,
-        keyEvent.keyCode);
-    assertEquals(
-        'Esc should fire a key event with the charcode 0', 0,
-        keyEvent.charCode);
-
-    fireKeyDown(keyHandler, KeyCodes.UP);
-    fireKeyPress(keyHandler, KeyCodes.UP);
-    assertEquals(
-        'Up should fire a key event with the keycode 38', KeyCodes.UP,
-        keyEvent.keyCode);
-    assertEquals(
-        'Up should fire a key event with the charcode 0', 0, keyEvent.charCode);
-
-    fireKeyDown(
-        keyHandler, KeyCodes.SEVEN, undefined, undefined, undefined, undefined,
-        true);
-    fireKeyPress(
-        keyHandler, 38, undefined, undefined, undefined, undefined, true);
-    assertEquals(
-        'Shift+7 should fire a key event with the keycode 55', KeyCodes.SEVEN,
-        keyEvent.keyCode);
-    assertEquals(
-        'Shift+7 should fire a key event with the charcode 38', 38,
-        keyEvent.charCode);
-
-    fireKeyDown(keyHandler, KeyCodes.A);
-    fireKeyPress(keyHandler, 97);
-    assertEquals(
-        'Lower case a should fire a key event with the keycode 65', KeyCodes.A,
-        keyEvent.keyCode);
-    assertEquals(
-        'Lower case a should fire a key event with the charcode 97', 97,
-        keyEvent.charCode);
-
-    fireKeyDown(keyHandler, KeyCodes.A);
-    fireKeyPress(keyHandler, 65);
-    assertEquals(
-        'Upper case A should fire a key event with the keycode 65', KeyCodes.A,
-        keyEvent.keyCode);
-    assertEquals(
-        'Upper case A should fire a key event with the charcode 65', 65,
-        keyEvent.charCode);
-
-    fireKeyDown(keyHandler, KeyCodes.DELETE);
-    fireKeyPress(keyHandler, KeyCodes.DELETE);
-    assertEquals(
-        'Delete should fire a key event with the keycode 46', KeyCodes.DELETE,
-        keyEvent.keyCode);
-    assertEquals(
-        'Delete should fire a key event with the charcode 0', 0,
-        keyEvent.charCode);
-
-    fireKeyDown(keyHandler, KeyCodes.PERIOD);
-    fireKeyPress(keyHandler, 46);
-    assertEquals(
-        'Period should fire a key event with the keycode 190', KeyCodes.PERIOD,
-        keyEvent.keyCode);
-    assertEquals(
-        'Period should fire a key event with the charcode 46', 46,
-        keyEvent.charCode);
-  },
-
   testGeckoOnMacAltHandling() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
@@ -818,6 +720,7 @@ testSuite({
     userAgent.WINDOWS = false;
     userAgent.LINUX = false;
     userAgent.EDGE = false;
+    /** @suppress {visibility} suppression added to enable type checking */
     KeyHandler.SAVE_ALT_FOR_KEYPRESS_ = true;
 
     let keyEvent;
@@ -848,14 +751,12 @@ testSuite({
   },
 
   testGeckoEqualSign() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     let keyEvent;
     const keyHandler = new KeyHandler();
@@ -875,14 +776,12 @@ testSuite({
   },
 
   testGeckoDash() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
     userAgent.MAC = false;
     userAgent.WINDOWS = true;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     const keyEvents = [];
     const keyHandler = new KeyHandler();
@@ -903,14 +802,12 @@ testSuite({
   },
 
   testMacGeckoSlash() {
-    userAgent.OPERA = false;
     userAgent.IE = false;
     userAgent.GECKO = true;
     userAgent.WEBKIT = false;
     userAgent.MAC = true;
     userAgent.WINDOWS = false;
     userAgent.LINUX = false;
-    KeyHandler.USES_KEYDOWN_ = true;
 
     let keyEvent;
     const keyHandler = new KeyHandler();
@@ -956,6 +853,7 @@ testSuite({
     assertEquals(target, keyHandler.getElement());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDetach() {
     const target = dom.createDom(TagName.DIV);
     const keyHandler = new KeyHandler(target);

@@ -23,13 +23,15 @@ class CustomShapeButtonHighlightPathGenerator
  public:
   CustomShapeButtonHighlightPathGenerator() = default;
 
+  CustomShapeButtonHighlightPathGenerator(
+      const CustomShapeButtonHighlightPathGenerator&) = delete;
+  CustomShapeButtonHighlightPathGenerator& operator=(
+      const CustomShapeButtonHighlightPathGenerator&) = delete;
+
   SkPath GetHighlightPath(const views::View* view) override {
     return static_cast<const ash::CustomShapeButton*>(view)
         ->CreateCustomShapePath(view->GetLocalBounds());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomShapeButtonHighlightPathGenerator);
 };
 }  // namespace
 

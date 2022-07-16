@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,15 +43,16 @@ using installer::InstallerState;
 using registry_util::RegistryOverrideManager;
 
 class InstallerStateTest : public testing::Test {
+ public:
+  InstallerStateTest(const InstallerStateTest&) = delete;
+  InstallerStateTest& operator=(const InstallerStateTest&) = delete;
+
  protected:
   InstallerStateTest() {}
 
   void SetUp() override { ASSERT_TRUE(test_dir_.CreateUniqueTempDir()); }
 
   base::ScopedTempDir test_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallerStateTest);
 };
 
 // An installer state on which we can access otherwise protected members.

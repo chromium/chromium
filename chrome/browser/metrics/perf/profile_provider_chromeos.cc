@@ -54,8 +54,8 @@ bool IsNormalUserLoggedIn() {
 }  // namespace
 
 ProfileProvider::ProfileProvider()
-    : jankiness_collection_min_interval_(base::TimeDelta::FromSeconds(
-          kJankinessCollectionMinIntervalSec.Get())) {
+    : jankiness_collection_min_interval_(
+          base::Seconds(kJankinessCollectionMinIntervalSec.Get())) {
   // Initialize the WindowedIncognitoMonitor on the UI thread.
   WindowedIncognitoMonitor::Init();
   // Register a perf events collector.
@@ -155,7 +155,8 @@ void ProfileProvider::SuspendDone(base::TimeDelta sleep_duration) {
   }
 }
 
-void ProfileProvider::OnSessionRestoreDone(int num_tabs_restored) {
+void ProfileProvider::OnSessionRestoreDone(Profile* profile,
+                                           int num_tabs_restored) {
   // Do not collect a profile unless logged in as a normal user.
   if (!IsNormalUserLoggedIn())
     return;

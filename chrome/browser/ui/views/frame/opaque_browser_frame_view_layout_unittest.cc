@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
@@ -40,6 +39,10 @@ const int kCaptionButtonHeight = 18;
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
   TestLayoutDelegate() : show_caption_buttons_(true), maximized_(false) {}
+
+  TestLayoutDelegate(const TestLayoutDelegate&) = delete;
+  TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;
+
   ~TestLayoutDelegate() override {}
 
   void set_window_title(const std::u16string& title) { window_title_ = title; }
@@ -86,8 +89,6 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   std::u16string window_title_;
   bool show_caption_buttons_;
   bool maximized_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutDelegate);
 };
 
 }  // namespace
@@ -97,6 +98,12 @@ class OpaqueBrowserFrameViewLayoutTest
       public testing::WithParamInterface<bool> {
  public:
   OpaqueBrowserFrameViewLayoutTest() {}
+
+  OpaqueBrowserFrameViewLayoutTest(const OpaqueBrowserFrameViewLayoutTest&) =
+      delete;
+  OpaqueBrowserFrameViewLayoutTest& operator=(
+      const OpaqueBrowserFrameViewLayoutTest&) = delete;
+
   ~OpaqueBrowserFrameViewLayoutTest() override {}
 
   void SetUp() override {
@@ -355,8 +362,6 @@ class OpaqueBrowserFrameViewLayoutTest
 
   TabIconView* tab_icon_view_ = nullptr;
   views::Label* window_title_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayoutTest);
 };
 
 TEST_P(OpaqueBrowserFrameViewLayoutTest, BasicWindow) {

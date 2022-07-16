@@ -20,6 +20,8 @@
 - (void)recordSettingsMetricsPerProfile;
 // Records open downloads metric per profile type.
 - (void)recordDownloadsMetricsPerProfile;
+// Starts a reverse image search for the image currently in the pasteboard.
+- (void)searchCopiedImage;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_ACTION_HANDLER_DELEGATE_H_

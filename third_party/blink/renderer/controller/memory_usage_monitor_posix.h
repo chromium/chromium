@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/renderer/controller/controller_export.h"

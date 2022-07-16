@@ -138,139 +138,53 @@
     }, `${selector} matches expected elements`);
   }
 
-  test_selector_all('.x:has(:scope .a)', [d02, d06, d07, d09, d12]);
-  test_selector_all('.x:has(:scope .a > .b)', [d09]);
-  test_selector_all('.x:has(:scope .a .b)', [d09, d12]);
-  test_selector_all('.x:has(:scope .a + .b)', [d12]);
-  test_selector_all('.x:has(:scope .a ~ .b)', [d02, d12]);
-  test_selector_all(':has(.x:scope .a)', [d02, d06, d07, d09, d12]);
-  test_selector_all(':has(.x:scope .a > .b)', [d09]);
-  test_selector_all(':has(.x:scope .a .b)', [d09, d12]);
-  test_selector_all(':has(.x:scope .a + .b)', [d12]);
-  test_selector_all(':has(.x:scope .a ~ .b)', [d02, d12]);
-  test_selector_all(':has(:scope.x .a)', [d02, d06, d07, d09, d12]);
-  test_selector_all(':has(:scope.x .a > .b)', [d09]);
-  test_selector_all(':has(:scope.x .a .b)', [d09, d12]);
-  test_selector_all(':has(:scope.x .a + .b)', [d12]);
-  test_selector_all(':has(:scope.x .a ~ .b)', [d02, d12]);
+  test_selector_all('.x:has(.a)', [d02, d06, d07, d09, d12]);
+  test_selector_all('.x:has(.a > .b)', [d09]);
+  test_selector_all('.x:has(.a .b)', [d09, d12]);
+  test_selector_all('.x:has(.a + .b)', [d12]);
+  test_selector_all('.x:has(.a ~ .b)', [d02, d12]);
 
-  test_selector_all('.x:has(:scope > .a)', [d02, d07, d09, d12]);
-  test_selector_all('.x:has(:scope > .a > .b)', [d09]);
-  test_selector_all('.x:has(:scope > .a .b)', [d09, d12]);
-  test_selector_all('.x:has(:scope > .a + .b)', [d12]);
-  test_selector_all('.x:has(:scope > .a ~ .b)', [d02, d12]);
-  test_selector_all(':has(.x:scope > .a)', [d02, d07, d09, d12]);
-  test_selector_all(':has(.x:scope > .a > .b)', [d09]);
-  test_selector_all(':has(.x:scope > .a .b)', [d09, d12]);
-  test_selector_all(':has(.x:scope > .a + .b)', [d12]);
-  test_selector_all(':has(.x:scope > .a ~ .b)', [d02, d12]);
-  test_selector_all(':has(:scope.x > .a)', [d02, d07, d09, d12]);
-  test_selector_all(':has(:scope.x > .a > .b)', [d09]);
-  test_selector_all(':has(:scope.x > .a .b)', [d09, d12]);
-  test_selector_all(':has(:scope.x > .a + .b)', [d12]);
-  test_selector_all(':has(:scope.x > .a ~ .b)', [d02, d12]);
+  test_selector_all('.x:has(> .a)', [d02, d07, d09, d12]);
+  test_selector_all('.x:has(> .a > .b)', [d09]);
+  test_selector_all('.x:has(> .a .b)', [d09, d12]);
+  test_selector_all('.x:has(> .a + .b)', [d12]);
+  test_selector_all('.x:has(> .a ~ .b)', [d02, d12]);
 
-  test_selector_all('.x:has(:scope + .a)', [d19, d21, d24, d28, d32, d37, d40, d46]);
-  test_selector_all('.x:has(:scope + .a > .b)', [d21]);
-  test_selector_all('.x:has(:scope + .a .b)', [d21, d24]);
-  test_selector_all('.x:has(:scope + .a + .b)', [d28, d32, d37]);
-  test_selector_all('.x:has(:scope + .a ~ .b)', [d19, d21, d24, d28, d32, d37, d40]);
-  test_selector_all(':has(.x:scope + .a)', [d19, d21, d24, d28, d32, d37, d40, d46]);
-  test_selector_all(':has(.x:scope + .a > .b)', [d21]);
-  test_selector_all(':has(.x:scope + .a .b)', [d21, d24]);
-  test_selector_all(':has(.x:scope + .a + .b)', [d28, d32, d37]);
-  test_selector_all(':has(.x:scope + .a ~ .b)', [d19, d21, d24, d28, d32, d37, d40]);
-  test_selector_all(':has(:scope.x + .a)', [d19, d21, d24, d28, d32, d37, d40, d46]);
-  test_selector_all(':has(:scope.x + .a > .b)', [d21]);
-  test_selector_all(':has(:scope.x + .a .b)', [d21, d24]);
-  test_selector_all(':has(:scope.x + .a + .b)', [d28, d32, d37]);
-  test_selector_all(':has(:scope.x + .a ~ .b)', [d19, d21, d24, d28, d32, d37, d40]);
+  test_selector_all('.x:has(+ .a)', [d19, d21, d24, d28, d32, d37, d40, d46]);
+  test_selector_all('.x:has(+ .a > .b)', [d21]);
+  test_selector_all('.x:has(+ .a .b)', [d21, d24]);
+  test_selector_all('.x:has(+ .a + .b)', [d28, d32, d37]);
+  test_selector_all('.x:has(+ .a ~ .b)', [d19, d21, d24, d28, d32, d37, d40]);
 
-  test_selector_all('.x:has(:scope ~ .a)', [d18, d19, d21, d24, d28, d32, d37, d40, d46]);
-  test_selector_all('.x:has(:scope ~ .a > .b)', [d18, d19, d21]);
-  test_selector_all('.x:has(:scope ~ .a .b)', [d18, d19, d21, d24]);
-  test_selector_all('.x:has(:scope ~ .a + .b)', [d18, d19, d21, d24, d28, d32, d37]);
-  test_selector_all('.x:has(:scope ~ .a + .b > .c)', [d18, d19, d21, d24, d28]);
-  test_selector_all('.x:has(:scope ~ .a + .b .c)', [d18, d19, d21, d24, d28, d32]);
-  test_selector_all(':has(.x:scope ~ .a)', [d18, d19, d21, d24, d28, d32, d37, d40, d46]);
-  test_selector_all(':has(.x:scope ~ .a > .b)', [d18, d19, d21]);
-  test_selector_all(':has(.x:scope ~ .a .b)', [d18, d19, d21, d24]);
-  test_selector_all(':has(.x:scope ~ .a + .b)', [d18, d19, d21, d24, d28, d32, d37]);
-  test_selector_all(':has(.x:scope ~ .a + .b > .c)', [d18, d19, d21, d24, d28]);
-  test_selector_all(':has(.x:scope ~ .a + .b .c)', [d18, d19, d21, d24, d28, d32]);
-  test_selector_all(':has(:scope.x ~ .a)', [d18, d19, d21, d24, d28, d32, d37, d40, d46]);
-  test_selector_all(':has(:scope.x ~ .a > .b)', [d18, d19, d21]);
-  test_selector_all(':has(:scope.x ~ .a .b)', [d18, d19, d21, d24]);
-  test_selector_all(':has(:scope.x ~ .a + .b)', [d18, d19, d21, d24, d28, d32, d37]);
-  test_selector_all(':has(:scope.x ~ .a + .b > .c)', [d18, d19, d21, d24, d28]);
-  test_selector_all(':has(:scope.x ~ .a + .b .c)', [d18, d19, d21, d24, d28, d32]);
+  test_selector_all('.x:has(~ .a)', [d18, d19, d21, d24, d28, d32, d37, d40, d46]);
+  test_selector_all('.x:has(~ .a > .b)', [d18, d19, d21]);
+  test_selector_all('.x:has(~ .a .b)', [d18, d19, d21, d24]);
+  test_selector_all('.x:has(~ .a + .b)', [d18, d19, d21, d24, d28, d32, d37]);
+  test_selector_all('.x:has(~ .a + .b > .c)', [d18, d19, d21, d24, d28]);
+  test_selector_all('.x:has(~ .a + .b .c)', [d18, d19, d21, d24, d28, d32]);
 
   test_selector_all('.x:has(.d .e)', [d48, d49, d50]);
   test_selector_all('.x:has(.d .e) .f', [d54]);
-  test_selector_all('.x:has(:scope .d .e)', [d48, d49, d50]);
-  test_selector_all('.x:has(:scope .d .e) .f', [d54]);
-  test_selector_all('.x:has(:scope > .d)', [d49, d50]);
-  test_selector_all('.x:has(:scope > .d) .f', [d54]);
-  test_selector_all('.x:has(:scope ~ .d ~ .e)', [d48, d55, d56]);
-  test_selector_all('.x:has(:scope ~ .d ~ .e) ~ .f', [d60]);
-  test_selector_all('.x:has(:scope + .d ~ .e)', [d55, d56]);
-  test_selector_all('.x:has(:scope + .d ~ .e) ~ .f', [d60]);
-  test_selector_all(':has(.x:scope .d .e)', [d48, d49, d50]);
-  test_selector_all(':has(.x:scope .d .e) .f', [d54]);
-  test_selector_all(':has(.x:scope > .d)', [d49, d50]);
-  test_selector_all(':has(.x:scope > .d) .f', [d54]);
-  test_selector_all(':has(.x:scope ~ .d ~ .e)', [d48, d55, d56]);
-  test_selector_all(':has(.x:scope ~ .d ~ .e) ~ .f', [d60]);
-  test_selector_all(':has(.x:scope + .d ~ .e)', [d55, d56]);
-  test_selector_all(':has(.x:scope + .d ~ .e) ~ .f', [d60]);
-  test_selector_all(':has(:scope.x .d .e)', [d48, d49, d50]);
-  test_selector_all(':has(:scope.x .d .e) .f', [d54]);
-  test_selector_all(':has(:scope.x > .d)', [d49, d50]);
-  test_selector_all(':has(:scope.x > .d) .f', [d54]);
-  test_selector_all(':has(:scope.x ~ .d ~ .e)', [d48, d55, d56]);
-  test_selector_all(':has(:scope.x ~ .d ~ .e) ~ .f', [d60]);
-  test_selector_all(':has(:scope.x + .d ~ .e)', [d55, d56]);
-  test_selector_all(':has(:scope.x + .d ~ .e) ~ .f', [d60]);
+  test_selector_all('.x:has(> .d)', [d49, d50]);
+  test_selector_all('.x:has(> .d) .f', [d54]);
+  test_selector_all('.x:has(~ .d ~ .e)', [d48, d55, d56]);
+  test_selector_all('.x:has(~ .d ~ .e) ~ .f', [d60]);
+  test_selector_all('.x:has(+ .d ~ .e)', [d55, d56]);
+  test_selector_all('.x:has(+ .d ~ .e) ~ .f', [d60]);
 
-  test_selector_all('.y:has(:scope > .g .h)', [d63, d71])
-  test_selector_all('.y:has(:scope .g .h)', [d63, d68, d71])
-  test_selector_all('.y:has(:scope > .g .h) .i', [d67, d75])
-  test_selector_all('.y:has(:scope .g .h) .i', [d67, d75])
-  test_selector_all('.x:has(:scope + .y:has(:scope > .g .h) .i)', [d62, d70])
-  test_selector_all('.x:has(:scope + .y:has(:scope .g .h) .i)', [d62, d63, d70])
-  test_selector_all('.x:has(:scope + .y:has(:scope > .g .h) .i) ~ .j', [d77, d80])
-  test_selector_all('.x:has(:scope + .y:has(:scope .g .h) .i) ~ .j', [d77, d80])
-  test_selector_all('.x:has(:scope ~ .y:has(:scope > .g .h) .i)', [d61, d62, d69, d70])
-  test_selector_all('.x:has(:scope ~ .y:has(:scope .g .h) .i)', [d61, d62, d63, d69, d70])
-  test_selector_all(':has(.y:scope > .g .h)', [d63, d71])
-  test_selector_all(':has(.y:scope .g .h)', [d63, d68, d71])
-  test_selector_all(':has(.y:scope > .g .h) .i', [d67, d75])
-  test_selector_all(':has(.y:scope .g .h) .i', [d67, d75])
-  test_selector_all(':has(.x:scope + :has(.y:scope > .g .h) .i)', [d62, d70])
-  test_selector_all(':has(.x:scope + :has(.y:scope .g .h) .i)', [d62, d63, d70])
-  test_selector_all(':has(.x:scope + :has(.y:scope > .g .h) .i) ~ .j', [d77, d80])
-  test_selector_all(':has(.x:scope + :has(.y:scope .g .h) .i) ~ .j', [d77, d80])
-  test_selector_all(':has(.x:scope ~ :has(.y:scope > .g .h) .i)', [d61, d62, d69, d70])
-  test_selector_all(':has(.x:scope ~ :has(.y:scope .g .h) .i)', [d61, d62, d63, d69, d70])
-  test_selector_all(':has(:scope.y > .g .h)', [d63, d71])
-  test_selector_all(':has(:scope.y .g .h)', [d63, d68, d71])
-  test_selector_all(':has(:scope.y > .g .h) .i', [d67, d75])
-  test_selector_all(':has(:scope.y .g .h) .i', [d67, d75])
-  test_selector_all(':has(:scope.x + :has(:scope.y > .g .h) .i)', [d62, d70])
-  test_selector_all(':has(:scope.x + :has(:scope.y .g .h) .i)', [d62, d63, d70])
-  test_selector_all(':has(:scope.x + :has(:scope.y > .g .h) .i) ~ .j', [d77, d80])
-  test_selector_all(':has(:scope.x + :has(:scope.y .g .h) .i) ~ .j', [d77, d80])
-  test_selector_all(':has(:scope.x ~ :has(:scope.y > .g .h) .i)', [d61, d62, d69, d70])
-  test_selector_all(':has(:scope.x ~ :has(:scope.y .g .h) .i)', [d61, d62, d63, d69, d70])
+  test_selector_all('.y:has(> .g .h)', [d63, d71])
+  test_selector_all('.y:has(.g .h)', [d63, d68, d71])
+  test_selector_all('.y:has(> .g .h) .i', [d67, d75])
+  test_selector_all('.y:has(.g .h) .i', [d67, d75])
+  test_selector_all('.x:has(+ .y:has(> .g .h) .i)', [d62, d70])
+  test_selector_all('.x:has(+ .y:has(.g .h) .i)', [d62, d63, d70])
+  test_selector_all('.x:has(+ .y:has(> .g .h) .i) ~ .j', [d77, d80])
+  test_selector_all('.x:has(+ .y:has(.g .h) .i) ~ .j', [d77, d80])
+  test_selector_all('.x:has(~ .y:has(> .g .h) .i)', [d61, d62, d69, d70])
+  test_selector_all('.x:has(~ .y:has(.g .h) .i)', [d61, d62, d63, d69, d70])
 
-  test_selector_all('.x:has(.d :scope .e)', [d51, d52])
-  test_selector_all(':has(.d .x:scope .e)', [d51, d52])
-  test_selector_all(':has(.d :scope.x .e)', [d51, d52])
+  test_selector_all('.d .x:has(.e)', [d51, d52])
 
-  test_selector_all('.x:has(.d ~ :scope ~ .e)', [d57, d58])
-  test_selector_all(':has(.d ~ .x:scope ~ .e)', [d57, d58])
-  test_selector_all(':has(.d ~ :scope.x ~ .e)', [d57, d58])
+  test_selector_all('.d ~ .x:has(~ .e)', [d57, d58])
 
-  test_selector_all(':has(:scope .d :scope)', [])
-  test_selector_all(':has(:scope ~ .d ~ :scope)', [])
 </script>

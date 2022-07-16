@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/test/stub_image.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
@@ -1436,7 +1437,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
     EXPECT_EQ(PhysicalOffset(), box->ScrolledContentOffset());       \
     const auto* scrollable_area = box->GetScrollableArea();          \
     EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());        \
-    EXPECT_EQ(IntPoint(), scrollable_area->ScrollOrigin());          \
+    EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());        \
     EXPECT_EQ(FloatPoint(), scrollable_area->ScrollPosition());      \
     EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt()); \
     EXPECT_EQ(IntSize(), scrollable_area->MinimumScrollOffsetInt()); \
@@ -1541,16 +1542,21 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), normal->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), normal->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
-  // 50 = border_left, 20 = border_top
-  // 2040 = child_width + padding_left (without padding_right which is in
-  //        inline-end direction)
-  // 1040 = child_height + padding_top + padding_bottom
-  EXPECT_EQ(LayoutRect(50, 20, 2040, 1040), normal->LayoutOverflowRect());
-  // 1595 = layout_overflow_width (2040) - client_width (445 -> see below).
-  // 716 = layout_overflow_height (1040) - client_height (324 -> see below).
-  EXPECT_EQ(IntSize(1595, 716), scrollable_area->MaximumScrollOffsetInt());
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(LayoutRect(50, 20, 2060, 1040), normal->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(1615, 716), scrollable_area->MaximumScrollOffsetInt());
+  } else {
+    // 50 = border_left, 20 = border_top
+    // 2040 = child_width + padding_left (without padding_right which is in
+    //        inline-end direction)
+    // 1040 = child_height + padding_top + padding_bottom
+    EXPECT_EQ(LayoutRect(50, 20, 2040, 1040), normal->LayoutOverflowRect());
+    // 1595 = layout_overflow_width (2040) - client_width (445 -> see below).
+    // 716 = layout_overflow_height (1040) - client_height (324 -> see below).
+    EXPECT_EQ(IntSize(1595, 716), scrollable_area->MaximumScrollOffsetInt());
+  }
   EXPECT_EQ(IntSize(), scrollable_area->MinimumScrollOffsetInt());
-  EXPECT_EQ(IntPoint(), scrollable_area->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());
   EXPECT_EQ(FloatPoint(), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), normal->BorderBoxRect());
@@ -1563,15 +1569,20 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), vlr->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
-  // 2060 = child_width + padding_left + padding_right
-  // 1010 = child_height + padding_top (without padding_bottom which is in
-  //        inline-end direction)
-  EXPECT_EQ(LayoutRect(50, 20, 2060, 1010), vlr->LayoutOverflowRect());
-  // 1615 = layout_overflow_width (2060) - client_width (445).
-  // 686 = layout_overflow_height (1010) - client_height (324).
-  EXPECT_EQ(IntSize(1615, 686), scrollable_area->MaximumScrollOffsetInt());
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(LayoutRect(50, 20, 2060, 1040), vlr->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(1615, 716), scrollable_area->MaximumScrollOffsetInt());
+  } else {
+    // 2060 = child_width + padding_left + padding_right
+    // 1010 = child_height + padding_top (without padding_bottom which is in
+    //        inline-end direction)
+    EXPECT_EQ(LayoutRect(50, 20, 2060, 1010), vlr->LayoutOverflowRect());
+    // 1615 = layout_overflow_width (2060) - client_width (445).
+    // 686 = layout_overflow_height (1010) - client_height (324).
+    EXPECT_EQ(IntSize(1615, 686), scrollable_area->MaximumScrollOffsetInt());
+  }
   EXPECT_EQ(IntSize(), scrollable_area->MinimumScrollOffsetInt());
-  EXPECT_EQ(IntPoint(), scrollable_area->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());
   EXPECT_EQ(FloatPoint(), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), vlr->BorderBoxRect());
@@ -1585,10 +1596,15 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(IntSize(), vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
-  EXPECT_EQ(LayoutRect(45, 20, 2060, 1010), vrl->LayoutOverflowRect());
-  EXPECT_EQ(IntSize(0, 686), scrollable_area->MaximumScrollOffsetInt());
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(LayoutRect(45, 20, 2060, 1040), vrl->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(0, 716), scrollable_area->MaximumScrollOffsetInt());
+  } else {
+    EXPECT_EQ(LayoutRect(45, 20, 2060, 1010), vrl->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(0, 686), scrollable_area->MaximumScrollOffsetInt());
+  }
   EXPECT_EQ(IntSize(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
-  EXPECT_EQ(IntPoint(1615, 0), scrollable_area->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
   EXPECT_EQ(FloatPoint(1615, 0), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), vrl->BorderBoxRect());
@@ -1601,15 +1617,23 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), rtl->ScrolledContentOffset());
   EXPECT_EQ(IntSize(15, 0), rtl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
-  // The contents overflow to the left.
-  // 2020 = child_width + padding_right (without padding_left which is in
-  //        inline-end direction)
-  // 1040 = child_height + padding_top + padding_bottom
-  EXPECT_EQ(LayoutRect(-1510, 20, 2020, 1040), rtl->LayoutOverflowRect());
-  EXPECT_EQ(IntSize(0, 716), scrollable_area->MaximumScrollOffsetInt());
-  EXPECT_EQ(IntSize(-1575, 0), scrollable_area->MinimumScrollOffsetInt());
-  EXPECT_EQ(IntPoint(1575, 0), scrollable_area->ScrollOrigin());
-  EXPECT_EQ(FloatPoint(1575, 0), scrollable_area->ScrollPosition());
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(LayoutRect(-1550, 20, 2060, 1040), rtl->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(0, 716), scrollable_area->MaximumScrollOffsetInt());
+    EXPECT_EQ(IntSize(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
+    EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
+    EXPECT_EQ(FloatPoint(1615, 0), scrollable_area->ScrollPosition());
+  } else {
+    // The contents overflow to the left.
+    // 2020 = child_width + padding_right (without padding_left which is in
+    //        inline-end direction)
+    // 1040 = child_height + padding_top + padding_bottom
+    EXPECT_EQ(LayoutRect(-1510, 20, 2020, 1040), rtl->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(0, 716), scrollable_area->MaximumScrollOffsetInt());
+    EXPECT_EQ(IntSize(-1575, 0), scrollable_area->MinimumScrollOffsetInt());
+    EXPECT_EQ(gfx::Point(1575, 0), scrollable_area->ScrollOrigin());
+    EXPECT_EQ(FloatPoint(1575, 0), scrollable_area->ScrollPosition());
+  }
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl->BorderBoxRect());
   EXPECT_EQ(LayoutRect(65, 20, 445, 324), rtl->NoOverflowRect());
@@ -1621,14 +1645,22 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), rtl_vlr->ScrolledContentOffset());
   EXPECT_EQ(IntSize(), rtl_vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
-  // 2060 = child_width + padding_left + padding_right
-  // 1030 = child_height + padding_bottom (without padding_top which is in
-  //        inline-end direction)
-  EXPECT_EQ(LayoutRect(50, -686, 2060, 1030), rtl_vlr->LayoutOverflowRect());
-  EXPECT_EQ(IntSize(1615, 0), scrollable_area->MaximumScrollOffsetInt());
-  EXPECT_EQ(IntSize(0, -706), scrollable_area->MinimumScrollOffsetInt());
-  EXPECT_EQ(IntPoint(0, 706), scrollable_area->ScrollOrigin());
-  EXPECT_EQ(FloatPoint(0, 706), scrollable_area->ScrollPosition());
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(LayoutRect(50, -696, 2060, 1040), rtl_vlr->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(1615, 0), scrollable_area->MaximumScrollOffsetInt());
+    EXPECT_EQ(IntSize(0, -716), scrollable_area->MinimumScrollOffsetInt());
+    EXPECT_EQ(gfx::Point(0, 716), scrollable_area->ScrollOrigin());
+    EXPECT_EQ(FloatPoint(0, 716), scrollable_area->ScrollPosition());
+  } else {
+    // 2060 = child_width + padding_left + padding_right
+    // 1030 = child_height + padding_bottom (without padding_top which is in
+    //        inline-end direction)
+    EXPECT_EQ(LayoutRect(50, -686, 2060, 1030), rtl_vlr->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(1615, 0), scrollable_area->MaximumScrollOffsetInt());
+    EXPECT_EQ(IntSize(0, -706), scrollable_area->MinimumScrollOffsetInt());
+    EXPECT_EQ(gfx::Point(0, 706), scrollable_area->ScrollOrigin());
+    EXPECT_EQ(FloatPoint(0, 706), scrollable_area->ScrollPosition());
+  }
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl_vlr->BorderBoxRect());
   EXPECT_EQ(LayoutRect(50, 20, 445, 324), rtl_vlr->NoOverflowRect());
@@ -1641,11 +1673,19 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(IntSize(), rtl_vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
-  EXPECT_EQ(LayoutRect(45, -686, 2060, 1030), rtl_vrl->LayoutOverflowRect());
-  EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt());
-  EXPECT_EQ(IntSize(-1615, -706), scrollable_area->MinimumScrollOffsetInt());
-  EXPECT_EQ(IntPoint(1615, 706), scrollable_area->ScrollOrigin());
-  EXPECT_EQ(FloatPoint(1615, 706), scrollable_area->ScrollPosition());
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(LayoutRect(45, -696, 2060, 1040), rtl_vrl->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt());
+    EXPECT_EQ(IntSize(-1615, -716), scrollable_area->MinimumScrollOffsetInt());
+    EXPECT_EQ(gfx::Point(1615, 716), scrollable_area->ScrollOrigin());
+    EXPECT_EQ(FloatPoint(1615, 716), scrollable_area->ScrollPosition());
+  } else {
+    EXPECT_EQ(LayoutRect(45, -686, 2060, 1030), rtl_vrl->LayoutOverflowRect());
+    EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt());
+    EXPECT_EQ(IntSize(-1615, -706), scrollable_area->MinimumScrollOffsetInt());
+    EXPECT_EQ(gfx::Point(1615, 706), scrollable_area->ScrollOrigin());
+    EXPECT_EQ(FloatPoint(1615, 706), scrollable_area->ScrollPosition());
+  }
   EXPECT_EQ(IntSize(), rtl_vrl->OriginAdjustmentForScrollbars());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl_vrl->BorderBoxRect());
@@ -1795,6 +1835,285 @@ TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   element->classList().Remove("transform");
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
+}
+
+class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
+                                             public PaintTestConfigurations {
+ protected:
+  void SetUp() override {
+    EnableCompositing();
+    RenderingTest::SetUp();
+  }
+
+  BackgroundPaintLocation ScrollerBackgroundPaintLocation() {
+    auto* scroller = To<LayoutBox>(GetLayoutObjectByElementId("scroller"));
+    // The scroller is forced to be composited, so the values equal.
+    EXPECT_EQ(scroller->ComputeBackgroundPaintLocationIfComposited(),
+              scroller->GetBackgroundPaintLocation());
+    return scroller->GetBackgroundPaintLocation();
+  }
+
+  const String kCommonStyle = R"HTML(
+    <style>
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+        will-change: transform;
+      }
+      .spacer { height: 1000px; }
+    </style>
+  )HTML";
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(LayoutBoxBackgroundPaintLocationTest);
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, ContentBoxClipZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because it
+  // has a content-box clip without local attachment.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       AttachmentLocalContentBoxClipNonZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white local content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because it
+  // has local attachment.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, NonLocalImage) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg),
+                           white local;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because
+  // the background image is not locally attached.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, LocalImageAndColor) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
+                           local, white local;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because both
+  // the image and color are locally attached.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       LocalImageAndNonLocalClipPaddingColor) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
+                           local, white padding-box;
+               padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because the
+  // image is locally attached and even though the color is not, it is filled to
+  // the padding box so it will be drawn the same as a locally attached
+  // background.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       LocalImageAndNonLocalClipContentColorNonZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
+                           local, white content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because
+  // the color is filled to the content box and we have padding so it is not
+  // equivalent to a locally attached background.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorNoBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' class='scroller' style='background: white border-box;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because its
+  // border-box is equivalent to its padding box since it has no border.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorSolidBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white border-box; border: 10px solid black;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because its
+  // border is opaque so it completely covers the background outside of the
+  // padding-box.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       BorderBoxClipColorTranslucentBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white border-box;
+                border: 10px solid rgba(0, 0, 0, 0.5);'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller paints the background into both layers because its border is
+  // partially transparent so the background must be drawn to the
+  // border-box edges.
+  EXPECT_EQ(kBackgroundPaintInBothSpaces, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorDashedBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white; border: 5px dashed black;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can be painted in both layers because the background is a
+  // solid color, it must be because the dashed border reveals the background
+  // underneath it.
+  EXPECT_EQ(kBackgroundPaintInBothSpaces, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, ContentClipColorZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white content-box;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because its
+  // content-box is equivalent to its padding box since it has no padding.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, ContentClipColorNonZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because
+  // it has padding so its content-box is not equivalent to its padding-box.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, CustomScrollbar) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <style>
+      #scroller::-webkit-scrollbar {
+        width: 13px;
+        height: 13px;
+      }
+    </style>
+    <div id='scroller' style='background: white border-box;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller paints the background into both layers because it has a custom
+  // scrollbar which the background may need to draw under.
+  EXPECT_EQ(kBackgroundPaintInBothSpaces, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       TranslucentColorAndTranslucentBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: rgba(255, 255, 255, 0.5) border-box;
+                border: 5px solid rgba(0, 0, 0, 0.5);'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller17 can only be painted once as it is translucent, and it must
+  // be painted in the border box space to be under the translucent border.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       LocalImageTranslucentColorAndTransparentBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: local linear-gradient(blue, red),
+                           rgba(0, 128, 0, 0.5);
+               border: 10px solid transparent'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // https://crbug.com/1241801: The background with translucent background color
+  // should not be painted twice.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, InsetBoxShadow) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white; box-shadow: 10px 10px black inset'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // Background with inset box shadow can only be painted in the main graphics
+  // layer because the shadow can't scroll.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, OutsetBoxShadow) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white; box-shadow: 10px 10px black'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // Outset box shadow doesn't affect background paint location.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
 }
 
 }  // namespace blink

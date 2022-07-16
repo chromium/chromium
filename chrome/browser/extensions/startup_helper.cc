@@ -9,9 +9,9 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -87,6 +87,9 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
         quit_closure_(std::move(quit_closure)),
         success_(false) {}
 
+  ValidateCrxHelper(const ValidateCrxHelper&) = delete;
+  ValidateCrxHelper& operator=(const ValidateCrxHelper&) = delete;
+
   bool success() const { return success_; }
   const std::u16string& error() const { return error_; }
 
@@ -147,9 +150,6 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
 
   // If the unpacking wasn't successful, this contains an error message.
   std::u16string error_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ValidateCrxHelper);
 };
 
 }  // namespace

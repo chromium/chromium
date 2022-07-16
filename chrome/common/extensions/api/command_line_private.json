@@ -16,19 +16,18 @@
             "name": "name",
             "type": "string",
             "description": "The name of a command line switch, without leading \"--\", such as \"enable-experimental-extension-apis\"."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "boolean",
-                "description": "Whether the switch is specified on the command line."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean",
+              "description": "Whether the switch is specified on the command line."
+            }
+          ]
+        }
       }
     ]
   }

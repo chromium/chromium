@@ -42,6 +42,9 @@ class TestObserver final : public GmsCoreNotificationsStateTracker::Observer {
   explicit TestObserver(GmsCoreNotificationsStateTrackerImpl* tracker)
       : tracker_(tracker) {}
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() = default;
 
   uint32_t change_count() const { return change_count_; }
@@ -62,13 +65,17 @@ class TestObserver final : public GmsCoreNotificationsStateTracker::Observer {
 
   uint32_t change_count_ = 0;
   std::vector<std::string> names_from_last_update_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
 
 class GmsCoreNotificationsStateTrackerImplTest : public testing::Test {
+ public:
+  GmsCoreNotificationsStateTrackerImplTest(
+      const GmsCoreNotificationsStateTrackerImplTest&) = delete;
+  GmsCoreNotificationsStateTrackerImplTest& operator=(
+      const GmsCoreNotificationsStateTrackerImplTest&) = delete;
+
  protected:
   GmsCoreNotificationsStateTrackerImplTest()
       : test_devices_(CreateTestDevices()) {}
@@ -106,9 +113,6 @@ class GmsCoreNotificationsStateTrackerImplTest : public testing::Test {
 
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl> tracker_;
   std::unique_ptr<TestObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GmsCoreNotificationsStateTrackerImplTest);
 };
 
 TEST_F(GmsCoreNotificationsStateTrackerImplTest, TestTracking) {

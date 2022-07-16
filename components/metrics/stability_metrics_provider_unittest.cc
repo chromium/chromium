@@ -19,13 +19,14 @@ class StabilityMetricsProviderTest : public testing::Test {
     StabilityMetricsProvider::RegisterPrefs(prefs_.registry());
   }
 
+  StabilityMetricsProviderTest(const StabilityMetricsProviderTest&) = delete;
+  StabilityMetricsProviderTest& operator=(const StabilityMetricsProviderTest&) =
+      delete;
+
   ~StabilityMetricsProviderTest() override {}
 
  protected:
   TestingPrefServiceSimple prefs_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsProviderTest);
 };
 
 TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
@@ -112,7 +113,7 @@ TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
     recorder.LogCrash(unclean_time);
 
     // Record a crash with no system crash.
-    recorder.LogCrash(unclean_time - base::TimeDelta::FromMinutes(1));
+    recorder.LogCrash(unclean_time - base::Minutes(1));
   }
 
   {

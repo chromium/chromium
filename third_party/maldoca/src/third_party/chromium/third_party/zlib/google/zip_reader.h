@@ -1,4 +1,3 @@
-
 // Copyright (c) 2011 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -11,8 +10,10 @@
 #include "base/files/file_path.h"
 #include "contrib/minizip/unzip.h"
 
-// This file is a stripped down version of zip_reader.h from Chromium: https://source.chromium.org/chromium/chromium/src/+/main:third_party/zlib/google/zip_reader.h
-// It only contains code required to read a zip file using zlib and replaces the usage of other Chromium code not present in mini_chromium.
+// This file is a stripped down version of zip_reader.h from Chromium:
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/zlib/google/zip_reader.h
+// It only contains code required to read a zip file using zlib and replaces the
+// usage of other Chromium code not present in mini_chromium.
 
 namespace zip {
 

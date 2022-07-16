@@ -89,7 +89,7 @@ const AccountId& GetAccountId(Profile* profile) {
 gfx::Size GetDefaultPdfMediaSizeMicrons() {
   PrintingContextDelegate delegate;
   auto printing_context(PrintingContext::Create(&delegate));
-  if (PrintingContext::OK != printing_context->UsePdfSettings() ||
+  if (mojom::ResultCode::kSuccess != printing_context->UsePdfSettings() ||
       printing_context->settings().device_units_per_inch() <= 0) {
     return gfx::Size();
   }

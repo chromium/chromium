@@ -16,7 +16,8 @@
       iron-icon {
         --iron-icon-width: var(--cr-icon-size);
         --iron-icon-height: var(--cr-icon-size);
-        --iron-icon-fill-color: var(--google-grey-refresh-700);
+        --iron-icon-fill-color:
+          var(--cr-tooltip-icon-fill-color, --google-grey-refresh-700);
       }
     </style>
     <iron-icon id="indicator" tabindex="0" aria-label$="[[iconAriaLabel]]"
@@ -24,7 +25,7 @@
     <paper-tooltip id="tooltip"
         for="indicator" position="[[tooltipPosition]]"
         fit-to-visible-bounds part="tooltip">
-      <slot>[[tooltipText]]</slot>
+      <slot name="tooltip-text">[[tooltipText]]</slot>
     </paper-tooltip>
   </template>
   <script src="cr_tooltip_icon.js"></script>

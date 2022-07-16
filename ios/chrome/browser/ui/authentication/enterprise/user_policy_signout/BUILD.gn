@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("user_policy_signout") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "user_policy_signout_coordinator.h",
+    "user_policy_signout_coordinator.mm",
+    "user_policy_signout_view_controller.h",
+    "user_policy_signout_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/ui/coordinators:chrome_coordinators" ]
+}

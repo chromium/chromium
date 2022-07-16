@@ -44,19 +44,19 @@ base::FilePath GetResourcesPakFilePath(NSString* name, NSString* mac_locale) {
 }  // namespace
 
 void ResourceBundle::LoadCommonResources() {
-  if (IsScaleFactorSupported(SCALE_FACTOR_100P)) {
+  if (IsScaleFactorSupported(k100Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_100_percent", nil),
-                        SCALE_FACTOR_100P);
+                        k100Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_200P)) {
+  if (IsScaleFactorSupported(k200Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_200_percent", nil),
-                        SCALE_FACTOR_200P);
+                        k200Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_300P)) {
+  if (IsScaleFactorSupported(k300Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_300_percent", nil),
-                        SCALE_FACTOR_300P);
+                        k300Percent);
   }
 }
 
@@ -102,7 +102,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
     // Load the raw data from the resource pack at the current supported scale
     // factor.  This code assumes that only one of the possible scale factors is
     // supported at runtime, based on the device resolution.
-    ui::ResourceScaleFactor scale_factor = GetMaxScaleFactor();
+    ui::ResourceScaleFactor scale_factor = GetMaxResourceScaleFactor();
 
     scoped_refptr<base::RefCountedMemory> data(
         LoadDataResourceBytesForScale(resource_id, scale_factor));

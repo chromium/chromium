@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 
@@ -110,13 +111,13 @@ MediaStreamSource::ConsumerWrapper::ConsumerWrapper(
   bus_vector_.ReserveInitialCapacity(8);
 }
 
-void MediaStreamSource::ConsumerWrapper::SetFormat(size_t number_of_channels,
+void MediaStreamSource::ConsumerWrapper::SetFormat(int number_of_channels,
                                                    float sample_rate) {
   consumer_->SetFormat(number_of_channels, sample_rate);
 }
 
 void MediaStreamSource::ConsumerWrapper::ConsumeAudio(AudioBus* bus,
-                                                      size_t number_of_frames) {
+                                                      int number_of_frames) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "ConsumerWrapper::ConsumeAudio");
 
@@ -124,11 +125,11 @@ void MediaStreamSource::ConsumerWrapper::ConsumeAudio(AudioBus* bus,
     return;
 
   // Wrap AudioBus.
-  size_t number_of_channels = bus->NumberOfChannels();
+  unsigned number_of_channels = bus->NumberOfChannels();
   if (bus_vector_.size() != number_of_channels) {
     bus_vector_.resize(number_of_channels);
   }
-  for (size_t i = 0; i < number_of_channels; ++i)
+  for (unsigned i = 0; i < number_of_channels; ++i)
     bus_vector_[i] = bus->Channel(i)->Data();
 
   consumer_->ConsumeAudio(bus_vector_, number_of_frames);
@@ -171,28 +172,17 @@ void MediaStreamSource::SetReadyState(ReadyState ready_state) {
     ready_state_ = ready_state;
 
     // Observers may dispatch events which create and add new Observers;
-    // take a snapshot so as to safely iterate.
-    HeapVector<Member<Observer>> observers;
-    CopyToVector(observers_, observers);
-    for (auto observer : observers)
-      observer->SourceChangedState();
-
-    // setReadyState() will be invoked via the MediaStreamComponent::dispose()
-    // prefinalizer, allocating |observers|. Which means that |observers| will
-    // live until the next GC (but be unreferenced by other heap objects),
-    // _but_ it will potentially contain references to Observers that were
-    // GCed after the MediaStreamComponent prefinalizer had completed.
-    //
-    // So, if the next GC is a conservative one _and_ it happens to find
-    // a reference to |observers| when scanning the stack, we're in trouble
-    // as it contains references to now-dead objects.
-    //
-    // Work around this by explicitly clearing the vector backing store.
-    //
-    // TODO(sof): consider adding run-time checks that disallows this kind
-    // of dead object revivification by default.
-    for (wtf_size_t i = 0; i < observers.size(); ++i)
-      observers[i] = nullptr;
+    // take a snapshot so as to safely iterate. Wrap the observers in
+    // weak persistents to allow cancelling callbacks in case they are reclaimed
+    // until the callback is executed.
+    Vector<base::OnceClosure> observer_callbacks;
+    for (const auto& it : observers_) {
+      observer_callbacks.push_back(WTF::Bind(&Observer::SourceChangedState,
+                                             WrapWeakPersistent(it.Get())));
+    }
+    for (auto& observer_callback : observer_callbacks) {
+      std::move(observer_callback).Run();
+    }
   }
 }
 
@@ -281,15 +271,14 @@ void MediaStreamSource::GetSettings(
   GetSourceSettings(WebMediaStreamSource(this), settings);
 }
 
-void MediaStreamSource::SetAudioFormat(size_t number_of_channels,
+void MediaStreamSource::SetAudioFormat(int number_of_channels,
                                        float sample_rate) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "MediaStreamSource::SetAudioFormat");
 
   SendLogMessage(String::Format("SetAudioFormat({id=%s}, "
                                 "{number_of_channels=%d}, {sample_rate=%.0f})",
-                                Id().Utf8().c_str(),
-                                static_cast<int>(number_of_channels),
+                                Id().Utf8().c_str(), number_of_channels,
                                 sample_rate)
                      .Utf8());
   DCHECK(requires_consumer_);
@@ -298,7 +287,7 @@ void MediaStreamSource::SetAudioFormat(size_t number_of_channels,
     consumer->SetFormat(number_of_channels, sample_rate);
 }
 
-void MediaStreamSource::ConsumeAudio(AudioBus* bus, size_t number_of_frames) {
+void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "MediaStreamSource::ConsumeAudio");
 

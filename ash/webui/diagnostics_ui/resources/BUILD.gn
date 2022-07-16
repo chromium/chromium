@@ -18,6 +18,9 @@ js_type_check("closure_compile_module") {
     ":diagnostics_app",
     ":diagnostics_browser_proxy",
     ":diagnostics_card",
+    ":diagnostics_card_frame",
+    ":diagnostics_network_icon",
+    ":diagnostics_sticky_banner",
     ":diagnostics_types",
     ":diagnostics_utils",
     ":ethernet_info",
@@ -26,17 +29,22 @@ js_type_check("closure_compile_module") {
     ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
+    ":frequency_channel_utils",
+    ":input_card",
     ":input_list",
     ":ip_config_info_drawer",
+    ":keyboard_tester",
     ":memory_card",
     ":mojo_interface_provider",
     ":mojo_utils",
     ":network_card",
     ":network_info",
     ":network_list",
+    ":network_troubleshooting",
     ":overview_card",
     ":percent_bar_chart",
     ":realtime_cpu_chart",
+    ":routine_group",
     ":routine_list_executor",
     ":routine_result_entry",
     ":routine_result_list",
@@ -65,15 +73,20 @@ js_library("cellular_info") {
   deps = [
     ":data_point",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
 js_library("connectivity_card") {
   deps = [
+    ":diagnostics_network_icon",
     ":ip_config_info_drawer",
     ":network_info",
+    ":routine_group",
     ":routine_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -95,9 +108,11 @@ js_library("data_point") {
 
 js_library("diagnostics_app") {
   deps = [
+    ":diagnostics_sticky_banner",
     ":network_list",
     ":system_page",
     "//ash/webui/common/resources:navigation_view_panel",
+    "//ash/webui/common/resources:page_toolbar",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -105,10 +120,20 @@ js_library("diagnostics_app") {
 }
 
 js_library("diagnostics_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":diagnostics_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("diagnostics_card") {
+  deps = [
+    ":diagnostics_card_frame",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("diagnostics_card_frame") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -118,7 +143,24 @@ js_library("diagnostics_types") {
   deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_js_library_for_compile" ]
 }
 
+js_library("diagnostics_network_icon") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:network_icon.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("diagnostics_sticky_banner") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
 js_library("diagnostics_utils") {
+  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
 }
 
 js_library("ethernet_info") {
@@ -162,7 +204,17 @@ js_library("fake_system_routine_controller") {
   ]
 }
 
+js_library("frequency_channel_utils") {
+  deps = [ ":diagnostics_types" ]
+}
+
 js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("input_card") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -170,6 +222,8 @@ js_library("icons") {
 
 js_library("input_list") {
   deps = [
+    ":input_card",
+    ":keyboard_tester",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -183,6 +237,15 @@ js_library("ip_config_info_drawer") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("keyboard_tester") {
+  deps = [
+    "//ash/webui/common/resources:keyboard_diagram",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
 }
 
@@ -215,9 +278,11 @@ js_library("mojo_utils") {
 js_library("network_card") {
   deps = [
     ":diagnostics_card",
+    ":diagnostics_network_icon",
     ":diagnostics_types",
     ":ip_config_info_drawer",
     ":network_info",
+    ":network_troubleshooting",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -237,10 +302,21 @@ js_library("network_info") {
 js_library("network_list") {
   deps = [
     ":connectivity_card",
+    ":diagnostics_browser_proxy",
     ":diagnostics_types",
     ":mojo_interface_provider",
     ":network_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("network_troubleshooting") {
+  deps = [
+    ":diagnostics_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -266,12 +342,20 @@ js_library("realtime_cpu_chart") {
   externs_list = [ "../../../../third_party/d3/src/externs.js" ]
 }
 
+js_library("routine_group") {
+  deps = [
+    ":routine_list_executor",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("routine_list_executor") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("routine_result_entry") {
   deps = [
+    ":routine_group",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
@@ -280,6 +364,7 @@ js_library("routine_result_entry") {
 
 js_library("routine_result_list") {
   deps = [
+    ":routine_group",
     ":routine_list_executor",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -288,7 +373,9 @@ js_library("routine_result_list") {
 js_library("routine_section") {
   deps = [
     ":mojo_interface_provider",
+    ":routine_group",
     ":routine_result_list",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -300,6 +387,7 @@ js_library("system_page") {
     ":cpu_card",
     ":diagnostics_browser_proxy",
     ":diagnostics_card",
+    ":diagnostics_sticky_banner",
     ":diagnostics_types",
     ":input_list",
     ":memory_card",
@@ -307,7 +395,7 @@ js_library("system_page") {
     ":overview_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -322,7 +410,10 @@ js_library("text_badge") {
 js_library("wifi_info") {
   deps = [
     ":data_point",
+    ":frequency_channel_utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -335,16 +426,22 @@ html_to_js("web_components") {
     "data_point.js",
     "diagnostics_app.js",
     "diagnostics_card.js",
+    "diagnostics_card_frame.js",
     "diagnostics_fonts_css.js",
+    "diagnostics_network_icon.js",
+    "diagnostics_sticky_banner.js",
     "diagnostics_shared_css.js",
     "ethernet_info.js",
     "icons.js",
+    "input_card.js",
     "input_list.js",
     "ip_config_info_drawer.js",
+    "keyboard_tester.js",
     "memory_card.js",
     "network_card.js",
     "network_info.js",
     "network_list.js",
+    "network_troubleshooting.js",
     "overview_card.js",
     "percent_bar_chart.js",
     "realtime_cpu_chart.js",

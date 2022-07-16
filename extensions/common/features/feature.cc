@@ -32,6 +32,8 @@ Feature::Platform Feature::GetCurrentPlatform() {
   return MACOSX_PLATFORM;
 #elif defined(OS_WIN)
   return WIN_PLATFORM;
+#elif defined(OS_FUCHSIA)
+  return FUCHSIA_PLATFORM;
 #else
   return UNSPECIFIED_PLATFORM;
 #endif

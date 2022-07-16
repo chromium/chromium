@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "content/public/browser/tracing_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
+namespace base {
+class Value;
+}  // namespace base
 
 namespace android_webview {
 
@@ -21,8 +22,6 @@ class AwTracingDelegate : public content::TracingDelegate {
   ~AwTracingDelegate() override;
 
   // content::TracingDelegate implementation:
-  std::unique_ptr<content::TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> factory) override;
   bool IsAllowedToBeginBackgroundScenario(
       const content::BackgroundTracingConfig& config,
       bool requires_anonymized_data) override;
@@ -30,7 +29,7 @@ class AwTracingDelegate : public content::TracingDelegate {
       const content::BackgroundTracingConfig& config,
       bool requires_anonymized_data,
       bool is_crash_scenario) override;
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
+  absl::optional<base::Value> GenerateMetadataDict() override;
 };
 
 }  // namespace android_webview

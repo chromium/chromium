@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 
 namespace ui {
@@ -18,6 +17,12 @@ class WaylandInputMethodContext;
 class WaylandInputMethodContextFactory : public LinuxInputMethodContextFactory {
  public:
   explicit WaylandInputMethodContextFactory(WaylandConnection* connection);
+
+  WaylandInputMethodContextFactory(const WaylandInputMethodContextFactory&) =
+      delete;
+  WaylandInputMethodContextFactory& operator=(
+      const WaylandInputMethodContextFactory&) = delete;
+
   ~WaylandInputMethodContextFactory() override;
 
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
@@ -31,8 +36,6 @@ class WaylandInputMethodContextFactory : public LinuxInputMethodContextFactory {
 
  private:
   WaylandConnection* const connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandInputMethodContextFactory);
 };
 
 }  // namespace ui

@@ -11,10 +11,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -110,6 +109,9 @@ struct DriveUploader::UploadFileInfo {
     }
   }
 
+  UploadFileInfo(const UploadFileInfo&) = delete;
+  UploadFileInfo& operator=(const UploadFileInfo&) = delete;
+
   ~UploadFileInfo() = default;
 
   // Useful for printf debugging.
@@ -167,7 +169,6 @@ struct DriveUploader::UploadFileInfo {
   }
 
   base::WeakPtrFactory<UploadFileInfo> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UploadFileInfo);
 };
 
 DriveUploader::DriveUploader(

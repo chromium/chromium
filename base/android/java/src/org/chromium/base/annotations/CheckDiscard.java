@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 /**
  * Causes build to assert that annotated classes / methods / fields are
  * optimized away in release builds (without dcheck_always_on).
- *
- * Note that @RemovableInRelease implies @CheckDiscard.
  */
 @Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)

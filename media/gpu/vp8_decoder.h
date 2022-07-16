@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/vp8_picture.h"
@@ -30,6 +29,10 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   class MEDIA_GPU_EXPORT VP8Accelerator {
    public:
     VP8Accelerator();
+
+    VP8Accelerator(const VP8Accelerator&) = delete;
+    VP8Accelerator& operator=(const VP8Accelerator&) = delete;
+
     virtual ~VP8Accelerator();
 
     // Create a new VP8Picture that the decoder client can use for decoding
@@ -54,12 +57,15 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
     // to |pic| after calling this method.
     // Return true if successful.
     virtual bool OutputPicture(scoped_refptr<VP8Picture> pic) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(VP8Accelerator);
   };
 
-  explicit VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator);
+  explicit VP8Decoder(
+      std::unique_ptr<VP8Accelerator> accelerator,
+      const VideoColorSpace& container_color_space = VideoColorSpace());
+
+  VP8Decoder(const VP8Decoder&) = delete;
+  VP8Decoder& operator=(const VP8Decoder&) = delete;
+
   ~VP8Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
@@ -106,7 +112,8 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
 
   const std::unique_ptr<VP8Accelerator> accelerator_;
 
-  DISALLOW_COPY_AND_ASSIGN(VP8Decoder);
+  // Color space provided by the container.
+  const VideoColorSpace container_color_space_;
 };
 
 }  // namespace media

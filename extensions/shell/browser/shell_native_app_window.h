@@ -16,6 +16,10 @@ class ShellNativeAppWindow : public NativeAppWindow {
  public:
   ShellNativeAppWindow(AppWindow* app_window,
                        const AppWindow::CreateParams& params);
+
+  ShellNativeAppWindow(const ShellNativeAppWindow&) = delete;
+  ShellNativeAppWindow& operator=(const ShellNativeAppWindow&) = delete;
+
   ~ShellNativeAppWindow() override;
 
   AppWindow* app_window() const { return app_window_; }
@@ -68,8 +72,6 @@ class ShellNativeAppWindow : public NativeAppWindow {
 
  private:
   AppWindow* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNativeAppWindow);
 };
 
 }  // namespace extensions

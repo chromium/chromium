@@ -57,7 +57,7 @@ class SVGInlineTextBox final : public InlineTextBox {
                                                    int& end_position) const;
 
   // Calculate the bounding rect of all text fragments.
-  FloatRect CalculateBoundaries() const;
+  gfx::RectF CalculateBoundaries() const;
 
   void ClearTextFragments() { text_fragments_.clear(); }
   Vector<SVGTextFragment>& TextFragments() { return text_fragments_; }

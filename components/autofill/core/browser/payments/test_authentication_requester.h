@@ -7,12 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <utility>
-#include <vector>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
 #if !defined(OS_IOS)
@@ -25,11 +24,13 @@ namespace autofill {
 // CreditCardFIDOAuthenticator.
 #if defined(OS_IOS)
 class TestAuthenticationRequester
-    : public CreditCardCVCAuthenticator::Requester {
+    : public CreditCardCVCAuthenticator::Requester,
+      public CreditCardOtpAuthenticator::Requester {
 #else
 class TestAuthenticationRequester
     : public CreditCardCVCAuthenticator::Requester,
-      public CreditCardFIDOAuthenticator::Requester {
+      public CreditCardFIDOAuthenticator::Requester,
+      public CreditCardOtpAuthenticator::Requester {
 #endif
  public:
   TestAuthenticationRequester();
@@ -54,11 +55,16 @@ class TestAuthenticationRequester
   void IsUserVerifiableCallback(bool is_user_verifiable);
 #endif
 
+  // CreditCardOtpAuthenticator::Requester:
+  void OnOtpAuthenticationComplete(
+      const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response)
+      override;
+
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 
   absl::optional<bool> is_user_verifiable() { return is_user_verifiable_; }
 
-  bool did_succeed() { return did_succeed_; }
+  absl::optional<bool> did_succeed() { return did_succeed_; }
 
   std::u16string number() { return number_; }
 
@@ -71,7 +77,7 @@ class TestAuthenticationRequester
   absl::optional<bool> is_user_verifiable_;
 
   // Is set to true if authentication was successful.
-  bool did_succeed_ = false;
+  absl::optional<bool> did_succeed_;
 
   // The failure type of the full card request. Set when the request is
   // finished.

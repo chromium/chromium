@@ -6,7 +6,7 @@
 
 namespace sync_sessions {
 
-SyncSessionsClient::SyncSessionsClient() {}
-SyncSessionsClient::~SyncSessionsClient() {}
+SyncSessionsClient::SyncSessionsClient() = default;
+SyncSessionsClient::~SyncSessionsClient() = default;
 
 }  // namespace sync_sessions

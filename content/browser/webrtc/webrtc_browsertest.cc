@@ -115,9 +115,16 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   MakeTypicalPeerConnectionCall(javascript);
 }
 
-
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_CanSetupVideoCallWith4To3AspectRatio \
+  DISABLED_CanSetupVideoCallWith4To3AspectRatio
+#else
+#define MAYBE_CanSetupVideoCallWith4To3AspectRatio \
+  CanSetupVideoCallWith4To3AspectRatio
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       CanSetupVideoCallWith4To3AspectRatio) {
+                       MAYBE_CanSetupVideoCallWith4To3AspectRatio) {
   const std::string javascript =
       "callAndExpectResolution({video: {mandatory: { minWidth: 320,"
       "maxWidth: 320, minAspectRatio: 1.333, maxAspectRatio: 1.333}}}, 320,"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "content/web_test/common/tracked_dictionary.h"
 
 namespace content {
@@ -21,18 +20,20 @@ class WebTestRuntimeFlags {
   // Creates default flags (see also the Reset method).
   WebTestRuntimeFlags();
 
+  WebTestRuntimeFlags(const WebTestRuntimeFlags&) = delete;
+  WebTestRuntimeFlags& operator=(const WebTestRuntimeFlags&) = delete;
+
   // Resets all the values to their defaults.
   void Reset();
 
   TrackedDictionary& tracked_dictionary() { return dict_; }
 
-#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)                     \
-  bool name() const {                                               \
-    bool result;                                                    \
-    bool found = dict_.current_values().GetBoolean(#name, &result); \
-    DCHECK(found);                                                  \
-    return result;                                                  \
-  }                                                                 \
+#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)                               \
+  bool name() const {                                                         \
+    absl::optional<bool> result = dict_.current_values().FindBoolPath(#name); \
+    DCHECK(result);                                                           \
+    return *result;                                                           \
+  }                                                                           \
   void set_##name(bool new_value) { dict_.SetBoolean(#name, new_value); }
 
 #define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)                  \
@@ -167,8 +168,6 @@ class WebTestRuntimeFlags {
 
  private:
   TrackedDictionary dict_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestRuntimeFlags);
 };
 
 }  // namespace content

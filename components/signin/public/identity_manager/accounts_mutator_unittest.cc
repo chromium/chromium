@@ -92,6 +92,9 @@ class AccountsMutatorTest : public testing::Test {
       : identity_test_env_(&test_url_loader_factory_, &prefs_),
         identity_manager_diagnostics_observer_(identity_manager()) {}
 
+  AccountsMutatorTest(const AccountsMutatorTest&) = delete;
+  AccountsMutatorTest& operator=(const AccountsMutatorTest&) = delete;
+
   ~AccountsMutatorTest() override {}
 
   PrefService* pref_service() { return &prefs_; }
@@ -121,8 +124,6 @@ class AccountsMutatorTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   IdentityTestEnvironment identity_test_env_;
   TestIdentityManagerDiagnosticsObserver identity_manager_diagnostics_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountsMutatorTest);
 };
 
 TEST_F(AccountsMutatorTest, Basic) {

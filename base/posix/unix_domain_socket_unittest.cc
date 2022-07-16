@@ -17,8 +17,8 @@
 #include "base/location.h"
 #include "base/pickle.h"
 #include "base/posix/unix_domain_socket.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,7 +77,7 @@ TEST(UnixDomainSocketTest, SendRecvMsgAbortOnReplyFDClose) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
   message_thread.task_runner()->PostTask(
       FROM_HERE, BindOnce(&WaitableEvent::Signal, Unretained(&event)));
-  ASSERT_TRUE(event.TimedWait(TimeDelta::FromMilliseconds(5000)));
+  ASSERT_TRUE(event.TimedWait(Milliseconds(5000)));
 }
 
 TEST(UnixDomainSocketTest, SendRecvMsgAvoidsSIGPIPE) {

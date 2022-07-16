@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/box_f.h"
-#include "ui/gfx/test/gfx_util.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace cc {
 namespace {
@@ -32,11 +30,11 @@ TEST(FilterAnimationCurveTest, OneFilterKeyframe) {
   curve->AddKeyframe(
       FilterKeyframe::Create(base::TimeDelta(), operations, nullptr));
 
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(-1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(0.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(0.5f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(2.f)));
 }
 
 // Tests that a filter animation with two keyframes works as expected.
@@ -50,13 +48,13 @@ TEST(FilterAnimationCurveTest, TwoFilterKeyframe) {
 
   curve->AddKeyframe(
       FilterKeyframe::Create(base::TimeDelta(), operations1, nullptr));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
-                                            operations2, nullptr));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
-  ExpectBrightness(3.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
-  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
-  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(1.f), operations2, nullptr));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(-1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(0.f)));
+  ExpectBrightness(3.f, curve->GetValue(base::Seconds(0.5f)));
+  ExpectBrightness(4.f, curve->GetValue(base::Seconds(1.f)));
+  ExpectBrightness(4.f, curve->GetValue(base::Seconds(2.f)));
 }
 
 // Tests that a filter animation with three keyframes works as expected.
@@ -71,17 +69,17 @@ TEST(FilterAnimationCurveTest, ThreeFilterKeyframe) {
   operations3.Append(FilterOperation::CreateBrightnessFilter(8.f));
   curve->AddKeyframe(
       FilterKeyframe::Create(base::TimeDelta(), operations1, nullptr));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
-                                            operations2, nullptr));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(2.f),
-                                            operations3, nullptr));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
-  ExpectBrightness(2.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
-  ExpectBrightness(3.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
-  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
-  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.5f)));
-  ExpectBrightness(8.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
-  ExpectBrightness(8.f, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(1.f), operations2, nullptr));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(2.f), operations3, nullptr));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(-1.f)));
+  ExpectBrightness(2.f, curve->GetValue(base::Seconds(0.f)));
+  ExpectBrightness(3.f, curve->GetValue(base::Seconds(0.5f)));
+  ExpectBrightness(4.f, curve->GetValue(base::Seconds(1.f)));
+  ExpectBrightness(6.f, curve->GetValue(base::Seconds(1.5f)));
+  ExpectBrightness(8.f, curve->GetValue(base::Seconds(2.f)));
+  ExpectBrightness(8.f, curve->GetValue(base::Seconds(3.f)));
 }
 
 // Tests that a filter animation with multiple keys at a given time works
@@ -100,27 +98,27 @@ TEST(FilterAnimationCurveTest, RepeatedFilterKeyTimes) {
   operations4.Append(FilterOperation::CreateBrightnessFilter(6.f));
   curve->AddKeyframe(
       FilterKeyframe::Create(base::TimeDelta(), operations1, nullptr));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
-                                            operations2, nullptr));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(1.f),
-                                            operations3, nullptr));
-  curve->AddKeyframe(FilterKeyframe::Create(base::TimeDelta::FromSecondsD(2.f),
-                                            operations4, nullptr));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(1.f), operations2, nullptr));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(1.f), operations3, nullptr));
+  curve->AddKeyframe(
+      FilterKeyframe::Create(base::Seconds(2.f), operations4, nullptr));
 
-  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
-  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
-  ExpectBrightness(4.f, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  ExpectBrightness(4.f, curve->GetValue(base::Seconds(-1.f)));
+  ExpectBrightness(4.f, curve->GetValue(base::Seconds(0.f)));
+  ExpectBrightness(4.f, curve->GetValue(base::Seconds(0.5f)));
 
   // There is a discontinuity at 1. Any value between 4 and 6 is valid.
-  FilterOperations value = curve->GetValue(base::TimeDelta::FromSecondsD(1.f));
+  FilterOperations value = curve->GetValue(base::Seconds(1.f));
   EXPECT_EQ(1u, value.size());
   EXPECT_EQ(FilterOperation::BRIGHTNESS, value.at(0).type());
   EXPECT_GE(value.at(0).amount(), 4);
   EXPECT_LE(value.at(0).amount(), 6);
 
-  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(1.5f)));
-  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
-  ExpectBrightness(6.f, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
+  ExpectBrightness(6.f, curve->GetValue(base::Seconds(1.5f)));
+  ExpectBrightness(6.f, curve->GetValue(base::Seconds(2.f)));
+  ExpectBrightness(6.f, curve->GetValue(base::Seconds(3.f)));
 }
 
 }  // namespace

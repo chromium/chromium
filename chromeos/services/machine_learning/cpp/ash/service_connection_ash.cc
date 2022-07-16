@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

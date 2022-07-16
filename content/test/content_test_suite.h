@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -24,6 +23,10 @@ class TestContentClientInitializer;
 class ContentTestSuite : public ContentTestSuiteBase {
  public:
   ContentTestSuite(int argc, char** argv);
+
+  ContentTestSuite(const ContentTestSuite&) = delete;
+  ContentTestSuite& operator=(const ContentTestSuite&) = delete;
+
   ~ContentTestSuite() override;
 
  protected:
@@ -38,8 +41,6 @@ class ContentTestSuite : public ContentTestSuiteBase {
 #if defined(OS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentTestSuite);
 };
 
 }  // namespace content

@@ -4,6 +4,7 @@
 
 #include "ui/aura/test/ui_controls_ozone.h"
 
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event_utils.h"
@@ -356,14 +357,9 @@ bool UIControlsOzone::ScreenDIPToHostPixels(gfx::PointF* location,
   return true;
 }
 
-// To avoid multiple definitions when use_x11 && use_ozone is true, disable this
-// factory method for OS_LINUX as Linux has a factory method that decides what
-// UIControls to use based on IsUsingOzonePlatform feature flag.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 ui_controls::UIControlsAura* CreateUIControlsAura(WindowTreeHost* host) {
   return new UIControlsOzone(host);
 }
-#endif
 
 }  // namespace test
 }  // namespace aura

@@ -335,7 +335,7 @@ AudioWorkletNode* AudioWorkletNode::Create(
     return nullptr;
   }
 
-  if (context->IsContextClosed()) {
+  if (context->IsContextCleared()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "AudioWorkletNode cannot be created: No execution context available.");
@@ -403,7 +403,7 @@ AudioWorkletNode* AudioWorkletNode::Create(
 }
 
 bool AudioWorkletNode::HasPendingActivity() const {
-  return !context()->IsContextClosed();
+  return !context()->IsContextCleared();
 }
 
 AudioParamMap* AudioWorkletNode::parameters() const {

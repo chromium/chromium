@@ -59,6 +59,9 @@ class GPU_EXPORT Scheduler {
   Scheduler(SyncPointManager* sync_point_manager,
             const GpuPreferences& gpu_preferences);
 
+  Scheduler(const Scheduler&) = delete;
+  Scheduler& operator=(const Scheduler&) = delete;
+
   ~Scheduler();
 
   // Create a sequence with given priority. Returns an identifier for the
@@ -143,6 +146,9 @@ class GPU_EXPORT Scheduler {
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              SchedulingPriority priority,
              scoped_refptr<SyncPointOrderData> order_data);
+
+    Sequence(const Sequence&) = delete;
+    Sequence& operator=(const Sequence&) = delete;
 
     ~Sequence();
 
@@ -342,8 +348,6 @@ class GPU_EXPORT Scheduler {
                                  1] = {};
 
     base::flat_set<CommandBufferId> client_waits_;
-
-    DISALLOW_COPY_AND_ASSIGN(Sequence);
   };
 
   void SyncTokenFenceReleased(const SyncToken& sync_token,
@@ -397,7 +401,6 @@ class GPU_EXPORT Scheduler {
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamDestroyRemovesPriorities);
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorityChangeWhileReleasing);
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, CircularPriorities);
-  DISALLOW_COPY_AND_ASSIGN(Scheduler);
 };
 
 }  // namespace gpu

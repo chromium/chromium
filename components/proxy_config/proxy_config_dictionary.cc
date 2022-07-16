@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 
 namespace {
@@ -36,7 +38,11 @@ ProxyConfigDictionary::ProxyConfigDictionary(base::Value dict)
   DCHECK(dict_.is_dict());
 }
 
-ProxyConfigDictionary::~ProxyConfigDictionary() {}
+ProxyConfigDictionary::ProxyConfigDictionary(ProxyConfigDictionary&& other) {
+  dict_ = std::move(other.dict_);
+}
+
+ProxyConfigDictionary::~ProxyConfigDictionary() = default;
 
 bool ProxyConfigDictionary::GetMode(ProxyPrefs::ProxyMode* out) const {
   const base::Value* mode_value = dict_.FindKey(kProxyMode);
@@ -148,7 +154,7 @@ void ProxyConfigDictionary::EncodeAndAppendProxyServer(
     *spec += url_scheme;
     *spec += "=";
   }
-  *spec += server.ToURI();
+  *spec += net::ProxyServerToProxyUri(server);
 }
 
 bool ProxyConfigDictionary::GetString(const char* key, std::string* out) const {

@@ -49,6 +49,10 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
       RespondWithObserver*,
       WaitUntilObserver*,
       ExecutionContext* execution_context);
+
+  PaymentRequestEvent(const PaymentRequestEvent&) = delete;
+  PaymentRequestEvent& operator=(const PaymentRequestEvent&) = delete;
+
   ~PaymentRequestEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -101,8 +105,6 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   Member<RespondWithObserver> observer_;
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerHost>
       payment_handler_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestEvent);
 };
 
 }  // namespace blink

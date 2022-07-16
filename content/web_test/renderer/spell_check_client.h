@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/renderer/web_test_spell_checker.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -25,6 +24,10 @@ namespace content {
 class SpellCheckClient : public blink::WebTextCheckClient {
  public:
   explicit SpellCheckClient(blink::WebLocalFrame* frame);
+
+  SpellCheckClient(const SpellCheckClient&) = delete;
+  SpellCheckClient& operator=(const SpellCheckClient&) = delete;
+
   ~SpellCheckClient() override;
 
   void SetEnabled(bool enabled);
@@ -69,8 +72,6 @@ class SpellCheckClient : public blink::WebTextCheckClient {
   v8::Persistent<v8::Function> resolved_callback_;
 
   base::WeakPtrFactory<SpellCheckClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckClient);
 };
 
 }  // namespace content

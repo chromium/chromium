@@ -17,6 +17,9 @@ namespace tracing {
 // categories via Perfetto.
 class COMPONENT_EXPORT(TRACING_CPP) BaseAgent {
  public:
+  BaseAgent(const BaseAgent&) = delete;
+  BaseAgent& operator=(const BaseAgent&) = delete;
+
   virtual ~BaseAgent();
 
   // May be called on any thread.
@@ -24,8 +27,6 @@ class COMPONENT_EXPORT(TRACING_CPP) BaseAgent {
 
  protected:
   BaseAgent();
-
-  DISALLOW_COPY_AND_ASSIGN(BaseAgent);
 };
 
 }  // namespace tracing

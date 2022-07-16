@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
@@ -133,6 +132,9 @@ class DemoModeResourcesRemover
   // disabled.
   static bool IsLegacyDemoRetailModeDomain(const std::string& domain);
 
+  DemoModeResourcesRemover(const DemoModeResourcesRemover&) = delete;
+  DemoModeResourcesRemover& operator=(const DemoModeResourcesRemover&) = delete;
+
   ~DemoModeResourcesRemover() override;
 
   // UserDataAuthClient::Observer:
@@ -195,16 +197,8 @@ class DemoModeResourcesRemover
       user_activity_observation_{this};
 
   base::WeakPtrFactory<DemoModeResourcesRemover> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeResourcesRemover);
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::DemoModeResourcesRemover;
-}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_RESOURCES_REMOVER_H_

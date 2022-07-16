@@ -7,6 +7,7 @@
 #include <numeric>
 #include <vector>
 
+#include "ash/components/phonehub/notification.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
@@ -25,11 +26,13 @@ namespace {
 
 // Appearance constants in DIPs.
 constexpr gfx::Insets kRecentAppButtonFocusPadding(4);
+constexpr gfx::Insets kContentTextLabelInsetsDip = {0, 4, 0, 4};
 constexpr int kHeaderLabelLineHeight = 30;
 constexpr int kRecentAppButtonDefaultSpacing = 42;
 constexpr int kRecentAppButtonMinSpacing = 4;
 constexpr int kRecentAppButtonSize = 32;
 constexpr int kRecentAppButtonsViewTopPadding = 12;
+constexpr int kContentLabelLineHeightDip = 20;
 
 // Typography.
 constexpr int kHeaderTextFontSizeDip = 15;
@@ -58,9 +61,34 @@ class HeaderView : public views::Label {
   const char* GetClassName() const override { return "HeaderView"; }
 };
 
+class PlaceholderView : public views::Label {
+ public:
+  PlaceholderView() {
+    SetText(
+        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER));
+    SetLineHeight(kContentLabelLineHeightDip);
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    SetAutoColorReadabilityEnabled(false);
+    SetSubpixelRenderingEnabled(false);
+    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    SetMultiLine(true);
+    SetBorder(views::CreateEmptyBorder(kContentTextLabelInsetsDip));
+  }
+  ~PlaceholderView() override = default;
+  PlaceholderView(PlaceholderView&) = delete;
+  PlaceholderView operator=(PlaceholderView&) = delete;
+
+  // views::View:
+  const char* GetClassName() const override { return "ContentView"; }
+};
+
 }  // namespace
 
-PhoneHubRecentAppsView::PhoneHubRecentAppsView() {
+PhoneHubRecentAppsView::PhoneHubRecentAppsView(
+    chromeos::phonehub::RecentAppsInteractionHandler*
+        recent_apps_interaction_handler)
+    : recent_apps_interaction_handler_(recent_apps_interaction_handler) {
   SetID(PhoneHubViewID::kPhoneHubRecentAppsView);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -69,10 +97,6 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView() {
   AddChildView(std::make_unique<HeaderView>());
   recent_app_buttons_view_ =
       AddChildView(std::make_unique<RecentAppButtonsView>());
-
-  // TODO(paulzchen): Add recent apps button using real data from phone.
-  recent_app_button_list_.push_back(
-      std::make_unique<PhoneHubRecentAppButton>());
 
   Update();
 }
@@ -141,20 +165,31 @@ const char* PhoneHubRecentAppsView::RecentAppButtonsView::GetClassName() const {
 }
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
 void PhoneHubRecentAppsView::Update() {
   recent_app_buttons_view_->Reset();
+  recent_app_button_list_.clear();
 
-  if (recent_app_button_list_.empty()) {
-    SetVisible(false);
+  std::vector<chromeos::phonehub::Notification::AppMetadata> recent_apps_list =
+      recent_apps_interaction_handler_->FetchRecentAppMetadataList();
+  if (recent_apps_list.empty()) {
+    recent_app_buttons_view_->SetVisible(false);
+    AddChildView(std::make_unique<PlaceholderView>());
     return;
   }
 
-  // TODO(paulzchen): Add recent apps button using real data from phone.
-  for (auto& recent_app_button : recent_app_button_list_)
-    recent_app_buttons_view_->AddRecentAppButton(recent_app_button.get());
+  for (const auto& recent_app : recent_apps_list) {
+    auto pressed_callback = base::BindRepeating(
+        &chromeos::phonehub::RecentAppsInteractionHandler::
+            NotifyRecentAppClicked,
+        base::Unretained(recent_apps_interaction_handler_), recent_app);
+    recent_app_button_list_.push_back(std::make_unique<PhoneHubRecentAppButton>(
+        recent_app.icon, recent_app.visible_app_name, pressed_callback));
+    recent_app_buttons_view_->AddRecentAppButton(
+        recent_app_button_list_.back().get());
+  }
 
   PreferredSizeChanged();
   SetVisible(true);

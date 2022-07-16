@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;
@@ -22,15 +21,16 @@ class WebUI;
 class ManagementUI : public content::WebUIController {
  public:
   explicit ManagementUI(content::WebUI* web_ui);
+
+  ManagementUI(const ManagementUI&) = delete;
+  ManagementUI& operator=(const ManagementUI&) = delete;
+
   ~ManagementUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
   static std::u16string GetManagementPageSubtitle(Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagementUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_

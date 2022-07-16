@@ -5,7 +5,7 @@
 #include "remoting/host/host_mock_objects.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/codec/audio_encoder.h"
@@ -119,5 +119,9 @@ MockSecurityKeyAuthHandler::GetSendMessageCallback() {
 MockMouseCursorMonitor::MockMouseCursorMonitor() = default;
 
 MockMouseCursorMonitor::~MockMouseCursorMonitor() = default;
+
+MockUrlForwarderConfigurator::MockUrlForwarderConfigurator() = default;
+
+MockUrlForwarderConfigurator::~MockUrlForwarderConfigurator() = default;
 
 }  // namespace remoting

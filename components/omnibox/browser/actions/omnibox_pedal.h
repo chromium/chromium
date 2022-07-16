@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/buildflags.h"
+#include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
 
 // Conceptually, a Pedal is a fixed action that can be taken by the user
@@ -188,6 +189,17 @@ class OmniboxPedal : public OmniboxAction {
   static const gfx::VectorIcon& GetDefaultVectorIcon();
 #endif
 
+  // Add a verbatim token sequence for direct matching.
+  // This can improve user experience of omnibox pedals by ensuring that
+  // button text entered verbatim is always a sufficient trigger. Since
+  // button text labels are not always within the specified set of triggers,
+  // it may be possible to discover a pedal, memorize the button
+  // label, and then go seeking it out again with the button label, but
+  // not find it. With the verbatim sequence, learning a pedal by label will
+  // always make the pedal available with that exact input (ignoring case and
+  // the common ignore group).
+  void AddVerbatimSequence(TokenSequence sequence);
+
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
 
@@ -195,6 +207,11 @@ class OmniboxPedal : public OmniboxAction {
   virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups() const;
 
   OmniboxPedalId id() const { return id_; }
+
+  // Sometimes pedals report different IDs for metrics, either to enable
+  // feature discrimination (e.g. incognito mode) or to unify metrics
+  // of closely related pedals (e.g. a ChromeOS specialization of a pedal).
+  virtual OmniboxPedalId GetMetricsId() const;
 
   // If a sufficient set of triggering synonym groups are present in
   // match_sequence then it's a concept match and this returns true.  If a
@@ -204,8 +221,8 @@ class OmniboxPedal : public OmniboxAction {
   bool IsConceptMatch(TokenSequence& match_sequence) const;
 
   // OmniboxAction overrides:
-  void RecordActionShown() const override;
-  void RecordActionExecuted() const override;
+  void RecordActionShown(size_t position) const override;
+  void RecordActionExecuted(size_t position) const override;
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
@@ -215,6 +232,8 @@ class OmniboxPedal : public OmniboxAction {
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupsDriveConceptMatches);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest,
+                           VerbatimSynonymGroupDrivesConceptMatches);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            UnorderedSynonymExpressionsAreConceptMatches);
 
@@ -222,7 +241,28 @@ class OmniboxPedal : public OmniboxAction {
 
   OmniboxPedalId id_;
 
+  // Before standard synonym group matching, we can check the verbatim
+  // syonym group for direct matches, e.g. with the button label text.
+  SynonymGroup verbatim_synonym_group_;
+
   std::vector<SynonymGroup> synonym_groups_;
+};
+
+// This is a simple pedal suitable only for use by tests.
+class TestOmniboxPedalClearBrowsingData : public OmniboxPedal {
+ public:
+  explicit TestOmniboxPedalClearBrowsingData()
+      : OmniboxPedal(
+            OmniboxPedalId::CLEAR_BROWSING_DATA,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
+                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
+            GURL("chrome://settings/clearBrowserData")) {}
+
+ protected:
+  ~TestOmniboxPedalClearBrowsingData() override = default;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_H_

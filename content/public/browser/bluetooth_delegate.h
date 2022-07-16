@@ -9,11 +9,21 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "url/origin.h"
+
+// Some OS Bluetooth stacks (macOS and Android) automatically bond to a device
+// when accessing a characteristic/descriptor which requires an authenticated
+// client. For other platforms Chrome does the on-demand pairing.
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define PAIR_BLUETOOTH_ON_DEMAND() true
+#else
+#define PAIR_BLUETOOTH_ON_DEMAND() false
+#endif
 
 namespace blink {
 class WebBluetoothDeviceId;
@@ -36,6 +46,19 @@ class RenderFrameHost;
 // class.
 class CONTENT_EXPORT BluetoothDelegate {
  public:
+  // The result of the prompt when requesting device authentication credentials
+  // from the user.
+  enum class DeviceCredentialsPromptResult {
+    kSuccess,    // Result contains user credentials.
+    kCancelled,  // User cancelled, or agent cancelled on their behalf.
+  };
+
+  // Callback for Bluetooth device auth credential (i.e. PIN) prompt.
+  // |result| is only valid when status is SUCCESS.
+  using CredentialsCallback =
+      base::OnceCallback<void(DeviceCredentialsPromptResult status,
+                              const std::u16string& result)>;
+
   // An observer used to track permission revocation events for a particular
   // render frame host.
   class CONTENT_EXPORT FramePermissionObserver : public base::CheckedObserver {
@@ -59,6 +82,17 @@ class CONTENT_EXPORT BluetoothDelegate {
   virtual std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) = 0;
+
+  // Prompt the user (via dialog, etc.) for their Bluetooth credentials
+  // (i.e. PIN). |device_identifier| is any string the caller wants to display
+  // to the user to identify the device (MAC address, name, etc.). |callback|
+  // will be called with the prompt result. |callback| may be called immediately
+  // from this function, for example, if a credential prompt for the given
+  // |frame| is already displayed.
+  virtual void ShowDeviceCredentialsPrompt(
+      RenderFrameHost* frame,
+      const std::u16string& device_identifier,
+      CredentialsCallback callback) = 0;
 
   // This should return the WebBluetoothDeviceId that corresponds to the device
   // with |device_address| in the current |frame|. If there is not a

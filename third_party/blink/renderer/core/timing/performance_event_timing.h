@@ -45,6 +45,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   Node* target() const;
 
+  uint32_t interactionId() const;
+
+  void SetInteractionId(uint32_t interaction_id);
+
   void SetDuration(double duration);
 
   void BuildJSONValue(V8ObjectBuilder&) const override;
@@ -59,6 +63,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   DOMHighResTimeStamp processing_end_;
   bool cancelable_;
   WeakMember<Node> target_;
+  uint32_t interaction_id_ = 0;
 };
 }  // namespace blink
 

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
@@ -28,12 +28,14 @@ ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& form_source_url,
-    const PersonalDataManager* personal_data_manager)
+    const PersonalDataManager* personal_data_manager,
+    bool allow_only_silent_updates)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
-      personal_data_manager_(personal_data_manager) {
+      personal_data_manager_(personal_data_manager),
+      allow_only_silent_updates_(allow_only_silent_updates) {
   DetermineProfileImportType();
 }
 
@@ -53,7 +55,6 @@ bool ProfileImportProcess::UserDeclined() const {
   return user_decision_ == UserDecision::kDeclined ||
          user_decision_ == UserDecision::kEditDeclined ||
          user_decision_ == UserDecision::kMessageDeclined;
-  ;
 }
 
 bool ProfileImportProcess::UserAccepted() const {
@@ -105,6 +106,11 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // user confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile)) {
+      if (allow_only_silent_updates_) {
+        ++number_of_unchanged_profiles;
+        continue;
+      }
+
       // Determine if the existing profile is blocked for updates.
       // If the personal data manager is not available the profile is considered
       // as not blocked.
@@ -139,13 +145,17 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // If the profile is not mergeable with an existing profile, the import
   // corresponds to a new profile.
   if (!is_mergeable_with_existing_profile) {
-    // There should be no import candidate yet.
-    DCHECK(!import_candidate_.has_value());
-    if (new_profiles_suppressed_for_domain_) {
-      import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
+    if (!allow_only_silent_updates_) {
+      // There should be no import candidate yet.
+      DCHECK(!import_candidate_.has_value());
+      if (new_profiles_suppressed_for_domain_) {
+        import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
+      } else {
+        import_type_ = AutofillProfileImportType::kNewProfile;
+        import_candidate_ = observed_profile();
+      }
     } else {
-      import_type_ = AutofillProfileImportType::kNewProfile;
-      import_candidate_ = observed_profile();
+      import_type_ = AutofillProfileImportType::kUnusableIncompleteProfile;
     }
   } else {
     bool silent_updates_present = updated_profiles_.size() > 0;
@@ -161,6 +171,11 @@ void ProfileImportProcess::DetermineProfileImportType() {
               ? AutofillProfileImportType::
                     kSuppressedConfirmableMergeAndSilentUpdate
               : AutofillProfileImportType::kSuppressedConfirmableMerge;
+    } else if (allow_only_silent_updates_) {
+      import_type_ =
+          silent_updates_present
+              ? AutofillProfileImportType::kSilentUpdateForIncompleteProfile
+              : AutofillProfileImportType::kUnusableIncompleteProfile;
     } else {
       import_type_ = silent_updates_present
                          ? AutofillProfileImportType::kSilentUpdate
@@ -241,7 +256,7 @@ void ProfileImportProcess::SetUserDecision(
           edited_profile->SetRawInfoWithVerificationStatus(
               type, value,
               structured_address::VerificationStatus::kUserVerified);
-        };
+        }
       }
 
       edited_profile->FinalizeAfterImport();
@@ -326,6 +341,12 @@ void ProfileImportProcess::CollectMetrics() const {
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
+  if (allow_only_silent_updates_) {
+    // Record the import type for the silent updates.
+    AutofillMetrics::LogSilentUpdatesProfileImportType(import_type_);
+    return;
+  }
+
   // For any finished import process record the type of the import.
   AutofillMetrics::LogProfileImportType(import_type_);
 
@@ -338,20 +359,23 @@ void ProfileImportProcess::CollectMetrics() const {
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
 
-    if (user_decision_ == UserDecision::kAccepted) {
-      DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
+    DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
 
-      const std::vector<ProfileValueDifference> merge_difference =
-          AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-              import_candidate_.value(), merge_candidate_.value(), app_locale_);
+    // For all update prompts, log the field types and total number of fields
+    // that would change due to the update. Note that this does not include
+    // additional manual edits the user can perform in the storage dialog.
+    // Those are covered separately below.
+    const std::vector<ProfileValueDifference> merge_difference =
+        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+            import_candidate_.value(), merge_candidate_.value(), app_locale_);
 
-      for (const auto& difference : merge_difference) {
-        AutofillMetrics::LogProfileUpdateAffectedType(difference.type);
-      }
-
-      AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
-          merge_difference.size());
+    for (const auto& difference : merge_difference) {
+      AutofillMetrics::LogProfileUpdateAffectedType(difference.type,
+                                                    user_decision_);
     }
+
+    AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
+        merge_difference.size(), user_decision_);
   }
 
   // If the profile was edited by the user, record a histogram of edited types.

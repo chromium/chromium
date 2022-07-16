@@ -29,21 +29,14 @@ namespace media_router {
 #if !defined(OS_ANDROID)
 const base::Feature kMediaRouter{"MediaRouter",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
-// Controls if browser side DialMediaRouteProvider is enabled.
-const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCastMediaRouteProvider{"CastMediaRouteProvider",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kGlobalMediaControlsCastStartStop{
     "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCastToMeetingFromCastDialog{
-    "CastToMeetingFromCastDialog", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCastFeedbackDialog{"CastFeedbackDialog",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 namespace {
@@ -101,6 +94,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO(imcheng): Migrate existing Media Router prefs to here.
   registry->RegisterStringPref(prefs::kMediaRouterReceiverIdHashToken, "",
                                PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(prefs::kAccessCodeCastEnabled, false,
+                                PrefRegistry::PUBLIC);
+  registry->RegisterIntegerPref(prefs::kAccessCodeCastDeviceDuration, 0,
+                                PrefRegistry::PUBLIC);
 }
 
 bool GetCastAllowAllIPsPref(PrefService* pref_service) {
@@ -135,12 +132,28 @@ bool DialMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
 }
 
-bool CastMediaRouteProviderEnabled() {
-  return base::FeatureList::IsEnabled(kCastMediaRouteProvider);
-}
-
 bool GlobalMediaControlsCastStartStopEnabled() {
   return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop);
+}
+
+bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
+#if !defined(OS_ANDROID)
+  return pref_service->GetBoolean(prefs::kAccessCodeCastEnabled);
+#else
+  return false;
+#endif  // !defined(OS_ANDROID)
+}
+
+base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
+#if !defined(OS_ANDROID)
+  if (!GetAccessCodeCastEnabledPref(pref_service)) {
+    return base::Seconds(0);
+  }
+  return base::Seconds(
+      pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
+#else
+  return base::Seconds(0);
+#endif  // !defined(OS_ANDROID)
 }
 
 #endif  // !defined(OS_ANDROID)

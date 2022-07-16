@@ -110,7 +110,7 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", false, data);
-  AddProperty("isEyeDropperEnabled", features::IsEyeDropperEnabled(), data);
+  AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
 #if defined(OS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
@@ -175,7 +175,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", true, data);
-  AddProperty("isEyeDropperEnabled", features::IsEyeDropperEnabled(), data);
+  AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
 #if defined(OS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif

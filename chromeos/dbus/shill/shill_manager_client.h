@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/shill/fake_shill_simulated_result.h"
@@ -140,6 +139,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // Returns the global instance if initialized. May return null.
   static ShillManagerClient* Get();
 
+  ShillManagerClient(const ShillManagerClient&) = delete;
+  ShillManagerClient& operator=(const ShillManagerClient&) = delete;
+
   // Adds a property changed |observer|.
   virtual void AddPropertyChangedObserver(
       ShillPropertyChangedObserver* observer) = 0;
@@ -210,6 +212,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                                           base::OnceClosure callback,
                                           ErrorCallback error_callback) = 0;
 
+  // Creates a set of Passpoint credentials from |properties| in the profile
+  // referenced by |profile_path|.
+  virtual void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
+                                       const base::Value& properties,
+                                       ObjectPathCallback callback,
+                                       ErrorCallback error_callback) = 0;
+
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;
 
@@ -219,9 +228,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // Initialize/Shutdown should be used instead.
   ShillManagerClient();
   virtual ~ShillManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillManagerClient);
 };
 
 }  // namespace chromeos

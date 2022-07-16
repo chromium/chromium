@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_UTIL_WIN_UTIL_READ_ICON_H_
 #define CHROME_SERVICES_UTIL_WIN_UTIL_READ_ICON_H_
 
-#include "base/macros.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -14,6 +13,10 @@ class UtilReadIcon : public chrome::mojom::UtilReadIcon {
  public:
   explicit UtilReadIcon(
       mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver);
+
+  UtilReadIcon(const UtilReadIcon&) = delete;
+  UtilReadIcon& operator=(const UtilReadIcon&) = delete;
+
   ~UtilReadIcon() override;
 
  private:
@@ -26,7 +29,6 @@ class UtilReadIcon : public chrome::mojom::UtilReadIcon {
   mojo::Receiver<chrome::mojom::UtilReadIcon> receiver_;
 
   base::WeakPtrFactory<UtilReadIcon> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UtilReadIcon);
 };
 
 #endif  // CHROME_SERVICES_UTIL_WIN_UTIL_READ_ICON_H_

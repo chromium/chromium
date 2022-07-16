@@ -18,9 +18,9 @@ void FakeDevicePostureProvider::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
-void FakeDevicePostureProvider::SetListener(
+void FakeDevicePostureProvider::AddListenerAndGetCurrentPosture(
     mojo::PendingRemote<mojom::DevicePostureProviderClient> client,
-    SetListenerCallback callback) {
+    AddListenerAndGetCurrentPostureCallback callback) {
   clients_.Add(std::move(client));
   std::move(callback).Run(current_posture_);
 }

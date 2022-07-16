@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -37,6 +36,10 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
   // OmniboxPageHandler is deleted when the supplied pipe is destroyed.
   OmniboxPageHandler(Profile* profile,
                      mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver);
+
+  OmniboxPageHandler(const OmniboxPageHandler&) = delete;
+  OmniboxPageHandler& operator=(const OmniboxPageHandler&) = delete;
+
   ~OmniboxPageHandler() override;
 
   // AutocompleteController::Observer overrides:
@@ -95,8 +98,6 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
       observation_{this};
 
   base::WeakPtrFactory<OmniboxPageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxPageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_PAGE_HANDLER_H_

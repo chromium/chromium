@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -35,6 +34,9 @@ class ChildAccountService : public KeyedService,
                             public SupervisedUserService::Delegate {
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
+
+  ChildAccountService(const ChildAccountService&) = delete;
+  ChildAccountService& operator=(const ChildAccountService&) = delete;
 
   ~ChildAccountService() override;
 
@@ -122,8 +124,6 @@ class ChildAccountService : public KeyedService,
   std::vector<base::OnceClosure> status_received_callback_list_;
 
   base::WeakPtrFactory<ChildAccountService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildAccountService);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_H_

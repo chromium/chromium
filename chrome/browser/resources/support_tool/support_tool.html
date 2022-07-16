@@ -1,0 +1,24 @@
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="stylesheet" href="support_tool.css">
+
+<div id="entry-view">
+    <h2>Support Tool</h2>
+    <div id="data-module-selection">
+        <div class="container-label">
+            Select the platform you want to collect debug data from.
+        </div>
+        <div class="data-module-checkbox">
+            <cr-checkbox checked="{{collectBrowserLogs_}}">
+                Browser
+            </cr-checkbox>
+        </div>
+        <div class="data-module-checkbox" hidden="[[hideChromeOS_]]">
+            <cr-checkbox checked="{{collectChromeOSLogs_}}">
+                Chrome OS
+            </cr-checkbox>
+        </div>
+    </div>
+</div>

@@ -37,6 +37,10 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
         shipping_option_(shipping_option) {
     Init();
   }
+
+  ShippingOptionItem(const ShippingOptionItem&) = delete;
+  ShippingOptionItem& operator=(const ShippingOptionItem&) = delete;
+
   ~ShippingOptionItem() override {}
 
  private:
@@ -77,8 +81,6 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
   }
 
   mojom::PaymentShippingOption* shipping_option_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingOptionItem);
 };
 
 }  // namespace

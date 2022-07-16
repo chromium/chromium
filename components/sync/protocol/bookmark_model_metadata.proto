@@ -32,13 +32,7 @@ message BookmarkModelMetadata {
   // A set of all bookmarks metadata.
   repeated BookmarkMetadata bookmarks_metadata = 2;
 
-  // Indicates whether the reupload of bookmarks has been triggered such that
-  // they include the full title, which means that their sequence number has
-  // been increased (independently of whether the commit has succeeded or even
-  // started).
-  // TODO(crbug.com/1066962): remove this code when most of bookmarks are
-  // reuploaded.
-  optional bool bookmarks_full_title_reuploaded = 3;
+  reserved 3;
 
   // The local timestamp corresponding to the last time remote updates were
   // received, in milliseconds since Unix epoch. Introduced in M86.
@@ -48,4 +42,12 @@ message BookmarkModelMetadata {
   optional int64 last_sync_time = 4;
 
   reserved 5;
+
+  // Indicates whether the reupload of bookmarks has been triggered such that
+  // they include fields like |type|, |unique_position| and |parent_guid|, which
+  // means that their sequence number has been increased (independently of
+  // whether the commit has succeeded or even started).
+  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
+  // reuploaded.
+  optional bool bookmarks_hierarchy_fields_reuploaded = 6;
 }

@@ -19,6 +19,7 @@ class PrefRegistrySyncable;
 
 class GURL;
 @class MDCSnackbarMessage;
+@class URLWithTitle;
 
 // Mediator for the bookmarks.
 @interface BookmarkMediator : NSObject
@@ -43,6 +44,11 @@ class GURL;
 - (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction;
+
+// Adds bookmarks for |URLs| into |folder|. Returns a message to be displayed
+// after the Bookmark has been added.
+- (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
+                           toFolder:(const bookmarks::BookmarkNode*)folder;
 
 @end
 

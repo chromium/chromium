@@ -32,6 +32,19 @@ struct DisplayStrings {
 // promo codes. Merchants are determined by |merchant_origins|.
 struct AutofillOfferData {
  public:
+  // The specific type of offer.
+  // TODO(crbug.com/1203811): Add GPAY_PROMO_CODE_OFFER once GPay-activated
+  //     promo codes become available, and create a way to differentiate them
+  //     from free-listing coupon codes.
+  enum class OfferType {
+    // Default value, should not be used.
+    UNKNOWN,
+    // GPay-activated card linked offer.
+    GPAY_CARD_LINKED_OFFER,
+    // Promo code offer from the FreeListingCouponService.
+    FREE_LISTING_COUPON_OFFER,
+  };
+
   AutofillOfferData();
   ~AutofillOfferData();
   AutofillOfferData(const AutofillOfferData&);
@@ -44,11 +57,19 @@ struct AutofillOfferData {
   // result of first found difference.
   int Compare(const AutofillOfferData& other_offer_data) const;
 
+  // Returns the specific type of the offer, which will inform decisions made by
+  // other classes, such as UI rendering or metrics.
+  OfferType GetOfferType() const;
+
   // Returns true if the current offer is a card-linked offer.
   bool IsCardLinkedOffer() const;
 
   // Returns true if the current offer is a promo code offer.
   bool IsPromoCodeOffer() const;
+
+  // Returns true if the current offer is 1) not expired and 2) contains the
+  // given |origin| in the list of |merchant_origins|.
+  bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
 
   // The unique server ID for this offer data.
   int64_t offer_id;

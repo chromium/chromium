@@ -48,6 +48,12 @@ class ChromeBrowsingDataRemoverDelegate
  public:
   explicit ChromeBrowsingDataRemoverDelegate(
       content::BrowserContext* browser_context);
+
+  ChromeBrowsingDataRemoverDelegate(const ChromeBrowsingDataRemoverDelegate&) =
+      delete;
+  ChromeBrowsingDataRemoverDelegate& operator=(
+      const ChromeBrowsingDataRemoverDelegate&) = delete;
+
   ~ChromeBrowsingDataRemoverDelegate() override;
 
   // KeyedService:
@@ -112,11 +118,11 @@ class ChromeBrowsingDataRemoverDelegate
     kNetworkErrorLogging = 21,
     kFlashDeauthorization = 22,
     kOfflinePages = 23,
-    kPrecache = 24,
+    kPrecache = 24,  // deprecated
     kExploreSites = 25,
     kLegacyStrikes = 26,
     kWebrtcEventLogs = 27,
-    kDrmLicenses = 28,
+    kCdmLicenses = 28,
     kHostCache = 29,
     kTpmAttestationKeys = 30,
     kStrikes = 31,
@@ -129,7 +135,8 @@ class ChromeBrowsingDataRemoverDelegate
     kAccountPasswordsSynced = 38,
     kAccountCompromisedCredentials = 39,
     kFaviconCacheExpiration = 40,
-    kMaxValue = kFaviconCacheExpiration,
+    kSecurePaymentConfirmationInstruments = 41,
+    kMaxValue = kSecurePaymentConfirmationInstruments,
   };
 
   // Called by CreateTaskCompletionClosure().
@@ -215,8 +222,6 @@ class ChromeBrowsingDataRemoverDelegate
 
   base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowsingDataRemoverDelegate);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_DELEGATE_H_

@@ -111,6 +111,6 @@ ReauthTabHelper::ReauthTabHelper(content::WebContents* web_contents,
       restrict_to_reauth_origin_(restrict_to_reauth_origin),
       callback_(std::move(callback)) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReauthTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReauthTabHelper);
 
 }  // namespace signin

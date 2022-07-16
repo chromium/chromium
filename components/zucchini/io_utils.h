@@ -13,8 +13,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/macros.h"
-
 namespace zucchini {
 
 // An std::ostream wrapper that that limits number of std::endl lines to output,
@@ -44,12 +42,12 @@ class LimitedOutputStream : public std::ostream {
 
  public:
   LimitedOutputStream(std::ostream& os, int limit);
+  LimitedOutputStream(const LimitedOutputStream&) = delete;
+  const LimitedOutputStream& operator=(const LimitedOutputStream&) = delete;
   bool full() const { return buf_.full(); }
 
  private:
   StreamBuf buf_;
-
-  DISALLOW_COPY_AND_ASSIGN(LimitedOutputStream);
 };
 
 // A class to render hexadecimal numbers for std::ostream with 0-padding. This
@@ -88,14 +86,14 @@ std::ostream& operator<<(std::ostream& os, const AsHex<N, T>& as_hex) {
 class PrefixSep {
  public:
   explicit PrefixSep(const std::string& sep_str) : sep_str_(sep_str) {}
+  PrefixSep(const PrefixSep&) = delete;
+  const PrefixSep& operator=(const PrefixSep&) = delete;
 
   friend std::ostream& operator<<(std::ostream& ostr, PrefixSep& obj);
 
  private:
   std::string sep_str_;
   bool first_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefixSep);
 };
 
 // An input manipulator that dictates the expected next character in
@@ -103,6 +101,8 @@ class PrefixSep {
 class EatChar {
  public:
   explicit EatChar(char ch) : ch_(ch) {}
+  EatChar(const EatChar&) = delete;
+  const EatChar& operator=(const EatChar&) = delete;
 
   friend inline std::istream& operator>>(std::istream& istr,
                                          const EatChar& obj) {
@@ -113,8 +113,6 @@ class EatChar {
 
  private:
   char ch_;
-
-  DISALLOW_COPY_AND_ASSIGN(EatChar);
 };
 
 // An input manipulator that reads an unsigned integer from |std::istream|,

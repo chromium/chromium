@@ -11,7 +11,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
-#include "ios/chrome/app/intents/SearchInChromeIntent.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
@@ -19,8 +18,8 @@
 #include "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
+#include "ios/chrome/common/intents/SearchInChromeIntent.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 

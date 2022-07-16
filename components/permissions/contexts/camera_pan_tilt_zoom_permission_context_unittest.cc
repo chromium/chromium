@@ -41,10 +41,11 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
         ->RemoveObserver(this);
   }
 
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override {
-    if (content_type == content_type_)
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override {
+    if (content_type_set.Contains(content_type_))
       Proceed();
   }
 
@@ -61,6 +62,23 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
 }  // namespace
 
 namespace permissions {
+
+namespace {
+class TestCameraPanTiltZoomPermissionContextDelegate
+    : public CameraPanTiltZoomPermissionContext::Delegate {
+ public:
+  explicit TestCameraPanTiltZoomPermissionContextDelegate(
+      content::BrowserContext* browser_context) {}
+
+  bool GetPermissionStatusInternal(
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      ContentSetting* content_setting_result) override {
+    // Do not override GetPermissionStatusInternal logic.
+    return false;
+  }
+};
+}  // namespace
 
 class CameraPanTiltZoomPermissionContextTests
     : public content::RenderViewHostTestHarness,
@@ -83,7 +101,8 @@ class CameraPanTiltZoomPermissionContextTests
     HostContentSettingsMap* content_settings =
         permissions::PermissionsClient::Get()->GetSettingsMap(
             browser_context());
-    return content_settings->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
+    return content_settings->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                                               url.DeprecatedGetOriginAsURL(),
                                                content_settings_type);
   }
 
@@ -103,8 +122,11 @@ class CameraContentSettingTests
 };
 
 TEST_P(CameraContentSettingTests, TestResetPermissionOnCameraChange) {
-  CameraPanTiltZoomPermissionContext permission_context(browser_context(),
-                                                        device_enumerator());
+  auto delegate =
+      std::make_unique<TestCameraPanTiltZoomPermissionContextDelegate>(
+          browser_context());
+  CameraPanTiltZoomPermissionContext permission_context(
+      browser_context(), std::move(delegate), device_enumerator());
   ContentSettingsChangeWaiter waiter(browser_context(),
                                      ContentSettingsType::MEDIASTREAM_CAMERA);
 
@@ -142,8 +164,11 @@ class CameraPanTiltZoomContentSettingTests
 
 TEST_P(CameraPanTiltZoomContentSettingTests,
        TestCameraPermissionOnCameraPanTiltZoomChange) {
-  CameraPanTiltZoomPermissionContext permission_context(browser_context(),
-                                                        device_enumerator());
+  auto delegate =
+      std::make_unique<TestCameraPanTiltZoomPermissionContextDelegate>(
+          browser_context());
+  CameraPanTiltZoomPermissionContext permission_context(
+      browser_context(), std::move(delegate), device_enumerator());
   ContentSettingsChangeWaiter waiter(browser_context(),
                                      ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
 

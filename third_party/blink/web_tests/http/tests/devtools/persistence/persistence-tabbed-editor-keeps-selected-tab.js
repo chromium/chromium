@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that tab keeps selected as the persistence binding comes in.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
@@ -30,13 +30,13 @@
   TestRunner.completeTest();
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources._sourcesView._editorContainer._tabbedPane;
-    var tabs = tabbedPane._tabs;
+    var tabbedPane = UI.panels.sources.sourcesView().editorContainer.tabbedPane;
+    var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {
       var text = (i + 1) + ': ';
       text += tabs[i].title;
-      if (tabs[i] === tabbedPane._currentTab)
+      if (tabs[i] === tabbedPane.currentTab)
         text += ' [selected]';
       TestRunner.addResult('    ' + text);
     }

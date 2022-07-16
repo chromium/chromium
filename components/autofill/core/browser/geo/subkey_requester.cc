@@ -41,9 +41,11 @@ class SubKeyRequest : public SubKeyRequester::Request {
         on_timeout_(base::BindOnce(&SubKeyRequest::OnRulesLoaded,
                                    base::Unretained(this))) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, on_timeout_.callback(),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        FROM_HERE, on_timeout_.callback(), base::Seconds(timeout_seconds));
   }
+
+  SubKeyRequest(const SubKeyRequest&) = delete;
+  SubKeyRequest& operator=(const SubKeyRequest&) = delete;
 
   ~SubKeyRequest() override { on_timeout_.Cancel(); }
 
@@ -75,8 +77,6 @@ class SubKeyRequest : public SubKeyRequester::Request {
 
   bool has_responded_;
   base::CancelableOnceClosure on_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubKeyRequest);
 };
 
 }  // namespace

@@ -28,8 +28,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
    public:
     ScopedReadLockSkImage(DisplayResourceProviderSoftware* resource_provider,
                           ResourceId resource_id,
-                          SkAlphaType alpha_type = kPremul_SkAlphaType,
-                          GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin);
+                          SkAlphaType alpha_type);
     ~ScopedReadLockSkImage();
 
     ScopedReadLockSkImage(const ScopedReadLockSkImage&) = delete;
@@ -60,7 +59,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
       const std::vector<ResourceId>& unused) override;
 
   void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
-                                    const ChildResource* resource);
+                                    const ChildResource* resource,
+                                    SkAlphaType alpha_type);
 
   SharedBitmapManager* const shared_bitmap_manager_;
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;

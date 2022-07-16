@@ -1,3 +1,0 @@
-include_rules = [
-  "+chromeos/services/cellular_setup",
-]

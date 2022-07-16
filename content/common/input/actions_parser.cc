@@ -672,7 +672,7 @@ bool ActionsParser::ParsePointerAction(
       action_param.set_key_modifiers(key_modifiers);
       break;
     case PointerActionType::IDLE:
-      action_param.set_duration(base::TimeDelta::FromMilliseconds(duration));
+      action_param.set_duration(base::Milliseconds(duration));
       break;
     case PointerActionType::CANCEL:
     case PointerActionType::LEAVE:
@@ -701,7 +701,7 @@ bool ActionsParser::ParseNullAction(
 
   SyntheticPointerActionParams action_param(pointer_action_type);
   action_param.set_pointer_id(0);
-  action_param.set_duration(base::TimeDelta::FromMilliseconds(duration));
+  action_param.set_duration(base::Milliseconds(duration));
   param_list.push_back(action_param);
   return true;
 }

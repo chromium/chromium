@@ -17,6 +17,10 @@
 
 class GURL;
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -28,6 +32,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     : public content_settings::CookieSettingsBase {
  public:
   CookieSettings();
+
+  CookieSettings(const CookieSettings&) = delete;
+  CookieSettings& operator=(const CookieSettings&) = delete;
+
   ~CookieSettings() override;
 
   void set_content_settings(const ContentSettingsForOneType& content_settings) {
@@ -85,13 +93,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
                                        ContentSetting* setting) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const GURL& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies) const override;
 
   // Returns true iff "privacy mode" should be enabled for the URL request in
   // question, according to the user's settings.
   bool IsPrivacyModeEnabled(
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       net::SamePartyContext::Type same_party_context_type) const;
 
@@ -101,7 +109,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsCookieAccessible(
       const net::CanonicalCookie& cookie,
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) const;
 
   // Annotates `maybe_included_cookies` and `excluded_cookies` with
@@ -113,7 +121,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // building the cookie line.
   bool AnnotateAndMoveUserBlockedCookies(
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) const;
@@ -154,7 +162,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // `is_third_party_request` appropriately.
   CookieSettingWithMetadata GetCookieSettingWithMetadata(
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin) const;
 
   // Returns whether the given cookie should be allowed to be sent, according to
@@ -196,8 +204,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   const bool sameparty_cookies_considered_first_party_ =
       base::FeatureList::IsEnabled(
           net::features::kSamePartyCookiesConsideredFirstParty);
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettings);
 };
 
 }  // namespace network

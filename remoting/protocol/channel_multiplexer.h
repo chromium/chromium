@@ -25,6 +25,10 @@ class ChannelMultiplexer : public StreamChannelFactory {
   // |factory| is used to create the channel upon which to multiplex.
   ChannelMultiplexer(StreamChannelFactory* factory,
                      const std::string& base_channel_name);
+
+  ChannelMultiplexer(const ChannelMultiplexer&) = delete;
+  ChannelMultiplexer& operator=(const ChannelMultiplexer&) = delete;
+
   ~ChannelMultiplexer() override;
 
   // StreamChannelFactory interface.
@@ -86,8 +90,6 @@ class ChannelMultiplexer : public StreamChannelFactory {
   MessageReader reader_;
 
   base::WeakPtrFactory<ChannelMultiplexer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMultiplexer);
 };
 
 }  // namespace protocol

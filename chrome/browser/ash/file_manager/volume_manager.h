@@ -13,12 +13,12 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -88,6 +88,9 @@ enum Source { SOURCE_FILE, SOURCE_DEVICE, SOURCE_NETWORK, SOURCE_SYSTEM };
 // valid as long as the volume is mounted.
 class Volume : public base::SupportsWeakPtr<Volume> {
  public:
+  Volume(const Volume&) = delete;
+  Volume& operator=(const Volume&) = delete;
+
   ~Volume();
 
   // Factory static methods for different volume types.
@@ -261,8 +264,6 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   // Device label of a physical removable device. Removable partitions
   // belonging to the same device share the same device label.
   std::string drive_label_;
-
-  DISALLOW_COPY_AND_ASSIGN(Volume);
 };
 
 // Manages Volumes for file manager. Example of Volumes:
@@ -298,6 +299,10 @@ class VolumeManager : public KeyedService,
       chromeos::disks::DiskMountManager* disk_mount_manager,
       ash::file_system_provider::Service* file_system_provider_service,
       GetMtpStorageInfoCallback get_mtp_storage_info_callback);
+
+  VolumeManager(const VolumeManager&) = delete;
+  VolumeManager& operator=(const VolumeManager&) = delete;
+
   ~VolumeManager() override;
 
   // Returns the instance corresponding to the |context|.
@@ -451,6 +456,10 @@ class VolumeManager : public KeyedService,
 
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
 
+  io_task::IOTaskController* io_task_controller() {
+    return &io_task_controller_;
+  }
+
  private:
   void OnDiskMountManagerRefreshed(bool success);
   void OnStorageMonitorInitialized();
@@ -484,11 +493,11 @@ class VolumeManager : public KeyedService,
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
   bool arc_volumes_mounted_ = false;
+  io_task::IOTaskController io_task_controller_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<VolumeManager> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(VolumeManager);
 };
 
 }  // namespace file_manager

@@ -13,11 +13,13 @@
 namespace payments {
 
 class PaymentRequestEmptyUpdateTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestEmptyUpdateTest(const PaymentRequestEmptyUpdateTest&) = delete;
+  PaymentRequestEmptyUpdateTest& operator=(
+      const PaymentRequestEmptyUpdateTest&) = delete;
+
  protected:
   PaymentRequestEmptyUpdateTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestEmptyUpdateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestEmptyUpdateTest, NoCrash) {

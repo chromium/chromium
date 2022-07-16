@@ -81,8 +81,7 @@ interface ExtensionsErrorPageElement {
   };
 }
 
-const ExtensionsErrorPageElementBase =
-    CrContainerShadowMixin(PolymerElement) as {new (): PolymerElement};
+const ExtensionsErrorPageElementBase = CrContainerShadowMixin(PolymerElement);
 
 class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {

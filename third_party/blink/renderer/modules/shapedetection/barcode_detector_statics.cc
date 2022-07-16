@@ -96,7 +96,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
 
     ExecutionContext* context = GetSupplementable();
     IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .SetWebfeature(WebFeature::kBarcodeDetector_GetSupportedFormats,
+        .AddWebFeature(WebFeature::kBarcodeDetector_GetSupportedFormats,
                        builder.GetToken())
         .Record(context->UkmRecorder());
   }

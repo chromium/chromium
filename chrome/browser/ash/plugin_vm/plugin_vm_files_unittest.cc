@@ -33,6 +33,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -91,7 +92,7 @@ class PluginVmFilesTest : public testing::Test {
 
   storage::FileSystemURL GetMyFilesFileSystemURL(const std::string& path) {
     return mount_points_->CreateExternalFileSystemURL(
-        url::Origin(), mount_name_, base::FilePath(path));
+        blink::StorageKey(), mount_name_, base::FilePath(path));
   }
 
   struct ScopedDBusThreadManager {
@@ -159,7 +160,8 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
                 return std::make_unique<MockPluginVmManager>();
               })));
   ash::ShelfModel shelf_model;
-  ChromeShelfController chrome_shelf_controller(&profile_, &shelf_model);
+  ChromeShelfController chrome_shelf_controller(&profile_, &shelf_model,
+                                                /*shelf_item_factory=*/nullptr);
   chrome_shelf_controller.SetProfileForTest(&profile_);
   chrome_shelf_controller.SetShelfControllerHelperForTest(
       std::make_unique<ShelfControllerHelper>(&profile_));
@@ -195,8 +197,10 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   MockAppWindowBase mock_window(shelf_id, nullptr);
   shelf_item_controller->AddWindow(&mock_window);
   mock_window.SetController(shelf_item_controller.get());
-  shelf_model.SetShelfItemDelegate(ash::ShelfID(kPluginVmShelfAppId),
-                                   std::move(shelf_item_controller));
+  ash::ShelfItem item;
+  item.type = ash::TYPE_APP;
+  item.id = shelf_id;
+  shelf_model.Add(item, std::move(shelf_item_controller));
   vm_tools::cicerone::LaunchContainerApplicationResponse response;
   response.set_success(true);
   EXPECT_CALL(mock_window, Activate());
@@ -232,7 +236,7 @@ TEST_F(PluginVmFilesTest, LaunchAppFail) {
       "other-volume", storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), GetMyFilesFolderPath());
   storage::FileSystemURL url = mount_points_->CreateExternalFileSystemURL(
-      url::Origin(), "other-volume", base::FilePath("other/volume"));
+      blink::StorageKey(), "other-volume", base::FilePath("other/volume"));
   LaunchPluginVmApp(&profile_, app_id_, {url},
                     base::BindOnce(capture_result, &actual_result));
   task_environment_.RunUntilIdle();

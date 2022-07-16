@@ -87,6 +87,10 @@ class FormatEtcEnumerator final : public IEnumFORMATETC {
  public:
   FormatEtcEnumerator(DataObjectImpl::StoredData::const_iterator begin,
                       DataObjectImpl::StoredData::const_iterator end);
+
+  FormatEtcEnumerator(const FormatEtcEnumerator&) = delete;
+  FormatEtcEnumerator& operator=(const FormatEtcEnumerator&) = delete;
+
   ~FormatEtcEnumerator();
 
   // IEnumFORMATETC implementation:
@@ -122,8 +126,6 @@ class FormatEtcEnumerator final : public IEnumFORMATETC {
   size_t cursor_;
 
   ULONG ref_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormatEtcEnumerator);
 };
 
 // Safely makes a copy of all of the relevant bits of a FORMATETC object.

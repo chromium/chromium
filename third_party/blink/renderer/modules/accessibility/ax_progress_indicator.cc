@@ -49,7 +49,7 @@ bool AXProgressIndicator::ValueForRange(float* out_value) const {
   }
 
   if (GetProgressElement()->position() >= 0) {
-    *out_value = clampTo<float>(GetProgressElement()->value());
+    *out_value = ClampTo<float>(GetProgressElement()->value());
     return true;
   }
   // Indeterminate progress bar has no value.
@@ -63,7 +63,7 @@ bool AXProgressIndicator::MaxValueForRange(float* out_value) const {
     return true;
   }
 
-  *out_value = clampTo<float>(GetProgressElement()->max());
+  *out_value = ClampTo<float>(GetProgressElement()->max());
   return true;
 }
 
@@ -79,7 +79,7 @@ bool AXProgressIndicator::MinValueForRange(float* out_value) const {
 }
 
 HTMLProgressElement* AXProgressIndicator::GetProgressElement() const {
-  return To<LayoutProgress>(layout_object_)->ProgressElement();
+  return To<LayoutProgress>(layout_object_.Get())->ProgressElement();
 }
 
 }  // namespace blink

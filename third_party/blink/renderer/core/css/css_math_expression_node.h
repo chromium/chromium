@@ -99,7 +99,7 @@ class CORE_EXPORT CSSMathExpressionNode
 
   scoped_refptr<const CalculationValue> ToCalcValue(
       const CSSToLengthConversionData& conversion_data,
-      ValueRange range,
+      Length::ValueRange range,
       bool allows_negative_percentage_reference) const;
 
   // Evaluates the expression with type conversion (e.g., cm -> px) handled, and
@@ -116,7 +116,7 @@ class CORE_EXPORT CSSMathExpressionNode
 
   virtual String CustomCSSText() const = 0;
   virtual bool operator==(const CSSMathExpressionNode& other) const {
-    return category_ == other.category_ && is_integer_ == other.is_integer_;
+    return category_ == other.category_;
   }
 
   virtual bool IsComputationallyIndependent() const = 0;
@@ -130,8 +130,6 @@ class CORE_EXPORT CSSMathExpressionNode
   // conversion* (e.g., 1px + 1em needs type conversion to resolve).
   // Returns |UnitType::kUnknown| if type conversion is required.
   virtual CSSPrimitiveValue::UnitType ResolvedUnitType() const = 0;
-
-  bool IsInteger() const { return is_integer_; }
 
   bool IsNestedCalc() const { return is_nested_calc_; }
   void SetIsNestedCalc() { is_nested_calc_ = true; }
@@ -149,17 +147,12 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
-  CSSMathExpressionNode(CalculationCategory category,
-                        bool is_integer,
-                        bool has_comparisons)
-      : category_(category),
-        is_integer_(is_integer),
-        has_comparisons_(has_comparisons) {
+  CSSMathExpressionNode(CalculationCategory category, bool has_comparisons)
+      : category_(category), has_comparisons_(has_comparisons) {
     DCHECK_NE(category, kCalcOther);
   }
 
   CalculationCategory category_;
-  bool is_integer_;
   bool is_nested_calc_ = false;
   bool has_comparisons_;
 };
@@ -168,13 +161,12 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
     : public CSSMathExpressionNode {
  public:
   static CSSMathExpressionNumericLiteral* Create(
-      const CSSNumericLiteralValue* value,
-      bool is_integer = false);
-  static CSSMathExpressionNumericLiteral*
-  Create(double value, CSSPrimitiveValue::UnitType type, bool is_integer);
+      const CSSNumericLiteralValue* value);
+  static CSSMathExpressionNumericLiteral* Create(
+      double value,
+      CSSPrimitiveValue::UnitType type);
 
-  CSSMathExpressionNumericLiteral(const CSSNumericLiteralValue* value,
-                                  bool is_integer);
+  explicit CSSMathExpressionNumericLiteral(const CSSNumericLiteralValue* value);
 
   const CSSNumericLiteralValue& GetValue() const { return *value_; }
 
@@ -294,7 +286,6 @@ class CSSMathExpressionVariadicOperation final : public CSSMathExpressionNode {
                                                     CSSMathOperator op);
 
   CSSMathExpressionVariadicOperation(CalculationCategory category,
-                                     bool is_integer_result,
                                      Operands&& operands,
                                      CSSMathOperator op);
 

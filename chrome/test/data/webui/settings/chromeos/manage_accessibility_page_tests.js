@@ -9,7 +9,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 /**
@@ -72,7 +72,17 @@ suite('ManageAccessibilityPageTests', function() {
             key: 'settings.a11y.tablet_mode_shelf_nav_buttons_enabled',
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
             value: false,
-          }
+          },
+          'dictation': {
+            key: 'prefs.settings.a11y.dictation',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          },
+          'dictation_locale': {
+            key: 'prefs.settings.a11y.dictation_locale',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            value: 'en-US',
+          },
         },
         'accessibility': {
           key: 'settings.accessibility',
@@ -247,7 +257,6 @@ suite('ManageAccessibilityPageTests', function() {
   test('Deep link to switch access', async () => {
     loadTimeData.overrideValues({
       isKioskModeActive: false,
-      isDeepLinkingEnabled: true,
     });
     initPage();
 
@@ -258,23 +267,137 @@ suite('ManageAccessibilityPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = page.$$('#enableSwitchAccess').$$('cr-toggle');
+    const deepLinkElement =
+        page.$$('#enableSwitchAccess').shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Switch access toggle should be focused for settingId=1522.');
   });
 
-  test('Dictation subtitle', async () => {
+  test('Dictation labels', async () => {
+    // Setup. Ensure that the Dictation locale menu is shown by doing the
+    // following:
+    // 1. Set the dictation pref to true (done in default prefs).
+    // 2. Ensure dictation locale prefs are allowed.
+    // 3. Populate dictation locale options with mock data.
+    loadTimeData.overrideValues({
+      areDictationLocalePrefsAllowed: true,
+    });
     initPage();
+    const locales = [{
+      name: 'English (United States)',
+      worksOffline: true,
+      installed: true,
+      recommended: true,
+      value: 'en-US',
+    }];
+    cr.webUIListenerCallback('dictation-locales-set', locales);
+    Polymer.dom.flush();
+    // Sanity checks.
+    assertTrue(loadTimeData.getBoolean('areDictationLocalePrefsAllowed'));
+    assertTrue(page.areDictationLocalePrefsAllowed_);
+
+    // Dictation toggle.
     const dictationSetting = page.$$('#enableDictation');
+    assertTrue(!!dictationSetting);
+    assertTrue(dictationSetting.checked);
     assertEquals('Enable dictation (speak to type)', dictationSetting.label);
     assertEquals(
-        'Send your voice to Google to allow dictation into any text field.',
+        'Type with your voice. Press Search + D, then start speaking.',
         dictationSetting.subLabel);
-    cr.webUIListenerCallback('dictation-setting-subtitle-changed', 'Testing');
+
+    // Dictation locale menu.
+    const dictationLocaleMenuLabel = page.$$('#dictationLocaleMenuLabel');
+    const dictationLocaleMenuSubtitle = page.$$('#dictationLocaleMenuSubtitle');
+    assertTrue(!!dictationLocaleMenuLabel);
+    assertTrue(!!dictationLocaleMenuSubtitle);
+    assertEquals('Language', dictationLocaleMenuLabel.innerText);
+    assertEquals(
+        'English (United States) is processed locally and works offline',
+        dictationLocaleMenuSubtitle.innerText);
+
+    // Fake a request to change the dictation locale menu subtitle.
+    cr.webUIListenerCallback(
+        'dictation-locale-menu-subtitle-changed', 'Testing');
     Polymer.dom.flush();
+
+    // Only the dictation locale subtitle should have changed.
     assertEquals('Enable dictation (speak to type)', dictationSetting.label);
-    assertEquals('Testing', dictationSetting.subLabel);
+    assertEquals(
+        'Type with your voice. Press Search + D, then start speaking.',
+        dictationSetting.subLabel);
+    assertEquals('Language', dictationLocaleMenuLabel.innerText);
+    assertEquals('Testing', dictationLocaleMenuSubtitle.innerText);
+  });
+
+  test('Test computeDictationLocaleSubtitle_()', async () => {
+    initPage();
+    const locales = [
+      {
+        name: 'English (United States)',
+        worksOffline: true,
+        installed: true,
+        recommended: true,
+        value: 'en-US',
+      },
+      {
+        name: 'Spanish',
+        worksOffline: true,
+        installed: false,
+        recommended: false,
+        value: 'es',
+      },
+      {
+        name: 'German',
+        // Note: this data should never occur in practice. If a locale isn't
+        // supported offline, then it should never be installed. Test this case
+        // to verify our code still works given unexpected input.
+        worksOffline: false,
+        installed: true,
+        recommended: false,
+        value: 'de',
+      },
+      {
+        name: 'French (France)',
+        worksOffline: false,
+        installed: false,
+        recommended: false,
+        value: 'fr-FR'
+      }
+    ];
+    cr.webUIListenerCallback('dictation-locales-set', locales);
+    page.dictationLocaleSubtitleOverride_ = 'Testing';
+    Polymer.dom.flush();
+    assertEquals(
+        'English (United States) is processed locally and works offline',
+        page.computeDictationLocaleSubtitle_());
+
+    // Changing the Dictation locale pref should change the subtitle
+    // computation.
+    page.prefs.settings.a11y.dictation_locale.value = 'es';
+    assertEquals(
+        'Couldn’t download Spanish speech files. Download will be attempted ' +
+            'later. Speech is sent to Google for processing until download ' +
+            'is completed.',
+        page.computeDictationLocaleSubtitle_());
+
+    page.prefs.settings.a11y.dictation_locale.value = 'de';
+    assertEquals(
+        'German speech is sent to Google for processing',
+        page.computeDictationLocaleSubtitle_());
+
+    page.prefs.settings.a11y.dictation_locale.value = 'fr-FR';
+    assertEquals(
+        'French (France) speech is sent to Google for processing',
+        page.computeDictationLocaleSubtitle_());
+
+    // Only use the subtitle override once.
+    page.useDictationLocaleSubtitleOverride_ = true;
+    assertEquals('Testing', page.computeDictationLocaleSubtitle_());
+    assertFalse(page.useDictationLocaleSubtitleOverride_);
+    assertEquals(
+        'French (France) speech is sent to Google for processing',
+        page.computeDictationLocaleSubtitle_());
   });
 });

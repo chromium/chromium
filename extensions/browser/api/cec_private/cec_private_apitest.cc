@@ -24,6 +24,10 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   CecPrivateKioskApiTest()
       : session_type_(ScopedCurrentFeatureSessionType(
             mojom::FeatureSessionType::kKiosk)) {}
+
+  CecPrivateKioskApiTest(const CecPrivateKioskApiTest&) = delete;
+  CecPrivateKioskApiTest& operator=(const CecPrivateKioskApiTest&) = delete;
+
   ~CecPrivateKioskApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -42,7 +46,6 @@ class CecPrivateKioskApiTest : public ShellApiTest {
 
  private:
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> session_type_;
-  DISALLOW_COPY_AND_ASSIGN(CecPrivateKioskApiTest);
 };
 
 using CecPrivateNonKioskApiTest = ShellApiTest;

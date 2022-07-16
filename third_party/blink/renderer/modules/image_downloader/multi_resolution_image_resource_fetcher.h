@@ -48,6 +48,11 @@ class MultiResolutionImageResourceFetcher {
                                       mojom::blink::FetchCacheMode cache_mode,
                                       Callback callback);
 
+  MultiResolutionImageResourceFetcher(
+      const MultiResolutionImageResourceFetcher&) = delete;
+  MultiResolutionImageResourceFetcher& operator=(
+      const MultiResolutionImageResourceFetcher&) = delete;
+
   virtual ~MultiResolutionImageResourceFetcher();
 
   // HTTP status code upon fetch completion.
@@ -101,8 +106,6 @@ class MultiResolutionImageResourceFetcher {
 
   // Request to send.
   WebURLRequest request_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiResolutionImageResourceFetcher);
 };
 
 }  // namespace blink

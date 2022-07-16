@@ -30,6 +30,7 @@
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
+#include "chrome/browser/android/signin/fre_mobile_identity_consistency_field_trial.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -37,7 +38,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/sync/split_settings_sync_field_trial.h"
+#include "chrome/browser/ash/sync/sync_consent_optional_field_trial.h"
 #include "chromeos/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
 
@@ -69,7 +70,7 @@ ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() {
 }
 
-void ChromeBrowserFieldTrials::SetupFieldTrials() {
+void ChromeBrowserFieldTrials::SetUpFieldTrials() {
   // Field trials that are shared by all platforms.
   InstantiateDynamicTrials();
 
@@ -78,7 +79,7 @@ void ChromeBrowserFieldTrials::SetupFieldTrials() {
 #endif
 }
 
-void ChromeBrowserFieldTrials::SetupFeatureControllingFieldTrials(
+void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
@@ -97,7 +98,7 @@ void ChromeBrowserFieldTrials::SetupFeatureControllingFieldTrials(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // This trial is fully client controlled and must be configured whether or
   // not a seed is available.
-  split_settings_sync_field_trial::Create(feature_list, local_state_);
+  sync_consent_optional_field_trial::Create(feature_list, local_state_);
 #endif
 }
 
@@ -175,6 +176,16 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         "BackgroundThreadPoolSynthetic";
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
+  }
+
+  {
+    // MobileIdentityConsistencyFRESynthetic field trial.
+    static constexpr char kFREMobileIdentityConsistencyTrial[] =
+        "FREMobileIdentityConsistencySynthetic";
+    const std::string group =
+        fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroup();
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kFREMobileIdentityConsistencyTrial, group);
   }
 #endif  // defined(OS_ANDROID)
 }

@@ -197,10 +197,11 @@ class CertificateReceiver {
 class MockCertificateReceiver : public CertificateReceiver {
  public:
   MockCertificateReceiver() = default;
-  MOCK_METHOD4(OnCertificate, bool(uint16_t, uint16_t, const uint8_t*, size_t));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCertificateReceiver);
+  MockCertificateReceiver(const MockCertificateReceiver&) = delete;
+  MockCertificateReceiver& operator=(const MockCertificateReceiver&) = delete;
+
+  MOCK_METHOD4(OnCertificate, bool(uint16_t, uint16_t, const uint8_t*, size_t));
 };
 
 struct CertificateTestData {

@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">新しいウィンドウをシークレット モードで開く</translation>
 <translation id="152892567002884378">音量を上げる</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="ESC" /> キーを押す</translation>
-<translation id="1633761758045565086">ヘルプ ダイアログにフォーカスを移動します</translation>
 <translation id="1652741121070700329">前の単語の先頭に移動する</translation>
 <translation id="1679841710523778799">明るさを上げる</translation>
 <translation id="168356808214100546"><ph name="ALT" /> キーを押したまま、目的のウィンドウが表示されるまで <ph name="TAB" /> キーを押し、表示されたらキーを放す</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">ウェブページを下にスクロールする</translation>
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2574014812750545982">ページのズームレベルをリセット</translation>
-<translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="TAB" /> キーまたは<ph name="RIGHT" />キーを押す</translation>
 <translation id="2750942583782703988">現在のページを再読み込みする</translation>
 <translation id="2764005613199379871">検索アドレスバーにフォーカスする</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3084301071537457911">シェルフの次のアイテムをハイライト表示する</translation>
 <translation id="309173601632226815">シェルフのランチャー ボタンをハイライト表示する</translation>
-<translation id="3105917916468784889">スクリーンショットを撮る</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">アドレスバーにフォーカスを移す</translation>
 <translation id="3256109297135787951">シェルフのアイテムのハイライト表示を解除する</translation>
 <translation id="3288816184963444640">現在のウィンドウを閉じる</translation>
+<translation id="3350805006883559974">アクティブなウィンドウを上部にフロート表示する</translation>
 <translation id="3407560819924487926">タスク マネージャを表示する</translation>
 <translation id="3417835166382867856">タブを検索</translation>
 <translation id="3422679037938588196">検索に一致する前の文字列に移動する</translation>
@@ -111,7 +109,6 @@
 <translation id="4556221320735744018">キーボード ショートカットのヘルプを表示する</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> キーまたは <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /> キー</translation>
 <translation id="4628718545549558538">ステータス領域（アカウント画像が表示されている部分）を開く</translation>
-<translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4698850295812410683">タッチペン ツールを表示する</translation>
 <translation id="4801989101741319327">次の単語の末尾に移動する</translation>
 <translation id="4866066940972151697">右のデスクを有効にする</translation>
@@ -212,6 +209,7 @@
 <translation id="8881584919399569791">アクティブなウィンドウを左のデスクに移動する</translation>
 <translation id="88986195241502842">ページ内を下に移動</translation>
 <translation id="8924883688469390268">前のユーザーに切り替える</translation>
+<translation id="8941626538514548667">ブラウザ上のウェブ コンテンツにフォーカスします</translation>
 <translation id="8977648847395357314">アドレスバーの内容を選択する</translation>
 <translation id="8982190978301344584">利用可能な IME のリストをメニューで表示する</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" />1〜8 キーを押す</translation>

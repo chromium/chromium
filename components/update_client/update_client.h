@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -283,6 +284,11 @@ struct CrxComponent {
   // the CRX is installed.
   base::Version version;
 
+  // Optional. This additional parameter ("ap") is sent to the server, which
+  // often uses it to distinguish between variants of the software that were
+  // chosen at install time.
+  std::string ap;
+
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.
 
@@ -294,22 +300,23 @@ struct CrxComponent {
 
   // Specifies that the CRX can be background-downloaded in some cases.
   // The default for this value is |true|.
-  bool allows_background_download;
+  bool allows_background_download = true;
 
   // Specifies that the update checks and pings associated with this component
   // require confidentiality. The default for this value is |true|. As a side
   // note, the confidentiality of the downloads is enforced by the server,
   // which only returns secure download URLs in this case.
-  bool requires_network_encryption;
+  bool requires_network_encryption = true;
 
   // Specifies the strength of package validation required for the item.
-  crx_file::VerifierFormat crx_format_requirement;
+  crx_file::VerifierFormat crx_format_requirement =
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
 
   // True if the component allows enabling or disabling updates by group policy.
   // This member should be set to |false| for data, non-binary components, such
   // as CRLSet, Supervised User Whitelists, STH Set, Origin Trials, and File
   // Type Policies.
-  bool supports_group_policy_enable_component_updates;
+  bool supports_group_policy_enable_component_updates = false;
 
   // Reasons why this component/extension is disabled.
   std::vector<int> disabled_reasons;
@@ -328,6 +335,15 @@ struct CrxComponent {
   // the component. This optional field is typically populated by policy and is
   // only populated on managed devices.
   std::string channel;
+
+  // A version prefix sent to the server in the case of version pinning. The
+  // server should not respond with an update to a version that does not match
+  // this prefix. If no prefix is specified, the client will accept any version.
+  std::string target_version_prefix;
+
+  // An indicator sent to the server to advise whether it may perform a version
+  // downgrade of this item.
+  bool rollback_allowed = false;
 };
 
 // Called when a non-blocking call of UpdateClient completes.
@@ -446,22 +462,19 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                       bool is_foreground,
                       Callback callback) = 0;
 
-  // Sends an uninstall ping for the CRX identified by |id| and |version|. The
-  // |reason| parameter is defined by the caller. The current implementation of
-  // this function only sends a best-effort, fire-and-forget ping. It has no
-  // other side effects regarding installs or updates done through an instance
-  // of this class.
-  virtual void SendUninstallPing(const std::string& id,
-                                 const base::Version& version,
+  // Sends an uninstall ping for `crx_component`. `reason` is sent to the server
+  // to indicate the cause of the uninstallation. The current implementation of
+  // this function only sends a best-effort ping. It has no other side effects
+  // regarding installs or updates done through an instance of this class.
+  virtual void SendUninstallPing(const CrxComponent& crx_component,
                                  int reason,
                                  Callback callback) = 0;
 
-  // Sends a registration ping for the CRX identified by |id| and |version|.
-  // The current implementation of this function only sends a best-effort,
-  // fire-and-forget ping. It has no other side effects regarding installs or
-  // updates done through an instance of this class.
-  virtual void SendRegistrationPing(const std::string& id,
-                                    const base::Version& version,
+  // Sends a registration ping for `crx_component`. The current implementation
+  // of this function only sends a best-effort ping. It has no other side
+  // effects regarding installs or updates done through an instance of this
+  // class.
+  virtual void SendRegistrationPing(const CrxComponent& crx_component,
                                     Callback callback) = 0;
 
   // Returns status details about a CRX update. The function returns true in

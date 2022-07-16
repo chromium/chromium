@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_marquee_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -73,8 +73,7 @@ void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
   auto* mover = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   shadow_root.AppendChild(mover);
 
-  mover->AppendChild(
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
+  mover->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
   mover_ = mover;
 }
 
@@ -295,7 +294,8 @@ void HTMLMarqueeElement::ContinueAnimation() {
   OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
   effect_timing->setFill("forwards");
   effect_timing->setDuration(
-      MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(duration));
+      MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
+          duration));
   TimingInput::Update(timing, effect_timing, nullptr, ASSERT_NO_EXCEPTION);
 
   auto* keyframe_effect =

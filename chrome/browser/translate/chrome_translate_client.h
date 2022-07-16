@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "components/autofill_assistant/browser/public/runtime_observer.h"
@@ -47,6 +47,9 @@ class ChromeTranslateClient
       public content::WebContentsUserData<ChromeTranslateClient>,
       public autofill_assistant::RuntimeObserver {
  public:
+  ChromeTranslateClient(const ChromeTranslateClient&) = delete;
+  ChromeTranslateClient& operator=(const ChromeTranslateClient&) = delete;
+
   ~ChromeTranslateClient() override;
 
   // Gets the LanguageState associated with the page.
@@ -92,12 +95,11 @@ class ChromeTranslateClient
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;
   int GetInfobarIconID() const override;
-#endif
 
   // Trigger a manual translation when the necessary state (e.g. source
   // language) is ready.
   void ManualTranslateWhenReady();
-
+#endif
   void SetPredefinedTargetLanguage(const std::string& translate_language_code);
 
   bool ShowTranslateUI(translate::TranslateStep step,
@@ -145,13 +147,13 @@ class ChromeTranslateClient
       per_frame_translate_driver_;
   std::unique_ptr<translate::TranslateManager> translate_manager_;
 
+#if defined(OS_ANDROID)
   // Whether to trigger a manual translation when ready.
   // See ChromeTranslateClient::ManualTranslateOnReady
   bool manual_translate_on_ready_ = false;
+#endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTranslateClient);
 };
 
 #endif  // CHROME_BROWSER_TRANSLATE_CHROME_TRANSLATE_CLIENT_H_

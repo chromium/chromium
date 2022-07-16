@@ -16,6 +16,10 @@ class WebviewRpcInstance : public PlatformViewsRpcInstance {
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                      WebviewWindowManager* window_manager,
                      bool enabled_for_dev);
+
+  WebviewRpcInstance(const WebviewRpcInstance&) = delete;
+  WebviewRpcInstance& operator=(const WebviewRpcInstance&) = delete;
+
   ~WebviewRpcInstance() override;
 
  protected:
@@ -26,8 +30,6 @@ class WebviewRpcInstance : public PlatformViewsRpcInstance {
   void CreateWebview(int app_id, int window_id, bool incognito);
   webview::PlatformViewsService::AsyncService* platform_views_service_;
   bool enabled_for_dev_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewRpcInstance);
 };
 
 }  // namespace chromecast

@@ -151,6 +151,8 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_support.h",
     "frame_sinks/external_begin_frame_source_mojo.cc",
     "frame_sinks/external_begin_frame_source_mojo.h",
+    "frame_sinks/frame_sink_bundle_impl.cc",
+    "frame_sinks/frame_sink_bundle_impl.h",
     "frame_sinks/frame_sink_manager_impl.cc",
     "frame_sinks/frame_sink_manager_impl.h",
     "frame_sinks/frame_sink_observer.h",
@@ -258,14 +260,6 @@ viz_component("service") {
     "//ui/latency",
   ]
 
-  if (use_x11) {
-    sources += [
-      "display_embedder/software_output_device_x11.cc",
-      "display_embedder/software_output_device_x11.h",
-    ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
       "display_embedder/gl_output_surface_chromeos.cc",
@@ -305,7 +299,6 @@ viz_component("service") {
       "display/overlay_strategy_underlay_cast.cc",
       "display/overlay_strategy_underlay_cast.h",
     ]
-    deps += [ "//media/gpu:buildflags" ]
   }
 
   if (is_android) {
@@ -402,6 +395,8 @@ viz_source_set("gpu_service_dependencies") {
     "display_embedder/skia_output_surface_impl.h",
     "display_embedder/skia_output_surface_impl_on_gpu.cc",
     "display_embedder/skia_output_surface_impl_on_gpu.h",
+    "display_embedder/skia_render_copy_results.cc",
+    "display_embedder/skia_render_copy_results.h",
     "gl/gpu_service_impl.cc",
     "gl/gpu_service_impl.h",
   ]
@@ -479,10 +474,10 @@ viz_source_set("gpu_service_dependencies") {
       ]
     }
 
-    if (use_x11 || ozone_platform_x11) {
+    # TODO(1239521): ideally, ozone_platform_x11 should not be used outside
+    # ui/ozone.
+    if (ozone_platform_x11) {
       sources += [
-        "display_embedder/output_presenter_x11.cc",
-        "display_embedder/output_presenter_x11.h",
         "display_embedder/skia_output_device_x11.cc",
         "display_embedder/skia_output_device_x11.h",
       ]
@@ -490,6 +485,7 @@ viz_source_set("gpu_service_dependencies") {
       libs = [ "xshmfence" ]
 
       deps += [
+        "//ui/base/x",
         "//ui/events/platform/x11",
         "//ui/gfx/x",
       ]
@@ -515,12 +511,6 @@ viz_source_set("gpu_service_dependencies") {
     sources += [
       "display_embedder/output_presenter_fuchsia.cc",
       "display_embedder/output_presenter_fuchsia.h",
-    ]
-
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
     ]
   }
 }
@@ -561,6 +551,7 @@ viz_source_set("unit_tests") {
     "display_embedder/vsync_parameter_listener_unittest.cc",
     "frame_sinks/begin_frame_tracker_unittest.cc",
     "frame_sinks/compositor_frame_sink_support_unittest.cc",
+    "frame_sinks/frame_sink_bundle_impl_unittest.cc",
     "frame_sinks/frame_sink_manager_unittest.cc",
     "frame_sinks/surface_references_unittest.cc",
     "frame_sinks/surface_synchronization_unittest.cc",
@@ -578,7 +569,7 @@ viz_source_set("unit_tests") {
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
-  if (enable_gl_backend_tests) {
+  if (enable_gl_renderer_tests) {
     sources += [
       "display/gl_renderer_copier_pixeltest.cc",
       "display/gl_renderer_copier_unittest.cc",
@@ -590,10 +581,7 @@ viz_source_set("unit_tests") {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
 
-  configs = [
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs = [ "//third_party/khronos:khronos_headers" ]
 
   deps = [
     ":service",
@@ -681,8 +669,8 @@ viz_source_set("perf_tests") {
     "display/gl_renderer_copier_perftest.cc",
     "display/renderer_perftest.cc",
     "display/surface_aggregator_perftest.cc",
-    "display/viz_perf_test.cc",
-    "display/viz_perf_test.h",
+    "display/viz_perftest.cc",
+    "display/viz_perftest.h",
   ]
 
   deps = [
@@ -696,6 +684,7 @@ viz_source_set("perf_tests") {
     "//components/viz/test:test_support",
     "//testing/gtest",
     "//testing/perf",
+    "//third_party/zlib/google:zip",
   ]
 }
 

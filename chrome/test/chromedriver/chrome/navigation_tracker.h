@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -41,6 +40,9 @@ class NavigationTracker : public DevToolsEventListener,
                     const BrowserInfo* browser_info,
                     const JavaScriptDialogManager* dialog_manager,
                     const bool is_eager = false);
+
+  NavigationTracker(const NavigationTracker&) = delete;
+  NavigationTracker& operator=(const NavigationTracker&) = delete;
 
   ~NavigationTracker() override;
 
@@ -87,8 +89,6 @@ class NavigationTracker : public DevToolsEventListener,
   LoadingState* loading_state_;
   // Used when current frame is invalid
   LoadingState dummy_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationTracker);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_NAVIGATION_TRACKER_H_

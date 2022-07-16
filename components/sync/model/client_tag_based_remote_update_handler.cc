@@ -27,16 +27,16 @@ void LogNonReflectionUpdateFreshnessToUma(ModelType type,
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Sync.NonReflectionUpdateFreshnessPossiblySkewed2",
                              latency,
-                             /*min=*/base::TimeDelta::FromMilliseconds(100),
-                             /*max=*/base::TimeDelta::FromDays(7),
+                             /*min=*/base::Milliseconds(100),
+                             /*max=*/base::Days(7),
                              /*bucket_count=*/50);
 
   base::UmaHistogramCustomTimes(
       std::string("Sync.NonReflectionUpdateFreshnessPossiblySkewed2.") +
           ModelTypeToHistogramSuffix(type),
       latency,
-      /*min=*/base::TimeDelta::FromMilliseconds(100),
-      /*max=*/base::TimeDelta::FromDays(7),
+      /*min=*/base::Milliseconds(100),
+      /*max=*/base::Days(7),
       /*bucket_count=*/50);
 }
 
@@ -171,10 +171,6 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
                   << " client_tag_hash: " << client_tag_hash << " for "
                   << ModelTypeToString(type_);
     return nullptr;
-  }
-
-  if (entity) {
-    entity->RecordEntityUpdateLatency(update.response_version, type_);
   }
 
   if (entity && entity->UpdateIsReflection(update.response_version)) {

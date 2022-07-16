@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/singleton.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -46,7 +46,9 @@ SegmentationPlatformService* SegmentationPlatformServiceFactory::GetForProfile(
 SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SegmentationPlatformService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
     default;
@@ -59,6 +61,10 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  // If optimization guide feature is disabled, then disable segmentation.
+  if (!optimization_guide)
+    return new DummySegmentationPlatformService();
+
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});

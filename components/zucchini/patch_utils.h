@@ -14,6 +14,17 @@
 
 namespace zucchini {
 
+// A change in major version indicates breaking changes such that a patch
+// definitely cannot be applied by a zucchini binary whose major version doesn't
+// match.
+enum : uint16_t { kMajorVersion = 1 };
+// A change in minor version indicates possibly breaking changes at the element
+// level, such that it may not be possible to apply a patch whose minor version
+// doesn't match this version. To determine if a given patch may be applied with
+// this version, VerifyPatch() should be called.
+enum : uint16_t { kMinorVersion = 0 };
+enum : uint16_t { kInvalidVersion = 0xffff };
+
 // A Zucchini 'ensemble' patch is the concatenation of a patch header with a
 // list of patch 'elements', each containing data for patching individual
 // elements.
@@ -24,9 +35,11 @@ namespace zucchini {
 // Header for a Zucchini patch, found at the beginning of an ensemble patch.
 struct PatchHeader {
   // Magic signature at the beginning of a Zucchini patch file.
-  enum : uint32_t { kMagic = 'Z' | ('u' << 8) | ('c' << 16) };
+  enum : uint32_t { kMagic = 'Z' | ('u' << 8) | ('c' << 16) | ('c' << 24) };
 
   uint32_t magic = 0;
+  uint16_t major_version = kInvalidVersion;
+  uint16_t minor_version = kInvalidVersion;
   uint32_t old_size = 0;
   uint32_t old_crc = 0;
   uint32_t new_size = 0;
@@ -34,7 +47,7 @@ struct PatchHeader {
 };
 
 // Sanity check.
-static_assert(sizeof(PatchHeader) == 20, "PatchHeader must be 20 bytes");
+static_assert(sizeof(PatchHeader) == 24, "PatchHeader must be 24 bytes");
 
 // Header for a patch element, found at the beginning of every patch element.
 struct PatchElementHeader {
@@ -43,11 +56,12 @@ struct PatchElementHeader {
   uint32_t new_offset;
   uint32_t new_length;
   uint32_t exe_type;  // ExecutableType.
+  uint16_t version = kInvalidVersion;
 };
 
 // Sanity check.
-static_assert(sizeof(PatchElementHeader) == 20,
-              "PatchElementHeader must be 20 bytes");
+static_assert(sizeof(PatchElementHeader) == 22,
+              "PatchElementHeader must be 22 bytes");
 
 #pragma pack(pop)
 

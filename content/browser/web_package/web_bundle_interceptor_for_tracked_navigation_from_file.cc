@@ -12,6 +12,7 @@
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace content {
 

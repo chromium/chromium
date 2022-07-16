@@ -6,7 +6,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/statusor.h"
 
 using ::testing::Invoke;

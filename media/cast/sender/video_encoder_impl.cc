@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/cast/sender/video_encoder_impl.h"
+#include "third_party/libaom/libaom_buildflags.h"
 
 #include <utility>
 
@@ -11,8 +12,11 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "media/base/video_frame.h"
+#if BUILDFLAG(ENABLE_LIBAOM)
+#include "media/cast/sender/av1_encoder.h"
+#endif
 #include "media/cast/sender/fake_software_video_encoder.h"
-#include "media/cast/sender/vp8_encoder.h"
+#include "media/cast/sender/vpx_encoder.h"
 
 namespace media {
 namespace cast {
@@ -55,7 +59,9 @@ bool VideoEncoderImpl::IsSupported(const FrameSenderConfig& video_config) {
     return true;
   }
 #endif
-  return video_config.codec == CODEC_VIDEO_VP8;
+  return video_config.codec == CODEC_VIDEO_VP8 ||
+         video_config.codec == CODEC_VIDEO_VP9 ||
+         video_config.codec == CODEC_VIDEO_AV1;
 }
 
 VideoEncoderImpl::VideoEncoderImpl(
@@ -66,8 +72,9 @@ VideoEncoderImpl::VideoEncoderImpl(
   CHECK(cast_environment_->HasVideoThread());
   DCHECK(status_change_cb);
 
-  if (video_config.codec == CODEC_VIDEO_VP8) {
-    encoder_ = std::make_unique<Vp8Encoder>(video_config);
+  if (video_config.codec == CODEC_VIDEO_VP8 ||
+      video_config.codec == CODEC_VIDEO_VP9) {
+    encoder_ = std::make_unique<VpxEncoder>(video_config);
     cast_environment_->PostTask(
         CastEnvironment::VIDEO, FROM_HERE,
         base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,
@@ -75,6 +82,14 @@ VideoEncoderImpl::VideoEncoderImpl(
 #ifndef OFFICIAL_BUILD
   } else if (video_config.codec == CODEC_VIDEO_FAKE) {
     encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(video_config);
+#endif
+#if BUILDFLAG(ENABLE_LIBAOM)
+  } else if (video_config.codec == CODEC_VIDEO_AV1) {
+    encoder_ = std::make_unique<Av1Encoder>(video_config);
+    cast_environment_->PostTask(
+        CastEnvironment::VIDEO, FROM_HERE,
+        base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,
+                       encoder_.get()));
 #endif
   } else {
     DCHECK(false) << "Invalid config";  // Codec not supported.

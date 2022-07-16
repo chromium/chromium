@@ -10,6 +10,7 @@
       "UseSystemCAs": true,
       "ClientCertType": "PKCS11Id",
       "ClientCertPKCS11Id": "1:123456abcdef",
+      "DomainSuffixMatch": ["domain1.com", "domain2.com"],
       "SaveCredentials": true,
       "SubjectMatch": "my_subject",
       "SubjectAlternativeNameMatch":[

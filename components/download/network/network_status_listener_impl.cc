@@ -21,7 +21,7 @@ void NetworkStatusListenerImpl::Start(
   bool sync = network_connection_tracker_->GetConnectionType(
       &connection_type_,
       base::BindOnce(&NetworkStatusListenerImpl::OnNetworkStatusReady,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
   if (sync)
     observer_->OnNetworkStatusReady(connection_type_);
 }

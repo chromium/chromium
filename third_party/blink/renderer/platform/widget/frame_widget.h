@@ -14,7 +14,6 @@
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
@@ -75,12 +74,13 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void RequestDecode(const cc::PaintImage&,
                              base::OnceCallback<void(bool)>) = 0;
 
-  // Forwards to WebFrameWidget::NotifySwapAndPresentationTime().
-  // The |callback| will be fired when the corresponding renderer frame is
-  // submitted (still called "swapped") to the display compositor (either with
-  // DidSwap or DidNotSwap).
+  // Forwards to `WebFrameWidget::NotifyPresentationTime()`.
+  // `presentation_callback` will be fired when the corresponding renderer frame
+  // is presented to the user. If the presentation is successful, the argument
+  // passed to the callback is the presentation timestamp; otherwise, it would
+  // be timestamp of when the failure is detected.
   virtual void NotifyPresentationTimeInBlink(
-      WebReportTimeCallback presentation_callback) = 0;
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback) = 0;
 
   // Enable or disable BeginMainFrameNotExpected signals from the compositor,
   // which are consumed by the blink scheduler.
@@ -274,6 +274,17 @@ class PLATFORM_EXPORT FrameWidget {
   // underlaying LayerTreeHost.
   virtual const cc::LayerTreeDebugState& GetLayerTreeDebugState() = 0;
   virtual void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) = 0;
+
+  // Set whether or not this widget should be throttled if it sends
+  // CompositorFrames while widget is hidden.  By default, it should throttle,
+  // since we should be smart enough not to send them.  However,
+  // PictureInPicture requires that we are allowed to continue to produce
+  // CompositorFrames even if they're discarded by viz, since those frames are a
+  // by-product of producing the content that does make it to the picture-in-
+  // picture window.  Ideally, we would know not to send the extra
+  // CompositorFrames.  See https://crbug.com/1232173 for more details.
+  virtual void SetMayThrottleIfUndrawnFrames(
+      bool may_throttle_if_undrawn_frames) = 0;
 };
 
 }  // namespace blink

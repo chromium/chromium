@@ -30,7 +30,7 @@ class ActivityStorageTest : public ::testing::Test {
   void SetUp() override {
     local_state_.registry()->RegisterDictionaryPref(kPrefName);
     storage_ = std::make_unique<ActivityStorage>(&local_state_, kPrefName,
-                                                 base::TimeDelta::FromDays(0));
+                                                 base::Days(0));
   }
 
   static testing::Matcher<em::TimePeriod> EqActivity(
@@ -82,8 +82,7 @@ TEST_F(ActivityStorageTest, PruneActivityPeriods) {
                                MakeLocalTime("29-MAR-2020 8:30pm"), "id1");
 
   storage()->PruneActivityPeriods(MakeLocalTime("27-MAR-2020 3:30pm"),
-                                  base::TimeDelta::FromDays(1),
-                                  base::TimeDelta::FromDays(2));
+                                  base::Days(1), base::Days(2));
 
   auto activity_periods = storage()->GetActivityPeriods();
   EXPECT_THAT(

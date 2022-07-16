@@ -38,6 +38,11 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
   GetFactoryInstance();
 
   explicit PrinterProviderInternalAPI(content::BrowserContext* browser_context);
+
+  PrinterProviderInternalAPI(const PrinterProviderInternalAPI&) = delete;
+  PrinterProviderInternalAPI& operator=(const PrinterProviderInternalAPI&) =
+      delete;
+
   ~PrinterProviderInternalAPI() override;
 
   void AddObserver(PrinterProviderInternalAPIObserver* observer);
@@ -85,14 +90,17 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
       const api::printer_provider::PrinterInfo* printer_info);
 
   base::ObserverList<PrinterProviderInternalAPIObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalAPI);
 };
 
 class PrinterProviderInternalReportPrintResultFunction
     : public ExtensionFunction {
  public:
   PrinterProviderInternalReportPrintResultFunction();
+
+  PrinterProviderInternalReportPrintResultFunction(
+      const PrinterProviderInternalReportPrintResultFunction&) = delete;
+  PrinterProviderInternalReportPrintResultFunction& operator=(
+      const PrinterProviderInternalReportPrintResultFunction&) = delete;
 
  protected:
   ~PrinterProviderInternalReportPrintResultFunction() override;
@@ -102,14 +110,17 @@ class PrinterProviderInternalReportPrintResultFunction
  private:
   DECLARE_EXTENSION_FUNCTION("printerProviderInternal.reportPrintResult",
                              PRINTERPROVIDERINTERNAL_REPORTPRINTRESULT)
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalReportPrintResultFunction);
 };
 
 class PrinterProviderInternalReportPrinterCapabilityFunction
     : public ExtensionFunction {
  public:
   PrinterProviderInternalReportPrinterCapabilityFunction();
+
+  PrinterProviderInternalReportPrinterCapabilityFunction(
+      const PrinterProviderInternalReportPrinterCapabilityFunction&) = delete;
+  PrinterProviderInternalReportPrinterCapabilityFunction& operator=(
+      const PrinterProviderInternalReportPrinterCapabilityFunction&) = delete;
 
  protected:
   ~PrinterProviderInternalReportPrinterCapabilityFunction() override;
@@ -119,14 +130,16 @@ class PrinterProviderInternalReportPrinterCapabilityFunction
  private:
   DECLARE_EXTENSION_FUNCTION("printerProviderInternal.reportPrinterCapability",
                              PRINTERPROVIDERINTERNAL_REPORTPRINTERCAPABILITY)
-
-  DISALLOW_COPY_AND_ASSIGN(
-      PrinterProviderInternalReportPrinterCapabilityFunction);
 };
 
 class PrinterProviderInternalReportPrintersFunction : public ExtensionFunction {
  public:
   PrinterProviderInternalReportPrintersFunction();
+
+  PrinterProviderInternalReportPrintersFunction(
+      const PrinterProviderInternalReportPrintersFunction&) = delete;
+  PrinterProviderInternalReportPrintersFunction& operator=(
+      const PrinterProviderInternalReportPrintersFunction&) = delete;
 
  protected:
   ~PrinterProviderInternalReportPrintersFunction() override;
@@ -135,13 +148,16 @@ class PrinterProviderInternalReportPrintersFunction : public ExtensionFunction {
  private:
   DECLARE_EXTENSION_FUNCTION("printerProviderInternal.reportPrinters",
                              PRINTERPROVIDERINTERNAL_REPORTPRINTERS)
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalReportPrintersFunction);
 };
 
 class PrinterProviderInternalGetPrintDataFunction : public ExtensionFunction {
  public:
   PrinterProviderInternalGetPrintDataFunction();
+
+  PrinterProviderInternalGetPrintDataFunction(
+      const PrinterProviderInternalGetPrintDataFunction&) = delete;
+  PrinterProviderInternalGetPrintDataFunction& operator=(
+      const PrinterProviderInternalGetPrintDataFunction&) = delete;
 
  protected:
   ~PrinterProviderInternalGetPrintDataFunction() override;
@@ -154,14 +170,17 @@ class PrinterProviderInternalGetPrintDataFunction : public ExtensionFunction {
               std::unique_ptr<content::BlobHandle> blob);
   DECLARE_EXTENSION_FUNCTION("printerProviderInternal.getPrintData",
                              PRINTERPROVIDERINTERNAL_GETPRINTDATA)
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalGetPrintDataFunction);
 };
 
 class PrinterProviderInternalReportUsbPrinterInfoFunction
     : public ExtensionFunction {
  public:
   PrinterProviderInternalReportUsbPrinterInfoFunction();
+
+  PrinterProviderInternalReportUsbPrinterInfoFunction(
+      const PrinterProviderInternalReportUsbPrinterInfoFunction&) = delete;
+  PrinterProviderInternalReportUsbPrinterInfoFunction& operator=(
+      const PrinterProviderInternalReportUsbPrinterInfoFunction&) = delete;
 
  protected:
   ~PrinterProviderInternalReportUsbPrinterInfoFunction() override;
@@ -170,8 +189,6 @@ class PrinterProviderInternalReportUsbPrinterInfoFunction
  private:
   DECLARE_EXTENSION_FUNCTION("printerProviderInternal.reportUsbPrinterInfo",
                              PRINTERPROVIDERINTERNAL_REPORTUSBPRINTERINFO)
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalReportUsbPrinterInfoFunction);
 };
 
 }  // namespace extensions

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 
-#include "ash/public/cpp/capture_mode_api.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 

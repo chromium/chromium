@@ -20,10 +20,11 @@ class CrostiniDialogBrowserTest
   explicit CrostiniDialogBrowserTest(bool register_termina)
       : SupportsTestDialog<CrostiniBrowserTestBase>(register_termina) {}
 
-  void WaitForLoadFinished(content::WebContents* contents);
+  CrostiniDialogBrowserTest(const CrostiniDialogBrowserTest&) = delete;
+  CrostiniDialogBrowserTest& operator=(const CrostiniDialogBrowserTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniDialogBrowserTest);
+  void WaitForLoadFinished(content::WebContents* contents);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_DIALOGUE_BROWSER_TEST_UTIL_H_

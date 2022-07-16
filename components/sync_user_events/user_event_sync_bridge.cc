@@ -21,11 +21,11 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
 
 namespace syncer {
 
-using sync_pb::ModelTypeState;
 using sync_pb::UserEventSpecifics;
 using IdList = ModelTypeStore::IdList;
 using Record = ModelTypeStore::Record;

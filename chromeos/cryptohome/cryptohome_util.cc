@@ -96,6 +96,9 @@ std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
         // is not expected to be used in GetKeyData.
         NOTREACHED();
         break;
+      case KeyData::KEY_TYPE_KIOSK:
+        key_definition.type = KeyDefinition::TYPE_PUBLIC_MOUNT;
+        break;
     }
     key_definition.label = it->label();
     key_definition.revision = it->revision();
@@ -173,6 +176,8 @@ AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
       break;
     case KeyDefinition::TYPE_FINGERPRINT:
       break;
+    case KeyDefinition::TYPE_PUBLIC_MOUNT:
+      break;
   }
 
   return auth_request;
@@ -201,6 +206,9 @@ void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
 
     case KeyDefinition::TYPE_FINGERPRINT:
       data->set_type(KeyData::KEY_TYPE_FINGERPRINT);
+      break;
+    case KeyDefinition::TYPE_PUBLIC_MOUNT:
+      data->set_type(KeyData::KEY_TYPE_KIOSK);
       break;
   }
 

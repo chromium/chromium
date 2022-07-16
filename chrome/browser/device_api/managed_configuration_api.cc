@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/origin.h"
 
@@ -239,7 +240,8 @@ ManagedConfigurationAPI::GetConfigurationOnBackend(
   if (!base::Contains(store_map_, origin))
     return nullptr;
 
-  LeveldbValueStore::ReadResult result = store_map_[origin]->Get(keys);
+  value_store::LeveldbValueStore::ReadResult result =
+      store_map_[origin]->Get(keys);
   if (!result.status().ok())
     return nullptr;
 
@@ -307,7 +309,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     const url::Origin& origin,
     const std::string& url_hash,
     const data_decoder::DataDecoder::ValueOrError decoding_result) {
-  if (!decoding_result.value) {
+  if (!decoding_result.value || !decoding_result.value->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
     PostStoreConfiguration(origin, base::DictionaryValue());

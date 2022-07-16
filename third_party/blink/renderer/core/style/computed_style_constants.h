@@ -210,6 +210,7 @@ enum EContainerType {
   kContainerTypeNone = 0x0,
   kContainerTypeInlineSize = 0x1,
   kContainerTypeBlockSize = 0x2,
+  kContainerTypeSize = kContainerTypeInlineSize | kContainerTypeBlockSize,
 };
 inline EContainerType operator|(EContainerType a, EContainerType b) {
   return EContainerType(int(a) | int(b));

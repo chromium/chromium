@@ -30,6 +30,10 @@ class TestObserver : public ContentProtectionManager::Observer {
   explicit TestObserver(ContentProtectionManager* manager) : manager_(manager) {
     manager_->AddObserver(this);
   }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override { manager_->RemoveObserver(this); }
 
   const SecurityChanges& security_changes() const { return security_changes_; }
@@ -43,13 +47,16 @@ class TestObserver : public ContentProtectionManager::Observer {
 
   ContentProtectionManager* const manager_;
   SecurityChanges security_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class ContentProtectionManagerTest : public testing::Test {
  public:
   ContentProtectionManagerTest() = default;
+
+  ContentProtectionManagerTest(const ContentProtectionManagerTest&) = delete;
+  ContentProtectionManagerTest& operator=(const ContentProtectionManagerTest&) =
+      delete;
+
   ~ContentProtectionManagerTest() override = default;
 
   void SetUp() override {
@@ -122,8 +129,6 @@ class ContentProtectionManagerTest : public testing::Test {
   uint32_t protection_mask_ = CONTENT_PROTECTION_METHOD_NONE;
 
   std::unique_ptr<DisplaySnapshot> displays_[base::size(kDisplayIds)];
-
-  DISALLOW_COPY_AND_ASSIGN(ContentProtectionManagerTest);
 };
 
 TEST_F(ContentProtectionManagerTest, Basic) {

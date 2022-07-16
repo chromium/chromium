@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -49,6 +48,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
  public:
   SurfaceManager(SurfaceManagerDelegate* delegate,
                  absl::optional<uint32_t> activation_deadline_in_frames);
+
+  SurfaceManager(const SurfaceManager&) = delete;
+  SurfaceManager& operator=(const SurfaceManager&) = delete;
+
   ~SurfaceManager();
 
 #if DCHECK_IS_ON()
@@ -323,8 +326,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   bool allocation_groups_need_garbage_collection_ = false;
 
   base::WeakPtrFactory<SurfaceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceManager);
 };
 
 }  // namespace viz

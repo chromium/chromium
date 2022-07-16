@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -99,6 +100,12 @@ public class BottomSheetToolbarView {
     public void setFaviconIcon(@DrawableRes int resId) {
         ImageView faviconIcon = mToolbarView.findViewById(R.id.favicon);
         faviconIcon.setImageResource(resId);
+    }
+
+    /** Sets the favicon icon drawable. */
+    public void setFaviconIconDrawable(Drawable iconDrawable) {
+        ImageView faviconIcon = mToolbarView.findViewById(R.id.favicon);
+        faviconIcon.setImageDrawable(iconDrawable);
     }
 
     /** Sets the visibility of favicon icon. */

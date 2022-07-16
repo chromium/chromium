@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -35,6 +34,9 @@ class FindBarController : public content::NotificationObserver,
                           public find_in_page::FindResultObserver {
  public:
   explicit FindBarController(std::unique_ptr<FindBar> find_bar);
+
+  FindBarController(const FindBarController&) = delete;
+  FindBarController& operator=(const FindBarController&) = delete;
 
   ~FindBarController() override;
 
@@ -112,8 +114,6 @@ class FindBarController : public content::NotificationObserver,
   base::ScopedObservation<find_in_page::FindTabHelper,
                           find_in_page::FindResultObserver>
       find_tab_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarController);
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_

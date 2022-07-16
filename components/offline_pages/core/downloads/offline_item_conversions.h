@@ -21,12 +21,13 @@ const char kOfflinePageNamespace[] = "LEGACY_OFFLINE_PAGE";
 // collection representation (for displaying in UI).
 class OfflineItemConversions {
  public:
+  OfflineItemConversions() = delete;
+  OfflineItemConversions(const OfflineItemConversions&) = delete;
+  OfflineItemConversions& operator=(const OfflineItemConversions&) = delete;
+
   static OfflineItem CreateOfflineItem(const OfflinePageItem& page,
                                        bool is_suggested);
   static OfflineItem CreateOfflineItem(const SavePageRequest& request);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(OfflineItemConversions);
 };
 
 }  // namespace offline_pages

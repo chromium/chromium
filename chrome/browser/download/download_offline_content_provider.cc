@@ -49,7 +49,7 @@ const int kThumbnailSizeInDP = 64;
 // The delay to wait after loading history and before starting the check for
 // externally removed downloads.
 const base::TimeDelta kCheckExternallyRemovedDownloadsDelay =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 #if defined(OS_ANDROID)
 // Invalid system download Id.
@@ -82,6 +82,10 @@ class AllDownloadObserver
     : public download::AllDownloadEventNotifier::Observer {
  public:
   explicit AllDownloadObserver(DownloadOfflineContentProvider* provider);
+
+  AllDownloadObserver(const AllDownloadObserver&) = delete;
+  AllDownloadObserver& operator=(const AllDownloadObserver&) = delete;
+
   ~AllDownloadObserver() override;
 
   void OnDownloadUpdated(SimpleDownloadManagerCoordinator* manager,
@@ -95,8 +99,6 @@ class AllDownloadObserver
 
   DownloadOfflineContentProvider* provider_;
   base::WeakPtrFactory<AllDownloadObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AllDownloadObserver);
 };
 
 AllDownloadObserver::AllDownloadObserver(

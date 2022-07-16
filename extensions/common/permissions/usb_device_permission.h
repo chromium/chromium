@@ -60,6 +60,10 @@ class UsbDevicePermission
                uint16_t product_id,
                std::unique_ptr<std::set<int>> interface_classes,
                int interface_id);
+
+    CheckParam(const CheckParam&) = delete;
+    CheckParam& operator=(const CheckParam&) = delete;
+
     ~CheckParam();
 
     const uint16_t vendor_id;
@@ -67,9 +71,6 @@ class UsbDevicePermission
     const std::unique_ptr<std::set<int>> interface_classes;
     const int interface_id;
     const bool interface_class_allowed;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CheckParam);
   };
 
   explicit UsbDevicePermission(const APIPermissionInfo* info);

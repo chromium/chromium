@@ -1,16 +1,8 @@
-// Copyright 2005 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview SHA-1 cryptographic hash.
@@ -43,6 +35,7 @@ goog.require('goog.crypt.Hash');
  * @struct
  */
 goog.crypt.Sha1 = function() {
+  'use strict';
   goog.crypt.Sha1.base(this, 'constructor');
 
   this.blockSize = 512 / 8;
@@ -99,6 +92,7 @@ goog.inherits(goog.crypt.Sha1, goog.crypt.Hash);
 
 /** @override */
 goog.crypt.Sha1.prototype.reset = function() {
+  'use strict';
   this.chain_[0] = 0x67452301;
   this.chain_[1] = 0xefcdab89;
   this.chain_[2] = 0x98badcfe;
@@ -117,6 +111,7 @@ goog.crypt.Sha1.prototype.reset = function() {
  * @private
  */
 goog.crypt.Sha1.prototype.compress_ = function(buf, opt_offset) {
+  'use strict';
   if (!opt_offset) {
     opt_offset = 0;
   }
@@ -199,6 +194,7 @@ goog.crypt.Sha1.prototype.compress_ = function(buf, opt_offset) {
 
 /** @override */
 goog.crypt.Sha1.prototype.update = function(bytes, opt_length) {
+  'use strict';
   // TODO(johnlenz): tighten the function signature and remove this check
   if (bytes == null) {
     return;
@@ -261,6 +257,7 @@ goog.crypt.Sha1.prototype.update = function(bytes, opt_length) {
 
 /** @override */
 goog.crypt.Sha1.prototype.digest = function() {
+  'use strict';
   var digest = [];
   var totalBits = this.total_ * 8;
 

@@ -14,8 +14,8 @@
 #include "chromecast/cast_core/message_port_service.h"
 #include "components/cast/api_bindings/manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/core_application_service.grpc.pb.h"
-#include "third_party/openscreen/src/cast/cast_core/api/web/message_channel.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
 

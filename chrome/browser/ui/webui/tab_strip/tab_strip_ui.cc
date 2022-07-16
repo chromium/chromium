@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -38,7 +38,7 @@ const char kWebUITabIdDataType[] = "application/vnd.chromium.tab";
 const char kWebUITabGroupIdDataType[] = "application/vnd.chromium.tabgroup";
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui),
+    : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),
       webui_load_timer_(web_ui->GetWebContents(),
                         "WebUITabStrip.LoadDocumentTime",
                         "WebUITabStrip.LoadCompletedTime") {
@@ -65,7 +65,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
                              tp.GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)));
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"newTab", IDS_TOOLTIP_NEW_TAB},
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},
       {"closeTab", IDS_ACCNAME_CLOSE},
       {"defaultTabTitle", IDS_DEFAULT_TAB_TITLE},
@@ -87,15 +86,13 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"namedGroupLabel", IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT},
   };
   html_source->AddLocalizedStrings(kStrings);
-  html_source->AddBoolean("newTabButtonEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kWebUITabStripNewTabButtonInTabStrip));
   content::WebUIDataSource::Add(profile, html_source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
+  // TODO(crbug.com/1234500): Migrate to mojo as well.
   web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 }
 
@@ -103,18 +100,37 @@ TabStripUI::~TabStripUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabStripUI)
 
+void TabStripUI::BindInterface(
+    mojo::PendingReceiver<tab_strip::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void TabStripUI::CreatePageHandler(
+    mojo::PendingRemote<tab_strip::mojom::Page> page,
+    mojo::PendingReceiver<tab_strip::mojom::PageHandler> receiver) {
+  // Initialize() must be called immediately after LoadURL() for the WebUI
+  // Tab Strip to start correctly. Only create TabStripPageHandler when both
+  // browser_ and embedder_ are set after calling Initialize().
+  if (browser_ && embedder_) {
+    page_handler_ = std::make_unique<TabStripPageHandler>(
+        std::move(receiver), std::move(page), web_ui(), browser_, embedder_);
+  }
+}
+
 void TabStripUI::Initialize(Browser* browser, TabStripUIEmbedder* embedder) {
   content::WebUI* const web_ui = TabStripUI::web_ui();
   DCHECK_EQ(Profile::FromWebUI(web_ui), browser->profile());
-  auto handler = std::make_unique<TabStripUIHandler>(browser, embedder);
-  handler_ = handler.get();
-  web_ui->AddMessageHandler(std::move(handler));
+  browser_ = browser;
+  embedder_ = embedder;
 }
 
 void TabStripUI::LayoutChanged() {
-  handler_->NotifyLayoutChanged();
+  if (page_handler_)
+    page_handler_->NotifyLayoutChanged();
 }
 
 void TabStripUI::ReceivedKeyboardFocus() {
-  handler_->NotifyReceivedKeyboardFocus();
+  if (page_handler_)
+    page_handler_->NotifyReceivedKeyboardFocus();
 }

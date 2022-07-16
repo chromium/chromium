@@ -28,6 +28,10 @@ namespace crypto {
 class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
  public:
   MockAppleKeychain();
+
+  MockAppleKeychain(const MockAppleKeychain&) = delete;
+  MockAppleKeychain& operator=(const MockAppleKeychain&) = delete;
+
   ~MockAppleKeychain() override;
 
   // AppleKeychain implementation.
@@ -79,8 +83,6 @@ class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
   // Tracks the allocations and frees of password data in |FindGenericPassword|
   // and |ItemFreeContent|.
   mutable int password_data_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAppleKeychain);
 };
 
 }  // namespace crypto

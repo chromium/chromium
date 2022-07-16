@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayer, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, flushTasks} from '../test_util.m.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
@@ -52,19 +52,17 @@ suite(key_event_test.suiteName, function() {
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplateWithAdvancedSettings(1, initialSettings.printerName));
     nativeLayer.setPageCount(3);
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     document.body.innerHTML = '';
     page = /** @type {!PrintPreviewAppElement} */ (
         document.createElement('print-preview-app'));
     document.body.appendChild(page);
-    const previewArea = /** @type {!PrintPreviewPreviewAreaElement} */ (
-        page.$$('#previewArea'));
 
     // Wait for initialization to complete.
     return Promise
@@ -96,10 +94,10 @@ suite(key_event_test.suiteName, function() {
   test(assert(key_event_test.TestNames.EnterOnInputTriggersPrint), function() {
     const whenPrintCalled = nativeLayer.whenCalled('print');
     keyEventOn(
-        page.$$('print-preview-sidebar')
-            .$$('print-preview-copies-settings')
-            .$$('print-preview-number-settings-section')
-            .$$('cr-input')
+        page.shadowRoot.querySelector('print-preview-sidebar')
+            .shadowRoot.querySelector('print-preview-copies-settings')
+            .shadowRoot.querySelector('print-preview-number-settings-section')
+            .shadowRoot.querySelector('cr-input')
             .inputElement,
         'keydown', 'Enter', [], 'Enter');
     return whenPrintCalled;
@@ -111,9 +109,9 @@ suite(key_event_test.suiteName, function() {
       assert(key_event_test.TestNames.EnterOnDropdownDoesNotPrint), function() {
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
-            page.$$('print-preview-sidebar')
-                .$$('print-preview-layout-settings')
-                .$$('.md-select'),
+            page.shadowRoot.querySelector('print-preview-sidebar')
+                .shadowRoot.querySelector('print-preview-layout-settings')
+                .shadowRoot.querySelector('.md-select'),
             'keydown', 'Enter', [], 'Enter');
         return whenKeyEventFired.then(
             () => assertEquals(0, nativeLayer.getCallCount('print')));
@@ -123,11 +121,13 @@ suite(key_event_test.suiteName, function() {
   // comes from a button.
   test(assert(key_event_test.TestNames.EnterOnButtonDoesNotPrint), async () => {
     const moreSettingsElement =
-        page.$$('print-preview-sidebar').$$('print-preview-more-settings');
+        page.shadowRoot.querySelector('print-preview-sidebar')
+            .shadowRoot.querySelector('print-preview-more-settings');
     moreSettingsElement.$.label.click();
-    const button = page.$$('print-preview-sidebar')
-                       .$$('print-preview-advanced-options-settings')
-                       .$$('cr-button');
+    const button =
+        page.shadowRoot.querySelector('print-preview-sidebar')
+            .shadowRoot.querySelector('print-preview-advanced-options-settings')
+            .shadowRoot.querySelector('cr-button');
     const whenKeyEventFired = eventToPromise('keydown', button);
     keyEventOn(button, 'keydown', 'Enter', [], 'Enter');
     await whenKeyEventFired;
@@ -140,13 +140,15 @@ suite(key_event_test.suiteName, function() {
   test(
       assert(key_event_test.TestNames.EnterOnCheckboxDoesNotPrint), function() {
         const moreSettingsElement =
-            page.$$('print-preview-sidebar').$$('print-preview-more-settings');
+            page.shadowRoot.querySelector('print-preview-sidebar')
+                .shadowRoot.querySelector('print-preview-more-settings');
         moreSettingsElement.$.label.click();
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
-            page.$$('print-preview-sidebar')
-                .$$('print-preview-other-options-settings')
-                .$$('cr-checkbox'),
+            page.shadowRoot.querySelector('print-preview-sidebar')
+                .shadowRoot
+                .querySelector('print-preview-other-options-settings')
+                .shadowRoot.querySelector('cr-checkbox'),
             'keydown', 'Enter', [], 'Enter');
         return whenKeyEventFired.then(
             () => assertEquals(0, nativeLayer.getCallCount('print')));

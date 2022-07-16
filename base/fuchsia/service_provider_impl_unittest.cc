@@ -26,6 +26,9 @@ class ServiceProviderImplTest : public testing::Test {
     provider_impl_->AddBinding(provider_client_.NewRequest());
   }
 
+  ServiceProviderImplTest(const ServiceProviderImplTest&) = delete;
+  ServiceProviderImplTest& operator=(const ServiceProviderImplTest&) = delete;
+
   ~ServiceProviderImplTest() override = default;
 
   void VerifyTestInterface(fidl::InterfacePtr<testfidl::TestInterface>* stub,
@@ -61,8 +64,6 @@ class ServiceProviderImplTest : public testing::Test {
   sys::OutgoingDirectory service_directory_;
   std::unique_ptr<ServiceProviderImpl> provider_impl_;
   ::fuchsia::sys::ServiceProviderPtr provider_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProviderImplTest);
 };
 
 // Verifies that we can connect to the service more than once.

@@ -36,6 +36,11 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   OriginTrialsComponentInstallerTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  OriginTrialsComponentInstallerTest(
+      const OriginTrialsComponentInstallerTest&) = delete;
+  OriginTrialsComponentInstallerTest& operator=(
+      const OriginTrialsComponentInstallerTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -44,12 +49,11 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     policy_ = std::make_unique<ChromeOriginTrialsComponentInstallerPolicy>();
   }
 
-  void LoadUpdates(std::unique_ptr<base::DictionaryValue> manifest) {
-    if (!manifest) {
-      manifest = std::make_unique<base::DictionaryValue>();
-      manifest->Set(kManifestOriginTrialsKey, std::make_unique<base::Value>());
+  void LoadUpdates(base::Value manifest) {
+    if (manifest.DictEmpty()) {
+      manifest.SetKey(kManifestOriginTrialsKey, base::Value());
     }
-    ASSERT_TRUE(policy_->VerifyInstallation(*manifest, temp_dir_.GetPath()));
+    ASSERT_TRUE(policy_->VerifyInstallation(manifest, temp_dir_.GetPath()));
     const base::Version expected_version(kTestUpdateVersion);
     policy_->ComponentReady(expected_version, temp_dir_.GetPath(),
                             std::move(manifest));
@@ -61,9 +65,6 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<ComponentInstallerPolicy> policy_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialsComponentInstallerTest);
 };
 
 TEST_F(OriginTrialsComponentInstallerTest,
@@ -75,7 +76,7 @@ TEST_F(OriginTrialsComponentInstallerTest,
       local_state()->GetString(embedder_support::prefs::kOriginTrialPublicKey));
 
   // Load with empty section in manifest
-  LoadUpdates(nullptr);
+  LoadUpdates(base::Value(base::Value::Type::DICTIONARY));
 
   EXPECT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialPublicKey));

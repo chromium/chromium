@@ -34,6 +34,9 @@ void MessageDispatcherBridge::SetInstanceForTesting(
   g_message_dospatcher_bridge_for_testing = instance;
 }
 
+MessageDispatcherBridge::MessageDispatcherBridge() = default;
+MessageDispatcherBridge::~MessageDispatcherBridge() = default;
+
 bool MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
                                              content::WebContents* web_contents,
                                              MessageScopeType scope_type,
@@ -43,27 +46,48 @@ bool MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
           env, message->GetJavaMessageWrapper(),
           web_contents->GetJavaWebContents(), static_cast<int>(scope_type),
           priority == MessagePriority::kUrgent) == JNI_TRUE) {
-    message->SetMessageEnqueued();
+    message->SetMessageEnqueued(
+        web_contents->GetTopLevelNativeWindow()->GetJavaObject());
+    return true;
+  }
+  return false;
+}
+
+bool MessageDispatcherBridge::EnqueueWindowScopedMessage(
+    MessageWrapper* message,
+    ui::WindowAndroid* window_android,
+    MessagePriority priority) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (Java_MessageDispatcherBridge_enqueueWindowScopedMessage(
+          env, message->GetJavaMessageWrapper(),
+          window_android->GetJavaObject(),
+          priority == MessagePriority::kUrgent) == JNI_TRUE) {
+    message->SetMessageEnqueued(window_android->GetJavaObject());
     return true;
   }
   return false;
 }
 
 void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,
-                                             content::WebContents* web_contents,
                                              DismissReason dismiss_reason) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jmessage(
       message->GetJavaMessageWrapper());
-  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_window_android(
+      message->java_window_android());
   message->HandleDismissCallback(env, static_cast<int>(dismiss_reason));
-  // DismissMessage can be called in the process of WebContents destruction.
-  // In this case WebContentsAndroid is already torn down. We shouldn't call
-  // GetJavaWebContents() because it recreates WebContentsAndroid.
-  if (!web_contents->IsBeingDestroyed()) {
-    Java_MessageDispatcherBridge_dismissMessage(
-        env, jmessage, web_contents->GetJavaWebContents(),
-        static_cast<int>(dismiss_reason));
-  }
+  Java_MessageDispatcherBridge_dismissMessage(
+      env, jmessage, java_window_android, static_cast<int>(dismiss_reason));
+}
+
+int MessageDispatcherBridge::MapToJavaDrawableId(int resource_id) {
+  DCHECK(resource_id_mapper_);
+  return resource_id_mapper_.Run(resource_id);
+}
+
+void MessageDispatcherBridge::SetResourceIdMapper(
+    ResourceIdMapper resource_id_mapper) {
+  resource_id_mapper_ = std::move(resource_id_mapper);
 }
 
 }  // namespace messages

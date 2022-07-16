@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -19,19 +20,15 @@ namespace blink {
 
 class PermissionsPolicy;
 
-// Mapping from WebClientHintsType to the hint's outgoing header
-// (e.g. kLang => "sec-ch-lang"). The ordering matches the ordering of enums in
-// services/network/public/mojom/web_client_hints_types.mojom
-BLINK_COMMON_EXPORT extern const char* const kClientHintsHeaderMapping[];
+using ClientHintToPolicyFeatureMap =
+    base::flat_map<network::mojom::WebClientHintsType,
+                   mojom::PermissionsPolicyFeature>;
 
 // Mapping from WebClientHintsType to the corresponding Permissions-Policy (e.g.
 // kDpr => kClientHintsDPR). The order matches the header mapping and the enum
 // order in services/network/public/mojom/web_client_hints_types.mojom
-BLINK_COMMON_EXPORT extern const mojom::PermissionsPolicyFeature
-    kClientHintsPermissionsPolicyMapping[];
-
-// The size of the mapping arrays.
-BLINK_COMMON_EXPORT extern const size_t kClientHintsMappingsCount;
+BLINK_COMMON_EXPORT const ClientHintToPolicyFeatureMap&
+GetClientHintToPolicyFeatureMap();
 
 // Mapping from WebEffectiveConnectionType to the header value. This value is
 // sent to the origins and is returned by the JavaScript API. The ordering
@@ -43,24 +40,6 @@ BLINK_COMMON_EXPORT extern const char* const
     kWebEffectiveConnectionTypeMapping[];
 
 BLINK_COMMON_EXPORT extern const size_t kWebEffectiveConnectionTypeMappingCount;
-
-// Given a comma-separated, ordered list of language codes, return the list
-// formatted as a structured header, as described in
-// https://tools.ietf.org/html/draft-west-lang-client-hint-00#section-2.1
-std::string BLINK_COMMON_EXPORT
-SerializeLangClientHint(const std::string& raw_language_list);
-
-// Filters a parsed accept-CH list to exclude clients hints support for which
-// is currently conditional on experiments:
-// Language hints will only be kept if |permit_lang_hints| is true;
-// UA-related ones if |permit_ua_hints| is.
-// Prefers-color-scheme ones if |permit_prefers_color_scheme_hints| is.
-BLINK_COMMON_EXPORT
-absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
-    absl::optional<std::vector<network::mojom::WebClientHintsType>> in,
-    bool permit_lang_hints,
-    bool permit_ua_hints,
-    bool permit_prefers_color_scheme_hints);
 
 // Indicates that a hint is sent by default, regardless of an opt-in.
 BLINK_COMMON_EXPORT

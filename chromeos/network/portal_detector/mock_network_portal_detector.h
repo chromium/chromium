@@ -13,6 +13,11 @@ namespace chromeos {
 class MockNetworkPortalDetector : public NetworkPortalDetector {
  public:
   MockNetworkPortalDetector();
+
+  MockNetworkPortalDetector(const MockNetworkPortalDetector&) = delete;
+  MockNetworkPortalDetector& operator=(const MockNetworkPortalDetector&) =
+      delete;
+
   ~MockNetworkPortalDetector() override;
 
   MOCK_METHOD1(AddObserver,
@@ -28,9 +33,6 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
   MOCK_METHOD0(StartPortalDetection, void());
   MOCK_METHOD1(SetStrategy,
                void(chromeos::PortalDetectorStrategy::StrategyId id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkPortalDetector);
 };
 
 }  // namespace chromeos

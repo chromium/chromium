@@ -125,13 +125,9 @@ const CGFloat kImageWidth = 150.0;
   [scrollView addSubview:container];
   [self addSubview:scrollView];
 
-  NSLayoutConstraint* scrollViewHeightConstraint = [scrollView.heightAnchor
-      constraintEqualToAnchor:container.heightAnchor
-                     constant:(self.scrollViewContentInsets.top +
-                               self.scrollViewContentInsets.bottom)];
-  scrollViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
-  scrollViewHeightConstraint.active = YES;
-  self.scrollViewHeight = scrollViewHeightConstraint;
+  self.scrollViewHeight = VerticalConstraintsWithInset(
+      container, scrollView,
+      self.scrollViewContentInsets.top + self.scrollViewContentInsets.bottom);
 
   [NSLayoutConstraint activateConstraints:@[
     [imageView.topAnchor constraintEqualToAnchor:container.topAnchor],

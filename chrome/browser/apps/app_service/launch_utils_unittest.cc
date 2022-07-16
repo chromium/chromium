@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
+
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 
@@ -20,11 +23,13 @@ class LaunchUtilsTest : public testing::Test {
     return apps::CreateAppIdLaunchParamsWithEventFlags(
         app_id,
         apps::GetEventFlags(container, disposition, preferred_container),
-        apps::mojom::AppLaunchSource::kSourceChromeInternal,
+        apps::mojom::LaunchSource::kFromChromeInternal,
         display::kInvalidDisplayId, fallback_container);
   }
 
   std::string app_id = "aaa";
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 };
 
 TEST_F(LaunchUtilsTest, WindowContainerAndWindowDisposition) {
@@ -87,11 +92,40 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, apps::GetEventFlags(container, disposition, true),
-      apps::mojom::AppLaunchSource::kSourceIntentUrl,
+      apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
-      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent));
+      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
+      &profile_);
 
   EXPECT_EQ(url, params.override_url);
+}
+
+TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+
+  std::vector<apps::mojom::IntentFilePtr> files;
+  auto file = apps::mojom::IntentFile::New();
+  std::string file_path = "filesystem:http://foo.com/test/foo.txt";
+  file->url = GURL(file_path);
+  EXPECT_TRUE(file->url.is_valid());
+  file->mime_type = "text/plain";
+  files.push_back(std::move(file));
+  auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
+
+  auto params = apps::CreateAppLaunchParamsForIntent(
+      app_id, apps::GetEventFlags(container, disposition, true),
+      apps::mojom::LaunchSource::kFromChromeInternal,
+      display::kInvalidDisplayId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
+      &profile_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(params.launch_files.size(), 1U);
+  EXPECT_EQ("foo.txt", params.launch_files[0].MaybeAsASCII());
+#else
+  ASSERT_EQ(params.launch_files.size(), 0U);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_NoAppID) {
@@ -153,16 +187,12 @@ TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_FileProtocol) {
             base::FilePath(FILE_PATH_LITERAL("file://filename")));
 }
 
+// Verifies that a non-file protocol is not treated as a filename.
 TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
-  // Validate a vector with size 1 is returned, and the
-  // contents match the command line parameter. This uses
-  // a test protocol.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, "test");
   command_line.AppendArg("web+test://filename");
   std::vector<base::FilePath> launch_files =
       apps::GetLaunchFilesFromCommandLine(command_line);
-  ASSERT_EQ(launch_files.size(), 1U);
-  EXPECT_EQ(launch_files[0],
-            base::FilePath(FILE_PATH_LITERAL("web+test://filename")));
+  EXPECT_EQ(0U, launch_files.size());
 }

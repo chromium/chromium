@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
 
@@ -67,7 +67,8 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
 CalendarApiEventsRequest::~CalendarApiEventsRequest() = default;
 
 GURL CalendarApiEventsRequest::GetURLInternal() const {
-  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_);
+  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_,
+                                                /*single_events=*/true);
 }
 
 void CalendarApiEventsRequest::ProcessURLFetchResults(

@@ -142,8 +142,7 @@ Status ImportKey(blink::WebCryptoKeyFormat format,
   if (status.IsError())
     return status;
 
-  status =
-      impl->ImportKey(format, key_data, algorithm, extractable, usages, key);
+  status = impl->ImportKey(format, key_data, algorithm, extractable, usages, key);
   if (status.IsError())
     return status;
 
@@ -246,8 +245,7 @@ Status UnwrapKey(blink::WebCryptoKeyFormat format,
   // key_ops). As long as the ImportKey error messages don't describe actual
   // key bytes however this should be OK. For more discussion see
   // http://crbug.com/372040
-  return ImportKey(format, CryptoData(buffer), algorithm, extractable, usages,
-                   key);
+  return ImportKey(format, CryptoData(buffer), algorithm, extractable, usages, key);
 }
 
 Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,

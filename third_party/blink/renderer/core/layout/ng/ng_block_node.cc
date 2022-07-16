@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -181,7 +182,6 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
              RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
     CreateAlgorithmAndRun<NGGridLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutReplaced()) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutNGFieldset()) {
     CreateAlgorithmAndRun<NGFieldsetLayoutAlgorithm>(params, callback);
@@ -304,9 +304,8 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
                                  style.PaddingEnd().IsPercentOrCalc()))
     return false;
 
-  if (!style.AspectRatio().IsAuto() &&
-      (style.LogicalMinHeight().IsPercentOrCalc() ||
-       style.LogicalMaxHeight().IsPercentOrCalc()))
+  if (node.HasAspectRatio() && (style.LogicalMinHeight().IsPercentOrCalc() ||
+                                style.LogicalMaxHeight().IsPercentOrCalc()))
     return false;
 
   if (node.IsNGTableCell() && To<LayoutNGTableCell>(node.GetLayoutBox())
@@ -423,13 +422,6 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     UpdateShapeOutsideInfoIfNeeded(
         *layout_result, constraint_space.PercentageResolutionInlineSize());
 
-    if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled()) {
-      // Even if we can reuse the result, we may still need to recalculate our
-      // overflow. TODO(crbug.com/919415): Explain why.
-      if (box_->NeedsLayoutOverflowRecalc())
-        box_->SetLayoutOverflowFromLayoutResults();
-    }
-
     // Return the cached result unless we're marked for layout. We may have
     // added or removed scrollbars during overflow recalculation, which may have
     // marked us for layout. In that case the cached result is unusable, and we
@@ -470,7 +462,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   NGLayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
                                  break_token, early_break);
 
-  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_);
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
 
   // Try to perform "simplified" layout.
   if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
@@ -499,10 +491,11 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     layout_result = nullptr;
   }
 
-  // Fragment geometry scrollbars are potentially size constrained, and cannot
-  // be used for comparison with their after layout size.
+  // All these variables may change after layout due to scrollbars changing.
   NGBoxStrut scrollbars_before = ComputeScrollbars(constraint_space, *this);
-  bool intrinsic_logical_widths_dirty_before =
+  const LayoutUnit inline_size_before =
+      fragment_geometry->border_box_size.inline_size;
+  const bool intrinsic_logical_widths_dirty_before =
       box_->IntrinsicLogicalWidthsDirty();
 
   if (!layout_result)
@@ -510,15 +503,30 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
   FinishLayout(block_flow, constraint_space, break_token, layout_result);
 
+  // We may be intrinsicly sized (shrink-to-fit), if our intrinsic logical
+  // widths are now dirty, re-calculate our inline-size for comparison.
+  if (!intrinsic_logical_widths_dirty_before &&
+      box_->IntrinsicLogicalWidthsDirty()) {
+    fragment_geometry =
+        CalculateInitialFragmentGeometry(constraint_space, *this);
+  }
+
   // We may need to relayout if:
   // - Our scrollbars have changed causing our size to change (shrink-to-fit)
   //   or the available space to our children changing.
   // - A child changed scrollbars causing our size to change (shrink-to-fit).
+  //
+  // Skip this part if side-effects aren't allowed, though. Calling
+  // ClearLayoutResults() when in this state is forbidden.
   NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
-  if (scrollbars_before != scrollbars_after ||
-      (!intrinsic_logical_widths_dirty_before &&
-       box_->IntrinsicLogicalWidthsDirty())) {
+  if ((scrollbars_before != scrollbars_after ||
+       inline_size_before != fragment_geometry->border_box_size.inline_size) &&
+      !NGDisableSideEffectsScope::IsDisabled()) {
     bool freeze_horizontal = false, freeze_vertical = false;
+    // If we're in a measure pass, freeze both scrollbars right away, to avoid
+    // quadratic time complexity for deeply nested flexboxes.
+    if (constraint_space.CacheSlot() == NGCacheSlot::kMeasure)
+      freeze_horizontal = freeze_vertical = true;
     do {
       // Freeze any scrollbars that appeared, and relayout. Repeat until both
       // have appeared, or until the scrollbar situation doesn't change,
@@ -539,8 +547,10 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 #if DCHECK_IS_ON()
       // Ensure turning on/off scrollbars only once at most, when we call
       // |LayoutWithAlgorithm| recursively.
-      DEFINE_STATIC_LOCAL(HashSet<LayoutBox*>, scrollbar_changed, ());
-      DCHECK(scrollbar_changed.insert(box_).is_new_entry);
+      DEFINE_STATIC_LOCAL(
+          Persistent<HeapHashSet<WeakMember<LayoutBox>>>, scrollbar_changed,
+          (MakeGarbageCollected<HeapHashSet<WeakMember<LayoutBox>>>()));
+      DCHECK(scrollbar_changed->insert(box_.Get()).is_new_entry);
 #endif
 
       // Scrollbar changes are hard to detect. Make sure everyone gets the
@@ -554,12 +564,12 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
       FinishLayout(block_flow, constraint_space, break_token, layout_result);
 
 #if DCHECK_IS_ON()
-      scrollbar_changed.erase(box_);
+    scrollbar_changed->erase(box_);
 #endif
 
-      scrollbars_after = ComputeScrollbars(constraint_space, *this);
-      DCHECK(!freeze_horizontal || !freeze_vertical ||
-             scrollbars_after == scrollbars_before);
+    scrollbars_after = ComputeScrollbars(constraint_space, *this);
+    DCHECK(!freeze_horizontal || !freeze_vertical ||
+           scrollbars_after == scrollbars_before);
     } while (scrollbars_after != scrollbars_before);
   }
 
@@ -669,7 +679,7 @@ NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
 }
 
 void NGBlockNode::PrepareForLayout() const {
-  auto* block = DynamicTo<LayoutBlock>(box_);
+  auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (block && block->IsScrollContainer()) {
     DCHECK(block->GetScrollableArea());
     if (block->GetScrollableArea()->ShouldPerformScrollAnchoring())
@@ -679,7 +689,7 @@ void NGBlockNode::PrepareForLayout() const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
-    To<LayoutNGListItem>(box_)->UpdateMarkerTextIfNeeded();
+    To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 }
 
 void NGBlockNode::FinishLayout(
@@ -704,7 +714,6 @@ void NGBlockNode::FinishLayout(
       To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
   if (box_->IsLayoutReplaced()) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
     DCHECK(CanUseNewLayout());
     // NG replaced elements are painted with legacy painters. We need to force
     // a legacy "layout" so that paint invalidation flags are updated. But we
@@ -723,9 +732,22 @@ void NGBlockNode::FinishLayout(
     input.override_inline_size = fragment.InlineSize();
     input.override_block_size = fragment.BlockSize();
     box_->ComputeAndSetBlockDirectionMargins(box_->ContainingBlock());
-    box_->ForceLayout();
-    DCHECK_EQ(box_->Size(), physical_fragment.Size().ToLayoutSize())
-        << "Legacy layout was supposed to use the size that NG computed";
+    if (box_->NeedsLayout())
+      box_->LayoutIfNeeded();
+    else
+      box_->ForceLayout();
+
+#if DCHECK_IS_ON()
+    // Assert that legacy uses the size NG forces above. But legacy sends
+    // LayoutUnit to float and back, which can slightly change the result. So
+    // give a 1px cushion.
+    PhysicalSize difference =
+        PhysicalSize(box_->Size()) - physical_fragment.Size();
+    DCHECK_LE(difference.width.Abs(), LayoutUnit(1))
+        << box_->Size() << " " << physical_fragment.Size();
+    DCHECK_LE(difference.height.Abs(), LayoutUnit(1))
+        << box_->Size() << " " << physical_fragment.Size();
+#endif
   }
 
   if (physical_fragment.IsOnlyForNode()) {
@@ -784,7 +806,23 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
-    To<LayoutNGListItem>(box_)->UpdateMarkerTextIfNeeded();
+    To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
+
+  const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
+  // In some scenarios, GridNG will run layout on its children during
+  // MinMaxSizes computation. Instead of running (and possible caching incorrect
+  // results), when we're not performing layout, just use border + padding.
+  if (!is_in_perform_layout && IsGrid()) {
+    const NGFragmentGeometry fragment_geometry =
+        CalculateInitialFragmentGeometry(constraint_space, *this,
+                                         /* is_intrinsic */ true);
+    const NGBoxStrut border_padding =
+        fragment_geometry.border + fragment_geometry.padding;
+    MinMaxSizes sizes;
+    sizes.min_size = border_padding.InlineSum();
+    sizes.max_size = sizes.min_size;
+    return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
+  }
 
   bool is_orthogonal_flow_root =
       !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
@@ -799,7 +837,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // Some other areas of the code can query the intrinsic-sizes while outside
     // of the layout phase.
     // TODO(ikilpatrick): Remove this check.
-    if (!box_->GetFrameView()->IsInPerformLayout()) {
+    if (!is_in_perform_layout) {
       sizes = ComputeMinMaxSizesFromLegacy(type, constraint_space);
       return MinMaxSizesResult(sizes,
                                /* depends_on_block_constraints */ false);
@@ -934,8 +972,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       result.depends_on_block_constraints, &result.sizes);
 
   if (IsNGTableCell()) {
-    To<LayoutNGTableCell>(box_)->SetIntrinsicLogicalWidthsBorderSizes(
-        constraint_space.TableCellBorders());
+    To<LayoutNGTableCell>(box_.Get())
+        ->SetIntrinsicLogicalWidthsBorderSizes(
+            constraint_space.TableCellBorders());
   }
 
   // We report to our parent if we depend on the %-block-size if we used the
@@ -983,7 +1022,7 @@ NGLayoutInputNode NGBlockNode::NextSibling() const {
 }
 
 NGLayoutInputNode NGBlockNode::FirstChild() const {
-  auto* block = DynamicTo<LayoutBlock>(box_);
+  auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (UNLIKELY(!block))
     return NGBlockNode(box_->FirstChildBox());
   auto* child = GetLayoutObjectForFirstChildNode(block);
@@ -994,7 +1033,7 @@ NGLayoutInputNode NGBlockNode::FirstChild() const {
 
   NGInlineNode inline_node(To<LayoutBlockFlow>(block));
   if (!inline_node.IsBlockLevel())
-    return inline_node;
+    return std::move(inline_node);
 
   // At this point we have a node which is empty or only has floats and
   // OOF-positioned nodes. We treat all children as block-level, even though
@@ -1022,27 +1061,34 @@ NGLayoutInputNode NGBlockNode::FirstChild() const {
 NGBlockNode NGBlockNode::GetRenderedLegend() const {
   if (!IsFieldsetContainer())
     return nullptr;
-  return NGBlockNode(LayoutFieldset::FindInFlowLegend(*To<LayoutBlock>(box_)));
+  return NGBlockNode(
+      LayoutFieldset::FindInFlowLegend(*To<LayoutBlock>(box_.Get())));
 }
 
 NGBlockNode NGBlockNode::GetFieldsetContent() const {
   if (!IsFieldsetContainer())
     return nullptr;
   return NGBlockNode(
-      To<LayoutNGFieldset>(box_)->FindAnonymousFieldsetContentBox());
+      To<LayoutNGFieldset>(box_.Get())->FindAnonymousFieldsetContentBox());
 }
 
 bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {
   DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
   if (box.ForceLegacyLayout())
     return false;
-  return box.IsLayoutNGMixin() ||
-         (box.IsLayoutReplaced() &&
-          RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
+  return box.IsLayoutNGMixin() || box.IsLayoutReplaced();
 }
 
 bool NGBlockNode::CanUseNewLayout() const {
   return CanUseNewLayout(*box_);
+}
+
+LayoutUnit NGBlockNode::EmptyLineBlockSize(
+    const NGBlockBreakToken* incoming_break_token) const {
+  // Only return a line-height for the first fragment.
+  if (IsResumingLayout(incoming_break_token))
+    return LayoutUnit();
+  return box_->LogicalHeightForEmptyLine();
 }
 
 String NGBlockNode::ToString() const {
@@ -1108,7 +1154,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   // the following line when all layout modes do this properly.
   UpdateMarginPaddingInfoIfNeeded(constraint_space);
 
-  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_);
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
   LayoutMultiColumnFlowThread* flow_thread = GetFlowThread(block_flow);
 
   // Position the children inside the box. We skip this if display-lock prevents
@@ -1141,7 +1187,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   if (UNLIKELY(!is_last_fragment))
     return;
 
-  LayoutBlock* block = DynamicTo<LayoutBlock>(box_);
+  LayoutBlock* block = DynamicTo<LayoutBlock>(box_.Get());
   bool needs_full_invalidation = false;
   if (LIKELY(block)) {
 #if DCHECK_IS_ON()
@@ -1253,7 +1299,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     const auto& child_break_tokens =
         previous_container_break_token->ChildBreakTokens();
     if (!child_break_tokens.empty()) {
-      const auto* token = To<NGBlockBreakToken>(child_break_tokens.back());
+      const auto* token =
+          To<NGBlockBreakToken>(child_break_tokens.back().Get());
       // We also create break tokens for spanners, so we need to check.
       if (token->InputNode() == *this) {
         previous_column_break_token = token;
@@ -1438,6 +1485,16 @@ void NGBlockNode::CopyChildFragmentPosition(
   layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(point);
 }
 
+void NGBlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutBox());
+  DCHECK(block_flow && block_flow->MultiColumnFlowThread());
+  MultiColumnFragmentainerGroup& last_group =
+      block_flow->MultiColumnFlowThread()
+          ->LastMultiColumnSet()
+          ->LastFragmentainerGroup();
+  last_group.ExtendLogicalBottomInFlowThread(block_size);
+}
+
 void NGBlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
     const NGFragmentItems& items,
@@ -1494,7 +1551,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
 
 bool NGBlockNode::IsInlineFormattingContextRoot(
     NGLayoutInputNode* first_child_out) const {
-  if (const auto* block = DynamicTo<LayoutBlockFlow>(box_)) {
+  if (const auto* block = DynamicTo<LayoutBlockFlow>(box_.Get())) {
     if (!AreNGBlockFlowChildrenInline(block))
       return false;
     NGLayoutInputNode first_child = FirstChild();
@@ -1543,7 +1600,8 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
 
   if (!ShouldApplySizeContainment()) {
     IntrinsicSizingInfo legacy_sizing_info;
-    To<LayoutReplaced>(box_)->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+    To<LayoutReplaced>(box_.Get())
+        ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
       return LogicalSize::AspectRatioFromFloatSize(
           legacy_sizing_info.aspect_ratio);
@@ -1579,7 +1637,7 @@ bool NGBlockNode::HasNonVisibleBlockOverflow() const {
 
 bool NGBlockNode::IsCustomLayoutLoaded() const {
   DCHECK(box_->IsLayoutNGCustom());
-  return To<LayoutNGCustom>(box_)->IsLoaded();
+  return To<LayoutNGCustom>(box_.Get())->IsLoaded();
 }
 
 MathScriptType NGBlockNode::ScriptType() const {
@@ -1626,7 +1684,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
   // we need to be at a formatting context boundary, since NG and legacy don't
   // cooperate on e.g. margin collapsing.
   DCHECK(!box_->IsLayoutBlock() ||
-         To<LayoutBlock>(box_)->CreatesNewFormattingContext());
+         To<LayoutBlock>(box_.Get())->CreatesNewFormattingContext());
 
   // We cannot enter legacy layout for something fragmentable if we're inside an
   // NG block fragmentation context. LayoutNG and legacy block fragmentation
@@ -1634,12 +1692,16 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
   DCHECK(!constraint_space.HasBlockFragmentation() ||
          box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
 
+  scoped_refptr<const NGLayoutResult> old_layout_result =
+      box_->GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> old_measure_result =
+      box_->GetCachedMeasureResult();
+
   scoped_refptr<const NGLayoutResult> layout_result =
-      constraint_space.CacheSlot() == NGCacheSlot::kMeasure
-          ? box_->GetCachedMeasureResult()
-          : box_->GetCachedLayoutResult();
+      constraint_space.CacheSlot() == NGCacheSlot::kMeasure ? old_measure_result
+                                                            : old_layout_result;
   if (constraint_space.CacheSlot() == NGCacheSlot::kLayout && !layout_result)
-    layout_result = box_->GetCachedMeasureResult();
+    layout_result = old_measure_result;
 
   if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
     DCHECK(layout_result);
@@ -1716,6 +1778,15 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
     // When side effects are disabled, it's not possible to disable side effects
     // completely for legacy, but at least keep the fragment tree unaffected.
     if (!NGDisableSideEffectsScope::IsDisabled()) {
+      // Legacy layout clears both layout and measure results, in
+      // LayoutBox::UpdateAfterLayout(), because that code has no way of knowing
+      // whether the legacy object is laid out by an NG container or not. We
+      // will now store the new layout result, either the measure result or the
+      // actual layout result, depending on the cache slot selected. Make sure
+      // that we leave the *other* result untouched, by first canceling what
+      // UpdateAfterLayout() did.
+      box_->RestoreLegacyLayoutResults(old_measure_result, old_layout_result);
+
       box_->SetCachedLayoutResult(layout_result);
 
       // If |SetCachedLayoutResult| did not update cached |LayoutResult|,
@@ -1881,18 +1952,20 @@ void NGBlockNode::AddColumnResult(
     scoped_refptr<const NGLayoutResult> result,
     const NGBlockBreakToken* incoming_break_token) const {
   wtf_size_t index = FragmentIndex(incoming_break_token);
-  GetFlowThread(To<LayoutBlockFlow>(box_))->AddLayoutResult(result, index);
+  GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
+      ->AddLayoutResult(result, index);
 }
 
 void NGBlockNode::AddColumnResult(
     scoped_refptr<const NGLayoutResult> result) const {
-  GetFlowThread(To<LayoutBlockFlow>(box_))->AddLayoutResult(std::move(result));
+  GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
+      ->AddLayoutResult(std::move(result));
 }
 
 void NGBlockNode::ReplaceColumnResult(
     scoped_refptr<const NGLayoutResult> result,
     const NGPhysicalBoxFragment& old_fragment) const {
-  GetFlowThread(To<LayoutBlockFlow>(box_))
+  GetFlowThread(To<LayoutBlockFlow>(box_.Get()))
       ->ReplaceLayoutResult(std::move(result), old_fragment);
 }
 

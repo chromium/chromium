@@ -13,8 +13,6 @@ source_set("lib") {
     "gzipper.h",
     "json_parser_impl.cc",
     "json_parser_impl.h",
-    "web_bundle_builder.cc",
-    "web_bundle_builder.h",
     "web_bundler.cc",
     "web_bundler.h",
     "xml_parser.cc",
@@ -65,7 +63,6 @@ source_set("tests") {
     "public/cpp/json_sanitizer_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
-    "web_bundle_builder_unittest.cc",
     "xml_parser_unittest.cc",
   ]
 
@@ -101,14 +98,29 @@ source_set("tests") {
   }
 }
 
-fuzzer_test("xml_parser_fuzzer") {
-  sources = [ "xml_parser_fuzzer.cc" ]
-  deps = [
+# This is a separate target because //third_party/libxml:libxml_utils
+# wants to limit its visibility to a select number of target, but the
+# "fuzzer_test" template expands on iOS to many targets that need to
+# have the "deps" information propagated in order to support "fat"
+# binaries.
+source_set("xml_parser_fuzzer_deps") {
+  visibility = [
+    ":run_xml_parser_fuzzer",
+    ":xml_parser_fuzzer",
+    ":xml_parser_fuzzer_arch_executable",
+    ":xml_parser_fuzzer_arch_executable_sources",
+  ]
+  public_deps = [
     ":lib",
     "//base",
     "//third_party/libxml:libxml_utils",
     "//third_party/libxml:xml_reader",
   ]
+}
+
+fuzzer_test("xml_parser_fuzzer") {
+  sources = [ "xml_parser_fuzzer.cc" ]
+  deps = [ ":xml_parser_fuzzer_deps" ]
   dict = "//third_party/libxml/fuzz/xml.dict"
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
 }

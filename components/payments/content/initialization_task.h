@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_INITIALIZATION_TASK_H_
 #define COMPONENTS_PAYMENTS_CONTENT_INITIALIZATION_TASK_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -76,6 +75,10 @@ class InitializationTask {
   };
 
   InitializationTask();
+
+  InitializationTask(const InitializationTask&) = delete;
+  InitializationTask& operator=(const InitializationTask&) = delete;
+
   virtual ~InitializationTask();
 
   // Add the |observer| to be notified of initialization.
@@ -96,8 +99,6 @@ class InitializationTask {
 
   // Whether NotifyInitialized() has been called.
   bool has_notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InitializationTask);
 };
 
 }  // namespace payments

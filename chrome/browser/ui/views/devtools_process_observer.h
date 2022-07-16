@@ -17,6 +17,10 @@ class TracingAgent;
 class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
  public:
   explicit DevtoolsProcessObserver(ui_devtools::TracingAgent* agent);
+
+  DevtoolsProcessObserver(const DevtoolsProcessObserver&) = delete;
+  DevtoolsProcessObserver& operator=(const DevtoolsProcessObserver&) = delete;
+
   ~DevtoolsProcessObserver() override;
 
  private:
@@ -33,8 +37,6 @@ class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
       const content::ChildProcessTerminationInfo& info) override;
 
   ui_devtools::TracingAgent* tracing_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevtoolsProcessObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_

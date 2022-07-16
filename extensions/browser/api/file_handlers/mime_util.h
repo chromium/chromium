@@ -52,6 +52,10 @@ class MimeTypeCollector {
       base::OnceCallback<void(std::unique_ptr<std::vector<std::string>>)>;
 
   explicit MimeTypeCollector(content::BrowserContext* context);
+
+  MimeTypeCollector(const MimeTypeCollector&) = delete;
+  MimeTypeCollector& operator=(const MimeTypeCollector&) = delete;
+
   virtual ~MimeTypeCollector();
 
   // Collects all mime types asynchronously for a vector of URLs and upon
@@ -73,8 +77,6 @@ class MimeTypeCollector {
   size_t left_;
   CompletionCallback callback_;
   base::WeakPtrFactory<MimeTypeCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeTypeCollector);
 };
 
 }  // namespace app_file_handler_util

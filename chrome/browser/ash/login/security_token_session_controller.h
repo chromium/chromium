@@ -12,8 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): forward declare when moved to ash.
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,7 +24,8 @@ namespace views {
 class Widget;
 }
 
-namespace chromeos {
+namespace ash {
+class CertificateProvider;
 
 namespace login {
 
@@ -111,6 +110,6 @@ class SecurityTokenSessionController
 };
 
 }  // namespace login
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_

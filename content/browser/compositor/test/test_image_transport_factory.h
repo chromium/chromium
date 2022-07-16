@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
 #define CONTENT_BROWSER_COMPOSITOR_TEST_TEST_IMAGE_TRANSPORT_FACTORY_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -29,6 +28,11 @@ class TestImageTransportFactory : public ui::ContextFactory,
                                   public ImageTransportFactory {
  public:
   TestImageTransportFactory();
+
+  TestImageTransportFactory(const TestImageTransportFactory&) = delete;
+  TestImageTransportFactory& operator=(const TestImageTransportFactory&) =
+      delete;
+
   ~TestImageTransportFactory() override;
 
   // ui::ContextFactory implementation.
@@ -59,8 +63,6 @@ class TestImageTransportFactory : public ui::ContextFactory,
   scoped_refptr<viz::ContextProvider> shared_main_context_provider_;
   viz::HostFrameSinkManager host_frame_sink_manager_;
   viz::TestFrameSinkManagerImpl test_frame_sink_manager_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImageTransportFactory);
 };
 
 }  // namespace content

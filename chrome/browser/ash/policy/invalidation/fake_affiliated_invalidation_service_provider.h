@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 
 namespace policy {
@@ -15,13 +14,15 @@ class FakeAffiliatedInvalidationServiceProvider
  public:
   FakeAffiliatedInvalidationServiceProvider();
 
+  FakeAffiliatedInvalidationServiceProvider(
+      const FakeAffiliatedInvalidationServiceProvider&) = delete;
+  FakeAffiliatedInvalidationServiceProvider& operator=(
+      const FakeAffiliatedInvalidationServiceProvider&) = delete;
+
   // AffiliatedInvalidationServiceProvider:
   void RegisterConsumer(Consumer* consumer) override;
   void UnregisterConsumer(Consumer* consumer) override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAffiliatedInvalidationServiceProvider);
 };
 
 }  // namespace policy

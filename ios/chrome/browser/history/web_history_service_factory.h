@@ -26,6 +26,9 @@ class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static WebHistoryServiceFactory* GetInstance();
 
+  WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;
+  WebHistoryServiceFactory& operator=(const WebHistoryServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebHistoryServiceFactory>;
 
@@ -35,8 +38,6 @@ class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebHistoryServiceFactory);
 };
 
 }  // namespace ios

@@ -15,12 +15,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -73,18 +73,18 @@ enum class AppUnloadStatus {
 };
 
 ActionAvailability GetLockScreenNoteTakingAvailability(
-    chromeos::NoteTakingAppInfo* app_info) {
+    ash::NoteTakingAppInfo* app_info) {
   if (!app_info || !app_info->preferred)
     return ActionAvailability::kNoActionHandlerApp;
 
   switch (app_info->lock_screen_support) {
-    case chromeos::NoteTakingLockScreenSupport::kNotSupported:
+    case ash::NoteTakingLockScreenSupport::kNotSupported:
       return ActionAvailability::kAppNotSupportingLockScreen;
-    case chromeos::NoteTakingLockScreenSupport::kSupported:
+    case ash::NoteTakingLockScreenSupport::kSupported:
       return ActionAvailability::kActionNotEnabledOnLockScreen;
-    case chromeos::NoteTakingLockScreenSupport::kNotAllowedByPolicy:
+    case ash::NoteTakingLockScreenSupport::kNotAllowedByPolicy:
       return ActionAvailability::kDisallowedByPolicy;
-    case chromeos::NoteTakingLockScreenSupport::kEnabled:
+    case ash::NoteTakingLockScreenSupport::kEnabled:
       return ActionAvailability::kAvailable;
   }
 
@@ -183,7 +183,7 @@ void AppManagerImpl::Initialize(
 
   state_ = State::kInactive;
 
-  note_taking_helper_observation_.Observe(chromeos::NoteTakingHelper::Get());
+  note_taking_helper_observation_.Observe(ash::NoteTakingHelper::Get());
 
   lock_screen_profile_creator_->AddCreateProfileCallback(
       base::BindOnce(&AppManagerImpl::OnLockScreenProfileLoaded,
@@ -355,8 +355,8 @@ void AppManagerImpl::UpdateLockScreenAppState() {
 std::string AppManagerImpl::FindLockScreenAppId() const {
   // Note that lock screen does not currently support Android apps, so
   // it's enough to only check the state of the preferred Chrome app.
-  std::unique_ptr<chromeos::NoteTakingAppInfo> note_taking_app =
-      chromeos::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
+  std::unique_ptr<ash::NoteTakingAppInfo> note_taking_app =
+      ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
           primary_profile_);
   ActionAvailability availability =
       GetLockScreenNoteTakingAvailability(note_taking_app.get());

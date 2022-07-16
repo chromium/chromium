@@ -16,7 +16,7 @@ namespace {
 // The exact value here came from |TransientAllowFullscreen|.
 //
 // TODO(mustaq): Revisit the value after we have a spec for it.
-constexpr base::TimeDelta kActivationLifespan = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kActivationLifespan = base::Seconds(1);
 
 }  // namespace
 

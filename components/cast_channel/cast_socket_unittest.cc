@@ -14,14 +14,13 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/mock_timer.h"
@@ -120,6 +119,9 @@ class MockTCPSocket : public net::MockTCPClientSocket {
     set_enable_read_if_ready(true);
   }
 
+  MockTCPSocket(const MockTCPSocket&) = delete;
+  MockTCPSocket& operator=(const MockTCPSocket&) = delete;
+
   int Connect(net::CompletionOnceCallback callback) override {
     if (do_nothing_) {
       // Stall the I/O event loop.
@@ -130,20 +132,19 @@ class MockTCPSocket : public net::MockTCPClientSocket {
 
  private:
   bool do_nothing_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTCPSocket);
 };
 
 class CompleteHandler {
  public:
   CompleteHandler() {}
+
+  CompleteHandler(const CompleteHandler&) = delete;
+  CompleteHandler& operator=(const CompleteHandler&) = delete;
+
   MOCK_METHOD1(OnCloseComplete, void(int result));
   MOCK_METHOD1(OnConnectComplete, void(CastSocket* socket));
   MOCK_METHOD1(OnWriteComplete, void(int result));
   MOCK_METHOD1(OnReadComplete, void(int result));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompleteHandler);
 };
 
 class TestCastSocketBase : public CastSocketImpl {
@@ -165,6 +166,10 @@ class TestCastSocketBase : public CastSocketImpl {
     SetPeerCertForTesting(
         net::ImportCertFromFile(GetTestCertsDirectory(), "self_signed.pem"));
   }
+
+  TestCastSocketBase(const TestCastSocketBase&) = delete;
+  TestCastSocketBase& operator=(const TestCastSocketBase&) = delete;
+
   ~TestCastSocketBase() override {}
 
   void SetVerifyChallengeResult(bool value) {
@@ -192,9 +197,6 @@ class TestCastSocketBase : public CastSocketImpl {
   bool verify_challenge_result_;
   bool verify_challenge_disallow_;
   std::unique_ptr<base::MockOneShotTimer> mock_timer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCastSocketBase);
 };
 
 class MockTestCastSocket : public TestCastSocketBase {
@@ -213,6 +215,9 @@ class MockTestCastSocket : public TestCastSocketBase {
                      const CastSocketOpenParams& open_params,
                      Logger* logger)
       : TestCastSocketBase(network_context, open_params, logger) {}
+
+  MockTestCastSocket(const MockTestCastSocket&) = delete;
+  MockTestCastSocket& operator=(const MockTestCastSocket&) = delete;
 
   ~MockTestCastSocket() override {}
 
@@ -234,14 +239,16 @@ class MockTestCastSocket : public TestCastSocketBase {
 
  private:
   MockCastTransport* mock_transport_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTestCastSocket);
 };
 
 // TODO(https://crbug.com/928467):  Remove this class.
 class TestSocketFactory : public net::ClientSocketFactory {
  public:
   explicit TestSocketFactory(net::IPEndPoint ip) : ip_(ip) {}
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   // Socket connection helpers.
@@ -370,8 +377,6 @@ class TestSocketFactory : public net::ClientSocketFactory {
   bool tcp_unresponsive_ = false;
   std::unique_ptr<net::TransportClientSocket> tcp_client_socket_;
   base::OnceClosure tls_socket_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 class CastSocketTestBase : public testing::Test {
@@ -381,10 +386,13 @@ class CastSocketTestBase : public testing::Test {
         url_request_context_(true),
         logger_(new Logger()),
         observer_(new MockCastSocketObserver()),
-        socket_open_params_(
-            CreateIPEndPointForTest(),
-            base::TimeDelta::FromMilliseconds(kDistantTimeoutMillis)),
+        socket_open_params_(CreateIPEndPointForTest(),
+                            base::Milliseconds(kDistantTimeoutMillis)),
         client_socket_factory_(socket_open_params_.ip_endpoint) {}
+
+  CastSocketTestBase(const CastSocketTestBase&) = delete;
+  CastSocketTestBase& operator=(const CastSocketTestBase&) = delete;
+
   ~CastSocketTestBase() override {}
 
   void SetUp() override {
@@ -415,12 +423,13 @@ class CastSocketTestBase : public testing::Test {
   std::unique_ptr<MockCastSocketObserver> observer_;
   CastSocketOpenParams socket_open_params_;
   TestSocketFactory client_socket_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastSocketTestBase);
 };
 
 class MockCastSocketTest : public CastSocketTestBase {
+ public:
+  MockCastSocketTest(const MockCastSocketTest&) = delete;
+  MockCastSocketTest& operator=(const MockCastSocketTest&) = delete;
+
  protected:
   MockCastSocketTest() {}
 
@@ -455,12 +464,13 @@ class MockCastSocketTest : public CastSocketTestBase {
   }
 
   std::unique_ptr<MockTestCastSocket> socket_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastSocketTest);
 };
 
 class SslCastSocketTest : public CastSocketTestBase {
+ public:
+  SslCastSocketTest(const SslCastSocketTest&) = delete;
+  SslCastSocketTest& operator=(const SslCastSocketTest&) = delete;
+
  protected:
   SslCastSocketTest() {}
 
@@ -604,9 +614,6 @@ class SslCastSocketTest : public CastSocketTestBase {
   std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
   scoped_refptr<net::X509Certificate> server_cert_;
   net::SSLServerConfig server_ssl_config_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SslCastSocketTest);
 };
 
 }  // namespace

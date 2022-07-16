@@ -22,7 +22,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 
 namespace extensions {
 
@@ -129,7 +129,7 @@ void MimeHandlerViewEmbedder::RenderFrameCreated(
       render_frame_host_ != render_frame_host->GetParent() ||
       render_frame_host_->GetLastCommittedURL() != resource_url_ ||
       render_frame_host->GetFrameOwnerElementType() !=
-          blink::mojom::FrameOwnerElementType::kEmbed ||
+          blink::FrameOwnerElementType::kEmbed ||
       render_frame_host->GetFrameName() != internal_id_) {
     return;
   }

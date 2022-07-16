@@ -13,6 +13,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "net/ssl/ssl_info.h"
 
+class GURL;
 class SSLCertReporter;
 
 namespace content {

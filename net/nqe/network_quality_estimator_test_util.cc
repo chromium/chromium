@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "net/base/load_flags.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log_util.h"
 #include "net/nqe/network_quality_estimator_params.h"
@@ -29,33 +30,25 @@ TestNetworkQualityEstimator::TestNetworkQualityEstimator()
 
 TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     const std::map<std::string, std::string>& variation_params)
-    : TestNetworkQualityEstimator(
-          variation_params,
-          true,
-          true,
-          std::make_unique<RecordingBoundTestNetLog>()) {}
+    : TestNetworkQualityEstimator(variation_params, true, true) {}
 
 TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     const std::map<std::string, std::string>& variation_params,
     bool allow_local_host_requests_for_tests,
-    bool allow_smaller_responses_for_tests,
-    std::unique_ptr<RecordingBoundTestNetLog> net_log)
+    bool allow_smaller_responses_for_tests)
     : TestNetworkQualityEstimator(variation_params,
                                   allow_local_host_requests_for_tests,
                                   allow_smaller_responses_for_tests,
-                                  false,
-                                  std::move(net_log)) {}
+                                  false) {}
 
 TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     const std::map<std::string, std::string>& variation_params,
     bool allow_local_host_requests_for_tests,
     bool allow_smaller_responses_for_tests,
-    bool suppress_notifications_for_testing,
-    std::unique_ptr<RecordingBoundTestNetLog> net_log)
+    bool suppress_notifications_for_testing)
     : NetworkQualityEstimator(
           std::make_unique<NetworkQualityEstimatorParams>(variation_params),
-          net_log->bound().net_log()),
-      net_log_(std::move(net_log)),
+          NetLog::Get()),
       current_network_type_(NetworkChangeNotifier::CONNECTION_UNKNOWN),
       embedded_test_server_(base::FilePath(kTestFilePath)),
       suppress_notifications_for_testing_(suppress_notifications_for_testing) {
@@ -65,15 +58,7 @@ TestNetworkQualityEstimator::TestNetworkQualityEstimator(
 
 TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     std::unique_ptr<NetworkQualityEstimatorParams> params)
-    : TestNetworkQualityEstimator(
-          std::move(params),
-          std::make_unique<RecordingBoundTestNetLog>()) {}
-
-TestNetworkQualityEstimator::TestNetworkQualityEstimator(
-    std::unique_ptr<NetworkQualityEstimatorParams> params,
-    std::unique_ptr<RecordingBoundTestNetLog> net_log)
-    : NetworkQualityEstimator(std::move(params), net_log->bound().net_log()),
-      net_log_(std::move(net_log)),
+    : NetworkQualityEstimator(std::move(params), NetLog::Get()),
       current_network_type_(NetworkChangeNotifier::CONNECTION_UNKNOWN),
       embedded_test_server_(base::FilePath(kTestFilePath)),
       suppress_notifications_for_testing_(false) {}
@@ -246,13 +231,13 @@ base::TimeDelta TestNetworkQualityEstimator::GetRTTEstimateInternal(
 }
 
 int TestNetworkQualityEstimator::GetEntriesCount(NetLogEventType type) const {
-  return net_log_->GetEntriesWithType(type).size();
+  return net_log_observer_.GetEntriesWithType(type).size();
 }
 
 std::string TestNetworkQualityEstimator::GetNetLogLastStringValue(
     NetLogEventType type,
     const std::string& key) const {
-  auto entries = net_log_->GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   for (int i = entries.size() - 1; i >= 0; --i) {
     if (entries[i].type == type) {
@@ -267,7 +252,7 @@ std::string TestNetworkQualityEstimator::GetNetLogLastStringValue(
 int TestNetworkQualityEstimator::GetNetLogLastIntegerValue(
     NetLogEventType type,
     const std::string& key) const {
-  auto entries = net_log_->GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   for (int i = entries.size() - 1; i >= 0; --i) {
     if (entries[i].type == type) {

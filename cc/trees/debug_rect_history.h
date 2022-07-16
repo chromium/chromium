@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "cc/cc_export.h"
 #include "cc/input/touch_action.h"
 #include "cc/layers/layer_collections.h"
 #include "ui/gfx/geometry/rect.h"
@@ -77,7 +78,7 @@ struct DebugRect {
 // This class maintains a history of rects of various types that can be used
 // for debugging purposes. The overhead of collecting rects is performed only if
 // the appropriate LayerTreeSettings are enabled.
-class DebugRectHistory {
+class CC_EXPORT DebugRectHistory {
  public:
   static std::unique_ptr<DebugRectHistory> Create();
 

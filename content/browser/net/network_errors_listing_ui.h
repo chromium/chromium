@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_NET_NETWORK_ERRORS_LISTING_UI_H_
 #define CONTENT_BROWSER_NET_NETWORK_ERRORS_LISTING_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -14,10 +13,11 @@ namespace content {
 class NetworkErrorsListingUI : public WebUIController {
  public:
   explicit NetworkErrorsListingUI(WebUI* web_ui);
-  ~NetworkErrorsListingUI() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkErrorsListingUI);
+  NetworkErrorsListingUI(const NetworkErrorsListingUI&) = delete;
+  NetworkErrorsListingUI& operator=(const NetworkErrorsListingUI&) = delete;
+
+  ~NetworkErrorsListingUI() override {}
 };
 
 }  // namespace content

@@ -25,16 +25,28 @@ IdentityRequestAccount::IdentityRequestAccount(const std::string& sub,
                                                const std::string& email,
                                                const std::string& name,
                                                const std::string& given_name,
-                                               const GURL& picture)
+                                               const GURL& picture,
+                                               LoginState login_state)
     : sub{sub},
       email{email},
       name{name},
       given_name{given_name},
-      picture{picture} {}
+      picture{picture},
+      login_state{login_state} {}
 
 IdentityRequestAccount::IdentityRequestAccount(const IdentityRequestAccount&) =
     default;
 IdentityRequestAccount::~IdentityRequestAccount() = default;
+
+ClientIdData::ClientIdData(const GURL& terms_of_service_url,
+                           const GURL& privacy_policy_url)
+    : terms_of_service_url{terms_of_service_url},
+      privacy_policy_url(privacy_policy_url) {}
+
+IdentityProviderMetadata::IdentityProviderMetadata() = default;
+IdentityProviderMetadata::~IdentityProviderMetadata() = default;
+IdentityProviderMetadata::IdentityProviderMetadata(
+    const IdentityProviderMetadata& other) = default;
 
 void IdentityRequestDialogController::ShowInitialPermissionDialog(
     WebContents* rp_web_contents,

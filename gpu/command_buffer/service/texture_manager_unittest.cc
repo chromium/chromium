@@ -2144,6 +2144,10 @@ class CountingMemoryTracker : public MemoryTracker {
   CountingMemoryTracker() {
     current_size_ = 0;
   }
+
+  CountingMemoryTracker(const CountingMemoryTracker&) = delete;
+  CountingMemoryTracker& operator=(const CountingMemoryTracker&) = delete;
+
   ~CountingMemoryTracker() override = default;
 
   void TrackMemoryAllocatedChange(int64_t delta) override {
@@ -2161,7 +2165,6 @@ class CountingMemoryTracker : public MemoryTracker {
 
  private:
   uint64_t current_size_;
-  DISALLOW_COPY_AND_ASSIGN(CountingMemoryTracker);
 };
 
 class SharedTextureTest : public GpuServiceTest {

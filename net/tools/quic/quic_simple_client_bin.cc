@@ -62,13 +62,6 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
       const quic::QuicConfig& config,
       std::unique_ptr<quic::ProofVerifier> verifier,
       std::unique_ptr<quic::SessionCache> /*session_cache*/) override {
-    net::AddressList addresses;
-    int rv = net::SynchronousHostResolver::Resolve(host_for_lookup, &addresses);
-    if (rv != net::OK) {
-      LOG(ERROR) << "Unable to resolve '" << host_for_lookup
-                 << "' : " << net::ErrorToShortString(rv);
-      return nullptr;
-    }
     // Determine IP address to connect to from supplied hostname.
     quic::QuicIpAddress ip_addr;
     if (!ip_addr.FromString(host_for_lookup)) {

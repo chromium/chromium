@@ -5,21 +5,37 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 #define CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 
+#include "base/check_op.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
-// MojoBinderPolicy specifies policies used by `MojoBinderPolicyMapApplier` for
-// mojo capability control.
-// See the comment in `MojoBinderPolicyApplier::ApplyPolicyToBinder()` for
-// details.
-enum class MojoBinderPolicy {
+// MojoBinderNonAssociatedPolicy specifies policies for non-associated
+// interfaces. It is used by `MojoBinderPolicyMapApplier` for Mojo
+// capability control.
+// See the comment in
+// `MojoBinderPolicyApplier::ApplyPolicyToNonAssociatedBinder()` for details.
+enum class MojoBinderNonAssociatedPolicy {
   // Run the binder registered for the requested interface as normal.
   kGrant,
   // Defer running the binder registered for the requested interface. Deferred
   // binders can be explicitly asked to run later.
   kDefer,
+  // Used for interface requests that cannot be handled and should cause the
+  // requesting context to be discarded (for example, cancel prerendering).
+  kCancel,
+  // The interface request is not expected. Kill the calling renderer.
+  kUnexpected,
+};
+
+// MojoBinderAssociatedPolicy specifies policies for channel-associated
+// interfaces. It is used by `MojoBinderPolicyMapApplier` for Mojo capability
+// control. See the comment in
+// `MojoBinderPolicyApplier::ApplyPolicyToAssociatedBinder()` for details.
+enum class MojoBinderAssociatedPolicy {
+  // Run the binder registered for the requested interface as normal.
+  kGrant,
   // Used for interface requests that cannot be handled and should cause the
   // requesting context to be discarded (for example, cancel prerendering).
   kCancel,
@@ -36,15 +52,26 @@ class CONTENT_EXPORT MojoBinderPolicyMap {
   MojoBinderPolicyMap() = default;
   virtual ~MojoBinderPolicyMap() = default;
 
-  // Called by embedders to set their binder policies.
+  // Called by embedders to set their binder policies for channel-associated
+  // interfaces.
   template <typename Interface>
-  void SetPolicy(MojoBinderPolicy policy) {
+  void SetAssociatedPolicy(MojoBinderAssociatedPolicy policy) {
+    SetPolicyByName(Interface::Name_, policy);
+  }
+
+  // Called by embedders to set their binder policies for non-associated
+  // interfaces.
+  template <typename Interface>
+  void SetNonAssociatedPolicy(MojoBinderNonAssociatedPolicy policy) {
     SetPolicyByName(Interface::Name_, policy);
   }
 
  private:
   virtual void SetPolicyByName(const base::StringPiece& name,
-                               MojoBinderPolicy policy) = 0;
+                               MojoBinderAssociatedPolicy policy) = 0;
+
+  virtual void SetPolicyByName(const base::StringPiece& name,
+                               MojoBinderNonAssociatedPolicy policy) = 0;
 };
 
 }  // namespace content

@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GR_CACHE_CONTROLLER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -23,6 +23,10 @@ class GrCacheControllerTest;
 class GPU_GLES2_EXPORT GrCacheController {
  public:
   explicit GrCacheController(SharedContextState* context_state);
+
+  GrCacheController(const GrCacheController&) = delete;
+  GrCacheController& operator=(const GrCacheController&) = delete;
+
   ~GrCacheController();
 
   // Called to schedule purging the GrCache after a period of inactivity.
@@ -45,8 +49,6 @@ class GPU_GLES2_EXPORT GrCacheController {
   base::CancelableOnceClosure purge_gr_cache_cb_;
   SharedContextState* context_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(GrCacheController);
 };
 
 }  // namespace raster

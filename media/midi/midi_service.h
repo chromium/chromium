@@ -10,10 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/midi/midi_export.h"
@@ -31,10 +30,12 @@ class MIDI_EXPORT MidiService final {
   class MIDI_EXPORT ManagerFactory {
    public:
     ManagerFactory() = default;
+
+    ManagerFactory(const ManagerFactory&) = delete;
+    ManagerFactory& operator=(const ManagerFactory&) = delete;
+
     virtual ~ManagerFactory() = default;
     virtual std::unique_ptr<MidiManager> Create(MidiService* service);
-
-    DISALLOW_COPY_AND_ASSIGN(ManagerFactory);
   };
 
   // Converts Web MIDI timestamp to base::TimeDelta delay for PostDelayedTask.
@@ -43,6 +44,10 @@ class MIDI_EXPORT MidiService final {
   MidiService();
   // Customized ManagerFactory can be specified in the constructor for testing.
   explicit MidiService(std::unique_ptr<ManagerFactory> factory);
+
+  MidiService(const MidiService&) = delete;
+  MidiService& operator=(const MidiService&) = delete;
+
   ~MidiService();
 
   // Called on the browser main thread to notify the I/O thread will stop and
@@ -98,8 +103,6 @@ class MIDI_EXPORT MidiService final {
 
   // Protects |threads_|.
   base::Lock threads_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiService);
 };
 
 }  // namespace midi

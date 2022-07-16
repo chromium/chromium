@@ -20,6 +20,10 @@ class VP9Picture;
 class Vp9ReferenceFrameVector {
  public:
   Vp9ReferenceFrameVector();
+
+  Vp9ReferenceFrameVector(const Vp9ReferenceFrameVector&) = delete;
+  Vp9ReferenceFrameVector& operator=(const Vp9ReferenceFrameVector&) = delete;
+
   ~Vp9ReferenceFrameVector();
 
   void Refresh(scoped_refptr<VP9Picture> pic);
@@ -31,7 +35,6 @@ class Vp9ReferenceFrameVector {
   std::array<scoped_refptr<VP9Picture>, kVp9NumRefFrames> reference_frames_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(Vp9ReferenceFrameVector);
 };
 
 }  // namespace media

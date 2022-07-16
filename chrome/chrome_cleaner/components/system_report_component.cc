@@ -365,7 +365,7 @@ void ReportFoldersUnderPath(const base::FilePath& path, const wchar_t* prefix) {
 void ReportInstalledPrograms() {
   static unsigned int install_paths[] = {
       base::DIR_PROGRAM_FILES,     base::DIR_PROGRAM_FILESX86,
-      base::DIR_PROGRAM_FILES6432, base::DIR_APP_DATA,
+      base::DIR_PROGRAM_FILES6432, base::DIR_ROAMING_APP_DATA,
       base::DIR_LOCAL_APP_DATA,    base::DIR_COMMON_APP_DATA,
   };
   std::set<base::FilePath> path_processed;
@@ -635,22 +635,6 @@ void ReportProxySettingsInformation() {
   // Retrieve the default WinHTTP proxy configuration from the registry.
   WINHTTP_PROXY_INFO proxy_info;
   if (::WinHttpGetDefaultProxyConfiguration(&proxy_info)) {
-    const char* access_type = nullptr;
-    switch (proxy_info.dwAccessType) {
-      case WINHTTP_ACCESS_TYPE_NO_PROXY:
-        access_type = "no proxy";
-        break;
-      case WINHTTP_ACCESS_TYPE_DEFAULT_PROXY:
-        access_type = "default proxy";
-        break;
-      case WINHTTP_ACCESS_TYPE_NAMED_PROXY:
-        access_type = "named proxy";
-        break;
-      default:
-        access_type = "unknown";
-        break;
-    }
-
     // Report proxy information when it's not the default configuration.
     if (proxy_info.dwAccessType != WINHTTP_ACCESS_TYPE_NO_PROXY ||
         proxy_info.lpszProxy || proxy_info.lpszProxyBypass) {
@@ -713,7 +697,7 @@ void ReportInstalledExtensions(JsonParserAPI* json_parser,
   // phases combined.
   const base::TimeTicks end_time =
       base::TimeTicks::Now() +
-      base::TimeDelta::FromMilliseconds(kParseAttemptTimeoutMilliseconds);
+      base::Milliseconds(kParseAttemptTimeoutMilliseconds);
   extension_settings_done.TimedWait(end_time - base::TimeTicks::Now());
   master_preferences_done.TimedWait(end_time - base::TimeTicks::Now());
   default_extensions_done.TimedWait(end_time - base::TimeTicks::Now());

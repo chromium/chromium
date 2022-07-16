@@ -26,6 +26,9 @@ class StabilityMetricsManager {
   // May return null if not initialized, which happens only in unit tests.
   static StabilityMetricsManager* Get();
 
+  StabilityMetricsManager(const StabilityMetricsManager&) = delete;
+  StabilityMetricsManager& operator=(const StabilityMetricsManager&) = delete;
+
   // Reads metrics from |local_state_| and record to UMA. Called from
   // ChromeOSMetricsProvider to include stability metrics in all uploaded UMA
   // logs.
@@ -54,8 +57,6 @@ class StabilityMetricsManager {
 
   SEQUENCE_CHECKER(sequence_checker_);
   PrefService* const local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsManager);
 };
 
 }  // namespace arc

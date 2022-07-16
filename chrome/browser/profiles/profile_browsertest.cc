@@ -16,15 +16,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -98,6 +97,10 @@
 #include "components/account_id/account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/exit_type_service.h"
+#endif
+
 namespace {
 
 // A helper class which creates a SimpleURLLoader with an expected final status
@@ -132,6 +135,9 @@ class SimpleURLLoaderHelper {
                                 base::Unretained(this)));
   }
 
+  SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
+  SimpleURLLoaderHelper& operator=(const SimpleURLLoaderHelper&) = delete;
+
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
     EXPECT_EQ(expected_error_code_, loader_->NetError());
     is_complete_ = true;
@@ -148,8 +154,6 @@ class SimpleURLLoaderHelper {
 
   bool is_complete_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderHelper);
 };
 
 class MockProfileDelegate : public Profile::Delegate {
@@ -162,6 +166,11 @@ class MockProfileDelegate : public Profile::Delegate {
 class ProfileDestructionWatcher : public ProfileObserver {
  public:
   ProfileDestructionWatcher() = default;
+
+  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
+  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
+      delete;
+
   ~ProfileDestructionWatcher() override = default;
 
   void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
@@ -183,8 +192,6 @@ class ProfileDestructionWatcher : public ProfileObserver {
   base::RunLoop run_loop_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileDestructionWatcher);
 };
 
 // Creates a prefs file in the given directory.
@@ -235,6 +242,10 @@ class BrowserCloseObserver : public BrowserListObserver {
   explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
   }
+
+  BrowserCloseObserver(const BrowserCloseObserver&) = delete;
+  BrowserCloseObserver& operator=(const BrowserCloseObserver&) = delete;
+
   ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
 
   void Wait() { run_loop_.Run(); }
@@ -248,8 +259,6 @@ class BrowserCloseObserver : public BrowserListObserver {
  private:
   Browser* browser_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserCloseObserver);
 };
 
 }  // namespace
@@ -485,51 +494,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileReadmeCreated) {
       base::PathExists(temp_dir.GetPath().Append(chrome::kReadmeFilename)));
 }
 
-// Test that repeated setting of exit type is handled correctly.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ExitType) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreationFinished(
-                            testing::NotNull(),
-                            Profile::CREATE_MODE_SYNCHRONOUS, true, true));
-  {
-    std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));
-
-    PrefService* prefs = profile->GetPrefs();
-    // The initial state is crashed; store for later reference.
-    std::string crash_value(prefs->GetString(prefs::kSessionExitType));
-
-    // The first call to a type other than crashed should change the value.
-    profile->SetExitType(Profile::EXIT_SESSION_ENDED);
-    std::string first_call_value(prefs->GetString(prefs::kSessionExitType));
-    EXPECT_NE(crash_value, first_call_value);
-
-    // Subsequent calls to a non-crash value should be ignored.
-    profile->SetExitType(Profile::EXIT_NORMAL);
-    std::string second_call_value(prefs->GetString(prefs::kSessionExitType));
-    EXPECT_EQ(first_call_value, second_call_value);
-
-    // Setting back to a crashed value should work.
-    profile->SetExitType(Profile::EXIT_CRASHED);
-    std::string final_value(prefs->GetString(prefs::kSessionExitType));
-    EXPECT_EQ(crash_value, final_value);
-
-    // Creating a profile causes an implicit connection attempt to a Mojo
-    // service, which occurs as part of a new task. Before deleting |profile|,
-    // ensure this task runs to prevent a crash.
-    FlushIoTaskRunnerAndSpinThreads();
-  }
-
-  FlushIoTaskRunnerAndSpinThreads();
-}
-
 // The EndSession IO synchronization is only critical on Windows, but also
-// happens under the USE_X11 define. See BrowserProcessImpl::EndSession.
-#if defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+// happens under the USE_OZONE define. See BrowserProcessImpl::EndSession.
+#if defined(OS_WIN) || defined(USE_OZONE)
 
 namespace {
 
@@ -598,7 +565,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   bool succeeded = false;
   for (size_t retries = 0; !succeeded && retries < 3; ++retries) {
     // Flush the profile data to disk for all loaded profiles.
-    profile->SetExitType(Profile::EXIT_CRASHED);
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+    ExitTypeService::GetInstanceForProfile(profile)->SetCurrentSessionExitType(
+        ExitType::kCrashed);
+#endif
     profile->GetPrefs()->CommitPendingWrite();
     FlushTaskRunner(profile->GetIOTaskRunner().get());
 
@@ -619,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     // This helps against flakes, and also ensures that if the IO thread starts
     // blocking systemically for that length of time (e.g. deadlocking or such),
     // we'll get a consistent test failure.
-    if (end - start > base::TimeDelta::FromSeconds(5))
+    if (end - start > base::Seconds(5))
       continue;
 
     // Make sure that the prefs file was written with the expected key/value.
@@ -632,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   ASSERT_TRUE(succeeded) << "profile->EndSession() timed out too often.";
 }
 
-#endif  // defined(USE_X11) || defined(OS_WIN) || defined(USE_OZONE)
+#endif  // defined(OS_WIN) || defined(USE_OZONE)
 
 // The following tests make sure that it's safe to shut down while one of the
 // Profile's URLLoaderFactories is in use by a SimpleURLLoader.
@@ -1016,8 +986,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   Browser* browser = CreateGuestBrowser();
   BrowserCloseObserver close_observer(browser);
 
-  browser->profile()->SetCreationTimeForTesting(
-      base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
+  browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                base::Seconds(60) * 60);
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
@@ -1067,6 +1037,39 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
 
+    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+              crosapi::mojom::SessionType::kPublicSession);
+    EXPECT_TRUE(profile->IsMainProfile());
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
+  }
+  FlushIoTaskRunnerAndSpinThreads();
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
+                       IsMainProfileReturnsTrueForWebKioskSession) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  {
+    base::FilePath profile_path =
+        temp_dir.GetPath().Append(chrome::kInitialProfile);
+    std::unique_ptr<Profile> profile(
+        CreateProfile(profile_path, /* delegate= */ nullptr,
+                      Profile::CREATE_MODE_SYNCHRONOUS));
+
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
+    init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+
+    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+              crosapi::mojom::SessionType::kWebKioskSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
     // Creating a profile causes an implicit connection attempt to a Mojo
@@ -1099,6 +1102,8 @@ IN_PROC_BROWSER_TEST_F(
     chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
 
+    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+              crosapi::mojom::SessionType::kRegularSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
     // Creating a profile causes an implicit connection attempt to a Mojo

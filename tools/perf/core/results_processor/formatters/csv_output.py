@@ -41,11 +41,11 @@ def _WriteCsv(dicts, output_stream):
 
 def ProcessHistogramDicts(histogram_dicts, options):
   """Convert histogram dicts to CSV and write output in output_dir."""
-  with tempfile_ext.NamedTemporaryFile() as hist_file:
+  with tempfile_ext.NamedTemporaryFile(mode='w') as hist_file:
     json.dump(histogram_dicts, hist_file)
     hist_file.close()
     vinn_result = histograms_to_csv.HistogramsToCsv(hist_file.name)
-    csv_dicts = _ReadCsv(vinn_result.stdout.splitlines())
+    csv_dicts = _ReadCsv(vinn_result.stdout.decode('utf-8').splitlines())
 
   output_file = os.path.join(options.output_dir, OUTPUT_FILENAME)
   if not options.reset_results and os.path.isfile(output_file):

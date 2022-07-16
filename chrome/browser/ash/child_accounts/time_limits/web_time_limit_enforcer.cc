@@ -9,12 +9,12 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
+#include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/url_matcher/url_matcher.h"
@@ -91,7 +91,7 @@ bool WebTimeLimitEnforcer::IsURLAllowlisted(const GURL& url) const {
   if (!effective_url.is_valid())
     effective_url = url;
 
-  if (web_app::IsValidExtensionUrl(effective_url))
+  if (IsValidExtensionUrl(effective_url))
     return app_time_controller_->IsExtensionAllowlisted(effective_url.host());
 
   auto matching_set_size = url_matcher_->MatchURL(effective_url).size();

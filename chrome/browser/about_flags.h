@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/flags_ui/feature_entry.h"
@@ -96,6 +97,11 @@ void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list);
 // Reset all flags to the default state by clearing all flags.
 void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 
+#if defined(OS_CHROMEOS)
+// Show flags of the other browser (Lacros/Ash).
+void CrosUrlFlagsRedirect();
+#endif
+
 // Sends UMA stats about experimental flag usage. This should be called once per
 // startup.
 void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage,
@@ -113,7 +119,7 @@ class ScopedFeatureEntries final {
   ~ScopedFeatureEntries();
 };
 
-const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
+base::span<const flags_ui::FeatureEntry> GetFeatureEntries();
 
 }  // namespace testing
 

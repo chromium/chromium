@@ -28,7 +28,7 @@ ACTION_P(CompareTimestampInfos, buffer_id, timestamp) {
   EXPECT_EQ(result.buffer_id(), buffer_id);
   const int64_t micros =
       result.system_timestamp().seconds() * base::Time::kMicrosecondsPerSecond +
-      result.system_timestamp().nanos() /
+      result.system_timestamp().nanoseconds() /
           base::Time::kNanosecondsPerMicrosecond;
   EXPECT_EQ(micros, timestamp);
 }

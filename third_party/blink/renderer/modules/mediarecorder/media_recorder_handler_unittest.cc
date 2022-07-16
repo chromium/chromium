@@ -46,8 +46,13 @@ using ::testing::ValuesIn;
 
 namespace blink {
 
-static const std::string kTestVideoTrackId = "video_track_id";
-static const std::string kTestAudioTrackId = "audio_track_id";
+static String TestVideoTrackId() {
+  return "video_track_id";
+}
+
+static String TestAudioTrackId() {
+  return "audio_track_id";
+}
 static const int kTestAudioChannels = 2;
 static const int kTestAudioSampleRate = 48000;
 static const int kTestAudioBufferDurationMs = 10;
@@ -123,6 +128,10 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     registry_.Init();
   }
 
+  MediaRecorderHandlerFixture(const MediaRecorderHandlerFixture&) = delete;
+  MediaRecorderHandlerFixture& operator=(const MediaRecorderHandlerFixture&) =
+      delete;
+
   ~MediaRecorderHandlerFixture() {
     registry_.reset();
     ThreadState::Current()->CollectAllGarbageForTesting();
@@ -159,7 +168,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 
   void AddVideoTrack() {
-    video_source_ = registry_.AddVideoTrack(kTestVideoTrackId);
+    video_source_ = registry_.AddVideoTrack(TestVideoTrackId());
   }
 
   void AddTracks() {
@@ -167,7 +176,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     if (has_video_)
       AddVideoTrack();
     if (has_audio_)
-      registry_.AddAudioTrack(kTestAudioTrackId);
+      registry_.AddAudioTrack(TestAudioTrackId());
   }
 
   void ForceOneErrorInWebmMuxer() {
@@ -198,9 +207,6 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   media::SineWaveAudioSource audio_source_;
 
   MockMediaStreamVideoSource* video_source_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerFixture);
 };
 
 class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
@@ -210,8 +216,8 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
       : MediaRecorderHandlerFixture(GetParam().has_video,
                                     GetParam().has_audio) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerTest);
+  MediaRecorderHandlerTest(const MediaRecorderHandlerTest&) = delete;
+  MediaRecorderHandlerTest& operator=(const MediaRecorderHandlerTest&) = delete;
 };
 
 // Checks that canSupportMimeType() works as expected, by sending supported
@@ -567,8 +573,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   media_recorder_handler_->Pause();
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::WebmMuxer::VideoParameters params(gfx::Size(), 1, media::kCodecVP9,
-                                           gfx::ColorSpace());
+  media::WebmMuxer::VideoParameters params(
+      gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 
@@ -601,8 +607,8 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::WebmMuxer::VideoParameters params(gfx::Size(), 1, media::kCodecVP9,
-                                           gfx::ColorSpace());
+  media::WebmMuxer::VideoParameters params(
+      gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 
@@ -636,8 +642,10 @@ class MediaRecorderHandlerH264ProfileTest
   MediaRecorderHandlerH264ProfileTest()
       : MediaRecorderHandlerFixture(true, GetParam().has_audio) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerH264ProfileTest);
+  MediaRecorderHandlerH264ProfileTest(
+      const MediaRecorderHandlerH264ProfileTest&) = delete;
+  MediaRecorderHandlerH264ProfileTest& operator=(
+      const MediaRecorderHandlerH264ProfileTest&) = delete;
 };
 
 TEST_P(MediaRecorderHandlerH264ProfileTest, ActualMimeType) {
@@ -673,10 +681,10 @@ struct MediaRecorderPassthroughTestParams {
 
 static const MediaRecorderPassthroughTestParams
     kMediaRecorderPassthroughTestParams[] = {
-        {"video/webm;codecs=vp8", media::kCodecVP8},
-        {"video/webm;codecs=vp9", media::kCodecVP9},
+        {"video/webm;codecs=vp8", media::VideoCodec::kVP8},
+        {"video/webm;codecs=vp9", media::VideoCodec::kVP9},
 #if BUILDFLAG(RTC_USE_H264)
-        {"video/x-matroska;codecs=avc1", media::kCodecH264},
+        {"video/x-matroska;codecs=avc1", media::VideoCodec::kH264},
 #endif
 };
 
@@ -686,12 +694,17 @@ class MediaRecorderHandlerPassthroughTest
  public:
   MediaRecorderHandlerPassthroughTest() {
     registry_.Init();
-    video_source_ = registry_.AddVideoTrack(kTestVideoTrackId);
+    video_source_ = registry_.AddVideoTrack(TestVideoTrackId());
     ON_CALL(*video_source_, SupportsEncodedOutput).WillByDefault(Return(true));
     media_recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
         scheduler::GetSingleThreadTaskRunnerForTesting());
     EXPECT_FALSE(media_recorder_handler_->recording_);
   }
+
+  MediaRecorderHandlerPassthroughTest(
+      const MediaRecorderHandlerPassthroughTest&) = delete;
+  MediaRecorderHandlerPassthroughTest& operator=(
+      const MediaRecorderHandlerPassthroughTest&) = delete;
 
   ~MediaRecorderHandlerPassthroughTest() {
     registry_.reset();
@@ -708,9 +721,6 @@ class MediaRecorderHandlerPassthroughTest
   MockMediaStreamRegistry registry_;
   MockMediaStreamVideoSource* video_source_ = nullptr;
   Persistent<MediaRecorderHandler> media_recorder_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerPassthroughTest);
 };
 
 TEST_P(MediaRecorderHandlerPassthroughTest, PassesThrough) {
@@ -767,21 +777,21 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
   }));
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
-                             .WithCodec(media::kCodecVP8)
+                             .WithCodec(media::VideoCodec::kVP8)
                              .WithData(std::string("vp8 frame"))
                              .BuildRefPtr());
   // Switch to VP9 frames. This is expected to cause the call to OnError
   // above.
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
-                             .WithCodec(media::kCodecVP9)
+                             .WithCodec(media::VideoCodec::kVP9)
                              .WithData(std::string("vp9 frame"))
                              .BuildRefPtr());
   // Send one more frame to verify that continued frame of different codec
   // transfer doesn't crash the media recorder.
   OnVideoFrameForTesting(FakeEncodedVideoFrame::Builder()
                              .WithKeyFrame(true)
-                             .WithCodec(media::kCodecVP8)
+                             .WithCodec(media::VideoCodec::kVP8)
                              .WithData(std::string("vp8 frame"))
                              .BuildRefPtr());
   platform_->RunUntilIdle();

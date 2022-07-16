@@ -54,6 +54,13 @@ class PolymerModulizerTest(unittest.TestCase):
         'dom-module', 'dom_module.html', 'dom_module.js',
         'dom_module.m.js', 'dom_module_expected.js')
 
+  # Test case where HTML is extracted from a Polymer2 <dom-module> that is
+  # using ES6 class syntax.
+  def testDomModuleWithClassSyntax(self):
+    self._run_test(
+        'dom-module', 'dom_module.html', 'dom_module_with_class_syntax.js',
+        'dom_module_with_class_syntax.m.js', 'dom_module_with_class_syntax_expected.js')
+
   # Test case where a commented out HTML import exists in the original HTML
   # file. It is purposefully picked up and converted to a JS module, to address
   # a unique use case of the FilesApp where an HTML import does not actually

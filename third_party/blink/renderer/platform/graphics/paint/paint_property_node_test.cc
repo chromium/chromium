@@ -181,7 +181,7 @@ TEST_F(PaintPropertyNodeTest, TransformChangeAncestor) {
   ResetAllChanged();
   ExpectUnchangedState();
   transform.ancestor->Update(
-      *transform.root, TransformPaintPropertyNode::State{FloatSize(1, 2)});
+      *transform.root, TransformPaintPropertyNode::State{gfx::Vector2dF(1, 2)});
 
   // Test descendant->Changed(ancestor).
   EXPECT_CHANGE_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
@@ -212,8 +212,9 @@ TEST_F(PaintPropertyNodeTest, ClipChangeAncestor) {
   ResetAllChanged();
   ExpectUnchangedState();
   clip.ancestor->Update(
-      *clip.root, ClipPaintPropertyNode::State{transform.ancestor.get(),
-                                               FloatRoundedRect(1, 2, 3, 4)});
+      *clip.root, ClipPaintPropertyNode::State(transform.ancestor.get(),
+                                               gfx::RectF(1, 2, 3, 4),
+                                               FloatRoundedRect(1, 2, 3, 4)));
 
   // Test descendant->Changed(ancestor).
   EXPECT_TRUE(clip.ancestor->Changed(
@@ -367,8 +368,9 @@ TEST_F(PaintPropertyNodeTest, ChangeTransformOriginDuringCompositedAnimation) {
 TEST_F(PaintPropertyNodeTest, TransformChangeOneChild) {
   ResetAllChanged();
   ExpectUnchangedState();
-  transform.child1->Update(*transform.ancestor,
-                           TransformPaintPropertyNode::State{FloatSize(1, 2)});
+  transform.child1->Update(
+      *transform.ancestor,
+      TransformPaintPropertyNode::State{gfx::Vector2dF(1, 2)});
 
   // Test descendant->Changed(ancestor).
   EXPECT_CHANGE_EQ(PaintPropertyChangeType::kUnchanged, transform.ancestor,
@@ -415,8 +417,9 @@ TEST_F(PaintPropertyNodeTest, ClipChangeOneChild) {
   ResetAllChanged();
   ExpectUnchangedState();
   clip.child1->Update(
-      *clip.root, ClipPaintPropertyNode::State{transform.ancestor.get(),
-                                               FloatRoundedRect(1, 2, 3, 4)});
+      *clip.root, ClipPaintPropertyNode::State(transform.ancestor.get(),
+                                               gfx::RectF(1, 2, 3, 4),
+                                               FloatRoundedRect(1, 2, 3, 4)));
 
   // Test descendant->Changed(ancestor).
   EXPECT_FALSE(clip.ancestor->Changed(
@@ -520,8 +523,8 @@ TEST_F(PaintPropertyNodeTest, EffectChangeOneChild) {
 TEST_F(PaintPropertyNodeTest, TransformReparent) {
   ResetAllChanged();
   ExpectUnchangedState();
-  transform.child1->Update(*transform.child2,
-                           TransformPaintPropertyNode::State{FloatSize(1, 2)});
+  transform.child1->Update(*transform.child2, TransformPaintPropertyNode::State{
+                                                  gfx::Vector2dF(1, 2)});
   EXPECT_FALSE(transform.ancestor->Changed(
       PaintPropertyChangeType::kChangedOnlyValues, *transform.root));
   EXPECT_TRUE(transform.child1->Changed(
@@ -544,8 +547,9 @@ TEST_F(PaintPropertyNodeTest, TransformReparent) {
 TEST_F(PaintPropertyNodeTest, ClipLocalTransformSpaceChange) {
   ResetAllChanged();
   ExpectUnchangedState();
-  transform.child1->Update(*transform.ancestor,
-                           TransformPaintPropertyNode::State{FloatSize(1, 2)});
+  transform.child1->Update(
+      *transform.ancestor,
+      TransformPaintPropertyNode::State{gfx::Vector2dF(1, 2)});
 
   // We check that we detect the change from the transform. However, right now
   // we report simple value change which may be a bit confusing. See
@@ -591,7 +595,7 @@ TEST_F(PaintPropertyNodeTest, EffectLocalTransformSpaceChange) {
   ResetAllChanged();
   ExpectUnchangedState();
   transform.ancestor->Update(
-      *transform.root, TransformPaintPropertyNode::State{FloatSize(1, 2)});
+      *transform.root, TransformPaintPropertyNode::State{gfx::Vector2dF(1, 2)});
 
   // We check that we detect the change from the transform. However, right now
   // we report simple value change which may be a bit confusing. See
@@ -635,7 +639,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Translation doesn't affect 2d axis alignment.
-  t->Update(t0(), TransformPaintPropertyNode::State{FloatSize(30, 40)});
+  t->Update(t0(), TransformPaintPropertyNode::State{gfx::Vector2dF(30, 40)});
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, NodeChanged(*t));
   t->ClearChangedToRoot();
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
@@ -670,7 +674,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Reset the transform back to simple translation changes 2d axis alignment.
-  t->Update(t0(), TransformPaintPropertyNode::State{FloatSize(1, 2)});
+  t->Update(t0(), TransformPaintPropertyNode::State{gfx::Vector2dF(1, 2)});
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, NodeChanged(*t));
   t->ClearChangedToRoot();
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));

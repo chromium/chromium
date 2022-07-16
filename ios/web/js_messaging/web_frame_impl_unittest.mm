@@ -360,7 +360,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionRespondWithResult) {
       "functionName", function_params,
       base::BindOnce(^(const base::Value* value){
       }),
-      base::TimeDelta::FromSeconds(5)));
+      base::Seconds(5)));
 
   NSString* last_script =
       base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());

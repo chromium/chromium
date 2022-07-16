@@ -47,6 +47,9 @@ class MockGbmBuffer final : public ui::GbmBuffer {
         planes_(std::move(planes)),
         handles_(std::move(handles)) {}
 
+  MockGbmBuffer(const MockGbmBuffer&) = delete;
+  MockGbmBuffer& operator=(const MockGbmBuffer&) = delete;
+
   ~MockGbmBuffer() override = default;
 
   uint32_t GetFormat() const override { return format_; }
@@ -101,8 +104,6 @@ class MockGbmBuffer final : public ui::GbmBuffer {
   gfx::Size size_;
   std::vector<gfx::NativePixmapPlane> planes_;
   std::vector<uint32_t> handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockGbmBuffer);
 };
 
 }  // namespace

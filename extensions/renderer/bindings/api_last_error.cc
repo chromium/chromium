@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_last_error.h"
 
+#include "base/macros.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
@@ -25,6 +26,9 @@ constexpr char kUncheckedErrorPrefix[] = "Unchecked runtime.lastError: ";
 class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
  public:
   explicit LastErrorObject(const std::string& error) : error_(error) {}
+
+  LastErrorObject(const LastErrorObject&) = delete;
+  LastErrorObject& operator=(const LastErrorObject&) = delete;
 
   static gin::WrapperInfo kWrapperInfo;
 
@@ -48,8 +52,6 @@ class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
  private:
   std::string error_;
   bool accessed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LastErrorObject);
 };
 
 gin::WrapperInfo LastErrorObject::kWrapperInfo = {gin::kEmbedderNativeGin};

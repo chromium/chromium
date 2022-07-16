@@ -12,8 +12,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/macros.h"
 #include "ui/base/class_property.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -90,6 +90,19 @@ std::vector<gfx::Rect> CollectCollisionRects(
         !ShouldIgnoreWindowForCollision(shelf_window, priority))
       rects.push_back(ComputeCollisionRectFromBounds(
           shelf_window->GetTargetBounds(), shelf_window->parent()));
+
+    // Explicitly add popup notifications as they are not in the notification
+    // tray.
+    auto* shelf_container =
+        root_window->GetChildById(kShellWindowId_ShelfContainer);
+    for (auto* window : shelf_container->children()) {
+      if (window->IsVisible() && !window->GetTargetBounds().IsEmpty() &&
+          window->GetName() ==
+              AshMessagePopupCollection::kMessagePopupWidgetName &&
+          !ShouldIgnoreWindowForCollision(window, priority))
+        rects.push_back(ComputeCollisionRectFromBounds(
+            window->GetTargetBounds(), window->parent()));
+    }
 
     // The hotseat doesn't span the whole width of the display, but to allow
     // a PIP window to be slided horizontally along the hotseat, we extend the

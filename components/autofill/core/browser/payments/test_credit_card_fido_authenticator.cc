@@ -18,7 +18,19 @@ TestCreditCardFIDOAuthenticator::TestCreditCardFIDOAuthenticator(
     AutofillClient* client)
     : CreditCardFIDOAuthenticator(driver, client) {}
 
-TestCreditCardFIDOAuthenticator::~TestCreditCardFIDOAuthenticator() {}
+TestCreditCardFIDOAuthenticator::~TestCreditCardFIDOAuthenticator() = default;
+
+void TestCreditCardFIDOAuthenticator::Authenticate(
+    const CreditCard* card,
+    base::WeakPtr<Requester> requester,
+    base::Value request_options,
+    absl::optional<std::string> context_token) {
+  authenticate_invoked_ = true;
+  card_ = *card;
+  context_token_ = context_token;
+  CreditCardFIDOAuthenticator::Authenticate(
+      card, requester, std::move(request_options), context_token);
+}
 
 void TestCreditCardFIDOAuthenticator::GetAssertion(
     PublicKeyCredentialRequestOptionsPtr request_options) {
@@ -95,6 +107,21 @@ std::string TestCreditCardFIDOAuthenticator::GetRelyingPartyId() {
 void TestCreditCardFIDOAuthenticator::IsUserVerifiable(
     base::OnceCallback<void(bool)> callback) {
   return std::move(callback).Run(is_user_verifiable_);
+}
+
+bool TestCreditCardFIDOAuthenticator::IsUserOptedIn() {
+  if (is_user_opted_in_.has_value())
+    return is_user_opted_in_.value();
+
+  return CreditCardFIDOAuthenticator::IsUserOptedIn();
+}
+
+void TestCreditCardFIDOAuthenticator::Reset() {
+  is_user_verifiable_ = false;
+  is_user_opted_in_ = absl::nullopt;
+  opt_out_called_ = false;
+  authenticate_invoked_ = false;
+  card_ = CreditCard();
 }
 
 }  // namespace autofill

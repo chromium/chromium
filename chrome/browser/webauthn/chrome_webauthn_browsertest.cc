@@ -45,6 +45,9 @@ class WebAuthnBrowserTest : public InProcessBrowserTest {
  public:
   WebAuthnBrowserTest() = default;
 
+  WebAuthnBrowserTest(const WebAuthnBrowserTest&) = delete;
+  WebAuthnBrowserTest& operator=(const WebAuthnBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -59,9 +62,6 @@ class WebAuthnBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAuthnBrowserTest);
 };
 
 static constexpr char kGetAssertionCredID1234[] = R"((() => {

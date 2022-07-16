@@ -67,7 +67,6 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
                 "   \"selectionURL\": "
                 "\"filesystem:chrome-extension://abc/Downloads/foo.txt\",\n"
                 "   \"showAndroidPickerApps\": false,\n"
-                "   \"targetName\": \"foo.txt\",\n"
                 "   \"title\": \"some title\",\n"
                 "   \"type\": \"open-file\"\n"
                 "}\n"),
@@ -91,7 +90,7 @@ TEST(FileManagerUrlUtilTest,
   file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
 
   const GURL url = GetFileManagerMainPageUrlWithParams(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, u"some title",
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, u"some title",
       GURL("filesystem:chrome-extension://abc/Downloads/"),
       GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       &file_types,
@@ -118,7 +117,7 @@ TEST(FileManagerUrlUtilTest,
       "   \"showAndroidPickerApps\": true,\n"
       "   \"targetName\": \"foo.txt\",\n"
       "   \"title\": \"some title\",\n"
-      "   \"type\": \"open-file\",\n"
+      "   \"type\": \"saveas-file\",\n"
       "   \"typeList\": [ {\n"
       "      \"description\": \"HTML\",\n"
       "      \"extensions\": [ \"htm\", \"html\" ],\n"

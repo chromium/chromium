@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_METADATA_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_METADATA_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -35,6 +34,12 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   RenderFrameMetadataProviderImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       FrameTokenMessageQueue* frame_token_message_queue);
+
+  RenderFrameMetadataProviderImpl(const RenderFrameMetadataProviderImpl&) =
+      delete;
+  RenderFrameMetadataProviderImpl& operator=(
+      const RenderFrameMetadataProviderImpl&) = delete;
+
   ~RenderFrameMetadataProviderImpl() override;
 
   void AddObserver(Observer* observer) override;
@@ -61,6 +66,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
  private:
   friend class FakeRenderWidgetHostViewAura;
   friend class DelegatedInkPointTest;
+  friend class RenderWidgetHostViewAndroidTest;
 
   // Paired with the mojom::RenderFrameMetadataObserverClient overrides, these
   // methods are enqueued in |frame_token_message_queue_|. They are invoked when
@@ -107,8 +113,6 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   absl::optional<bool> pending_report_all_frame_submission_for_testing_;
 
   base::WeakPtrFactory<RenderFrameMetadataProviderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataProviderImpl);
 };
 
 }  // namespace content

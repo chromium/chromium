@@ -9,17 +9,20 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/apps_grid_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/wm/core/window_util.h"
@@ -34,6 +37,10 @@ int64_t GetPrimaryDisplayId() {
 class AppListPresenterImplTest : public AshTestBase {
  public:
   AppListPresenterImplTest() = default;
+
+  AppListPresenterImplTest(const AppListPresenterImplTest&) = delete;
+  AppListPresenterImplTest& operator=(const AppListPresenterImplTest&) = delete;
+
   ~AppListPresenterImplTest() override = default;
 
   AppListPresenterImpl* presenter() {
@@ -54,9 +61,6 @@ class AppListPresenterImplTest : public AshTestBase {
   bool IsShowingAssistantUI() {
     return presenter()->IsShowingEmbeddedAssistantUI();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListPresenterImplTest);
 };
 
 // Tests that app launcher is dismissed when focus moves to another window.
@@ -87,7 +91,7 @@ TEST_F(AppListPresenterImplTest, WidgetDestroyed) {
 // Test that clicking on app list context menus doesn't close the app list.
 TEST_F(AppListPresenterImplTest, ClickingContextMenuDoesNotDismiss) {
   // Populate some apps since we will show the context menu over a view.
-  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+  AppListModel* model = AppListModelProvider::Get()->model();
   model->AddItem(std::make_unique<AppListItem>("item 1"));
   model->AddItem(std::make_unique<AppListItem>("item 2"));
 
@@ -98,7 +102,7 @@ TEST_F(AppListPresenterImplTest, ClickingContextMenuDoesNotDismiss) {
 
   // Show a context menu for the first app list item view.
   AppListView::TestApi test_api(presenter()->GetView());
-  AppsGridView* grid_view = test_api.GetRootAppsGridView();
+  PagedAppsGridView* grid_view = test_api.GetRootAppsGridView();
   AppListItemView* item_view = grid_view->GetItemViewAt(0);
   DCHECK(item_view);
   item_view->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
@@ -174,6 +178,40 @@ TEST_F(AppListPresenterImplTest, HideAssistantUIOnFocusOut) {
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
   EXPECT_FALSE(IsShowingAssistantUI());
   EXPECT_FALSE(presenter()->IsVisibleDeprecated());
+}
+
+// Regression test for https://crbug.com/1235056
+// Tests that shelf observers are cleared when shelf is destroyed.
+TEST_F(AppListPresenterImplTest, ClearShelfObserversOnShelfRemoval) {
+  // Set up multidisplay, and open the app list on secondary monitor, so app
+  // list presenter starts observing the shelf state.
+  UpdateDisplay("600x400,600x400");
+
+  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
+
+  // Enter tablet mode, so the test can trigger tablet mode exit later on.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove the secondary display, and exit tablet mode to trigger app list view
+  // dismissal. Note that the display will be removed before the app list close
+  // animation completes.
+  UpdateDisplay("600x400");
+
+  base::RunLoop run_loop;
+  Shell::Get()
+      ->app_list_controller()
+      ->SetStateTransitionAnimationCallbackForTesting(
+          base::BindLambdaForTesting([&](AppListViewState state) {
+            if (state == AppListViewState::kClosed)
+              run_loop.Quit();
+          }));
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  run_loop.Run();
+
+  // Just verify there was no crash.
 }
 
 }  // namespace

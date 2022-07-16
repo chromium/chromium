@@ -16,6 +16,8 @@
 
 namespace ui {
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
+
 class ElementTracker::ElementData {
  public:
   ElementData(ElementTracker* tracker,
@@ -60,7 +62,7 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementShown(TrackedElement* element) {
-    DCHECK_EQ(identifier().raw_value(), element->identifier().raw_value());
+    DCHECK_EQ(identifier(), element->identifier());
     DCHECK_EQ(static_cast<intptr_t>(context()),
               static_cast<intptr_t>(element->context()));
     const auto it = elements_.insert(elements_.end(), element);
@@ -201,6 +203,16 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   return result;
 }
 
+ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
+    ElementIdentifier id) {
+  ElementList result;
+  for (const auto& pr : element_to_data_lookup_) {
+    if (pr.first->identifier() == id)
+      result.push_back(pr.first);
+  }
+  return result;
+}
+
 bool ElementTracker::IsElementVisible(ElementIdentifier id,
                                       ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
@@ -211,6 +223,8 @@ ElementTracker::Subscription ElementTracker::AddElementShownCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
+  DCHECK(id);
+  DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementShownCallback(callback);
 }
 
@@ -218,6 +232,8 @@ ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
+  DCHECK(id);
+  DCHECK(context);
   return GetOrAddElementData(id, context)
       ->AddElementActivatedCallback(callback);
 }
@@ -226,6 +242,8 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
+  DCHECK(id);
+  DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementHiddenCallback(callback);
 }
 
@@ -268,6 +286,9 @@ ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
   const LookupKey key(id, context);
   auto it = element_data_.find(key);
   if (it == element_data_.end()) {
+    // This might be the first time we've referenced this identifier, so make
+    // sure it's registered.
+    ElementIdentifier::RegisterKnownIdentifier(id);
     const auto result = element_data_.emplace(
         key, std::make_unique<ElementData>(this, id, context));
     DCHECK(result.second);
@@ -297,6 +318,11 @@ SafeElementReference::SafeElementReference(SafeElementReference&& other)
   other.element_ = nullptr;
 }
 
+SafeElementReference::SafeElementReference(const SafeElementReference& other)
+    : element_(other.element_) {
+  Subscribe();
+}
+
 SafeElementReference& SafeElementReference::operator=(
     SafeElementReference&& other) {
   if (&other != this) {
@@ -310,11 +336,23 @@ SafeElementReference& SafeElementReference::operator=(
   return *this;
 }
 
+SafeElementReference& SafeElementReference::operator=(
+    const SafeElementReference& other) {
+  if (&other != this) {
+    element_ = other.element_;
+    Subscribe();
+  }
+  return *this;
+}
+
 SafeElementReference::~SafeElementReference() = default;
 
 void SafeElementReference::Subscribe() {
-  if (!element_)
+  if (!element_) {
+    if (subscription_)
+      subscription_ = ElementTracker::Subscription();
     return;
+  }
 
   subscription_ = ElementTracker::GetElementTracker()->AddElementHiddenCallback(
       element_->identifier(), element_->context(),

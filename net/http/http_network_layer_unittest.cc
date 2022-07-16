@@ -265,7 +265,9 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   MockClientSocketFactory mock_socket_factory_;
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{
+      /*default_result=*/
+      MockHostResolverBase::RuleResolver::GetLocalhostResult()};
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;

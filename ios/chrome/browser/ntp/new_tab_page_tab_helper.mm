@@ -81,6 +81,14 @@ bool NewTabPageTabHelper::IgnoreLoadRequests() const {
   return ignore_load_requests_;
 }
 
+// static
+void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
+  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
+    item->SetVirtualURL(GURL(kChromeUINewTabURL));
+    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  }
+}
+
 void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
   if (!base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad))
     return;
@@ -91,7 +99,7 @@ void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
   // it's safe to use Unretained here.
   ignore_load_requests_timer_.reset(new base::OneShotTimer());
   ignore_load_requests_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaximumIgnoreLoadRequestsTime),
+      FROM_HERE, base::Seconds(kMaximumIgnoreLoadRequestsTime),
       base::BindOnce(&NewTabPageTabHelper::DisableIgnoreLoadRequests,
                      base::Unretained(this)));
 }
@@ -161,19 +169,12 @@ void NewTabPageTabHelper::SetActive(bool active) {
   }
 }
 
-void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
-  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
-    item->SetVirtualURL(GURL(kChromeUINewTabURL));
-    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
-  }
-}
-
 bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
   // |url| can be chrome://newtab/ or about://newtab/ depending on where |url|
   // comes from (the VisibleURL chrome:// from a navigation item or the actual
   // webView url about://).  If the url is about://newtab/, there is no origin
   // to match, so instead check the scheme and the path.
-  return url.GetOrigin() == kChromeUINewTabURL ||
+  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
          (url.SchemeIs(url::kAboutScheme) && url.path() == kAboutNewTabPath);
 }
 

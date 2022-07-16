@@ -4,33 +4,40 @@
 
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
 ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
-    Observer* observer,
+    std::vector<Observer*>&& observers,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
-    ModelExecutionManager* model_execution_manager)
-    : observer_(observer),
+    ModelExecutionManager* model_execution_manager,
+    base::Clock* clock,
+    const PlatformOptions& platform_options)
+    : observers_(observers),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
-      model_execution_manager_(model_execution_manager) {}
+      model_execution_manager_(model_execution_manager),
+      clock_(clock),
+      platform_options_(platform_options) {}
 
 ModelExecutionSchedulerImpl::~ModelExecutionSchedulerImpl() = default;
 
 void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
     const proto::SegmentInfo& segment_info) {
   DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
-         metadata_utils::VALIDATION_SUCCESS);
+         metadata_utils::ValidationResult::kValidationSuccess);
 
   if (!ShouldExecuteSegment(/*expired_only=*/true, segment_info)) {
     // We usually cancel any outstanding requests right before executing the
@@ -68,11 +75,11 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   // TODO(shaktisahu): Check ModelExecutionStatus and handle failure cases.
   // Should we save it to DB?
   proto::PredictionResult segment_result;
-  bool success = result.second == ModelExecutionStatus::SUCCESS;
+  bool success = result.second == ModelExecutionStatus::kSuccess;
   if (success) {
     segment_result.set_result(result.first);
     segment_result.set_timestamp_us(
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+        clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     stats::RecordModelScore(segment_id, result.first);
   }
 
@@ -90,8 +97,11 @@ void ModelExecutionSchedulerImpl::FilterEligibleSegments(
   for (const auto& pair : all_segments) {
     OptimizationTarget segment_id = pair.first;
     const proto::SegmentInfo& segment_info = pair.second;
-    if (!ShouldExecuteSegment(expired_only, segment_info))
+    if (!ShouldExecuteSegment(expired_only, segment_info)) {
+      VLOG(1) << "Segmentation scheduler: Skipped executed segment "
+              << optimization_guide::proto::OptimizationTarget_Name(segment_id);
       continue;
+    }
 
     models_to_run.emplace_back(segment_id);
   }
@@ -103,19 +113,27 @@ void ModelExecutionSchedulerImpl::FilterEligibleSegments(
 bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
     bool expired_only,
     const proto::SegmentInfo& segment_info) {
+  if (platform_options_.force_refresh_results)
+    return true;
+
   // Filter out the segments computed recently.
-  if (metadata_utils::HasFreshResults(segment_info))
+  if (metadata_utils::HasFreshResults(segment_info, clock_->Now())) {
+    VLOG(1) << "Segmentation model not executed since it has fresh results.";
     return false;
+  }
 
   // Filter out the segments that aren't expired yet.
-  if (expired_only &&
-      !metadata_utils::HasExpiredOrUnavailableResult(segment_info)) {
+  if (expired_only && !metadata_utils::HasExpiredOrUnavailableResult(
+                          segment_info, clock_->Now())) {
+    VLOG(1) << "Segmentation model not executed since results are not expired.";
     return false;
   }
 
   // Filter out segments that don't match signal collection min length.
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
           segment_info.model_metadata())) {
+    VLOG(1) << "Segmentation model not executed since metadata requirements "
+               "not met.";
     return false;
   }
 
@@ -133,10 +151,12 @@ void ModelExecutionSchedulerImpl::CancelOutstandingExecutionRequests(
 
 void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
                                                 bool success) {
+  stats::RecordModelExecutionSaveResult(segment_id, success);
   if (!success)
     return;
 
-  observer_->OnModelExecutionCompleted(segment_id);
+  for (Observer* observer : observers_)
+    observer->OnModelExecutionCompleted(segment_id);
 }
 
 }  // namespace segmentation_platform

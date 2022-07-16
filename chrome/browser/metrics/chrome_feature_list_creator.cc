@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -47,7 +46,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -61,7 +60,7 @@ void ChromeFeatureListCreator::CreateFeatureList() {
   ConvertFlagsToSwitches();
   CreateMetricsServices();
   SetupInitialPrefs();
-  SetupFieldTrials();
+  SetUpFieldTrials();
 }
 
 void ChromeFeatureListCreator::SetApplicationLocale(const std::string& locale) {
@@ -112,7 +111,7 @@ void ChromeFeatureListCreator::CreatePrefService() {
   // DBus must be initialized before constructing the policy connector.
   CHECK(chromeos::DBusThreadManager::IsInitialized());
   browser_policy_connector_ =
-      std::make_unique<policy::BrowserPolicyConnectorChromeOS>();
+      std::make_unique<policy::BrowserPolicyConnectorAsh>();
 #else
   browser_policy_connector_ =
       std::make_unique<policy::ChromeBrowserPolicyConnector>();
@@ -165,23 +164,12 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
                                       flags_ui::kAddSentinels);
 }
 
-void ChromeFeatureListCreator::SetupFieldTrials() {
+void ChromeFeatureListCreator::SetUpFieldTrials() {
   browser_field_trials_ =
       std::make_unique<ChromeBrowserFieldTrials>(local_state_.get());
 
-  // Initialize FieldTrialList to support FieldTrials. If an instance already
-  // exists, this is likely a test scenario with a ScopedFeatureList active,
-  // so use that one to apply any overrides.
-  if (!base::FieldTrialList::GetInstance()) {
-    // Note: This is intentionally leaked since it needs to live for the
-    // duration of the browser process and there's no benefit in cleaning it up
-    // at exit.
-    base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList(
-        metrics_services_manager_->CreateEntropyProvider());
-    ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-    ignore_result(leaked_field_trial_list);
-  }
-
+  metrics_services_manager_->InstantiateFieldTrialList(
+      cc::switches::kEnableGpuBenchmarking);
   auto feature_list = std::make_unique<base::FeatureList>();
 
   // Associate parameters chosen in about:flags and create trial/group for them.
@@ -192,9 +180,8 @@ void ChromeFeatureListCreator::SetupFieldTrials() {
 
   variations::VariationsService* variations_service =
       metrics_services_manager_->GetVariationsService();
-  variations_service->SetupFieldTrials(
-      cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
-      switches::kDisableFeatures, variation_ids,
+  variations_service->SetUpFieldTrials(
+      variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());

@@ -11,6 +11,8 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/dns/public/secure_dns_policy.h"
 
 namespace net {
@@ -38,8 +40,8 @@ SpdySessionKey::SpdySessionKey(const HostPortPair& host_port_pair,
   // using multiple layers of proxies on top of each other isn't supported.
   DCHECK(is_proxy_session != IsProxySession::kTrue || proxy_server.is_direct());
   DVLOG(1) << "SpdySessionKey(host=" << host_port_pair.ToString()
-      << ", proxy=" << proxy_server.ToURI()
-      << ", privacy=" << privacy_mode;
+           << ", proxy=" << ProxyServerToProxyUri(proxy_server)
+           << ", privacy=" << privacy_mode;
 }
 
 SpdySessionKey::SpdySessionKey(const SpdySessionKey& other) = default;
@@ -82,10 +84,6 @@ SpdySessionKey::CompareForAliasingResult SpdySessionKey::CompareForAliasing(
        secure_dns_policy_ == other.secure_dns_policy_);
   result.is_socket_tag_match = (socket_tag_ == other.socket_tag_);
   return result;
-}
-
-size_t SpdySessionKey::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(host_port_proxy_pair_);
 }
 
 }  // namespace net

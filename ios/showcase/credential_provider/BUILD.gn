@@ -22,7 +22,6 @@ source_set("credential_provider") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -32,6 +31,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

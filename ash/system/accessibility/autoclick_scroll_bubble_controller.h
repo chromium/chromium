@@ -15,6 +15,12 @@ namespace ash {
 class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
  public:
   AutoclickScrollBubbleController();
+
+  AutoclickScrollBubbleController(const AutoclickScrollBubbleController&) =
+      delete;
+  AutoclickScrollBubbleController& operator=(
+      const AutoclickScrollBubbleController&) = delete;
+
   ~AutoclickScrollBubbleController() override;
 
   void UpdateAnchorRect(gfx::Rect rect, views::BubbleBorder::Arrow alignment);
@@ -54,8 +60,6 @@ class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
   gfx::Rect menu_bubble_rect_;
   views::BubbleBorder::Arrow menu_bubble_alignment_ =
       views::BubbleBorder::Arrow::TOP_LEFT;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickScrollBubbleController);
 };
 
 }  // namespace ash

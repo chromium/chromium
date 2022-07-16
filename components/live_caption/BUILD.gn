@@ -4,35 +4,69 @@
 
 import("//build/config/ui.gni")
 
-if (toolkit_views) {
+if (!is_android) {
   static_library("live_caption") {
     sources = [
-      "views/caption_bubble.cc",
-      "views/caption_bubble.h",
-      "views/caption_bubble_model.cc",
-      "views/caption_bubble_model.h",
+      "caption_bubble_context.h",
+      "caption_bubble_controller.h",
+      "live_caption_controller.cc",
+      "live_caption_controller.h",
     ]
 
     deps = [
       "//base",
-      "//components/strings",
-      "//components/vector_icons",
-      "//third_party/re2",
-      "//ui/accessibility",
-      "//ui/base",
-      "//ui/gfx",
+      "//components/keyed_service/core",
+      "//components/live_caption:constants",
+      "//components/live_caption:utils",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/soda",
+      "//components/soda:constants",
+      "//components/sync_preferences",
+      "//media",
+      "//media/mojo/mojom",
       "//ui/native_theme",
-      "//ui/strings:ui_strings_grit",
-      "//ui/views",
     ]
+
+    if (toolkit_views) {
+      sources += [
+        "views/caption_bubble.cc",
+        "views/caption_bubble.h",
+        "views/caption_bubble_controller_views.cc",
+        "views/caption_bubble_controller_views.h",
+        "views/caption_bubble_model.cc",
+        "views/caption_bubble_model.h",
+      ]
+
+      deps += [
+        "//components/strings",
+        "//components/vector_icons",
+        "//third_party/re2",
+        "//ui/accessibility",
+        "//ui/base",
+        "//ui/gfx",
+        "//ui/strings:ui_strings_grit",
+        "//ui/views",
+      ]
+    }  # toolkit_views
   }
-}  # toolkit_views
+}  # !is_android
 
 source_set("constants") {
   sources = [
     "pref_names.cc",
     "pref_names.h",
   ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//media",
+  ]
+
+  if (!is_android) {
+    deps += [ "//components/soda:constants" ]
+  }
 }
 
 source_set("utils") {

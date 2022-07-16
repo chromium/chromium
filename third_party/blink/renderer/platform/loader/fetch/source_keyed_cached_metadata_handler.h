@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -32,6 +32,7 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
   SingleCachedMetadataHandler* HandlerForSource(const String& source);
 
   void ClearCachedMetadata(
+      CodeCacheHost*,
       CachedMetadataHandler::ClearCacheType cache_type) override;
   String Encoding() const override;
   bool IsServedFromCacheStorage() const override {
@@ -73,7 +74,7 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
     static bool IsDeletedValue(const Key& value) { return value == Key{1}; }
   };
 
-  void SendToPlatform();
+  void SendToPlatform(CodeCacheHost*);
 
   // TODO(leszeks): Maybe just store the SingleKeyHandlers directly in here?
   WTF::HashMap<Key, scoped_refptr<CachedMetadata>, KeyHash, KeyHashTraits>

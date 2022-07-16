@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/request_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -279,13 +279,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
         : queue_type(queue_type),
           spec(NameForQueueType(queue_type)),
           agent_group_scheduler(nullptr),
-          frame_scheduler(nullptr),
-          freeze_when_keep_active(false) {}
-
-    QueueCreationParams SetFreezeWhenKeepActive(bool value) {
-      freeze_when_keep_active = value;
-      return *this;
-    }
+          frame_scheduler(nullptr) {}
 
     QueueCreationParams SetWebSchedulingPriority(
         absl::optional<WebSchedulingPriority> priority) {
@@ -367,9 +361,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
-    QueueCreationParams SetTimeDomain(
-        base::sequence_manager::TimeDomain* domain) {
-      spec = spec.SetTimeDomain(domain);
+    QueueCreationParams SetNonWaking(bool non_waking) {
+      spec = spec.SetNonWaking(non_waking);
       return *this;
     }
 
@@ -378,7 +371,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     AgentGroupSchedulerImpl* agent_group_scheduler;
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
-    bool freeze_when_keep_active;
     absl::optional<WebSchedulingPriority> web_scheduling_priority;
 
    private:
@@ -419,8 +411,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return queue_traits_.can_run_when_virtual_time_paused;
   }
 
-  bool FreezeWhenKeepActive() const { return freeze_when_keep_active_; }
-
   QueueTraits GetQueueTraits() const { return queue_traits_; }
 
   QueueTraits::PrioritisationType GetPrioritisationType() const {
@@ -433,6 +423,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void OnTaskCompleted(const base::sequence_manager::Task& task,
                        TaskQueue::TaskTiming* task_timing,
                        base::sequence_manager::LazyNow* lazy_now);
+
+  void LogTaskExecution(perfetto::EventContext& ctx,
+                        const base::sequence_manager::Task& task);
 
   void SetOnIPCTaskPosted(
       base::RepeatingCallback<void(const base::sequence_manager::Task&)>
@@ -457,6 +450,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
   absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
+
+  void OnWebSchedulingTaskQueueDestroyed();
 
   // TODO(kdillon): Improve MTTQ API surface so that we no longer
   // need to expose the raw pointer to the queue.
@@ -487,6 +482,13 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   void SetWakeUpBudgetPool(WakeUpBudgetPool* wake_up_budget_pool);
   WakeUpBudgetPool* GetWakeUpBudgetPool() const { return wake_up_budget_pool_; }
+
+  void SetQueuePriority(TaskQueue::QueuePriority priority) {
+    task_queue_->SetQueuePriority(priority);
+  }
+  TaskQueue::QueuePriority GetQueuePriority() const {
+    return task_queue_->GetQueuePriority();
+  }
 
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -533,7 +535,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;
-  const bool freeze_when_keep_active_;
 
   // Warning: net_request_priority is not the same as the priority of the queue.
   // It is the priority (at the loading stack level) of the resource associated

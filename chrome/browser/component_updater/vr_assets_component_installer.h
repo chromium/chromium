@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
@@ -27,6 +26,12 @@ class ComponentUpdateService;
 class VrAssetsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   VrAssetsComponentInstallerPolicy() = default;
+
+  VrAssetsComponentInstallerPolicy(const VrAssetsComponentInstallerPolicy&) =
+      delete;
+  VrAssetsComponentInstallerPolicy& operator=(
+      const VrAssetsComponentInstallerPolicy&) = delete;
+
   ~VrAssetsComponentInstallerPolicy() override = default;
 
  private:
@@ -39,14 +44,14 @@ class VrAssetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
@@ -59,8 +64,6 @@ class VrAssetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   friend bool ShouldRegisterVrAssetsComponentOnStartup();
   friend void RegisterVrAssetsComponent(ComponentUpdateService* cus);
   friend void UpdateVrAssetsComponent(ComponentUpdateService* cus);
-
-  DISALLOW_COPY_AND_ASSIGN(VrAssetsComponentInstallerPolicy);
 };
 
 // Returns true if the assets component should be registered at startup.

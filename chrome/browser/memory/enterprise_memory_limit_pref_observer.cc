@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/common/pref_names.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
@@ -27,7 +27,7 @@ EnterpriseMemoryLimitPrefObserver::EnterpriseMemoryLimitPrefObserver(
   DCHECK(pref_service_);
   DCHECK(base::MemoryPressureMonitor::Get());
   evaluator_ = std::make_unique<EnterpriseMemoryLimitEvaluator>(
-      static_cast<util::MultiSourceMemoryPressureMonitor*>(
+      static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
           base::MemoryPressureMonitor::Get())
           ->CreateVoter());
 

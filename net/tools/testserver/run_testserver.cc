@@ -20,9 +20,10 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
 static void PrintUsage() {
-  printf("run_testserver --doc-root=relpath\n"
-         "               [--http|--https|--ws|--wss|--ftp]\n"
-         "               [--ssl-cert=ok|mismatched-name|expired]\n");
+  printf(
+      "run_testserver --doc-root=relpath\n"
+      "               [--http|--https|--ws|--wss]\n"
+      "               [--ssl-cert=ok|mismatched-name|expired]\n");
   printf("(NOTE: relpath should be relative to the 'src' directory.\n");
 }
 
@@ -63,8 +64,6 @@ int main(int argc, const char* argv[]) {
     server_type = net::SpawnedTestServer::TYPE_WS;
   } else if (command_line->HasSwitch("wss")) {
     server_type = net::SpawnedTestServer::TYPE_WSS;
-  } else if (command_line->HasSwitch("ftp")) {
-    server_type = net::SpawnedTestServer::TYPE_FTP;
   } else {
     // If no scheme switch is specified, select http or https scheme.
     // TODO(toyoshim): Remove this estimation.

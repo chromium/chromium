@@ -50,15 +50,6 @@ interface BackgroundFetchUpdateUIEvent : BackgroundFetchEvent
     attribute @@toStringTag
     method constructor
     method updateUI
-interface BidirectionalStream
-    attribute @@toStringTag
-    getter readable
-    getter readingAborted
-    getter writable
-    getter writingAborted
-    method abortReading
-    method abortWriting
-    method constructor
 interface Blob
     attribute @@toStringTag
     getter size
@@ -113,14 +104,12 @@ interface CacheStorage
     method open
 interface CanMakePaymentEvent : ExtendableEvent
     attribute @@toStringTag
-    getter currency
     getter methodData
     getter modifiers
     getter paymentRequestOrigin
     getter topOrigin
     method constructor
     method respondWith
-    method respondWithMinimalUI
 interface CanvasFilter
     attribute @@toStringTag
     method constructor
@@ -404,19 +393,6 @@ interface DOMStringList
     method constructor
     method contains
     method item
-interface DatagramDuplexStream
-    attribute @@toStringTag
-    getter incomingHighWaterMark
-    getter incomingMaxAge
-    getter outgoingHighWaterMark
-    getter outgoingMaxAge
-    getter readable
-    getter writable
-    method constructor
-    setter incomingHighWaterMark
-    setter incomingMaxAge
-    setter outgoingHighWaterMark
-    setter outgoingMaxAge
 interface DecompressionStream
     attribute @@toStringTag
     getter readable
@@ -566,14 +542,18 @@ interface FileSystemFileHandle : FileSystemHandle
     method constructor
     method createWritable
     method getFile
+    method move
+    method rename
 interface FileSystemHandle
     attribute @@toStringTag
     getter kind
     getter name
     method constructor
     method isSameEntry
+    method move
     method queryPermission
     method remove
+    method rename
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
@@ -730,7 +710,6 @@ interface IDBObjectStore
     method openCursor
     method openKeyCursor
     method put
-    method putAllValues
     setter name
 interface IDBOpenDBRequest : IDBRequest
     attribute @@toStringTag
@@ -997,6 +976,7 @@ interface OffscreenCanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter letterSpacing
     getter lineCap
     getter lineDashOffset
     getter lineJoin
@@ -1009,9 +989,8 @@ interface OffscreenCanvasRenderingContext2D
     getter strokeStyle
     getter textAlign
     getter textBaseline
-    getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     method arc
     method arcTo
     method beginLayer
@@ -1042,7 +1021,6 @@ interface OffscreenCanvasRenderingContext2D
     method lineTo
     method measureText
     method moveTo
-    method perspective
     method putImageData
     method quadraticCurveTo
     method rect
@@ -1050,8 +1028,6 @@ interface OffscreenCanvasRenderingContext2D
     method resetTransform
     method restore
     method rotate
-    method rotate3d
-    method rotateAxis
     method roundRect
     method save
     method scale
@@ -1073,6 +1049,7 @@ interface OffscreenCanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter letterSpacing
     setter lineCap
     setter lineDashOffset
     setter lineJoin
@@ -1085,9 +1062,8 @@ interface OffscreenCanvasRenderingContext2D
     setter strokeStyle
     setter textAlign
     setter textBaseline
-    setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface Path2D
     attribute @@toStringTag
     method addPath
@@ -1216,6 +1192,7 @@ interface PeriodicSyncManager
     method unregister
 interface PermissionStatus : EventTarget
     attribute @@toStringTag
+    getter name
     getter onchange
     getter state
     method constructor
@@ -1313,12 +1290,6 @@ interface ReadableStreamDefaultReader
     method constructor
     method read
     method releaseLock
-interface ReceiveStream : ReadableStream
-    attribute @@toStringTag
-    getter readable
-    getter readingAborted
-    method abortReading
-    method constructor
 interface ReportingObserver
     attribute @@toStringTag
     method constructor
@@ -1389,12 +1360,6 @@ interface SecurityPolicyViolationEvent : Event
     getter sourceFile
     getter statusCode
     getter violatedDirective
-    method constructor
-interface SendStream : WritableStream
-    attribute @@toStringTag
-    getter writable
-    getter writingAborted
-    method abortWriting
     method constructor
 interface ServiceWorker : EventTarget
     attribute @@toStringTag
@@ -1611,6 +1576,7 @@ interface URL
     setter search
     setter username
 interface URLPattern
+    static method compareComponent
     attribute @@toStringTag
     getter hash
     getter hostname
@@ -2957,8 +2923,6 @@ interface WebSocketStream
 interface WebTransport
     attribute @@toStringTag
     getter closed
-    getter datagramReadable
-    getter datagramWritable
     getter datagrams
     getter incomingBidirectionalStreams
     getter incomingUnidirectionalStreams
@@ -2967,7 +2931,30 @@ interface WebTransport
     method constructor
     method createBidirectionalStream
     method createUnidirectionalStream
-    method setDatagramWritableQueueExpirationDuration
+interface WebTransportBidirectionalStream
+    attribute @@toStringTag
+    getter readable
+    getter writable
+    method constructor
+interface WebTransportDatagramDuplexStream
+    attribute @@toStringTag
+    getter incomingHighWaterMark
+    getter incomingMaxAge
+    getter maxDatagramSize
+    getter outgoingHighWaterMark
+    getter outgoingMaxAge
+    getter readable
+    getter writable
+    method constructor
+    setter incomingHighWaterMark
+    setter incomingMaxAge
+    setter outgoingHighWaterMark
+    setter outgoingMaxAge
+interface WebTransportError : DOMException
+    attribute @@toStringTag
+    getter source
+    getter streamErrorCode
+    method constructor
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused
@@ -3006,8 +2993,10 @@ interface WorkerGlobalScope : EventTarget
     method fetch
     method importScripts
     method queueMicrotask
+    method reportError
     method setInterval
     method setTimeout
+    method structuredClone
     setter onerror
     setter onlanguagechange
     setter onrejectionhandled

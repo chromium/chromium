@@ -27,6 +27,10 @@ namespace chromeos {
 namespace tether {
 
 class NetworkHostScanCacheTest : public testing::Test {
+ public:
+  NetworkHostScanCacheTest(const NetworkHostScanCacheTest&) = delete;
+  NetworkHostScanCacheTest& operator=(const NetworkHostScanCacheTest&) = delete;
+
  protected:
   NetworkHostScanCacheTest()
       : test_entries_(host_scan_test_util::CreateTestEntries()) {}
@@ -129,9 +133,6 @@ class NetworkHostScanCacheTest : public testing::Test {
   std::unique_ptr<FakeHostScanCache> expected_cache_;
 
   std::unique_ptr<NetworkHostScanCache> host_scan_cache_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkHostScanCacheTest);
 };
 
 TEST_F(NetworkHostScanCacheTest, TestSetAndRemove) {

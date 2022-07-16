@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -60,6 +59,12 @@ namespace content {
 class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
  public:
   CrossPlatformAccessibilityBrowserTest() = default;
+
+  CrossPlatformAccessibilityBrowserTest(
+      const CrossPlatformAccessibilityBrowserTest&) = delete;
+  CrossPlatformAccessibilityBrowserTest& operator=(
+      const CrossPlatformAccessibilityBrowserTest&) = delete;
+
   ~CrossPlatformAccessibilityBrowserTest() override = default;
 
   // Make sure each node in the tree has a unique id.
@@ -204,8 +209,6 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 #if defined(OS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CrossPlatformAccessibilityBrowserTest);
 };
 
 void CrossPlatformAccessibilityBrowserTest::SetUp() {
@@ -527,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(3U, body->PlatformChildCount());
 
   const BrowserAccessibility* button1 = body->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kButton, button1->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button1->GetRole());
   EXPECT_STREQ(
       "Button 1",
       GetAttr(button1->node(), ax::mojom::StringAttribute::kName).c_str());
@@ -539,20 +542,20 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(1U, iframe->PlatformChildCount());
 
   const BrowserAccessibility* sub_document = iframe->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, sub_document->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, sub_document->GetRole());
   ASSERT_EQ(1U, sub_document->PlatformChildCount());
 
   const BrowserAccessibility* sub_body = sub_document->PlatformGetChild(0);
   ASSERT_EQ(1U, sub_body->PlatformChildCount());
 
   const BrowserAccessibility* button2 = sub_body->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kButton, button2->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button2->GetRole());
   EXPECT_STREQ(
       "Button 2",
       GetAttr(button2->node(), ax::mojom::StringAttribute::kName).c_str());
 
   const BrowserAccessibility* button3 = body->PlatformGetChild(2);
-  EXPECT_EQ(ax::mojom::Role::kButton, button3->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, button3->GetRole());
   EXPECT_STREQ(
       "Button 3",
       GetAttr(button3->node(), ax::mojom::StringAttribute::kName).c_str());
@@ -743,6 +746,112 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
 
+// Select controls behave differently on Mac/Android, this test doesn't apply.
+#if !defined(OS_ANDROID) && !defined(OS_MAC)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       SelectWithOptgroupActiveDescendant) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <select autofocus aria-label="Select" id="select_node">
+          <optgroup label="A">
+            <option>Option 1</option>
+          </optgroup>
+          <optgroup label="B">
+            <option selected>Option 2</option>
+            <option>Option 3</option>
+          </optgroup>
+        </select>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Select");
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_NE(body, nullptr);
+  BrowserAccessibility* select = body->PlatformGetChild(0);
+  ASSERT_NE(select, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kPopUpButton, select->GetRole());
+
+  // Open popup.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  select->AccessibilityPerformAction(action_data);
+  waiter.WaitForNotification();
+
+  // Get popup.
+  const BrowserAccessibility* popup = select->PlatformGetChild(0);
+  ASSERT_NE(popup, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
+
+  // Get "Option 2".
+  const BrowserAccessibility* option_2 = popup->PlatformGetChild(1);
+  ASSERT_NE(option_2, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
+  EXPECT_EQ("Option 2",
+            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  // Ensure active descendant is "Option 2"
+  int active_descendant_id = -1;
+  EXPECT_TRUE(popup->GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+  EXPECT_EQ(active_descendant_id, option_2->GetId());
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
+
+// Select controls behave differently on Mac/Android, this test doesn't apply.
+#if !defined(OS_ANDROID) && !defined(OS_MAC)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       SelectListWithOptgroupActiveDescendant) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <select autofocus size="8" aria-label="Select">
+          <optgroup label="A">
+            <option>Option 1</option>
+          </optgroup>
+          <optgroup label="B">
+            <option selected>Option 2</option>
+            <option>Option 3</option>
+          </optgroup>
+        </select>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Select");
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_NE(body, nullptr);
+  BrowserAccessibility* select = body->PlatformGetChild(0);
+  ASSERT_NE(select, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kListBox, select->GetRole());
+
+  // Get "Option 2".
+  const BrowserAccessibility* option_2 = select->PlatformGetChild(3);
+  ASSERT_NE(option_2, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kListBoxOption, option_2->GetRole());
+  EXPECT_EQ("Option 2",
+            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  // Ensure active descendant is "Option 2"
+  int active_descendant_id = -1;
+  EXPECT_TRUE(select->GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+  EXPECT_EQ(active_descendant_id, option_2->GetId());
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -768,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   const BrowserAccessibility* root = GetManager()->GetRoot();
   BrowserAccessibility::PlatformChildIterator it =
       root->PlatformChildrenBegin();
-  EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*it).GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*it).GetRole());
   it = (*it).PlatformChildrenBegin();
   EXPECT_STREQ(
       "Button 1",
@@ -779,10 +888,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       GetAttr((*it).node(), ax::mojom::StringAttribute::kHtmlTag).c_str());
   EXPECT_EQ(1U, (*it).PlatformChildCount());
   auto iframe_iterator = (*it).PlatformChildrenBegin();
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, (*iframe_iterator).GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, (*iframe_iterator).GetRole());
   iframe_iterator = (*iframe_iterator).PlatformChildrenBegin();
-  EXPECT_EQ(ax::mojom::Role::kGenericContainer,
-            (*iframe_iterator).GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*iframe_iterator).GetRole());
   iframe_iterator = (*iframe_iterator).PlatformChildrenBegin();
   EXPECT_STREQ("Button 2", GetAttr((*iframe_iterator).node(),
                                    ax::mojom::StringAttribute::kName)
@@ -1428,19 +1536,19 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest, GeneratedText) {
   ASSERT_EQ(3U, heading->PlatformChildCount());
 
   const BrowserAccessibility* static1 = heading->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, static1->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static1->GetRole());
   EXPECT_STREQ(
       "[ ",
       GetAttr(static1->node(), ax::mojom::StringAttribute::kName).c_str());
 
   const BrowserAccessibility* static2 = heading->PlatformGetChild(1);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, static2->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static2->GetRole());
   EXPECT_STREQ(
       "Foo",
       GetAttr(static2->node(), ax::mojom::StringAttribute::kName).c_str());
 
   const BrowserAccessibility* static3 = heading->PlatformGetChild(2);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, static3->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static3->GetRole());
   EXPECT_STREQ(
       " ]",
       GetAttr(static3->node(), ax::mojom::StringAttribute::kName).c_str());
@@ -1626,8 +1734,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                                            ax::mojom::Event::kLayoutComplete);
     // Run test for 1 second, counting the number of layout completes.
     while (timer.Elapsed().InMilliseconds() < 1000) {
-      waiter.WaitForNotificationWithTimeout(
-          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
+                                            timer.Elapsed());
       ++num_batches;
     }
   }
@@ -1640,8 +1748,15 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DocumentSelectionChangesAreNotBatched \
+  DISABLED_DocumentSelectionChangesAreNotBatched
+#else
+#define MAYBE_DocumentSelectionChangesAreNotBatched \
+  DocumentSelectionChangesAreNotBatched
+#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       DocumentSelectionChangesAreNotBatched) {
+                       MAYBE_DocumentSelectionChangesAreNotBatched) {
   // Ensure that document selection changes are not batched, and occur faster
   // than once per kDelayForDeferredUpdatesAfterPageLoad.
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -1677,8 +1792,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       ax::mojom::Event::kDocumentSelectionChanged);
   // Run test for 1 second, counting the number of selection changes.
   while (timer.Elapsed().InMilliseconds() < 1000) {
-    waiter.WaitForNotificationWithTimeout(
-        base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+    waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
+                                          timer.Elapsed());
     ++num_batches;
   }
 
@@ -1688,8 +1803,15 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif  // IS_FAST_BUILD
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ActiveDescendantChangesAreNotBatched \
+  DISABLED_ActiveDescendantChangesAreNotBatched
+#else
+#define MAYBE_ActiveDescendantChangesAreNotBatched \
+  ActiveDescendantChangesAreNotBatched
+#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       ActiveDescendantChangesAreNotBatched) {
+                       MAYBE_ActiveDescendantChangesAreNotBatched) {
   // Ensure that active descendant changes are not batched, and occur faster
   // than once per kDelayForDeferredUpdatesAfterPageLoad.
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -1728,8 +1850,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED);
     // Run test for 1 second, counting the number of active descendant changes.
     while (timer.Elapsed().InMilliseconds() < 1000) {
-      waiter.WaitForNotificationWithTimeout(
-          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
+                                            timer.Elapsed());
       ++num_batches;
     }
   }

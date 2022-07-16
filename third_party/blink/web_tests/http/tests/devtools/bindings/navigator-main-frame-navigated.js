@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that navigator properly handles main frame navigated event.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
 
   var sourcesNavigator = new Sources.NetworkNavigatorView();

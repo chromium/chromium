@@ -6,9 +6,9 @@
 #define UI_GFX_MOJOM_RRECT_F_MOJOM_TRAITS_H_
 
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f_builder.h"
 #include "ui/gfx/mojom/rrect_f.mojom-shared.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/rrect_f_builder.h"
 
 namespace mojo {
 

@@ -57,6 +57,9 @@ class AlwaysOnVpnManagerTest : public testing::Test {
  public:
   AlwaysOnVpnManagerTest() = default;
 
+  AlwaysOnVpnManagerTest(const AlwaysOnVpnManagerTest&) = delete;
+  AlwaysOnVpnManagerTest& operator=(const AlwaysOnVpnManagerTest&) = delete;
+
   void SetUp() override {
     arc::prefs::RegisterProfilePrefs(pref_service()->registry());
   }
@@ -67,8 +70,6 @@ class AlwaysOnVpnManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnVpnManagerTest);
 };
 
 TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownUnset) {

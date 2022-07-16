@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/ownership_export.h"
 
@@ -20,6 +19,9 @@ namespace ownership {
 class OWNERSHIP_EXPORT OwnerKeyUtilImpl : public OwnerKeyUtil {
  public:
   explicit OwnerKeyUtilImpl(const base::FilePath& public_key_file);
+
+  OwnerKeyUtilImpl(const OwnerKeyUtilImpl&) = delete;
+  OwnerKeyUtilImpl& operator=(const OwnerKeyUtilImpl&) = delete;
 
   // OwnerKeyUtil implementation:
   bool ImportPublicKey(std::vector<uint8_t>* output) override;
@@ -33,8 +35,6 @@ class OWNERSHIP_EXPORT OwnerKeyUtilImpl : public OwnerKeyUtil {
 
   // The file that holds the public key.
   base::FilePath public_key_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerKeyUtilImpl);
 };
 
 }  // namespace ownership

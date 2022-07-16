@@ -123,8 +123,8 @@ class DecoderCacheEntry final : public CacheEntry {
                     cc::PaintImage::GeneratorClientId client_id)
       : CacheEntry(generator, count),
         cached_decoder_(std::move(decoder)),
-        size_(SkISize::Make(cached_decoder_->DecodedSize().Width(),
-                            cached_decoder_->DecodedSize().Height())),
+        size_(SkISize::Make(cached_decoder_->DecodedSize().width(),
+                            cached_decoder_->DecodedSize().height())),
         alpha_option_(cached_decoder_->GetAlphaOption()),
         client_id_(client_id) {}
 
@@ -150,8 +150,8 @@ class DecoderCacheEntry final : public CacheEntry {
       const ImageDecoder* decoder,
       cc::PaintImage::GeneratorClientId client_id) {
     return MakeCacheKey(generator,
-                        SkISize::Make(decoder->DecodedSize().Width(),
-                                      decoder->DecodedSize().Height()),
+                        SkISize::Make(decoder->DecodedSize().width(),
+                                      decoder->DecodedSize().height()),
                         decoder->GetAlphaOption(), client_id);
   }
   DecoderCacheKey CacheKey() const {

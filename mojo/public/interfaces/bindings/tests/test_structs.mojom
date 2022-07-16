@@ -365,11 +365,11 @@ struct MultiVersionStructV7 {
 // A struct where the fields are not sorted by their ordinals.
 struct ReorderedStruct {
   [MinVersion=2]
-  int32 a@3 = 3;
+  int32 a@1 = 3;
   [MinVersion=4]
-  int32 b@6 = 6;
+  int32 b@2 = 6;
   [MinVersion=1]
-  int32 c@1 = 1;
+  int32 c@0 = 1;
 };
 
 // Used to verify that interfaces that are struct members can be defined in the

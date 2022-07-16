@@ -76,10 +76,12 @@ class FakeRequestConfig : public OverlayResponseInfo<FakeRequestConfig> {
     // Creates an AlertRequest with an OK and Cancel button and a single
     // text field.
     NSArray<TextFieldConfiguration*>* text_field_configs = @[
-      [[TextFieldConfiguration alloc] initWithText:@""
-                                       placeholder:@""
-                           accessibilityIdentifier:@""
-                                   secureTextEntry:NO],
+      [[TextFieldConfiguration alloc]
+                     initWithText:@""
+                      placeholder:@""
+          accessibilityIdentifier:@""
+           autocapitalizationType:UITextAutocapitalizationTypeSentences
+                  secureTextEntry:NO],
     ];
     const std::vector<ButtonConfig> button_configs{
         ButtonConfig(@"OK", kOKTappedUserActionName),

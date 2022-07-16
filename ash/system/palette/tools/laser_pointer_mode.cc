@@ -8,7 +8,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -51,17 +50,11 @@ void LaserPointerMode::OnDisable() {
 }
 
 const gfx::VectorIcon& LaserPointerMode::GetActiveTrayIcon() const {
-  if (AshColorProvider::Get()->IsDarkModeEnabled())
-    return kPaletteTrayIconLaserPointerIcon;
-
-  return kPaletteTrayIconLaserPointerLightModeIcon;
+  return kPaletteModeLaserPointerIcon;
 }
 
 const gfx::VectorIcon& LaserPointerMode::GetPaletteIcon() const {
-  if (AshColorProvider::Get()->IsDarkModeEnabled())
-    return kPaletteModeLaserPointerIcon;
-
-  return kPaletteModeLaserPointerLightModeIcon;
+  return kPaletteModeLaserPointerIcon;
 }
 
 views::View* LaserPointerMode::CreateView() {

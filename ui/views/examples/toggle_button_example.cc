@@ -28,18 +28,22 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   auto layout = std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical);
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
   container->SetLayoutManager(std::move(layout));
-  container->AddChildView(std::make_unique<ToggleButton>(base::BindRepeating(
-      [](ToggleButtonExample* example) {
-        PrintStatus("Pressed 1! count: %d", ++example->count_1_);
-      },
-      base::Unretained(this))));
   container
       ->AddChildView(std::make_unique<ToggleButton>(base::BindRepeating(
           [](ToggleButtonExample* example) {
-            PrintStatus("Pressed 2! count: %d", ++example->count_2_);
+            PrintStatus("Pressed 1! count: %d", ++example->count_1_);
           },
           base::Unretained(this))))
-      ->SetIsOn(true);
+      ->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TOGGLE_BUTTON_NAME_1));
+  auto* button = container->AddChildView(
+      std::make_unique<ToggleButton>(base::BindRepeating(
+          [](ToggleButtonExample* example) {
+            PrintStatus("Pressed 2! count: %d", ++example->count_2_);
+          },
+          base::Unretained(this))));
+  button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TOGGLE_BUTTON_NAME_2));
+  button->SetIsOn(true);
 }
 
 }  // namespace examples

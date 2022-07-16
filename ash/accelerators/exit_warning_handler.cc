@@ -65,6 +65,10 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
 
+  ExitWarningWidgetDelegateView(const ExitWarningWidgetDelegateView&) = delete;
+  ExitWarningWidgetDelegateView& operator=(
+      const ExitWarningWidgetDelegateView&) = delete;
+
   void OnPaint(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -82,8 +86,6 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
   std::u16string text_;
   std::u16string accessible_name_;
   int text_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitWarningWidgetDelegateView);
 };
 
 }  // namespace
@@ -125,8 +127,7 @@ void ExitWarningHandler::TimerAction() {
 void ExitWarningHandler::StartTimer() {
   if (stub_timer_for_test_)
     return;
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromMilliseconds(kTimeOutMilliseconds), this,
+  timer_.Start(FROM_HERE, base::Milliseconds(kTimeOutMilliseconds), this,
                &ExitWarningHandler::TimerAction);
 }
 

@@ -16,6 +16,11 @@ namespace net {
 class NET_EXPORT_PRIVATE ProxyResolverErrorObserver {
  public:
   ProxyResolverErrorObserver() {}
+
+  ProxyResolverErrorObserver(const ProxyResolverErrorObserver&) = delete;
+  ProxyResolverErrorObserver& operator=(const ProxyResolverErrorObserver&) =
+      delete;
+
   virtual ~ProxyResolverErrorObserver() {}
 
   // Handler for when an error is encountered. |line_number| may be -1
@@ -28,9 +33,6 @@ class NET_EXPORT_PRIVATE ProxyResolverErrorObserver {
   // thread than the proxy resolver's origin thread.
   virtual void OnPACScriptError(int line_number,
                                 const std::u16string& error) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverErrorObserver);
 };
 
 }  // namespace net

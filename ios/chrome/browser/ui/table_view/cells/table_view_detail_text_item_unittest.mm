@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -89,6 +89,7 @@ TEST_F(TableViewDetailTextItemTest, ItemPropertiesDefaultColor) {
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_NSEQ(text, cell.textLabel.text);
   EXPECT_NSEQ(detailText, cell.detailTextLabel.text);
-  EXPECT_NSEQ(UIColor.cr_labelColor, cell.textLabel.textColor);
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, cell.detailTextLabel.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextPrimaryColor], cell.textLabel.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
+              cell.detailTextLabel.textColor);
 }

@@ -149,8 +149,7 @@ class MessageFragment<Array_Data<T>> {
     static_assert(
         std::numeric_limits<uint32_t>::max() > Traits::kMaxNumElements,
         "Max num elements castable to 32bit");
-    if (num_elements > Traits::kMaxNumElements)
-      return;
+    CHECK_LE(num_elements, Traits::kMaxNumElements);
 
     const uint32_t num_bytes =
         Traits::GetStorageSize(static_cast<uint32_t>(num_elements));

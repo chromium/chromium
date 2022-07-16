@@ -48,6 +48,13 @@ FakeBluetoothDelegate::ShowBluetoothScanningPrompt(
   return std::make_unique<AlwaysAllowBluetoothScanning>(event_handler);
 }
 
+void FakeBluetoothDelegate::ShowDeviceCredentialsPrompt(
+    RenderFrameHost* frame,
+    const std::u16string& device_identifier,
+    CredentialsCallback callback) {
+  std::move(callback).Run(DeviceCredentialsPromptResult::kCancelled, u"");
+}
+
 WebBluetoothDeviceId FakeBluetoothDelegate::GetWebBluetoothDeviceId(
     RenderFrameHost* frame,
     const std::string& device_address) {

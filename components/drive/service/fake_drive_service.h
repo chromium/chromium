@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/drive/service/drive_service_interface.h"
@@ -43,6 +42,10 @@ class FakeDriveService : public DriveServiceInterface {
   };
 
   FakeDriveService();
+
+  FakeDriveService(const FakeDriveService&) = delete;
+  FakeDriveService& operator=(const FakeDriveService&) = delete;
+
   ~FakeDriveService() override;
 
   // Adds a Team Drive to the Team Drive resource list.
@@ -427,8 +430,6 @@ class FakeDriveService : public DriveServiceInterface {
   base::ObserverList<ChangeObserver>::Unchecked change_observers_;
 
   base::WeakPtrFactory<FakeDriveService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveService);
 };
 
 }  // namespace drive

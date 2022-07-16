@@ -8,7 +8,9 @@
 #include "base/time/time.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-extension.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 const char kBenchmarkingExtensionName[] = "v8/Benchmarking";
 

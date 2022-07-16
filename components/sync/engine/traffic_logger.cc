@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 

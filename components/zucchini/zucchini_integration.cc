@@ -146,6 +146,22 @@ status::Code ApplyCommon(base::File old_file,
   return status::kStatusSuccess;
 }
 
+status::Code VerifyPatchCommon(base::File patch_file,
+                               base::FilePath patch_name) {
+  MappedFileReader mapped_patch(std::move(patch_file));
+  if (mapped_patch.HasError()) {
+    LOG(ERROR) << "Error with file " << patch_name.value() << ": "
+               << mapped_patch.error();
+    return status::kStatusFileReadError;
+  }
+  auto patch_reader = EnsemblePatchReader::Create(mapped_patch.region());
+  if (!patch_reader.has_value()) {
+    LOG(ERROR) << "Error reading patch header.";
+    return status::kStatusPatchReadError;
+  }
+  return status::kStatusSuccess;
+}
+
 }  // namespace
 
 status::Code Generate(base::File old_file,
@@ -204,6 +220,17 @@ status::Code Apply(const base::FilePath& old_path,
   const FileNames file_names(old_path, new_path, patch_path);
   return ApplyCommon(std::move(old_file), std::move(patch_file),
                      std::move(new_file), file_names, force_keep);
+}
+
+status::Code VerifyPatch(base::File patch_file) {
+  return VerifyPatchCommon(std::move(patch_file), base::FilePath());
+}
+
+status::Code VerifyPatch(const base::FilePath& patch_path) {
+  using base::File;
+  File patch_file(patch_path, File::FLAG_OPEN | File::FLAG_READ |
+                                  base::File::FLAG_SHARE_DELETE);
+  return VerifyPatchCommon(std::move(patch_file), patch_path);
 }
 
 }  // namespace zucchini

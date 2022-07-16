@@ -73,8 +73,7 @@ class CRWContextMenuElementFetcherTest : public WebTestWithWebController {
     if (element_present) {
       // If the element is present, we still need a small delay to let all the
       // scripts be injected in the page.
-      base::test::ios::SpinRunLoopWithMinDelay(
-          base::TimeDelta::FromSecondsD(0.5));
+      base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
     }
     return element_present;
   }

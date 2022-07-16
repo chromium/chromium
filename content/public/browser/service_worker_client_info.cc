@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/common/child_process_host.h"
 
 namespace content {
 
-ServiceWorkerClientInfo::ServiceWorkerClientInfo(int frame_tree_node_id)
-    : type_(blink::mojom::ServiceWorkerClientType::kWindow),
-      frame_tree_node_id_(frame_tree_node_id) {}
+ServiceWorkerClientInfo::ServiceWorkerClientInfo()
+    : type_(blink::mojom::ServiceWorkerClientType::kWindow) {}
 
 ServiceWorkerClientInfo::ServiceWorkerClientInfo(
     const blink::DedicatedWorkerToken& dedicated_worker_token)
@@ -39,9 +39,18 @@ ServiceWorkerClientInfo& ServiceWorkerClientInfo::operator=(
 
 ServiceWorkerClientInfo::~ServiceWorkerClientInfo() = default;
 
-int ServiceWorkerClientInfo::GetFrameTreeNodeId() const {
+GlobalRenderFrameHostId ServiceWorkerClientInfo::GetRenderFrameHostId() const {
   DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
-  return frame_tree_node_id_;
+  return render_frame_host_id_;
+}
+
+void ServiceWorkerClientInfo::SetRenderFrameHostId(
+    const GlobalRenderFrameHostId& render_frame_host_id) {
+  DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
+  DCHECK_NE(ChildProcessHost::kInvalidUniqueID, render_frame_host_id.child_id);
+  DCHECK_NE(MSG_ROUTING_NONE, render_frame_host_id.frame_routing_id);
+
+  render_frame_host_id_ = render_frame_host_id;
 }
 
 blink::DedicatedWorkerToken ServiceWorkerClientInfo::GetDedicatedWorkerToken()

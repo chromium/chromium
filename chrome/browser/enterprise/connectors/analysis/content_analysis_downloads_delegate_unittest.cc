@@ -120,8 +120,8 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestGetMessageAndUrl) {
   EXPECT_TRUE(delegate.GetCustomLearnMoreUrl());
 
   EXPECT_EQ(
-      u"foo.txt has sensitive or dangerous data. Your administrator says "
-      u"\"Message\".",
+      u"foo.txt has sensitive or dangerous data. Your administrator says: "
+      u"\"Message\"",
       *(delegate.GetCustomMessage()));
   EXPECT_EQ(GURL("http://www.example.com"),
             *(delegate.GetCustomLearnMoreUrl()));

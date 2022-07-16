@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "dbus/object_path.h"
+#include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/dbus/bluez_dbus_client.h"
 
@@ -20,6 +21,21 @@ namespace bluez {
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMonitorManagerClient
     : public BluezDBusClient {
  public:
+  // Structure of properties associated with the advertisement monitor manager.
+  struct Properties : public dbus::PropertySet {
+    Properties(dbus::ObjectProxy* object_proxy,
+               const std::string& interface_name,
+               const PropertyChangedCallback& callback);
+    ~Properties() override;
+
+    // This lists the supported types of advertisement monitors. [read-only]
+    dbus::Property<std::vector<std::string>> supported_monitor_types;
+
+    // This lists the features of advertisement monitoring supported by the
+    // Bluetooth stack. [read-only]
+    dbus::Property<std::vector<std::string>> supported_features;
+  };
+
   ~BluetoothAdvertisementMonitorManagerClient() override;
 
   using ErrorCallback = base::OnceCallback<void(std::string error_name,
@@ -40,6 +56,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMonitorManagerClient
                                  const dbus::ObjectPath& adapter,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) = 0;
+
+  // Obtain the properties for the advertisement monitor manager associated with
+  // object path |object_path|. Values should be copied if needed.
+  virtual Properties* GetProperties(const dbus::ObjectPath& object_path) = 0;
 
   // Creates the instance.
   static std::unique_ptr<BluetoothAdvertisementMonitorManagerClient> Create();

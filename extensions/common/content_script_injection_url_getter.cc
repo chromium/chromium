@@ -19,6 +19,22 @@ GURL ContentScriptInjectionUrlGetter::Get(
     const GURL& document_url,
     MatchOriginAsFallbackBehavior match_origin_as_fallback,
     bool allow_inaccessible_parents) {
+  // The following schemes are considered for opaque origins if the
+  // `match_origin_as_fallback` behavior is to always match.
+  // NOTE(devlin): This isn't an exhaustive list of schemes: some schemes may
+  // be missing, or more schemes may be added in the future. Would it make
+  // sense to turn this into a blocklist? Just doing this for all opaque
+  // schemes *should* be safe, since We still have a permission check against
+  // the precursor origin. This would only be a problem if an
+  // extension-accessible precursor origin can create an opaque-origin frame
+  // that *shouldn't* be accessible.
+  static const char* const kAllowedSchemesToMatchOriginAsFallback[] = {
+      url::kAboutScheme,
+      url::kBlobScheme,
+      url::kDataScheme,
+      url::kFileSystemScheme,
+  };
+
   auto should_consider_origin = [&document_url, match_origin_as_fallback]() {
     switch (match_origin_as_fallback) {
       case MatchOriginAsFallbackBehavior::kNever:
@@ -26,9 +42,8 @@ GURL ContentScriptInjectionUrlGetter::Get(
       case MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree:
         return document_url.SchemeIs(url::kAboutScheme);
       case MatchOriginAsFallbackBehavior::kAlways:
-        // TODO(devlin): Add more schemes here - blob, filesystem, etc.
-        return document_url.SchemeIs(url::kAboutScheme) ||
-               document_url.SchemeIs(url::kDataScheme);
+        return base::Contains(kAllowedSchemesToMatchOriginAsFallback,
+                              document_url.scheme());
     }
 
     NOTREACHED();

@@ -97,7 +97,7 @@ void PepperHungPluginFilter::EnsureTimerScheduled() {
   timer_task_pending_ = true;
   io_task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PepperHungPluginFilter::OnHangTimer, this),
-      base::TimeDelta::FromSeconds(kHungThresholdSec));
+      base::Seconds(kHungThresholdSec));
 }
 
 void PepperHungPluginFilter::MayHaveBecomeUnhung() {
@@ -118,12 +118,11 @@ base::TimeTicks PepperHungPluginFilter::GetHungTime() const {
 
   // Always considered hung at the hard threshold.
   base::TimeTicks hard_time =
-      began_blocking_time_ +
-      base::TimeDelta::FromSeconds(kBlockedHardThresholdSec);
+      began_blocking_time_ + base::Seconds(kBlockedHardThresholdSec);
 
   // Hung after a soft threshold from last message of any sort.
   base::TimeTicks soft_time =
-      last_message_received_ + base::TimeDelta::FromSeconds(kHungThresholdSec);
+      last_message_received_ + base::Seconds(kHungThresholdSec);
 
   return std::min(soft_time, hard_time);
 }
@@ -145,7 +144,7 @@ void PepperHungPluginFilter::OnHangTimer() {
     return;  // Not blocked any longer.
 
   base::TimeDelta delay = GetHungTime() - base::TimeTicks::Now();
-  if (delay > base::TimeDelta()) {
+  if (delay.is_positive()) {
     // Got a timer message while we're waiting on a sync message. We need
     // to schedule another timer message because the latest sync message
     // would not have scheduled one (we only have one out-standing timer at

@@ -35,6 +35,11 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
       ClientSessionDetails* client_session_details,
       protocol::ClientStub* client_stub,
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
+
+  SecurityKeyExtensionSession(const SecurityKeyExtensionSession&) = delete;
+  SecurityKeyExtensionSession& operator=(const SecurityKeyExtensionSession&) =
+      delete;
+
   ~SecurityKeyExtensionSession() override;
 
   // HostExtensionSession interface.
@@ -63,8 +68,6 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
 
   // Handles platform specific security key operations.
   std::unique_ptr<SecurityKeyAuthHandler> security_key_auth_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyExtensionSession);
 };
 
 }  // namespace remoting

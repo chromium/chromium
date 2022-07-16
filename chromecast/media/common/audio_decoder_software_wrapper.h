@@ -29,6 +29,11 @@ class AudioDecoderSoftwareWrapper
 
   AudioDecoderSoftwareWrapper(
       MediaPipelineBackend::AudioDecoder* backend_decoder);
+
+  AudioDecoderSoftwareWrapper(const AudioDecoderSoftwareWrapper&) = delete;
+  AudioDecoderSoftwareWrapper& operator=(const AudioDecoderSoftwareWrapper&) =
+      delete;
+
   ~AudioDecoderSoftwareWrapper() override;
 
   void SetDelegate(DecoderDelegate* delegate);
@@ -60,8 +65,6 @@ class AudioDecoderSoftwareWrapper
   AudioConfig output_config_;
   scoped_refptr<DecoderBufferBase> pending_pushed_buffer_;
   bool decoder_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderSoftwareWrapper);
 };
 
 }  // namespace media

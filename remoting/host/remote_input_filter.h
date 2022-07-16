@@ -23,6 +23,10 @@ class RemoteInputFilter : public protocol::InputStub {
   // Creates a filter forwarding events to the specified InputEventTracker.
   // The filter needs a tracker to release buttons & keys when blocking input.
   explicit RemoteInputFilter(protocol::InputEventTracker* event_tracker);
+
+  RemoteInputFilter(const RemoteInputFilter&) = delete;
+  RemoteInputFilter& operator=(const RemoteInputFilter&) = delete;
+
   ~RemoteInputFilter() override;
 
   // Informs the filter that local mouse or touch activity has been detected.
@@ -63,8 +67,6 @@ class RemoteInputFilter : public protocol::InputStub {
 
   // If |true| than the filter assumes that injecting input causes an echo.
   bool expect_local_echo_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteInputFilter);
 };
 
 }  // namespace remoting

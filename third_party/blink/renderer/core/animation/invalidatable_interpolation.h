@@ -67,10 +67,10 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
   std::unique_ptr<TypedInterpolationValue> MaybeConvertUnderlyingValue(
       const InterpolationEnvironment&) const;
   const TypedInterpolationValue* EnsureValidConversion(
-      const InterpolationEnvironment&,
+      InterpolationEnvironment&,
       const UnderlyingValueOwner&) const;
-  void EnsureValidInterpolationTypes(const InterpolationEnvironment&) const;
-  void ClearConversionCache() const;
+  void EnsureValidInterpolationTypes(InterpolationEnvironment&) const;
+  void ClearConversionCache(InterpolationEnvironment& environment) const;
   bool IsConversionCacheValid(const InterpolationEnvironment&,
                               const UnderlyingValueOwner&) const;
   bool IsNeutralKeyframeActive() const;

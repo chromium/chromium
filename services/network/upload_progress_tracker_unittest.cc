@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "net/base/upload_progress.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +28,10 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
                               std::move(task_runner)),
         current_time_(base::TimeTicks::Now()) {}
 
+  TestingUploadProgressTracker(const TestingUploadProgressTracker&) = delete;
+  TestingUploadProgressTracker& operator=(const TestingUploadProgressTracker&) =
+      delete;
+
   void set_upload_progress(const net::UploadProgress& upload_progress) {
     upload_progress_ = upload_progress;
   }
@@ -45,8 +49,6 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
 
   base::TimeTicks current_time_;
   net::UploadProgress upload_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingUploadProgressTracker);
 };
 
 }  // namespace
@@ -61,6 +63,10 @@ class UploadProgressTrackerTest : public ::testing::Test {
                 &UploadProgressTrackerTest::OnUploadProgressReported,
                 base::Unretained(this)),
             task_environment_.GetMainThreadTaskRunner()) {}
+
+  UploadProgressTrackerTest(const UploadProgressTrackerTest&) = delete;
+  UploadProgressTrackerTest& operator=(const UploadProgressTrackerTest&) =
+      delete;
 
  private:
   void OnUploadProgressReported(const net::UploadProgress& progress) {
@@ -77,8 +83,6 @@ class UploadProgressTrackerTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestingUploadProgressTracker upload_progress_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadProgressTrackerTest);
 };
 
 TEST_F(UploadProgressTrackerTest, NoACK) {
@@ -202,7 +206,7 @@ TEST_F(UploadProgressTrackerTest, TimePassed) {
   EXPECT_EQ(1, report_count_);
 
   upload_progress_tracker_.set_current_time(base::TimeTicks::Now() +
-                                            base::TimeDelta::FromSeconds(5));
+                                            base::Seconds(5));
 
   // The third timer task calls ReportUploadProgress since it's been long time
   // from the last report.
@@ -236,7 +240,7 @@ TEST_F(UploadProgressTrackerTest, Rewound) {
   EXPECT_EQ(1, report_count_);
 
   upload_progress_tracker_.set_current_time(base::TimeTicks::Now() +
-                                            base::TimeDelta::FromSeconds(5));
+                                            base::Seconds(5));
 
   // Even after a good amount of time passed, the rewound progress should not be
   // reported.

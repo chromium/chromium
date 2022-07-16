@@ -26,7 +26,7 @@ class PLATFORM_EXPORT CompositorTransformKeyframe : public CompositorKeyframe {
   std::unique_ptr<gfx::TransformKeyframe> CloneToCC() const;
 
   // CompositorKeyframe implementation.
-  double Time() const override;
+  base::TimeDelta Time() const override;
   const gfx::TimingFunction* CcTimingFunction() const override;
 
  private:

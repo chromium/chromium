@@ -10,7 +10,7 @@ from page_sets.system_health import system_health_story
 
 IDLE_TIME_IN_SECONDS = 100
 SAMPLING_INTERVAL_IN_SECONDS = 1
-STEPS = IDLE_TIME_IN_SECONDS / SAMPLING_INTERVAL_IN_SECONDS
+STEPS = IDLE_TIME_IN_SECONDS // SAMPLING_INTERVAL_IN_SECONDS
 
 
 class _LongRunningStory(system_health_story.SystemHealthStory):

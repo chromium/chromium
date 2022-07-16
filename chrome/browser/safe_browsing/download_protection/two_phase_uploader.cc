@@ -9,9 +9,8 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -41,6 +40,10 @@ class TwoPhaseUploaderImpl : public TwoPhaseUploader {
       const base::FilePath& file_path,
       FinishCallback finish_callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TwoPhaseUploaderImpl(const TwoPhaseUploaderImpl&) = delete;
+  TwoPhaseUploaderImpl& operator=(const TwoPhaseUploaderImpl&) = delete;
+
   ~TwoPhaseUploaderImpl() override;
 
   // Begins the upload process.
@@ -64,8 +67,6 @@ class TwoPhaseUploaderImpl : public TwoPhaseUploader {
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(TwoPhaseUploaderImpl);
 };
 
 TwoPhaseUploaderImpl::TwoPhaseUploaderImpl(

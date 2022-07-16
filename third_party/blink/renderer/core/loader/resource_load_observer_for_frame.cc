@@ -91,41 +91,6 @@ void RecordAddressSpaceFeature(LocalFrame* client_frame,
   }
 }
 
-// Same as above, for cases where the fetch failed.
-// Does nothing if the fetch failed due to an error other than a failed Private
-// Network Access check.
-void RecordAddressSpaceFeature(LocalFrame* client_frame,
-                               const ResourceError& error) {
-  if (!client_frame) {
-    return;
-  }
-
-  absl::optional<network::CorsErrorStatus> status = error.CorsErrorStatus();
-  if (!status.has_value() ||
-      status->cors_error !=
-          network::mojom::CorsError::kInsecurePrivateNetwork) {
-    // Not the right kind of error, ignore.
-    return;
-  }
-
-  LocalDOMWindow* window = client_frame->DomWindow();
-  absl::optional<WebFeature> feature = AddressSpaceFeature(
-      FetchType::kSubresource, window->AddressSpace(),
-      window->IsSecureContext(), status->resource_address_space);
-  if (!feature.has_value()) {
-    return;
-  }
-
-  // This WebFeature encompasses all private network requests.
-  UseCounter::Count(window,
-                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
-
-  // Count the feature but do not log it as a deprecation, since its use is
-  // forbidden and has resulted in the fetch failing. In other words, the
-  // document only *attempted* to use a feature that is no longer available.
-  UseCounter::Count(window, *feature);
-}
-
 }  // namespace
 
 ResourceLoadObserverForFrame::ResourceLoadObserverForFrame(
@@ -237,7 +202,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
           resource_request.Url(),
           String::FromUTF8(resource_request.HttpMethod().Utf8()),
           String::FromUTF8(response.MimeType().Utf8()),
-          resource_request.GetRequestDestination());
+          resource_request.GetRequestDestination(),
+          response.RequestIncludeCredentials());
     }
 
     // Note: probe::WillSendRequest needs to precede before this probe method.
@@ -359,8 +325,6 @@ void ResourceLoadObserverForFrame::DidFailLoading(
 
   probe::DidFailLoading(GetProbe(), identifier, document_loader_, error,
                         frame->GetDevToolsFrameToken());
-
-  RecordAddressSpaceFeature(frame, error);
 
   // Notification to FrameConsole should come AFTER InspectorInstrumentation
   // call, DevTools front-end relies on this.

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_AFFILIATION_FACET_MANAGER_HOST_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_AFFILIATION_FACET_MANAGER_HOST_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 
 namespace password_manager {

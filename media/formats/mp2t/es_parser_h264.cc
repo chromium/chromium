@@ -517,7 +517,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps,
   }
 
   VideoDecoderConfig video_decoder_config(
-      kCodecH264, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoCodec::kH264, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
       VideoColorSpace::REC709(), kNoTransformation, coded_size.value(),
       visible_rect.value(), natural_size, EmptyExtraData(), scheme);
 

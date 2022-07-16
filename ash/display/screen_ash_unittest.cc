@@ -16,25 +16,25 @@ using ScreenAshTest = AshTestBase;
 // Tests that ScreenAsh::GetWindowAtScreenPoint() returns the correct window on
 // the correct display.
 TEST_F(ScreenAshTest, TestGetWindowAtScreenPoint) {
-  UpdateDisplay("200x200,400x400");
+  UpdateDisplay("300x200,500x400");
 
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> win1(CreateTestWindowInShellWithDelegate(
       &delegate, 0, gfx::Rect(0, 0, 200, 200)));
 
   std::unique_ptr<aura::Window> win2(CreateTestWindowInShellWithDelegate(
-      &delegate, 1, gfx::Rect(200, 200, 100, 100)));
+      &delegate, 1, gfx::Rect(300, 200, 100, 100)));
 
   ASSERT_NE(win1->GetRootWindow(), win2->GetRootWindow());
 
   EXPECT_EQ(win1.get(), display::Screen::GetScreen()->GetWindowAtScreenPoint(
                             gfx::Point(50, 60)));
   EXPECT_EQ(win2.get(), display::Screen::GetScreen()->GetWindowAtScreenPoint(
-                            gfx::Point(250, 260)));
+                            gfx::Point(350, 260)));
 }
 
 TEST_F(ScreenAshTest, GetDisplayForNewWindows) {
-  UpdateDisplay("200x200,400x400");
+  UpdateDisplay("300x200,500x400");
   display::Screen* screen = display::Screen::GetScreen();
   const std::vector<display::Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
@@ -57,6 +57,11 @@ namespace {
 class TestDisplayRemoveObserver : public display::DisplayObserver {
  public:
   TestDisplayRemoveObserver() = default;
+
+  TestDisplayRemoveObserver(const TestDisplayRemoveObserver&) = delete;
+  TestDisplayRemoveObserver& operator=(const TestDisplayRemoveObserver&) =
+      delete;
+
   ~TestDisplayRemoveObserver() override = default;
 
   int added_displays() const { return added_displays_; }
@@ -81,8 +86,6 @@ class TestDisplayRemoveObserver : public display::DisplayObserver {
 
   int added_displays_ = 0;
   int removed_displays_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayRemoveObserver);
 };
 
 }  // namespace

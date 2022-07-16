@@ -73,8 +73,9 @@ void InstallTracker::OnBeginExtensionInstall(
     const InstallObserver::ExtensionInstallParams& params) {
   auto install_data = active_installs_.find(params.extension_id);
   if (install_data == active_installs_.end()) {
-    ActiveInstallData install_data(params.extension_id);
-    active_installs_.insert(std::make_pair(params.extension_id, install_data));
+    ActiveInstallData active_install_data(params.extension_id);
+    active_installs_.insert(
+        std::make_pair(params.extension_id, active_install_data));
   }
 
   for (auto& observer : observers_)

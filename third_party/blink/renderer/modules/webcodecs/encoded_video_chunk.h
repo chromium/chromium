@@ -8,12 +8,11 @@
 #include "media/base/decoder_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
-
 class EncodedVideoChunkInit;
 class ExceptionState;
 
@@ -30,7 +29,7 @@ class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
   int64_t timestamp() const;
   absl::optional<uint64_t> duration() const;
   uint64_t byteLength() const;
-  void copyTo(const V8BufferSource* destination,
+  void copyTo(const AllowSharedBufferSource* destination,
               ExceptionState& exception_state);
 
   scoped_refptr<media::DecoderBuffer> buffer() const { return buffer_; }

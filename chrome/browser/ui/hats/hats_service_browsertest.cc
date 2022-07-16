@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,11 +23,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -55,6 +56,9 @@ class ScopedSetMetricsConsent {
         &consent_);
   }
 
+  ScopedSetMetricsConsent(const ScopedSetMetricsConsent&) = delete;
+  ScopedSetMetricsConsent& operator=(const ScopedSetMetricsConsent&) = delete;
+
   ~ScopedSetMetricsConsent() {
     ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
         nullptr);
@@ -62,8 +66,6 @@ class ScopedSetMetricsConsent {
 
  private:
   const bool consent_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetMetricsConsent);
 };
 
 class HatsServiceBrowserTestBase : public InProcessBrowserTest {
@@ -76,6 +78,10 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
   }
 
   HatsServiceBrowserTestBase() = default;
+
+  HatsServiceBrowserTestBase(const HatsServiceBrowserTestBase&) = delete;
+  HatsServiceBrowserTestBase& operator=(const HatsServiceBrowserTestBase&) =
+      delete;
 
   ~HatsServiceBrowserTestBase() override = default;
 
@@ -100,21 +106,27 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
 
   std::vector<base::test::ScopedFeatureList::FeatureAndParams>
       enabled_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceBrowserTestBase);
 };
 
 class HatsServiceProbabilityZero : public HatsServiceBrowserTestBase {
+ public:
+  HatsServiceProbabilityZero(const HatsServiceProbabilityZero&) = delete;
+  HatsServiceProbabilityZero& operator=(const HatsServiceProbabilityZero&) =
+      delete;
+
  protected:
   HatsServiceProbabilityZero()
       : HatsServiceBrowserTestBase({probability_zero}) {}
 
   ~HatsServiceProbabilityZero() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceProbabilityZero);
 };
 
 class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
+ public:
+  HatsServiceProbabilityOne(const HatsServiceProbabilityOne&) = delete;
+  HatsServiceProbabilityOne& operator=(const HatsServiceProbabilityOne&) =
+      delete;
+
  protected:
   HatsServiceProbabilityOne()
       : HatsServiceBrowserTestBase(
@@ -124,16 +136,15 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
 
  private:
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     // Set the profile creation time to be old enough to ensure triggering.
-    browser()->profile()->SetCreationTimeForTesting(
-        base::Time::Now() - base::TimeDelta::FromDays(45));
+    browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                    base::Days(45));
   }
 
   void TearDownOnMainThread() override {
     GetHatsService()->SetSurveyMetadataForTesting({});
   }
-
-  DISALLOW_COPY_AND_ASSIGN(HatsServiceProbabilityOne);
 };
 
 }  // namespace
@@ -237,8 +248,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
   base::HistogramTester histogram_tester;
   // Set creation time to only 15 days.
   static_cast<ProfileImpl*>(browser()->profile())
-      ->SetCreationTimeForTesting(base::Time::Now() -
-                                  base::TimeDelta::FromDays(15));
+      ->SetCreationTimeForTesting(base::Time::Now() - base::Days(15));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
@@ -250,8 +260,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileOldEnoughToShow) {
   SetMetricsConsent(true);
   // Set creation time to 31 days. This is just past the threshold.
   static_cast<ProfileImpl*>(browser()->profile())
-      ->SetCreationTimeForTesting(base::Time::Now() -
-                                  base::TimeDelta::FromDays(31));
+      ->SetCreationTimeForTesting(base::Time::Now() - base::Days(31));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
 }
@@ -260,9 +269,10 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
   SetMetricsConsent(true);
   // Disable incognito mode for this profile.
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kIncognitoModeAvailability,
-                           IncognitoModePrefs::DISABLED);
-  EXPECT_EQ(IncognitoModePrefs::DISABLED,
+  pref_service->SetInteger(
+      prefs::kIncognitoModeAvailability,
+      static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
+  EXPECT_EQ(IncognitoModePrefs::Availability::kDisabled,
             IncognitoModePrefs::GetAvailability(pref_service));
 
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
@@ -272,8 +282,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
   SetMetricsConsent(true);
   HatsService::SurveyMetadata metadata;
-  metadata.last_survey_check_time =
-      base::Time::Now() - base::TimeDelta::FromHours(23);
+  metadata.last_survey_check_time = base::Time::Now() - base::Hours(23);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
@@ -282,8 +291,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedAfterADayToShow) {
   SetMetricsConsent(true);
   HatsService::SurveyMetadata metadata;
-  metadata.last_survey_check_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  metadata.last_survey_check_time = base::Time::Now() - base::Days(1);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
@@ -380,6 +388,73 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, InvisibleWebContentsNoShow) {
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerSettings, web_contents, 0);
   chrome::AddTabAt(browser(), GURL(), -1, true);
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       NavigatedWebContents_RequireSameOrigin) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  // As navigating also occurs asynchronously, a long survey delay is use to
+  // ensure it completes before the survey tries to run.
+  GetHatsService()->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
+      /*require_same_origin=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.test", "/empty.html")));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetHatsService()->HasPendingTasks());
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       NavigatedWebContents_NoRequireSameOrigin) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  EXPECT_FALSE(GetHatsService()->HasPendingTasks());
+  GetHatsService()->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
+      /*require_same_origin=*/false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.test", "/empty.html")));
+  base::RunLoop().RunUntilIdle();
+
+  // The survey task should still be in the pending task queue.
+  EXPECT_TRUE(GetHatsService()->HasPendingTasks());
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SameOriginNavigation) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  EXPECT_FALSE(GetHatsService()->HasPendingTasks());
+  GetHatsService()->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
+      /*require_same_origin=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/form.html")));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetHatsService()->HasPendingTasks());
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 

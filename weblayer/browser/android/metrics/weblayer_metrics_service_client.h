@@ -20,6 +20,8 @@
 #include "weblayer/browser/browser_list_observer.h"
 #include "weblayer/browser/profile_impl.h"
 
+class PrefService;
+
 namespace weblayer {
 
 class WebLayerMetricsServiceClient
@@ -32,9 +34,17 @@ class WebLayerMetricsServiceClient
   static WebLayerMetricsServiceClient* GetInstance();
 
   WebLayerMetricsServiceClient();
+
+  WebLayerMetricsServiceClient(const WebLayerMetricsServiceClient&) = delete;
+  WebLayerMetricsServiceClient& operator=(const WebLayerMetricsServiceClient&) =
+      delete;
+
   ~WebLayerMetricsServiceClient() override;
 
   void RegisterExternalExperiments(const std::vector<int>& experiment_ids);
+
+  // Initializes, but does not necessarily start, the MetricsService.
+  void Initialize(PrefService* pref_service);
 
   // metrics::MetricsServiceClient
   int32_t GetProduct() override;
@@ -43,6 +53,7 @@ class WebLayerMetricsServiceClient
   std::string GetUploadSigningKey() override;
 
   // metrics::AndroidMetricsServiceClient:
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   int GetSampleRatePerMille() const override;
   void OnMetricsStart() override;
   void OnMetricsNotStarted() override;
@@ -69,8 +80,6 @@ class WebLayerMetricsServiceClient
   void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) override;
 
   std::vector<base::OnceClosure> post_start_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerMetricsServiceClient);
 };
 
 }  // namespace weblayer

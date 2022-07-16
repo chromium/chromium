@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_NETWORK_OBSERVER_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "content/browser/background_sync/background_sync.pb.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -21,6 +21,10 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   // called when the network connection changes asynchronously via PostMessage.
   BackgroundSyncNetworkObserver(
       base::RepeatingClosure network_changed_callback);
+
+  BackgroundSyncNetworkObserver(const BackgroundSyncNetworkObserver&) = delete;
+  BackgroundSyncNetworkObserver& operator=(
+      const BackgroundSyncNetworkObserver&) = delete;
 
   ~BackgroundSyncNetworkObserver() override;
 
@@ -70,9 +74,9 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   // (to prevent flakes in tests).
   static bool ignore_network_changes_;
 
-  base::WeakPtrFactory<BackgroundSyncNetworkObserver> weak_ptr_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncNetworkObserver);
+  base::WeakPtrFactory<BackgroundSyncNetworkObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace content

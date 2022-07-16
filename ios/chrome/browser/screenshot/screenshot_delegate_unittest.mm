@@ -29,8 +29,7 @@ class ScreenshotDelegateTest : public PlatformTest {
   void SetUp() override {
     browser_interface_ = [[StubBrowserInterface alloc] init];
     browser_interface_provider_ = [[StubBrowserInterfaceProvider alloc] init];
-    if (@available(iOS 13, *))
-      screenshot_service_ = OCMClassMock([UIScreenshotService class]);
+    screenshot_service_ = OCMClassMock([UIScreenshotService class]);
   }
 
   void createScreenshotDelegate() {
@@ -49,112 +48,104 @@ class ScreenshotDelegateTest : public PlatformTest {
 // be set and that data can be generated from it.
 TEST_F(ScreenshotDelegateTest, ScreenshotService) {
   // Expected: Empty NSData.
-  if (@available(iOS 14, *)) {
-    auto web_state = std::make_unique<web::FakeWebState>();
-    TestBrowser browser;
+  auto web_state = std::make_unique<web::FakeWebState>();
+  TestBrowser browser;
 
-    CRWWebViewScrollViewProxy* scroll_view_proxy =
-        [[CRWWebViewScrollViewProxy alloc] init];
-    UIScrollView* scroll_view = [[UIScrollView alloc] init];
-    [scroll_view_proxy setScrollView:scroll_view];
-    id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
-    [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
-    web_state->SetWebViewProxy(web_view_proxy_mock);
+  CRWWebViewScrollViewProxy* scroll_view_proxy =
+      [[CRWWebViewScrollViewProxy alloc] init];
+  UIScrollView* scroll_view = [[UIScrollView alloc] init];
+  [scroll_view_proxy setScrollView:scroll_view];
+  id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+  [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+  web_state->SetWebViewProxy(web_view_proxy_mock);
 
-    // Fake scroll_view contentOffset, contentSize and frame.
-    CGPoint content_offset = CGPointMake(10.0, 15.0);
-    CGSize content_size = CGSizeMake(425, 4000);
-    CGRect frame = CGRectMake(0, 0, 375, 812);
-    scroll_view.contentOffset = content_offset;
-    scroll_view.contentSize = content_size;
-    scroll_view.frame = frame;
+  // Fake scroll_view contentOffset, contentSize and frame.
+  CGPoint content_offset = CGPointMake(10.0, 15.0);
+  CGSize content_size = CGSizeMake(425, 4000);
+  CGRect frame = CGRectMake(0, 0, 375, 812);
+  scroll_view.contentOffset = content_offset;
+  scroll_view.contentSize = content_size;
+  scroll_view.frame = frame;
 
-    CGRect expected_rect_in_page = CGRectZero;
+  CGRect expected_rect_in_page = CGRectZero;
 
-    if (@available(iOS 14, *)) {
-      expected_rect_in_page =
-          CGRectMake(content_offset.x,
-                     content_size.height - frame.size.height - content_offset.y,
-                     frame.size.width, frame.size.height);
-    }
+  expected_rect_in_page =
+      CGRectMake(content_offset.x,
+                 content_size.height - frame.size.height - content_offset.y,
+                 frame.size.width, frame.size.height);
 
-    // Insert the web_state into the Browser.
-    int insertion_index = browser.GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(web_state),
-        WebStateList::INSERT_NO_FLAGS, WebStateOpener());
-    browser.GetWebStateList()->ActivateWebStateAt(insertion_index);
+  // Insert the web_state into the Browser.
+  int insertion_index = browser.GetWebStateList()->InsertWebState(
+      WebStateList::kInvalidIndex, std::move(web_state),
+      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  browser.GetWebStateList()->ActivateWebStateAt(insertion_index);
 
-    // Add the Browser to StubBrowserInterface.
-    browser_interface_.browser = &browser;
+  // Add the Browser to StubBrowserInterface.
+  browser_interface_.browser = &browser;
 
-    // Add the StubBrowserInterface to StubBrowserInterfaceProvider.
-    browser_interface_provider_.currentInterface = browser_interface_;
+  // Add the StubBrowserInterface to StubBrowserInterfaceProvider.
+  browser_interface_provider_.currentInterface = browser_interface_;
 
-    createScreenshotDelegate();
+  createScreenshotDelegate();
 
-    __block int nbCalls = 0;
-    [screenshotDelegate_ screenshotService:screenshot_service_
-        generatePDFRepresentationWithCompletion:^(NSData* PDFData,
-                                                  NSInteger indexOfCurrentPage,
-                                                  CGRect rectInCurrentPage) {
-          EXPECT_TRUE(PDFData);
-          EXPECT_TRUE(
-              CGRectEqualToRect(expected_rect_in_page, rectInCurrentPage));
-          ++nbCalls;
-        }];
+  __block int nbCalls = 0;
+  [screenshotDelegate_ screenshotService:screenshot_service_
+      generatePDFRepresentationWithCompletion:^(NSData* PDFData,
+                                                NSInteger indexOfCurrentPage,
+                                                CGRect rectInCurrentPage) {
+        EXPECT_TRUE(PDFData);
+        EXPECT_TRUE(
+            CGRectEqualToRect(expected_rect_in_page, rectInCurrentPage));
+        ++nbCalls;
+      }];
 
-    EXPECT_EQ(1, nbCalls);
-  }
+  EXPECT_EQ(1, nbCalls);
 }
 
 // Tests that when ScreenshotDelegate's browserInterfaceProvider has a nil
 // Browser screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilBrowser) {
   // Expected: nil NSData.
-  if (@available(iOS 14, *)) {
-    // Add the StubBrowserInterface with no set Browser to
-    // StubBrowserInterfaceProvider.
-    browser_interface_provider_.currentInterface = browser_interface_;
+  // Add the StubBrowserInterface with no set Browser to
+  // StubBrowserInterfaceProvider.
+  browser_interface_provider_.currentInterface = browser_interface_;
 
-    createScreenshotDelegate();
+  createScreenshotDelegate();
 
-    __block bool callback_ran = false;
-    [screenshotDelegate_ screenshotService:screenshot_service_
-        generatePDFRepresentationWithCompletion:^(NSData* PDFData,
-                                                  NSInteger indexOfCurrentPage,
-                                                  CGRect rectInCurrentPage) {
-          EXPECT_FALSE(PDFData);
-          callback_ran = true;
-        }];
+  __block bool callback_ran = false;
+  [screenshotDelegate_ screenshotService:screenshot_service_
+      generatePDFRepresentationWithCompletion:^(NSData* PDFData,
+                                                NSInteger indexOfCurrentPage,
+                                                CGRect rectInCurrentPage) {
+        EXPECT_FALSE(PDFData);
+        callback_ran = true;
+      }];
 
-    EXPECT_TRUE(callback_ran);
-  }
+  EXPECT_TRUE(callback_ran);
 }
 
 // Tests that when ScreenshotDelegate's browserInterfaceProvider has a nil
 // WebSatate screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilWebState) {
   // Expected: nil NSData.
-  if (@available(iOS 14, *)) {
-    TestBrowser browser;
+  TestBrowser browser;
 
-    // Add the empty Browser to StubBrowserInterface.
-    browser_interface_.browser = &browser;
+  // Add the empty Browser to StubBrowserInterface.
+  browser_interface_.browser = &browser;
 
-    // Add the StubBrowserInterface to StubBrowserInterfaceProvider.
-    browser_interface_provider_.currentInterface = browser_interface_;
+  // Add the StubBrowserInterface to StubBrowserInterfaceProvider.
+  browser_interface_provider_.currentInterface = browser_interface_;
 
-    createScreenshotDelegate();
+  createScreenshotDelegate();
 
-    __block bool callback_ran = false;
-    [screenshotDelegate_ screenshotService:screenshot_service_
-        generatePDFRepresentationWithCompletion:^(NSData* PDFData,
-                                                  NSInteger indexOfCurrentPage,
-                                                  CGRect rectInCurrentPage) {
-          EXPECT_FALSE(PDFData);
-          callback_ran = true;
-        }];
+  __block bool callback_ran = false;
+  [screenshotDelegate_ screenshotService:screenshot_service_
+      generatePDFRepresentationWithCompletion:^(NSData* PDFData,
+                                                NSInteger indexOfCurrentPage,
+                                                CGRect rectInCurrentPage) {
+        EXPECT_FALSE(PDFData);
+        callback_ran = true;
+      }];
 
-    EXPECT_TRUE(callback_ran);
-  }
+  EXPECT_TRUE(callback_ran);
 }

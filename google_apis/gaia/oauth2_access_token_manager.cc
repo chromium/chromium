@@ -150,6 +150,10 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
       const ScopeSet& scopes,
       const std::string& consumer_name,
       base::WeakPtr<RequestImpl> waiting_request);
+
+  Fetcher(const Fetcher&) = delete;
+  Fetcher& operator=(const Fetcher&) = delete;
+
   ~Fetcher() override;
 
   // Add a request that is waiting for the result of this Fetcher.
@@ -225,8 +229,6 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
 
   // Ensures that the fetcher is deleted only once.
   bool scheduled_for_deletion_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Fetcher);
 };
 
 // static
@@ -341,7 +343,7 @@ OAuth2AccessTokenManager::Fetcher::ComputeExponentialBackOffMilliseconds(
 bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
     const GoogleServiceAuthError& error) {
   if (retry_number_ < oauth2_access_token_manager_->max_fetch_retry_num_) {
-    base::TimeDelta backoff = base::TimeDelta::FromMilliseconds(
+    base::TimeDelta backoff = base::Milliseconds(
         ComputeExponentialBackOffMilliseconds(retry_number_));
     ++retry_number_;
     UMA_HISTOGRAM_ENUMERATION("Signin.OAuth2TokenGetRetry", error.state(),

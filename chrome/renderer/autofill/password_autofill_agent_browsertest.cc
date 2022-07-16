@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -312,6 +311,10 @@ namespace autofill {
 class PasswordAutofillAgentTest : public ChromeRenderViewTest {
  public:
   PasswordAutofillAgentTest() {}
+
+  PasswordAutofillAgentTest(const PasswordAutofillAgentTest&) = delete;
+  PasswordAutofillAgentTest& operator=(const PasswordAutofillAgentTest&) =
+      delete;
 
   // Simulates the fill password form message being sent to the renderer.
   // We use that so we don't have to make RenderView::OnFillPasswordForm()
@@ -808,9 +811,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordAutofillAgentTest);
 };
 
 // Tests that the password login is autocompleted as expected when the browser

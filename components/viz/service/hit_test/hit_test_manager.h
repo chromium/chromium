@@ -26,6 +26,10 @@ class LatestLocalSurfaceIdLookupDelegate;
 class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
  public:
   explicit HitTestManager(SurfaceManager* surface_manager);
+
+  HitTestManager(const HitTestManager&) = delete;
+  HitTestManager& operator=(const HitTestManager&) = delete;
+
   ~HitTestManager() override;
 
   // SurfaceObserver:
@@ -100,8 +104,6 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   // HitTestAggregators to stay in sync with the HitTestManager and only
   // aggregate when there is new hit-test data.
   uint64_t submit_hit_test_region_list_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestManager);
 };
 
 }  // namespace viz

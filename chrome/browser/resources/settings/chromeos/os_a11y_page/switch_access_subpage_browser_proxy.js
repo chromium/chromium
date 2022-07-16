@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /** @interface */
-/* #export */ class SwitchAccessSubpageBrowserProxy {
+export class SwitchAccessSubpageBrowserProxy {
   /**
    * Refresh assignments by requesting SwitchAccessHandler send all readable key
    * names for each action pref via the 'switch-access-assignments-changed'
@@ -34,7 +34,7 @@
 /**
  * @implements {SwitchAccessSubpageBrowserProxy}
  */
-/* #export */ class SwitchAccessSubpageBrowserProxyImpl {
+export class SwitchAccessSubpageBrowserProxyImpl {
   /** @override */
   refreshAssignmentsFromPrefs() {
     chrome.send('refreshAssignmentsFromPrefs');
@@ -58,4 +58,4 @@
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-cr.addSingletonGetter(SwitchAccessSubpageBrowserProxyImpl);
+addSingletonGetter(SwitchAccessSubpageBrowserProxyImpl);

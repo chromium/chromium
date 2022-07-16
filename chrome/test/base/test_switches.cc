@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/test_switches.h"
-#include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace switches {
 
@@ -19,10 +17,5 @@ const char kDevtoolsCodeCoverage[] = "devtools-code-coverage";
 // are monitoring. Note that this is only applicable for PerformanceTest
 // subclasses.
 const char kPerfTestPrintUmaMeans[] = "perf-test-print-uma-means";
-
-#if defined(OS_WIN)
-// If enabled, tests will run with high DPI support enabled.
-const char kEnableHighDpiSupport[] = "enable-high-dpi-support-for-testing";
-#endif
 
 }  // namespace switches

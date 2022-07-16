@@ -49,6 +49,9 @@ class FlocEventLoggerUnitTest : public testing::Test {
   FlocEventLoggerUnitTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  FlocEventLoggerUnitTest(const FlocEventLoggerUnitTest&) = delete;
+  FlocEventLoggerUnitTest& operator=(const FlocEventLoggerUnitTest&) = delete;
+
   ~FlocEventLoggerUnitTest() override = default;
 
   void SetUp() override {
@@ -101,10 +104,9 @@ class FlocEventLoggerUnitTest : public testing::Test {
     const sync_pb::UserEventSpecifics_FlocIdComputed& e =
         specifics.floc_id_computed_event();
 
-    return {
-        e.has_floc_id(), e.has_floc_id() ? e.floc_id() : 0,
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(specifics.event_time_usec()))};
+    return {e.has_floc_id(), e.has_floc_id() ? e.floc_id() : 0,
+            base::Time::FromDeltaSinceWindowsEpoch(
+                base::Microseconds(specifics.event_time_usec()))};
   }
 
  protected:
@@ -115,8 +117,6 @@ class FlocEventLoggerUnitTest : public testing::Test {
   std::unique_ptr<FakeFlocRemotePermissionService>
       fake_floc_remote_permission_service_;
   std::unique_ptr<FlocEventLogger> floc_event_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlocEventLoggerUnitTest);
 };
 
 TEST_F(FlocEventLoggerUnitTest, DefaultSyncDisabled_EventLogging) {
@@ -126,7 +126,7 @@ TEST_F(FlocEventLoggerUnitTest, DefaultSyncDisabled_EventLogging) {
   EXPECT_EQ(0u, GetLoggedEventSize());
 
   // After 10 seconds, still no loggings.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(0u, GetLoggedEventSize());
 }
 
@@ -136,13 +136,13 @@ TEST_F(FlocEventLoggerUnitTest, SyncEnabledWithinTenSeconds) {
       {true, 33, base::Time::FromTimeT(44)});
   EXPECT_EQ(0u, GetLoggedEventSize());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
+  task_environment_.FastForwardBy(base::Seconds(9));
   EnableSyncHistory();
   EXPECT_EQ(0u, GetLoggedEventSize());
 
   // After 10 seconds, expect a logging as the previous logging is attempted for
   // the second time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1u, GetLoggedEventSize());
   EXPECT_EQ(1u, GetNumberOfRemotePermissionQueries());
   EXPECT_EQ(true, GetEventAtIndex(0).sim_hash_computed);
@@ -156,12 +156,12 @@ TEST_F(FlocEventLoggerUnitTest, SyncEnabledAfterTenSeconds) {
       {true, 33, base::Time::FromTimeT(44)});
   EXPECT_EQ(0u, GetLoggedEventSize());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(11));
+  task_environment_.FastForwardBy(base::Seconds(11));
 
   // If sync is enabled after 10 seconds after the logging time, the event won't
   // be handled.
   EnableSyncHistory();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10000));
+  task_environment_.FastForwardBy(base::Seconds(10000));
   EXPECT_EQ(0u, GetLoggedEventSize());
 }
 
@@ -169,7 +169,7 @@ TEST_F(FlocEventLoggerUnitTest, MultipleEventsBeforeSyncEnabled) {
   floc_event_logger_->LogFlocComputedEvent(
       {true, 33, base::Time::FromTimeT(44)});
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   floc_event_logger_->LogFlocComputedEvent(
       {false, 999, base::Time::FromTimeT(55)});
@@ -178,7 +178,7 @@ TEST_F(FlocEventLoggerUnitTest, MultipleEventsBeforeSyncEnabled) {
 
   EnableSyncHistory();
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   // At time 10, the first event will be given its second attempt.
   EXPECT_EQ(1u, GetLoggedEventSize());
@@ -190,7 +190,7 @@ TEST_F(FlocEventLoggerUnitTest, MultipleEventsBeforeSyncEnabled) {
   // At time 15, the second event will be given its second attempt.
   // The sim_hash field of the 2nd event (i.e. 999) was ignored because the
   // sim_hash_computed field is false.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(15));
+  task_environment_.FastForwardBy(base::Seconds(15));
   EXPECT_EQ(2u, GetLoggedEventSize());
   EXPECT_EQ(2u, GetNumberOfRemotePermissionQueries());
   EXPECT_EQ(false, GetEventAtIndex(1).sim_hash_computed);
@@ -228,7 +228,7 @@ TEST_F(FlocEventLoggerUnitTest,
   EXPECT_EQ(0u, GetLoggedEventSize());
 
   SetRemoteSwaaNacAccountEnabled(true);
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(0u, GetLoggedEventSize());
 }
 

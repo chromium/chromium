@@ -32,6 +32,9 @@ class WaylandInputTimestamps : public WaylandInputDelegate::Observer {
     delegate_->AddObserver(this);
   }
 
+  WaylandInputTimestamps(const WaylandInputTimestamps&) = delete;
+  WaylandInputTimestamps& operator=(const WaylandInputTimestamps&) = delete;
+
   ~WaylandInputTimestamps() override {
     if (delegate_)
       delegate_->RemoveObserver(this);
@@ -53,8 +56,6 @@ class WaylandInputTimestamps : public WaylandInputDelegate::Observer {
  private:
   wl_resource* const resource_;
   WaylandInputDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandInputTimestamps);
 };
 
 void input_timestamps_destroy(struct wl_client* client,

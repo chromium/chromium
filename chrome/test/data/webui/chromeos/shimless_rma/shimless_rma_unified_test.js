@@ -13,12 +13,18 @@ import {onboardingNetworkPageTest} from './onboarding_network_page_test.js';
 import {onboardingSelectComponentsPageTest} from './onboarding_select_components_page_test.js';
 import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
 import {onboardingWaitForManualWpDisablePageTest} from './onboarding_wait_for_manual_wp_disable_page_test.js';
-import {reimagingAccelerometerCalibrationPageTest} from './reimaging_accelerometer_calibration_page_test.js';
+import {onboardingWpDisableCompletePageTest} from './onboarding_wp_disable_complete_page_test.js';
+import {reimagingCalibrationPageTest} from './reimaging_calibration_page_test.js';
+import {reimagingCalibrationRunPageTest} from './reimaging_calibration_run_page_test.js';
+import {reimagingCalibrationSetupPageTest} from './reimaging_calibration_setup_page_test.js';
 import {reimagingDeviceInformationPageTest} from './reimaging_device_information_page_test.js';
 import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
 import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
+import {wrapupFinalizePageTest} from './wrapup_finalize_page_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
+import {wrapupRestockPageTest} from './wrapup_restock_page_test.js';
+import {wrapupWaitForManualWpEnablePageTest} from './wrapup_wait_for_manual_wp_enable_page_test.js';
 
 window.test_suites_list = [];
 
@@ -45,11 +51,18 @@ runSuite(
     'OnboardingWaitForManualWpDisablePageTest',
     onboardingWaitForManualWpDisablePageTest);
 runSuite(
-    'ReimagingAccelerometerCalibrationPageTest',
-    reimagingAccelerometerCalibrationPageTest);
+    'OnboardingWpDisableCompletePageTest', onboardingWpDisableCompletePageTest);
+runSuite('ReimagingCalibrationPageTest', reimagingCalibrationPageTest);
+runSuite('ReimagingCalibrationRunPageTest', reimagingCalibrationRunPageTest);
+runSuite(
+    'ReimagingCalibrationSetupPageTest', reimagingCalibrationSetupPageTest);
 runSuite('ReimagingFirmwareUpdatePageTest', reimagingFirmwareUpdatePageTest);
 runSuite(
     'ReimagingDeviceInformationPageTest', reimagingDeviceInformationPageTest);
 runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
+runSuite('WrapupFinalizePageTest', wrapupFinalizePageTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);
+runSuite('WrapupRestockPageTest', wrapupRestockPageTest);
+runSuite(
+    'WrapupWaitForManualWpEnablePageTest', wrapupWaitForManualWpEnablePageTest);

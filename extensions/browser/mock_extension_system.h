@@ -24,6 +24,10 @@ class MockExtensionSystem : public ExtensionSystem {
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
 
   explicit MockExtensionSystem(content::BrowserContext* context);
+
+  MockExtensionSystem(const MockExtensionSystem&) = delete;
+  MockExtensionSystem& operator=(const MockExtensionSystem&) = delete;
+
   ~MockExtensionSystem() override;
 
   content::BrowserContext* browser_context() { return browser_context_; }
@@ -33,13 +37,13 @@ class MockExtensionSystem : public ExtensionSystem {
   // ExtensionSystem overrides:
   void InitForRegularProfile(bool extensions_enabled) override;
   ExtensionService* extension_service() override;
-  RuntimeData* runtime_data() override;
   ManagementPolicy* management_policy() override;
   ServiceWorkerManager* service_worker_manager() override;
   UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  scoped_refptr<ValueStoreFactory> store_factory() override;
+  StateStore* dynamic_user_scripts_store() override;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
@@ -62,8 +66,6 @@ class MockExtensionSystem : public ExtensionSystem {
  private:
   content::BrowserContext* browser_context_;
   base::OneShotEvent ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionSystem);
 };
 
 // A factory to create a MockExtensionSystem. Sample use:
@@ -79,6 +81,10 @@ class MockExtensionSystemFactory : public ExtensionSystemProvider {
             BrowserContextDependencyManager::GetInstance()) {
     DependsOn(ExtensionRegistryFactory::GetInstance());
   }
+
+  MockExtensionSystemFactory(const MockExtensionSystemFactory&) = delete;
+  MockExtensionSystemFactory& operator=(const MockExtensionSystemFactory&) =
+      delete;
 
   ~MockExtensionSystemFactory() override {}
 
@@ -99,9 +105,6 @@ class MockExtensionSystemFactory : public ExtensionSystemProvider {
     return static_cast<ExtensionSystem*>(
         GetServiceForBrowserContext(context, true));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionSystemFactory);
 };
 
 }  // namespace extensions

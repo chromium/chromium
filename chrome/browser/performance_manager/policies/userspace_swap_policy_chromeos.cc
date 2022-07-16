@@ -40,7 +40,7 @@ class UserspaceSwapPolicyData
   base::TimeTicks last_swap_;
 };
 
-constexpr base::TimeDelta kMetricsInterval = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kMetricsInterval = base::Seconds(30);
 
 }  // namespace
 

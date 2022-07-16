@@ -23,6 +23,9 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
  public:
   StructTraitsTest() = default;
 
+  StructTraitsTest(const StructTraitsTest&) = delete;
+  StructTraitsTest& operator=(const StructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::TraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::TraitsTestService> remote;
@@ -85,8 +88,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(StructTraitsTest);
 };
 
 }  // namespace

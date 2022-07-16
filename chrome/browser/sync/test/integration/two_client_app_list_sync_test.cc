@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_app_list_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -111,12 +109,13 @@ class RemoveDefaultAppSyncTest : public testing::WithParamInterface<bool>,
                                  public TwoClientAppListSyncTest {
  public:
   RemoveDefaultAppSyncTest() = default;
+
+  RemoveDefaultAppSyncTest(const RemoveDefaultAppSyncTest&) = delete;
+  RemoveDefaultAppSyncTest& operator=(const RemoveDefaultAppSyncTest&) = delete;
+
   ~RemoveDefaultAppSyncTest() override = default;
 
   bool MarkAppAsDefaultApp() { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoveDefaultAppSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, StartWithNoApps) {
@@ -334,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableApps) {
 
   // Disable APP_LIST by disabling apps sync.
   SyncUserSettings* settings = GetClient(1)->service()->GetUserSettings();
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     UserSelectableOsTypeSet types = settings->GetSelectedOsTypes();
     types.Remove(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
@@ -348,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableApps) {
   ASSERT_FALSE(AllProfilesHaveSameAppList());
 
   // Enable APP_LIST by enabling apps sync.
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     UserSelectableOsTypeSet types = settings->GetSelectedOsTypes();
     types.Put(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
@@ -589,12 +588,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, FolderAddRemove) {
   ASSERT_TRUE(AllProfilesHaveSameAppList());
 }
 
-// Tests for SplitSettingsSync.
+// Tests for SyncSettingsCategorization and SyncConsentOptional.
 class TwoClientAppListOsSyncTest : public TwoClientAppListSyncTest {
  public:
   TwoClientAppListOsSyncTest() {
-    settings_feature_list_.InitAndEnableFeature(
-        chromeos::features::kSplitSettingsSync);
+    settings_feature_list_.InitWithFeatures(
+        {chromeos::features::kSyncSettingsCategorization,
+         chromeos::features::kSyncConsentOptional},
+        {});
   }
   ~TwoClientAppListOsSyncTest() override = default;
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -47,6 +46,11 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   using TView = EnableDebuggingScreenView;
 
   explicit EnableDebuggingScreenHandler(JSCallsContainer* js_calls_container);
+
+  EnableDebuggingScreenHandler(const EnableDebuggingScreenHandler&) = delete;
+  EnableDebuggingScreenHandler& operator=(const EnableDebuggingScreenHandler&) =
+      delete;
+
   ~EnableDebuggingScreenHandler() override;
 
   // EnableDebuggingScreenView implementation:
@@ -74,8 +78,6 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreenHandler);
 };
 
 }  // namespace chromeos

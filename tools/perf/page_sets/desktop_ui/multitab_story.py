@@ -4,6 +4,7 @@
 
 import logging
 import py_utils
+from page_sets.desktop_ui import desktop_ui_shared_state
 from page_sets.desktop_ui.js_utils import MEASURE_FRAME_TIME_SCRIPT, \
     START_MEASURING_FRAME_TIME, STOP_MEASURING_FRAME_TIME
 from telemetry.page import page
@@ -13,10 +14,17 @@ class MultiTabStory(page.Page):
   """Base class for stories to open tabs with a list of urls"""
 
   def __init__(self, story_set, extra_browser_args=None):
-    super(MultiTabStory, self).__init__(url=self.URL,
-                                        name=self.NAME,
-                                        page_set=story_set,
-                                        extra_browser_args=extra_browser_args)
+    tags = []
+    if hasattr(self, 'TAGS'):
+      for t in self.TAGS:
+        tags.append(t.name)
+    super(MultiTabStory, self).__init__(
+        url=self.URL,
+        name=self.NAME,
+        tags=tags,
+        page_set=story_set,
+        extra_browser_args=extra_browser_args,
+        shared_page_state_class=desktop_ui_shared_state.DesktopUISharedState)
     self._devtools = None
 
   def RunNavigateSteps(self, action_runner):

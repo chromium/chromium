@@ -60,10 +60,12 @@ class SnackbarCollection {
         }
         if (current != null) {
             SnackbarController controller = current.getController();
-            if (isAction) {
-                controller.onAction(current.getActionData());
-            } else {
-                controller.onDismissNoAction(current.getActionData());
+            if (controller != null) {
+                if (isAction) {
+                    controller.onAction(current.getActionData());
+                } else {
+                    controller.onDismissNoAction(current.getActionData());
+                }
             }
         }
         return current;
@@ -111,6 +113,7 @@ class SnackbarCollection {
 
     private static boolean removeSnackbarFromList(
             Deque<Snackbar> list, SnackbarController controller) {
+        if (controller == null) return false;
         boolean snackbarRemoved = false;
         Iterator<Snackbar> iter = list.iterator();
         while (iter.hasNext()) {
@@ -132,6 +135,7 @@ class SnackbarCollection {
 
     private static boolean removeSnackbarFromList(
             Deque<Snackbar> list, SnackbarController controller, Object data) {
+        if (controller == null) return false;
         boolean snackbarRemoved = false;
         Iterator<Snackbar> iter = list.iterator();
         while (iter.hasNext()) {

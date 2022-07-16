@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 #define CHROME_BROWSER_ASH_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/arc/mojom/video.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

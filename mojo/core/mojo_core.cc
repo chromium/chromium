@@ -35,6 +35,9 @@ class IPCSupport {
     mojo::core::Core::Get()->SetIOTaskRunner(ipc_thread_.task_runner());
   }
 
+  IPCSupport(const IPCSupport&) = delete;
+  IPCSupport& operator=(const IPCSupport&) = delete;
+
   ~IPCSupport() {
     base::WaitableEvent wait(base::WaitableEvent::ResetPolicy::MANUAL,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -54,8 +57,6 @@ class IPCSupport {
 #endif  // !defined(COMPONENT_BUILD)
 
   base::Thread ipc_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(IPCSupport);
 };
 
 std::unique_ptr<IPCSupport>& GetIPCSupport() {

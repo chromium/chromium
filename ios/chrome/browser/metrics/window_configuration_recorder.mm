@@ -24,8 +24,7 @@
 namespace {
 
 // Delay between a recording of a new configuration.
-static constexpr base::TimeDelta kRecordDelay =
-    base::TimeDelta::FromSeconds(20);
+static constexpr base::TimeDelta kRecordDelay = base::Seconds(20);
 
 // Timer callback for recording configuration after a delay.
 void RecordWindowGeometryMetrics(WindowConfigurationRecorder* recorder) {
@@ -38,20 +37,18 @@ NSArray<UIWindow*>* ForegroundWindowsForApplication(
   NSMutableArray<UIWindow*>* windows = [NSMutableArray arrayWithCapacity:3];
 
   if (base::ios::IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      for (UIScene* scene in application.connectedScenes) {
-        if (scene.activationState != UISceneActivationStateForegroundActive)
+    for (UIScene* scene in application.connectedScenes) {
+      if (scene.activationState != UISceneActivationStateForegroundActive)
+        continue;
+
+      UIWindowScene* windowScene = base::mac::ObjCCast<UIWindowScene>(scene);
+      for (UIWindow* window in windowScene.windows) {
+        // Skip other windows (like keyboard) that keep showing up.
+        if (![window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")])
           continue;
 
-        UIWindowScene* windowScene = base::mac::ObjCCast<UIWindowScene>(scene);
-        for (UIWindow* window in windowScene.windows) {
-          // Skip other windows (like keyboard) that keep showing up.
-          if (![window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")])
-            continue;
-
-          [windows addObject:window];
-          break;  // Stop after one window per scene. This may be wrong.
-        }
+        [windows addObject:window];
+        break;  // Stop after one window per scene. This may be wrong.
       }
     }
   }

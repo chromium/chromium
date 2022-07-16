@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_DOWNLOAD_CONTROLLER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_DOWNLOAD_CONTROLLER_ASH_H_
 
+#include <string>
+
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,9 +23,9 @@ class DownloadControllerAsh : public mojom::DownloadController {
   // Allows ash classes to observe download events.
   class DownloadControllerObserver : public base::CheckedObserver {
    public:
-    virtual void OnLacrosDownloadCreated(const mojom::DownloadEvent& event) {}
-    virtual void OnLacrosDownloadUpdated(const mojom::DownloadEvent& event) {}
-    virtual void OnLacrosDownloadDestroyed(const mojom::DownloadEvent& event) {}
+    virtual void OnLacrosDownloadCreated(const mojom::DownloadItem&) {}
+    virtual void OnLacrosDownloadUpdated(const mojom::DownloadItem&) {}
+    virtual void OnLacrosDownloadDestroyed(const mojom::DownloadItem&) {}
   };
 
   DownloadControllerAsh();
@@ -36,16 +38,47 @@ class DownloadControllerAsh : public mojom::DownloadController {
   void BindReceiver(mojo::PendingReceiver<mojom::DownloadController> receiver);
 
   // mojom::DownloadController:
-  void OnDownloadCreated(mojom::DownloadEventPtr event) override;
-  void OnDownloadUpdated(mojom::DownloadEventPtr event) override;
-  void OnDownloadDestroyed(mojom::DownloadEventPtr event) override;
+  void BindClient(
+      mojo::PendingRemote<mojom::DownloadControllerClient> client) override;
+  void OnDownloadCreated(mojom::DownloadItemPtr download) override;
+  void OnDownloadUpdated(mojom::DownloadItemPtr download) override;
+  void OnDownloadDestroyed(mojom::DownloadItemPtr download) override;
 
   // Required for the below `base::ObserverList`:
   void AddObserver(DownloadControllerObserver* observer);
   void RemoveObserver(DownloadControllerObserver* observer);
 
+  // Asynchronously returns all downloads from each Lacros client via the
+  // specified `callback`, no matter the type or state. Downloads are sorted
+  // chronologically by start time.
+  void GetAllDownloads(
+      mojom::DownloadControllerClient::GetAllDownloadsCallback callback);
+
+  // Pauses the download associated with the specified `download_guid`. This
+  // method will ultimately invoke `download::DownloadItem::Pause()`.
+  void Pause(const std::string& download_guid);
+
+  // Resumes the download associated with the specified `download_guid`. If
+  // `user_resume` is set to `true`, it signifies that this invocation was
+  // triggered by an explicit user action. This method will ultimately invoke
+  // `download::DownloadItem::Resume()`.
+  void Resume(const std::string& download_guid, bool user_resume);
+
+  // Cancels the download associated with the specified `download_guid`.  If
+  // `user_cancel` is set to `true`, it signifies that this invocation was
+  // triggered by an explicit user action. This method will ultimately invoke
+  // `download::DownloadItem::Cancel()`.
+  void Cancel(const std::string& download_guid, bool user_cancel);
+
+  // Marks the download associated with the specified `download_guid` to be
+  // `open_when_complete`. This method will ultimately invoke
+  // `download::DownloadItem::SetOpenWhenComplete()`.
+  void SetOpenWhenComplete(const std::string& download_guid,
+                           bool open_when_complete);
+
  private:
   mojo::ReceiverSet<mojom::DownloadController> receivers_;
+  mojo::RemoteSet<mojom::DownloadControllerClient> clients_;
   base::ObserverList<DownloadControllerObserver> observers_;
 };
 

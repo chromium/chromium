@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Rounded corner tab renderer for {@link goog.ui.Tab}s.
@@ -24,6 +16,8 @@ goog.require('goog.ui.Tab');
 goog.require('goog.ui.TabBar');
 goog.require('goog.ui.TabRenderer');
 goog.require('goog.ui.registry');
+goog.requireType('goog.ui.Control');
+goog.requireType('goog.ui.ControlContent');
 
 
 
@@ -34,6 +28,7 @@ goog.require('goog.ui.registry');
  * @final
  */
 goog.ui.RoundedTabRenderer = function() {
+  'use strict';
   goog.ui.TabRenderer.call(this);
 };
 goog.inherits(goog.ui.RoundedTabRenderer, goog.ui.TabRenderer);
@@ -55,6 +50,7 @@ goog.ui.RoundedTabRenderer.CSS_CLASS = goog.getCssName('goog-rounded-tab');
  * @override
  */
 goog.ui.RoundedTabRenderer.prototype.getCssClass = function() {
+  'use strict';
   return goog.ui.RoundedTabRenderer.CSS_CLASS;
 };
 
@@ -87,6 +83,7 @@ goog.ui.RoundedTabRenderer.prototype.getCssClass = function() {
  * @override
  */
 goog.ui.RoundedTabRenderer.prototype.createDom = function(tab) {
+  'use strict';
   return this.decorate(
       tab, goog.ui.RoundedTabRenderer.superClass_.createDom.call(this, tab));
 };
@@ -101,6 +98,7 @@ goog.ui.RoundedTabRenderer.prototype.createDom = function(tab) {
  * @override
  */
 goog.ui.RoundedTabRenderer.prototype.decorate = function(tab, element) {
+  'use strict';
   var tabBar = tab.getParent();
 
   if (!this.getContentElement(element)) {
@@ -128,6 +126,7 @@ goog.ui.RoundedTabRenderer.prototype.decorate = function(tab, element) {
  */
 goog.ui.RoundedTabRenderer.prototype.createTab = function(
     dom, caption, location) {
+  'use strict';
   var rows = [];
 
   if (location != goog.ui.TabBar.Location.BOTTOM) {
@@ -159,6 +158,7 @@ goog.ui.RoundedTabRenderer.prototype.createTab = function(
  * @protected
  */
 goog.ui.RoundedTabRenderer.prototype.createCaption = function(dom, caption) {
+  'use strict';
   var baseClass = this.getStructuralCssClass();
   return dom.createDom(
       goog.dom.TagName.TR, null,
@@ -178,6 +178,7 @@ goog.ui.RoundedTabRenderer.prototype.createCaption = function(dom, caption) {
  * @protected
  */
 goog.ui.RoundedTabRenderer.prototype.createEdge = function(dom, isTopEdge) {
+  'use strict';
   var baseClass = this.getStructuralCssClass();
   var inner = dom.createDom(
       goog.dom.TagName.DIV, goog.getCssName(baseClass, 'inner-edge'));
@@ -193,6 +194,7 @@ goog.ui.RoundedTabRenderer.prototype.createEdge = function(dom, isTopEdge) {
 
 /** @override */
 goog.ui.RoundedTabRenderer.prototype.getContentElement = function(element) {
+  'use strict';
   var baseClass = this.getStructuralCssClass();
   return element &&
       goog.dom.getElementsByTagNameAndClass(
@@ -205,5 +207,6 @@ goog.ui.RoundedTabRenderer.prototype.getContentElement = function(element) {
 // tab renderer.
 goog.ui.registry.setDecoratorByClassName(
     goog.ui.RoundedTabRenderer.CSS_CLASS, function() {
+      'use strict';
       return new goog.ui.Tab(null, goog.ui.RoundedTabRenderer.getInstance());
     });

@@ -29,12 +29,13 @@ class METRICS_EXPORT UkmEntryBuilder final
     : public ukm::internal::UkmEntryBuilderBase {
  public:
   UkmEntryBuilder(SourceId source_id, base::StringPiece event_name);
+
+  UkmEntryBuilder(const UkmEntryBuilder&) = delete;
+  UkmEntryBuilder& operator=(const UkmEntryBuilder&) = delete;
+
   ~UkmEntryBuilder() override;
 
   void SetMetric(base::StringPiece metric_name, int64_t value);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmEntryBuilder);
 };
 
 }  // namespace ukm

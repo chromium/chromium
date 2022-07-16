@@ -28,8 +28,7 @@ namespace {
 // Time in seconds after which we decide that the device has not rebooted
 // automatically. If reboot didn't happen during this interval, ask user to
 // reboot device manually.
-constexpr const base::TimeDelta kWaitForRebootTime =
-    base::TimeDelta::FromSeconds(3);
+constexpr const base::TimeDelta kWaitForRebootTime = base::Seconds(3);
 
 // Progress bar stages. Each represents progress bar value
 // at the beginning of each stage.
@@ -45,7 +44,7 @@ const int kProgressComplete = 100;
 const int kDownloadProgressIncrement = 60;
 
 // Period of time between planned updates.
-constexpr const base::TimeDelta kUpdateTime = base::TimeDelta::FromSeconds(1);
+constexpr const base::TimeDelta kUpdateTime = base::Seconds(1);
 
 }  // anonymous namespace
 

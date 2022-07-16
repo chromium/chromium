@@ -41,9 +41,10 @@ class AwComponentUpdateService {
   // many components were actually updated.
   using UpdateCallback = base::OnceCallback<void(int)>;
 
-  void StartComponentUpdateService(UpdateCallback finished_callback);
+  void StartComponentUpdateService(UpdateCallback finished_callback,
+                                   bool on_demand_update);
   bool RegisterComponent(const update_client::CrxComponent& component);
-  void CheckForUpdates(UpdateCallback on_finished);
+  void CheckForUpdates(UpdateCallback on_finished, bool on_demand_update);
 
   void IncrementComponentsUpdatedCount();
 
@@ -71,8 +72,8 @@ class AwComponentUpdateService {
       const std::string& id) const;
   std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
-  void ScheduleUpdatesOfRegisteredComponents(
-      UpdateCallback on_finished_updates);
+  void ScheduleUpdatesOfRegisteredComponents(UpdateCallback on_finished_updates,
+                                             bool on_demand_update);
 
   // Virtual for testing.
   virtual void RegisterComponents(RegisterComponentsCallback register_callback,

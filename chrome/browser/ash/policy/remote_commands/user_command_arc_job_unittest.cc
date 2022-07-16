@@ -9,13 +9,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
@@ -50,6 +49,10 @@ std::unique_ptr<policy::RemoteCommandJob> CreateArcJob(
 }
 
 class UserCommandArcJobTest : public testing::Test {
+ public:
+  UserCommandArcJobTest(const UserCommandArcJobTest&) = delete;
+  UserCommandArcJobTest& operator=(const UserCommandArcJobTest&) = delete;
+
  protected:
   UserCommandArcJobTest();
   ~UserCommandArcJobTest() override;
@@ -64,9 +67,6 @@ class UserCommandArcJobTest : public testing::Test {
   const std::unique_ptr<TestingProfile> profile_;
   arc::ArcPolicyBridge* const arc_policy_bridge_;
   const std::unique_ptr<arc::FakePolicyInstance> policy_instance_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserCommandArcJobTest);
 };
 
 UserCommandArcJobTest::UserCommandArcJobTest()

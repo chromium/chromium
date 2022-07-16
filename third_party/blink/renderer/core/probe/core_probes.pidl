@@ -136,8 +136,6 @@ interface CoreProbes {
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
-  void NetworkStateChanged([Keep] LocalFrame*, bool online);
-  void UpdateApplicationCacheStatus([Keep] LocalFrame*);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
   /* For BlinkGenPropertyTrees/CompositeAfterPaint. */
@@ -189,7 +187,7 @@ interface CoreProbes {
   void LocalFontsEnabled(ExecutionContext*, bool* result);
   void DidUpdateComputedStyle([Keep] Element*, const ComputedStyle* old_style, const ComputedStyle* new_style);
   void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);
-  void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType violationType);
+  void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicyViolationType violationType);
   void IsCacheDisabled(ExecutionContext*, bool* is_cache_disabled);
   void PerformanceEntryAdded([Keep] ExecutionContext*, PerformanceEntry*);
 }

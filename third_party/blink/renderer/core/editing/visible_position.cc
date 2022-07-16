@@ -282,7 +282,7 @@ std::ostream& operator<<(std::ostream& ostream,
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::VisiblePosition* vpos) {
+void ShowTree(const blink::VisiblePosition* vpos) {
   if (vpos) {
     vpos->ShowTreeForThis();
     return;
@@ -290,7 +290,7 @@ void showTree(const blink::VisiblePosition* vpos) {
   DLOG(INFO) << "Cannot showTree for (nil) VisiblePosition.";
 }
 
-void showTree(const blink::VisiblePosition& vpos) {
+void ShowTree(const blink::VisiblePosition& vpos) {
   vpos.ShowTreeForThis();
 }
 

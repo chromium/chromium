@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   FidoCableDevice(BluetoothAdapter* adapter, std::string address);
   // Constructor used for testing purposes.
   FidoCableDevice(std::unique_ptr<FidoBleConnection> connection);
+
+  FidoCableDevice(const FidoCableDevice&) = delete;
+  FidoCableDevice& operator=(const FidoCableDevice&) = delete;
+
   ~FidoCableDevice() override;
 
   // Returns FidoDevice::GetId() for a given FidoBleConnection address.
@@ -137,8 +141,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
 
   absl::optional<EncryptionData> encryption_data_;
   base::WeakPtrFactory<FidoCableDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoCableDevice);
 };
 
 }  // namespace device

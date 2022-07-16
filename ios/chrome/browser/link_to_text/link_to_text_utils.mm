@@ -48,18 +48,16 @@ shared_highlighting::LinkGenerationError OutcomeToError(
   switch (outcome) {
     case LinkGenerationOutcome::kInvalidSelection:
       return LinkGenerationError::kIncorrectSelector;
-      break;
     case LinkGenerationOutcome::kAmbiguous:
       return LinkGenerationError::kContextExhausted;
-      break;
     case LinkGenerationOutcome::kTimeout:
       return LinkGenerationError::kTimeout;
-      break;
+    case LinkGenerationOutcome::kExecutionFailed:
+      return LinkGenerationError::kUnknown;
     case LinkGenerationOutcome::kSuccess:
       // kSuccess is not supposed to happen, as it is not an error.
       NOTREACHED();
       return LinkGenerationError::kUnknown;
-      break;
   }
 }
 

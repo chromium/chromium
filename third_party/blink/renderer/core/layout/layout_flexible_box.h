@@ -47,6 +47,7 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
  public:
   explicit LayoutFlexibleBox(Element*);
   ~LayoutFlexibleBox() override;
+  void Trace(Visitor*) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -218,7 +219,10 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   void ResetAutoMarginsAndLogicalTopInCrossAxis(LayoutBox& child);
   void SetOverrideMainAxisContentSizeForChild(FlexItem&);
   void PrepareChildForPositionedLayout(LayoutBox& child);
-  void LayoutLineItems(FlexLine*, bool relayout_children, SubtreeLayoutScope&);
+  void LayoutLineItems(FlexLine*,
+                       bool relayout_children,
+                       SubtreeLayoutScope&,
+                       LayoutPoint** current_item_offset);
   void ApplyLineItemsPosition(FlexLine*);
   void LayoutColumnReverse(FlexItemVectorView&,
                            LayoutUnit cross_axis_offset,
@@ -237,14 +241,15 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
 
   // This is used to cache the preferred size for orthogonal flow children so we
   // don't have to relayout to get it
-  HashMap<const LayoutObject*, LayoutUnit> intrinsic_size_along_main_axis_;
+  HeapHashMap<Member<const LayoutObject>, LayoutUnit>
+      intrinsic_size_along_main_axis_;
 
   // This set is used to keep track of which children we laid out in this
   // current layout iteration. We need it because the ones in this set may
   // need an additional layout pass for correct stretch alignment handling, as
   // the first layout likely did not use the correct value for percentage
   // sizing of children.
-  HashSet<const LayoutObject*> relaid_out_children_;
+  HeapHashSet<Member<const LayoutObject>> relaid_out_children_;
 
   mutable OrderIterator order_iterator_;
   int number_of_in_flow_children_on_first_line_;

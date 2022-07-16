@@ -51,6 +51,10 @@ class PPAPI_PROXY_EXPORT MessageHandler {
       void* user_data,
       PP_Resource message_loop,
       int32_t* error);
+
+  MessageHandler(const MessageHandler&) = delete;
+  MessageHandler& operator=(const MessageHandler&) = delete;
+
   ~MessageHandler();
 
   bool LoopIsValid() const;
@@ -68,8 +72,6 @@ class PPAPI_PROXY_EXPORT MessageHandler {
   const PPP_MessageHandler_0_2* handler_if_;
   void* user_data_;
   scoped_refptr<MessageLoopResource> message_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageHandler);
 };
 
 }  // namespace proxy

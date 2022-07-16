@@ -30,6 +30,9 @@ class DeviceDescriptionFetcher {
       base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
       base::OnceCallback<void(const std::string&)> error_cb);
 
+  DeviceDescriptionFetcher(const DeviceDescriptionFetcher&) = delete;
+  DeviceDescriptionFetcher& operator=(const DeviceDescriptionFetcher&) = delete;
+
   virtual ~DeviceDescriptionFetcher();
 
   const GURL& device_description_url() { return device_description_url_; }
@@ -55,7 +58,6 @@ class DeviceDescriptionFetcher {
   std::unique_ptr<DialURLFetcher> fetcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DeviceDescriptionFetcher);
 };
 
 }  // namespace media_router

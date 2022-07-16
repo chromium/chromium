@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -31,11 +32,11 @@ const int64_t kTestMaxImageSize = 128 * 1024;
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kDefault;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kDefault;
 #endif
 #endif
 
@@ -69,7 +70,10 @@ class Request {
   const SkBitmap& bitmap() const { return bitmap_; }
 
  private:
-  void OnRequestDone(const SkBitmap& result_image) { bitmap_ = result_image; }
+  void OnRequestDone(base::TimeDelta ignored_decoding_time,
+                     const SkBitmap& result_image) {
+    bitmap_ = result_image;
+  }
 
   ImageDecoderImpl* decoder_;
   SkBitmap bitmap_;
@@ -88,10 +92,10 @@ class BlinkInitializer : public blink::Platform {
     blink::CreateMainThreadAndInitialize(this, &binders);
   }
 
-  ~BlinkInitializer() override = default;
+  BlinkInitializer(const BlinkInitializer&) = delete;
+  BlinkInitializer& operator=(const BlinkInitializer&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlinkInitializer);
+  ~BlinkInitializer() override = default;
 };
 
 base::LazyInstance<BlinkInitializer>::Leaky g_blink_initializer =
@@ -145,9 +149,9 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
     // Check that if resize not requested and image exceeds IPC size limit,
     // an empty image is returned
     if (heights[i] > max_height_for_msg) {
-      Request request(decoder());
-      request.DecodeImage(jpg, false);
-      EXPECT_TRUE(request.bitmap().isNull());
+      Request request2(decoder());
+      request2.DecodeImage(jpg, false);
+      EXPECT_TRUE(request2.bitmap().isNull());
     }
 #endif
   }

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CONTENT_SETTINGS_CONTENT_SETTINGS_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CONTENT_SETTINGS_CONTENT_SETTINGS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
@@ -24,6 +23,10 @@ class ContentSettingsService : public BrowserContextKeyedAPI,
                                public EarlyExtensionPrefsObserver {
  public:
   explicit ContentSettingsService(content::BrowserContext* context);
+
+  ContentSettingsService(const ContentSettingsService&) = delete;
+  ContentSettingsService& operator=(const ContentSettingsService&) = delete;
+
   ~ContentSettingsService() override;
 
   scoped_refptr<ContentSettingsStore> content_settings_store() const {
@@ -61,8 +64,6 @@ class ContentSettingsService : public BrowserContextKeyedAPI,
   scoped_refptr<ContentSettingsStore> content_settings_store_;
   base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsService);
 };
 
 }  // namespace extensions

@@ -21,7 +21,7 @@ from .user_defined_type import UserDefinedType
 class CallbackInterface(UserDefinedType, WithExtendedAttributes,
                         WithCodeGeneratorInfo, WithExposure, WithComponent,
                         WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-interfaces"""
+    """https://webidl.spec.whatwg.org/#idl-interfaces"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):

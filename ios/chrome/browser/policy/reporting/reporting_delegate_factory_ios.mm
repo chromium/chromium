@@ -6,7 +6,6 @@
 
 #include "ios/chrome/browser/policy/reporting/browser_report_generator_ios.h"
 #include "ios/chrome/browser/policy/reporting/profile_report_generator_ios.h"
-#include "ios/chrome/browser/policy/reporting/report_generator_ios.h"
 #include "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,7 +26,7 @@ ReportingDelegateFactoryIOS::GetProfileReportGeneratorDelegate() {
 
 std::unique_ptr<ReportGenerator::Delegate>
 ReportingDelegateFactoryIOS::GetReportGeneratorDelegate() {
-  return std::make_unique<ReportGeneratorIOS>();
+  return nullptr;
 }
 
 std::unique_ptr<ReportScheduler::Delegate>

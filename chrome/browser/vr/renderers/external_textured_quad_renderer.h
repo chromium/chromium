@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_RENDERERS_EXTERNAL_TEXTURED_QUAD_RENDERER_H_
 #define CHROME_BROWSER_VR_RENDERERS_EXTERNAL_TEXTURED_QUAD_RENDERER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
 
 namespace vr {
@@ -13,12 +12,15 @@ namespace vr {
 class ExternalTexturedQuadRenderer : public TexturedQuadRenderer {
  public:
   ExternalTexturedQuadRenderer();
+
+  ExternalTexturedQuadRenderer(const ExternalTexturedQuadRenderer&) = delete;
+  ExternalTexturedQuadRenderer& operator=(const ExternalTexturedQuadRenderer&) =
+      delete;
+
   ~ExternalTexturedQuadRenderer() override;
 
  private:
   GLenum TextureType() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalTexturedQuadRenderer);
 };
 
 }  // namespace vr

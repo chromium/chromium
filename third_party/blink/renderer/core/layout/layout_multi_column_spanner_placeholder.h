@@ -27,6 +27,8 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
       const ComputedStyle& parent_style,
       LayoutBox&);
 
+  void Trace(Visitor*) const override;
+
   LayoutBlockFlow* MultiColumnBlockFlow() const {
     NOT_DESTROYED();
     return To<LayoutBlockFlow>(Parent());
@@ -59,6 +61,8 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   void LayoutObjectInFlowThreadStyleDidChange(const ComputedStyle* old_style);
   void UpdateProperties(const ComputedStyle& parent_style);
 
+  explicit LayoutMultiColumnSpannerPlaceholder(LayoutBox*);
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutMultiColumnSpannerPlaceholder";
@@ -81,8 +85,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
                    HitTestAction) override;
 
  private:
-  LayoutMultiColumnSpannerPlaceholder(LayoutBox*);
-
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
     NOT_DESTROYED();
     NOTREACHED();
@@ -90,7 +92,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
   }
 
   // The actual column-span:all layoutObject inside the flow thread.
-  LayoutBox* layout_object_in_flow_thread_;
+  Member<LayoutBox> layout_object_in_flow_thread_;
 };
 
 template <>

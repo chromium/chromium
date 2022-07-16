@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/extensions/api/tab_capture.h"
@@ -36,6 +35,9 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
                            public ExtensionRegistryObserver,
                            public MediaCaptureDevicesDispatcher::Observer {
  public:
+  TabCaptureRegistry(const TabCaptureRegistry&) = delete;
+  TabCaptureRegistry& operator=(const TabCaptureRegistry&) = delete;
+
   static TabCaptureRegistry* Get(content::BrowserContext* context);
 
   // Used by BrowserContextKeyedAPI.
@@ -118,8 +120,6 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabCaptureRegistry);
 };
 
 }  // namespace extensions

@@ -36,6 +36,7 @@ class LayoutMedia : public LayoutImage {
  public:
   explicit LayoutMedia(HTMLMediaElement*);
   ~LayoutMedia() override;
+  void Trace(Visitor*) const override;
 
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();

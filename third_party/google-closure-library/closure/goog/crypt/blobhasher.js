@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Asynchronous hash computer for the Blob interface.
@@ -47,6 +39,7 @@ goog.require('goog.log');
  * @final
  */
 goog.crypt.BlobHasher = function(hashFn, opt_blockSize) {
+  'use strict';
   goog.crypt.BlobHasher.base(this, 'constructor');
 
   /**
@@ -127,6 +120,7 @@ goog.crypt.BlobHasher.EventType = {
  * @param {!Blob} blob The blob of data to compute the hash for.
  */
 goog.crypt.BlobHasher.prototype.hash = function(blob) {
+  'use strict';
   this.abort();
   this.hashFn_.reset();
   this.blob_ = blob;
@@ -150,6 +144,7 @@ goog.crypt.BlobHasher.prototype.hash = function(blob) {
  *     values are not allowed.
  */
 goog.crypt.BlobHasher.prototype.setHashingLimit = function(byteOffset) {
+  'use strict';
   goog.asserts.assert(byteOffset >= 0, 'Hashing limit must be non-negative.');
   this.hashingLimit_ = byteOffset;
 
@@ -165,6 +160,7 @@ goog.crypt.BlobHasher.prototype.setHashingLimit = function(byteOffset) {
  * Abort hash computation.
  */
 goog.crypt.BlobHasher.prototype.abort = function() {
+  'use strict';
   if (this.fileReader_) {
     this.fileReader_.abort();
     this.fileReader_ = null;
@@ -181,6 +177,7 @@ goog.crypt.BlobHasher.prototype.abort = function() {
  * @return {number} Number of bytes processed so far.
  */
 goog.crypt.BlobHasher.prototype.getBytesProcessed = function() {
+  'use strict';
   return this.bytesProcessed_;
 };
 
@@ -189,6 +186,7 @@ goog.crypt.BlobHasher.prototype.getBytesProcessed = function() {
  * @return {Array<number>} The computed hash value or null if not ready.
  */
 goog.crypt.BlobHasher.prototype.getHash = function() {
+  'use strict';
   return this.hashVal_;
 };
 
@@ -199,6 +197,7 @@ goog.crypt.BlobHasher.prototype.getHash = function() {
  * @private
  */
 goog.crypt.BlobHasher.prototype.processNextBlock_ = function() {
+  'use strict';
   goog.asserts.assert(this.blob_, 'A hash computation must be in progress.');
 
   if (this.bytesProcessed_ < this.blob_.size) {
@@ -246,6 +245,7 @@ goog.crypt.BlobHasher.prototype.processNextBlock_ = function() {
  * @private
  */
 goog.crypt.BlobHasher.prototype.onLoad_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'Successfully loaded a chunk');
 
   var array = null;
@@ -277,6 +277,7 @@ goog.crypt.BlobHasher.prototype.onLoad_ = function() {
  * @private
  */
 goog.crypt.BlobHasher.prototype.onError_ = function() {
+  'use strict';
   this.fileReader_ = null;
   this.blob_ = null;
   this.dispatchEvent(goog.crypt.BlobHasher.EventType.ERROR);

@@ -11,12 +11,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/payments/content/web_app_manifest.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
 #include "content/public/browser/payment_app_provider.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 class GURL;
@@ -39,8 +38,7 @@ class PaymentManifestWebDataService;
 
 // Retrieves service worker payment apps.
 class ServiceWorkerPaymentAppFinder
-    : public content::RenderDocumentHostUserData<
-          ServiceWorkerPaymentAppFinder> {
+    : public content::DocumentUserData<ServiceWorkerPaymentAppFinder> {
  public:
   using InstallablePaymentApps =
       std::map<GURL, std::unique_ptr<WebAppInstallationInfo>>;
@@ -48,6 +46,10 @@ class ServiceWorkerPaymentAppFinder
       base::OnceCallback<void(content::InstalledPaymentAppsFinder::PaymentApps,
                               InstallablePaymentApps,
                               const std::string& error_message)>;
+
+  ServiceWorkerPaymentAppFinder(const ServiceWorkerPaymentAppFinder&) = delete;
+  ServiceWorkerPaymentAppFinder& operator=(
+      const ServiceWorkerPaymentAppFinder&) = delete;
 
   ~ServiceWorkerPaymentAppFinder() override;
 
@@ -88,14 +90,14 @@ class ServiceWorkerPaymentAppFinder
   void IgnorePaymentMethodForTest(const std::string& method);
 
  private:
-  friend class content::RenderDocumentHostUserData<
-      ServiceWorkerPaymentAppFinder>;
+  friend class content::DocumentUserData<ServiceWorkerPaymentAppFinder>;
   friend class IframeCspTest;
   friend class PaymentRequestPaymentAppTest;
   friend class ServiceWorkerPaymentAppFinderBrowserTest;
   friend class PaymentRequestPlatformBrowserTestBase;
   friend class PaymentMethodViewControllerTest;
   friend class PaymentHandlerIconRefetchTest;
+  friend class EmptyParametersTest;
 
   explicit ServiceWorkerPaymentAppFinder(content::RenderFrameHost* rfh);
 
@@ -105,15 +107,10 @@ class ServiceWorkerPaymentAppFinder
   void SetDownloaderAndIgnorePortInOriginComparisonForTesting(
       std::unique_ptr<PaymentManifestDownloader> downloader);
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-
-  // The identifier of the frame that owns this ServiceWorkerPaymentAppFinder.
-  content::GlobalRenderFrameHostId frame_routing_id_;
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   std::set<std::string> ignored_methods_;
   std::unique_ptr<PaymentManifestDownloader> test_downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppFinder);
 };
 
 }  // namespace payments

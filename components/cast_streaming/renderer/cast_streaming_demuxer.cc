@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/renderer/cast_streaming_receiver.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -176,7 +176,8 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
 
 }  // namespace
 
-class CastStreamingAudioDemuxerStream : public CastStreamingDemuxerStream {
+class CastStreamingAudioDemuxerStream final
+    : public CastStreamingDemuxerStream {
  public:
   explicit CastStreamingAudioDemuxerStream(
       mojom::AudioStreamInfoPtr audio_stream_info)
@@ -187,7 +188,7 @@ class CastStreamingAudioDemuxerStream : public CastStreamingDemuxerStream {
     DVLOG(1) << __func__
              << ": config info: " << config_.AsHumanReadableString();
   }
-  ~CastStreamingAudioDemuxerStream() final = default;
+  ~CastStreamingAudioDemuxerStream() override = default;
 
  private:
   // CastStreamingBufferReceiver implementation.
@@ -215,7 +216,8 @@ class CastStreamingAudioDemuxerStream : public CastStreamingDemuxerStream {
   media::AudioDecoderConfig config_;
 };
 
-class CastStreamingVideoDemuxerStream : public CastStreamingDemuxerStream {
+class CastStreamingVideoDemuxerStream final
+    : public CastStreamingDemuxerStream {
  public:
   explicit CastStreamingVideoDemuxerStream(
       mojom::VideoStreamInfoPtr video_stream_info)
@@ -226,7 +228,7 @@ class CastStreamingVideoDemuxerStream : public CastStreamingDemuxerStream {
     DVLOG(1) << __func__
              << ": config info: " << config_.AsHumanReadableString();
   }
-  ~CastStreamingVideoDemuxerStream() final = default;
+  ~CastStreamingVideoDemuxerStream() override = default;
 
  private:
   // CastStreamingBufferReceiver implementation.

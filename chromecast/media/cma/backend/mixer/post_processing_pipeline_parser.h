@@ -48,6 +48,10 @@ class PostProcessingPipelineParser {
   // For testing only:
   explicit PostProcessingPipelineParser(base::Value config_dict);
 
+  PostProcessingPipelineParser(const PostProcessingPipelineParser&) = delete;
+  PostProcessingPipelineParser& operator=(const PostProcessingPipelineParser&) =
+      delete;
+
   ~PostProcessingPipelineParser();
 
   std::vector<StreamPipelineDescriptor> GetStreamPipelines();
@@ -66,8 +70,6 @@ class PostProcessingPipelineParser {
   const base::FilePath file_path_;
   base::Value config_dict_;
   const base::Value* postprocessor_config_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PostProcessingPipelineParser);
 };
 
 }  // namespace media

@@ -3,35 +3,49 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {DeviceNameState, SetDeviceNameResult} from './device_name_util.js';
 // clang-format on
 
 /**
  * @typedef {{
  *   deviceName: string,
+ *   deviceNameState: !DeviceNameState,
  * }}
  */
-/* #export */ let DeviceNameMetadata;
+export let DeviceNameMetadata;
 
 /** @interface */
-/* #export */ class DeviceNameBrowserProxy {
+export class DeviceNameBrowserProxy {
   /**
-   * Queries the system for metadata about the device name.
+   * Notifies the system that the page is ready for the device name.
    * @return {!Promise<!DeviceNameMetadata>}
    */
-  getDeviceNameMetadata() {}
+  notifyReadyForDeviceName() {}
+
+  /**
+   * Attempts to set the device name to the new name entered by the user.
+   * @param {string} name
+   * @return {!Promise<!SetDeviceNameResult>}
+   */
+  attemptSetDeviceName(name) {}
 }
 
 /**
  * @implements {DeviceNameBrowserProxy}
  */
-/* #export */ class DeviceNameBrowserProxyImpl {
+export class DeviceNameBrowserProxyImpl {
   /** @override */
-  getDeviceNameMetadata() {
-    return cr.sendWithPromise('getDeviceNameMetadata');
+  notifyReadyForDeviceName() {
+    return chrome.send('notifyReadyForDeviceName');
+  }
+
+  /** @override */
+  attemptSetDeviceName(name) {
+    return sendWithPromise('attemptSetDeviceName', name);
   }
 }
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-cr.addSingletonGetter(DeviceNameBrowserProxyImpl);
+addSingletonGetter(DeviceNameBrowserProxyImpl);

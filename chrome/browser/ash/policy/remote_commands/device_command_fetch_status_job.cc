@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/browser_process.h"
@@ -32,11 +32,11 @@ DeviceCommandFetchStatusJob::GetType() const {
 void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult succeeded_callback,
                                           CallbackWithResult failed_callback) {
   SYSLOG(INFO) << "Fetching device status";
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  DeviceCloudPolicyManagerChromeOS* manager =
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  DeviceCloudPolicyManagerAsh* manager =
       connector->GetDeviceCloudPolicyManager();
-  // DeviceCloudPolicyManagerChromeOS, StatusUploader and SystemLogUploader can
+  // DeviceCloudPolicyManagerAsh, StatusUploader and SystemLogUploader can
   // be null during shutdown (and unit tests). StatusUploader and
   // SystemLogUploader objects have the same lifetime - they are created
   // together and they are destroyed together (which is why this code doesn't

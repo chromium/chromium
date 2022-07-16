@@ -40,5 +40,14 @@
             app:primaryText="@string/test_string"
             app:descriptionText="@string/test_string" />
 
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/icon_disabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:state_enabled="false"
+            app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
+            app:primaryText="@string/test_string"
+            app:descriptionText="@string/test_string" />
+
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 </FrameLayout>

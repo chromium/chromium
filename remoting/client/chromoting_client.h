@@ -53,6 +53,9 @@ class ChromotingClient : public SignalStrategy::Listener,
                    protocol::VideoRenderer* video_renderer,
                    base::WeakPtr<protocol::AudioStub> audio_stream_consumer);
 
+  ChromotingClient(const ChromotingClient&) = delete;
+  ChromotingClient& operator=(const ChromotingClient&) = delete;
+
   ~ChromotingClient() override;
 
   void set_protocol_config(
@@ -150,8 +153,6 @@ class ChromotingClient : public SignalStrategy::Listener,
   bool host_capabilities_received_ = false;
 
   std::unique_ptr<HostExperimentSender> host_experiment_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingClient);
 };
 
 }  // namespace remoting

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_
 #define CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_
 
-#include "base/macros.h"
-
 class Browser;
 
 // Base class for a session restore request bubble, to be displayed when the
@@ -19,15 +17,16 @@ class SessionCrashedBubble {
   // reporting if it's not already enabled.
   // Note: It is the caller's responsibility to determine if the previous
   // session ended with a crash.
-  static void ShowIfNotOffTheRecordProfile(Browser* browser);
+  static void ShowIfNotOffTheRecordProfile(Browser* browser,
+                                           bool skip_tab_checking);
+
+  SessionCrashedBubble(const SessionCrashedBubble&) = delete;
+  SessionCrashedBubble& operator=(const SessionCrashedBubble&) = delete;
 
   virtual ~SessionCrashedBubble() {}
 
  protected:
   SessionCrashedBubble() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionCrashedBubble);
 };
 
 #endif  // CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_

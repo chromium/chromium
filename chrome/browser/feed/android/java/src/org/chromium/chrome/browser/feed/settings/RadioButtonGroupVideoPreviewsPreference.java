@@ -12,8 +12,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.VideoPreviewsType;
-import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 

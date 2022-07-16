@@ -20,7 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -85,7 +85,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -450,8 +449,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
           break;
       }
 #if defined(USE_OZONE)
-      if (features::IsUsingOzonePlatform() &&
-          params.surface_handle != gpu::kNullSurfaceHandle) {
+      if (params.surface_handle != gpu::kNullSurfaceHandle) {
         window_surface_ =
             ui::OzonePlatform::GetInstance()
                 ->GetSurfaceFactoryOzone()

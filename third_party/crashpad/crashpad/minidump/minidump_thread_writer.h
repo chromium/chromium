@@ -23,7 +23,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_thread_id_map.h"
 #include "minidump/minidump_writable.h"
@@ -44,6 +43,10 @@ class ThreadSnapshot;
 class MinidumpThreadWriter final : public internal::MinidumpWritable {
  public:
   MinidumpThreadWriter();
+
+  MinidumpThreadWriter(const MinidumpThreadWriter&) = delete;
+  MinidumpThreadWriter& operator=(const MinidumpThreadWriter&) = delete;
+
   ~MinidumpThreadWriter() override;
 
   //! \brief Initializes the MINIDUMP_THREAD based on \a thread_snapshot.
@@ -131,8 +134,6 @@ class MinidumpThreadWriter final : public internal::MinidumpWritable {
   MINIDUMP_THREAD thread_;
   std::unique_ptr<SnapshotMinidumpMemoryWriter> stack_;
   std::unique_ptr<MinidumpContextWriter> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpThreadWriter);
 };
 
 //! \brief The writer for a MINIDUMP_THREAD_LIST stream in a minidump file,
@@ -140,6 +141,10 @@ class MinidumpThreadWriter final : public internal::MinidumpWritable {
 class MinidumpThreadListWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpThreadListWriter();
+
+  MinidumpThreadListWriter(const MinidumpThreadListWriter&) = delete;
+  MinidumpThreadListWriter& operator=(const MinidumpThreadListWriter&) = delete;
+
   ~MinidumpThreadListWriter() override;
 
   //! \brief Adds an initialized MINIDUMP_THREAD for each thread in \a
@@ -205,8 +210,6 @@ class MinidumpThreadListWriter final : public internal::MinidumpStreamWriter {
   std::vector<std::unique_ptr<MinidumpThreadWriter>> threads_;
   MinidumpMemoryListWriter* memory_list_writer_;  // weak
   MINIDUMP_THREAD_LIST thread_list_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpThreadListWriter);
 };
 
 }  // namespace crashpad

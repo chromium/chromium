@@ -6,11 +6,15 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GET_LOGINS_WITH_AFFILIATIONS_REQUEST_HANDLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+
+#include "components/password_manager/core/browser/password_form_digest.h"
 
 namespace password_manager {
 
@@ -27,11 +31,19 @@ class GetLoginsWithAffiliationsRequestHandler
   using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 
   GetLoginsWithAffiliationsRequestHandler(
+      const PasswordFormDigest& form,
       base::WeakPtr<PasswordStoreConsumer> consumer,
       PasswordStoreInterface* store);
 
   // Returns a OnceCallback that calls 'HandleLoginsForFormReceived()'.
   base::OnceCallback<void(LoginsResult)> LoginsForFormClosure();
+
+  // Returns a OnceCallback that calls 'HandleAffiliationsReceived()'. The
+  // callback returns the forms to be additionally requested from the password
+  // store.
+  base::OnceCallback<
+      std::vector<PasswordFormDigest>(const std::vector<std::string>&)>
+  AffiliationsClosure();
 
   // Returns a OnceCallback that calls 'HandleAffiliatedLoginsReceived()'.
   base::OnceCallback<void(LoginsResult)> AffiliatedLoginsClosure();
@@ -43,11 +55,22 @@ class GetLoginsWithAffiliationsRequestHandler
   // Appends logins to the 'results_' and calls 'forms_received_'.
   void HandleLoginsForFormReceived(LoginsResult logins);
 
-  // Marks logins as affiliated and trims username only. Afterwards appends
-  // result to 'results_' and calls 'forms_received_'.
-  void HandleAffiliatedLoginsReceived(LoginsResult logins);
+  // From the affiliated realms returns all the forms to be additionally queried
+  // in the password store. The list excludes the PSL matches because those will
+  // be already returned by the main request.
+  std::vector<PasswordFormDigest> HandleAffiliationsReceived(
+      const std::vector<std::string>& realms);
+
+  // Receives all the affiliated logins from the password store.
+  void HandleAffiliatedLoginsReceived(
+      std::vector<std::unique_ptr<PasswordForm>> logins);
 
   void NotifyConsumer();
+
+  const PasswordFormDigest requested_digest_;
+
+  // All the affiliations for 'requested_digest_'.
+  base::flat_set<std::string> affiliations_;
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 

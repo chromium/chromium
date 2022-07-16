@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/core/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"

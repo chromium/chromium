@@ -11,8 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "remoting/base/constants.h"
@@ -32,17 +32,17 @@ namespace remoting {
 
 namespace {
 
-const base::TimeDelta kTestOverridePollingInterval =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kTestOverridePollingInterval = base::Milliseconds(1);
 
 class ClientClipboard : public protocol::ClipboardStub {
  public:
   ClientClipboard();
+
+  ClientClipboard(const ClientClipboard&) = delete;
+  ClientClipboard& operator=(const ClientClipboard&) = delete;
+
   MOCK_METHOD1(InjectClipboardEvent,
                void(const protocol::ClipboardEvent& event));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientClipboard);
 };
 
 ClientClipboard::ClientClipboard() = default;

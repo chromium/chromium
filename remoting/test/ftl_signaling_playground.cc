@@ -58,7 +58,7 @@ constexpr char kSwitchNameHostId[] = "host-id";
 constexpr char kSwitchNameUseChromotocol[] = "use-chromotocol";
 
 // Delay to allow sending session-terminate before tearing down.
-constexpr base::TimeDelta kTearDownDelay = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kTearDownDelay = base::Seconds(2);
 
 const char* SignalStrategyErrorToString(SignalStrategy::Error error) {
   switch (error) {

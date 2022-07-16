@@ -51,10 +51,10 @@ content::WebDragDestDelegate*
 }
 
 void ChromeWebContentsViewDelegateMac::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   ShowMenu(BuildMenu(
-      content::WebContents::FromRenderFrameHost(render_frame_host),
+      render_frame_host,
       AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
 }
 
@@ -103,10 +103,10 @@ void ChromeWebContentsViewDelegateMac::ShowMenu(
 
 std::unique_ptr<RenderViewContextMenuBase>
 ChromeWebContentsViewDelegateMac::BuildMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   std::unique_ptr<RenderViewContextMenuBase> menu;
-  menu.reset(CreateRenderViewContextMenu(web_contents, params));
+  menu.reset(CreateRenderViewContextMenu(render_frame_host, params));
 
   if (menu)
     menu->Init();
@@ -116,20 +116,12 @@ ChromeWebContentsViewDelegateMac::BuildMenu(
 
 RenderViewContextMenuBase*
 ChromeWebContentsViewDelegateMac::CreateRenderViewContextMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  // If the frame tree does not have a focused frame at this point, do not
-  // bother creating RenderViewContextMenuBase. This happens if the frame has
-  // navigated to a different page before ContextMenu message was received by
-  // the current RenderFrameHost.
-  content::RenderFrameHost* focused_frame = web_contents->GetFocusedFrame();
-  if (!focused_frame)
-    return nullptr;
-
   gfx::NativeView parent_view =
       GetActiveRenderWidgetHostView()->GetNativeView();
 
-  return new RenderViewContextMenuMacCocoa(focused_frame, params,
+  return new RenderViewContextMenuMacCocoa(render_frame_host, params,
                                            parent_view.GetNativeNSView());
 }
 

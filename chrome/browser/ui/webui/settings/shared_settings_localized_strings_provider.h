@@ -28,7 +28,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-sync-account-control> element.
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Adds strings used by the <settings-password-prompt-dialog> element.
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 #endif

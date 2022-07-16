@@ -91,6 +91,10 @@ class DecryptingDemuxerStreamTest : public testing::Test {
         encrypted_buffer_(CreateFakeEncryptedStreamBuffer(false)),
         decrypted_buffer_(new DecoderBuffer(kFakeBufferSize)) {}
 
+  DecryptingDemuxerStreamTest(const DecryptingDemuxerStreamTest&) = delete;
+  DecryptingDemuxerStreamTest& operator=(const DecryptingDemuxerStreamTest&) =
+      delete;
+
   ~DecryptingDemuxerStreamTest() override {
     if (is_initialized_)
       EXPECT_CALL(*decryptor_, CancelDecrypt(_));
@@ -143,7 +147,7 @@ class DecryptingDemuxerStreamTest : public testing::Test {
       return std::make_unique<CallbackRegistration>();
     });
 
-    AudioDecoderConfig input_config(kCodecVorbis, kSampleFormatPlanarF32,
+    AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                     CHANNEL_LAYOUT_STEREO, 44100,
                                     EmptyExtraData(), EncryptionScheme::kCenc);
 
@@ -300,9 +304,6 @@ class DecryptingDemuxerStreamTest : public testing::Test {
   scoped_refptr<DecoderBuffer> clear_encrypted_stream_buffer_;
   scoped_refptr<DecoderBuffer> encrypted_buffer_;
   scoped_refptr<DecoderBuffer> decrypted_buffer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecryptingDemuxerStreamTest);
 };
 
 TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalAudio) {
@@ -336,7 +337,7 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
 
 TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
-  AudioDecoderConfig input_config(kCodecVorbis, kSampleFormatPlanarF32,
+  AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                   CHANNEL_LAYOUT_STEREO, 44100,
                                   EmptyExtraData(), EncryptionScheme::kCenc);
   EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
@@ -516,7 +517,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringAbortedDemuxerRead) {
 TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
   Initialize(2, 2);
 
-  AudioDecoderConfig new_config(kCodecVorbis, kSampleFormatPlanarF32,
+  AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                 CHANNEL_LAYOUT_STEREO, 88200, EmptyExtraData(),
                                 EncryptionScheme::kCenc);
   input_audio_stream_->set_audio_decoder_config(new_config);

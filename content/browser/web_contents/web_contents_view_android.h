@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -35,6 +34,10 @@ class WebContentsViewAndroid : public WebContentsView,
  public:
   WebContentsViewAndroid(WebContentsImpl* web_contents,
                          WebContentsViewDelegate* delegate);
+
+  WebContentsViewAndroid(const WebContentsViewAndroid&) = delete;
+  WebContentsViewAndroid& operator=(const WebContentsViewAndroid&) = delete;
+
   ~WebContentsViewAndroid() override;
 
   void SetContentUiEventHandler(std::unique_ptr<ContentUiEventHandler> handler);
@@ -78,9 +81,10 @@ class WebContentsViewAndroid : public WebContentsView,
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
+  void OnCapturerCountChanged() override;
 
   // Backend implementation of RenderViewHostDelegateView.
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
   void ShowPopupMenu(
       RenderFrameHost* render_frame_host,
@@ -175,8 +179,6 @@ class WebContentsViewAndroid : public WebContentsView,
 
   gfx::PointF drag_location_;
   gfx::PointF drag_screen_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewAndroid);
 };
 
 } // namespace content

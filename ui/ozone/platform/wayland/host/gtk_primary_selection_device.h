@@ -5,9 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -23,6 +21,11 @@ class GtkPrimarySelectionDevice : public WaylandDataDeviceBase {
  public:
   GtkPrimarySelectionDevice(WaylandConnection* connection,
                             gtk_primary_selection_device* data_device);
+
+  GtkPrimarySelectionDevice(const GtkPrimarySelectionDevice&) = delete;
+  GtkPrimarySelectionDevice& operator=(const GtkPrimarySelectionDevice&) =
+      delete;
+
   ~GtkPrimarySelectionDevice() override;
 
   gtk_primary_selection_device* data_device() const {
@@ -42,8 +45,6 @@ class GtkPrimarySelectionDevice : public WaylandDataDeviceBase {
 
   // The Wayland object wrapped by this instance.
   wl::Object<gtk_primary_selection_device> data_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkPrimarySelectionDevice);
 };
 
 }  // namespace ui

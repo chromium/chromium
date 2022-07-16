@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -82,7 +83,7 @@ class CORE_EXPORT SVGDocumentExtensions final
   SVGElementSet web_animations_pending_svg_elements_;
   // Root SVG elements with relative length descendants.
   HeapHashSet<Member<SVGSVGElement>> relative_length_svg_roots_;
-  FloatPoint translate_;
+  gfx::Vector2dF translate_;
 #if DCHECK_IS_ON()
   bool in_relative_length_svg_roots_invalidation_ = false;
 #endif

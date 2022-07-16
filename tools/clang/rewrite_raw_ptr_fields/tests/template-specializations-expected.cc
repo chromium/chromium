@@ -10,8 +10,8 @@
 // / "overimposed" on top of the template definition and this can lead to
 // generating conflicting replacements - for example the same |t_ptr_field|
 // definition can get replaced with:
-// 1. T* t_ptr_field  ->  CheckedPtr<T> t_ptr_field            // expected
-// 2. T* t_ptr_field  ->  CheckedPtr<SomeClass> t_ptr_field    // undesired
+// 1. T* t_ptr_field  ->  raw_ptr<T> t_ptr_field            // expected
+// 2. T* t_ptr_field  ->  raw_ptr<SomeClass> t_ptr_field    // undesired
 //
 // To avoid generating conflicting replacements, the rewriter excludes implicit
 // template specializations via |implicit_field_decl_matcher|.
@@ -20,18 +20,18 @@
 // desirable.  For example, see the |T2* t2_ptr_field| in |MyTemplate<int, T2>|
 // partial template specialization.
 
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 class SomeClass;
 class SomeClass2;
 
 template <typename T, typename T2>
 class MyTemplate {
-  // Expected rewrite: CheckedPtr<T> t_ptr_field;
-  CheckedPtr<T> t_ptr_field;
+  // Expected rewrite: raw_ptr<T> t_ptr_field;
+  raw_ptr<T> t_ptr_field;
 
-  // Expected rewrite: CheckedPtr<SomeClass> some_class_ptr_field;
-  CheckedPtr<SomeClass> some_class_ptr_field;
+  // Expected rewrite: raw_ptr<SomeClass> some_class_ptr_field;
+  raw_ptr<SomeClass> some_class_ptr_field;
 
   // No rewrite expected.
   int int_field;
@@ -40,14 +40,14 @@ class MyTemplate {
 // Partial *explicit* specialization.
 template <typename T2>
 class MyTemplate<int, T2> {
-  // Expected rewrite: CheckedPtr<T2> t2_ptr_field;
-  CheckedPtr<T2> t2_ptr_field;
+  // Expected rewrite: raw_ptr<T2> t2_ptr_field;
+  raw_ptr<T2> t2_ptr_field;
 
-  // Expected rewrite: CheckedPtr<SomeClass> some_class_ptr_field;
-  CheckedPtr<SomeClass> some_class_ptr_field;
+  // Expected rewrite: raw_ptr<SomeClass> some_class_ptr_field;
+  raw_ptr<SomeClass> some_class_ptr_field;
 
-  // Expected rewrite: CheckedPtr<int> int_ptr_field;
-  CheckedPtr<int> int_ptr_field;
+  // Expected rewrite: raw_ptr<int> int_ptr_field;
+  raw_ptr<int> int_ptr_field;
 
   // No rewrite expected.
   int int_field;
@@ -56,11 +56,11 @@ class MyTemplate<int, T2> {
 // Full *explicit* specialization.
 template <>
 class MyTemplate<int, SomeClass2> {
-  // Expected rewrite: CheckedPtr<int> int_ptr_field;
-  CheckedPtr<int> int_ptr_field;
+  // Expected rewrite: raw_ptr<int> int_ptr_field;
+  raw_ptr<int> int_ptr_field;
 
-  // Expected rewrite: CheckedPtr<SomeClass2> some_class2_ptr_field;
-  CheckedPtr<SomeClass2> some_class2_ptr_field;
+  // Expected rewrite: raw_ptr<SomeClass2> some_class2_ptr_field;
+  raw_ptr<SomeClass2> some_class2_ptr_field;
 
   // No rewrite expected.
   int int_field;
@@ -86,23 +86,23 @@ template <typename T>
 class TemplateSelfPointerTest {
   // Early versions of the rewriter used to rewrite the type below to three
   // conflicting replacements:
-  // 1. CheckedPtr<TemplateSelfPointerTest<bool>>
-  // 2. CheckedPtr<TemplateSelfPointerTest<SomeClass2>>
-  // 3. CheckedPtr<TemplateSelfPointerTest<T>>
+  // 1. raw_ptr<TemplateSelfPointerTest<bool>>
+  // 2. raw_ptr<TemplateSelfPointerTest<SomeClass2>>
+  // 3. raw_ptr<TemplateSelfPointerTest<T>>
   //
   // Something similar would have happened in //base/scoped_generic.h (in the
   // nested Receiver class):
   //   ScopedGeneric* scoped_generic_;
   //
-  // Expected rewrite: CheckedPtr<TemplateSelfPointerTest<T>>
-  CheckedPtr<TemplateSelfPointerTest<T>> ptr_field_;
+  // Expected rewrite: raw_ptr<TemplateSelfPointerTest<T>>
+  raw_ptr<TemplateSelfPointerTest<T>> ptr_field_;
 
   // Similar test to the above.  Something similar would have happened in
   // //base/id_map.h (in the nested Iterator class):
   //   IDMap<V, K>* map_;
   //
-  // Expected rewrite: CheckedPtr<TemplateSelfPointerTest<T>>
-  CheckedPtr<TemplateSelfPointerTest<T>> ptr_field2_;
+  // Expected rewrite: raw_ptr<TemplateSelfPointerTest<T>>
+  raw_ptr<TemplateSelfPointerTest<T>> ptr_field2_;
 };
 
 void foo() {
@@ -140,8 +140,8 @@ class StringSplitter {
     // |StringSplitter<T>| for |StringSplitter<int>| in an implicit template
     // specialization triggered by the |foo2| function below.
     //
-    // Expected rewrite: CheckedPtr<const StringSplitter<T>> splitter_
-    CheckedPtr<const StringSplitter<T>> splitter_;
+    // Expected rewrite: raw_ptr<const StringSplitter<T>> splitter_
+    raw_ptr<const StringSplitter<T>> splitter_;
   };
 
   Iterator begin() const { return Iterator(*this); }
@@ -162,11 +162,11 @@ namespace template_function {
 template <typename T>
 void foo(T* arg) {
   struct NestedStruct {
-    // Expected rewrite: CheckedPtr<T> ptr_field;
-    CheckedPtr<T> ptr_field;
+    // Expected rewrite: raw_ptr<T> ptr_field;
+    raw_ptr<T> ptr_field;
 
-    // Expected rewrite: CheckedPtr<MyTemplate<T, T>> ptr_field2;
-    CheckedPtr<MyTemplate<T, T>> ptr_field2;
+    // Expected rewrite: raw_ptr<MyTemplate<T, T>> ptr_field2;
+    raw_ptr<MyTemplate<T, T>> ptr_field2;
   } var;
 
   var.ptr_field = nullptr;

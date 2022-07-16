@@ -44,6 +44,9 @@ class UpdateServiceFactory;
 class UpdateService : public KeyedService,
                       update_client::UpdateClient::Observer {
  public:
+  UpdateService(const UpdateService&) = delete;
+  UpdateService& operator=(const UpdateService&) = delete;
+
   static UpdateService* Get(content::BrowserContext* context);
 
   static void SupplyUpdateServiceForTest(UpdateService* service);
@@ -114,8 +117,6 @@ class UpdateService : public KeyedService,
 
   // used to create WeakPtrs to |this|.
   base::WeakPtrFactory<UpdateService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateService);
 };
 
 }  // namespace extensions

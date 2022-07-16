@@ -51,8 +51,9 @@ class AccessTokenFetcherForTest : public AccessTokenFetcher {
   using AccessTokenFetcher::OnGetTokenFailure;
   using AccessTokenFetcher::OnGetTokenSuccess;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessTokenFetcherForTest);
+  AccessTokenFetcherForTest(const AccessTokenFetcherForTest&) = delete;
+  AccessTokenFetcherForTest& operator=(const AccessTokenFetcherForTest&) =
+      delete;
 };
 
 class AccessTokenFetcherTest : public testing::Test {
@@ -81,8 +82,7 @@ class AccessTokenFetcherTest : public testing::Test {
     OAuth2AccessTokenConsumer::TokenResponse::Builder builder;
     builder.WithAccessToken(access_token);
     builder.WithRefreshToken(refresh_token);
-    builder.WithExpirationTime(base::Time::Now() +
-                               base::TimeDelta::FromDays(1));
+    builder.WithExpirationTime(base::Time::Now() + base::Days(1));
     builder.WithIdToken("id token");
     return builder.build();
   }

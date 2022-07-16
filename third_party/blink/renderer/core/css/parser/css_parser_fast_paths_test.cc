@@ -74,6 +74,48 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
   }
 }
 
+TEST(CSSParserFastPathsTest, ParseRevertLayer) {
+  ScopedCSSCascadeLayersForTest enabled(true);
+
+  // 'revert-layer' enabled, IsKeywordPropertyID=false
+  {
+    DCHECK(!CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kMarginTop));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kMarginTop, "revert-layer", kHTMLStandardMode);
+    ASSERT_TRUE(value);
+    EXPECT_TRUE(value->IsRevertLayerValue());
+  }
+
+  // 'revert-layer' enabled, IsKeywordPropertyID=true
+  {
+    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kDirection, "revert-layer", kHTMLStandardMode);
+    ASSERT_TRUE(value);
+    EXPECT_TRUE(value->IsRevertLayerValue());
+  }
+}
+
+TEST(CSSParserFastPathsTest, ParseRevertLayerDisable) {
+  ScopedCSSCascadeLayersForTest disabled(false);
+
+  // 'revert-layer' disabled, IsKeywordPropertyID=false
+  {
+    DCHECK(!CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kMarginTop));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kMarginTop, "revert-layer", kHTMLStandardMode);
+    EXPECT_FALSE(value);
+  }
+
+  // 'revert-layer' disabled, IsKeywordPropertyID=true
+  {
+    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kDirection, "revert-layer", kHTMLStandardMode);
+    EXPECT_FALSE(value);
+  }
+}
+
 TEST(CSSParserFastPathsTest, ParseTransform) {
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
       CSSPropertyID::kTransform, "translate(5.5px, 5px)", kHTMLStandardMode);

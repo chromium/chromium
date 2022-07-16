@@ -62,6 +62,10 @@ class ScreenTimeController
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit ScreenTimeController(content::BrowserContext* context);
+
+  ScreenTimeController(const ScreenTimeController&) = delete;
+  ScreenTimeController& operator=(const ScreenTimeController&) = delete;
+
   ~ScreenTimeController() override;
 
   // Returns the child's screen time duration. This is how long the child has
@@ -171,8 +175,6 @@ class ScreenTimeController
   TimeLimitNotifier time_limit_notifier_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenTimeController);
 };
 
 }  // namespace ash

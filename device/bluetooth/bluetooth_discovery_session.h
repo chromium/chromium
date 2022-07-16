@@ -47,6 +47,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoverySession {
     INACTIVE
   };
 
+  BluetoothDiscoverySession(const BluetoothDiscoverySession&) = delete;
+  BluetoothDiscoverySession& operator=(const BluetoothDiscoverySession&) =
+      delete;
+
   // Terminates the discovery session. If this is the last active discovery
   // session, a call to the underlying system to stop device discovery is made.
   // Users may call BluetoothDiscoverySession::Stop() if they need to observe
@@ -127,8 +131,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoverySession {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothDiscoverySession> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDiscoverySession);
 };
 
 }  // namespace device

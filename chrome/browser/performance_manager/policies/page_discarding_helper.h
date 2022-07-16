@@ -15,6 +15,7 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -44,6 +45,17 @@ class PageDiscardingHelper : public GraphOwned,
   void UrgentlyDiscardAPage(features::DiscardStrategy discard_strategy,
                             base::OnceCallback<void(bool)> post_discard_cb);
 
+  // Discards multiple tabs to meet the reclaim target based on |strategy| and
+  // posts to the UI thread to discard these tabs. Retries discarding if all
+  // discardings in the UI thread fail. If |reclaim_target_kb| is nullopt, only
+  // discard one tab. If |discard_protected_tabs| is true, protected tab
+  // (CanUrgentlyDiscard() returns kProtected) can also be discarded.
+  void UrgentlyDiscardMultiplePages(
+      absl::optional<uint64_t> reclaim_target_kb,
+      features::DiscardStrategy discard_strategy,
+      bool discard_protected_tabs,
+      base::OnceCallback<void(bool)> post_discard_cb);
+
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
@@ -51,7 +63,7 @@ class PageDiscardingHelper : public GraphOwned,
   void SetMockDiscarderForTesting(
       std::unique_ptr<mechanism::PageDiscarder> discarder);
   bool CanUrgentlyDiscardForTesting(const PageNode* page_node) const {
-    return CanUrgentlyDiscard(page_node);
+    return CanUrgentlyDiscard(page_node) == CanUrgentlyDiscardResult::kEligible;
   }
   void SetGraphForTesting(Graph* graph) { graph_ = graph; }
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
@@ -67,17 +79,29 @@ class PageDiscardingHelper : public GraphOwned,
       const PageNode* page_node) const;
 
  private:
+  enum class CanUrgentlyDiscardResult {
+    // Discarding eligible nodes is hard to notice for user.
+    kEligible,
+    // Discarding protected nodes is noticeable to user.
+    kProtected,
+    // Marked nodes can never be discarded.
+    kMarked,
+  };
+
   // Indicates if a PageNode can be urgently discarded.
-  bool CanUrgentlyDiscard(const PageNode* page_node) const;
+  CanUrgentlyDiscardResult CanUrgentlyDiscard(const PageNode* page_node) const;
 
   // NodeDataDescriber implementation:
   base::Value DescribePageNodeData(const PageNode* node) const override;
 
   // Called after each discard attempt. |success| will indicate whether or not
   // the attempt has been successful. |post_discard_cb| will be called once
-  // there's been a successful discard or if there's no more discard candidates.
+  // there's been at least one successful discard or if there's no more discard
+  // candidates.
   void PostDiscardAttemptCallback(
+      absl::optional<uint64_t> reclaim_target_kb,
       features::DiscardStrategy discard_strategy,
+      bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
       bool success);
 

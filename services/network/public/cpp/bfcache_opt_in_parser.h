@@ -18,4 +18,4 @@ bool ParseBFCacheOptInUnload(base::StringPiece header_value);
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_BFCACHE_OPT_IN_PARSER_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_BFCACHE_OPT_IN_PARSER_H_

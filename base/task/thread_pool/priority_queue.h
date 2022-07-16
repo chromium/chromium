@@ -5,12 +5,13 @@
 #ifndef BASE_TASK_THREAD_POOL_PRIORITY_QUEUE_H_
 #define BASE_TASK_THREAD_POOL_PRIORITY_QUEUE_H_
 
+#include <functional>
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/common/intrusive_heap.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
 

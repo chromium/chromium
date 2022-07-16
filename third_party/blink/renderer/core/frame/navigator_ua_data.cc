@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/frame/navigator_ua_data.h"
 
 #include "base/compiler_specific.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -33,7 +33,7 @@ void MaybeRecordMetric(bool record_identifiability,
       IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues,
       IdentifiableToken(hint.Utf8()));
   IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
-      .Set(identifiable_surface, IdentifiableToken(value.Utf8()))
+      .Add(identifiable_surface, IdentifiableToken(value.Utf8()))
       .Record(execution_context->UkmRecorder());
 }
 
@@ -55,11 +55,27 @@ void NavigatorUAData::AddBrandVersion(const String& brand,
   brand_set_.push_back(dict);
 }
 
+void NavigatorUAData::AddBrandFullVersion(const String& brand,
+                                          const String& version) {
+  NavigatorUABrandVersion* dict = NavigatorUABrandVersion::Create();
+  dict->setBrand(brand);
+  dict->setVersion(version);
+  full_version_list_.push_back(dict);
+}
+
 void NavigatorUAData::SetBrandVersionList(
     const UserAgentBrandList& brand_version_list) {
   for (const auto& brand_version : brand_version_list) {
     AddBrandVersion(String::FromUTF8(brand_version.brand),
-                    String::FromUTF8(brand_version.major_version));
+                    String::FromUTF8(brand_version.version));
+  }
+}
+
+void NavigatorUAData::SetFullVersionList(
+    const UserAgentBrandList& full_version_list) {
+  for (const auto& brand_version : full_version_list) {
+    AddBrandFullVersion(String::FromUTF8(brand_version.brand),
+                        String::FromUTF8(brand_version.version));
   }
 }
 
@@ -150,6 +166,8 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
       values->setBitness(bitness_);
       MaybeRecordMetric(record_identifiability, hint, bitness_,
                         execution_context);
+    } else if (hint == "fullVersionList") {
+      values->setFullVersionList(full_version_list_);
     }
   }
 
@@ -172,6 +190,7 @@ ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
 
 void NavigatorUAData::Trace(Visitor* visitor) const {
   visitor->Trace(brand_set_);
+  visitor->Trace(full_version_list_);
   visitor->Trace(empty_brand_set_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

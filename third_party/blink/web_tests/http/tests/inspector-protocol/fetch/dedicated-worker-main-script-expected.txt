@@ -1,0 +1,3 @@
+Tests that Fetch.requestPaused is emitted for the main script of dedciated worker
+PASSED: intercepted script
+

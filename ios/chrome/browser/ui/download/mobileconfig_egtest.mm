@@ -7,7 +7,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/download/download_test_util.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
-#import "ios/chrome/browser/ui/download/features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -68,12 +67,6 @@ bool WaitForWarningAlert() {
 @end
 
 @implementation MobileConfigEGTest
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kDownloadMobileConfigFile);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

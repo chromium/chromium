@@ -54,8 +54,7 @@ bool g_snapshots_enabled_for_testing = false;
 // exception of files/directories that should be left behind for a full data
 // wipe. Returns no value if the target directory could not be created, or the
 // number of items that could not be moved.
-absl::optional<int> MoveUserData(const base::FilePath& source,
-                                 const base::FilePath& target) {
+void MoveUserData(const base::FilePath& source, const base::FilePath& target) {
   // Returns true to exclude a file.
   auto exclusion_predicate =
       base::BindRepeating([](const base::FilePath& name) -> bool {
@@ -85,8 +84,6 @@ absl::optional<int> MoveUserData(const base::FilePath& source,
   if (!result ||
       !MoveWithoutFallback(source.Append(kDowngradeLastVersionFile),
                            target.Append(kDowngradeLastVersionFile))) {
-    if (result)
-      *result += 1;
     // Attempt to delete Last Version if all else failed so that Chrome does not
     // continually attempt to perform a migration.
     base::DeleteFile(source.Append(kDowngradeLastVersionFile));
@@ -98,7 +95,6 @@ absl::optional<int> MoveUserData(const base::FilePath& source,
     // switch suppresses downgrade processing, so that launch will go through
     // normal startup.
   }
-  return result;
 }
 
 // Renames |disk_cache_dir| in its containing folder. If that fails, an attempt
@@ -277,26 +273,14 @@ void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir) {
   // be left behind. Furthermore, User Data is moved to a new directory within
   // itself (for example, to User Data/User Data.CHROME_DELETE) to guarantee
   // that the movement isn't across volumes.
-  const auto failure_count = MoveUserData(
-      user_data_dir,
-      GetTempDirNameForDelete(user_data_dir, user_data_dir.BaseName()));
-  enum class UserDataMoveResult {
-    kCreateTargetFailure = 0,
-    kSuccess = 1,
-    kPartialSuccess = 2,
-    kMaxValue = kPartialSuccess
-  };
-  UserDataMoveResult move_result =
-      !failure_count ? UserDataMoveResult::kCreateTargetFailure
-                     : (*failure_count ? UserDataMoveResult::kPartialSuccess
-                                       : UserDataMoveResult::kSuccess);
-  base::UmaHistogramEnumeration("Downgrade.UserDataDirMove.Result",
-                                move_result);
-  if (failure_count && *failure_count) {
-    // Report precise values rather than an exponentially bucketed histogram.
-    base::UmaHistogramExactLinear("Downgrade.UserDataDirMove.FailureCount",
-                                  *failure_count, 50);
-  }
+  // This has a 95% success rate according to the histogram
+  // "Downgrade.UserDataDirMove.Result" which is acceptable in this case since
+  // the files (usually under 5 files according to
+  // "Downgrade.UserDataDirMove.FailureCount") left behind 5% of the time might
+  // be overridden by `SnapshotManager::RestoreSnapshot` or updated following a
+  // version upgrade.
+  MoveUserData(user_data_dir, GetTempDirNameForDelete(
+                                  user_data_dir, user_data_dir.BaseName()));
 
   if (type_ == Type::kSnapshotRestore) {
     SnapshotManager snapshot_manager(user_data_dir);

@@ -18,6 +18,11 @@ namespace headless {
 class HeadlessPermissionManager : public content::PermissionControllerDelegate {
  public:
   explicit HeadlessPermissionManager(content::BrowserContext* browser_context);
+
+  HeadlessPermissionManager(const HeadlessPermissionManager&) = delete;
+  HeadlessPermissionManager& operator=(const HeadlessPermissionManager&) =
+      delete;
+
   ~HeadlessPermissionManager() override;
 
   // PermissionManager implementation.
@@ -58,8 +63,6 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
 
  private:
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPermissionManager);
 };
 
 }  // namespace content

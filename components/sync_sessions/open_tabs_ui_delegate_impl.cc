@@ -5,6 +5,7 @@
 #include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
@@ -36,7 +37,7 @@ OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
       session_tracker_(session_tracker),
       delete_foreign_session_cb_(delete_foreign_session_cb) {}
 
-OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() {}
+OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
     std::vector<const SyncedSession*>* sessions) {
@@ -69,17 +70,15 @@ bool OpenTabsUIDelegateImpl::GetForeignSessionTabs(
   // Prune those tabs that are not syncable or are NewTabPage, then sort them
   // from most recent to least recent, independent of which window the tabs were
   // from.
-  for (size_t j = 0; j < windows.size(); ++j) {
-    const sessions::SessionWindow* window = windows[j];
-    for (size_t t = 0; t < window->tabs.size(); ++t) {
-      sessions::SessionTab* const tab = window->tabs[t].get();
+  for (const sessions::SessionWindow* window : windows) {
+    for (const std::unique_ptr<sessions::SessionTab>& tab : window->tabs) {
       if (tab->navigations.empty())
         continue;
       const sessions::SerializedNavigationEntry& current_navigation =
           tab->navigations.at(tab->normalized_navigation_index());
       if (!sessions_client_->ShouldSyncURL(current_navigation.virtual_url()))
         continue;
-      tabs->push_back(tab);
+      tabs->push_back(tab.get());
     }
   }
   std::stable_sort(tabs->begin(), tabs->end(), TabsRecencyComparator);

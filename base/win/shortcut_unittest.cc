@@ -15,6 +15,8 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -197,6 +199,11 @@ TEST_F(ShortcutTest, UpdateShortcutVerifyProperties) {
 }
 
 TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -234,6 +241,11 @@ TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {
 }
 
 TEST_F(ShortcutTest, UpdateShortcutRemoveDualMode) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -249,6 +261,11 @@ TEST_F(ShortcutTest, UpdateShortcutRemoveDualMode) {
 }
 
 TEST_F(ShortcutTest, UpdateShortcutClearArguments) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -270,6 +287,11 @@ TEST_F(ShortcutTest, FailUpdateShortcutThatDoesNotExist) {
 }
 
 TEST_F(ShortcutTest, ReplaceShortcutAllProperties) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -280,6 +302,11 @@ TEST_F(ShortcutTest, ReplaceShortcutAllProperties) {
 }
 
 TEST_F(ShortcutTest, ReplaceShortcutSomeProperties) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
@@ -309,6 +336,11 @@ TEST_F(ShortcutTest, FailReplaceShortcutThatDoesNotExist) {
 // Test that the old arguments remain on the replaced shortcut when not
 // otherwise specified.
 TEST_F(ShortcutTest, ReplaceShortcutKeepOldArguments) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 

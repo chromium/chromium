@@ -91,7 +91,7 @@ bool DeserializeP2PCandidate(const std::string& candidate_str,
   std::string protocol;
   std::string username;
   std::string password;
-  double preference = 0;
+  absl::optional<double> preference = dic_value->FindDoubleKey("preference");
   int generation = 0;
 
   if (!dic_value->GetString("ip", &ip) ||
@@ -99,8 +99,7 @@ bool DeserializeP2PCandidate(const std::string& candidate_str,
       !dic_value->GetString("type", &type) ||
       !dic_value->GetString("protocol", &protocol) ||
       !dic_value->GetString("username", &username) ||
-      !dic_value->GetString("password", &password) ||
-      !dic_value->GetDouble("preference", &preference) ||
+      !dic_value->GetString("password", &password) || !preference ||
       !dic_value->GetInteger("generation", &generation)) {
     return false;
   }
@@ -110,7 +109,7 @@ bool DeserializeP2PCandidate(const std::string& candidate_str,
   candidate->set_protocol(protocol);
   candidate->set_username(username);
   candidate->set_password(password);
-  candidate->set_preference(static_cast<float>(preference));
+  candidate->set_preference(static_cast<float>(*preference));
   candidate->set_generation(generation);
 
   return true;

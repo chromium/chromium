@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_MANAGER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -20,6 +19,12 @@ class ChromeSpeechRecognitionManagerDelegate
       public content::SpeechRecognitionEventListener {
  public:
   ChromeSpeechRecognitionManagerDelegate();
+
+  ChromeSpeechRecognitionManagerDelegate(
+      const ChromeSpeechRecognitionManagerDelegate&) = delete;
+  ChromeSpeechRecognitionManagerDelegate& operator=(
+      const ChromeSpeechRecognitionManagerDelegate&) = delete;
+
   ~ChromeSpeechRecognitionManagerDelegate() override;
 
  protected:
@@ -57,8 +62,6 @@ class ChromeSpeechRecognitionManagerDelegate
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
       int render_process_id,
       int render_frame_id);
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSpeechRecognitionManagerDelegate);
 };
 
 }  // namespace speech

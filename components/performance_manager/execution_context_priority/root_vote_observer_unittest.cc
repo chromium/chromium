@@ -44,7 +44,7 @@ class RootVoteObserverTest : public GraphTestHarness {
   ~RootVoteObserverTest() override = default;
 
   void SetUp() override {
-    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
   }
 };

@@ -14,7 +14,6 @@
 #include "base/as_const.h"
 #include "base/check_op.h"
 #include "base/containers/vector_buffer.h"
-#include "base/macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 

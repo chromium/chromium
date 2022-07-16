@@ -385,12 +385,9 @@ TEST_F(PerfettoIntegrationTest, PerfettoPlatformTest) {
 }
 
 TEST_F(PerfettoIntegrationTest, PerfettoClientLibraryTest) {
-  // Create a dummy tracing session without a real backend to check that
-  // the client library was initialized.
-  constexpr perfetto::BackendType kInvalidBackend(
-      static_cast<perfetto::BackendType>(1u << 31));
-  auto tracing_session = perfetto::Tracing::NewTrace(kInvalidBackend);
-  EXPECT_TRUE(tracing_session);
+  // Check that PerfettoTracedProcess initialized the client library. Functional
+  // client library tests are in TracingServiceTest.
+  EXPECT_TRUE(perfetto::Tracing::IsInitialized());
 }
 
 }  // namespace

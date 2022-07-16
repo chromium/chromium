@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarCoordina
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -76,11 +77,11 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mMediator = new NoteCreationMediator(mListModel, new GoogleFontService(mActivity),
                 noteService, new ImageService(imageFetcher));
 
-        String urlDomain =
-                UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mShareUrl);
+        String urlDomain = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                new GURL(mShareUrl));
         mDialog = new NoteCreationDialog();
         mDialog.initDialog(this::onViewCreated, urlDomain, title, selectedText,
-                noteService.isPublishAvailable());
+                noteService.isPublishAvailable(), this::executeAction);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     }
 
     /**
-     * Dismiss the main dialog.
+     * Dismiss the main dialog from top bar.
      */
     @Override
     public void dismiss() {
@@ -115,6 +116,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void executeAction() {
+        // Top bar may be loaded before notes.
+        if (mListModel.size() == 0) return;
         int selectedNoteIndex = mDialog.getSelectedItemIndex();
         NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart(),
                 mDialog.getNbTemplateSwitches(),
@@ -136,6 +139,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                             new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, mShareUrl)
                                     .setFileUris(
                                             new ArrayList<>(Collections.singletonList(imageUri)))
+                                    .setFileAltTexts(new ArrayList<>(
+                                            Collections.singletonList(mSelectedText)))
                                     .setFileContentType(PNG_MIME_TYPE)
                                     .setCallback(new ShareParams.TargetChosenCallback() {
                                         @Override
@@ -154,13 +159,15 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                     .build();
 
                     long shareStartTime = System.currentTimeMillis();
-                    ChromeShareExtras extras = new ChromeShareExtras.Builder()
-                                                       .setSkipPageSharingActions(true)
-                                                       .setContentUrl(new GURL(mShareUrl))
-                                                       .build();
+                    ChromeShareExtras extras =
+                            new ChromeShareExtras.Builder()
+                                    .setSkipPageSharingActions(true)
+                                    .setContentUrl(new GURL(mShareUrl))
+                                    .setDetailedContentType(DetailedContentType.WEB_NOTES)
+                                    .build();
 
                     // Dismiss current dialog before showing the share sheet.
-                    this.dismiss();
+                    mDialog.dismiss();
                     mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
                 });
     }
@@ -224,12 +231,13 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
         long shareStartTime = System.currentTimeMillis();
         ChromeShareExtras extras = new ChromeShareExtras.Builder()
-                                           .setSkipPageSharingActions(true)
-                                           .setContentUrl(new GURL(mShareUrl))
+                                           .setSkipPageSharingActions(false)
+                                           .setContentUrl(new GURL(noteUrl))
+                                           .setDetailedContentType(DetailedContentType.WEB_NOTES)
                                            .build();
 
         // Dismiss current dialog before showing the share sheet.
-        this.dismiss();
+        mDialog.dismiss();
         mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
     }
 

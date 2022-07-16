@@ -24,14 +24,14 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -184,7 +184,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
       base::RunLoop run_loop;
-      WebAppProvider::Get(&profile_)
+      WebAppProvider::GetForTest(&profile_)
           ->install_finalizer()
           .UninstallExternalWebApp(
               app_id.app_id(),
@@ -221,7 +221,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
-      WebAppProvider::Get(&profile_)->registry_controller().SetAppIsDisabled(
+      WebAppProvider::GetForTest(&profile_)->sync_bridge().SetAppIsDisabled(
           app_id.app_id(), disabled);
       task_environment_.RunUntilIdle();
       return;

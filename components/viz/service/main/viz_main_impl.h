@@ -6,9 +6,8 @@
 #define COMPONENTS_VIZ_SERVICE_MAIN_VIZ_MAIN_IMPL_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
@@ -70,6 +69,10 @@ class VizMainImpl : public mojom::VizMain,
    public:
     ExternalDependencies();
     ExternalDependencies(ExternalDependencies&& other);
+
+    ExternalDependencies(const ExternalDependencies&) = delete;
+    ExternalDependencies& operator=(const ExternalDependencies&) = delete;
+
     ~ExternalDependencies();
 
     ExternalDependencies& operator=(ExternalDependencies&& other);
@@ -97,14 +100,15 @@ class VizMainImpl : public mojom::VizMain,
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner;
     std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder;
     VizCompositorThreadRunner* viz_compositor_thread_runner = nullptr;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ExternalDependencies);
   };
 
   VizMainImpl(Delegate* delegate,
               ExternalDependencies dependencies,
               std::unique_ptr<gpu::GpuInit> gpu_init);
+
+  VizMainImpl(const VizMainImpl&) = delete;
+  VizMainImpl& operator=(const VizMainImpl&) = delete;
+
   // Destruction must happen on the GPU thread.
   ~VizMainImpl() override;
 
@@ -199,8 +203,6 @@ class VizMainImpl : public mojom::VizMain,
       discardable_shared_memory_manager_;
 
   std::unique_ptr<gfx::RenderingPipeline> gpu_pipeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(VizMainImpl);
 };
 
 }  // namespace viz

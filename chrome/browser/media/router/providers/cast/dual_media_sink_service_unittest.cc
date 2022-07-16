@@ -9,7 +9,33 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
+
 namespace media_router {
+
+namespace {
+
+constexpr char kCastProviderName[] = "cast";
+constexpr char kDialProviderName[] = "dial";
+
+std::vector<MediaSinkInternal> CreateCastSinks() {
+  MediaSinkInternal cast_sink;
+  cast_sink.set_sink(MediaSink("cast_sink", "", SinkIconType::CAST,
+                               mojom::MediaRouteProviderId::CAST));
+  return {cast_sink};
+}
+
+std::vector<MediaSinkInternal> CreateDialSinks() {
+  MediaSinkInternal dial_sink1;
+  dial_sink1.set_sink(MediaSink("dial_sink1", "", SinkIconType::GENERIC,
+                                mojom::MediaRouteProviderId::DIAL));
+  MediaSinkInternal dial_sink2;
+  dial_sink2.set_sink(MediaSink("dial_sink2", "", SinkIconType::GENERIC,
+                                mojom::MediaRouteProviderId::DIAL));
+  return {dial_sink1, dial_sink2};
+}
+
+}  // namespace
 
 class DualMediaSinkServiceTest : public testing::Test {
  public:
@@ -29,68 +55,58 @@ class DualMediaSinkServiceTest : public testing::Test {
 
   ~DualMediaSinkServiceTest() override = default;
 
-  MockDialMediaSinkService* dial_media_sink_service() {
-    return dial_media_sink_service_;
-  }
-  MockCastMediaSinkService* cast_media_sink_service() {
-    return cast_media_sink_service_;
-  }
-  DualMediaSinkService* dual_media_sink_service() {
-    return dual_media_sink_service_.get();
-  }
-
   MOCK_METHOD2(OnSinksDiscovered,
                void(const std::string& provider_name,
                     const std::vector<MediaSinkInternal>& sinks));
 
- private:
-  MockCastMediaSinkService* cast_media_sink_service_;
-  MockDialMediaSinkService* dial_media_sink_service_;
-  MockCastAppDiscoveryService* cast_app_discovery_service_;
+ protected:
+  MockCastMediaSinkService* cast_media_sink_service_ = nullptr;
+  MockDialMediaSinkService* dial_media_sink_service_ = nullptr;
+  MockCastAppDiscoveryService* cast_app_discovery_service_ = nullptr;
   std::unique_ptr<DualMediaSinkService> dual_media_sink_service_;
 };
 
 TEST_F(DualMediaSinkServiceTest, OnUserGesture) {
-  EXPECT_CALL(*cast_media_sink_service(), OnUserGesture());
-  dual_media_sink_service()->OnUserGesture();
+  EXPECT_CALL(*cast_media_sink_service_, OnUserGesture());
+  dual_media_sink_service_->OnUserGesture();
 }
 
 TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallback) {
-  auto subscription = dual_media_sink_service()->AddSinksDiscoveredCallback(
+  auto subscription = dual_media_sink_service_->AddSinksDiscoveredCallback(
       base::BindRepeating(&DualMediaSinkServiceTest::OnSinksDiscovered,
                           base::Unretained(this)));
+  base::flat_map<std::string, std::vector<MediaSinkInternal>> sink_map = {
+      {kDialProviderName, CreateDialSinks()}};
 
-  base::flat_map<std::string, std::vector<MediaSinkInternal>> sink_map;
-  std::string dial_provider_name = "dial";
-  MediaSinkInternal dial_sink1;
-  dial_sink1.set_sink(MediaSink("dial_sink1", "", SinkIconType::GENERIC,
-                                mojom::MediaRouteProviderId::DIAL));
-  MediaSinkInternal dial_sink2;
-  dial_sink2.set_sink(MediaSink("dial_sink2", "", SinkIconType::GENERIC,
-                                mojom::MediaRouteProviderId::DIAL));
-
-  sink_map[dial_provider_name] = {dial_sink1, dial_sink2};
-
-  EXPECT_CALL(*this, OnSinksDiscovered(dial_provider_name,
-                                       sink_map[dial_provider_name]));
-  dual_media_sink_service()->OnSinksDiscovered(dial_provider_name,
-                                               sink_map[dial_provider_name]);
-
-  EXPECT_EQ(sink_map, dual_media_sink_service()->current_sinks());
+  EXPECT_CALL(
+      *this, OnSinksDiscovered(kDialProviderName, sink_map[kDialProviderName]));
+  dual_media_sink_service_->OnSinksDiscovered(kDialProviderName,
+                                              sink_map[kDialProviderName]);
+  EXPECT_EQ(sink_map, dual_media_sink_service_->current_sinks_);
 
   // |this| no longer receive updates.
   subscription = {};
 
-  std::string cast_provider_name = "cast";
-  MediaSinkInternal cast_sink;
-  cast_sink.set_sink(MediaSink("cast_sink", "", SinkIconType::CAST,
-                               mojom::MediaRouteProviderId::CAST));
-  sink_map[cast_provider_name] = {cast_sink};
-  EXPECT_CALL(*this, OnSinksDiscovered(testing::_, testing::_)).Times(0);
-  dual_media_sink_service()->OnSinksDiscovered(cast_provider_name,
-                                               sink_map[cast_provider_name]);
+  sink_map[kCastProviderName] = CreateCastSinks();
+  EXPECT_CALL(*this, OnSinksDiscovered(_, _)).Times(0);
+  dual_media_sink_service_->OnSinksDiscovered(kCastProviderName,
+                                              sink_map[kCastProviderName]);
+  EXPECT_EQ(sink_map, dual_media_sink_service_->current_sinks_);
+}
 
-  EXPECT_EQ(sink_map, dual_media_sink_service()->current_sinks());
+TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallbackAfterDiscovery) {
+  base::flat_map<std::string, std::vector<MediaSinkInternal>> sink_map = {
+      {kDialProviderName, CreateDialSinks()}};
+  dual_media_sink_service_->OnSinksDiscovered(kDialProviderName,
+                                              sink_map[kDialProviderName]);
+
+  // The callback should be called even if it was added after the sinks were
+  // discovered.
+  EXPECT_CALL(
+      *this, OnSinksDiscovered(kDialProviderName, sink_map[kDialProviderName]));
+  auto subscription = dual_media_sink_service_->AddSinksDiscoveredCallback(
+      base::BindRepeating(&DualMediaSinkServiceTest::OnSinksDiscovered,
+                          base::Unretained(this)));
 }
 
 }  // namespace media_router

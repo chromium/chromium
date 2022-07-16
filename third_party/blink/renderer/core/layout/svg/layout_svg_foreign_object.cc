@@ -54,7 +54,7 @@ void LayoutSVGForeignObject::UpdateLogicalWidth() {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   float logical_width =
-      style.IsHorizontalWritingMode() ? viewport_.Width() : viewport_.Height();
+      style.IsHorizontalWritingMode() ? viewport_.width() : viewport_.height();
   logical_width *= style.EffectiveZoom();
   SetLogicalWidth(LayoutUnit(logical_width));
 }
@@ -66,7 +66,7 @@ void LayoutSVGForeignObject::ComputeLogicalHeight(
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   float logical_height =
-      style.IsHorizontalWritingMode() ? viewport_.Height() : viewport_.Width();
+      style.IsHorizontalWritingMode() ? viewport_.height() : viewport_.width();
   logical_height *= style.EffectiveZoom();
   computed_values.extent_ = LayoutUnit(logical_height);
   computed_values.position_ = logical_top;
@@ -106,16 +106,18 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // zoom.
   SVGLengthContext length_context(foreign);
   const ComputedStyle& style = StyleRef();
-  viewport_ =
-      FloatRect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
-                ToFloatSize(length_context.ResolveLengthPair(
-                    style.Width(), style.Height(), style)));
+  gfx::Vector2dF origin =
+      length_context.ResolveLengthPair(style.X(), style.Y(), style);
+  gfx::Vector2dF size =
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  // SetRect() will clamp negative width/height to zero.
+  viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
 
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children
   // of the foreign object exist with their specified zoom.
-  FloatPoint zoomed_location =
-      viewport_.Location().ScaledBy(style.EffectiveZoom());
+  gfx::PointF zoomed_location =
+      gfx::ScalePoint(viewport_.origin(), style.EffectiveZoom());
 
   // Set box origin to the foreignObject x/y translation, so positioned objects
   // in XHTML content get correct positions. A regular LayoutBoxModelObject
@@ -194,21 +196,6 @@ PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
   NOT_DESTROYED();
   // Skip LayoutSVGBlock's override.
   return LayoutBlockFlow::LayerTypeRequired();
-}
-
-void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
-                                            const ComputedStyle* old_style) {
-  NOT_DESTROYED();
-  LayoutSVGBlock::StyleDidChange(diff, old_style);
-
-  if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=
-                    SVGLayoutSupport::IsOverflowHidden(StyleRef()))) {
-    // See NeedsOverflowClip() in PaintPropertyTreeBuilder for the reason.
-    SetNeedsPaintPropertyUpdate();
-
-    if (Layer())
-      Layer()->SetNeedsCompositingInputsUpdate();
-  }
 }
 
 }  // namespace blink

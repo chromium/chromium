@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_DIALOG_CONTROLLER_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_DIALOG_CONTROLLER_WIN_H_
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 
 // Provides functions, such as |Accept()| and |Cancel()|, that should

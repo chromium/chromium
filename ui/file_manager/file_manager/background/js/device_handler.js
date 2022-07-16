@@ -8,6 +8,7 @@ import {AsyncUtil} from '../../common/js/async_util.js';
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {getFilesAppIconURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -37,14 +38,19 @@ export class DeviceHandler extends EventTarget {
      */
     this.mountStatus_ = {};
 
-    chrome.fileManagerPrivate.onDeviceChanged.addListener(
-        this.onDeviceChanged_.bind(this));
-    chrome.fileManagerPrivate.onMountCompleted.addListener(
-        this.onMountCompleted_.bind(this));
-    xfm.notifications.onClicked.addListener(
-        this.onNotificationClicked_.bind(this));
-    xfm.notifications.onButtonClicked.addListener(
-        this.onNotificationButtonClicked_.bind(this));
+    // Notifications in a SWA context are handled by the
+    // system_notification_manager.cc and thus we don't want this code
+    // duplicated in the background page.
+    if (!window.isSWA) {
+      chrome.fileManagerPrivate.onDeviceChanged.addListener(
+          this.onDeviceChanged_.bind(this));
+      chrome.fileManagerPrivate.onMountCompleted.addListener(
+          this.onMountCompleted_.bind(this));
+      xfm.notifications.onClicked.addListener(
+          this.onNotificationClicked_.bind(this));
+      xfm.notifications.onButtonClicked.addListener(
+          this.onNotificationButtonClicked_.bind(this));
+    }
   }
 
   /**
@@ -53,6 +59,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onDeviceChanged_(event) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onDeviceChangedInternal_(event);
     });
@@ -188,6 +197,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onMountCompleted_(event) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onMountCompletedInternal_(event);
     });
@@ -341,19 +353,8 @@ export class DeviceHandler extends EventTarget {
                * @param {!DirectoryEntry} directory
                */
               directory => {
-                return importer.isPhotosAppImportEnabled().then(
-                    /**
-                     * @param {boolean} appEnabled
-                     */
-                    appEnabled => {
-                      // We don't want to auto-open two windows when a user
-                      // inserts a removable device.  Only open Files app if
-                      // auto-import is disabled in Photos app.
-                      if (!appEnabled) {
-                        this.openMediaDirectory_(
-                            metadata.volumeId, null, directory.fullPath);
-                      }
-                    });
+                this.openMediaDirectory_(
+                    metadata.volumeId, null, directory.fullPath);
               })
         .catch(error => {
           if (metadata.deviceType && metadata.devicePath) {
@@ -391,6 +392,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onNotificationClicked_(id) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onNotificationClickedInternal_(id, -1 /* index */);
     });
@@ -403,6 +407,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onNotificationButtonClicked_(id, index) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onNotificationClickedInternal_(id, index);
     });
@@ -642,7 +649,7 @@ DeviceHandler.Notification = class {
           type: 'basic',
           title: str(this.title),
           message: message || (str(this.message) + additionalMessage),
-          iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
+          iconUrl: getFilesAppIconURL().toString(),
           buttons: buttons,
           isClickable: this.isClickable
         },

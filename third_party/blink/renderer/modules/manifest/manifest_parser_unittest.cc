@@ -24,6 +24,10 @@ bool IsManifestEmpty(const mojom::blink::ManifestPtr& manifest) {
 }
 
 class ManifestParserTest : public testing::Test {
+ public:
+  ManifestParserTest(const ManifestParserTest&) = delete;
+  ManifestParserTest& operator=(const ManifestParserTest&) = delete;
+
  protected:
   ManifestParserTest() {}
   ~ManifestParserTest() override {}
@@ -62,8 +66,6 @@ class ManifestParserTest : public testing::Test {
 
   const KURL default_document_url = KURL("http://foo.com/index.html");
   const KURL default_manifest_url = KURL("http://foo.com/manifest.json");
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestParserTest);
 };
 
 TEST_F(ManifestParserTest, CrashTest) {
@@ -72,7 +74,8 @@ TEST_F(ManifestParserTest, CrashTest) {
   KURL url("http://example.com");
   ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
 
-  parser.Parse();
+  bool has_comments = parser.Parse();
+  EXPECT_FALSE(has_comments);
   Vector<mojom::blink::ManifestErrorPtr> errors;
   const auto& manifest = parser.manifest();
   parser.TakeErrors(&errors);
@@ -80,6 +83,18 @@ TEST_F(ManifestParserTest, CrashTest) {
   // .Parse() should have been call without crashing and succeeded.
   EXPECT_EQ(0u, errors.size());
   EXPECT_FALSE(IsManifestEmpty(manifest));
+}
+
+TEST_F(ManifestParserTest, HasComments) {
+  const String json = R"({
+        // comment
+        "start_url": "/"
+      })";
+  KURL url("http://example.com");
+  ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
+
+  bool has_comments = parser.Parse();
+  EXPECT_TRUE(has_comments);
 }
 
 TEST_F(ManifestParserTest, EmptyStringNull) {
@@ -302,7 +317,7 @@ TEST_F(ManifestParserTest, IdParseRules) {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "" })");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("", manifest->id);
+    EXPECT_EQ("start?query=a", manifest->id);
   }
   // Full url.
   {
@@ -331,6 +346,13 @@ TEST_F(ManifestParserTest, IdParseRules) {
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"/\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("", manifest->id);
+  }
+  // url with fragment
+  {
+    auto& manifest = ParseManifest(
+        "{ \"start_url\": \"/start?query=a\", \"id\": \"/#abc\" }");
     ASSERT_EQ(0u, GetErrorCount());
     EXPECT_EQ("", manifest->id);
   }
@@ -2205,6 +2227,44 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     EXPECT_EQ(0u, file_handlers[0]->accept.find("image/png")->value.size());
   }
 
+  // Invalid MIME types and those with parameters are stripped.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "file_handlers": [
+            {
+              "name": "Foo",
+              "icons": [{ "src": "foo.jpg" }],
+              "action": "/files",
+              "accept": {
+                "image_png": ".png",
+                "foo/bar": ".foo",
+                "application/foobar;parameter=25": ".foobar",
+                "application/its+xml": ".itsml"
+              }
+            }
+          ]
+        })");
+    auto& file_handlers = manifest->file_handlers;
+
+    ASSERT_EQ(3u, GetErrorCount());
+    EXPECT_EQ("invalid MIME type: image_png", errors()[0]);
+    EXPECT_EQ("invalid MIME type: foo/bar", errors()[1]);
+    EXPECT_EQ("invalid MIME type: application/foobar;parameter=25",
+              errors()[2]);
+    ASSERT_EQ(1u, file_handlers.size());
+
+    EXPECT_EQ("Foo", file_handlers[0]->name);
+    EXPECT_EQ("http://foo.com/foo.jpg",
+              file_handlers[0]->icons[0]->src.GetString());
+    EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
+    ASSERT_EQ(1U, file_handlers[0]->accept.size());
+    ASSERT_TRUE(file_handlers[0]->accept.Contains("application/its+xml"));
+    EXPECT_EQ(0u, file_handlers[0]
+                      ->accept.find("application/its+xml")
+                      ->value.Contains(".foobar"));
+  }
+
   // Extensions specified as a single string is valid.
   {
     auto& manifest = ParseManifest(
@@ -3071,39 +3131,7 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, NoteTakingParseRulesWithFeatureDisabled) {
-  // With feature disabled, note taking field should never be parsed.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kWebAppNoteTaking);
-
-  KURL manifest_url = KURL("https://foo.com/manifest.json");
-  KURL document_url = KURL("https://foo.com/index.html");
-
-  {
-    // Manifest does not contain a 'note_taking' field.
-    auto& manifest = ParseManifest("{ }");
-    ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_TRUE(manifest->note_taking.is_null());
-  }
-
-  {
-    // A valid note_taking entry.
-    auto& manifest = ParseManifestWithURLs(
-        R"({
-          "note_taking": {
-            "new_note_url": "https://foo.com"
-          }
-        })",
-        manifest_url, document_url);
-    ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_TRUE(manifest->note_taking.is_null());
-  }
-}
-
 TEST_F(ManifestParserTest, NoteTakingParseRules) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kWebAppNoteTaking);
-
   KURL manifest_url = KURL("https://foo.com/manifest.json");
   KURL document_url = KURL("https://foo.com/index.html");
 
@@ -4795,6 +4823,298 @@ TEST_F(ManifestParserTest, CaptureLinksParseRules) {
       EXPECT_EQ("capture_links value '34' ignored, string expected.",
                 errors()[1]);
     }
+  }
+}
+
+TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
+  using RouteTo = mojom::blink::ManifestLaunchHandler::RouteTo;
+  using NavigateExistingClient =
+      mojom::blink::ManifestLaunchHandler::NavigateExistingClient;
+
+  {
+    ScopedWebAppLaunchHandlerForTest feature(false);
+
+    // Feature not enabled, should not be parsed.
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "route_to": "existing-client",
+        "navigate_existing_client": "never"
+      }
+    })");
+    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  {
+    ScopedWebAppLaunchHandlerForTest feature(true);
+    // Smoke test.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": "existing-client",
+          "navigate_existing_client": "never"
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kExistingClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kNever);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": "new-client",
+          "navigate_existing_client": "always"
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kNewClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty object is fine.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {}
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kAuto);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty array is fine.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": [],
+          "navigate_existing_client": []
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kAuto);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Unknown single string.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": "space",
+          "navigate_existing_client": "sometimes"
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kAuto);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kAlways);
+      EXPECT_EQ(2u, GetErrorCount());
+      EXPECT_EQ("route_to value 'space' ignored, unknown value.", errors()[0]);
+      EXPECT_EQ(
+          "navigate_existing_client value 'sometimes' ignored, unknown value.",
+          errors()[1]);
+    }
+
+    // First known value in array is used.
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": ["existing-client", "new-client"],
+          "navigate_existing_client": ["never", "always"]
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kExistingClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kNever);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": {
+          "route_to": [null, "space", "existing-client", "auto"],
+          "navigate_existing_client": [1234, "sometimes", "never", "always"]
+        }
+      })");
+      EXPECT_EQ(manifest->launch_handler->route_to, RouteTo::kExistingClient);
+      EXPECT_EQ(manifest->launch_handler->navigate_existing_client,
+                NavigateExistingClient::kNever);
+      EXPECT_EQ(4u, GetErrorCount());
+      EXPECT_EQ("route_to value 'null' ignored, string expected.", errors()[0]);
+      EXPECT_EQ("route_to value 'space' ignored, unknown value.", errors()[1]);
+      EXPECT_EQ(
+          "navigate_existing_client value '1234' ignored, string expected.",
+          errors()[2]);
+      EXPECT_EQ(
+          "navigate_existing_client value 'sometimes' ignored, unknown value.",
+          errors()[3]);
+    }
+
+    // Don't parse if the property isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "launch_handler": null })");
+      EXPECT_FALSE(manifest->launch_handler);
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
+    }
+    {
+      auto& manifest = ParseManifest(R"({
+        "launch_handler": [{
+          "route_to": "new-client",
+          "navigate_existing_client": "never"
+        }]
+      })");
+      EXPECT_FALSE(manifest->launch_handler);
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
+    }
+  }
+}
+
+TEST_F(ManifestParserTest, TranslationsParseRules) {
+  {
+    ScopedWebAppTranslationsForTest feature(false);
+
+    // Feature not enabled, should not be parsed.
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"name": "french name"}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    ScopedWebAppTranslationsForTest feature(true);
+
+    // Manifest does not contain a 'translations' field.
+    {
+      auto& manifest = ParseManifest(R"({ })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Don't parse if translations object is empty.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": {} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty translation is ignored.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": {"fr": {}} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_FALSE(manifest->translations.Contains("fr"));
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Valid name, short_name and description should be parsed
+    {
+      auto& manifest = ParseManifest(
+          R"({ "translations": {"fr": {"name": "french name", "short_name":
+           "fr name", "description": "french description"}} })");
+      EXPECT_FALSE(manifest->translations.IsEmpty());
+      EXPECT_TRUE(manifest->translations.Contains("fr"));
+      EXPECT_EQ(manifest->translations.find("fr")->value->name, "french name");
+      EXPECT_EQ(manifest->translations.find("fr")->value->short_name,
+                "fr name");
+      EXPECT_EQ(manifest->translations.find("fr")->value->description,
+                "french description");
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Don't parse if the property isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": [] })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("property 'translations' ignored, object expected.",
+                errors()[0]);
+    }
+
+    // Ignore translation if it isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "translations": {"fr": []} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("skipping translation, object expected.", errors()[0]);
+    }
+
+    // Multiple valid translations should all be parsed.
+    {
+      auto& manifest = ParseManifest(
+          R"({ "translations": {"fr": {"name": "french name"},
+          "es": {"name": "spanish name"}} })");
+      EXPECT_FALSE(manifest->translations.IsEmpty());
+      EXPECT_TRUE(manifest->translations.Contains("fr"));
+      EXPECT_TRUE(manifest->translations.Contains("es"));
+      EXPECT_EQ(manifest->translations.find("fr")->value->name, "french name");
+      EXPECT_EQ(manifest->translations.find("es")->value->name, "spanish name");
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty locale string should be ignored.
+    {
+      auto& manifest = ParseManifest(
+          R"({ "translations": {"": {"name": "translated name"}} })");
+      EXPECT_TRUE(manifest->translations.IsEmpty());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("skipping translation, non-empty locale string expected.",
+                errors()[0]);
+    }
+  }
+}
+
+TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
+  ScopedWebAppTranslationsForTest feature(true);
+
+  // Ignore non-string translations name.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"name": {}}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'name' of 'translations' ignored, type string expected.",
+        errors()[0]);
+  }
+
+  // Ignore non-string translations short_name.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"short_name": []}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'short_name' of 'translations' ignored, type string "
+        "expected.",
+        errors()[0]);
+  }
+
+  // Ignore non-string translations description.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "translations": {"fr": {"description": 42}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'description' of 'translations' ignored, type string "
+        "expected.",
+        errors()[0]);
+  }
+
+  // Translation with empty strings is ignored.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "translations": {"fr": {"name": "", "short_name": "",
+        "description": ""}} })");
+    EXPECT_TRUE(manifest->translations.IsEmpty());
+    EXPECT_FALSE(manifest->translations.Contains("fr"));
+    EXPECT_EQ(3u, GetErrorCount());
+    EXPECT_EQ("property 'name' of 'translations' is an empty string.",
+              errors()[0]);
+    EXPECT_EQ("property 'short_name' of 'translations' is an empty string.",
+              errors()[1]);
+    EXPECT_EQ("property 'description' of 'translations' is an empty string.",
+              errors()[2]);
   }
 }
 

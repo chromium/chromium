@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/media_resource.h"
 #include "media/base/renderer.h"
@@ -39,6 +38,9 @@ class CONTENT_EXPORT FlingingRendererClient
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       media::RemotePlayStateChangeCB remote_play_state_change_cb);
 
+  FlingingRendererClient(const FlingingRendererClient&) = delete;
+  FlingingRendererClient& operator=(const FlingingRendererClient&) = delete;
+
   ~FlingingRendererClient() override;
 
   // media::MojoRendererWrapper overrides.
@@ -62,8 +64,6 @@ class CONTENT_EXPORT FlingingRendererClient
 
   mojo::Receiver<FlingingRendererClientExtension> client_extension_receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlingingRendererClient);
 };
 
 }  // namespace content

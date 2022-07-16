@@ -20,11 +20,15 @@ FilteringRanker::FilteringRanker() {}
 
 FilteringRanker::~FilteringRanker() {}
 
-void FilteringRanker::Start(const std::u16string& query) {
+void FilteringRanker::Start(const std::u16string& query,
+                            ResultsMap& results,
+                            CategoriesMap& categories) {
   last_query_ = query;
 }
 
-void FilteringRanker::Rank(ResultsMap& results, ProviderType provider) {
+void FilteringRanker::Rank(ResultsMap& results,
+                           CategoriesMap& categories,
+                           ProviderType provider) {
   // Don't perform any filtering on zero-state.
   if (last_query_.empty())
     return;
@@ -52,11 +56,12 @@ void FilteringRanker::Rank(ResultsMap& results, ProviderType provider) {
               return a->relevance() > b->relevance();
             });
 
-  // Filter all results after the |kMaxOmniboxResults|th one out of the UI by
-  // making their relevance score negative, but never remove top matches.
+  // Filter all results after the |kMaxOmniboxResults|th one out of the UI, but
+  // never remove top matches.
   for (int i = kMaxOmniboxResults; i < omnibox_results.size(); ++i) {
-    if (omnibox_results[i]->relevance() < kTopMatchScoreBoost)
-      omnibox_results[i]->set_relevance(-1.0);
+    auto& scoring = omnibox_results[i]->scoring();
+    if (!scoring.top_match)
+      scoring.filter = true;
   }
 }
 

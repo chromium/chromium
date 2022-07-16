@@ -6,8 +6,8 @@
 #define HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "headless/lib/browser/protocol/browser.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
-#include "headless/lib/browser/protocol/dp_browser.h"
 
 namespace headless {
 class HeadlessBrowserImpl;
@@ -16,6 +16,10 @@ namespace protocol {
 class BrowserHandler : public DomainHandler, public Browser::Backend {
  public:
   BrowserHandler(HeadlessBrowserImpl* browser, const std::string& target_id);
+
+  BrowserHandler(const BrowserHandler&) = delete;
+  BrowserHandler& operator=(const BrowserHandler&) = delete;
+
   ~BrowserHandler() override;
 
   // DomainHandler implementation
@@ -39,7 +43,6 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
  private:
   HeadlessBrowserImpl* browser_;
   std::string target_id_;
-  DISALLOW_COPY_AND_ASSIGN(BrowserHandler);
 };
 
 }  // namespace protocol

@@ -276,7 +276,7 @@ void BrowserContextKeyedAPIFactory<OmniboxAPI>::DeclareFactoryDependencies() {
 
 ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
   std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(*args_));
+      SendSuggestions::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   content::NotificationService::current()->Notify(
@@ -290,7 +290,7 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
 
 ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
   std::unique_ptr<SetDefaultSuggestion::Params> params(
-      SetDefaultSuggestion::Params::Create(*args_));
+      SetDefaultSuggestion::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

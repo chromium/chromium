@@ -27,5 +27,5 @@ function FindProxyForURL(url, host) {
   var proxyHost = ips.join('-');
   proxyHost = proxyHost.replace(/[^0-9a-zA-Z.-]/g, '_');
 
-  return "PROXY " + proxyHost + ":99";
+  return "PROXY " + proxyHost + ".test:99";
 }

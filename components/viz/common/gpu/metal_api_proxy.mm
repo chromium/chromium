@@ -63,11 +63,11 @@ id<MTLLibrary> NewLibraryWithRetry(id<MTLDevice> device,
   // The completion handler will signal the condition variable we will wait
   // on. Note that completionHandler will hold a reference to |state|.
   MTLNewLibraryCompletionHandler completionHandler =
-      ^(id<MTLLibrary> library, NSError* error) {
+      ^(id<MTLLibrary> library, NSError* ns_error) {
         base::AutoLock lock(state->lock);
         state->has_result = true;
         state->library = [library retain];
-        state->error = [error retain];
+        state->error = [ns_error retain];
         state->condition_variable.Signal();
       };
 
@@ -82,9 +82,8 @@ id<MTLLibrary> NewLibraryWithRetry(id<MTLDevice> device,
 
   // Suppress the watchdog timer for kTimeout by reporting progress every
   // half-second. After that, allow it to kill the the GPU process.
-  constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(60);
-  constexpr base::TimeDelta kWaitPeriod =
-      base::TimeDelta::FromMilliseconds(500);
+  constexpr base::TimeDelta kTimeout = base::Seconds(60);
+  constexpr base::TimeDelta kWaitPeriod = base::Milliseconds(500);
   while (true) {
     if (base::TimeTicks::Now() - start_time < kTimeout && progress_reporter)
       progress_reporter->ReportProgress();
@@ -108,20 +107,19 @@ id<MTLRenderPipelineState> NewRenderPipelineStateWithRetry(
   const base::TimeTicks start_time = base::TimeTicks::Now();
   auto state = base::MakeRefCounted<AsyncMetalState>();
   MTLNewRenderPipelineStateCompletionHandler completionHandler =
-      ^(id<MTLRenderPipelineState> render_pipeline_state, NSError* error) {
+      ^(id<MTLRenderPipelineState> render_pipeline_state, NSError* ns_error) {
         base::AutoLock lock(state->lock);
         state->has_result = true;
         state->render_pipeline_state = [render_pipeline_state retain];
-        state->error = [error retain];
+        state->error = [ns_error retain];
         state->condition_variable.Signal();
       };
   if (progress_reporter)
     progress_reporter->ReportProgress();
   [device newRenderPipelineStateWithDescriptor:descriptor
                              completionHandler:completionHandler];
-  constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(60);
-  constexpr base::TimeDelta kWaitPeriod =
-      base::TimeDelta::FromMilliseconds(500);
+  constexpr base::TimeDelta kTimeout = base::Seconds(60);
+  constexpr base::TimeDelta kWaitPeriod = base::Milliseconds(500);
   while (true) {
     if (base::TimeTicks::Now() - start_time < kTimeout && progress_reporter)
       progress_reporter->ReportProgress();
@@ -148,6 +146,10 @@ constexpr uint32_t kShaderCrashDumpLength = 8128;
 class MTLLibraryCache {
  public:
   MTLLibraryCache() = default;
+
+  MTLLibraryCache(const MTLLibraryCache&) = delete;
+  MTLLibraryCache& operator=(const MTLLibraryCache&) = delete;
+
   ~MTLLibraryCache() = default;
 
   id<MTLLibrary> NewLibraryWithSource(id<MTLDevice> device,
@@ -224,7 +226,6 @@ class MTLLibraryCache {
   };
 
   std::map<LibraryKey, LibraryData> libraries_;
-  DISALLOW_COPY_AND_ASSIGN(MTLLibraryCache);
 };
 
 // Disable protocol warnings and property synthesis warnings. Any unimplemented

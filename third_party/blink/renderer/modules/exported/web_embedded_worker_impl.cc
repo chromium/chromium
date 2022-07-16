@@ -215,6 +215,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       global_scope_name, worker_start_data->user_agent,
       worker_start_data->ua_metadata, std::move(web_worker_fetch_context),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       network::mojom::ReferrerPolicy::kDefault, starter_origin.get(),
       starter_secure_context, starter_https_state, nullptr /* worker_clients */,
       std::move(content_settings_proxy),
@@ -224,8 +225,9 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       // Generate the full code cache in the first execution of the script.
       mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck,
       nullptr /* worklet_module_respones_map */,
-      std::move(browser_interface_broker), BeginFrameProviderParams(),
-      nullptr /* parent_permissions_policy */,
+      std::move(browser_interface_broker),
+      mojo::NullRemote() /* code_cache_host_interface */,
+      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
       base::UnguessableToken() /* agent_cluster_id */,
       worker_start_data->ukm_source_id);
 

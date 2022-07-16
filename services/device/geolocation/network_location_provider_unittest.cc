@@ -80,6 +80,9 @@ class MockWifiDataProvider : public WifiDataProvider {
 
   MockWifiDataProvider() : start_calls_(0), stop_calls_(0), got_data_(true) {}
 
+  MockWifiDataProvider(const MockWifiDataProvider&) = delete;
+  MockWifiDataProvider& operator=(const MockWifiDataProvider&) = delete;
+
   // WifiDataProvider implementation.
   void StartDataProvider() override { ++start_calls_; }
 
@@ -117,8 +120,6 @@ class MockWifiDataProvider : public WifiDataProvider {
 
   WifiData data_;
   bool got_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWifiDataProvider);
 };
 
 MockWifiDataProvider* MockWifiDataProvider::instance_ = nullptr;
@@ -293,23 +294,28 @@ class GeolocationNetworkProviderTest : public testing::Test {
       base::ListValue expected_wifi_aps_json;
       CreateReferenceWifiScanDataJson(expected_wifi_aps, wifi_start_index,
                                       &expected_wifi_aps_json);
-      EXPECT_EQ(size_t(expected_wifi_aps), expected_wifi_aps_json.GetSize());
+      EXPECT_EQ(size_t(expected_wifi_aps),
+                expected_wifi_aps_json.GetList().size());
 
       const base::ListValue* wifi_aps_json;
       ASSERT_TRUE(
           JsonGetList("wifiAccessPoints", *request_json, &wifi_aps_json));
-      for (size_t i = 0; i < expected_wifi_aps_json.GetSize(); ++i) {
-        const base::DictionaryValue* expected_json;
-        ASSERT_TRUE(expected_wifi_aps_json.GetDictionary(i, &expected_json));
-        const base::DictionaryValue* actual_json;
-        ASSERT_TRUE(wifi_aps_json->GetDictionary(i, &actual_json));
+      for (size_t i = 0; i < expected_wifi_aps_json.GetList().size(); ++i) {
+        const base::Value& expected_json_value =
+            expected_wifi_aps_json.GetList()[i];
+        ASSERT_TRUE(expected_json_value.is_dict());
+        const base::DictionaryValue& expected_json =
+            base::Value::AsDictionaryValue(expected_json_value);
+        const base::Value& actual_json_value = wifi_aps_json->GetList()[i];
+        ASSERT_TRUE(actual_json_value.is_dict());
+        const base::DictionaryValue& actual_json =
+            base::Value::AsDictionaryValue(actual_json_value);
+        ASSERT_TRUE(JsonFieldEquals("macAddress", expected_json, actual_json));
         ASSERT_TRUE(
-            JsonFieldEquals("macAddress", *expected_json, *actual_json));
+            JsonFieldEquals("signalStrength", expected_json, actual_json));
+        ASSERT_TRUE(JsonFieldEquals("channel", expected_json, actual_json));
         ASSERT_TRUE(
-            JsonFieldEquals("signalStrength", *expected_json, *actual_json));
-        ASSERT_TRUE(JsonFieldEquals("channel", *expected_json, *actual_json));
-        ASSERT_TRUE(JsonFieldEquals("signalToNoiseRatio", *expected_json,
-                                    *actual_json));
+            JsonFieldEquals("signalToNoiseRatio", expected_json, actual_json));
       }
     } else {
       ASSERT_FALSE(request_json->HasKey("wifiAccessPoints"));
@@ -775,8 +781,7 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedTooOld) {
   // Seed the last position cache with a geoposition value with the timestamp
   // set to 20 minutes ago.
   mojom::Geoposition last_position = CreateReferencePosition(0);
-  last_position.timestamp =
-      base::Time::Now() - base::TimeDelta::FromMinutes(20);
+  last_position.timestamp = base::Time::Now() - base::Minutes(20);
   EXPECT_TRUE(ValidateGeoposition(last_position));
   position_cache_.SetLastUsedNetworkPosition(last_position);
 

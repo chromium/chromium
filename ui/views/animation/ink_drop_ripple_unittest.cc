@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -45,6 +44,10 @@ class InkDropRippleTest
     : public testing::TestWithParam<InkDropRippleTestTypes> {
  public:
   InkDropRippleTest();
+
+  InkDropRippleTest(const InkDropRippleTest&) = delete;
+  InkDropRippleTest& operator=(const InkDropRippleTest&) = delete;
+
   ~InkDropRippleTest() override;
 
  protected:
@@ -56,9 +59,6 @@ class InkDropRippleTest
 
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropRippleTest);
 };
 
 InkDropRippleTest::InkDropRippleTest()

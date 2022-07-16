@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_ENTERPRISE_REPORTING_SERVICE_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_ENTERPRISE_REPORTING_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/enterprise_reporting.mojom.h"
@@ -31,6 +30,11 @@ class ArcEnterpriseReportingService
 
   ArcEnterpriseReportingService(content::BrowserContext* context,
                                 ArcBridgeService* arc_bridge_service);
+
+  ArcEnterpriseReportingService(const ArcEnterpriseReportingService&) = delete;
+  ArcEnterpriseReportingService& operator=(
+      const ArcEnterpriseReportingService&) = delete;
+
   ~ArcEnterpriseReportingService() override;
 
   // mojom::EnterpriseReportingHost overrides:
@@ -42,8 +46,6 @@ class ArcEnterpriseReportingService
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   base::WeakPtrFactory<ArcEnterpriseReportingService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcEnterpriseReportingService);
 };
 
 }  // namespace arc

@@ -45,6 +45,7 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
                  const AppId& app_id,
                  const std::vector<base::FilePath>& files,
                  const std::vector<GURL>& urls,
+                 const GURL& override_url,
                  chrome::mojom::AppShimLoginItemRestoreState
                      login_item_restore_state) override;
   void LaunchShim(Profile* profile,
@@ -53,6 +54,8 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
                   apps::ShimLaunchedCallback launched_callback,
                   apps::ShimTerminatedCallback terminated_callback) override;
   bool HasNonBookmarkAppWindowsOpen() override;
+  std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+  GetAppShortcutsMenuItemInfos(Profile* profile, const AppId& app_id) override;
 
  private:
   // Return true if |fallback_delegate_| should be used instead of |this|.

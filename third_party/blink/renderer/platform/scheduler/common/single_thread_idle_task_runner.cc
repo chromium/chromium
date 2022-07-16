@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/blame_context.h"
 #include "base/trace_event/trace_event.h"
 

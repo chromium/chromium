@@ -68,14 +68,14 @@ PermissionToggleRowView::PermissionToggleRowView(
 PermissionToggleRowView::~PermissionToggleRowView() = default;
 
 void PermissionToggleRowView::AddObserver(
-    PermissionSelectorRowObserver* observer) {
+    PermissionToggleRowViewObserver* observer) {
   observer_list_.AddObserver(observer);
 }
 
 void PermissionToggleRowView::PermissionChanged() {
   UpdateUiOnPermissionChanged();
 
-  for (PermissionSelectorRowObserver& observer : observer_list_) {
+  for (PermissionToggleRowViewObserver& observer : observer_list_) {
     observer.OnPermissionChanged(permission_);
   }
 }

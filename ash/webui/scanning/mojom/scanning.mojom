@@ -44,10 +44,18 @@ enum SourceType {
 
 // The page sizes that can be used to perform a scan.
 enum PageSize {
+  // ISO A3 (297 x 420 mm).
+  kIsoA3,
   // ISO A4 (210 x 297 mm).
   kIsoA4,
+  // ISO B4 [JIS] (257 x 364 mm).
+  kIsoB4,
+  // Legal (215.9 x 355.6 mm).
+  kLegal,
   // NA Letter (216 x 279 mm).
   kNaLetter,
+  // Tabloid (279.4 x 431.8 mm).
+  kTabloid,
   // The page size resulting from scanning the scanner's entire scannable area.
   kMax,
 };
@@ -121,9 +129,10 @@ interface ScanJobObserver {
   OnPageProgress(uint32 page_number, uint32 progress_percent);
 
   // Called when scanning a page is complete. |page_data| contains the page's
-  // image data encoded as a PNG.
+  // image data encoded as a PNG. |new_page_index| is the expected index of this
+  // page in the array of scanned images.
   // TODO(b/184747389): Send a lower resolution preview.
-  OnPageComplete(array<uint8> page_data);
+  OnPageComplete(array<uint8> page_data, uint32 new_page_index);
 
   // Called when the scan is complete. |result| indicates the result of the scan
   // and is set to kSuccess when the scan completes successfully.
@@ -135,6 +144,10 @@ interface ScanJobObserver {
   // Called when canceling the current scan job is complete. |success|
   // indicates whether the scan job was cancelled successfully.
   OnCancelComplete(bool success);
+
+  // Called when a scan in a multi-page scan session fails. This does not end
+  // the multi-page scan session. The user is allowed to attempt the scan again.
+  OnMultiPageScanFail(ScanResult result);
 };
 
 // Interface used to obtain information about and interact with connected
@@ -158,7 +171,43 @@ interface ScanService {
   StartScan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings,
       pending_remote<ScanJobObserver> observer) => (bool success);
 
+  // Starts a multi-page scan session with the scanner identified by
+  // |scanner_id| using the provided |settings|. Scan job events are reported to
+  // the client via the |observer|. |success| indicates whether the first scan
+  // started successfully. All subsequent multi-page scan actions are made
+  // through the |controller|. There can only be one multi-page scan session
+  // started at at a time.
+  StartMultiPageScan(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings, pending_remote<ScanJobObserver> observer)
+      => (pending_remote<MultiPageScanController>? controller);
+
   // Attempts to cancel the currently running scan job. The success of the
   // cancel attempt is reported through the ScanJobObserver.
   CancelScan();
+};
+
+// Interface used for performing the actions in a multi-page scan session. It is
+// exposed to the Scan app only after a successful call to
+// ScanService::StartMultiPageScan(). Closing the message pipe for this
+// interface without calling CompleteMultiPageScan() cancels the current
+// multipage scan session. The previously scanned images from that session
+// will be discarded.
+interface MultiPageScanController {
+  // Scans the next page in a multi-page scan session. |success| indicates
+  // whether the scan started successfully.
+  ScanNextPage(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings) => (bool success);
+
+  // Removes a scanned image from an ongoing multi-page scan session at the
+  // specified |page_index|. |page_index| is zero-based.
+  RemovePage(uint32 page_index);
+
+  // Starts a new scan in an ongoing multi-page scan session then replaces the
+  // scanned image specified at |page_index| on completion. If the scan fails,
+  // no existing image is deleted or replaced. |page_index| is zero-based.
+  RescanPage(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings, uint32 page_index) => (bool success);
+
+  // Ends a multi-page scan session and saves the scan to disk.
+  CompleteMultiPageScan();
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/gl/dcomp_surface_registry.h"
+#include "base/logging.h"
 
 namespace gl {
 
@@ -16,14 +17,23 @@ DCOMPSurfaceRegistry::~DCOMPSurfaceRegistry() = default;
 
 base::UnguessableToken DCOMPSurfaceRegistry::RegisterDCOMPSurfaceHandle(
     base::win::ScopedHandle surface) {
+  DVLOG(1) << __func__;
   base::UnguessableToken token = base::UnguessableToken::Create();
   DCHECK(surface_handle_map_.find(token) == surface_handle_map_.end());
   surface_handle_map_[token] = std::move(surface);
+  DVLOG(1) << __func__ << ": Surface handle registered with token " << token;
   return token;
+}
+
+void DCOMPSurfaceRegistry::UnregisterDCOMPSurfaceHandle(
+    const base::UnguessableToken& token) {
+  DVLOG(1) << __func__;
+  surface_handle_map_.erase(token);
 }
 
 base::win::ScopedHandle DCOMPSurfaceRegistry::TakeDCOMPSurfaceHandle(
     const base::UnguessableToken& token) {
+  DVLOG(1) << __func__;
   auto surface_iter = surface_handle_map_.find(token);
   if (surface_iter != surface_handle_map_.end()) {
     // Take ownership.
@@ -32,6 +42,7 @@ base::win::ScopedHandle DCOMPSurfaceRegistry::TakeDCOMPSurfaceHandle(
     return surface_handle;
   }
 
+  DLOG(ERROR) << __func__ << ": No surface handle found for token " << token;
   return base::win::ScopedHandle();
 }
 

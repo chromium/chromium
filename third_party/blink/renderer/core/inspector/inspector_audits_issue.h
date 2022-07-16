@@ -7,9 +7,12 @@
 
 #include <memory>
 #include "base/unguessable_token.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 
 namespace WTF {
 class String;
@@ -17,8 +20,14 @@ class String;
 
 namespace blink {
 
+class DocumentLoader;
 class Element;
 class ExecutionContext;
+class LocalFrame;
+class ResourceError;
+class LocalFrame;
+class SecurityPolicyViolationEventInit;
+class SourceLocation;
 
 namespace protocol {
 namespace Audits {
@@ -38,6 +47,17 @@ enum class AttributionReportingIssueType {
   kInvalidAttributionData,
   kAttributionSourceUntrustworthyOrigin,
   kAttributionUntrustworthyOrigin,
+};
+
+enum class SharedArrayBufferIssueType {
+  kTransferIssue,
+  kCreationIssue,
+};
+
+enum class MixedContentResolutionStatus {
+  kMixedContentBlocked,
+  kMixedContentAutomaticallyUpgraded,
+  kMixedContentWarning,
 };
 
 // |AuditsIssue| is a thin wrapper around the Audits::InspectorIssue
@@ -106,6 +126,38 @@ class CORE_EXPORT AuditsIssue {
       WTF::String source_origin,
       WTF::String target_origin,
       bool is_warning);
+
+  static void ReportSharedArrayBufferIssue(
+      ExecutionContext* execution_context,
+      bool shared_buffer_transfer_allowed,
+      SharedArrayBufferIssueType issue_type);
+
+  static void ReportDeprecationIssue(ExecutionContext* execution_context,
+                                     const String& message);
+
+  static AuditsIssue CreateBlockedByResponseIssue(
+      network::mojom::BlockedByResponseReason reason,
+      uint64_t identifier,
+      DocumentLoader* loader,
+      const ResourceError& error,
+      const base::UnguessableToken& token);
+
+  static void ReportMixedContentIssue(
+      const KURL& main_resource_url,
+      const KURL& insecure_url,
+      const mojom::blink::RequestContextType request_context,
+      LocalFrame* frame,
+      const MixedContentResolutionStatus resolution_status,
+      const absl::optional<String>& devtools_id);
+
+  static AuditsIssue CreateContentSecurityPolicyIssue(
+      const blink::SecurityPolicyViolationEventInit& violation_data,
+      bool is_report_only,
+      ContentSecurityPolicyViolationType violation_type,
+      LocalFrame* frame_ancestor,
+      Element* element,
+      SourceLocation* source_location,
+      absl::optional<base::UnguessableToken> issue_id);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

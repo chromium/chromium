@@ -77,9 +77,11 @@ void TableRowPainter::PaintBoxDecorationBackground(
 
   BoxPainter(layout_table_row_)
       .RecordHitTestData(local_paint_info, paint_rect, layout_table_row_);
+  BoxPainter(layout_table_row_)
+      .RecordRegionCaptureData(local_paint_info, paint_rect, layout_table_row_);
 
-  bool has_background = layout_table_row_.StyleRef().HasBackground();
-  bool has_box_shadow = layout_table_row_.StyleRef().BoxShadow();
+  const bool has_background = layout_table_row_.StyleRef().HasBackground();
+  const bool has_box_shadow = layout_table_row_.StyleRef().BoxShadow();
   if (!has_background && !has_box_shadow)
     return;
 
@@ -109,12 +111,6 @@ void TableRowPainter::PaintBoxDecorationBackground(
             paint_info_for_cells, layout_table_row_);
       }
     }
-    uint64_t paint_area = base::saturated_cast<uint64_t>(
-        paint_rect.Width().ToUnsigned() * paint_rect.Height().ToUnsigned());
-    paint_info.context.GetPaintController().SetPossibleBackgroundColor(
-        layout_table_row_,
-        layout_table_row_.ResolveColor(GetCSSPropertyBackgroundColor()).Rgb(),
-        paint_area);
   }
 
   if (has_box_shadow) {

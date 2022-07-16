@@ -37,6 +37,9 @@ class AXMenuList final : public AXLayoutObject {
  public:
   AXMenuList(LayoutObject*, AXObjectCacheImpl&);
 
+  AXMenuList(const AXMenuList&) = delete;
+  AXMenuList& operator=(const AXMenuList&) = delete;
+
   AccessibilityExpanded IsExpanded() const final;
   bool OnNativeClickAction() override;
   void ClearChildren() const override;
@@ -57,8 +60,6 @@ class AXMenuList final : public AXLayoutObject {
   void AddChildren() override;
 
   bool IsCollapsed() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMenuList);
 };
 
 template <>

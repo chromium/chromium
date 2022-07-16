@@ -21,8 +21,9 @@ class JSChecker(object):
         self.input_api.re, line_number, line, regex, message)
 
   def BindThisCheck(self, i, line):
-    return self.RegexCheck(i, line, r"(\.bind\(this)[^)]*\)",
-        "Prefer arrow (=>) functions over bind(this)");
+    """Checks for usages of bind(this) with inlined functions."""
+    return self.RegexCheck(i, line, r"\)(\.bind\(this)[^)]*\)",
+                           "Prefer arrow (=>) functions over bind(this)")
 
   def ChromeSendCheck(self, i, line):
     """Checks for a particular misuse of "chrome.send"."""
@@ -36,6 +37,10 @@ class JSChecker(object):
         '    // <include src="...">\n' +
         '    // <if expr="chromeos">\n' +
         "    // </if>\n")
+
+  def DebuggerCheck(self, i, line):
+    return self.RegexCheck(i, line, r"^\s*(debugger);",
+                           "Debugger statements should be removed")
 
   def EndJsDocCommentCheck(self, i, line):
     msg = "End JSDoc comments with */ instead of **/"
@@ -108,11 +113,13 @@ class JSChecker(object):
     for f in affected_js_files:
       error_lines = []
 
-      for i, line in enumerate(f.NewContents(), start=1):
+      for i, line in f.ChangedContents():
         error_lines += [
             _f for _f in [
+                self.BindThisCheck(i, line),
                 self.ChromeSendCheck(i, line),
                 self.CommentIfAndIncludeCheck(i, line),
+                self.DebuggerCheck(i, line),
                 self.EndJsDocCommentCheck(i, line),
                 self.ExtraDotInGenericCheck(i, line),
                 self.InheritDocCheck(i, line),

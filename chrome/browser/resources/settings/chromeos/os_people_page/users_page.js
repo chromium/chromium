@@ -51,30 +51,12 @@ Polymer({
     supportedSettingIds: {
       type: Object,
       value: () => new Set([
-        chromeos.settings.mojom.Setting.kGuestBrowsing,
-        chromeos.settings.mojom.Setting.kShowUsernamesAndPhotosAtSignIn,
-        chromeos.settings.mojom.Setting.kRestrictSignIn,
-        chromeos.settings.mojom.Setting.kAddToUserAllowlist,
-        chromeos.settings.mojom.Setting.kRemoveFromUserAllowlist,
-
         chromeos.settings.mojom.Setting.kGuestBrowsingV2,
         chromeos.settings.mojom.Setting.kShowUsernamesAndPhotosAtSignInV2,
         chromeos.settings.mojom.Setting.kRestrictSignInV2,
         chromeos.settings.mojom.Setting.kAddToUserAllowlistV2,
         chromeos.settings.mojom.Setting.kRemoveFromUserAllowlistV2,
       ]),
-    },
-
-    /**
-     * True if redesign of account management flows is enabled.
-     * @private
-     */
-    isAccountManagementFlowsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
-      },
-      readOnly: true,
     },
   },
 
@@ -98,9 +80,7 @@ Polymer({
    */
   beforeDeepLinkAttempt(settingId) {
     if (settingId !==
-            chromeos.settings.mojom.Setting.kRemoveFromUserAllowlist &&
-        settingId !==
-            chromeos.settings.mojom.Setting.kRemoveFromUserAllowlistV2) {
+        chromeos.settings.mojom.Setting.kRemoveFromUserAllowlistV2) {
       // Continue with deep linking attempt.
       return true;
     }

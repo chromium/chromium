@@ -15,6 +15,15 @@ group("linux") {
 # is applied to all targets. It is here to separate out the logic that is
 # Linux-only. This is not applied to Android, but is applied to ChromeOS.
 config("compiler") {
+  if (current_cpu == "arm64") {
+    import("//build/config/arm.gni")
+    cflags = []
+    asmflags = []
+    if (arm_control_flow_integrity == "standard") {
+      cflags += [ "-mbranch-protection=standard" ]
+      asmflags += [ "-mbranch-protection=standard" ]
+    }
+  }
 }
 
 # This is included by reference in the //build/config/compiler:runtime_library

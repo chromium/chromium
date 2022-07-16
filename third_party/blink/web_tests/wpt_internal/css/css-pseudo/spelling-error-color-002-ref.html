@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Reference</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<style>
+  div {
+    padding: 10px;
+    background: cyan;
+  }
+</style>
+
+<p>The test passes if you cannot see a spelling error marker in the next sentence.</p>
+<div id="target" contenteditable spellcheck="false">The uikc brown fox.</div>
+
+<script>
+  target.focus();
+</script>

@@ -38,8 +38,10 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
-class SigningService;
+class ClientDataDelegate;
 class DMServerJobConfiguration;
+class RegistrationJobConfiguration;
+class SigningService;
 
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,
@@ -134,6 +136,16 @@ class POLICY_EXPORT CloudPolicyClient {
         enterprise_management::DeviceRegisterRequest::Flavor flavor);
     ~RegistrationParameters();
 
+    // A setter for |psm_execution_result| field.
+    void SetPsmExecutionResult(
+        absl::optional<
+            enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
+            new_psm_result);
+
+    // A setter for |psm_determination_timestamp| field.
+    void SetPsmDeterminationTimestamp(
+        absl::optional<int64_t> new_psm_timestamp);
+
     enterprise_management::DeviceRegisterRequest::Type registration_type;
     enterprise_management::DeviceRegisterRequest::Flavor flavor;
 
@@ -147,16 +159,30 @@ class POLICY_EXPORT CloudPolicyClient {
 
     // Server-backed state keys (used for forced enrollment check).
     std::string current_state_key;
+
+    // The following field is relevant only to Chrome OS.
+    // PSM protocol execution result. Its value will exist if the device
+    // undergoes enrollment and a PSM server-backed state determination was
+    // performed before (on Chrome OS, as encoded in the
+    // `prefs::kEnrollmentPsmResult` pref).
+    absl::optional<
+        enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
+        psm_execution_result;
+
+    // The following field is relevant only to Chrome OS.
+    // PSM protocol determination timestamp. Its value will exist if the device
+    // undergoes enrollment and PSM got executed successfully (on ChromeOS, as
+    // encoded in `prefs::kEnrollmentPsmDeterminationTime` pref).
+    absl::optional<int64_t> psm_determination_timestamp;
   };
 
   // If non-empty, |machine_id|, |machine_model|, |brand_code|,
   // |attested_device_id|, |ethernet_mac_address|, |dock_mac_address| and
   // |manufacture_date| are passed to the server verbatim. As these reveal
   // machine identity, they must only be used where this is appropriate (i.e.
-  // device policy, but not user policy). |service| and |signing_service| are
-  // weak pointers and it's the caller's responsibility to keep them valid for
-  // the lifetime of CloudPolicyClient. The |signing_service| is used to sign
-  // sensitive requests. |device_dm_token_callback| is used to retrieve device
+  // device policy, but not user policy). |service| is weak pointer and it's
+  // the caller's responsibility to keep it valid for the lifetime of
+  // CloudPolicyClient. |device_dm_token_callback| is used to retrieve device
   // DMToken for affiliated users. Could be null if it's not possible to use
   // device DMToken for user policy fetches.
   CloudPolicyClient(
@@ -167,12 +193,11 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& ethernet_mac_address,
       const std::string& dock_mac_address,
       const std::string& manufacture_date,
-      SigningService* signing_service,
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);
   // A simpler constructor for those that do not need any of the identification
-  // strings of the full constructor or the signing service.
+  // strings of the full constructor.
   CloudPolicyClient(
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -199,20 +224,27 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Attempts to register with the device management service using a
   // registration certificate. Results in a registration change or
-  // error notification.
+  // error notification. The |signing_service| is used to sign the request and
+  // is expected to be available until caller receives
+  // |OnRegistrationStateChanged| or |OnClientError|.
+  // TODO(crbug.com/1236148): Remove SigningService from CloudPolicyClient and
+  // make callees sign their data themselves.
   virtual void RegisterWithCertificate(const RegistrationParameters& parameters,
                                        const std::string& client_id,
                                        DMAuth auth,
                                        const std::string& pem_certificate_chain,
-                                       const std::string& sub_organization);
+                                       const std::string& sub_organization,
+                                       SigningService* signing_service);
 
   // Attempts to enroll with the device management service using an enrollment
   // token. Results in a registration change or error notification.
   // This method is used to register browser (e.g. for machine-level policies).
   // Device registration with enrollment token should be performed using
   // RegisterWithCertificate method.
-  virtual void RegisterWithToken(const std::string& token,
-                                 const std::string& client_id);
+  virtual void RegisterWithToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate);
 
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version
@@ -383,6 +415,11 @@ class POLICY_EXPORT CloudPolicyClient {
   // associate the DM token in authorization header with |gcm_id|, and
   // |callback| will be called when the operation completes.
   virtual void UpdateGcmId(const std::string& gcm_id, StatusCallback callback);
+
+  // Sends a request with EUICCs on device to the DM server.
+  virtual void UploadEuiccInfo(
+      std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
+      StatusCallback callback);
 
   // Sends certificate provisioning start csr request. It is Step 1 in the
   // certificate provisioning flow. |cert_scope| defines if it is a user- or
@@ -691,6 +728,14 @@ class POLICY_EXPORT CloudPolicyClient {
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
 
+  // Callback for EUICC info upload requests.
+  void OnEuiccInfoUploaded(
+      StatusCallback callback,
+      DeviceManagementService::Job* job,
+      DeviceManagementStatus status,
+      int net_error,
+      const enterprise_management::DeviceManagementResponse& response);
+
   // Callback for certificate provisioning start csr requests.
   void OnClientCertProvisioningStartCsrResponse(
       ClientCertProvisioningStartCsrCallback callback,
@@ -760,15 +805,13 @@ class POLICY_EXPORT CloudPolicyClient {
   // The invalidation version used for the most recent fetch operation.
   int64_t fetched_invalidation_version_ = 0;
 
-  // Used for signing requests.
-  SigningService* signing_service_ = nullptr;
-
   // Used for issuing requests to the cloud.
   DeviceManagementService* service_ = nullptr;
 
-  // Only one outstanding policy fetch is allowed, so this is tracked in
-  // its own member variable.
-  std::unique_ptr<DeviceManagementService::Job> policy_fetch_request_job_;
+  // Only one outstanding policy fetch or device/user registration request is
+  // allowed. Using a separate job to track those requests. If multiple
+  // requests have been started, only the last one will be kept.
+  std::unique_ptr<DeviceManagementService::Job> unique_request_job_;
 
   // All of the outstanding non-policy-fetch request jobs. These jobs are
   // silently cancelled if Unregister() is called.
@@ -829,6 +872,10 @@ class POLICY_EXPORT CloudPolicyClient {
   // Executes a job to upload a certificate. Onwership of the job is
   // retained by this method.
   void ExecuteCertUploadJob(std::unique_ptr<DMServerJobConfiguration> config);
+
+  // Sets `unique_request_job_` with a new job created with `config`.
+  void CreateUniqueRequestJob(
+      std::unique_ptr<RegistrationJobConfiguration> config);
 
   // Used to store a copy of the previously used |dm_token_|. This is used
   // during re-registration, which gets triggered by a failed policy fetch with

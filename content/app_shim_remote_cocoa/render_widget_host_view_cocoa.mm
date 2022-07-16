@@ -4,6 +4,7 @@
 
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 
+#include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
 #include <limits>
 #include <utility>
 
@@ -11,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
+#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #import "content/browser/accessibility/browser_accessibility_mac.h"
@@ -31,7 +33,7 @@
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/display/display_list.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -68,6 +70,9 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
  public:
   explicit DummyHostHelper() {}
 
+  DummyHostHelper(const DummyHostHelper&) = delete;
+  DummyHostHelper& operator=(const DummyHostHelper&) = delete;
+
  private:
   // RenderWidgetHostNSViewHostHelper implementation.
   id GetRootBrowserAccessibilityElement() override { return nil; }
@@ -92,8 +97,6 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
   void GestureUpdate(blink::WebGestureEvent update_event) override {}
   void GestureEnd(blink::WebGestureEvent end_event) override {}
   void SmartMagnify(const blink::WebGestureEvent& web_event) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(DummyHostHelper);
 };
 
 // Touch bar identifier.
@@ -634,7 +637,8 @@ void ExtractUnderlines(NSAttributedString* string,
   // If this is a background window, don't handle mouse movement events. This
   // is the expected behavior on the Mac as evidenced by other applications.
   if ([theEvent type] == NSMouseMoved &&
-      ![self acceptsMouseEventsWhenInactive] && ![window isKeyWindow]) {
+      ![self acceptsMouseEventsWhenInactive] && ![window isMainWindow] &&
+      ![window isKeyWindow]) {
     return YES;
   }
 
@@ -711,7 +715,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   if ([self shouldIgnoreMouseEvent:theEvent]) {
     // If this is the first such event, send a mouse exit to the host view.
-    if (!_mouseEventWasIgnored) {
+    if (!_mouseEventWasIgnored && !self.hidden) {
       WebMouseEvent exitEvent =
           WebMouseEventBuilder::Build(theEvent, self, _pointerType);
       exitEvent.SetType(WebInputEvent::Type::kMouseLeave);
@@ -1005,9 +1009,20 @@ void ExtractUnderlines(NSAttributedString* string,
   _hasEditCommands = NO;
   _editCommands.clear();
 
-  // Sends key down events to input method first, then we can decide what should
-  // be done according to input method's feedback.
-  [self interpretKeyEvents:@[ theEvent ]];
+  // Since Mac Eisu Kana keys cannot be handled by interpretKeyEvents to enable/
+  // disable an IME, we need to pass the event to processInputKeyBindings.
+  // processInputKeyBindings is available at least on 10.11-11.0.
+  if (keyCode == kVK_JIS_Eisu || keyCode == kVK_JIS_Kana) {
+    if ([NSTextInputContext
+            respondsToSelector:@selector(processInputKeyBindings:)]) {
+      [NSTextInputContext performSelector:@selector(processInputKeyBindings:)
+                               withObject:theEvent];
+    }
+  } else {
+    // Sends key down events to input method first, then we can decide what
+    // should be done according to input method's feedback.
+    [self interpretKeyEvents:@[ theEvent ]];
+  }
 
   _handlingKeyDown = NO;
 
@@ -1361,10 +1376,11 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // TODO(ccameron): This will call [enclosingWindow screen], which may return
   // nil. Do that call here to avoid sending bogus display info to the host.
-  const display::DisplayList new_display_list =
-      display::Screen::GetScreen()->GetDisplayListNearestViewWithFallbacks(
-          self);
-  _host->OnDisplaysChanged(new_display_list);
+  auto* screen = display::Screen::GetScreen();
+  const display::ScreenInfos new_screen_infos =
+      screen->GetScreenInfosNearestDisplay(
+          screen->GetDisplayNearestView(self).id());
+  _host->OnScreenInfosChanged(new_screen_infos);
 }
 
 // This will be called when the NSView's NSWindow moves from one NSScreen to

@@ -16,7 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 HelpAppDiscoverTabNotification::HelpAppDiscoverTabNotification(Profile* profile)
     : profile_(profile) {}
@@ -30,7 +30,7 @@ void HelpAppDiscoverTabNotification::Show() {
       l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE);
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kShowHelpAppDiscoverTabNotificationId, std::move(title),
           std::move(message), l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE),
@@ -71,4 +71,4 @@ void HelpAppDiscoverTabNotification::SetOnClickCallbackForTesting(
   onclick_callback_ = callback;
 }
 
-}  // namespace chromeos
+}  // namespace ash

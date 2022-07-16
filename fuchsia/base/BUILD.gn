@@ -9,13 +9,19 @@ import("//testing/test.gni")
 
 # Integration helpers for commonly used fuchsia.* APIs.
 source_set("base") {
+  # Only for use by Fuchsia Components.
+  visibility = [
+    "./test/*",
+    "//chromecast/internal/*",
+    "//fuchsia/engine/*",
+    "//fuchsia/runners/*",
+  ]
   sources = [
     "config_reader.cc",
     "feedback_registration.cc",
     "fuchsia_dir_scheme.cc",
     "init_logging.cc",
     "inspect.cc",
-    "mem_buffer_util.cc",
     "string_util.cc",
   ]
   public = [
@@ -24,14 +30,12 @@ source_set("base") {
     "fuchsia_dir_scheme.h",
     "init_logging.h",
     "inspect.h",
-    "mem_buffer_util.h",
     "string_util.h",
   ]
   deps = [
     "//base",
     "//components/version_info",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
@@ -41,6 +45,14 @@ source_set("base") {
 
 # Integration helpers for fuchsia.modular.
 source_set("modular") {
+  # Only for use by Fuchsia Components.
+  visibility = [
+    ":cr_fuchsia_base_unittests__exec",
+    "./test/*",
+    "//chromecast/internal/*",
+    "//fuchsia/engine/*",
+    "//fuchsia/runners/*",
+  ]
   sources = [
     "agent_impl.cc",
     "agent_impl.h",
@@ -58,19 +70,29 @@ source_set("modular") {
 
 # FIDL/Mojo adapters for MessagePorts.
 source_set("message_port") {
+  visibility = [ "//fuchsia/engine/*" ]
   sources = [ "message_port.cc" ]
   public = [ "message_port.h" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/common:headers",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
   deps = [
-    ":base",
     "//base",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
   ]
 }
 
 source_set("legacymetrics") {
+  visibility = [
+    ":cr_fuchsia_base_unittests__exec",
+    "//chromecast/internal/*",
+    "//fuchsia/engine/*",
+  ]
   sources = [
     "legacymetrics_client.cc",
     "legacymetrics_client.h",
@@ -87,6 +109,10 @@ source_set("legacymetrics") {
 
 static_library("run_all_integration_tests") {
   testonly = true
+  visibility = [
+    "//fuchsia/engine/*",
+    "//fuchsia/runners/*",
+  ]
   sources = [ "run_all_integration_tests.cc" ]
   deps = [ "//base/test:test_support" ]
 }
@@ -94,7 +120,8 @@ static_library("run_all_integration_tests") {
 # Unit-tests for all //fuchsia/base utilities.
 test("cr_fuchsia_base_unittests") {
   sources = [
-    "agent_impl_unittests.cc",
+    "agent_impl_unittest.cc",
+    "config_reader_unittest.cc",
     "inspect_unittest.cc",
     "legacymetrics_client_unittest.cc",
     "legacymetrics_histogram_flattener_unittest.cc",

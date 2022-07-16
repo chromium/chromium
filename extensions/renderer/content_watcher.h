@@ -29,6 +29,10 @@ namespace extensions {
 class ContentWatcher {
  public:
   ContentWatcher();
+
+  ContentWatcher(const ContentWatcher&) = delete;
+  ContentWatcher& operator=(const ContentWatcher&) = delete;
+
   ~ContentWatcher();
 
   // Handler for the WatchPages Mojo method in extensions.mojom.Renderer
@@ -41,8 +45,6 @@ class ContentWatcher {
   // If any of these selectors match on a page, we need to call
   // extensions::mojom::LocalFrameHost::WatchedPageChange to notify the browser.
   blink::WebVector<blink::WebString> css_selectors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentWatcher);
 };
 
 }  // namespace extensions

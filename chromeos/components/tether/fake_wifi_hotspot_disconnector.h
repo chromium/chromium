@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_WIFI_HOTSPOT_DISCONNECTOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/wifi_hotspot_disconnector.h"
 
 namespace chromeos {
@@ -17,6 +16,11 @@ namespace tether {
 class FakeWifiHotspotDisconnector : public WifiHotspotDisconnector {
  public:
   FakeWifiHotspotDisconnector();
+
+  FakeWifiHotspotDisconnector(const FakeWifiHotspotDisconnector&) = delete;
+  FakeWifiHotspotDisconnector& operator=(const FakeWifiHotspotDisconnector&) =
+      delete;
+
   ~FakeWifiHotspotDisconnector() override;
 
   std::string last_disconnected_wifi_network_guid() {
@@ -36,8 +40,6 @@ class FakeWifiHotspotDisconnector : public WifiHotspotDisconnector {
  private:
   std::string last_disconnected_wifi_network_guid_;
   std::string disconnection_error_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWifiHotspotDisconnector);
 };
 
 }  // namespace tether

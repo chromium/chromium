@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
@@ -44,6 +43,10 @@ class ListChangesTaskTest : public testing::Test {
  public:
   ListChangesTaskTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  ListChangesTaskTest(const ListChangesTaskTest&) = delete;
+  ListChangesTaskTest& operator=(const ListChangesTaskTest&) = delete;
+
   ~ListChangesTaskTest() override {}
 
   void SetUp() override {
@@ -208,8 +211,6 @@ class ListChangesTaskTest : public testing::Test {
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
 
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListChangesTaskTest);
 };
 
 TEST_F(ListChangesTaskTest, NoChange) {

@@ -12,13 +12,8 @@
 
 UIView* PrimaryBackgroundBlurView() {
   UIView* view;
-  if (@available(iOS 13, *)) {
-    UIVisualEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
-    view = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-  } else {
-    view = [[UIView alloc] init];
-    view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  }
+  UIVisualEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+  view = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   return view;
 }

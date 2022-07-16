@@ -21,6 +21,10 @@ class AXPropertyNode;
 class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
  public:
   AXTreeFormatterBase();
+
+  AXTreeFormatterBase(const AXTreeFormatterBase&) = delete;
+  AXTreeFormatterBase& operator=(const AXTreeFormatterBase&) = delete;
+
   ~AXTreeFormatterBase() override;
 
   bool ShouldDumpNode(const AXPlatformNodeDelegate& node) const;
@@ -128,8 +132,6 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
 
   // Whether or not node ids should be included in the dump.
   bool show_ids_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeFormatterBase);
 };
 
 }  // namespace ui

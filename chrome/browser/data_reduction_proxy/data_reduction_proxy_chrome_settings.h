@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -53,6 +52,11 @@ class DataReductionProxyChromeSettings
   // Constructs a settings object. Construction and destruction must happen on
   // the UI thread.
   explicit DataReductionProxyChromeSettings(bool is_off_the_record_profile);
+
+  DataReductionProxyChromeSettings(const DataReductionProxyChromeSettings&) =
+      delete;
+  DataReductionProxyChromeSettings& operator=(
+      const DataReductionProxyChromeSettings&) = delete;
 
   // Destructs the settings object.
   ~DataReductionProxyChromeSettings() override;
@@ -107,8 +111,6 @@ class DataReductionProxyChromeSettings
 
   // Null before InitDataReductionProxySettings is called.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyChromeSettings);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_CHROME_SETTINGS_H_

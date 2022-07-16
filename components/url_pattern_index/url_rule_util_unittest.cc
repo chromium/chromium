@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/url_pattern.h"
@@ -51,6 +50,10 @@ struct RuleTest {
 };
 
 class UrlRuleUtilTest : public ::testing::Test {
+ public:
+  UrlRuleUtilTest(const UrlRuleUtilTest&) = delete;
+  UrlRuleUtilTest& operator=(const UrlRuleUtilTest&) = delete;
+
  protected:
   UrlRuleUtilTest() = default;
 
@@ -75,9 +78,6 @@ class UrlRuleUtilTest : public ::testing::Test {
   flatbuffers::FlatBufferBuilder flat_builder_;
 
   FlatDomainMap domain_map_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UrlRuleUtilTest);
 };
 
 TEST_F(UrlRuleUtilTest, Blocklist) {
@@ -202,7 +202,7 @@ TEST_F(UrlRuleUtilTest, ElementType) {
   std::string expected =
       "example.com/"
       "$script,image,stylesheet,object,xmlhttprequest,object-subrequest,"
-      "subdocument,ping,media,font,websocket";
+      "subdocument,ping,media,font,websocket,webtransport,webbundle";
 
   EXPECT_EQ(expected, FlatUrlRuleToFilterlistString(flat_rule));
 }

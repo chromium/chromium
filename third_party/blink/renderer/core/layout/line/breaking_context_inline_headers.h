@@ -903,8 +903,8 @@ ALWAYS_INLINE bool BreakingContext::RewindToMidWordBreak(
   x_pos_to_break += LayoutUnit::Epsilon();
   if (run.Rtl())
     x_pos_to_break = word_measurement.width - x_pos_to_break;
-  len = font.OffsetForPosition(run, x_pos_to_break, OnlyFullGlyphs,
-                               DontBreakGlyphs);
+  len = font.OffsetForPosition(run, x_pos_to_break, kOnlyFullGlyphs,
+                               BreakGlyphsOption(false));
   int end = start + len;
   if (len) {
     end = break_iterator.PreviousBreakOpportunity(end, start);
@@ -918,7 +918,7 @@ ALWAYS_INLINE bool BreakingContext::RewindToMidWordBreak(
   }
 
   FloatRect rect = font.SelectionRectForText(run, FloatPoint(), 0, 0, len);
-  return RewindToMidWordBreak(word_measurement, end, rect.Width());
+  return RewindToMidWordBreak(word_measurement, end, rect.width());
 }
 
 ALWAYS_INLINE bool BreakingContext::Hyphenate(
@@ -946,9 +946,9 @@ ALWAYS_INLINE bool BreakingContext::Hyphenate(
   TextRun run = ConstructTextRun(font, text, start, len, style);
   run.SetTabSize(!collapse_white_space_, style.GetTabSize());
   run.SetXPos(width_.CurrentWidth());
-  // TODO(fserb): Check if this need to be BreakGlyphs.
+  // TODO(fserb): Check if this need to be BreakGlyphsOption(true).
   unsigned max_prefix_length = font.OffsetForPosition(
-      run, max_prefix_width, OnlyFullGlyphs, DontBreakGlyphs);
+      run, max_prefix_width, kOnlyFullGlyphs, BreakGlyphsOption(false));
   if (max_prefix_length < Hyphenation::kMinimumPrefixLength)
     return false;
 
@@ -1328,7 +1328,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
         &word_measurement.fallback_fonts, &word_measurement.glyph_bounds);
     word_measurement.width =
         last_width_measurement + word_spacing_for_word_measurement;
-    word_measurement.glyph_bounds.Move(word_spacing_for_word_measurement, 0);
+    word_measurement.glyph_bounds.Offset(word_spacing_for_word_measurement, 0);
   }
   last_width_measurement += last_space_word_spacing;
 
@@ -1453,7 +1453,7 @@ inline WordMeasurement& BreakingContext::CalculateWordWidth(
 
   word_measurement.width =
       last_width_measurement + word_spacing_for_word_measurement;
-  word_measurement.glyph_bounds.Move(word_spacing_for_word_measurement, 0);
+  word_measurement.glyph_bounds.Offset(word_spacing_for_word_measurement, 0);
   return word_measurement;
 }
 

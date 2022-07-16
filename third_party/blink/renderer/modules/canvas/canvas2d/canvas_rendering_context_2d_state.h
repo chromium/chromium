@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -38,13 +39,26 @@ class CanvasRenderingContext2DState final
  public:
   enum ClipListCopyMode { kCopyClipList, kDontCopyClipList };
   // SaveType indicates whether the state was pushed to the state stack by Save
-  // or by BeginLayer. By default, it is set to kSaveRestore.
-  enum class SaveType { kSaveRestore, kBeginEndLayer };
+  // or by BeginLayer. The first state on the state stack, which is created in
+  // the canvas constructor and not by Save or BeginLayer, has SaveType
+  // kInitial. In some circumpstances we have to split an endlayer into two
+  // 'states', we use the kExtraState for that.
+  enum class SaveType {
+    kSaveRestore,
+    kBeginEndLayer,
+    kInternalLayer,
+    kInitial
+  };
 
   CanvasRenderingContext2DState();
   CanvasRenderingContext2DState(const CanvasRenderingContext2DState&,
                                 ClipListCopyMode,
                                 SaveType);
+
+  CanvasRenderingContext2DState(const CanvasRenderingContext2DState&) = delete;
+  CanvasRenderingContext2DState& operator=(
+      const CanvasRenderingContext2DState&) = delete;
+
   ~CanvasRenderingContext2DState() override;
 
   void Trace(Visitor*) const override;
@@ -54,6 +68,8 @@ class CanvasRenderingContext2DState final
     kStrokePaintType,
     kImagePaintType,
   };
+
+  enum ImageType { kNoImage, kOpaqueImage, kNonOpaqueImage };
 
   // FontSelectorClient implementation
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
@@ -104,11 +120,11 @@ class CanvasRenderingContext2DState final
                                CanvasRenderingContext2D*);
   sk_sp<PaintFilter> GetFilterForOffscreenCanvas(IntSize canvas_size,
                                                  BaseRenderingContext2D*);
-  bool HasFilterForOffscreenCanvas(IntSize canvas_size,
-                                   BaseRenderingContext2D*);
-  bool HasFilter(Element*, IntSize canvas_size, CanvasRenderingContext2D*);
   ALWAYS_INLINE bool IsFilterUnresolved() const {
     return filter_state_ == FilterState::kUnresolved;
+  }
+  ALWAYS_INLINE bool IsFilterResolved() const {
+    return filter_state_ == FilterState::kResolved;
   }
 
   void ClearResolvedFilter();
@@ -142,11 +158,11 @@ class CanvasRenderingContext2DState final
   void SetTextBaseline(TextBaseline baseline) { text_baseline_ = baseline; }
   TextBaseline GetTextBaseline() const { return text_baseline_; }
 
-  void SetTextLetterSpacing(float letter_space, FontSelector* selector);
-  float GetTextLetterSpacing() const { return letter_spacing_; }
+  void SetLetterSpacing(float letter_space, FontSelector* selector);
+  float GetLetterSpacing() const { return letter_spacing_; }
 
-  void SetTextWordSpacing(float word_space, FontSelector* selector);
-  float GetTextWordSpacing() const { return word_spacing_; }
+  void SetWordSpacing(float word_space, FontSelector* selector);
+  float GetWordSpacing() const { return word_spacing_; }
 
   void SetTextRendering(TextRenderingMode text_rendering,
                         FontSelector* selector);
@@ -166,7 +182,7 @@ class CanvasRenderingContext2DState final
   }
 
   void SetLineWidth(double line_width) {
-    stroke_flags_.setStrokeWidth(clampTo<float>(line_width));
+    stroke_flags_.setStrokeWidth(ClampTo<float>(line_width));
   }
   double LineWidth() const { return stroke_flags_.getStrokeWidth(); }
 
@@ -185,7 +201,7 @@ class CanvasRenderingContext2DState final
   }
 
   void SetMiterLimit(double miter_limit) {
-    stroke_flags_.setStrokeMiter(clampTo<float>(miter_limit));
+    stroke_flags_.setStrokeMiter(ClampTo<float>(miter_limit));
   }
   double MiterLimit() const { return stroke_flags_.getStrokeMiter(); }
 
@@ -222,13 +238,13 @@ class CanvasRenderingContext2DState final
 
   bool ShouldDrawShadows() const;
 
-  enum ImageType { kNoImage, kOpaqueImage, kNonOpaqueImage };
-
   // If paint will not be used for painting a bitmap, set bitmapOpacity to
   // Opaque.
   const PaintFlags* GetFlags(PaintType, ShadowMode, ImageType = kNoImage) const;
 
   SaveType GetSaveType() const { return save_type_; }
+
+  sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
  private:
   void UpdateLineDash() const;
@@ -241,7 +257,6 @@ class CanvasRenderingContext2DState final
   sk_sp<SkDrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<SkDrawLooper>& ShadowAndForegroundDrawLooper() const;
   sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
-  sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
   String unparsed_stroke_color_;
   String unparsed_fill_color_;
@@ -307,10 +322,13 @@ class CanvasRenderingContext2DState final
 
   ClipList clip_list_;
 
-  const SaveType save_type_ = SaveType::kSaveRestore;
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContext2DState);
+  const SaveType save_type_ = SaveType::kInitial;
 };
+
+ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
+  return AlphaChannel(shadow_color_) &&
+         (shadow_blur_ || !shadow_offset_.IsZero());
+}
 
 }  // namespace blink
 

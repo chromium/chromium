@@ -39,6 +39,9 @@ class ProfilingServiceImpl
       : heap_profiler_receiver_(this, std::move(profiler_receiver)),
         helper_(std::move(helper)) {}
 
+  ProfilingServiceImpl(const ProfilingServiceImpl&) = delete;
+  ProfilingServiceImpl& operator=(const ProfilingServiceImpl&) = delete;
+
   ~ProfilingServiceImpl() override = default;
 
   // mojom::ProfilingService implementation:
@@ -97,8 +100,6 @@ class ProfilingServiceImpl
   ConnectionManager connection_manager_;
 
   base::WeakPtrFactory<ProfilingServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilingServiceImpl);
 };
 
 void RunHeapProfilingService(

@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -48,11 +49,26 @@ public class ModalDialogProperties {
         void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause);
     }
 
-    @IntDef({ModalDialogProperties.ButtonType.POSITIVE, ModalDialogProperties.ButtonType.NEGATIVE})
+    @IntDef({ModalDialogProperties.ButtonType.POSITIVE, ModalDialogProperties.ButtonType.NEGATIVE,
+            ModalDialogProperties.ButtonType.TITLE_ICON})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
         int POSITIVE = 0;
         int NEGATIVE = 1;
+        int TITLE_ICON = 2;
+    }
+
+    /**
+     * Styles of the primary and negative button. Only one of them can be filled at the same time.
+     */
+    @IntDef({ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
+            ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+            ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonStyles {
+        int PRIMARY_OUTLINE_NEGATIVE_OUTLINE = 0;
+        int PRIMARY_FILLED_NEGATIVE_OUTLINE = 1;
+        int PRIMARY_OUTLINE_NEGATIVE_FILLED = 2;
     }
 
     /** The {@link Controller} that handles events on user actions. */
@@ -71,7 +87,7 @@ public class ModalDialogProperties {
             new WritableObjectPropertyKey<>();
 
     /** The message of the dialog. */
-    public static final WritableObjectPropertyKey<String> MESSAGE =
+    public static final WritableObjectPropertyKey<CharSequence> MESSAGE =
             new WritableObjectPropertyKey<>();
 
     /** The customized content view of the dialog. */
@@ -124,14 +140,19 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
 
-    /** Whether the primary (positive) button should be a filled button */
-    public static final ReadableBooleanPropertyKey PRIMARY_BUTTON_FILLED =
+    /** Whether the primary (positive) or negative button should be a filled button */
+    public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
+
+    /**
+     * Whether the dialog is of fullscreen style.
+     */
+    public static final ReadableBooleanPropertyKey FULLSCREEN_DIALOG =
             new ReadableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
-            FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE,
-            PRIMARY_BUTTON_FILLED};
+            FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
+            FULLSCREEN_DIALOG};
 }

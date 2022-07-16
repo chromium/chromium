@@ -43,6 +43,7 @@ pausable. Some internal task queues are not.
 | ServiceWorkerClientMessage        | No          | No                      |  No        | Yes       | Yes      | Yes          |
 | WebLocks                          | No          | No                      |  No        | No        | No       | Yes          |
 | WakeLock                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WebSchedulingPostedTask           | Yes [^3]    | Yes [^3]                |  Yes       | Yes       | Yes      | Yes          |
 | InternalDefault                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | InternalLoading                   | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | InternalTest                      | No          | No                      |  No        | No        | No       | Yes          |
@@ -70,3 +71,5 @@ has been backgrounded for 5 minutes. See
 "can_intensively_throttle_low_nesting_level" param is "true".
 
 [^2] "No" if the "IntensiveWakeUpThrottling" feature is disabled.
+
+[^3] "Yes" only for `scheduler.postTask()` tasks where delay > 0.

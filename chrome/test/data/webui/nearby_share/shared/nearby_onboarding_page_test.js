@@ -10,7 +10,7 @@
 // #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {waitAfterNextRender} from '../../test_util.m.js';
+// #import {waitAfterNextRender} from '../../test_util.js';
 // clang-format on
 
 suite('nearby-onboarding-page', function() {
@@ -32,6 +32,9 @@ suite('nearby-onboarding-page', function() {
         document.createElement('nearby-onboarding-page'));
     element.settings = {
       enabled: false,
+      fastInitiationNotificationState:
+          nearbyShare.mojom.FastInitiationNotificationState.kEnabled,
+      isFastInitiationHardwareSupported: true,
       deviceName: deviceName,
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kAllContacts,

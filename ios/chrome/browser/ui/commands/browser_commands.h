@@ -19,6 +19,7 @@
 
 class GURL;
 @class ReadingListAddCommand;
+@class SearchImageWithLensCommand;
 
 // Protocol for commands that will generally be handled by the "current tab",
 // which in practice is the BrowserViewController instance displaying the tab.
@@ -38,7 +39,7 @@ class GURL;
 - (void)closeCurrentTab;
 
 // Bookmarks the current page.
-// TODO(crbug.com/1134586): Reuse BookmarksCommands' bookmarkPage instead.
+// TODO(crbug.com/1134586): Reuse BookmarksCommands' bookmark instead.
 - (void)bookmarkCurrentPage;
 
 // Adds a page to the reading list using data in |command|.
@@ -53,11 +54,6 @@ class GURL;
 
 // Closes all tabs.
 - (void)closeAllTabs;
-
-#if !defined(NDEBUG)
-// Shows the source of the current page.
-- (void)viewSource;
-#endif
 
 // Shows the translate infobar.
 - (void)showTranslate;
@@ -84,8 +80,8 @@ class GURL;
 // omnibox.
 - (void)focusFakebox;
 
-// Searches for an image in the current tab.
-- (void)searchByImage:(UIImage*)image;
+// Search for an image with Lens, using |command| parameters.
+- (void)searchImageWithLens:(SearchImageWithLensCommand*)command;
 
 // Shows/Hides the activity indicator overlay that appears over the view to
 // prevent interaction with the web page.

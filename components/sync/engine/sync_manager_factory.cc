@@ -12,7 +12,7 @@ SyncManagerFactory::SyncManagerFactory(
     network::NetworkConnectionTracker* network_connection_tracker)
     : network_connection_tracker_(network_connection_tracker) {}
 
-SyncManagerFactory::~SyncManagerFactory() {}
+SyncManagerFactory::~SyncManagerFactory() = default;
 
 std::unique_ptr<SyncManager> SyncManagerFactory::CreateSyncManager(
     const std::string& name) {

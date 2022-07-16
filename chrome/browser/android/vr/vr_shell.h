@@ -13,9 +13,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/vr/assets_load_status.h"
@@ -80,6 +79,10 @@ class VrShell : VoiceResultDelegate,
           int display_height_pixels,
           bool pause_content,
           bool low_density);
+
+  VrShell(const VrShell&) = delete;
+  VrShell& operator=(const VrShell&) = delete;
+
   bool HasUiFinishedLoading(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
   void SwapContents(JNIEnv* env,
@@ -379,8 +382,6 @@ class VrShell : VoiceResultDelegate,
   std::set<int> incognito_tab_ids_;
 
   base::WeakPtrFactory<VrShell> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VrShell);
 };
 
 }  // namespace vr

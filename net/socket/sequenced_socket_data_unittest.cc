@@ -57,6 +57,9 @@ class ReentrantHelper {
         second_write_data_(nullptr),
         second_len_(-1) {}
 
+  ReentrantHelper(const ReentrantHelper&) = delete;
+  ReentrantHelper& operator=(const ReentrantHelper&) = delete;
+
   // Expect that the previous operation will return |first_len| and will fill
   // |first_read_data_| with |first_read_data|.
   void SetExpectedRead(const char* first_read_data, int first_len) {
@@ -144,8 +147,6 @@ class ReentrantHelper {
   scoped_refptr<IOBuffer> second_read_buf_;
   const char* second_write_data_;
   int second_len_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReentrantHelper);
 };
 
 class SequencedSocketDataTest : public TestWithTaskEnvironment {

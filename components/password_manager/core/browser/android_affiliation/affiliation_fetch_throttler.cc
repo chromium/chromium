@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -140,9 +140,9 @@ void AffiliationFetchThrottler::OnConnectionChanged(
 
   double grace_ms = kGracePeriodAfterReconnectMs *
                     (1 - base::RandDouble() * kBackoffPolicy.jitter_factor);
-  exponential_backoff_->SetCustomReleaseTime(std::max(
-      exponential_backoff_->GetReleaseTime(),
-      tick_clock_->NowTicks() + base::TimeDelta::FromMillisecondsD(grace_ms)));
+  exponential_backoff_->SetCustomReleaseTime(
+      std::max(exponential_backoff_->GetReleaseTime(),
+               tick_clock_->NowTicks() + base::Milliseconds(grace_ms)));
 
   if (state_ == FETCH_NEEDED)
     EnsureCallbackIsScheduled();

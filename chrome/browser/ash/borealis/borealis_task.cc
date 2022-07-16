@@ -4,16 +4,23 @@
 
 #include "chrome/browser/ash/borealis/borealis_task.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
+#include "base/files/file.h"
+#include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
+#include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -22,17 +29,21 @@
 
 namespace borealis {
 
-BorealisTask::BorealisTask() = default;
+BorealisTask::BorealisTask(std::string name) : name_(std::move(name)) {}
 
 BorealisTask::~BorealisTask() = default;
 
 void BorealisTask::Run(BorealisContext* context,
                        CompletionResultCallback callback) {
   callback_ = std::move(callback);
+  start_time_ = base::Time::Now();
   RunInternal(context);
 }
 
 void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
+  // TODO(b/198698779): Remove these logs before going live.
+  LOG(WARNING) << "Task " << name_ << " completed in "
+               << (base::Time::Now() - start_time_);
   // Task completion is self-mutually-exclusive, because tasks are deleted once
   // complete.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -40,7 +51,7 @@ void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
       base::BindOnce(std::move(callback_), status, std::move(message)));
 }
 
-MountDlc::MountDlc() = default;
+MountDlc::MountDlc() : BorealisTask("MountDlc") {}
 MountDlc::~MountDlc() = default;
 
 void MountDlc::RunInternal(BorealisContext* context) {
@@ -64,12 +75,12 @@ void MountDlc::OnMountDlc(
   }
 }
 
-CreateDiskImage::CreateDiskImage() = default;
+CreateDiskImage::CreateDiskImage() : BorealisTask("CreateDiskImage") {}
 CreateDiskImage::~CreateDiskImage() = default;
 
 void CreateDiskImage::RunInternal(BorealisContext* context) {
   vm_tools::concierge::CreateDiskImageRequest request;
-  request.set_disk_path(context->vm_name());
+  request.set_vm_name(context->vm_name());
   request.set_cryptohome_id(
       chromeos::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
@@ -103,10 +114,53 @@ void CreateDiskImage::OnCreateDiskImage(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
-StartBorealisVm::StartBorealisVm() = default;
+namespace {
+
+bool GetDeveloperMode() {
+  std::string output;
+  if (!base::GetAppOutput({"/usr/bin/crossystem", "cros_debug"}, &output)) {
+    return false;
+  }
+  return output == "1";
+}
+
+absl::optional<base::File> GetExtraDiskIfInDeveloperMode(
+    absl::optional<base::FilePath> file_path) {
+  if (!file_path)
+    return absl::nullopt;
+
+  if (!GetDeveloperMode())
+    return absl::nullopt;
+
+  base::File file(file_path.value(), base::File::FLAG_OPEN |
+                                         base::File::FLAG_READ |
+                                         base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    LOG(WARNING) << "Failed to open " << file_path.value();
+    return absl::nullopt;
+  }
+  return file;
+}
+
+}  // namespace
+
+StartBorealisVm::StartBorealisVm() : BorealisTask("StartBorealisVm") {}
 StartBorealisVm::~StartBorealisVm() = default;
 
 void StartBorealisVm::RunInternal(BorealisContext* context) {
+  absl::optional<base::FilePath> external_disk =
+      borealis::BorealisService::GetForProfile(context->profile())
+          ->LaunchOptions()
+          .GetExtraDisk();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&GetExtraDiskIfInDeveloperMode, std::move(external_disk)),
+      base::BindOnce(&StartBorealisVm::StartBorealisWithExternalDisk,
+                     weak_factory_.GetWeakPtr(), context));
+}
+void StartBorealisVm::StartBorealisWithExternalDisk(
+    BorealisContext* context,
+    absl::optional<base::File> external_disk) {
   vm_tools::concierge::StartVmRequest request;
   request.mutable_vm()->set_dlc_id(kBorealisDlcName);
   request.set_start_termina(false);
@@ -116,6 +170,9 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
   request.set_software_tpm(false);
   request.set_enable_audio_capture(false);
   request.set_enable_vulkan(true);
+  if (base::FeatureList::IsEnabled(chromeos::features::kBorealisBigGl)) {
+    request.set_enable_big_gl(true);
+  }
   request.set_name(context->vm_name());
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
@@ -131,6 +188,16 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
                        chromeos::features::kExoPointerLock)
                        ? "enabled"
                        : "disabled");
+
+  if (external_disk) {
+    base::ScopedFD fd(external_disk->TakePlatformFile());
+    request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
+    chromeos::ConciergeClient::Get()->StartTerminaVmWithFd(
+        std::move(fd), std::move(request),
+        base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
+                       weak_factory_.GetWeakPtr(), context));
+    return;
+  }
   chromeos::ConciergeClient::Get()->StartTerminaVm(
       std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                                          weak_factory_.GetWeakPtr(), context));
@@ -158,7 +225,7 @@ void StartBorealisVm::OnStartBorealisVm(
 
 AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
                                            std::string vm_name)
-    : watcher_(profile, vm_name) {}
+    : BorealisTask("AwaitBorealisStartup"), watcher_(profile, vm_name) {}
 AwaitBorealisStartup::~AwaitBorealisStartup() = default;
 
 void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
@@ -183,7 +250,7 @@ void AwaitBorealisStartup::OnAwaitBorealisStartup(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
-SyncBorealisDisk::SyncBorealisDisk() = default;
+SyncBorealisDisk::SyncBorealisDisk() : BorealisTask("SyncBorealisDisk") {}
 SyncBorealisDisk::~SyncBorealisDisk() = default;
 
 void SyncBorealisDisk::RunInternal(BorealisContext* context) {

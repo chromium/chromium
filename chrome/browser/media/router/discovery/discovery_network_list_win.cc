@@ -79,6 +79,9 @@ class WlanApi {
     return base::WrapUnique(new WlanApi(library));
   }
 
+  WlanApi(const WlanApi&) = delete;
+  WlanApi& operator=(const WlanApi&) = delete;
+
   ~WlanApi() { FreeLibrary(library_); }
 
  private:
@@ -103,8 +106,6 @@ class WlanApi {
   }
 
   HINSTANCE library_;
-
-  DISALLOW_COPY_AND_ASSIGN(WlanApi);
 };
 
 class ScopedWlanClientHandle {
@@ -112,6 +113,10 @@ class ScopedWlanClientHandle {
   explicit ScopedWlanClientHandle(
       const WlanCloseHandleFunction wlan_close_handle)
       : wlan_close_handle_(wlan_close_handle) {}
+
+  ScopedWlanClientHandle(const ScopedWlanClientHandle&) = delete;
+  ScopedWlanClientHandle& operator=(const ScopedWlanClientHandle&) = delete;
+
   ~ScopedWlanClientHandle() {
     if (handle != nullptr) {
       wlan_close_handle_(handle, nullptr);
@@ -122,8 +127,6 @@ class ScopedWlanClientHandle {
 
  private:
   const WlanCloseHandleFunction wlan_close_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWlanClientHandle);
 };
 
 // Returns a map from a network interface's GUID to its MAC address.  This

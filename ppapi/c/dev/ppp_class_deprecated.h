@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-#ifndef PPAPI_C_PPP_CLASS_DEPRECATED_H_
-#define PPAPI_C_PPP_CLASS_DEPRECATED_H_
+#ifndef PPAPI_C_DEV_PPP_CLASS_DEPRECATED_H_
+#define PPAPI_C_DEV_PPP_CLASS_DEPRECATED_H_
 
 #include "ppapi/c/dev/deprecated_bool.h"
 #include "ppapi/c/pp_stdint.h"
@@ -131,5 +131,5 @@ struct PPP_Class_Deprecated {
  * @}
  * End addtogroup PPP
  */
-#endif  /* PPAPI_C_PPP_CLASS_DEPRECATED_H_ */
+#endif  // PPAPI_C_DEV_PPP_CLASS_DEPRECATED_H_
 

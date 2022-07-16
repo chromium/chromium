@@ -36,6 +36,6 @@ void WakeLockServiceImpl::GetWakeLock(
 WakeLockServiceImpl::WakeLockServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WakeLockService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentService(render_frame_host, std::move(receiver)) {}
 
 }  // namespace content

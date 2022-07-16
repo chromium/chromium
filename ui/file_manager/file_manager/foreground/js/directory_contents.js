@@ -927,9 +927,6 @@ export class DirectoryContents extends EventTarget {
       return;
     }
 
-    // Enlarge the cache size into the new filelist size.
-    const newListSize = this.fileList_.length + entries.length;
-
     this.processNewEntriesQueue_.run(callbackOuter => {
       const finish = () => {
         if (!this.scanCancelled_) {

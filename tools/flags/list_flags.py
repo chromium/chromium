@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -27,7 +27,7 @@ import owners
 def load_metadata():
   flags_path = os.path.join(ROOT_PATH, 'chrome', 'browser',
                             'flag-metadata.json')
-  return json5.load(open(flags_path, encoding='utf-8'))
+  return json5.load(open(flags_path))
 
 
 def keep_expired_by(flags, mstone):
@@ -89,7 +89,7 @@ def find_unused(flags):
       'chrome/browser/about_flags.cc',
       'ios/chrome/browser/flags/about_flags.mm',
   ]
-  flag_files_data = [open(f, 'rb', encoding='utf-8').read() for f in FLAG_FILES]
+  flag_files_data = [open(f, 'r', encoding='utf-8').read() for f in FLAG_FILES]
   unused_flags = []
   for flag in flags:
     # Search for the name in quotes.

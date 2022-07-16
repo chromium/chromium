@@ -61,10 +61,11 @@ class FileAnalysisRequestTest : public testing::Test {
   std::unique_ptr<FileAnalysisRequest> MakeRequest(bool block_unsupported_types,
                                                    base::FilePath path,
                                                    base::FilePath file_name,
-                                                   bool delay_opening_file) {
+                                                   bool delay_opening_file,
+                                                   std::string mime_type = "") {
     return std::make_unique<FileAnalysisRequest>(
-        settings(block_unsupported_types), path, file_name,
-        /*mime_type*/ "", delay_opening_file, DoNothingConnector());
+        settings(block_unsupported_types), path, file_name, mime_type,
+        delay_opening_file, DoNothingConnector());
   }
 
   void GetResultsForFileContents(const std::string& file_contents,
@@ -355,6 +356,47 @@ TEST_F(FileAnalysisRequestTest, CachesResults) {
   EXPECT_EQ(sync_data.size, async_data.size);
   EXPECT_EQ(sync_data.hash, async_data.hash);
   EXPECT_EQ(sync_data.mime_type, async_data.mime_type);
+}
+
+TEST_F(FileAnalysisRequestTest, CachesResultsWithKnownMimetype) {
+  base::test::TaskEnvironment task_environment;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::string normal_contents = "Normal file contents";
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
+  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
+
+  BinaryUploadService::Result result;
+  BinaryUploadService::Request::Data data;
+
+  auto request = MakeRequest(/*block_unsupported_types=*/false, file_path,
+                             file_path.BaseName(), /*delay_opening_file*/ false,
+                             "fake/mimetype");
+
+  bool called = false;
+  base::RunLoop run_loop;
+  request->GetRequestData(base::BindLambdaForTesting(
+      [&run_loop, &called, &result, &data](
+          BinaryUploadService::Result tmp_result,
+          const BinaryUploadService::Request::Data& tmp_data) {
+        called = true;
+        run_loop.Quit();
+        result = tmp_result;
+        data = tmp_data;
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(called);
+
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+  EXPECT_EQ(data.size, normal_contents.size());
+  EXPECT_TRUE(data.contents.empty());
+  // printf "Normal file contents" | sha256sum | tr '[:lower:]' '[:upper:]'
+  EXPECT_EQ(data.hash,
+            "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
+  EXPECT_EQ(request->digest(), data.hash);
+  EXPECT_EQ(request->content_type(), "fake/mimetype");
 }
 
 TEST_F(FileAnalysisRequestTest, DelayedFileOpening) {

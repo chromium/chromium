@@ -6,6 +6,9 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/download/android/download_dialog_utils.h"
+#include "chrome/browser/download/android/duplicate_download_dialog_bridge.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_download_bridge.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -14,6 +17,15 @@
 // TODO(dimich): consider callsites to generalize.
 
 namespace offline_pages {
+
+namespace {
+
+void OnDuplicateDialogConfirmed(base::OnceClosure callback, bool accepted) {
+  if (accepted)
+    std::move(callback).Run();
+}
+
+}  // namespace
 
 // static
 bool OfflinePageUtils::GetTabId(content::WebContents* web_contents,
@@ -39,8 +51,17 @@ void OfflinePageUtils::ShowDuplicatePrompt(
     const GURL& url,
     bool exists_duplicate_request,
     content::WebContents* web_contents) {
-  OfflinePageInfoBarDelegate::Create(std::move(confirm_continuation), url,
-                                     exists_duplicate_request, web_contents);
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kEnableDuplicateDownloadDialog)) {
+    DuplicateDownloadDialogBridge::GetInstance()->Show(
+        url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
+        -1 /*total_bytes*/, exists_duplicate_request, web_contents,
+        base::BindOnce(&OnDuplicateDialogConfirmed,
+                       std::move(confirm_continuation)));
+  } else {
+    OfflinePageInfoBarDelegate::Create(std::move(confirm_continuation), url,
+                                       exists_duplicate_request, web_contents);
+  }
 }
 
 // static

@@ -10,12 +10,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/push_messaging_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "url/gurl.h"
 
@@ -29,17 +30,27 @@ enum class PushUnregistrationStatus;
 
 namespace content {
 
+class RenderProcessHost;
 class ServiceWorkerContextWrapper;
 
 // Documented at definition.
 extern const char kPushSenderIdServiceWorkerKey[];
 extern const char kPushRegistrationIdServiceWorkerKey[];
 
+// Owned by RenderFrameHostImpl (if `this` handles requests from a document) or
+// RenderProcessHostImpl (if `this` handles requests from a service worker).
+// Lives on the UI thread.
 class PushMessagingManager : public blink::mojom::PushMessaging {
  public:
-  PushMessagingManager(int render_process_id,
-                       int render_frame_id,
-                       ServiceWorkerContextWrapper* service_worker_context);
+  PushMessagingManager(
+      RenderProcessHost& render_process_host,
+      int render_frame_id,
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  PushMessagingManager(const PushMessagingManager&) = delete;
+  PushMessagingManager& operator=(const PushMessagingManager&) = delete;
+
+  ~PushMessagingManager() override;
 
   void AddPushMessagingReceiver(
       mojo::PendingReceiver<blink::mojom::PushMessaging> receiver);
@@ -48,7 +59,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
     return weak_factory_.GetWeakPtr();
   }
 
-  // blink::mojom::PushMessaging impl, run on service worker core thread.
+  // blink::mojom::PushMessaging impl.
   void Subscribe(int64_t service_worker_registration_id,
                  blink::mojom::PushSubscriptionOptionsPtr options,
                  bool user_gesture,
@@ -60,12 +71,17 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
 
  private:
   struct RegisterData;
-  class Core;
 
-  friend class BrowserThread;
-  friend class base::DeleteHelper<PushMessagingManager>;
-
-  ~PushMessagingManager() override;
+  void Register(RegisterData data);
+  void DidRegister(RegisterData data,
+                   const std::string& push_subscription_id,
+                   const GURL& endpoint,
+                   const absl::optional<base::Time>& expiration_time,
+                   const std::vector<uint8_t>& p256dh,
+                   const std::vector<uint8_t>& auth,
+                   blink::mojom::PushRegistrationStatus status);
+  void DidRequestPermissionInIncognito(RegisterData data,
+                                       blink::mojom::PermissionStatus status);
 
   void DidCheckForExistingRegistration(
       RegisterData data,
@@ -77,17 +93,15 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       const std::vector<std::string>& sender_id,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Called via PostTask from UI thread.
-  void PersistRegistrationOnSW(
-      RegisterData data,
-      const std::string& push_subscription_id,
-      const GURL& endpoint,
-      const absl::optional<base::Time>& expiration_time,
-      const std::vector<uint8_t>& p256dh,
-      const std::vector<uint8_t>& auth,
-      blink::mojom::PushRegistrationStatus status);
+  void PersistRegistration(RegisterData data,
+                           const std::string& push_subscription_id,
+                           const GURL& endpoint,
+                           const absl::optional<base::Time>& expiration_time,
+                           const std::vector<uint8_t>& p256dh,
+                           const std::vector<uint8_t>& auth,
+                           blink::mojom::PushRegistrationStatus status);
 
-  void DidPersistRegistrationOnSW(
+  void DidPersistRegistration(
       RegisterData data,
       const GURL& endpoint,
       const absl::optional<base::Time>& expiration_time,
@@ -96,10 +110,8 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       blink::mojom::PushRegistrationStatus push_registration_status,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Called both from "SW core" thread, and via PostTask from UI thread.
   void SendSubscriptionError(RegisterData data,
                              blink::mojom::PushRegistrationStatus status);
-  // Called both from "SW core" thread, and via PostTask from UI thread.
   void SendSubscriptionSuccess(
       RegisterData data,
       blink::mojom::PushRegistrationStatus status,
@@ -108,6 +120,29 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth);
 
+  void GetSubscriptionDidUnsubscribe(
+      GetSubscriptionCallback callback,
+      blink::mojom::PushGetRegistrationStatus get_status,
+      blink::mojom::PushUnregistrationStatus unsubscribe_status);
+
+  void GetSubscriptionDidGetInfo(
+      GetSubscriptionCallback callback,
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      const std::string& application_server_key,
+      bool is_valid,
+      const GURL& endpoint,
+      const absl::optional<base::Time>& expiration_time,
+      const std::vector<uint8_t>& p256dh,
+      const std::vector<uint8_t>& auth);
+
+  void GetSubscriptionInfo(
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      const std::string& sender_id,
+      const std::string& push_subscription_id,
+      PushMessagingService::SubscriptionInfoCallback callback);
+
   void UnsubscribeHavingGottenSenderId(
       UnsubscribeCallback callback,
       int64_t service_worker_registration_id,
@@ -115,7 +150,6 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       const std::vector<std::string>& sender_id,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Called both from "SW core" thread, and via PostTask from UI thread.
   void DidUnregister(
       UnsubscribeCallback callback,
       blink::mojom::PushUnregistrationStatus unregistration_status);
@@ -126,28 +160,23 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       const std::vector<std::string>& push_subscription_id_and_sender_info,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // Helper methods on either thread -------------------------------------------
+  PushMessagingService* GetService();
 
-  // Inner core of this message filter which lives on the UI thread.
-  std::unique_ptr<Core, BrowserThread::DeleteOnUIThread> ui_core_;
+  RenderProcessHost& render_process_host_;
 
-  // Can be used on the SW core thread as the |this| parameter when binding a
-  // callback that will be called on the UI thread (an SW -> UI -> UI chain).
-  base::WeakPtr<Core> ui_core_weak_ptr_;
+  // Will be ChildProcessHost::kInvalidUniqueID in requests from Service Worker.
+  const int render_frame_id_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
-  // Whether the PushMessagingService was available when constructed.
-  bool service_available_;
+  const bool is_incognito_;
 
-  // Will be ChildProcessHost::kInvalidUniqueID in requests from Service Worker.
-  int render_frame_id_;
+  // Whether the PushMessagingService was available when constructed.
+  const bool service_available_;
 
   mojo::ReceiverSet<blink::mojom::PushMessaging> receivers_;
 
   base::WeakPtrFactory<PushMessagingManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingManager);
 };
 
 }  // namespace content

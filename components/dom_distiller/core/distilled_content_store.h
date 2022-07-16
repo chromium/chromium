@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include "base/bind.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 
@@ -76,7 +76,7 @@ class InMemoryContentStore : public DistilledContentStore {
 
   void EraseUrlToIdMapping(const DistilledArticleProto& proto);
 
-  typedef base::MRUCache<std::string,
+  typedef base::LRUCache<std::string,
                          std::unique_ptr<DistilledArticleProto, CacheDeletor>>
       ContentMap;
   typedef std::unordered_map<std::string, std::string> UrlMap;

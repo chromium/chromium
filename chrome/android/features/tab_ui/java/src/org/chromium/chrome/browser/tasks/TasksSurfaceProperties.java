@@ -36,9 +36,6 @@ public class TasksSurfaceProperties {
     public static final PropertyModel
             .WritableBooleanPropertyKey IS_VOICE_RECOGNITION_BUTTON_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel
-            .WritableBooleanPropertyKey INCOGNITO_COOKIE_CONTROLS_CARD_VISIBILITY =
-            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -84,8 +81,8 @@ public class TasksSurfaceProperties {
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_FAKE_SEARCH_BOX_VISIBLE,
             IS_INCOGNITO, IS_INCOGNITO_DESCRIPTION_INITIALIZED, IS_INCOGNITO_DESCRIPTION_VISIBLE,
             IS_LENS_BUTTON_VISIBLE, IS_SURFACE_BODY_VISIBLE, IS_TAB_CAROUSEL_VISIBLE,
-            IS_VOICE_RECOGNITION_BUTTON_VISIBLE, INCOGNITO_COOKIE_CONTROLS_CARD_VISIBILITY,
-            INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER, INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED,
+            IS_VOICE_RECOGNITION_BUTTON_VISIBLE, INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER,
+            INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED,
             INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED_LISTENER,
             INCOGNITO_COOKIE_CONTROLS_TOGGLE_ENFORCEMENT, INCOGNITO_COOKIE_CONTROLS_MANAGER,
             INCOGNITO_LEARN_MORE_CLICK_LISTENER, FAKE_SEARCH_BOX_CLICK_LISTENER,

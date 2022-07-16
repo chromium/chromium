@@ -24,12 +24,10 @@ SigninHelper::SigninHelper(
     : account_manager_(account_manager),
       account_manager_mojo_service_(account_manager_mojo_service),
       close_dialog_closure_(close_dialog_closure),
+      account_key_(gaia_id, account_manager::AccountType::kGaia),
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
       gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
-  account_key_ =
-      account_manager::AccountKey{gaia_id, account_manager::AccountType::kGaia};
-
   DCHECK(!signin_scoped_device_id.empty());
   gaia_auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       auth_code, signin_scoped_device_id);
@@ -62,9 +60,7 @@ void SigninHelper::OnClientOAuthFailure(const GoogleServiceAuthError& error) {
   // Notify `AccountManagerMojoService` about account addition failure and send
   // `error`.
   account_manager_mojo_service_->OnAccountAdditionFinished(
-      account_manager::AccountAdditionResult(
-          account_manager::AccountAdditionResult::Status::kNetworkError,
-          error));
+      account_manager::AccountAdditionResult::FromError(error));
   CloseDialogAndExit();
 }
 
@@ -74,8 +70,7 @@ void SigninHelper::UpsertAccount(const std::string& refresh_token) {
   // Notify `AccountManagerMojoService` about successful account addition and
   // send the account.
   account_manager_mojo_service_->OnAccountAdditionFinished(
-      account_manager::AccountAdditionResult(
-          account_manager::AccountAdditionResult::Status::kSuccess,
+      account_manager::AccountAdditionResult::FromAccount(
           account_manager::Account{account_key_, email_}));
 }
 

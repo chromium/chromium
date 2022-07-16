@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
@@ -50,6 +49,10 @@ class ContentVerifierHashTest
       public testing::WithParamInterface<ContentVerificationMode> {
  public:
   ContentVerifierHashTest() = default;
+
+  ContentVerifierHashTest(const ContentVerifierHashTest&) = delete;
+  ContentVerifierHashTest& operator=(const ContentVerifierHashTest&) = delete;
+
   ~ContentVerifierHashTest() override {}
 
   enum TamperResourceType {
@@ -409,8 +412,6 @@ class ContentVerifierHashTest
   std::string verified_contents_contents_;
 
   bool hash_fetching_disabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifierHashTest);
 };
 
 // Tests that corruption of a requested extension resource always disables the

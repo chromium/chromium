@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_MENU_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_MENU_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -16,13 +15,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT MenuExample : public ExampleBase {
  public:
   MenuExample();
+
+  MenuExample(const MenuExample&) = delete;
+  MenuExample& operator=(const MenuExample&) = delete;
+
   ~MenuExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuExample);
 };
 
 }  // namespace examples

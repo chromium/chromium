@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -36,6 +37,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 
@@ -72,6 +74,13 @@ class BlockedActionWaiter
 class ExtensionsToolbarContainerBrowserTest
     : public ExtensionsToolbarBrowserTest {
  public:
+  enum class ExtensionRemovalMethod {
+    kDisable,
+    kUninstall,
+    kBlocklist,
+    kTerminate,
+  };
+
   ExtensionsToolbarContainerBrowserTest() = default;
   ExtensionsToolbarContainerBrowserTest(
       const ExtensionsToolbarContainerBrowserTest&) = delete;
@@ -91,6 +100,60 @@ class ExtensionsToolbarContainerBrowserTest
   }
 
   void ShowUi(const std::string& name) override { NOTREACHED(); }
+
+  void RemoveExtension(ExtensionRemovalMethod method,
+                       const std::string& extension_id) {
+    extensions::ExtensionService* const extension_service =
+        extensions::ExtensionSystem::Get(browser()->profile())
+            ->extension_service();
+    switch (method) {
+      case ExtensionRemovalMethod::kDisable:
+        extension_service->DisableExtension(
+            extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
+        break;
+      case ExtensionRemovalMethod::kUninstall:
+        extension_service->UninstallExtension(
+            extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+        break;
+      case ExtensionRemovalMethod::kBlocklist:
+        extension_service->BlocklistExtensionForTest(extension_id);
+        break;
+      case ExtensionRemovalMethod::kTerminate:
+        extension_service->TerminateExtension(extension_id);
+        break;
+    }
+
+    // Removing an extension can result in the container changing visibility.
+    // Allow it to finish laying out appropriately.
+    auto* container = GetExtensionsToolbarContainer();
+    container->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  void VerifyContainerVisibility(ExtensionRemovalMethod method,
+                                 bool expected_visibility) {
+    // An empty container should not be shown.
+    EXPECT_FALSE(GetExtensionsToolbarContainer()->GetVisible());
+
+    // Loading the first extension should show the button (and container).
+    LoadTestExtension("extensions/uitest/long_name");
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+
+    // Add another extension so we can make sure that removing some don't change
+    // the visibility.
+    LoadTestExtension("extensions/uitest/window_open");
+
+    // Remove 1/2 extensions, should still be drawn.
+    RemoveExtension(method, extensions()[0]->id());
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+
+    // Removing the last extension. All actions now have the same state.
+    RemoveExtension(method, extensions()[1]->id());
+
+    // Container should remain visible during the removal animation.
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    EXPECT_EQ(expected_visibility, GetExtensionsToolbarContainer()->IsDrawn());
+  }
 };
 
 // TODO(devlin): There are probably some tests from
@@ -127,6 +190,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
   histogram_tester.ExpectBucketCount(
       kHistogramName,
       ToolbarActionViewController::InvocationSource::kToolbarButton, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Disable) {
+  VerifyContainerVisibility(ExtensionRemovalMethod::kDisable, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Uninstall) {
+  VerifyContainerVisibility(ExtensionRemovalMethod::kUninstall, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Blocklist) {
+  VerifyContainerVisibility(ExtensionRemovalMethod::kBlocklist, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Terminate) {
+  // TODO(pbos): Keep the container visible when extensions are terminated
+  // (crash). This lets users find and restart them. Then update this test
+  // expectation to be kept visible by terminated extensions. Also update the
+  // test name to reflect that the container should be visible with only
+  // terminated extensions.
+  VerifyContainerVisibility(ExtensionRemovalMethod::kTerminate, false);
 }
 
 // Tests that clicking on a second extension action will close a first if its
@@ -552,6 +640,12 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
         controller->GetContextMenu());
   }
 
+  std::u16string GetActionTooltip() {
+    return GetExtensionsToolbarContainer()
+        ->GetViewForId(extension_->id())
+        ->GetTooltipText();
+  }
+
  private:
   extensions::TestExtensionDir extension_dir_;
   scoped_refptr<const extensions::Extension> extension_;
@@ -562,6 +656,14 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
                        ContextMenuPageAccess_RefreshRequired) {
   LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_START);
+  std::u16string tooltip_wants_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+      u"\n");
+  std::u16string tooltip_has_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+      u"\n");
 
   ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
                                                   false /* will_reply */);
@@ -575,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   BlockedActionWaiter blocked_action_waiter(runner);
   {
     content::TestNavigationObserver observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_TRUE(observer.last_navigation_succeeded());
   }
 
@@ -585,6 +687,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
                                                                 extension());
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
   extensions::ExtensionContextMenuModel* extension_menu =
@@ -610,6 +713,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
   injection_listener.Reset();
   EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_has_access, GetActionTooltip());
   EXPECT_FALSE(runner->WantsToRun(extension()));
 
   // Now navigate to a different host. The extension should have blocked
@@ -617,12 +721,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   {
     url = embedded_test_server()->GetURL("abc.com", "/title1.html");
     content::TestNavigationObserver observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_TRUE(observer.last_navigation_succeeded());
   }
   blocked_action_waiter.WaitAndReset();
   EXPECT_TRUE(runner->WantsToRun(extension()));
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
   // Allow the extension to run on all sites this time. This should again show a
@@ -638,6 +743,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   // should still be in wants-to-run state.
   EXPECT_TRUE(runner->WantsToRun(extension()));
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 }
 
@@ -646,6 +752,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
                        ContextMenuPageAccess_RefreshNotRequired) {
   LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_IDLE);
+  std::u16string tooltip_wants_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+      u"\n");
+  std::u16string tooltip_has_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+      u"\n");
+
   ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
                                                   false /* will_reply */);
   injection_listener.set_extension_id(extension()->id());
@@ -658,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   BlockedActionWaiter blocked_action_waiter(runner);
   {
     content::TestNavigationObserver observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_TRUE(observer.last_navigation_succeeded());
   }
 
@@ -668,6 +783,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
                                                                 extension());
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
   extensions::ExtensionContextMenuModel* extension_menu =
@@ -683,4 +799,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
   EXPECT_FALSE(runner->WantsToRun(extension()));
   EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_has_access, GetActionTooltip());
 }

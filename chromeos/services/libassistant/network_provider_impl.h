@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "libassistant/shared/public/platform_net.h"
@@ -22,6 +21,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
       public network_config::mojom::CrosNetworkConfigObserver {
  public:
   NetworkProviderImpl();
+
+  NetworkProviderImpl(const NetworkProviderImpl&) = delete;
+  NetworkProviderImpl& operator=(const NetworkProviderImpl&) = delete;
+
   ~NetworkProviderImpl() override;
 
   void Initialize(mojom::PlatformDelegate* platform_delegate);
@@ -48,8 +51,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
       this};
   mojo::Remote<network_config::mojom::CrosNetworkConfig>
       cros_network_config_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkProviderImpl);
 };
 
 }  // namespace libassistant

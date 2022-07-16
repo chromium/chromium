@@ -5,25 +5,27 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {BorealisPermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
+// #import {Router, routes, Route} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
 'use strict';
 
 suite('<app-management-borealis-detail-view>', function() {
-  let BorealisDetailView;
+  let borealisDetailView;
   let fakeHandler;
 
   const kBorealisMainAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
   function getPermissionBoolByType(permissionType) {
     return app_management.util.getPermissionValueBool(
-        BorealisDetailView.app_, permissionType);
+        borealisDetailView.app_, permissionType);
   }
 
   async function clickToggle(permissionType) {
-    getPermissionToggleByType(BorealisDetailView, permissionType).click();
+    getPermissionToggleByType(borealisDetailView, permissionType).click();
     await fakeHandler.flushPipesForTesting();
   }
 
@@ -37,58 +39,56 @@ suite('<app-management-borealis-detail-view>', function() {
     replaceStore();
 
     const permissions = {};
-    const permissionIds = [BorealisPermissionType.MICROPHONE];
-    for (const permissionId of permissionIds) {
-      permissions[permissionId] = app_management.util.createPermission(
-          permissionId, PermissionValueType.kBool, Bool.kTrue,
-          false /*is_managed*/);
+    const permissionTypes = [PermissionType.kMicrophone];
+    for (const permissionType of permissionTypes) {
+      permissions[permissionType] = createBoolPermission(
+          permissionType, true /*permission_value*/, false /*is_managed*/);
     }
 
-    // Add an app, and make it the currently selected app.
-    const options = {
+    // Add main app, and make it the currently selected app.
+    const mainOptions = {
       type: apps.mojom.AppType.kBorealis,
       permissions: permissions
     };
-    const app = await fakeHandler.addApp(kBorealisMainAppId, options);
+    const mainApp = await fakeHandler.addApp(kBorealisMainAppId, mainOptions);
     app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
-
-    BorealisDetailView =
+        app_management.actions.updateSelectedAppId(mainApp.id));
+    borealisDetailView =
         document.createElement('app-management-borealis-detail-view');
-    replaceBody(BorealisDetailView);
+    replaceBody(borealisDetailView);
   });
 
   test('App is rendered correctly', function() {
     assertEquals(
         app_management.AppManagementStore.getInstance().data.selectedAppId,
-        BorealisDetailView.app_.id);
+        borealisDetailView.app_.id);
   });
 
   test('Toggle permissions', async function() {
     const checkToggle = async (permissionType) => {
       assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue(getPermissionCrToggleByType(BorealisDetailView, permissionType)
+      assertTrue(getPermissionCrToggleByType(borealisDetailView, permissionType)
                      .checked);
 
       // Toggle off.
       await clickToggle(permissionType);
       assertFalse(getPermissionBoolByType(permissionType));
       assertFalse(
-          getPermissionCrToggleByType(BorealisDetailView, permissionType)
+          getPermissionCrToggleByType(borealisDetailView, permissionType)
               .checked);
 
       // Toggle on.
       await clickToggle(permissionType);
       assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue(getPermissionCrToggleByType(BorealisDetailView, permissionType)
+      assertTrue(getPermissionCrToggleByType(borealisDetailView, permissionType)
                      .checked);
     };
 
-    await checkToggle('MICROPHONE');
+    await checkToggle('kMicrophone');
   });
 
   test('Pin to shelf toggle', async function() {
-    const pinToShelfItem = BorealisDetailView.$['pin-to-shelf-setting'];
+    const pinToShelfItem = borealisDetailView.$['pin-to-shelf-setting'];
     const toggle = pinToShelfItem.$['toggle-row'].$.toggle;
 
     assertFalse(toggle.checked);
@@ -110,5 +110,34 @@ suite('<app-management-borealis-detail-view>', function() {
         toggle.checked,
         app_management.util.convertOptionalBoolToBool(
             getSelectedAppFromStore().isPinned));
+  });
+
+  test('Permission info links are correct', async function() {
+    assertTrue(!!borealisDetailView.$$('#main-link'));
+    assertFalse(!!borealisDetailView.$$('#borealis-link'));
+
+    // Add borealis (non main) app. Note that any tests after this will
+    // have the borealis app selected as default.
+    const options = {
+      type: apps.mojom.AppType.kBorealis,
+    };
+    const app = await fakeHandler.addApp('foo', options);
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+    await fakeHandler.flushPipesForTesting();
+    assertFalse(!!borealisDetailView.$$('#main-link'));
+    assertTrue(!!borealisDetailView.$$('#borealis-link'));
+
+    // Check that link directs to main app page.
+    const link = borealisDetailView.$$('#borealis-link');
+    const anchorTag = link.$$('a');
+    assertTrue(!!anchorTag);
+    const localizedLinkPromise = test_util.eventToPromise('link-clicked', link);
+    anchorTag.click();
+    await Promise.all([localizedLinkPromise, test_util.flushTasks()]);
+    await fakeHandler.flushPipesForTesting();
+    assertEquals(
+        settings.Router.getInstance().getQueryParameters().get('id'),
+        kBorealisMainAppId);
   });
 });

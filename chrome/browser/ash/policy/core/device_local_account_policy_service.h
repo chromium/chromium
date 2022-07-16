@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -74,6 +73,12 @@ class DeviceLocalAccountPolicyBroker
       const scoped_refptr<base::SequencedTaskRunner>&
           resource_cache_task_runner,
       AffiliatedInvalidationServiceProvider* invalidation_service_provider);
+
+  DeviceLocalAccountPolicyBroker(const DeviceLocalAccountPolicyBroker&) =
+      delete;
+  DeviceLocalAccountPolicyBroker& operator=(
+      const DeviceLocalAccountPolicyBroker&) = delete;
+
   ~DeviceLocalAccountPolicyBroker() override;
 
   // Initialize the broker, start asynchronous load of its |store_|.
@@ -146,8 +151,6 @@ class DeviceLocalAccountPolicyBroker
   base::RepeatingClosure policy_update_callback_;
   std::unique_ptr<AffiliatedCloudPolicyInvalidator> invalidator_;
   const scoped_refptr<base::SequencedTaskRunner> resource_cache_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyBroker);
 };
 
 // Manages user policy blobs for device-local accounts present on the device.
@@ -178,6 +181,12 @@ class DeviceLocalAccountPolicyService {
       scoped_refptr<base::SequencedTaskRunner>
           external_data_service_backend_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  DeviceLocalAccountPolicyService(const DeviceLocalAccountPolicyService&) =
+      delete;
+  DeviceLocalAccountPolicyService& operator=(
+      const DeviceLocalAccountPolicyService&) = delete;
+
   virtual ~DeviceLocalAccountPolicyService();
 
   // Shuts down the service and prevents further policy fetches from the cloud.
@@ -198,7 +207,7 @@ class DeviceLocalAccountPolicyService {
   void RemoveObserver(Observer* observer);
 
  private:
-  typedef std::map<std::string, DeviceLocalAccountPolicyBroker*>
+  typedef std::map<std::string, std::unique_ptr<DeviceLocalAccountPolicyBroker>>
       PolicyBrokerMap;
 
   // Returns |true| if the directory in which force-installed extensions are
@@ -283,8 +292,6 @@ class DeviceLocalAccountPolicyService {
   const base::FilePath component_policy_cache_root_;
 
   base::WeakPtrFactory<DeviceLocalAccountPolicyService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyService);
 };
 
 }  // namespace policy

@@ -11,13 +11,13 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
@@ -40,7 +40,7 @@ ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     : UserSelectionScreen(display_type) {
   device_local_account_policy_service_ =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService();
   if (device_local_account_policy_service_) {
     device_local_account_policy_service_->AddObserver(this);
@@ -121,10 +121,9 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
 
   // Parse the list of recommended locales set by policy.
   std::vector<std::string> new_recommended_locales;
-  base::ListValue const* list = NULL;
   if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
-      entry->value() && entry->value()->GetAsList(&list)) {
-    for (const auto& entry : list->GetList()) {
+      entry->value() && entry->value()->is_list()) {
+    for (const auto& entry : entry->value()->GetList()) {
       if (!entry.is_string()) {
         NOTREACHED();
         new_recommended_locales.clear();

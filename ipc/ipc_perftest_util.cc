@@ -5,6 +5,7 @@
 #include "ipc/ipc_perftest_util.h"
 
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_perftest_messages.h"

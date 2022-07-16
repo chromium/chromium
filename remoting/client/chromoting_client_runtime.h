@@ -55,6 +55,9 @@ class ChromotingClientRuntime {
 
   static ChromotingClientRuntime* GetInstance();
 
+  ChromotingClientRuntime(const ChromotingClientRuntime&) = delete;
+  ChromotingClientRuntime& operator=(const ChromotingClientRuntime&) = delete;
+
   // Must be called before calling any other methods on this object.
   void Init(ChromotingClientRuntime::Delegate* delegate);
 
@@ -122,8 +125,6 @@ class ChromotingClientRuntime {
   ChromotingClientRuntime::Delegate* delegate_ = nullptr;
 
   friend struct base::DefaultSingletonTraits<ChromotingClientRuntime>;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingClientRuntime);
 };
 
 }  // namespace remoting

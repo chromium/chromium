@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
@@ -48,6 +49,10 @@ bool IsInterstitialReload(const GURL& current_url,
          stored_redirect_chain[stored_redirect_chain.size() - 1] == current_url;
 }
 
+const base::Feature kOptimizeLookalikeUrlNavigationThrottle{
+    "OptimizeLookalikeUrlNavigationThrottle",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
@@ -57,6 +62,18 @@ LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
           navigation_handle->GetWebContents()->GetBrowserContext())) {}
 
 LookalikeUrlNavigationThrottle::~LookalikeUrlNavigationThrottle() {}
+
+ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
+  if (profile_->AsTestingProfile())
+    return content::NavigationThrottle::PROCEED;
+
+  auto* service = LookalikeUrlService::Get(profile_);
+  if (base::FeatureList::IsEnabled(kOptimizeLookalikeUrlNavigationThrottle) &&
+      service->EngagedSitesNeedUpdating()) {
+    service->ForceUpdateEngagedSites(base::DoNothing());
+  }
+  return content::NavigationThrottle::PROCEED;
+}
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
   // Ignore if running unit tests. Some tests use
@@ -120,7 +137,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
   if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(
         base::BindOnce(&LookalikeUrlNavigationThrottle::PerformChecksDeferred,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
     return content::NavigationThrottle::DEFER;
   }
   return PerformChecks(service->GetLatestEngagedSites());
@@ -152,7 +169,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::ShowInterstitial(
       blocking_page->GetHTMLContents();
 
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      web_contents, handle->GetNavigationId(), std::move(blocking_page));
+      handle, std::move(blocking_page));
 
   // Store interstitial parameters in per-tab storage. Reloading the
   // interstitial once it's shown navigates to the final URL in the original
@@ -245,7 +262,10 @@ void LookalikeUrlNavigationThrottle::OnManifestValidationResult(
 }
 
 void LookalikeUrlNavigationThrottle::PerformChecksDeferred(
+    base::TimeTicks start,
     const std::vector<DomainInfo>& engaged_sites) {
+  UMA_HISTOGRAM_TIMES("NavigationSuggestion.UpdateEngagedSitesDeferTime",
+                      base::TimeTicks::Now() - start);
   ThrottleCheckResult result = PerformChecks(engaged_sites);
   if (result.action() == NavigationThrottle::DEFER) {
     // Already deferred by PerformChecks(), don't defer again. PerformChecks()
@@ -343,11 +363,26 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
                                                   first_is_lookalike);
   }
 
-  RecordUMAFromMatchType(first_is_lookalike ? first_match_type
-                                            : last_match_type);
+  LookalikeUrlMatchType match_type =
+      first_is_lookalike ? first_match_type : last_match_type;
+  if (match_type == LookalikeUrlMatchType::kCharacterSwapSiteEngagement ||
+      match_type == LookalikeUrlMatchType::kCharacterSwapTop500) {
+    GURL lookalike_url = first_is_lookalike ? first_url : last_url;
+
+    navigation_handle()->GetWebContents()->GetMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "Chrome has determined that %s could be fake or fraudulent.\n\n"
+            "Future Chrome versions will show a warning on this domain name. "
+            "If you believe this is shown in error please visit "
+            "https://g.co/chrome/lookalike-warnings",
+            lookalike_url.host().c_str()));
+  }
+
+  RecordUMAFromMatchType(match_type);
   // Interstitial normally records UKM, but still record when it's not shown.
   RecordUkmForLookalikeUrlBlockingPage(
-      source_id, first_is_lookalike ? first_match_type : last_match_type,
+      source_id, match_type,
       LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
       first_is_lookalike);
   return NavigationThrottle::PROCEED;

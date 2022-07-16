@@ -35,17 +35,19 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
     ScrollRight,
   };
 
+  // 100% is represented as 100s or 100000ms. We store it here in Milliseconds
+  // because that is the time unit returned by functions like CurrentTime.
+  static constexpr double kScrollTimelineDurationMs = 100000;
+
   ScrollTimeline(absl::optional<ElementId> scroller_id,
                  ScrollDirection direction,
                  const std::vector<double> scroll_offsets,
-                 double time_range,
                  int animation_timeline_id);
 
   static scoped_refptr<ScrollTimeline> Create(
       absl::optional<ElementId> scroller_id,
       ScrollDirection direction,
-      const std::vector<double> scroll_offsets,
-      double time_range);
+      const std::vector<double> scroll_offsets);
 
   // Create a copy of this ScrollTimeline intended for the impl thread in the
   // compositor.
@@ -89,7 +91,6 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
       return absl::nullopt;
     return scroll_offsets_[1];
   }
-  double GetTimeRangeForTest() const { return time_range_; }
 
   bool IsScrollTimeline() const override;
 
@@ -110,11 +111,6 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   // This defines scroll ranges of the scroller that the ScrollTimeline is
   // active within. If no ranges are defined the timeline is inactive.
   std::vector<double> scroll_offsets_;
-
-  // A ScrollTimeline maps from the scroll offset in the scroller to a time
-  // value based on a 'time range'. See the implementation of CurrentTime or the
-  // spec for details.
-  double time_range_;
 };
 
 inline ScrollTimeline* ToScrollTimeline(AnimationTimeline* timeline) {

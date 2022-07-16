@@ -16,7 +16,6 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_activation_observer_holder.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -39,10 +38,17 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   using UserSessions = std::vector<std::unique_ptr<UserSession>>;
 
   SessionControllerImpl();
+
+  SessionControllerImpl(const SessionControllerImpl&) = delete;
+  SessionControllerImpl& operator=(const SessionControllerImpl&) = delete;
+
   ~SessionControllerImpl() override;
 
   base::TimeDelta session_length_limit() const { return session_length_limit_; }
   base::Time session_start_time() const { return session_start_time_; }
+  bool session_state_change_in_progress() const {
+    return session_state_change_in_progress_;
+  }
 
   // Returns the number of signed in users. If 0 is returned, there is either
   // no session in progress or no active user.
@@ -309,9 +315,10 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   std::unique_ptr<FullscreenController> fullscreen_controller_;
 
-  base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
+  // Indicate if the session state is being changed.
+  bool session_state_change_in_progress_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerImpl);
+  base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

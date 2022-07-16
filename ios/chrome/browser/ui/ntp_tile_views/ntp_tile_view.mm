@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_view.h"
 
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -36,7 +35,7 @@ const CGFloat kPreferredMaxWidth = 73;
   self = [super initWithFrame:frame];
   if (self) {
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
@@ -76,20 +75,15 @@ const CGFloat kPreferredMaxWidth = 73;
 
     _imageBackgroundView = backgroundView;
 
-    if (@available(iOS 13.4, *)) {
-      _pointerInteraction =
-          [[UIPointerInteraction alloc] initWithDelegate:self];
-      [self addInteraction:self.pointerInteraction];
-    }
+    _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
+    [self addInteraction:self.pointerInteraction];
   }
   return self;
 }
 
 - (void)dealloc {
-  if (@available(iOS 13.4, *)) {
-    [self removeInteraction:self.pointerInteraction];
-    self.pointerInteraction = nil;
-  }
+  [self removeInteraction:self.pointerInteraction];
+  self.pointerInteraction = nil;
 }
 
 // Returns the font size for the location label.

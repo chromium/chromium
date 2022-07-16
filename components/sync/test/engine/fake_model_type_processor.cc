@@ -11,8 +11,8 @@
 
 namespace syncer {
 
-FakeModelTypeProcessor::FakeModelTypeProcessor() {}
-FakeModelTypeProcessor::~FakeModelTypeProcessor() {}
+FakeModelTypeProcessor::FakeModelTypeProcessor() = default;
+FakeModelTypeProcessor::~FakeModelTypeProcessor() = default;
 
 void FakeModelTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {}
 

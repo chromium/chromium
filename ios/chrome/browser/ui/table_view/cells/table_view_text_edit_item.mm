@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -59,6 +58,7 @@ const CGFloat kEditIconLength = 18;
       [NSString stringWithFormat:textLabelFormat, self.textFieldName];
   cell.textField.placeholder = self.textFieldPlaceholder;
   cell.textField.text = self.textFieldValue;
+  cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
   if (self.textFieldName.length) {
     cell.textField.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@_textField", self.textFieldName];
@@ -80,11 +80,11 @@ const CGFloat kEditIconLength = 18;
   if (self.hideIcon) {
     cell.textField.textColor = self.textFieldEnabled
                                    ? [UIColor colorNamed:kBlueColor]
-                                   : UIColor.cr_secondaryLabelColor;
+                                   : [UIColor colorNamed:kTextSecondaryColor];
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {
-      cell.textField.textColor = UIColor.cr_secondaryLabelColor;
+      cell.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
     } else {
       cell.textField.textColor = [UIColor colorNamed:kRedColor];
     }
@@ -367,6 +367,7 @@ const CGFloat kEditIconLength = 18;
   self.textField.accessibilityIdentifier = nil;
   self.textField.enabled = NO;
   self.textField.delegate = nil;
+  self.textField.secureTextEntry = NO;
   [self.textField removeTarget:nil
                         action:nil
               forControlEvents:UIControlEventAllEvents];
@@ -380,8 +381,12 @@ const CGFloat kEditIconLength = 18;
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@, %@", self.textLabel.text, self.textField.text];
+  // If |textFieldSecureTextEntry| is
+  // YES, the voice over should not read the text value.
+  NSString* textFieldText =
+      self.textField.secureTextEntry ? @"" : self.textField.text;
+  return
+      [NSString stringWithFormat:@"%@, %@", self.textLabel.text, textFieldText];
 }
 
 #pragma mark Private

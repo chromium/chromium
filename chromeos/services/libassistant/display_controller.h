@@ -6,9 +6,9 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_
 
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
-#include "chromeos/services/libassistant/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,7 +31,7 @@ class CrosActionModule;
 namespace chromeos {
 namespace libassistant {
 
-class DisplayConnectionImpl;
+class DisplayConnection;
 
 class DisplayController
     : public mojom::DisplayController,
@@ -75,7 +75,7 @@ class DisplayController
 
   mojo::Receiver<mojom::DisplayController> receiver_{this};
   std::unique_ptr<EventObserver> event_observer_;
-  std::unique_ptr<DisplayConnectionImpl> display_connection_;
+  std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>&

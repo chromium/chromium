@@ -26,6 +26,11 @@ class ASH_EXPORT AutoclickMenuBubbleController
   static const int kAnimationDurationMs = 150;
 
   AutoclickMenuBubbleController();
+
+  AutoclickMenuBubbleController(const AutoclickMenuBubbleController&) = delete;
+  AutoclickMenuBubbleController& operator=(
+      const AutoclickMenuBubbleController&) = delete;
+
   ~AutoclickMenuBubbleController() override;
 
   // Sets the currently selected event type.
@@ -81,8 +86,6 @@ class ASH_EXPORT AutoclickMenuBubbleController
   // by this class so that positioning calculations can take place using both
   // classes at once.
   std::unique_ptr<AutoclickScrollBubbleController> scroll_bubble_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickMenuBubbleController);
 };
 
 }  // namespace ash

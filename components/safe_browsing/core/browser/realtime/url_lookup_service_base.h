@@ -55,6 +55,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider);
+
+  RealTimeUrlLookupServiceBase(const RealTimeUrlLookupServiceBase&) = delete;
+  RealTimeUrlLookupServiceBase& operator=(const RealTimeUrlLookupServiceBase&) =
+      delete;
+
   ~RealTimeUrlLookupServiceBase() override;
 
   // Returns true if |url|'s scheme can be checked.
@@ -75,9 +80,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // |callback_task_runner| when response is received.
   // Note that |request_callback| is not called if there's a valid entry in the
   // cache for |url|.
+  // |last_committed_url| and |is_mainframe| are for obtaining page load token
+  // for the request.
   // This function is overridden in unit tests.
   virtual void StartLookup(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
@@ -111,6 +120,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // It also attached an auth header if |access_token_string| has a value.
   void SendRequest(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       absl::optional<std::string> access_token_string,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
@@ -142,10 +153,15 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Returns the user gesture limit of the referrer chain.
   virtual int GetReferrerUserGestureLimit() const = 0;
 
+  // Returns true if page load tokens can be attached to requests.
+  virtual bool CanSendPageLoadToken() const = 0;
+
   // Gets access token, called if |CanPerformFullURLLookupWithToken| returns
   // true.
   virtual void GetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
@@ -218,7 +234,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       std::unique_ptr<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.
-  std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url);
+  std::unique_ptr<RTLookupRequest> FillRequestProto(
+      const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -260,8 +279,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 
   base::WeakPtrFactory<RealTimeUrlLookupServiceBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RealTimeUrlLookupServiceBase);
 
 };  // class RealTimeUrlLookupServiceBase
 

@@ -98,7 +98,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_AllowViewIntents() {
         Assert.assertTrue(
                 createStartupTabPreloader(VIEW_INTENT, sChromeTabCreator).shouldLoadTab());
@@ -106,7 +106,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_AllowChromeMainComponentIntentWithUrl() {
         Assert.assertTrue(createStartupTabPreloader(CHROME_MAIN_COMPONENT_INTENT, sChromeTabCreator)
                                   .shouldLoadTab());
@@ -114,7 +114,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_AllowMainIntentsWithUrl() {
         Assert.assertTrue(
                 createStartupTabPreloader(MAIN_INTENT_WITH_URL, sChromeTabCreator).shouldLoadTab());
@@ -122,7 +122,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedMainIntentsWithoutUrl() {
         Assert.assertFalse(createStartupTabPreloader(MAIN_INTENT_WITHOUT_URL, sChromeTabCreator)
                                    .shouldLoadTab());
@@ -130,7 +130,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @EnableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedWhenFeatureDisabled() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT, sChromeTabCreator).shouldLoadTab());
@@ -138,7 +138,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedInvalidSchemeIntent() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT_WITH_INVALID_SCHEME, sChromeTabCreator)
@@ -147,7 +147,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedNonChromeTabCreators() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT, sNonChromeTabCreator).shouldLoadTab());
@@ -155,7 +155,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedIncognitoIntents() {
         Assert.assertFalse(createStartupTabPreloader(INCOGNITO_VIEW_INTENT, sChromeTabCreator)
                                    .shouldLoadTab());
@@ -163,7 +163,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_UninitializedTabCreatorManager() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT, sUninitializedChromeTabCreatorManager)

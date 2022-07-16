@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_device_buffer_queue.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/swap_result.h"
@@ -30,7 +32,7 @@ namespace {
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
 
 NOINLINE void CheckForLoopFailuresBufferQueue() {
-  const auto threshold = base::TimeDelta::FromSeconds(1);
+  const auto threshold = base::Seconds(1);
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
       now - g_last_reshape_failure < threshold) {
@@ -123,14 +125,17 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     gpu::SharedImageRepresentationFactory* representation_factory,
     gpu::MemoryTracker* memory_tracker,
     const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
-    bool needs_background_image)
+    bool needs_background_image,
+    bool supports_non_backed_solid_color_images)
     : SkiaOutputDevice(deps->GetSharedContextState()->gr_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       presenter_(std::move(presenter)),
       context_state_(deps->GetSharedContextState()),
       representation_factory_(representation_factory),
-      needs_background_image_(needs_background_image) {
+      needs_background_image_(needs_background_image),
+      supports_non_backed_solid_color_images_(
+          supports_non_backed_solid_color_images) {
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
@@ -226,6 +231,7 @@ void SkiaOutputDeviceBufferQueue::FreeAllSurfaces() {
   submitted_image_ = nullptr;
   displayed_image_ = nullptr;
   available_images_.clear();
+  primary_plane_waiting_on_paint_ = true;
 }
 
 bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
@@ -324,9 +330,15 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     auto& overlay = overlays[i];
 
 #if defined(USE_OZONE)
-    // TODO(petermcneeley) : Remove this code when http://crbug/1204102 is done.
     if (overlay.solid_color.has_value()) {
-      overlay.mailbox = GetImageMailboxForColor(overlay.solid_color.value());
+      // TODO(msisov): reconsider this once Linux Wayland compositors also
+      // support that. See https://bit.ly/2ZqUO0w.
+      if (!supports_non_backed_solid_color_images_) {
+        overlay.mailbox = GetImageMailboxForColor(overlay.solid_color.value());
+      } else {
+        accesses[i] = nullptr;
+        continue;
+      }
     }
 #endif
 
@@ -518,9 +530,11 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   }
 
 #if defined(USE_OZONE)
+  std::set<gpu::Mailbox> released_solid_color_overlays;
   for (const auto& mailbox : overlay_mailboxes) {
     auto it = solid_color_images_.find(mailbox);
     if (it != solid_color_images_.end()) {
+      released_solid_color_overlays.insert(mailbox);
       solid_color_cache_.insert(
           std::make_pair(it->second.first, std::move(it->second.second)));
       solid_color_images_.erase(it);
@@ -540,21 +554,38 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   }
 #endif
 
+  std::vector<gpu::Mailbox> released_overlays;
+  auto on_overlay_release =
+#if defined(OS_APPLE)
+      [&released_overlays](const OverlayData& overlay) {
+        // Right now, only macOS needs to return maliboxes of released
+        // overlays, so SkiaRenderer can unlock resources for them.
+        released_overlays.push_back(overlay.mailbox());
+      };
+#elif defined(USE_OZONE)
+      [&released_overlays,
+       &released_solid_color_overlays](const OverlayData& overlay) {
+        // Delegated compositing on Ozone needs to return mailboxes of released
+        // overlays, so SkiaRenderer can unlock resources for them. However, the
+        // solid color buffers originating in this class and should not
+        // propagate up to SkiaRenderer.
+        if (released_solid_color_overlays.find(overlay.mailbox()) ==
+            released_solid_color_overlays.end()) {
+          released_overlays.push_back(overlay.mailbox());
+        }
+      };
+#else
+      [](const OverlayData& overlay) {};
+#endif
+
   // Go through backings of all overlays, and release overlay backings which are
   // not used.
-  std::vector<gpu::Mailbox> released_overlays;
-  base::EraseIf(overlays_, [&released_overlays](auto& overlay) {
+  base::EraseIf(overlays_, [&on_overlay_release](auto& overlay) {
     if (!overlay.unique())
       return false;
     if (overlay.IsInUseByWindowServer())
       return false;
-#if defined(OS_APPLE) || defined(USE_OZONE)
-    // Right now, only macOS needs to return maliboxes of released overlays, so
-    // SkiaRenderer can unlock resources for them.
-    released_overlays.push_back(overlay.mailbox());
-#else
-    ALLOW_UNUSED_LOCAL(released_overlays);
-#endif
+    on_overlay_release(overlay);
     overlay.Unref();
     return true;
   });

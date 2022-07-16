@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging dumps large arrays properly.\n');
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -62,8 +62,8 @@
     })();
   `);
 
-  ObjectUI.ArrayGroupingTreeElement._bucketThreshold = 20;
-  var messages = Console.ConsoleView.instance()._visibleViewMessages;
+  ObjectUI.ArrayGroupingTreeElement.bucketThreshold = 20;
+  var messages = Console.ConsoleView.instance().visibleViewMessages;
   var sections = [];
 
   for (var i = 0; i < messages.length; ++i) {

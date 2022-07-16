@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/platform_thread.h"
@@ -81,6 +81,9 @@ class HostContentSettingsMap : public content_settings::Observer,
                          bool is_off_the_record,
                          bool store_last_modified,
                          bool restore_session);
+
+  HostContentSettingsMap(const HostContentSettingsMap&) = delete;
+  HostContentSettingsMap& operator=(const HostContentSettingsMap&) = delete;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -288,9 +291,10 @@ class HostContentSettingsMap : public content_settings::Observer,
   void ShutdownOnUIThread() override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // Returns the ProviderType associated with the given source string.
   // TODO(estade): I regret adding this. At the moment there are no legitimate
@@ -467,8 +471,6 @@ class HostContentSettingsMap : public content_settings::Observer,
   bool allow_invalid_secondary_pattern_for_testing_;
 
   base::WeakPtrFactory<HostContentSettingsMap> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMap);
 };
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_HOST_CONTENT_SETTINGS_MAP_H_

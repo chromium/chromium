@@ -348,9 +348,8 @@ TEST(NotificationDataTest, MaximumActionCount) {
 TEST(NotificationDataTest, RejectsTriggerTimestampOverAYear) {
   V8TestingScope scope;
 
-  base::Time show_timestamp = base::Time::Now() +
-                              kMaxNotificationShowTriggerDelay +
-                              base::TimeDelta::FromDays(1);
+  base::Time show_timestamp =
+      base::Time::Now() + kMaxNotificationShowTriggerDelay + base::Days(1);
   TimestampTrigger* show_trigger =
       TimestampTrigger::Create(show_timestamp.ToJsTime());
 

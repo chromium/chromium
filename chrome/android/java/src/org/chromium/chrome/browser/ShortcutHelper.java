@@ -15,10 +15,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappAuthenticator;
@@ -88,7 +88,7 @@ public class ShortcutHelper {
     @CalledByNative
     private static void addWebapp(final String id, final String url, final String scopeUrl,
             final String userTitle, final String name, final String shortName, final String iconUrl,
-            final Bitmap icon, boolean isIconAdaptive, @WebDisplayMode final int displayMode,
+            final Bitmap icon, boolean isIconAdaptive, @DisplayMode.EnumType final int displayMode,
             final int orientation, final int source, final long themeColor,
             final long backgroundColor) {
         new AsyncTask<Intent>() {
@@ -205,8 +205,8 @@ public class ShortcutHelper {
      */
     public static Intent createWebappShortcutIntent(String id, String url, String scope,
             String name, String shortName, String encodedIcon, int version,
-            @WebDisplayMode int displayMode, int orientation, long themeColor, long backgroundColor,
-            boolean isIconGenerated, boolean isIconAdaptive) {
+            @DisplayMode.EnumType int displayMode, int orientation, long themeColor,
+            long backgroundColor, boolean isIconGenerated, boolean isIconAdaptive) {
         // Create an intent as a launcher icon for a full-screen Activity.
         Intent shortcutIntent = new Intent();
         shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName())
@@ -236,7 +236,7 @@ public class ShortcutHelper {
      */
     public static Intent createWebappShortcutIntentForTesting(String id, String url) {
         return createWebappShortcutIntent(id, url, getScopeFromUrl(url), null, null, null,
-                WebappConstants.WEBAPP_SHORTCUT_VERSION, WebDisplayMode.STANDALONE, 0, 0, 0, false,
+                WebappConstants.WEBAPP_SHORTCUT_VERSION, DisplayMode.STANDALONE, 0, 0, 0, false,
                 false);
     }
 

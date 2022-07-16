@@ -15,6 +15,10 @@ enum UseCounterFeatureType {
   kAnimatedCssProperty,
   // Blink.UseCounter.PermissionsPolicy.Violation.Enforce
   kPermissionsPolicyViolationEnforce,
+  // Blink.UseCounter.PermissionsPolicy.Allow
+  kPermissionsPolicyIframeAttribute,
+  // Blink.UseCounter.PermissionsPolicy.Header
+  kPermissionsPolicyHeader,
 };
 
 // This struct corresponds to `blink::UseCounterFeature`.

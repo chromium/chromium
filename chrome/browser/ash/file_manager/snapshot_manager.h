@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -34,6 +33,10 @@ class SnapshotManager {
   typedef base::OnceCallback<void(const base::FilePath&)> LocalPathCallback;
 
   explicit SnapshotManager(Profile* profile);
+
+  SnapshotManager(const SnapshotManager&) = delete;
+  SnapshotManager& operator=(const SnapshotManager&) = delete;
+
   ~SnapshotManager();
 
   // Creates a snapshot file copy of a file system file |absolute_file_path| and
@@ -56,7 +59,6 @@ class SnapshotManager {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<SnapshotManager> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SnapshotManager);
 };
 
 }  // namespace file_manager

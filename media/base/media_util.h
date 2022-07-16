@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 
@@ -26,13 +25,14 @@ MEDIA_EXPORT void ReportPepperVideoDecoderOutputPictureCountSW(int height);
 class MEDIA_EXPORT NullMediaLog : public media::MediaLog {
  public:
   NullMediaLog() = default;
+
+  NullMediaLog(const NullMediaLog&) = delete;
+  NullMediaLog& operator=(const NullMediaLog&) = delete;
+
   ~NullMediaLog() override = default;
 
   void AddLogRecordLocked(
       std::unique_ptr<media::MediaLogRecord> event) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullMediaLog);
 };
 
 }  // namespace media

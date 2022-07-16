@@ -33,7 +33,11 @@ grit("resources") {
 }
 
 generate_grd("build_grd") {
-  input_files = [ "read_later.html" ]
+  input_files = [
+    "read_later.html",
+    "images/read_later_empty.svg",
+    "images/read_later_empty_dark.svg",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
   deps = [
@@ -74,7 +78,6 @@ preprocess_if_expr("preprocess_web_components") {
   in_files = [
     "app.js",
     "icons.js",
-    "read_later_shared_style.js",
     "read_later_item.js",
   ]
 }
@@ -117,7 +120,7 @@ js_library("read_later_item") {
     "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
   ]
 }
 
@@ -125,7 +128,6 @@ html_to_js("web_components") {
   js_files = [
     "app.js",
     "icons.js",
-    "read_later_shared_style.js",
     "read_later_item.js",
   ]
 }
@@ -140,9 +142,11 @@ ts_library("build_ts") {
     "side_panel/bookmark_folder.ts",
     "side_panel/bookmarks_list.ts",
     "side_panel/bookmarks_api_proxy.ts",
+    "side_panel/bookmarks_drag_manager.ts",
     "side_panel/bookmarks.mojom-webui.js",
   ]
   definitions = [
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -150,6 +154,7 @@ ts_library("build_ts") {
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
     ":preprocess",

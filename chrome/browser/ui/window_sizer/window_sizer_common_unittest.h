@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_COMMON_UNITTEST_H_
 #define CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_COMMON_UNITTEST_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -48,6 +47,10 @@ static const gfx::Rect taskbar_right_work_area(0, 0, 917, 768);
 class TestStateProvider : public WindowSizer::StateProvider {
  public:
   TestStateProvider();
+
+  TestStateProvider(const TestStateProvider&) = delete;
+  TestStateProvider& operator=(const TestStateProvider&) = delete;
+
   ~TestStateProvider() override {}
 
   void SetPersistentState(const gfx::Rect& bounds,
@@ -72,8 +75,6 @@ class TestStateProvider : public WindowSizer::StateProvider {
   gfx::Rect last_active_bounds_;
   bool has_last_active_data_;
   ui::WindowShowState last_active_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStateProvider);
 };
 
 // Several convenience functions which allow to set up a state for
@@ -83,6 +84,10 @@ enum Source { DEFAULT, LAST_ACTIVE, PERSISTED, BOTH };
 
 class WindowSizerTestUtil {
  public:
+  WindowSizerTestUtil() = delete;
+  WindowSizerTestUtil(const WindowSizerTestUtil&) = delete;
+  WindowSizerTestUtil& operator=(const WindowSizerTestUtil&) = delete;
+
   // Sets up the window bounds, monitor bounds, and work area to get the
   // resulting |out_bounds| from the WindowSizer.
   // |source| specifies which type of data gets set for the test: Either the
@@ -99,9 +104,6 @@ class WindowSizerTestUtil {
                               const Browser* browser,
                               const gfx::Rect& passed_in,
                               gfx::Rect* out_bounds);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WindowSizerTestUtil);
 };
 
 #endif  // CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_COMMON_UNITTEST_H_

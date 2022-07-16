@@ -1,3 +1,1 @@
-monorail {
-  component: "OS>Inputs"
-}
+mixins: "//ash/keyboard/COMMON_METADATA"

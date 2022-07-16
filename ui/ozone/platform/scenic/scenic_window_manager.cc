@@ -26,9 +26,7 @@ void ScenicWindowManager::Shutdown() {
 
 std::unique_ptr<PlatformScreen> ScenicWindowManager::CreateScreen() {
   DCHECK(windows_.IsEmpty());
-  auto screen = std::make_unique<ScenicScreen>();
-  screen_ = screen->GetWeakPtr();
-  return screen;
+  return std::make_unique<ScenicScreen>();
 }
 
 fuchsia::ui::scenic::Scenic* ScenicWindowManager::GetScenic() {
@@ -36,25 +34,20 @@ fuchsia::ui::scenic::Scenic* ScenicWindowManager::GetScenic() {
     scenic_ = base::ComponentContextForProcess()
                   ->svc()
                   ->Connect<fuchsia::ui::scenic::Scenic>();
-    scenic_.set_error_handler(
-        [](zx_status_t status) { ZX_LOG(FATAL, status) << " Scenic lost."; });
+    scenic_.set_error_handler(base::LogFidlErrorAndExitProcess(
+        FROM_HERE, "fuchsia.ui.scenic.Scenic"));
   }
   return scenic_.get();
 }
 
 int32_t ScenicWindowManager::AddWindow(ScenicWindow* window) {
-  int32_t id = windows_.Add(window);
-  if (screen_)
-    screen_->OnWindowAdded(id);
-  return id;
+  return windows_.Add(window);
 }
 
 void ScenicWindowManager::RemoveWindow(int32_t window_id,
                                        ScenicWindow* window) {
   DCHECK_EQ(window, windows_.Lookup(window_id));
   windows_.Remove(window_id);
-  if (screen_)
-    screen_->OnWindowRemoved(window_id);
 }
 
 ScenicWindow* ScenicWindowManager::GetWindow(int32_t window_id) {

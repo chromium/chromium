@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ru">
+<translation id="1113173431709655881">Режим камеры</translation>
+<translation id="1175958423215084756">Обнаружена ссылка <ph name="HOSTNAME" />.</translation>
+<translation id="1258009455399840361">Повернуть на 90 градусов по часовой стрелке</translation>
+<translation id="1276998909102132017">Изображения в галерее</translation>
+<translation id="1300209025925956156">Сканирование документа</translation>
+<translation id="1303487788671416818">Включить полноразмерный снимок</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Для настройки нажмите Поиск + Стрелка влево.</translation>
+<translation id="1430915738399379752">Печать</translation>
+<translation id="1467231725790366244">Отключено устройство <ph name="CAMERA" />.</translation>
+<translation id="1473110567575736769">Таймер на 3 сек.</translation>
+<translation id="1545749641540134597">Сканирование QR-кода</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Обычный</translation>
+<translation id="1620510694547887537">Камера</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Ничего не записано.</translation>
+<translation id="1838104802459806957">Наклонить вверх</translation>
+<translation id="1851169887664797861">Доступны дополнительные настройки камеры</translation>
+<translation id="1851616744363735765">ПРИОСТАНОВЛЕНО</translation>
+<translation id="1862930711583847113">Не удалось экспортировать файл <ph name="FILE" />.</translation>
+<translation id="1899697626337024495">Разрешение фото</translation>
+<translation id="2022953316617983419">QR-код</translation>
+<translation id="2036868001356139588">Длительность таймера</translation>
+<translation id="2050339315714019657">Книжная</translation>
+<translation id="2064538373111010176">Камера <ph name="CAMERA" /> активна</translation>
+<translation id="2144806332417375165">Свои параметры видео</translation>
+<translation id="2175927920773552910">QR-код</translation>
+<translation id="229579744168541441">Экспортировать на диск</translation>
+<translation id="2320741269052147773">Панорамировать влево</translation>
+<translation id="2501278716633472235">Назад</translation>
+<translation id="2501853267655415902">Запись остановлена</translation>
+<translation id="2501953888035679275">Съемка фото и видео на камеру устройства.</translation>
+<translation id="2517472476991765520">Сканировать</translation>
+<translation id="2549985041256363841">Начать запись</translation>
+<translation id="2599796128805996109">Основная камера</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек.</translation>
+<translation id="2761536921376153655">Тип сканирования</translation>
+<translation id="2879583609344924966">Подключено устройство <ph name="CAMERA" />.</translation>
+<translation id="2968794441791257519">Фотографии и видео, полученные с камеры, будут перемещены в папку скачанных файлов. Вы также сможете найти их в папке "Файлы".
+
+Приложения, которым вы разрешили пользоваться хранилищем, получат доступ к вашим фотографиям и видео.</translation>
+<translation id="3067436040345934772">Панорамировать вправо</translation>
+<translation id="3081586908890909590">Переключиться на видеосъемку</translation>
+<translation id="313467653172006084">30 кадров/с</translation>
+<translation id="3183731565330012717">Тип сетки</translation>
+<translation id="3227137524299004712">Микрофон</translation>
+<translation id="3240426699337459095">Готово</translation>
+<translation id="3259149966178251584">Разрешение камеры</translation>
+<translation id="3260401663013584785">Документ не обнаружен</translation>
+<translation id="3305962767867348165">Исправить</translation>
+<translation id="3448774564454087943">Видео не сохранено, так как оно слишком короткое.</translation>
+<translation id="346539236881580388">Переснять</translation>
+<translation id="3517926952904427380">Не удалось сделать вертикальное фото.</translation>
+<translation id="3569311554794739032">Удалить файл <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Переключиться в режим сканирования</translation>
+<translation id="3789724198583203151">Повернуть на 90 градусов против часовой стрелки</translation>
+<translation id="3810838688059735925">Видео</translation>
+<translation id="3838931309141338733">Сканировать штрихкод</translation>
+<translation id="3892148308691398805">Копировать текст</translation>
+<translation id="4118525110028899586">Приостановить запись</translation>
+<translation id="4121305183798804752">Обнаружен документ</translation>
+<translation id="4269820728363426813">Копировать адрес ссылки</translation>
+<translation id="4279490309300973883">Отражение</translation>
+<translation id="4329152592498422850">Перейти к созданию квадратного фото</translation>
+<translation id="4383571725254449280">Распечатать журнал производительности</translation>
+<translation id="4445542136948522167">Отменить съемку</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Мп</translation>
+<translation id="4570032796877367747">Фронтальная камера</translation>
+<translation id="4628948037717959914">Фото</translation>
+<translation id="4649291346448517080">Не удалось сохранить файл.</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Многопотоковая видеозапись</translation>
+<translation id="5057360777601936059">Камера недоступна.
+        Проверьте, правильно ли подключена камера.</translation>
+<translation id="5152121255775685072">Перейти в галерею</translation>
+<translation id="520537883758714667">Доступно сканирование документов.</translation>
+<translation id="5317780077021120954">Сохранить</translation>
+<translation id="5444515100983837161">Расположите документ внутри рамки. Для повышения качества отсканированного изображения цвета документа и фона должны различаться.</translation>
+<translation id="5671277269877808209">Квадрат</translation>
+<translation id="5746169159649715125">Сохранить как PDF</translation>
+<translation id="5753488212459587150">Включить режим эксперта</translation>
+<translation id="5759254179196327752">Сканирование документов</translation>
+<translation id="5775960006311140197">Режим эксперта</translation>
+<translation id="5869546221129391014">Сетка</translation>
+<translation id="5975083100439434680">Уменьшить</translation>
+<translation id="6073451960410192870">Остановить запись</translation>
+<translation id="6197807149213783179">Сохранение метаданных</translation>
+<translation id="6233780560267770709">3 на 3</translation>
+<translation id="6243827288366940320">Золотое сечение</translation>
+<translation id="6248749904681914629">Внешняя камера</translation>
+<translation id="6353688143752491039">Спасибо за отзыв о приложении "Камера".
+
+Если ваш отзыв касается качества фото или видео, прикрепите файл с примером проблемы (например, слишком темный или размытый снимок).</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Мп</translation>
+<translation id="6527303717912515753">Поделиться</translation>
+<translation id="667999046851023355">Документ</translation>
+<translation id="6681668084120808868">Сфотографировать</translation>
+<translation id="6778482348691154169">Не удалось сделать снимок</translation>
+<translation id="695140971690006676">Сбросить все</translation>
+<translation id="6965382102122355670">ОК</translation>
+<translation id="698156982839284926">3 секунды</translation>
+<translation id="712848772518857951">Удалить выбранные файлы (<ph name="COUNT" />)?</translation>
+<translation id="7134221860976209830">Таймер на 10 сек.</translation>
+<translation id="7191890674911603392">Тип записи</translation>
+<translation id="7243947652761655814">Разрешение видео</translation>
+<translation id="7337660886763914220">Ошибки файловой системы.</translation>
+<translation id="7450541714075000668">Текст скопирован.</translation>
+<translation id="7476762461674917065">Показывать функцию записи в формате GIF</translation>
+<translation id="7488619942230388918">Записать видео в формате GIF</translation>
+<translation id="7557677699350329807">Переключиться на следующую камеру</translation>
+<translation id="7607002721634913082">Приостановлен</translation>
+<translation id="7608223098072244877">4 на 4</translation>
+<translation id="7649070708921625228">Справка</translation>
+<translation id="7658239707568436148">Отмена</translation>
+<translation id="7670511624014457267">60 кадров/с</translation>
+<translation id="7726641833034062494">Записать обычное видео</translation>
+<translation id="7983668134180549431">Обнаружен текст.</translation>
+<translation id="8067883171444229417">Смотреть видео</translation>
+<translation id="8120146556401698679">Панорамирование, изменение ракурса, масштабирование</translation>
+<translation id="8131740175452115882">Подтвердить</translation>
+<translation id="8145038249676204903">Переключиться на фотосъемку</translation>
+<translation id="8167081290930651932">Сохранить как фото</translation>
+<translation id="8239780215768881278">Сделать снимок</translation>
+<translation id="8261506727792406068">Удалить</translation>
+<translation id="8425673304802773841">Наклонить вниз</translation>
+<translation id="8428213095426709021">Настройки</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Готово</translation>
+<translation id="8730621377337864115">Готово</translation>
+<translation id="8732462232047530626">Просмотр метаданных</translation>
+<translation id="8815966864175525708">Перейти к созданию вертикального фото</translation>
+<translation id="8828441885228359828">Продолжить запись</translation>
+<translation id="8870695351537079478">Не удалось начать запись</translation>
+<translation id="8903921497873541725">Увеличить</translation>
+<translation id="9045010116236796332">Расположите документ внутри рамки.</translation>
+<translation id="9045155556724273246">10 секунд</translation>
+<translation id="906331135292332864">Обработка изображения…</translation>
+<translation id="945522503751344254">Отправить отзыв</translation>
+</translationbundle>

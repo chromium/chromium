@@ -15,12 +15,12 @@ Document
 ++++++Edit Name='Email:'
 ++++Text
 ++++++Text Name='File: '
-++++++Button Name='File:'
+++++++Button Name='File:' Value.Value='No file chosen'
 ++++++++Button Name='Choose File'
 ++++Text
 ++++++Text Name='Image: '
 ++++++Button Name='Image:'
-++++++++Image
+++++++++Image Name='To get missing image descriptions, open the context menu.'
 ++++++++Text Name='Submit' IsControlElement=false
 ++++Text
 ++++++Text Name='Number: '

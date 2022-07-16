@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
 #define CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/install_gate.h"
 
 class Profile;
@@ -16,6 +15,9 @@ class UpdateInstallGate : public InstallGate {
  public:
   explicit UpdateInstallGate(Profile* profile);
 
+  UpdateInstallGate(const UpdateInstallGate&) = delete;
+  UpdateInstallGate& operator=(const UpdateInstallGate&) = delete;
+
   // InstallGate:
   Action ShouldDelay(const Extension* extension,
                      bool install_immediately) override;
@@ -23,8 +25,6 @@ class UpdateInstallGate : public InstallGate {
  private:
   // Not owned.
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateInstallGate);
 };
 
 }  // namespace extensions

@@ -45,11 +45,26 @@
 // everything to two decimal places, which isn't OK for the matrices
 // that result from large perspective values.
 const compareWithPerspective = (actual, expected) => {
-  const matrixRegExp = /^matrix3d\(((?:(?:[-0-9.]+), ){15}(?:[-0-9.]+))\)$/;
-  const actualArray = actual.match(matrixRegExp)[1].split(", ").map(Number);
-  const expectedArray = expected.match(matrixRegExp)[1].split(", ").map(Number);
+  // TODO: This RegExp should be more precise to capture only what is a
+  // valid float, and this code should be merged with other code doing
+  // the same thing, e.g., RoundMatrix in
+  // web-animations/animation-model/animation-types/property-list.js .
+  const matrixRegExp = /^matrix3d\(((?:(?:[-0-9.e]+), ){15}(?:[-0-9.]+))\)$/;
+  const actualMatch = actual.match(matrixRegExp);
+  const expectedMatch = expected.match(matrixRegExp);
+  assert_not_equals(actualMatch, null, `${actual} should be a matrix`);
+  assert_not_equals(expectedMatch, null, `${expected} should be a matrix`);
+  if (actualMatch === null || expectedMatch === null) {
+    return;
+  }
+  const actualArray = actualMatch[1].split(", ").map(Number);
+  const expectedArray = expectedMatch[1].split(", ").map(Number);
   assert_equals(actualArray.length, 16);
   assert_equals(expectedArray.length, 16);
+
+  if (actualArray.length != expectedArray.length) {
+    return;
+  }
 
   for (let i in actualArray) {
     const error = Math.abs((actualArray[i] - expectedArray[i])) /
@@ -109,6 +124,30 @@ test_interpolation({
   {at: 0.75, expect: `scaleZ(1.75) perspective(${interpolatePerspective(400, 500, 0.75)}px)`},
   {at: 1, expect: `scaleZ(2) perspective(${interpolatePerspective(400, 500, 1)}px)`},
   {at: 2, expect: `scaleZ(3) perspective(${interpolatePerspective(400, 500, 2)}px)`},
+]);
+// Test that the transform identity function for perspective is perspective(none)
+test_interpolation({
+  property: 'transform',
+  from: 'scaleZ(2)',
+  to: 'scaleZ(2) perspective(500px)',
+  comparisonFunction: compareWithPerspective
+}, [
+  {at: -1, expect: `scaleZ(2)`},
+  {at: 0, expect: `scaleZ(2)`},
+  {at: 0.5, expect: `scaleZ(2) perspective(1000px)`},
+  {at: 1, expect: `scaleZ(2) perspective(500px)`},
+  {at: 2, expect: `scaleZ(2) perspective(250px)`},
+]);
+test_interpolation({
+  property: 'transform',
+  from: 'perspective(none)',
+  to: 'perspective(500px)',
+}, [
+  {at: -1, expect: `perspective(none)`},
+  {at: 0, expect: `perspective(none)`},
+  {at: 0.5, expect: `perspective(1000px)`},
+  {at: 1, expect: `perspective(500px)`},
+  {at: 2, expect: `perspective(250px)`},
 ]);
 
 // Rotate

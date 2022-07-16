@@ -37,6 +37,10 @@ class FocusRingController : public AccessibilityLayerDelegate,
  public:
   explicit FocusRingController(aura::Window* root_window,
                                wm::ActivationClient* activation_client);
+
+  FocusRingController(const FocusRingController&) = delete;
+  FocusRingController& operator=(const FocusRingController&) = delete;
+
   ~FocusRingController() override;
 
   // Turns on/off the focus ring.
@@ -74,8 +78,6 @@ class FocusRingController : public AccessibilityLayerDelegate,
   bool visible_;
   views::Widget* widget_;
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRingController);
 };
 
 }  // namespace chromecast

@@ -59,7 +59,6 @@ constexpr int kPrimaryTextLineHeight = 20;
 constexpr SkColor kTitleTextColor = gfx::kGoogleGrey900;
 constexpr SkColor kPrimaryTextColor = gfx::kGoogleGrey700;
 constexpr SkColor kSecondaryTextColor = gfx::kGoogleGrey600;
-constexpr SkColor kButtonTextColor = gfx::kGoogleBlue600;
 
 }  // namespace sharesheet
 }  // namespace ash

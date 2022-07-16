@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
@@ -19,6 +18,9 @@ class EulaAcceptedNotifierTest : public testing::Test,
  public:
   EulaAcceptedNotifierTest() : eula_accepted_called_(false) {
   }
+
+  EulaAcceptedNotifierTest(const EulaAcceptedNotifierTest&) = delete;
+  EulaAcceptedNotifierTest& operator=(const EulaAcceptedNotifierTest&) = delete;
 
   // testing::Test overrides.
   void SetUp() override {
@@ -49,8 +51,6 @@ class EulaAcceptedNotifierTest : public testing::Test,
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<EulaAcceptedNotifier> notifier_;
   bool eula_accepted_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(EulaAcceptedNotifierTest);
 };
 
 TEST_F(EulaAcceptedNotifierTest, EulaAlreadyAccepted) {

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -24,6 +23,10 @@ namespace disks {
 class MockDiskMountManager : public DiskMountManager {
  public:
   MockDiskMountManager();
+
+  MockDiskMountManager(const MockDiskMountManager&) = delete;
+  MockDiskMountManager& operator=(const MockDiskMountManager&) = delete;
+
   virtual ~MockDiskMountManager();
 
   // DiskMountManager override.
@@ -128,8 +131,6 @@ class MockDiskMountManager : public DiskMountManager {
 
   // The list of existing mount points.
   DiskMountManager::MountPointMap mount_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDiskMountManager);
 };
 
 }  // namespace disks

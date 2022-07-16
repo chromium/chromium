@@ -37,6 +37,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
   bool disable_oopr_debug_crash_dump() const {
     return disable_oopr_debug_crash_dump_;
   }
+  bool is_destroyed() const { return destroyed_; }
 
  private:
   friend class base::RefCountedThreadSafe<ServiceFontManager>;

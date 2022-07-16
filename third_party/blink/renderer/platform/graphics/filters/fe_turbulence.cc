@@ -127,8 +127,8 @@ sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
       GetType() == FETURBULENCE_TYPE_FRACTALNOISE
           ? TurbulencePaintFilter::TurbulenceType::kFractalNoise
           : TurbulencePaintFilter::TurbulenceType::kTurbulence;
-  const SkISize size = SkISize::Make(FilterPrimitiveSubregion().Width(),
-                                     FilterPrimitiveSubregion().Height());
+  const SkISize size = SkISize::Make(FilterPrimitiveSubregion().width(),
+                                     FilterPrimitiveSubregion().height());
   // Frequency should be scaled by page zoom, but not by primitiveUnits.
   // So we apply only the transform scale (as Filter::apply*Scale() do)
   // and not the target bounding box scale (as SVGFilter::apply*Scale()

@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -20,6 +19,11 @@ class ASH_EXPORT BrightnessControllerChromeos
     : public ash::BrightnessControlDelegate {
  public:
   BrightnessControllerChromeos() {}
+
+  BrightnessControllerChromeos(const BrightnessControllerChromeos&) = delete;
+  BrightnessControllerChromeos& operator=(const BrightnessControllerChromeos&) =
+      delete;
+
   ~BrightnessControllerChromeos() override {}
 
   // Overridden from ash::BrightnessControlDelegate:
@@ -28,9 +32,6 @@ class ASH_EXPORT BrightnessControllerChromeos
   void SetBrightnessPercent(double percent, bool gradual) override;
   void GetBrightnessPercent(
       base::OnceCallback<void(absl::optional<double>)> callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrightnessControllerChromeos);
 };
 
 }  // namespace system

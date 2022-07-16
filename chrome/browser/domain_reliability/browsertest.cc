@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
@@ -35,6 +34,10 @@ class DomainReliabilityBrowserTest : public InProcessBrowserTest {
       : test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     net::URLRequestFailedJob::AddUrlHandler();
   }
+
+  DomainReliabilityBrowserTest(const DomainReliabilityBrowserTest&) = delete;
+  DomainReliabilityBrowserTest& operator=(const DomainReliabilityBrowserTest&) =
+      delete;
 
   ~DomainReliabilityBrowserTest() override {}
 
@@ -69,12 +72,16 @@ class DomainReliabilityBrowserTest : public InProcessBrowserTest {
 
  private:
   net::EmbeddedTestServer test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityBrowserTest);
 };
 
 class DomainReliabilityDisabledBrowserTest
     : public DomainReliabilityBrowserTest {
+ public:
+  DomainReliabilityDisabledBrowserTest(
+      const DomainReliabilityDisabledBrowserTest&) = delete;
+  DomainReliabilityDisabledBrowserTest& operator=(
+      const DomainReliabilityDisabledBrowserTest&) = delete;
+
  protected:
   DomainReliabilityDisabledBrowserTest() {}
 
@@ -83,9 +90,6 @@ class DomainReliabilityDisabledBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableDomainReliability);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityDisabledBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DomainReliabilityDisabledBrowserTest,
@@ -141,12 +145,12 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     GetNetworkContext()->AddDomainReliabilityContextForTesting(
-        test_server()->base_url().GetOrigin(), upload_url);
+        test_server()->base_url().DeprecatedGetOriginAsURL(), upload_url);
   }
 
   // Trigger an error.
 
-  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
 
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
@@ -166,13 +170,15 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
 
   const base::ListValue* entries;
   ASSERT_TRUE(dict->GetList("entries", &entries));
-  ASSERT_EQ(1u, entries->GetSize());
+  ASSERT_EQ(1u, entries->GetList().size());
 
-  const base::DictionaryValue* entry;
-  ASSERT_TRUE(entries->GetDictionary(0u, &entry));
+  const base::Value& entry_value = entries->GetList()[0u];
+  ASSERT_TRUE(entry_value.is_dict());
+  const base::DictionaryValue& entry =
+      base::Value::AsDictionaryValue(entry_value);
 
   std::string url;
-  ASSERT_TRUE(entry->GetString("url", &url));
+  ASSERT_TRUE(entry.GetString("url", &url));
   EXPECT_EQ(url, error_url);
 }
 
@@ -186,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, UploadAtShutdown) {
         GURL("https://localhost/"), upload_url);
   }
 
-  ui_test_utils::NavigateToURL(browser(), GURL("https://localhost/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://localhost/")));
 
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;

@@ -128,14 +128,25 @@ void OnObjectPathMethodWithoutStatus(
 // Handles responses for methods with base::Value results.
 void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
                    DBusMethodCallback<base::Value> callback,
-                   dbus::Response* response) {
+                   dbus::Response* response,
+                   dbus::ErrorResponse* error_response) {
   if (!response) {
+    if (error_response) {
+      dbus::MessageReader reader(error_response);
+      std::string error_message;
+      reader.PopString(&error_message);
+      NET_LOG(ERROR) << "DBus call failed. Error: "
+                     << error_response->GetErrorName()
+                     << " Message: " << error_message;
+    } else {
+      NET_LOG(ERROR) << "DBus call failed with no error.";
+    }
     std::move(callback).Run(absl::nullopt);
     return;
   }
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  if (!value.get() || !value->is_dict()) {
+  if (!value.get()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -174,13 +185,12 @@ void OnListValueMethodWithErrorCallback(
     dbus::Response* response) {
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  base::ListValue* result = nullptr;
-  if (!value.get() || !value->GetAsList(&result)) {
+  if (!value.get() || !value->is_list()) {
     std::move(error_callback)
         .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
     return;
   }
-  std::move(callback).Run(*result);
+  std::move(callback).Run(base::Value::AsListValue(*value));
 }
 
 // Handles running appropriate error callbacks.
@@ -286,7 +296,7 @@ void ShillClientHelper::CallValueMethod(
     dbus::MethodCall* method_call,
     DBusMethodCallback<base::Value> callback) {
   DCHECK(!callback.is_null());
-  proxy_->CallMethod(
+  proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnValueMethod,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
@@ -375,10 +385,8 @@ enum DictionaryType { DICTIONARY_TYPE_VARIANT, DICTIONARY_TYPE_STRING };
 // strings.
 void AppendStringDictionary(const base::Value& dictionary,
                             dbus::MessageWriter* writer) {
-  dbus::MessageWriter variant_writer(nullptr);
-  writer->OpenVariant("a{ss}", &variant_writer);
   dbus::MessageWriter array_writer(nullptr);
-  variant_writer.OpenArray("{ss}", &array_writer);
+  writer->OpenArray("{ss}", &array_writer);
   for (const auto it : dictionary.DictItems()) {
     dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
@@ -393,8 +401,7 @@ void AppendStringDictionary(const base::Value& dictionary,
     entry_writer.AppendString(value_string);
     array_writer.CloseContainer(&entry_writer);
   }
-  variant_writer.CloseContainer(&array_writer);
-  writer->CloseContainer(&variant_writer);
+  writer->CloseContainer(&array_writer);
 }
 
 void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
@@ -406,7 +413,10 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       if (dictionary_type == DICTIONARY_TYPE_STRING) {
         // AppendStringDictionary uses a{ss} to support Cellular.APN which
         // expects a string -> string dictionary.
-        AppendStringDictionary(value, writer);
+        dbus::MessageWriter variant_writer(nullptr);
+        writer->OpenVariant("a{ss}", &variant_writer);
+        AppendStringDictionary(value, &variant_writer);
+        writer->CloseContainer(&variant_writer);
       } else {
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("a{sv}", &variant_writer);
@@ -416,16 +426,29 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       break;
     }
     case base::Value::Type::LIST: {
-      const base::ListValue* list = nullptr;
-      value.GetAsList(&list);
+      // Support list of string and list of string-to-string dictionary.
+      const auto& list_view = value.GetList();
+      if (list_view.size() > 0 && list_view.front().is_dict()) {
+        // aa{ss} to support WireGuard.Peers
+        dbus::MessageWriter variant_writer(nullptr);
+        writer->OpenVariant("aa{ss}", &variant_writer);
+        dbus::MessageWriter array_writer(nullptr);
+        variant_writer.OpenArray("a{ss}", &array_writer);
+        for (const auto& value : list_view) {
+          AppendStringDictionary(value, &array_writer);
+        }
+        variant_writer.CloseContainer(&array_writer);
+        writer->CloseContainer(&variant_writer);
+        break;
+      }
       dbus::MessageWriter variant_writer(nullptr);
       writer->OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (const auto& value : list->GetList()) {
+      for (const auto& inner_value : list_view) {
         std::string value_string;
-        if (value.is_string()) {
-          value_string = value.GetString();
+        if (inner_value.is_string()) {
+          value_string = inner_value.GetString();
         } else {
           NET_LOG(ERROR) << "List value not a string: " << value;
         }
@@ -473,6 +496,20 @@ void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
     array_writer.CloseContainer(&entry_writer);
   }
   writer->CloseContainer(&array_writer);
+}
+
+// static
+void ShillClientHelper::OnGetProperties(
+    const dbus::ObjectPath& device_path,
+    DBusMethodCallback<base::Value> callback,
+    absl::optional<base::Value> result) {
+  if (result && !result->is_dict()) {
+    NET_LOG(ERROR) << "GetProperties for: " << device_path.value()
+                   << " returned non dictionary Value: " << *result;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void ShillClientHelper::AddRef() {

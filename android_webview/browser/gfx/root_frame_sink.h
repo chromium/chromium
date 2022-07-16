@@ -48,6 +48,9 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   using SetNeedsBeginFrameCallback = base::RepeatingCallback<void(bool)>;
   RootFrameSink(RootFrameSinkClient* client);
 
+  RootFrameSink(const RootFrameSink&) = delete;
+  RootFrameSink& operator=(const RootFrameSink&) = delete;
+
   const viz::FrameSinkId& root_frame_sink_id() const {
     return root_frame_sink_id_;
   }
@@ -109,8 +112,6 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   RootFrameSinkClient* client_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RootFrameSink);
 };
 
 using RootFrameSinkGetter =

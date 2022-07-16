@@ -30,13 +30,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/preload_key.h"
@@ -152,14 +152,6 @@ class PLATFORM_EXPORT ResourceFetcher
   Resource* RequestResource(FetchParameters&,
                             const ResourceFactory&,
                             ResourceClient*);
-
-  // TODO(crbug/1112515): Instead of having one-off notifications of these
-  // loading milestones, we should introduce an abstract interface that
-  // interested parties can hook into, to be notified of relevant loading
-  // milestones.
-  // These are only called for main frames.
-  void MarkFirstPaint();
-  void MarkFirstContentfulPaint();
 
   // Returns the task runner used by this fetcher, and loading operations
   // this fetcher initiates. The returned task runner will keep working even
@@ -306,12 +298,6 @@ class PLATFORM_EXPORT ResourceFetcher
   void SetThrottleOptionOverride(
       ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override) {
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
-  }
-
-  void SetOptimizationGuideHints(
-      mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr
-          optimization_hints) {
-    scheduler_->SetOptimizationGuideHints(std::move(optimization_hints));
   }
 
   void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import { CrToastManagerElement,getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
+
 // clang-format on
 
 suite('cr-toast-manager', () => {
@@ -50,7 +52,8 @@ suite('cr-toast-manager', () => {
   test('duration passed through to toast', () => {
     toastManager.duration = 3;
     assertEquals(
-        3, /** @type {!CrToastElement} */ (toastManager.$$('#toast').duration));
+        3, /** @type {!CrToastElement} */
+        (toastManager.shadowRoot.querySelector('#toast').duration));
   });
 
   test('slot hidden or shown based on arg passed into |show()|', () => {

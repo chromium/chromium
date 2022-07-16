@@ -78,6 +78,15 @@
     }
 </if>
 
+    :host-context([enable-branding-update]) .folder-icon {
+      -webkit-mask-image: url(chrome://bookmarks/images/folder_open.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-size: var(--cr-icon-size);
+      background-color: var(--iron-icon-fill-color);
+      content: none;
+    }
+
     :host-context([dir=rtl]) .folder-icon {
       transform: scaleX(-1);
     }

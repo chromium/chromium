@@ -26,6 +26,10 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
  public:
   explicit WrappedSkImageFactory(
       scoped_refptr<SharedContextState> context_state);
+
+  WrappedSkImageFactory(const WrappedSkImageFactory&) = delete;
+  WrappedSkImageFactory& operator=(const WrappedSkImageFactory&) = delete;
+
   ~WrappedSkImageFactory() override;
 
   // SharedImageBackingFactory implementation:
@@ -74,8 +78,6 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
                             GrContextType gr_context_type) const;
 
   scoped_refptr<SharedContextState> context_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedSkImageFactory);
 };
 
 }  // namespace raster

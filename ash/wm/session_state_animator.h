@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -109,6 +108,9 @@ class ASH_EXPORT SessionStateAnimator {
   //
   class ASH_EXPORT AnimationSequence {
    public:
+    AnimationSequence(const AnimationSequence&) = delete;
+    AnimationSequence& operator=(const AnimationSequence&) = delete;
+
     virtual ~AnimationSequence();
 
     // Apply animation |type| to all containers included in |container_mask|
@@ -160,11 +162,13 @@ class ASH_EXPORT SessionStateAnimator {
 
     // Callback to be called when the aniamtion is finished or aborted.
     AnimationCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
   };
 
   SessionStateAnimator();
+
+  SessionStateAnimator(const SessionStateAnimator&) = delete;
+  SessionStateAnimator& operator=(const SessionStateAnimator&) = delete;
+
   virtual ~SessionStateAnimator();
 
   // Reports animation duration for |speed|.
@@ -198,9 +202,6 @@ class ASH_EXPORT SessionStateAnimator {
 
   // Hides the wallpaper immediately.
   virtual void HideWallpaper() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStateAnimator);
 };
 
 }  // namespace ash

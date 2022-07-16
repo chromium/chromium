@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
@@ -27,6 +26,10 @@ namespace {
 class MockDelegate : public HeaderModificationDelegate {
  public:
   MockDelegate() = default;
+
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   ~MockDelegate() override = default;
 
   MOCK_METHOD1(ShouldInterceptNavigation, bool(content::WebContents* contents));
@@ -36,9 +39,6 @@ class MockDelegate : public HeaderModificationDelegate {
   MOCK_METHOD2(ProcessResponse,
                void(ResponseAdapter* response_adapter,
                     const GURL& redirect_url));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 content::WebContents::Getter NullWebContentsGetter() {

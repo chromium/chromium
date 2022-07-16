@@ -60,7 +60,8 @@ SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
           this,
           /*always_check_updates=*/true,
-          /*wait_for_cache_initialization=*/false) {
+          /*wait_for_cache_initialization=*/false,
+          /*allow_scheduled_updates=*/false) {
   DCHECK(ProfileHelper::IsSigninProfile(profile));
 }
 

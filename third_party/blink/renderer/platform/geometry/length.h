@@ -33,8 +33,6 @@
 
 namespace blink {
 
-enum ValueRange { kValueRangeAll, kValueRangeNonNegative };
-
 struct PixelsAndPercent {
   DISALLOW_NEW();
   PixelsAndPercent(float pixels, float percent)
@@ -49,6 +47,8 @@ class PLATFORM_EXPORT Length {
   DISALLOW_NEW();
 
  public:
+  enum class ValueRange { kAll, kNonNegative };
+
   // FIXME: This enum makes it hard to tell in general what values may be
   // appropriate for any given Length.
   enum Type : unsigned char {
@@ -64,7 +64,8 @@ class PLATFORM_EXPORT Length {
     kExtendToZoom,
     kDeviceWidth,
     kDeviceHeight,
-    kNone
+    kNone,    // only valid for max-width, max-height, or contain-intrinsic-size
+    kContent  // only valid for flex-basis
   };
 
   Length() : int_value_(0), quirk_(false), type_(kAuto), is_float_(false) {}
@@ -91,7 +92,7 @@ class PLATFORM_EXPORT Length {
 
   Length(double v, Length::Type t, bool q = false)
       : quirk_(q), type_(t), is_float_(true) {
-    float_value_ = clampTo<float>(v);
+    float_value_ = ClampTo<float>(v);
   }
 
   explicit Length(scoped_refptr<const CalculationValue>);
@@ -152,6 +153,7 @@ class PLATFORM_EXPORT Length {
   static Length DeviceHeight() { return Length(kDeviceHeight); }
   static Length None() { return Length(kNone); }
   static Length FitContent() { return Length(kFitContent); }
+  static Length Content() { return Length(kContent); }
   template <typename NUMBER_TYPE>
   static Length Percent(NUMBER_TYPE number) {
     return Length(number, kPercent);
@@ -233,7 +235,8 @@ class PLATFORM_EXPORT Length {
   // as `auto`. https://www.w3.org/TR/css-sizing-3/#valdef-width-min-content
   bool IsContentOrIntrinsic() const {
     return GetType() == kMinContent || GetType() == kMaxContent ||
-           GetType() == kFitContent || GetType() == kMinIntrinsic;
+           GetType() == kFitContent || GetType() == kMinIntrinsic ||
+           GetType() == kContent;
   }
   bool IsAutoOrContentOrIntrinsic() const {
     return GetType() == kAuto || IsContentOrIntrinsic();
@@ -253,6 +256,7 @@ class PLATFORM_EXPORT Length {
   bool IsCalculatedEqual(const Length&) const;
   bool IsMinContent() const { return GetType() == kMinContent; }
   bool IsMaxContent() const { return GetType() == kMaxContent; }
+  bool IsContent() const { return GetType() == kContent; }
   bool IsMinIntrinsic() const { return GetType() == kMinIntrinsic; }
   bool IsFillAvailable() const { return GetType() == kFillAvailable; }
   bool IsFitContent() const { return GetType() == kFitContent; }
@@ -296,6 +300,8 @@ class PLATFORM_EXPORT Length {
 
   Length Zoom(double factor) const;
 
+  String ToString() const;
+
  private:
   int GetIntValue() const {
     DCHECK(!IsNone());
@@ -321,6 +327,8 @@ class PLATFORM_EXPORT Length {
   unsigned char type_;
   bool is_float_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const Length&);
 
 }  // namespace blink
 

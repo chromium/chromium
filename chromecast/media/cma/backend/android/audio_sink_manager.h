@@ -20,6 +20,10 @@ namespace media {
 class AudioSinkManager {
  public:
   static AudioSinkManager* Get();
+
+  AudioSinkManager(const AudioSinkManager&) = delete;
+  AudioSinkManager& operator=(const AudioSinkManager&) = delete;
+
   static AudioSinkAndroid::SinkType GetDefaultSinkType();
 
   // Gets the Android audio session ids used for media and communication (TTS)
@@ -69,8 +73,6 @@ class AudioSinkManager {
   std::map<AudioContentType, VolumeInfo> volume_info_;
 
   std::vector<AudioSinkAndroid*> sinks_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSinkManager);
 };
 
 }  // namespace media

@@ -18,6 +18,30 @@ be describing additional metrics about the same event.
 
 <ukm-configuration>
 
+<event name="AboutThisSiteStatus">
+  <owner>olesiamarukhnno@google.com</owner>
+  <summary>
+    Recorded on each page info bubble open when &quot;About this site&quot; data
+    is fetched.
+  </summary>
+  <metric name="Status" enum="AboutThisSiteStatus">
+    <summary>
+      The status of the &quot;About this site&quot; info, including if the data
+      is available and whether the proto is valid. See
+      |page_info::about_this_site_validation::ProtoValidation| for enum
+      elements.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AbusiveExperienceHeuristic">
   <owner>csharrison@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
@@ -138,6 +162,60 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="AccuracyTipDialog">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    Recorded when an action on the accuracy tip dialog is taken.
+  </summary>
+  <metric name="Interaction" enum="AccuracyTipInteraction">
+    <summary>
+      Records an enum value representing which action in the accuracy tip was
+      taken.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeSpent">
+    <summary>
+      The amount of time spent on the dialog until it was closed. In seconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="AccuracyTipStatus">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    Recorded on each page load when the AccuracyService determines whether an
+    accuracy tip should be shown or the reason why it was not shown.
+  </summary>
+  <metric name="Status" enum="AccuracyTipStatus">
+    <summary>
+      The accuracy tip status that was determined for a pageload.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>
@@ -407,6 +485,28 @@ be describing additional metrics about the same event.
       site-wide framework and not a reader experience.
     </summary>
   </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventduration">
+    <summary>
+      The average value of user interaction latency above budget of a page load
+      in AMP subframes, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.MaxEventDuration and we
+      deduct a budget from the original value. If the latency value is below the
+      budget, it will be treated as 0 ms. Each type of interaction has its own
+      budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.TotalEventduration">
+    <summary>
+      The average value of user interaction latency above budget of a page load
+      in AMP subframes, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.TotalEventDuration and we
+      deduct a budget from the original value. If the latency value is below the
+      budget, it will be treated as 0 ms. Each type of interaction has its own
+      budget.
+    </summary>
+  </metric>
   <metric name="SubFrame.InteractiveTiming.FirstInputDelay3">
     <obsolete>
       Removed July 2019 in favor of FirstInputDelay4.
@@ -424,6 +524,112 @@ be describing additional metrics about the same event.
       and the start of event processing on the main thread for the first
       meaningful input per navigation, in the AMP subframe. See
       https://goo.gl/tr1oTZ for a detailed explanation. In milliseconds.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page load in AMP subframes, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page load in AMP subframes, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page load in AMP subframes, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page load in AMP subframes, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventduration">
+    <summary>
+      The sum of user interaction latency above budget of a page load in AMP
+      subframes, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.MaxEventDuration and we
+      deduct a budget from the original value. If the latency value is below the
+      budget, it will be treated as 0 ms. Each type of interaction has its own
+      budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventduration">
+    <summary>
+      The sum of user interaction latency above budget of a page load in AMP
+      subframes, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.TotalEventDuration and we
+      deduct a budget from the original value. If the latency value is below the
+      budget, it will be treated as 0 ms. Each type of interaction has its own
+      budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventduration">
+    <summary>
+      The maximum value of high percentile of user interaction latency above
+      budget of a page load in AMP subframes, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.TotalEventduration">
+    <summary>
+      The maximum value of high percentile of user interaction latency above
+      budget of a page load in AMP subframes, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.MaxEventduration">
+    <summary>
+      The maximum value of user interaction latency above budget of a page load
+      in AMP subframes, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.MaxEventDuration and we
+      deduct a budget from the original value. If the latency value is below the
+      budget, it will be treated as 0 ms. Each type of interaction has its own
+      budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.TotalEventduration">
+    <summary>
+      The maximum value of user interaction latency above budget of a page load
+      in AMP subframes, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.TotalEventDuration and we
+      deduct a budget from the original value. If the latency value is below the
+      budget, it will be treated as 0 ms. Each type of interaction has its own
+      budget.
     </summary>
   </metric>
   <metric
@@ -610,6 +816,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="SubFrame.PaintTiming.NavigationToLargestContentfulPaint">
+    <obsolete>
+      Replaced by SubFrame.PaintTiming.NavigationToLargestContentfulPaint2. No
+      longer reported from Nov 2021.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -647,6 +857,27 @@ be describing additional metrics about the same event.
       Note that most AMP documents are loaded in a subframe from a reader like
       Google Search; this metric measures usage of such readers.
     </summary>
+  </metric>
+</event>
+
+<event name="Android.DarkTheme.AutoDarkMode">
+  <owner>nemco@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Recorded when the user changes auto-dark theming for a site through the app
+    menu.
+  </summary>
+  <metric name="DisabledByUser" enum="Boolean">
+    <summary>
+      A boolean signaling that auto-dark theming has been disabled.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -980,8 +1211,7 @@ be describing additional metrics about the same event.
     from the suggestion chip, or from the grid of apps. The UKM metrics are not
     keyed by navigational urls. Instead, for Chrome apps the keys are based upon
     the app id, for Play apps the keys are based upon a hash of the package name
-    and for PWAs and bookmark apps the keys are the urls associated with the
-    PWA/bookmark.
+    and for PWAs the keys are the urls associated with the PWA.
   </summary>
   <metric name="AllClicksLast24Hours">
     <summary>
@@ -1998,6 +2228,25 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.Timing">
+  <owner>arbesser@google.com</owner>
+  <owner>hluca@google.com</owner>
+  <owner>sandromaggi@google.com</owner>
+  <metric name="TriggerConditionEvaluationMs">
+    <summary>
+      The time it took to evaluate the trigger conditions, in milliseconds. Only
+      successful evaluations are recorded.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="BackForwardCacheDisabledForRenderFrameHostReason">
   <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
@@ -2029,6 +2278,28 @@ be describing additional metrics about the same event.
       as a 48-bit int representing the source (blink or an embedder) and a
       source-specific 16-bit int representing the reason specific to that
       source.
+
+      The metric is recorded when a history navigation commits and emits a
+      sample for each reason. One history navigation can emit multiple reasons,
+      and these reasons are recorded as multiple events with the same source ID
+      based on the navigation ID.
+    </summary>
+  </metric>
+</event>
+
+<event name="BackForwardCacheDisallowActivationReason">
+  <owner>altimin@chromium.org</owner>
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <summary>
+    Recorded at a history commit for each reason passed to
+    RenderFrameHost::IsInactiveAndDisallowActivation. The source IDs match with
+    the source IDs of HistoryNavigation events.
+  </summary>
+  <metric name="Reason" enum="BackForwardCacheDisallowActivationReason">
+    <summary>
+      For history navigations, records the reason passed to
+      RenderFrameHost::IsInactiveAndDisallowActivation.
 
       The metric is recorded when a history navigation commits and emits a
       sample for each reason. One history navigation can emit multiple reasons,
@@ -3936,15 +4207,56 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InstallReason" enum="InstallReason">
+    <summary>
+      An enum that records the reason why the app was installed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="InstallSource" enum="InstallSource">
+    <obsolete>
+      Removed in M96. Replaced with InstallReason.
+    </obsolete>
     <summary>
       An enum that records how the app was installed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InstallSource2" enum="InstallSource2">
+    <summary>
+      An enum that records where the app was installed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InstallTime" enum="InstallTime">
     <summary>
       An enum that records when the app was installed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
@@ -3985,6 +4297,60 @@ be describing additional metrics about the same event.
     <summary>
       An enum that records where the app was launched.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
+    <summary>
+      An enum that records the user type and the device type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="ChromeOSApp.UninstallApp">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records the uninstalled app in Chrome OS, only when the user allows app
+    syncing or allows sync of everything, and the user does not set up a sync
+    passphrase. Only ARC apps, Chrome apps and web apps(PWA), system web apps,
+    buildin apps are recorded. This is logged when the user uninstalls an app.
+  </summary>
+  <metric name="AppType" enum="AppType">
+    <summary>
+      An enum that records the app type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UninstallSource" enum="UninstallSource">
+    <summary>
+      An enum that records how the app was uninstalled.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
@@ -4026,6 +4392,13 @@ be describing additional metrics about the same event.
     <summary>
       The milliseconds that the app was used.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
     <summary>
@@ -4636,6 +5009,20 @@ be describing additional metrics about the same event.
   <metric name="ProcessUptimeMs">
     <summary>
       The uptime of the process being measured, in milliseconds.
+    </summary>
+  </metric>
+</event>
+
+<event name="CrossOriginSubframeWithoutEmbeddingControl">
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Recorded when a subframe is embedded in a cross-origin context without
+    having a CSP frame-ancestor header or an XFO header.
+  </summary>
+  <metric name="SubframeEmbedded">
+    <summary>
+      Mesaures the number of pages with subframes embedded in cross-origin
+      contexts without having a CSP frame-ancestor header or an XFO header.
     </summary>
   </metric>
 </event>
@@ -5491,6 +5878,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="PinchInputType" enum="EventLatencyPinchInputType">
+    <summary>
+      Type of the input device for pinch events.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="RendererCompositorFinishedToActivation">
     <summary>
       The time from when the event processing is finished on the renderer
@@ -5783,7 +6182,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ScrollInputType" enum="EventLatencyScrollInputType">
     <summary>
-      Type of the input device for scroll and pinch events.
+      Type of the input device for scroll events.
     </summary>
     <aggregation>
       <history>
@@ -6710,6 +7109,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -6724,6 +7126,121 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessBad">
+    <summary>
+      The percentage of sliding windows with bad smoothness, or a
+      PercentDroppedFrames of 12% to 25%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessGood">
+    <summary>
+      The percentage of sliding windows with good smoothness, or a
+      PercentDroppedFrames of 3% to 6%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessOkay">
+    <summary>
+      The percentage of sliding windows with okay smoothness, or a
+      PercentDroppedFrames of 6% to 12%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryBad25to50">
+    <summary>
+      The percentage of sliding windows with a subset of very bad smoothness, or
+      a PercentDroppedFrames of 25% to 50%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryBad50to75">
+    <summary>
+      The percentage of sliding windows with a subset of very bad smoothness, or
+      a PercentDroppedFrames of 50% to 75%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryBad75to100">
+    <summary>
+      The percentage of sliding windows with a subset of very bad smoothness, or
+      a PercentDroppedFrames of 75% to 100%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryGood">
+    <summary>
+      The percentage of sliding windows with very good smoothness, or a
+      PercentDroppedFrames of 0% to 3%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -6736,6 +7253,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -6750,6 +7270,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -6763,6 +7286,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -6776,6 +7302,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -6789,6 +7318,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
         </statistics>
@@ -7299,6 +7831,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="HistoryClusters" singular="True">
+  <owner>chrome-memories@google.com</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Metrics that capture the iteractions with HistoryClusters, or Journeys, This
+    will be recorded once per visit to the HistoryClusters UI and logged when
+    the UI is closed or navigated away from.
+  </summary>
+  <metric name="FinalState" enum="HistoryClustersFinalState">
+    <summary>
+      The final state, or outcome, of an interaction on the HistoryClusters UI.
+    </summary>
+  </metric>
+  <metric name="InitialState" enum="HistoryClustersInitialState">
+    <summary>
+      The initial state that describes how an interaction with the
+      HistoryClusters UI was started.
+    </summary>
+  </metric>
+  <metric name="NumQueries">
+    <summary>
+      The number of times the user performed a query on the HistoryClusters UI
+      during this interaction. This can include partial queries that occur due
+      to the UI's query timing.
+    </summary>
+  </metric>
+  <metric name="NumTogglesToBasicHistory">
+    <summary>
+      The number of times the user toggled to the basic history page during this
+      interaction with the HistoryClusters UI.
+    </summary>
+  </metric>
+</event>
+
 <event name="HistoryManipulationIntervention">
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -7329,6 +7895,28 @@ be describing additional metrics about the same event.
       back-forward. The gap between two consecutive shifts in a window is not
       bigger than 5000ms. This metric's integral value is 100x the fractional
       cumulative layout shift score described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventduration">
+    <summary>
+      The average value of user interaction latency above budget of a page after
+      it is restored from the back-forward, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventduration">
+    <summary>
+      The average value of user interaction latency above budget of a page after
+      it is restored from the back-forward, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
     </summary>
   </metric>
   <metric name="BackForwardCache.BlocklistedFeatures"
@@ -7401,6 +7989,18 @@ be describing additional metrics about the same event.
     <summary>
       Measures the time duration between the page restore from back-forward
       cache and the first requestAnimationFrame time in milliseconds.
+    </summary>
+  </metric>
+  <metric name="ForegroundDurationAfterBackForwardCacheRestore">
+    <summary>
+      For page loads that start in the foreground, measures the duration of time
+      in milliseconds until one of the following events occurs: the load of the
+      main resource fails, the page load is stopped, the tab hosting the page is
+      closed, the render process hosting the page goes away, a new navigation
+      which later commits is initiated in the same tab, or the tab hosting the
+      page is backgrounded. This metric has a very long tail, for pages that
+      spend a long period of time in the foreground. As such, use of the mean or
+      tail values are not recommended.
     </summary>
   </metric>
   <metric name="LastCommittedCrossDocumentNavigationSourceIdForTheSameDocument">
@@ -7526,6 +8126,72 @@ be describing additional metrics about the same event.
       cache and the second requestAnimationFrame time in milliseconds.
     </summary>
   </metric>
+  <metric
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile.MaxEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page after it is restored from the back-forward, in ms. For
+      this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile.TotalEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page after it is restored from the back-forward, in ms. For
+      this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile2.MaxEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page after it is restored from the back-forward, in ms. For
+      this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile2.TotalEventduration">
+    <summary>
+      An approximation of high percentile of user interaction latency above
+      budget of a page after it is restored from the back-forward, in ms. For
+      this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventduration">
+    <summary>
+      The sum of user interaction latency above budget of a page after it is
+      restored from the back-forward, in ms. For this metric, we measure the
+      latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventduration">
+    <summary>
+      The sum of user interaction latency above budget of a page after it is
+      restored from the back-forward, in ms. For this metric, we measure the
+      latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
   <metric name="ThirdRequestAnimationFrameAfterBackForwardCacheRestore">
     <summary>
       Measures the time duration between the page restore from back-forward
@@ -7540,6 +8206,46 @@ be describing additional metrics about the same event.
       This is clamped to hours for values greater than 3 hours, to minutes for
       values greater than 3 minutes, to seconds for values greater than 5
       seconds.
+    </summary>
+  </metric>
+  <metric
+      name="WorstUserInteractionLatencyAfterBackForwardCacheRestore.MaxEventduration">
+    <summary>
+      The maximum value of user interaction latency of a page after it is
+      restored from the back-forward, in ms. For this metric, we measure the
+      latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
+    </summary>
+  </metric>
+  <metric
+      name="WorstUserInteractionLatencyAfterBackForwardCacheRestore.TotalEventduration">
+    <summary>
+      The maximum value of user interaction latency of a page after it is
+      restored from the back-forward, in ms. For this metric, we measure the
+      latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration.
+    </summary>
+  </metric>
+  <metric
+      name="WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventduration">
+    <summary>
+      The maximum value of user interaction latency above budget of a page after
+      it is restored from the back-forward, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we reduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventduration">
+    <summary>
+      The maximum value of user interaction latency above budget of a page after
+      it is restored from the back-forward, in ms. For this metric, we measure
+      the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we reduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
     </summary>
   </metric>
 </event>
@@ -7673,6 +8379,13 @@ be describing additional metrics about the same event.
     <summary>
       The type of the assistive suggestion which is triggered.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -7790,6 +8503,55 @@ be describing additional metrics about the same event.
       True if the page was added by the user tapping on the Messages prompt to
       save to Reading List.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.PageReadability">
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>
+    Logged when the Distilibility score of the current page is returned and the
+    Reading List Message is shown. Muliplied by 10X to get tenth digit
+    granularity. 0.1 granularity will be recorded for scores between 0.5 and
+    1.5. Otherwise, the granularity will be 0.5.
+  </summary>
+  <metric name="DidAccept" enum="Boolean">
+    <summary>
+      True if the user tapped on the Messages prompt to save the current page to
+      Reading List.
+    </summary>
+  </metric>
+  <metric name="DistilibilityLongScore">
+    <summary>
+      Distilibility score value indicating the &quot;long readability&quot; of
+      the page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DistilibilityScore">
+    <summary>
+      Distilibility score value indicating the &quot;readability&quot; of the
+      page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -7960,6 +8722,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Layout.DisplayCutout.StateChanged">
+  <obsolete>
+    Obsolete as of 08/2021.
+  </obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -8675,9 +9440,33 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="KeySystem" enum="MediaKeySystem">
+    <summary>
+      The key system associated with the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="SystemCode" enum="CdmSystemCode">
     <summary>
       A CDM specific code providing more details about the cause of rejection.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UseHardwareSecureCodecs" enum="Boolean">
+    <summary>
+      Whether hardware secure codecs are required for the current CDM.
     </summary>
     <aggregation>
       <history>
@@ -8732,7 +9521,7 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="KeySystem" enum="MediaKeySystem">
+  <metric name="KeySystem" enum="MediaKeySystemLegacy">
     <summary>
       The key system associated with this call.
     </summary>
@@ -8789,7 +9578,7 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="KeySystem" enum="MediaKeySystem">
+  <metric name="KeySystem" enum="MediaKeySystemLegacy">
     <summary>
       The key system passed in requestMediaKeySystemAccess() call.
     </summary>
@@ -9270,7 +10059,6 @@ be describing additional metrics about the same event.
 
 <event name="Media.WebAudio.AudioContext.AudibleTime">
   <owner>hongchan@chromium.org</owner>
-  <owner>rtoy@chromium.org</owner>
   <owner>webaudio-dev@chromium.org</owner>
   <summary>
     Records the AudioContext audible time information.
@@ -9299,6 +10087,13 @@ be describing additional metrics about the same event.
       Encryption type of the audio stream such as whether audio is encrypted and
       if so whether it has clear lead.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ContainerName">
     <summary>
@@ -9357,6 +10152,13 @@ be describing additional metrics about the same event.
       Type of media::Renderer used for the playback. In most cases we do not
       support dynamically changing RendererType during one playback.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TimeToFirstFrame">
     <summary>
@@ -9388,6 +10190,13 @@ be describing additional metrics about the same event.
       Encryption type of the video stream such as whether video is encrypted and
       if so whether it has clear lead.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -9539,11 +10348,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net">
+    <obsolete>
+      Deprecated as of 09/2021.
+    </obsolete>
     <summary>
       Measure of memory allocated by network sockets and caches.
     </summary>
   </metric>
   <metric name="Net.UrlRequestContext">
+    <obsolete>
+      Deprecated as of 09/2021.
+    </obsolete>
     <summary>
       Measure of memory allocated by all network requests.
     </summary>
@@ -10489,6 +11304,9 @@ be describing additional metrics about the same event.
     Metrics associated with main frame navigation.
   </summary>
   <metric name="EarlyHintsForFinalRequest">
+    <obsolete>
+      Deprecated 09/2021
+    </obsolete>
     <owner>nhiroki@chromium.org</owner>
     <owner>chrome-loading@google.com</owner>
     <summary>
@@ -10498,6 +11316,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="EarlyHintsForFirstRequest">
+    <obsolete>
+      Deprecated 09/2021
+    </obsolete>
     <owner>nhiroki@chromium.org</owner>
     <owner>chrome-loading@google.com</owner>
     <summary>
@@ -10733,7 +11554,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="IsRoaming" enum="Boolean">
     <summary>
-      Whether the device was roaming when the background task ran.
+      Whether the device was roaming when the background task ran. This field is
+      only set if we can determine whether the network was roaming or not. This
+      means in cases where the HTTP probe was cancelled or we ecountered an
+      error while getting whether the network is roaming or not that this field
+      will be null.
     </summary>
   </metric>
   <metric name="LocalHourOfDayStart">
@@ -10934,6 +11759,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OptimizationGuideAutotuning">
+  <obsolete>
+    Removed 8/2021.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -10948,6 +11776,28 @@ be describing additional metrics about the same event.
   <metric name="TuningVersion">
     <summary>
       The version of the tuning group for the optimization type that was served.
+    </summary>
+  </metric>
+</event>
+
+<event name="PageContentAnnotations" singular="True">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Metrics on the content annotations of the page, one record per page load
+    commit and has an annotation calculated on it. The metrics are recorded in a
+    RAPPOR-style with low-entropy so only aggregate analysis can be performed.
+  </summary>
+  <metric name="VisibilityScore">
+    <summary>
+      Records a low entropy respresentation of the visibility score output by a
+      content annotations model. The low entropy value is calculated using a
+      RAPPOR-style calculation to enable analysis only on aggregated results.
+      The raw score is between 0 and 1, scaled to between 0 and 100. The score
+      is then placed into one of 16 linearly spaced buckets by dividing the
+      score by the bucket size and taking the floor. The resulting bucket value
+      has noise added with a probability of .5 where the noise is randomly
+      applied to each individual bit.
     </summary>
   </metric>
 </event>
@@ -11052,7 +11902,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageInfoBubble">
-  <owner>chlily@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
   <summary>
     Recorded when an action on the Page Info Bubble (aka Origin Info Bubble or
     WebsiteSettings Bubble) is taken. May be recorded multiple times for a
@@ -11063,6 +11914,14 @@ be describing additional metrics about the same event.
       Records an enum value representing which action on the Page Info Bubble
       was taken.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -11143,7 +12002,10 @@ be describing additional metrics about the same event.
       for quiescent windows. The unit of time is ms.
     </summary>
   </metric>
-  <metric name="Experimental.PageLoadType" enum="PageLoadType">
+  <metric name="Experimental.PageLoadType" enum="PageVisitFinalStatus">
+    <obsolete>
+      Renamed in 11/2021, use PageVisitFinalStatus instead.
+    </obsolete>
     <summary>
       Determines the PageLoadType for this page load. That is, records whether
       the page was never foregrounded, was foregrounded but did not reach FCP,
@@ -11275,6 +12137,26 @@ be describing additional metrics about the same event.
       the end of each page load. As usual with PageLoad metrics, we consider app
       backgrounding on Android to be the end of page load as well as the app
       could be evicted by Android anytime after that happens.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventDuration">
+    <summary>
+      The average value of user interaction latency above budget of a page load,
+      in ms. For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.AverageUserInteractionLatencyOverBudget.TotalEventDuration">
+    <summary>
+      The average value of user interaction latency above budget of a page load,
+      in ms. For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
     </summary>
   </metric>
   <metric name="InteractiveTiming.FirstInputDelay">
@@ -11562,6 +12444,70 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric
+      name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency above
+      budget of a page load, in ms. For this metric, we measure the latency of
+      user interactions by Responsiveness.UserInteraction.MaxEventDuration and
+      we deduct a budget from the original value. If the latency value is below
+      the budget, it will be treated as 0 ms. Each type of interaction has its
+      own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency above
+      budget of a page load, in ms. For this metric, we measure the latency of
+      user interactions by Responsiveness.UserInteraction.TotalEventDuration and
+      we deduct a budget from the original value. If the latency value is below
+      the budget, it will be treated as 0 ms. Each type of interaction has its
+      own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency above
+      budget of a page load, in ms. For this metric, we measure the latency of
+      user interactions by Responsiveness.UserInteraction.MaxEventDuration and
+      we deduct a budget from the original value. If the latency value is below
+      the budget, it will be treated as 0 ms. Each type of interaction has its
+      own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency above
+      budget of a page load, in ms. For this metric, we measure the latency of
+      user interactions by Responsiveness.UserInteraction.TotalEventDuration and
+      we deduct a budget from the original value. If the latency value is below
+      the budget, it will be treated as 0 ms. Each type of interaction has its
+      own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventDuration">
+    <summary>
+      The sum of user interaction latency above budget of a page load, in ms.
+      For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventDuration">
+    <summary>
+      The sum of user interaction latency above budget of a page load, in ms.
+      For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.TotalAdjustedInputDelay">
     <summary>
       sum(max(Input Delay - 50, 0)). The Input Delay refers to the duration
@@ -11589,6 +12535,71 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric
+      name="InteractiveTiming.TotalUserInteractionLatencyOverBudget.MaxEventDuration">
+    <obsolete>
+      Deprecated 10/2021. Replaced by
+      &quot;InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventDuration&quot;.
+    </obsolete>
+    <summary>
+      The sum of user interaction latency above budget of a page load, in ms.
+      For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.TotalUserInteractionLatencyOverBudget.TotalEventDuration">
+    <obsolete>
+      Deprecated 10/2021. Replaced by
+      &quot;InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventDuration&quot;.
+    </obsolete>
+    <summary>
+      The sum of user interaction latency above budget of a page load, in ms.
+      For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration">
+    <summary>
+      The maximum value of user interaction latency of a page load, in ms. For
+      this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration. Each type of interaction
+      has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration">
+    <summary>
+      The maximum value of user interaction latency of a page load, in ms. For
+      this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration. Each type of
+      interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.WorstUserInteractionLatencyOverBudget.MaxEventDuration">
+    <summary>
+      The maximum value of user interaction latency above budget of a page load,
+      in ms. For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.WorstUserInteractionLatencyOverBudget.TotalEventDuration">
+    <summary>
+      The maximum value of user interaction latency above budget of a page load,
+      in ms. For this metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.TotalEventDuration and we reduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
   </metric>
   <metric name="IsCrossProcessNavigation">
     <owner>altimin@chromium.org</owner>
@@ -12004,6 +13015,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net.ImageBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.ImageBytes2.
+    </obsolete>
+    <summary>
+      The total number of bytes loaded from the network for images on the page.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      spacing factor of 1.3). On mobile this only records bytes up until the
+      page/app is backgrounded.
+    </summary>
+  </metric>
+  <metric name="Net.ImageBytes2">
     <summary>
       The total number of bytes loaded from the network for images on the page.
       This is rounded down to the nearest exponential bucket (with a bucket
@@ -12012,6 +13034,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net.ImageSubframeBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.ImageSubframeBytes2.
+    </obsolete>
+    <summary>
+      The total number of bytes loaded from the network for images on the
+      subframes of the page. This is rounded down to the nearest exponential
+      bucket (with a bucket spacing factor of 1.3). On mobile this only records
+      bytes up until the page/app is backgrounded.
+    </summary>
+  </metric>
+  <metric name="Net.ImageSubframeBytes2">
     <summary>
       The total number of bytes loaded from the network for images on the
       subframes of the page. This is rounded down to the nearest exponential
@@ -12020,6 +13053,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net.JavaScriptBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.JavaScriptBytes2.
+    </obsolete>
     <summary>
       The sum of decoded body lengths of all JavaScript resouces that completed
       loading on the page. This is rounded down to the nearest exponential
@@ -12027,7 +13063,18 @@ be describing additional metrics about the same event.
       bytes up until the page/app is backgrounded.
     </summary>
   </metric>
+  <metric name="Net.JavaScriptBytes2">
+    <summary>
+      The sum of decoded body lengths of all JavaScript resouces that completed
+      loading on the page. This is rounded down to the nearest exponential
+      bucket (with a bucket spacing factor of 1.3). On mobile this only records
+      bytes up until the page/app is backgrounded.
+    </summary>
+  </metric>
   <metric name="Net.JavaScriptMaxBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.JavaScriptMaxBytes2.
+    </obsolete>
     <summary>
       The max of decoded body lengths of all JavaScript resouces that completed
       loading on the page. This is rounded down to the nearest exponential
@@ -12035,7 +13082,26 @@ be describing additional metrics about the same event.
       bytes up until the page/app is backgrounded.
     </summary>
   </metric>
+  <metric name="Net.JavaScriptMaxBytes2">
+    <summary>
+      The max of decoded body lengths of all JavaScript resouces that completed
+      loading on the page. This is rounded down to the nearest exponential
+      bucket (with a bucket spacing factor of 1.3). On mobile this only records
+      bytes up until the page/app is backgrounded.
+    </summary>
+  </metric>
   <metric name="Net.MediaBytes">
+    <obsolete>
+      Deprecated 09/2021 in favor of Net.MediaBytes2.
+    </obsolete>
+    <summary>
+      The total number of bytes loaded from the network for media (video, audio)
+      on the page. This is rounded down to the nearest exponential bucket (with
+      a bucket spacing factor of 1.3). On mobile this only records bytes up
+      until the page/app is backgrounded.
+    </summary>
+  </metric>
+  <metric name="Net.MediaBytes2">
     <summary>
       The total number of bytes loaded from the network for media (video, audio)
       on the page. This is rounded down to the nearest exponential bucket (with
@@ -12098,6 +13164,13 @@ be describing additional metrics about the same event.
       'mark_fully_loaded' name to mark that the page is fully loaded. If the
       mark is called more than once, the last is used.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PageTiming.UserTimingMarkFullyVisible">
     <summary>
@@ -12105,12 +13178,43 @@ be describing additional metrics about the same event.
       'mark_fully_visible' name to mark that the page is fully visible. If the
       mark is called more than once, the last is used.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PageTiming.UserTimingMarkInteractive">
     <summary>
       When the page UserTiming mark API is called with the standard
       'mark_interactive' name to mark that the page is interactive. If the mark
       is called more than once, the last is used.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PageVisitFinalStatus" enum="PageVisitFinalStatus">
+    <summary>
+      Determines the final status for this page load. That is, records whether
+      the page was never foregrounded, was foregrounded but did not reach FCP,
+      or did reach FCP. The metric is recorded at the end of each page load. As
+      usual with PageLoad metrics, we consider app backgrounding on Android to
+      be the end of page load as well as the app could be evicted by Android
+      anytime after that happens.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintType">
+    <summary>
+      Indicates that type of the LargestContentfulPaint candidate. This value is
+      a packed set of flags, defined in
+      third_party/blink/public/common/performance/largest_contentful_paint_type.h
     </summary>
   </metric>
   <metric name="PaintTiming.NavigationToExperimentalLargestContentfulPaint">
@@ -12188,6 +13292,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="PaintTiming.NavigationToLargestContentfulPaint">
+    <obsolete>
+      Replaced by PaintTiming.NavigationToLargestContentfulPaint2. No longer
+      reported from Nov 2021.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -12211,6 +13319,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="PaintTiming.NavigationToLargestContentfulPaint.MainFrame">
+    <obsolete>
+      Replaced by PaintTiming.NavigationToLargestContentfulPaint2.MainFrame. No
+      longer reported from Nov 2021.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -12241,6 +13353,18 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric
+      name="PaintTiming.NavigationToLargestContentfulPaint2.CrossSiteSubFrame">
+    <summary>
+      Similar to PaintTiming.NavigationToLargestContentfulPaint2, this measures
+      the time in milliseconds from the navigation start of the top-level frame
+      to the time when the page first paints the largest content (text or image)
+      in the cross-site subframe which is the top candidate of largest
+      contentful paint. This metric is computed separately from the page-level
+      LCP, it's recorded even in page loads where the page-level LCP is not that
+      cross-site LCP.
+    </summary>
   </metric>
   <metric name="PaintTiming.NavigationToLargestContentfulPaint2.MainFrame">
     <summary>
@@ -12310,6 +13434,13 @@ be describing additional metrics about the same event.
   <summary>
     Recorded for page loads that were navigated to via Google Search.
   </summary>
+  <metric name="GoogleSearchMode" enum="GoogleSearchMode">
+    <summary>
+      Google Search mode used by the user. This corresponds to the tab (e.g. web
+      result, image results, video results, etc.) the user is on. This
+      information is extracted from the tbm query parameter on the Search URL.
+    </summary>
+  </metric>
 </event>
 
 <event name="PageLoad.Internal" singular="True">
@@ -12321,6 +13452,10 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="PaintTiming.ExperimentalLargestContentfulPaint.ContentType"
       enum="LargestContentType">
+    <obsolete>
+      Replaced by PaintTiming.LargestContentfulPaint.ContentType. No longer
+      reported from Nov 2021.
+    </obsolete>
     <summary>
       Records whether the page's experimental version of largest contentful
       paint, whose timestamp is measured by
@@ -12333,6 +13468,10 @@ be describing additional metrics about the same event.
   <metric
       name="PaintTiming.ExperimentalLargestContentfulPaint.TerminationState"
       enum="LargestContentfulPaint.TerminationState">
+    <obsolete>
+      Replaced by PaintTiming.LargestContentfulPaint.TerminationState. No longer
+      reported from Nov 2021.
+    </obsolete>
     <summary>
       Records the state of the experimental largest contentful paint algorithm
       at the time in which the browser attempts to record
@@ -12369,8 +13508,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.ServiceWorkerControlled" singular="True">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>falken@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Recorded for page loads controlled by a service worker.
   </summary>
@@ -12935,6 +14074,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PerfectHeuristics" singular="True">
+  <obsolete>
+    Implementation for these experiments were removed in M94.
+  </obsolete>
   <owner>dom@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -13271,6 +14413,150 @@ be describing additional metrics about the same event.
       An enum of type PermissionSourceUI. The UI surface for this action.
     </summary>
   </metric>
+  <metric name="Stats.AllPrompts.Count">
+    <summary>
+      Total number of prompts shown to the user in the last 28 days. The count
+      is bucketed. The bucket minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5, 4
+      and 0. The correct bucket is the first one that is smaller or equal to the
+      prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPrompts.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, all PermissionTypes and all
+      PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.Count">
+    <summary>
+      Total number of prompts shown to the user in the last 28 days for the
+      currently requested permission type. The count is bucketed. The bucket
+      minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5, 4 and 0. The correct bucket
+      is the first one that is smaller or equal to the prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.AllPromptsOfType.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, the current requested PermissionType and
+      all PromptDisposition. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.Count">
+    <summary>
+      Total number of loud UI prompts shown to the user in the last 28 days. The
+      count is bucketed. The bucket minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5
+      ,4 and 0. The correct bucket is the first one that is smaller or equal to
+      the prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPrompts.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, all PermissionTypes and loud UI
+      PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.Count">
+    <summary>
+      Total number of loud UI prompts shown to the user in the last 28 days for
+      the currently requested permission type. The count is bucketed. The bucket
+      minimums being 20, 15, 12, 10, 9, 8, 7, 6, 5, 4 and 0. The correct bucket
+      is the first one that is smaller or equal to the prompt count.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.DenyRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user deny.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.DismissRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user dismiss.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.GrantRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user grant.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
+  <metric name="Stats.LoudPromptsOfType.IgnoreRate">
+    <summary>
+      What percentage of prompts from the last 28 days did the user ignore.
+      Aggregated across all origins, currently requested PermissionType and loud
+      UI PromptDispositions only. Rounded to the nearest 10%.
+    </summary>
+  </metric>
   <metric name="TimeToDecision">
     <summary>
       Time (in milliseconds) taken by the user to make a decision on a
@@ -13411,7 +14697,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PostMessage.Incoming.Frame">
-  <owner>chlily@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
     The frame received an incoming postMessage event. This is recorded only for
@@ -13425,7 +14711,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PostMessage.Incoming.Page">
-  <owner>chlily@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
     A frame on the page received an incoming postMessage event. This is recorded
@@ -13802,7 +15088,7 @@ be describing additional metrics about the same event.
 
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>falken@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
   <summary>
     Metrics related to Prerender2
     (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
@@ -14439,6 +15725,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="RenderViewContextMenu.Used">
+  <owner>juanmojica@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Metric recorded when a context menu item is selected. This is currently only
+    recorded for Lens context menu items.
+  </summary>
+  <metric name="SelectedMenuItem" enum="RenderViewContextMenuItem">
+    <summary>
+      The menu item selected by the user on the context menu.
+    </summary>
+  </metric>
+</event>
+
 <event name="Responsiveness.UserInteraction">
   <owner>hbsong@chromium.org</owner>
   <summary>
@@ -14935,6 +16235,20 @@ be describing additional metrics about the same event.
     <summary>
       Whether the form submission is a shopping transaction. This has 50% chance
       randomized.
+    </summary>
+  </metric>
+</event>
+
+<event name="Shopping.WillSendRequest">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Recorded when an XHR is about to be sent.
+  </summary>
+  <metric name="IsAddToCart" enum="Boolean">
+    <summary>
+      Whether the XHR is to add a product to a shopping cart. This has 50%
+      chance randomized.
     </summary>
   </metric>
 </event>
@@ -16392,6 +17706,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TrustedWebActivity.LocationDelegation" singular="True">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records when a site running in Trusted Web Activity requests geolocation.
+  </summary>
+  <metric name="Enrolled" enum="Boolean">
+    <summary>
+      Whether the Trusted Web Activity client app enrolled location delegation.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="TrustedWebActivity.Open" singular="True">
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -16791,6 +18125,30 @@ be describing additional metrics about the same event.
     <summary>
       Site engagement score in the range [0, 100], rounded down to a multiple of
       10 to limit granularity.
+    </summary>
+  </metric>
+</event>
+
+<event name="UserPerceivedPageVisit" singular="True">
+  <owner>djw@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Metrics related to a page visit as a user perceives it, regardless of how
+    the page was visited. More metrics may be associated with a particular page
+    visit, these can be found in specific UKM events with the same UKM source
+    ID. Currently the methods of visiting a page that will populate this event
+    are: 'normal' page load (more metrics in the PageLoad event), Back-Forward
+    Cache Restore (more metrics in the HistoryNavigation event), and AMP
+    documents (more metrics in the AmpPageLoad event)
+  </summary>
+  <metric name="PageVisitFinalStatus" enum="PageVisitFinalStatus">
+    <summary>
+      Determines the final status for this page visit. That is, records whether
+      the page was never foregrounded, was foregrounded but did not reach FCP,
+      or did reach FCP. The metric is recorded at the end of each page visit.
+      App backgrounding on Android to is considered to be the end of page visit
+      as well, as the app could be evicted by Android anytime after that
+      happens.
     </summary>
   </metric>
 </event>
@@ -17613,7 +18971,7 @@ be describing additional metrics about the same event.
   <summary>
     Features of a web app recorded at most once per day if a user interacted
     with the web app. Recorded for installed and/or promotable (installable) web
-    apps unless noted otherwise on the metric.
+    apps unless noted otherwise on the metric. Keyed by start_url of the app.
   </summary>
   <metric name="BackgroundDuration">
     <summary>

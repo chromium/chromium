@@ -436,6 +436,34 @@ RasterDecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   return error::kNoError;
 }
 
+error::Error
+RasterDecoderImpl::HandleConvertRGBAToYUVAMailboxesINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate& c =
+      *static_cast<const volatile raster::cmds::
+                       ConvertRGBAToYUVAMailboxesINTERNALImmediate*>(cmd_data);
+  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
+  GLenum plane_config = static_cast<GLenum>(c.plane_config);
+  GLenum subsampling = static_cast<GLenum>(c.subsampling);
+  uint32_t mailboxes_size;
+  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 80>(1, &mailboxes_size)) {
+    return error::kOutOfBounds;
+  }
+  if (mailboxes_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* mailboxes =
+      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailboxes_size,
+                                                        immediate_data_size);
+  if (mailboxes == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoConvertRGBAToYUVAMailboxesINTERNAL(planes_yuv_color_space, plane_config,
+                                       subsampling, mailboxes);
+  return error::kNoError;
+}
+
 error::Error RasterDecoderImpl::HandleTraceEndCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

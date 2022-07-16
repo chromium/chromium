@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/common/extension_resource.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,6 +35,9 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
              OptionalFileSequenceTask file_sequence_task,
              DoneCallback done_callback);
 
+  FileReader(const FileReader&) = delete;
+  FileReader& operator=(const FileReader&) = delete;
+
   // Called to start reading the files on a background sequence. Upon
   // completion, the callback will be notified of the results.
   void Start();
@@ -50,8 +53,6 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
   OptionalFileSequenceTask optional_file_sequence_task_;
   DoneCallback done_callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileReader);
 };
 
 #endif  // EXTENSIONS_BROWSER_FILE_READER_H_

@@ -2,4 +2,4 @@
 
   * Build spec: https://chromium.googlesource.com/chromium/src.git/+/@@VERSION@@/
 
- -- @@MAINTNAME@@ <@@MAINTMAIL@@>  Tue, 03 Feb 2009 14:54:35 -0800
+ -- @@MAINTNAME@@ <@@MAINTMAIL@@>  @@DATE_RFC5322@@

@@ -63,6 +63,13 @@
                   "minimum": 0,
                   "maximum": 65535
                 },
+                "testWebTransportPort": {
+                  "type": "integer",
+                  "optional": true,
+                  "description": "The port on which the test WebTransport server is listening.",
+                  "minimum": 0,
+                  "maximum": 65535
+                },
                 "loginStatus": {
                   "type": "object",
                   "optional": true,

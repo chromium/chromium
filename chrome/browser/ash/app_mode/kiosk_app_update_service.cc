@@ -63,9 +63,8 @@ void KioskAppUpdateService::StartAppUpdateRestartTimer() {
     return;
 
   // Setup timer to force restart once the wait period expires.
-  restart_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kForceRestartWaitTimeMs),
-      this, &KioskAppUpdateService::ForceAppUpdateRestart);
+  restart_timer_.Start(FROM_HERE, base::Milliseconds(kForceRestartWaitTimeMs),
+                       this, &KioskAppUpdateService::ForceAppUpdateRestart);
 }
 
 void KioskAppUpdateService::ForceAppUpdateRestart() {

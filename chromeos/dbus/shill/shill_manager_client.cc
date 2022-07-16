@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
@@ -31,6 +30,10 @@ ShillManagerClient* g_instance = nullptr;
 class ShillManagerClientImpl : public ShillManagerClient {
  public:
   ShillManagerClientImpl() = default;
+
+  ShillManagerClientImpl(const ShillManagerClientImpl&) = delete;
+  ShillManagerClientImpl& operator=(const ShillManagerClientImpl&) = delete;
+
   ~ShillManagerClientImpl() override = default;
 
   ////////////////////////////////////
@@ -48,7 +51,11 @@ class ShillManagerClientImpl : public ShillManagerClient {
   void GetProperties(DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetPropertiesFunction);
-    helper_->CallValueMethod(&method_call, std::move(callback));
+    helper_->CallValueMethod(
+        &method_call,
+        base::BindOnce(&ShillClientHelper::OnGetProperties,
+                       dbus::ObjectPath(shill::kFlimflamServicePath),
+                       std::move(callback)));
   }
 
   void GetNetworksForGeolocation(
@@ -168,6 +175,19 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                              std::move(error_callback));
   }
 
+  void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
+                               const base::Value& properties,
+                               ObjectPathCallback callback,
+                               ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kAddPasspointCredentialsFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendObjectPath(profile_path);
+    ShillClientHelper::AppendServiceProperties(&writer, properties);
+    helper_->CallObjectPathMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
+  }
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   void Init(dbus::Bus* bus) {
@@ -193,8 +213,6 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   dbus::ObjectProxy* proxy_ = nullptr;
   std::unique_ptr<ShillClientHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillManagerClientImpl);
 };
 
 }  // namespace

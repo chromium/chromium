@@ -39,7 +39,9 @@ password_manager::CredentialView ConvertJavaObjectToCredentialView(
       ConvertJavaStringToUTF16(
           env, Java_CompromisedCredential_getUsername(env, credential)),
       ConvertJavaStringToUTF16(
-          env, Java_CompromisedCredential_getPassword(env, credential)));
+          env, Java_CompromisedCredential_getPassword(env, credential)),
+      base::Time::FromJavaTime(
+          Java_CompromisedCredential_getLastUsedTime(env, credential)));
 }
 
 }  // namespace
@@ -97,6 +99,7 @@ void PasswordCheckBridge::GetCompromisedCredentials(
                                                credential.change_password_url),
         base::android::ConvertUTF8ToJavaString(env, credential.package_name),
         credential.create_time.ToJavaTime(),
+        credential.last_used_time.ToJavaTime(),
         (credential.insecure_type ==
          password_manager::InsecureCredentialTypeFlags::kCredentialLeaked),
         (credential.insecure_type ==

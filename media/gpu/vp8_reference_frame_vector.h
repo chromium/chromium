@@ -18,6 +18,10 @@ class VP8Picture;
 class Vp8ReferenceFrameVector {
  public:
   Vp8ReferenceFrameVector();
+
+  Vp8ReferenceFrameVector(const Vp8ReferenceFrameVector&) = delete;
+  Vp8ReferenceFrameVector& operator=(const Vp8ReferenceFrameVector&) = delete;
+
   ~Vp8ReferenceFrameVector();
 
   void Refresh(scoped_refptr<VP8Picture> pic);
@@ -30,7 +34,6 @@ class Vp8ReferenceFrameVector {
       reference_frames_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(Vp8ReferenceFrameVector);
 };
 
 }  // namespace media

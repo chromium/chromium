@@ -134,7 +134,7 @@
 #define FILE_PATH_USES_WIN_SEPARATORS // 文件路径使用windows分隔符
 #endif  // OS_WIN
 
-// 要可移植地打印路径名，请使用 PRFilePath（基于 PRIuS 和来自 C99 和 format_macros.h 
+// 要可移植地打印路径名，请使用 PRFilePath（基于 PRIuS 和来自 C99 和 format_macros.h
 // 的朋友），如下所示：
 // To print path names portably use PRFilePath (based on PRIuS and friends from
 // C99 and format_macros.h) like this:
@@ -149,23 +149,24 @@
 // 字符串文字(字面量)初始化宏
 #if defined(OS_WIN)
 // 字符串前面加L表示该字符串是Unicode字符串，win默认使用uniquecode编码
-#define FILE_PATH_LITERAL(x) L##x 
+#define FILE_PATH_LITERAL(x) L##x
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #define FILE_PATH_LITERAL(x) x // 文件路径字面量
 #endif  // OS_WIN
 
 namespace base {
 
+class SafeBaseName;
 class Pickle;
 class PickleIterator;
 
 // An abstraction to isolate users from the differences between native
-// pathnames on different platforms. 
+// pathnames on different platforms.
 // 将用户与不同平台上本机路径名之间的差异隔离开来的抽象。
 class BASE_EXPORT FilePath {
  public:
 #if defined(OS_WIN)
-  // On Windows, for Unicode-aware(支持Unicode) applications, native pathnames 
+  // On Windows, for Unicode-aware(支持Unicode) applications, native pathnames
   // are wchar_t arrays encoded in UTF-16.
   // 在Windows上，对于支持Unicode的应用程序，本机路径名是以 UTF-16 编码的 wchar_t 数组
   typedef std::wstring StringType;
@@ -181,7 +182,7 @@ class BASE_EXPORT FilePath {
 
   // Null-terminated（即：'\0'） array of separators used to separate components in
   // hierarchical paths.  用于分隔分层路径中的组件的分隔符(例：'\')数组，以 '\0' 结尾终止.
-  // Each character in this array is a valid separator, 
+  // Each character in this array is a valid separator,
   // 这个数组中的每个字符都是一个有效的分隔符，
   // but kSeparators[0] is treated as the canonical separator and will be used
   // when composing pathnames.
@@ -300,6 +301,11 @@ class BASE_EXPORT FilePath {
   //   - calling this function with "foo.tar.blah" will return just ".blah"
   //     until ".*.blah" is added to the hard-coded allow-list.
   //
+  // That hard-coded allow-list is case-insensitive: ".GZ" and ".gz" are
+  // equivalent. However, the StringType returned is not canonicalized for
+  // case: "foo.TAR.bz2" input will produce ".TAR.bz2", not ".tar.bz2", and
+  // "bar.EXT", which is not a double-extension, will produce ".EXT".
+  //
   // The following code should always work regardless of the value of path.
   //   new_path = path.RemoveExtension().value().append(path.Extension());
   //   ASSERT(new_path == path.value());
@@ -362,6 +368,7 @@ class BASE_EXPORT FilePath {
   // it is an error to pass an absolute path.
   FilePath Append(StringPieceType component) const WARN_UNUSED_RESULT;
   FilePath Append(const FilePath& component) const WARN_UNUSED_RESULT;
+  FilePath Append(const SafeBaseName& component) const WARN_UNUSED_RESULT;
 
   // Although Windows StringType is std::wstring, since the encoding it uses for
   // paths is well defined, it can handle ASCII path components as well.
@@ -373,7 +380,7 @@ class BASE_EXPORT FilePath {
 
   // Returns true if this FilePath contains an absolute path.  On Windows, an
   // absolute path begins with either a drive letter specification followed by
-  // a separator character(例: D:\), or with two separator characters(例: \\).  
+  // a separator character(例: D:\), or with two separator characters(例: \\).
   // On POSIX platforms, an absolute path begins with a separator character(/).
   bool IsAbsolute() const;
 
@@ -410,7 +417,7 @@ class BASE_EXPORT FilePath {
   //
   // This function is *unsafe* as there is no way to tell what encoding is
   // used in file names on POSIX systems other than Mac and Chrome OS,
-  // although UTF-8 is practically used everywhere these days. 
+  // although UTF-8 is practically used everywhere these days.
   // To mitigate(缓解) the encoding issue, this function internally calls
   // SysNativeMBToWide() on POSIX systems other than Mac and Chrome OS,
   // per assumption(假设) that the current locale's encoding is used in file
@@ -423,6 +430,9 @@ class BASE_EXPORT FilePath {
 
   // Similar to AsUTF8Unsafe, but returns UTF-16 instead.
   std::u16string AsUTF16Unsafe() const;
+
+  // Returns a FilePath object from a path name in ASCII.
+  static FilePath FromASCII(StringPiece ascii);
 
   // Returns a FilePath object from a path name in UTF-8. This function
   // should only be used for cases where you are sure that the input
@@ -461,7 +471,7 @@ class BASE_EXPORT FilePath {
 
   static bool CompareEqualIgnoreCase(StringPieceType string1,
                                      StringPieceType string2) {
-                                       
+
     return CompareIgnoreCase(string1, string2) == 0;
   }
   static bool CompareLessIgnoreCase(StringPieceType string1,
@@ -474,8 +484,8 @@ class BASE_EXPORT FilePath {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #if defined(OS_APPLE)
-  // Returns the string in the special canonical(典范) decomposed form as 
-  // defined for HFS, which is close to, but not quite, decomposition form D. 
+  // Returns the string in the special canonical(典范) decomposed form as
+  // defined for HFS, which is close to, but not quite, decomposition form D.
   // See:
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
   // for further comments.
@@ -521,7 +531,7 @@ template <>
 struct hash<base::FilePath> {
   typedef base::FilePath argument_type;
   typedef std::size_t result_type;
-  
+
   result_type operator()(argument_type const& f) const {
     return hash<base::FilePath::StringType>()(f.value());
   }

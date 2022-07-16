@@ -27,4 +27,9 @@ android_library("public_java") {
     "//third_party/metrics_proto:metrics_proto_java",
     "//url:gurl_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java" ]
 }

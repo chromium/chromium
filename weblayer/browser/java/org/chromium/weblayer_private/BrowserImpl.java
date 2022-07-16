@@ -222,7 +222,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         if (mWindowAndroid != null) {
             IntentRequestTracker tracker = mWindowAndroid.getIntentRequestTracker();
             assert tracker != null;
-            tracker.onActivityResult(requestCode, resultCode, data, mWindowAndroid);
+            tracker.onActivityResult(requestCode, resultCode, data);
         }
     }
 

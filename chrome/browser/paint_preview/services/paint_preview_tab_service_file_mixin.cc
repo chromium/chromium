@@ -20,9 +20,8 @@ void PaintPreviewTabServiceFileMixin::GetCapturedPaintPreviewProto(
     OnReadProtoCallback on_read_proto_callback) {
   PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
       key,
-      expiry_horizon.has_value()
-          ? expiry_horizon.value()
-          : base::TimeDelta::FromHours(kExpiryHorizonHrs),
+      expiry_horizon.has_value() ? expiry_horizon.value()
+                                 : base::Hours(kExpiryHorizonHrs),
       std::move(on_read_proto_callback));
 }
 

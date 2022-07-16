@@ -51,7 +51,7 @@ class CONTENT_EXPORT QuotaChangeDispatcher
  private:
   friend class QuotaChangeDispatcherTest;
   friend class QuotaContext;
-  friend class RefCountedDeleteOnSequence<QuotaChangeDispatcher>;
+  friend class base::RefCountedDeleteOnSequence<QuotaChangeDispatcher>;
   friend class base::DeleteHelper<QuotaChangeDispatcher>;
 
   ~QuotaChangeDispatcher();

@@ -4,16 +4,17 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-type bookmarkData = {
+export type BookmarkData = {
   parentId: string,
   title: string,
   url: string,
 };
 
-type AddBookmarkCallback = (node: chrome.bookmarks.BookmarkTreeNode) => void;
+export type AddBookmarkCallback = (node: chrome.bookmarks.BookmarkTreeNode) =>
+    void;
 
 export interface BookmarkProxy {
-  addBookmark(data: bookmarkData, callback: AddBookmarkCallback): void;
+  addBookmark(data: BookmarkData, callback: AddBookmarkCallback): void;
 
   /** @param id ID provided by callback when bookmark was added. */
   removeBookmark(id: string): void;
@@ -23,7 +24,7 @@ export interface BookmarkProxy {
 }
 
 export class BookmarkProxyImpl implements BookmarkProxy {
-  addBookmark(data: bookmarkData, callback: AddBookmarkCallback) {
+  addBookmark(data: BookmarkData, callback: AddBookmarkCallback) {
     chrome.bookmarks.create(data, callback);
   }
 

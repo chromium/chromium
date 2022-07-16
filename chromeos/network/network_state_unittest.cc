@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/i18n/streaming_utf8_validator.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -32,6 +31,9 @@ const char kTestCellularDeviceName[] = "cellular_name";
 class NetworkStateTest : public testing::Test {
  public:
   NetworkStateTest() : network_state_("test_path") {}
+
+  NetworkStateTest(const NetworkStateTest&) = delete;
+  NetworkStateTest& operator=(const NetworkStateTest&) = delete;
 
   // testing::Test:
   void SetUp() override { AddCellularDevice(); }
@@ -69,8 +71,6 @@ class NetworkStateTest : public testing::Test {
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
 
   base::DictionaryValue properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateTest);
 };
 
 }  // namespace

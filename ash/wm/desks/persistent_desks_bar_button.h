@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_PERSISTENT_DESKS_BAR_BUTTON_H_
 #define ASH_WM_DESKS_PERSISTENT_DESKS_BAR_BUTTON_H_
 
+#include <string>
+
 #include "ash/wm/desks/zero_state_button.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
@@ -24,9 +26,11 @@ class PersistentDesksBarDeskButton : public DeskButtonBase {
   ~PersistentDesksBarDeskButton() override = default;
 
   const Desk* desk() const { return desk_; }
+  void UpdateText(std::u16string name);
 
  private:
   // DeskButtonBase:
+  const char* GetClassName() const override;
   void OnButtonPressed() override;
   void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -48,6 +52,7 @@ class PersistentDesksBarCircularButton : public views::ImageButton {
   ~PersistentDesksBarCircularButton() override = default;
 
   // views::ImageButton:
+  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
@@ -75,6 +80,7 @@ class PersistentDesksBarVerticalDotsButton
   friend class DesksTestApi;
 
   // PersistentDesksBarCircularButton:
+  const char* GetClassName() const override;
   void OnButtonPressed() override;
 
   void OnMenuClosed();
@@ -97,6 +103,7 @@ class PersistentDesksBarOverviewButton
 
  private:
   // PersistentDesksBarCircularButton:
+  const char* GetClassName() const override;
   void OnButtonPressed() override;
 };
 

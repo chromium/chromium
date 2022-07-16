@@ -20,12 +20,14 @@ CodecSurfaceBundle::CodecSurfaceBundle(std::unique_ptr<AndroidOverlay> overlay)
       overlay_(std::move(overlay)) {}
 
 CodecSurfaceBundle::CodecSurfaceBundle(
-    scoped_refptr<gpu::TextureOwner> texture_owner)
+    scoped_refptr<gpu::TextureOwner> texture_owner,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
     : RefCountedDeleteOnSequence<CodecSurfaceBundle>(
           base::SequencedTaskRunnerHandle::Get()),
       codec_buffer_wait_coordinator_(
           base::MakeRefCounted<CodecBufferWaitCoordinator>(
-              std::move(texture_owner))),
+              std::move(texture_owner),
+              std::move(drdc_lock))),
       texture_owner_surface_(codec_buffer_wait_coordinator_->texture_owner()
                                  ->CreateJavaSurface()) {}
 

@@ -38,6 +38,9 @@ class LockManager final : public ScriptWrappable,
 
   explicit LockManager(NavigatorBase&);
 
+  LockManager(const LockManager&) = delete;
+  LockManager& operator=(const LockManager&) = delete;
+
   ScriptPromise request(ScriptState*,
                         const String& name,
                         V8LockGrantedCallback*,
@@ -85,8 +88,6 @@ class LockManager final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::FeatureObserver> observer_;
 
   absl::optional<bool> cached_allowed_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockManager);
 };
 
 }  // namespace blink

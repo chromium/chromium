@@ -13,7 +13,7 @@
 namespace feedstore {
 namespace {
 base::Time kTestTimeEpoch = base::Time::UnixEpoch();
-const base::Time kExpiryTime1 = kTestTimeEpoch + base::TimeDelta::FromHours(2);
+const base::Time kExpiryTime1 = kTestTimeEpoch + base::Hours(2);
 
 const std::string Token1() {
   return "token1";

@@ -213,8 +213,8 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
       (state_ != state || current_password_.empty())) {
     current_password_ =
         driver_->GetPasswordGenerationHelper()->GeneratePassword(
-            web_contents()->GetLastCommittedURL().GetOrigin(), form_signature_,
-            field_signature_, max_length_);
+            web_contents()->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+            form_signature_, field_signature_, max_length_);
   }
   state_ = state;
 

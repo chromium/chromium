@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/paint_preview/browser/directory_key.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
@@ -29,7 +29,9 @@ namespace paint_preview {
 
 namespace {
 
-constexpr size_t kMaxParallelRequests = 1;
+constexpr std::array<size_t,
+                     PlayerCompositorDelegate::PressureLevelCount::kLevels>
+    kMaxParallelRequests = {1, 1, 1};
 
 class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
  public:
@@ -74,11 +76,12 @@ class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
     SkBitmap bitmap;
     bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));
-    task_runner_->PostTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
-                       bitmap));
+                       bitmap),
+        base::Seconds(1));
   }
 
   void BeginMainFrameComposite(
@@ -100,11 +103,12 @@ class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
     SkBitmap bitmap;
     bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));
-    task_runner_->PostTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
-                       bitmap));
+                       bitmap),
+        base::Seconds(1));
   }
 
   void SetRootFrameUrl(const GURL& url) override {
@@ -148,6 +152,11 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
                            base::OnTaskRunnerDeleter>(
         new FakePaintPreviewCompositorClient(task_runner_),
         base::OnTaskRunnerDeleter(task_runner_));
+  }
+
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
+                            memory_pressure_level) override {
+    // no-op.
   }
 
   void SetTimeout() { timeout_ = true; }
@@ -451,8 +460,10 @@ TEST_F(PlayerCompositorDelegateTest, InMemoryProto) {
   SerializeProtoAndCreateRootSkp(&proto, key, true);
   {
     PlayerCompositorDelegateImpl player_compositor_delegate;
-    player_compositor_delegate.SetProto(
-        std::make_unique<PaintPreviewProto>(proto));
+    auto capture_result =
+        std::make_unique<CaptureResult>(RecordingPersistence::kFileSystem);
+    capture_result->proto = std::move(proto);
+    player_compositor_delegate.SetCaptureResult(std::move(capture_result));
     player_compositor_delegate.SetExpectedStatus(CompositorStatus::OK);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
         service, url, key, /*main_frame_mode=*/false, base::DoNothing(),
@@ -806,7 +817,8 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccessQueued) {
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
 
-    base::RunLoop loop;
+    base::RunLoop loop_1;
+    base::RunLoop loop_2;
     player_compositor_delegate.RequestBitmap(
         base::UnguessableToken::Create(), gfx::Rect(10, 20, 30, 40), 1.0,
         base::BindOnce(
@@ -817,8 +829,20 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccessQueued) {
                         status);
               std::move(quit).Run();
             },
-            loop.QuitClosure()));
-    loop.Run();
+            loop_1.QuitClosure()));
+    player_compositor_delegate.RequestBitmap(
+        base::UnguessableToken::Create(), gfx::Rect(10, 20, 30, 40), 1.0,
+        base::BindOnce(
+            [](base::OnceClosure quit,
+               mojom::PaintPreviewCompositor::BitmapStatus status,
+               const SkBitmap& bitmap) {
+              EXPECT_EQ(mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
+                        status);
+              std::move(quit).Run();
+            },
+            loop_2.QuitClosure()));
+    loop_1.Run();
+    loop_2.Run();
   }
   env.RunUntilIdle();
 }
@@ -878,9 +902,8 @@ TEST_F(PlayerCompositorDelegateTest, Timeout) {
               std::move(quit).Run();
             },
             loop.QuitClosure()),
-        base::TimeDelta::FromSeconds(1), kMaxParallelRequests,
-        std::move(compositor_service));
-    env.FastForwardBy(base::TimeDelta::FromSeconds(5));
+        base::Seconds(1), kMaxParallelRequests, std::move(compositor_service));
+    env.FastForwardBy(base::Seconds(5));
     loop.Run();
   }
   env.RunUntilIdle();
@@ -929,7 +952,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
     // created.
     base::RunLoop loop;
     PlayerCompositorDelegateImpl player_compositor_delegate;
-    util::test::FakeMemoryPressureMonitor memory_pressure_monitor;
+    memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor;
     memory_pressure_monitor.SetAndNotifyMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
     player_compositor_delegate.SetFakeMemoryPressureMonitor(
@@ -949,6 +972,56 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
 
     player_compositor_delegate.OnMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    loop.Run();
+  }
+  env.RunUntilIdle();
+}
+
+TEST_F(PlayerCompositorDelegateTest,
+       RequestBitmapSuccessQueuedWithPressureAbort) {
+  auto* service = GetBaseService();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
+  auto key = file_manager->CreateKey(1U);
+  GURL url("https://www.chromium.org/");
+  auto proto = CreateValidProto(url);
+  SerializeProtoAndCreateRootSkp(&proto, key);
+  {
+    // This test skips setting up files as the fakes don't use them. In normal
+    // execution the files are required by the service or no bitmap will be
+    // created.
+    PlayerCompositorDelegateImpl player_compositor_delegate;
+    player_compositor_delegate.SetExpectedStatus(CompositorStatus::OK);
+    base::RunLoop loop;
+    player_compositor_delegate.InitializeWithFakeServiceForTest(
+        service, url, key, /*main_frame_mode=*/false,
+        base::BindOnce(
+            [](base::OnceClosure quit, int compositor_status) {
+              EXPECT_EQ(compositor_status,
+                        static_cast<int>(
+                            CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+              std::move(quit).Run();
+            },
+            loop.QuitClosure()),
+        base::TimeDelta::Max(), {1, 0, 0}, CreateCompositorService());
+    env.RunUntilIdle();
+    EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
+
+    base::RunLoop request_loop;
+    player_compositor_delegate.RequestBitmap(
+        base::UnguessableToken::Create(), gfx::Rect(10, 20, 30, 40), 1.0,
+        base::BindOnce(
+            [](base::OnceClosure quit,
+               mojom::PaintPreviewCompositor::BitmapStatus status,
+               const SkBitmap& bitmap) {
+              EXPECT_EQ(mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
+                        status);
+              std::move(quit).Run();
+            },
+            request_loop.QuitClosure()));
+    request_loop.Run();
+
+    player_compositor_delegate.OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
     loop.Run();
   }
   env.RunUntilIdle();

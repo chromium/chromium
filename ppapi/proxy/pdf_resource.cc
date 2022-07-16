@@ -71,9 +71,7 @@ void PDFResource::SearchString(const unsigned short* input_string,
   UErrorCode status = U_ZERO_ERROR;
   UStringSearch* searcher =
       usearch_open(term, -1, string, -1, locale_.c_str(), nullptr, &status);
-  DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
-         status == U_USING_DEFAULT_WARNING)
-      << status;
+  DCHECK(U_SUCCESS(status)) << status;
   UCollationStrength strength = case_sensitive ? UCOL_TERTIARY : UCOL_PRIMARY;
 
   UCollator* collator = usearch_getCollator(searcher);
@@ -84,7 +82,7 @@ void PDFResource::SearchString(const unsigned short* input_string,
 
   status = U_ZERO_ERROR;
   int match_start = usearch_first(searcher, &status);
-  DCHECK_EQ(U_ZERO_ERROR, status);
+  DCHECK(U_SUCCESS(status));
 
   std::vector<PP_PrivateFindResult> pp_results;
   while (match_start != USEARCH_DONE) {
@@ -94,7 +92,7 @@ void PDFResource::SearchString(const unsigned short* input_string,
     result.length = matched_length;
     pp_results.push_back(result);
     match_start = usearch_next(searcher, &status);
-    DCHECK_EQ(U_ZERO_ERROR, status);
+    DCHECK(U_SUCCESS(status));
   }
 
   if (pp_results.empty() ||

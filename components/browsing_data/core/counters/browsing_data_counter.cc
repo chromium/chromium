@@ -85,10 +85,8 @@ void BrowsingDataCounter::Restart() {
   state_transitions_.push_back(state_);
 
   if (use_delay_) {
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kDelayUntilShowCalculatingMs), this,
-        &BrowsingDataCounter::TransitionToShowCalculating);
+    timer_.Start(FROM_HERE, base::Milliseconds(kDelayUntilShowCalculatingMs),
+                 this, &BrowsingDataCounter::TransitionToShowCalculating);
   } else {
     state_ = State::READY_TO_REPORT_RESULT;
   }
@@ -150,10 +148,8 @@ void BrowsingDataCounter::TransitionToShowCalculating() {
   state_transitions_.push_back(state_);
 
   callback_.Run(std::make_unique<Result>(this));
-  timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kDelayUntilReadyToShowResultMs),
-      this, &BrowsingDataCounter::TransitionToReadyToReportResult);
+  timer_.Start(FROM_HERE, base::Milliseconds(kDelayUntilReadyToShowResultMs),
+               this, &BrowsingDataCounter::TransitionToReadyToReportResult);
 }
 
 void BrowsingDataCounter::TransitionToReadyToReportResult() {

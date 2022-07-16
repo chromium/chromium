@@ -9,8 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -28,6 +29,10 @@ class CollectUserDataAction : public Action,
  public:
   explicit CollectUserDataAction(ActionDelegate* delegate,
                                  const ActionProto& proto);
+
+  CollectUserDataAction(const CollectUserDataAction&) = delete;
+  CollectUserDataAction& operator=(const CollectUserDataAction&) = delete;
+
   ~CollectUserDataAction() override;
 
   // Overrides Action:
@@ -90,12 +95,18 @@ class CollectUserDataAction : public Action,
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.
   bool CreateOptionsFromProto();
 
-  // Will update |initial_card_has_billing_postal_code_|.
   bool CheckInitialAutofillDataComplete(
-      autofill::PersonalDataManager* personal_data_manager);
+      const std::vector<std::unique_ptr<Contact>>& contacts,
+      const std::vector<std::unique_ptr<Address>>& addresses,
+      const std::vector<std::unique_ptr<PaymentInstrument>>&
+          payment_instruments);
 
   void WriteProcessedAction(UserData* user_data, const UserModel* user_model);
+  void UpdateProfileAndCardUse(UserData* user_data);
 
+  void UpdateUserDataFromProto(
+      const CollectUserDataProto::UserDataProto& proto_data,
+      UserData* user_data);
   // Update user data with the new state from personal data manager.
   void UpdatePersonalDataManagerProfiles(
       UserData* user_data,
@@ -103,24 +114,25 @@ class CollectUserDataAction : public Action,
   void UpdatePersonalDataManagerCards(
       UserData* user_data,
       UserData::FieldChange* field_change = nullptr);
+  void UpdateSelectedContact(UserData* user_data);
+  void UpdateSelectedShippingAddress(UserData* user_data);
+  void UpdateSelectedCreditCard(UserData* user_data);
   void UpdateDateTimeRangeStart(UserData* user_data,
                                 UserData::FieldChange* field_change = nullptr);
   void UpdateDateTimeRangeEnd(UserData* user_data,
                               UserData::FieldChange* field_change = nullptr);
 
   bool shown_to_user_ = false;
-  bool initially_prefilled = false;
+  bool initially_prefilled_ = false;
   bool personal_data_changed_ = false;
   bool action_successful_ = false;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
   ProcessActionCallback callback_;
 
   // Maps login choice identifiers to the corresponding login details.
-  std::map<std::string, std::unique_ptr<LoginDetails>> login_details_map_;
+  base::flat_map<std::string, std::unique_ptr<LoginDetails>> login_details_map_;
 
   base::WeakPtrFactory<CollectUserDataAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CollectUserDataAction);
 };
 
 }  // namespace autofill_assistant

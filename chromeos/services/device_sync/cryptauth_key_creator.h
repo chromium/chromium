@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
@@ -73,6 +72,10 @@ class CryptAuthKeyCreator {
   };
 
   CryptAuthKeyCreator();
+
+  CryptAuthKeyCreator(const CryptAuthKeyCreator&) = delete;
+  CryptAuthKeyCreator& operator=(const CryptAuthKeyCreator&) = delete;
+
   virtual ~CryptAuthKeyCreator();
 
   // A new key is null if key creation fails.
@@ -85,8 +88,6 @@ class CryptAuthKeyCreator {
           keys_to_create,
       const absl::optional<CryptAuthKey>& server_ephemeral_dh,
       CreateKeysCallback create_keys_callback) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyCreator);
 };
 
 }  // namespace device_sync

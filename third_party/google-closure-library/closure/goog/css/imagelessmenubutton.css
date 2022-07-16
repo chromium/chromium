@@ -7,8 +7,9 @@
 
 /*
  * Standard styling for buttons created by goog.ui.ImagelessMenuButtonRenderer.
- *
  */
+
+@provide 'goog.css.imagelessmenubutton';
 
 /* Dropdown arrow style. */
 .goog-imageless-button-dropdown {

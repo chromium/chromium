@@ -32,16 +32,16 @@ namespace {
 constexpr char kSecondaryEDUEmail[] = "testuser1@managedchrome.com";
 
 // Returns the user type for the primary test account for logging in.
-chromeos::LoggedInUserMixin::LogInType GetPrimaryLogInType(
+ash::LoggedInUserMixin::LogInType GetPrimaryLogInType(
     FamilyUserMetricsProvider::FamilyUserLogSegment log_segment) {
   switch (log_segment) {
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedUser:
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent:
-      return chromeos::LoggedInUserMixin::LogInType::kChild;
+      return ash::LoggedInUserMixin::LogInType::kChild;
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome:
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser:
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kOther:
-      return chromeos::LoggedInUserMixin::LogInType::kRegular;
+      return ash::LoggedInUserMixin::LogInType::kRegular;
   }
 }
 
@@ -58,8 +58,8 @@ absl::optional<AccountId> GetPrimaryAccountId(
     // kStudentAtHome is the only one with an enterprise managed primary
     // account.
     return AccountId::FromUserEmailGaiaId(
-        chromeos::FakeGaiaMixin::kEnterpriseUser1,
-        chromeos::FakeGaiaMixin::kEnterpriseUser1GaiaId);
+        ash::FakeGaiaMixin::kEnterpriseUser1,
+        ash::FakeGaiaMixin::kEnterpriseUser1GaiaId);
   }
   // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
   return absl::nullopt;
@@ -104,7 +104,7 @@ class FamilyUserMetricsProviderTest
     return GetParam();
   }
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+  ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, GetPrimaryLogInType(GetFamilyUserLogSegment()),
       embedded_test_server(), this,
       /*should_launch_browser=*/true,
@@ -180,7 +180,7 @@ INSTANTIATE_TEST_SUITE_P(
 class FamilyUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
  private:
-  chromeos::GuestSessionMixin guest_session_mixin_{&mixin_host_};
+  ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
 };
 
 // Prevents a regression to crbug/1137352. Also tests secondary account metrics
@@ -208,7 +208,7 @@ class FamilyUserMetricsProviderEphemeralUserTest
   // MixinBasedInProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    std::unique_ptr<chromeos::ScopedDevicePolicyUpdate> device_policy_update =
+    std::unique_ptr<ash::ScopedDevicePolicyUpdate> device_policy_update =
         device_state_.RequestDevicePolicyUpdate();
     device_policy_update->policy_payload()
         ->mutable_ephemeral_users_enabled()
@@ -229,8 +229,8 @@ class FamilyUserMetricsProviderEphemeralUserTest
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kRegular,
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this};
 };
 

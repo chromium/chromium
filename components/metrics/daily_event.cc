@@ -57,8 +57,8 @@ void DailyEvent::CheckInterval() {
   base::Time now = base::Time::Now();
   if (last_fired_.is_null()) {
     // The first time we call CheckInterval, we read the time stored in prefs.
-    last_fired_ = base::Time() + base::TimeDelta::FromMicroseconds(
-                                     pref_service_->GetInt64(pref_name_));
+    last_fired_ =
+        base::Time() + base::Microseconds(pref_service_->GetInt64(pref_name_));
 
     DVLOG(1) << "DailyEvent time loaded: " << last_fired_;
     if (last_fired_.is_null()) {

@@ -8,8 +8,8 @@
 #include <iostream>
 
 #include "base/check.h"
+#include "base/json/values_util.h"
 #include "base/notreached.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -30,7 +30,7 @@ AXTreeID::AXTreeID(const std::string& string) {
   } else {
     type_ = ax::mojom::AXTreeIDType::kToken;
     absl::optional<base::UnguessableToken> token =
-        util::ValueToUnguessableToken(base::Value(string));
+        base::ValueToUnguessableToken(base::Value(string));
     CHECK(token);
     token_ = *token;
   }
@@ -61,7 +61,7 @@ std::string AXTreeID::ToString() const {
     case ax::mojom::AXTreeIDType::kUnknown:
       return "";
     case ax::mojom::AXTreeIDType::kToken:
-      return util::UnguessableTokenToValue(*token_).GetString();
+      return base::UnguessableTokenToValue(*token_).GetString();
   }
 
   NOTREACHED();

@@ -17,7 +17,7 @@ import tempfile
 
 
 SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
-SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official', 'Coverage')
+SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official')
 
 # Name of the gn variable to set when generating Xcode project.
 GENERATE_XCODE_PROJECT = 'ios_set_attributes_for_xcode_project_generation'
@@ -110,14 +110,16 @@ class GnGenerator(object):
         if goma_dir:
           args.append(('goma_dir', '"%s"' % os.path.expanduser(goma_dir)))
 
+    is_debug = self._config == 'Debug'
+    official = self._config == 'Official'
+    is_optim = self._config in ('Profile', 'Official')
+
     args.append(('target_os', '"ios"'))
-    args.append(('is_debug', self._config in ('Debug', 'Coverage')))
-    args.append(('enable_dsyms', self._config in ('Profile', 'Official')))
-    args.append(('enable_stripping', 'enable_dsyms'))
-    args.append(('is_official_build', self._config == 'Official'))
-    args.append(('is_chrome_branded', 'is_official_build'))
-    args.append(('use_clang_coverage', self._config == 'Coverage'))
-    args.append(('is_component_build', False))
+    args.append(('is_debug', is_debug))
+    args.append(('enable_dsyms', is_optim))
+    args.append(('enable_stripping', is_optim))
+    args.append(('is_official_build', is_optim))
+    args.append(('is_chrome_branded', official))
 
     if os.environ.get('FORCE_MAC_TOOLCHAIN', '0') == '1':
       args.append(('use_system_xcode', False))
@@ -126,19 +128,6 @@ class GnGenerator(object):
     args.append((
         'target_environment',
         self.TARGET_ENVIRONMENT_VALUES[self._target]))
-
-    if self._target == 'maccatalyst':
-      # Building for "catalyst" environment has not been open-sourced thus can't
-      # use ToT clang and need to use Xcode's version instead. This version of
-      # clang does not generate the same warning as ToT clang, so do not treat
-      # warnings as errors.
-      # TODO(crbug.com/1145947): remove once clang ToT supports "macabi".
-      args.append(('use_xcode_clang', True))
-      args.append(('treat_warnings_as_errors', False))
-
-      # The "catalyst" environment is only supported from iOS 13.0 SDK. Until
-      # Chrome uses this SDK, it needs to be overridden for "catalyst" builds.
-      args.append(('ios_deployment_target', '"13.0"'))
 
     # If extra arguments are passed to the function, pass them before the
     # user overrides (if any).

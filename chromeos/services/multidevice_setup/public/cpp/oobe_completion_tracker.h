@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_OOBE_COMPLETION_TRACKER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_OOBE_COMPLETION_TRACKER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -29,14 +28,16 @@ class OobeCompletionTracker : public KeyedService {
   void RemoveObserver(Observer* observer);
 
   OobeCompletionTracker();
+
+  OobeCompletionTracker(const OobeCompletionTracker&) = delete;
+  OobeCompletionTracker& operator=(const OobeCompletionTracker&) = delete;
+
   ~OobeCompletionTracker() override;
 
   void MarkOobeShown();
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeCompletionTracker);
 };
 
 }  // namespace multidevice_setup

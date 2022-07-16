@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_MANAGE_MIGRATION_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_MANAGE_MIGRATION_UI_CONTROLLER_H_
 
-#include "base/macros.h"
+#include <string>
+#include <vector>
+
 #include "chrome/browser/ui/autofill/payments/local_card_migration_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_controller_impl.h"
@@ -51,6 +53,9 @@ class ManageMigrationUiController
     : public LocalCardMigrationControllerObserver,
       public content::WebContentsUserData<ManageMigrationUiController> {
  public:
+  ManageMigrationUiController(const ManageMigrationUiController&) = delete;
+  ManageMigrationUiController& operator=(const ManageMigrationUiController&) =
+      delete;
   ~ManageMigrationUiController() override;
 
   void ShowBubble(base::OnceClosure show_migration_dialog_closure);
@@ -106,8 +111,6 @@ class ManageMigrationUiController
   bool show_error_dialog_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ManageMigrationUiController);
 };
 
 }  // namespace autofill

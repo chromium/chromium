@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -35,6 +34,10 @@ class CopyEntry : public Operation {
             const base::FilePath& source_path,
             const base::FilePath& target_path,
             storage::AsyncFileUtil::StatusCallback callback);
+
+  CopyEntry(const CopyEntry&) = delete;
+  CopyEntry& operator=(const CopyEntry&) = delete;
+
   ~CopyEntry() override;
 
   // Operation overrides.
@@ -50,8 +53,6 @@ class CopyEntry : public Operation {
   base::FilePath source_path_;
   base::FilePath target_path_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyEntry);
 };
 
 }  // namespace operations

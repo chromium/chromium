@@ -70,11 +70,10 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_Normal) {
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(&kData), kDataSize,
       reinterpret_cast<const uint8_t*>(&kSideData), kSideDataSize));
-  buffer->set_timestamp(base::TimeDelta::FromMilliseconds(123));
-  buffer->set_duration(base::TimeDelta::FromMilliseconds(456));
-  buffer->set_discard_padding(
-      DecoderBuffer::DiscardPadding(base::TimeDelta::FromMilliseconds(5),
-                                    base::TimeDelta::FromMilliseconds(6)));
+  buffer->set_timestamp(base::Milliseconds(123));
+  buffer->set_duration(base::Milliseconds(456));
+  buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
+      base::Milliseconds(5), base::Milliseconds(6)));
 
   MojoDecoderBufferConverter converter;
   converter.ConvertAndVerify(buffer);

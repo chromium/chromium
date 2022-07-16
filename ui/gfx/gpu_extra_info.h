@@ -16,13 +16,6 @@
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #define USE_OZONE_PLATFORM_X11
 #endif
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#define USE_OZONE_PLATFORM_WAYLAND
-#endif
-#endif
-
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-#include "ui/gfx/x/xproto.h"
 #endif
 
 namespace gfx {
@@ -68,7 +61,7 @@ struct GFX_EXPORT GpuExtraInfo {
   // applicable.
   ANGLEFeatures angle_features;
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
   std::vector<gfx::BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 #endif
 };

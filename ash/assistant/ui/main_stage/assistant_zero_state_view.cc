@@ -13,12 +13,16 @@
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -68,6 +72,8 @@ void AssistantZeroStateView::OnThemeChanged() {
 
   greeting_label_->SetBackgroundColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
+
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
   greeting_label_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorPrimary));
 }

@@ -50,6 +50,8 @@ class PlatformSensorProviderChromeOS
                             SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
   void FreeResources() override;
+
+  bool IsFusionSensorType(mojom::SensorType type) const override;
   bool IsSensorTypeAvailable(mojom::SensorType type) const override;
 
  private:
@@ -106,7 +108,12 @@ class PlatformSensorProviderChromeOS
   void IgnoreSensor(SensorData& sensor);
   bool AreAllSensorsReady() const;
 
-  void OnSensorDeviceDisconnect(int32_t id);
+  void OnSensorDeviceDisconnect(int32_t id,
+                                uint32_t custom_reason_code,
+                                const std::string& description);
+
+  void ReplaceAndRemoveSensor(mojom::SensorType type);
+
   void ProcessSensorsIfPossible();
 
   void DetermineMotionSensors();
@@ -144,6 +151,8 @@ class PlatformSensorProviderChromeOS
 
   FRIEND_TEST_ALL_PREFIXES(PlatformSensorProviderChromeOSTest,
                            CheckUnsupportedTypes);
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorProviderChromeOSTest,
+                           SensorDeviceDisconnectWithReason);
   FRIEND_TEST_ALL_PREFIXES(PlatformSensorProviderChromeOSTest, ReconnectClient);
 };
 

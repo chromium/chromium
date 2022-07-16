@@ -189,17 +189,17 @@ VP8CPUInfo VP8GetCPUInfo = AndroidCPUInfo;
 // Use compile flags as an indicator of SIMD support instead of a runtime check.
 static int wasmCPUInfo(CPUFeature feature) {
   switch (feature) {
-#ifdef WEBP_USE_SSE2
+#ifdef WEBP_HAVE_SSE2
     case kSSE2:
       return 1;
 #endif
-#ifdef WEBP_USE_SSE41
+#ifdef WEBP_HAVE_SSE41
     case kSSE3:
     case kSlowSSSE3:
     case kSSE4_1:
       return 1;
 #endif
-#ifdef WEBP_USE_NEON
+#ifdef WEBP_HAVE_NEON
     case kNEON:
       return 1;
 #endif
@@ -209,9 +209,10 @@ static int wasmCPUInfo(CPUFeature feature) {
   return 0;
 }
 VP8CPUInfo VP8GetCPUInfo = wasmCPUInfo;
-#elif defined(WEBP_USE_NEON)
-// define a dummy function to enable turning off NEON at runtime by setting
-// VP8DecGetCPUInfo = NULL
+#elif defined(WEBP_HAVE_NEON)
+// In most cases this function doesn't check for NEON support (it's assumed by
+// the configuration), but enables turning off NEON at runtime, for testing
+// purposes, by setting VP8DecGetCPUInfo = NULL.
 static int armCPUInfo(CPUFeature feature) {
   if (feature != kNEON) return 0;
 #if defined(__linux__) && defined(WEBP_HAVE_NEON_RTCD)

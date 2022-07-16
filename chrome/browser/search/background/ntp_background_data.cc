@@ -108,3 +108,12 @@ void ErrorInfo::ClearError() {
   error_type = ErrorType::NONE;
   net_error = 0;
 }
+
+CustomBackground::CustomBackground() = default;
+CustomBackground::CustomBackground(const CustomBackground&) = default;
+CustomBackground::CustomBackground(CustomBackground&&) = default;
+CustomBackground::~CustomBackground() = default;
+
+CustomBackground& CustomBackground::operator=(const CustomBackground&) =
+    default;
+CustomBackground& CustomBackground::operator=(CustomBackground&&) = default;

@@ -27,7 +27,7 @@ const char kIgnoreUrlFetcherCertRequests[] = "ignore-urlfetcher-cert-requests";
 // or more certificates have public key hashes that match a key from this list,
 // the error is ignored.
 //
-// The switch value must a be a comma-separated list of Base64-encoded SHA-256
+// The switch value must be a comma-separated list of Base64-encoded SHA-256
 // SPKI Fingerprints (RFC 7469, Section 2.4).
 //
 // This switch has no effect unless --user-data-dir (as defined by the content

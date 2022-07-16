@@ -208,16 +208,27 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateContainerPolicy();
     }
   } else if (name == html_names::kCspAttr) {
+    static const size_t kMaxLengthCSPAttribute = 4096;
     if (value && (value.Contains('\n') || value.Contains('\r') ||
                   !MatchesTheSerializedCSPGrammar(value.GetString()))) {
+      // TODO(antoniosartori): It would be safer to block loading iframes with
+      // invalid 'csp' attribute.
       required_csp_ = g_null_atom;
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kError,
           "'csp' attribute is invalid: " + value));
-      return;
-    }
-    if (required_csp_ != value) {
+    } else if (value && value.length() > kMaxLengthCSPAttribute) {
+      // TODO(antoniosartori): It would be safer to block loading iframes with
+      // invalid 'csp' attribute.
+      required_csp_ = g_null_atom;
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          String::Format("'csp' attribute too long. The max length for the "
+                         "'csp' attribute is %zu bytes.",
+                         kMaxLengthCSPAttribute)));
+    } else if (required_csp_ != value) {
       required_csp_ = value;
       DidChangeAttributes();
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
@@ -374,7 +385,7 @@ bool HTMLIFrameElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 
 LayoutObject* HTMLIFrameElement::CreateLayoutObject(const ComputedStyle&,
                                                     LegacyLayout) {
-  return new LayoutIFrame(this);
+  return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
 Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(

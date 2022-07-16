@@ -37,4 +37,14 @@ public class MockContextualSearchPolicy extends ContextualSearchPolicy {
     public boolean isUserUndecided() {
         return false;
     }
+
+    @Override
+    public boolean shouldPreviousGestureResolve() {
+        return true;
+    }
+
+    @Override
+    public boolean canSendSurroundings() {
+        return true;
+    }
 }

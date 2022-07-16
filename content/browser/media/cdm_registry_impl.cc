@@ -100,7 +100,7 @@ bool CdmRegistryImpl::FinalizeCdmCapability(
   return true;
 }
 
-const std::vector<CdmInfo>& CdmRegistryImpl::GetAllRegisteredCdmsForTesting() {
+const std::vector<CdmInfo>& CdmRegistryImpl::GetRegisteredCdms() {
   base::AutoLock auto_lock(lock_);
   return cdms_;
 }

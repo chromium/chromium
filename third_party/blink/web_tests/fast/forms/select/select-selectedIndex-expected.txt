@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 17: Blocked to expand the option list to 4294967295 items.  The maximum list length is 2147483647.
-CONSOLE WARNING: line 146: Blocked to expand the option list to 2147483648 items.  The maximum list length is 2147483647.
+CONSOLE WARNING: Blocked to expand the option list to 4294967295 items.  The maximum list length is 2147483647.
+CONSOLE WARNING: Blocked to expand the option list to 2147483648 items.  The maximum list length is 2147483647.
 one
 two
 1) setting length to a negative length

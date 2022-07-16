@@ -7,15 +7,19 @@
 #include <ostream>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/no_destructor.h"
-#include "base/synchronization/lock.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 
 namespace base {
 
-Lock& GetHooksLock() {
-  static NoDestructor<Lock> lock;
-  return *lock;
+namespace {
+
+internal::PartitionLock g_hook_lock;
+
+internal::PartitionLock& GetHooksLock() {
+  return g_hook_lock;
 }
+
+}  // namespace
 
 std::atomic<bool> PartitionAllocHooks::hooks_enabled_(false);
 std::atomic<PartitionAllocHooks::AllocationObserverHook*>
@@ -31,7 +35,7 @@ std::atomic<PartitionAllocHooks::ReallocOverrideHook*>
 
 void PartitionAllocHooks::SetObserverHooks(AllocationObserverHook* alloc_hook,
                                            FreeObserverHook* free_hook) {
-  AutoLock guard(GetHooksLock());
+  internal::PartitionAutoLock guard(GetHooksLock());
 
   // Chained hooks are not supported. Registering a non-null hook when a
   // non-null hook is already registered indicates somebody is trying to
@@ -48,7 +52,7 @@ void PartitionAllocHooks::SetObserverHooks(AllocationObserverHook* alloc_hook,
 void PartitionAllocHooks::SetOverrideHooks(AllocationOverrideHook* alloc_hook,
                                            FreeOverrideHook* free_hook,
                                            ReallocOverrideHook realloc_hook) {
-  AutoLock guard(GetHooksLock());
+  internal::PartitionAutoLock guard(GetHooksLock());
 
   PA_CHECK((!allocation_override_hook_ && !free_override_hook_ &&
             !realloc_override_hook_) ||

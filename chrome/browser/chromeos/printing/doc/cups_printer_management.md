@@ -96,7 +96,7 @@ sites.
 ### SyncedPrintersManager
 
 `SyncedPrintersManager` (nee `PrintersManager`) is a KeyedService Defined in
-`chome/browser/chromeos/printing/printers_sync_manager.[cc|h]`.
+`chome/browser/ash/printers_sync_manager.[cc|h]`.
 `SyncedPrintersManager` manages the persistent data about printers that is
 synced across devices.  It serves as a two-way bridge between the sync systems
 and `CupsPrintersManager` for both Saved and Enterprise printers.
@@ -134,12 +134,12 @@ Details for the existing PrinterDetector implementations follow.
 
 #### USBPrinterDetector
 
-Defined in `chome/browser/chromeos/printing/usb_printer_detector.[cc|h]`, this
+Defined in `chome/browser/ash/printing/usb_printer_detector.[cc|h]`, this
 interacts with the USB subsystem to turn USB device detection events into
 printers.  Both cold- and hot-plugged printers are supported.
 
 #### ZeroconfPrinterDetector
 
-Defined in `chome/browser/chromeos/printing/zeroconf_printer_detector.[cc|h]`,
+Defined in `chome/browser/ash/printing/zeroconf_printer_detector.[cc|h]`,
 this interacts with the DNS-SD and mDNS systems to detect printers that
 advertise themselves on the local network.

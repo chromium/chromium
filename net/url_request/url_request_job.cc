@@ -11,8 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/base/auth.h"
@@ -23,11 +23,13 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/x509_certificate.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_context.h"
 
@@ -55,6 +57,10 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
     DCHECK(job_);
   }
 
+  URLRequestJobSourceStream(const URLRequestJobSourceStream&) = delete;
+  URLRequestJobSourceStream& operator=(const URLRequestJobSourceStream&) =
+      delete;
+
   ~URLRequestJobSourceStream() override = default;
 
   // SourceStream implementation:
@@ -75,8 +81,6 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   // indirectly owns |this|. Therefore, |job_| will not be destroyed when |this|
   // is alive.
   URLRequestJob* const job_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestJobSourceStream);
 };
 
 URLRequestJob::URLRequestJob(URLRequest* request)
@@ -283,7 +287,7 @@ GURL MaybeStripToOrigin(GURL url, bool should_strip_to_origin) {
   if (!should_strip_to_origin)
     return url;
 
-  return url.GetOrigin();
+  return url.DeprecatedGetOriginAsURL();
 }
 
 }  // namespace
@@ -413,10 +417,6 @@ bool URLRequestJob::CanSetCookie(const net::CanonicalCookie& cookie,
   return request_->CanSetCookie(cookie, options);
 }
 
-PrivacyMode URLRequestJob::privacy_mode() const {
-  return request_->privacy_mode();
-}
-
 void URLRequestJob::NotifyHeadersComplete() {
   if (has_handled_response_)
     return;
@@ -485,8 +485,6 @@ void URLRequestJob::NotifyHeadersComplete() {
   }
 
   if (NeedsAuth()) {
-    request_->net_log().AddEvent(
-        NetLogEventType::URL_REQUEST_JOB_NOTIFY_HEADERS_COMPLETE_NEEDS_AUTH);
     std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
     // Need to check for a NULL auth_info because the server may have failed
     // to send a challenge with the 401 response.

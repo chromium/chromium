@@ -38,7 +38,7 @@ DMTokenStorage::DMTokenStorage(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   chromeos::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
-      &DMTokenStorage::OnSystemSaltRecevied, weak_ptr_factory_.GetWeakPtr()));
+      &DMTokenStorage::OnSystemSaltReceived, weak_ptr_factory_.GetWeakPtr()));
 }
 
 DMTokenStorage::~DMTokenStorage() {
@@ -107,7 +107,7 @@ void DMTokenStorage::RetrieveDMToken(RetrieveCallback callback) {
   }
 }
 
-void DMTokenStorage::OnSystemSaltRecevied(const std::string& system_salt) {
+void DMTokenStorage::OnSystemSaltReceived(const std::string& system_salt) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   system_salt_ = system_salt;
   if (system_salt_.empty()) {

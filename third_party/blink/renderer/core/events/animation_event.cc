@@ -37,7 +37,7 @@ AnimationEvent::AnimationEvent(const AtomicString& type,
     : Event(type, initializer),
       animation_name_(initializer->animationName()),
       elapsed_time_(
-          AnimationTimeDelta::FromSecondsD(initializer->elapsedTime())),
+          ANIMATION_TIME_DELTA_FROM_SECONDS(initializer->elapsedTime())),
       pseudo_element_(initializer->pseudoElement()) {}
 
 AnimationEvent::AnimationEvent(const AtomicString& type,

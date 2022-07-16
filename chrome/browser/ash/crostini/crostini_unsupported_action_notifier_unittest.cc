@@ -13,14 +13,13 @@
 
 namespace crostini {
 
+using ::ash::input_method::InputMethodDescriptor;
 using ::testing::_;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Truly;
-
-using chromeos::input_method::InputMethodDescriptor;
 
 class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
  public:
@@ -52,11 +51,11 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
               (override));
   MOCK_METHOD(void,
               AddInputMethodObserver,
-              (chromeos::input_method::InputMethodManager::Observer * observer),
+              (ash::input_method::InputMethodManager::Observer * observer),
               (override));
   MOCK_METHOD(void,
               RemoveInputMethodObserver,
-              (chromeos::input_method::InputMethodManager::Observer * observer),
+              (ash::input_method::InputMethodManager::Observer * observer),
               (override));
   MOCK_METHOD(void,
               AddKeyboardControllerObserver,

@@ -19,8 +19,8 @@ namespace {
 void SplitStringHelper(const String& str, HashSet<String>& set) {
   Vector<String> substrings;
   str.Split(' ', substrings);
-  for (size_t i = 0; i < substrings.size(); ++i)
-    set.insert(substrings[i]);
+  for (const auto& substring : substrings)
+    set.insert(substring);
 }
 
 }  // anonymous namespace

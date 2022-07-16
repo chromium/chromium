@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorMode, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationState, DestinationType, Margins, MarginsType, NativeLayer, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
+import {ColorMode, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationState, DestinationType, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
+
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getDefaultInitialSettings} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
 
 window.preview_generation_test = {};
 preview_generation_test.suiteName = 'PreviewGenerationTest';
@@ -60,7 +61,7 @@ suite(preview_generation_test.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
@@ -79,12 +80,13 @@ suite(preview_generation_test.suiteName, function() {
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     const previewArea = page.$.previewArea;
-    const documentInfo = page.$$('print-preview-document-info');
+    const documentInfo =
+        page.shadowRoot.querySelector('print-preview-document-info');
     documentInfo.documentSettings.pageCount = 3;
     documentInfo.margins = new Margins(10, 10, 10, 10);
 
@@ -574,8 +576,9 @@ suite(preview_generation_test.suiteName, function() {
   });
 
   /**
-   * Validate changing the rasterize setting updates the preview. Only runs
-   * on Linux and CrOS as setting is not available on other platforms.
+   * Validate changing the rasterize setting updates the preview.  Setting is
+   * always available on Linux and CrOS.  Availability on Windows and macOS
+   * depends upon policy (see policy_test.js).
    */
   test(assert(preview_generation_test.TestNames.Rasterize), function() {
     // Set PDF document so setting is available.
@@ -674,7 +677,8 @@ suite(preview_generation_test.suiteName, function() {
         // Check the last ticket sent by the preview area. It should not
         // have the same settings as the original (headers and footers
         // should have been turned off).
-        const previewArea = page.$$('print-preview-preview-area');
+        const previewArea =
+            page.shadowRoot.querySelector('print-preview-preview-area');
         assertMarginsFooter(
             previewArea.lastTicket_, 1, MarginsType.DEFAULT, false);
         nativeLayer.resetResolver('getPreview');

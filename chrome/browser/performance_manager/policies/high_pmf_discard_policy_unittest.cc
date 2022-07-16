@@ -8,9 +8,9 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,14 +48,14 @@ class HighPMFDiscardPolicyTest
  protected:
   HighPMFDiscardPolicy* policy() { return policy_; }
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
-  util::test::FakeMemoryPressureMonitor& memory_pressure_monitor() {
+  memory_pressure::test::FakeMemoryPressureMonitor& memory_pressure_monitor() {
     return memory_pressure_monitor_;
   }
 
  private:
   HighPMFDiscardPolicy* policy_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  util::test::FakeMemoryPressureMonitor memory_pressure_monitor_;
+  memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor_;
 };
 
 TEST_F(HighPMFDiscardPolicyTest, EndToEnd) {

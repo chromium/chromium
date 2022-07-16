@@ -8,16 +8,55 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/media/webrtc/same_origin_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+
+namespace {
+// This helper class is designed to live as long as the capture, and is used
+// when no other MediaStreamUI object is used. If the capture violates the
+// SameOrigin EnterprisePolicy, we'll abort the capture and show a dialog that
+// we have stopped it.
+class SameOriginPolicyUI : public MediaStreamUI {
+ public:
+  // Since we own the observer, the base::Unretained for the callback is safe.
+  SameOriginPolicyUI(content::WebContents* observed_contents,
+                     const GURL& reference_origin)
+      : observer_(
+            observed_contents,
+            reference_origin,
+            base::BindRepeating(&SameOriginPolicyUI::OnSameOriginStateChange,
+                                base::Unretained(this))) {}
+  // Called when stream capture is stopped.
+  ~SameOriginPolicyUI() override = default;
+
+  gfx::NativeViewId OnStarted(
+      base::OnceClosure stop_callback,
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override {
+    stop_callback_ = std::move(stop_callback);
+    return 0;
+  }
+
+ private:
+  void OnSameOriginStateChange(content::WebContents* wc) {
+    std::move(stop_callback_).Run();
+    capture_policy::ShowCaptureTerminatedDialog(wc);
+  }
+
+  SameOriginObserver observer_;
+  base::OnceClosure stop_callback_;
+};
+}  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
@@ -62,7 +101,19 @@ void TabCaptureAccessHandler::HandleRequest(
         std::move(ui));
     return;
   }
-  if (!profile->GetPrefs()->GetBoolean(prefs::kScreenCaptureAllowed)) {
+
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(request.security_origin,
+                                             web_contents);
+  DesktopMediaList::WebContentsFilter can_show_web_contents =
+      capture_policy::GetIncludableWebContentsFilter(request.security_origin,
+                                                     capture_level);
+
+  content::WebContents* target_web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(request.render_process_id,
+                                           request.render_frame_id));
+  if (!can_show_web_contents.Run(target_web_contents)) {
     std::move(callback).Run(
         devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         std::move(ui));
@@ -109,9 +160,14 @@ void TabCaptureAccessHandler::HandleRequest(
   }
 
   if (!devices.empty()) {
+    std::unique_ptr<MediaStreamUI> media_ui;
+    if (capture_level == AllowedScreenCaptureLevel::kSameOrigin) {
+      media_ui = std::make_unique<SameOriginPolicyUI>(target_web_contents,
+                                                      request.security_origin);
+    }
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
-             ->RegisterMediaStream(web_contents, devices);
+             ->RegisterMediaStream(web_contents, devices, std::move(media_ui));
   }
   UpdateExtensionTrusted(request, extension);
   std::move(callback).Run(

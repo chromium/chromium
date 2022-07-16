@@ -15,20 +15,18 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
-#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/components/web_app_url_loader.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-class Browser;
 
 namespace base {
 class Version;
@@ -49,7 +47,7 @@ namespace web_app {
 
 class WebAppUiManager;
 class OsIntegrationManager;
-class AppRegistryController;
+class WebAppSyncBridge;
 class WebAppPolicyManager;
 
 using SystemAppDelegateMap =
@@ -84,7 +82,7 @@ class SystemWebAppManager {
   void SetSubsystems(
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* registrar,
-      AppRegistryController* registry_controller,
+      WebAppSyncBridge* sync_bridge,
       WebAppUiManager* ui_manager,
       OsIntegrationManager* os_integration_manager,
       WebAppPolicyManager* web_app_policy_manager);
@@ -110,61 +108,23 @@ class SystemWebAppManager {
   // Returns the System App Type for the given |app_id|.
   absl::optional<SystemAppType> GetSystemAppTypeForAppId(AppId app_id) const;
 
+  // Returns the System App Delegate for the given App |type|.
+  const SystemWebAppDelegate* GetSystemApp(SystemAppType type) const;
+
   // Returns the App Ids for all installed System Web Apps.
   std::vector<AppId> GetAppIds() const;
 
   // Returns whether |app_id| points to an installed System App.
   bool IsSystemWebApp(const AppId& app_id) const;
 
-  // Returns whether the given System App |type| should use a single window.
-  bool IsSingleWindow(SystemAppType type) const;
-
-  // Returns whether the given System App |type| should get launch directory in
-  // launch parameter.
-  bool AppShouldReceiveLaunchDirectory(SystemAppType type) const;
-
   // Perform tab-specific setup when a navigation in a System Web App is about
   // to be committed.
   void OnReadyToCommitNavigation(const AppId& app_id,
                                  content::NavigationHandle* navigation_handle);
 
-  // Returns terms to be used when searching for the app.
-  std::vector<std::string> GetAdditionalSearchTerms(SystemAppType type) const;
-
-  // Returns whether the app should be shown in the launcher.
-  bool ShouldShowInLauncher(SystemAppType type) const;
-
-  // Returns whether the app should be shown in search.
-  bool ShouldShowInSearch(SystemAppType type) const;
-
-  // Returns whether the app should be resizeable.
-  bool IsResizeableWindow(SystemAppType type) const;
-
-  // Returns whether the surface of app can be maximizable.
-  bool IsMaximizableWindow(SystemAppType type) const;
-
-  // Returns whether the app should have the reload button in minimal ui mode.
-  bool ShouldHaveReloadButtonInMinimalUi(SystemAppType type) const;
-
-  // Returns whether the app is allowed to close the window through scripts.
-  bool AllowScriptsToCloseWindows(SystemAppType type) const;
-
-  // Returns whether the app window should have the tab-strip.
-  bool ShouldHaveTabStrip(SystemAppType type) const;
-
   // Returns the SystemAppType that should capture the navigation to |url|.
   absl::optional<SystemAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
-
-  // Return the default bound of App's window.
-  gfx::Rect GetDefaultBounds(SystemAppType type, Browser* browser) const;
-
-  // Returns the minimum window size for |app_id| or an empty size if the app
-  // doesn't specify a minimum.
-  gfx::Size GetMinimumWindowSize(const AppId& app_id) const;
-
-  // Returns whether to show "New Window" menu item in App's shelf context menu.
-  bool ShouldShowNewWindowMenuOption(SystemAppType type) const;
 
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
@@ -206,10 +166,9 @@ class SystemWebAppManager {
   // Returns the list of origin trials to enable for |url| loaded in System
   // App |type|. Returns an empty vector if the App does not specify origin
   // trials for |url|.
-  const std::vector<std::string>* GetEnabledOriginTrials(SystemAppType type,
-                                                         const GURL& url) const;
-
-  bool AppHasFileHandlingOriginTrial(SystemAppType type);
+  const std::vector<std::string>* GetEnabledOriginTrials(
+      const SystemWebAppDelegate* system_app,
+      const GURL& url) const;
 
   void StopBackgroundTasks();
 
@@ -254,7 +213,7 @@ class SystemWebAppManager {
 
   WebAppRegistrar* registrar_ = nullptr;
 
-  AppRegistryController* registry_controller_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
 
   WebAppUiManager* ui_manager_ = nullptr;
 

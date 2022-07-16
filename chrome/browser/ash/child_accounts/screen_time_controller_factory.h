@@ -25,6 +25,10 @@ class ScreenTimeControllerFactory : public BrowserContextKeyedServiceFactory {
 
   static ScreenTimeControllerFactory* GetInstance();
 
+  ScreenTimeControllerFactory(const ScreenTimeControllerFactory&) = delete;
+  ScreenTimeControllerFactory& operator=(const ScreenTimeControllerFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<ScreenTimeControllerFactory>;
 
@@ -34,8 +38,6 @@ class ScreenTimeControllerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenTimeControllerFactory);
 };
 
 }  // namespace ash

@@ -152,9 +152,8 @@ bool AudioDevicesPrefHandlerImpl::GetMuteValue(const AudioDevice& device) {
   if (!device_mute_settings_->HasKey(device_id_str))
     MigrateDeviceMuteSettings(device_id_str, device);
 
-  int mute = kPrefMuteOff;
-  device_mute_settings_->GetInteger(device_id_str, &mute);
-
+  int mute =
+      device_mute_settings_->FindIntKey(device_id_str).value_or(kPrefMuteOff);
   return (mute == kPrefMuteOn);
 }
 
@@ -203,18 +202,27 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
     LOG(ERROR) << "Could not get device state for device:" << device.ToString();
     return false;
   }
-  if (!dict->GetBoolean(kActiveKey, active)) {
+
+  absl::optional<bool> active_opt = dict->FindBoolKey(kActiveKey);
+  if (!active_opt.has_value()) {
     LOG(ERROR) << "Could not get active value for device:" << device.ToString();
     return false;
   }
 
-  if (*active && !dict->GetBoolean(kActivateByUserKey, activate_by_user)) {
+  *active = active_opt.value();
+  if (!*active)
+    return true;
+
+  absl::optional<bool> activate_by_user_opt =
+      dict->FindBoolKey(kActivateByUserKey);
+  if (!activate_by_user_opt.has_value()) {
     LOG(ERROR) << "Could not get activate_by_user value for previously "
                   "active device:"
                << device.ToString();
     return false;
   }
 
+  *activate_by_user = activate_by_user_opt.value();
   return true;
 }
 
@@ -238,11 +246,7 @@ double AudioDevicesPrefHandlerImpl::GetOutputVolumePrefValue(
   std::string device_id_str = GetDeviceIdString(device);
   if (!device_volume_settings_->HasKey(device_id_str))
     MigrateDeviceVolumeGainSettings(device_id_str, device);
-
-  double value;
-  device_volume_settings_->GetDouble(device_id_str, &value);
-
-  return value;
+  return *device_volume_settings_->FindDoubleKey(device_id_str);
 }
 
 double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
@@ -251,11 +255,7 @@ double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
   std::string device_id_str = GetDeviceIdString(device);
   if (!device_gain_settings_->HasKey(device_id_str))
     SetInputGainPrefValue(device, kDefaultInputGainPercent);
-
-  double value;
-  device_gain_settings_->GetDouble(device_id_str, &value);
-
-  return value;
+  return *device_gain_settings_->FindDoubleKey(device_id_str);
 }
 
 double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(

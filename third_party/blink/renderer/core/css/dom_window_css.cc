@@ -79,7 +79,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
 String DOMWindowCSS::escape(const String& ident) {
   StringBuilder builder;
   SerializeIdentifier(ident, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

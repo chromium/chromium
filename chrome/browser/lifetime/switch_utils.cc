@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 

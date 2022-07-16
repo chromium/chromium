@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/policy_container_host.h"
 
-#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -81,7 +80,8 @@ std::ostream& operator<<(std::ostream& out,
       << ", report_only_reporting_endpoint: "
       << policies.cross_origin_opener_policy.report_only_reporting_endpoint
              .value_or("<null>")
-      << " }";
+      << ", soap_by_default_value: "
+      << policies.cross_origin_opener_policy.soap_by_default_value << " }";
 
   return out << " }";
 }
@@ -195,8 +195,7 @@ void PolicyContainerHost::Bind(
   // the mojo remote) in the renderer process alive.
   scoped_refptr<PolicyContainerHost> copy = this;
   policy_container_host_receiver_.set_disconnect_handler(base::BindOnce(
-      base::DoNothing::Once<scoped_refptr<PolicyContainerHost>>(),
-      std::move(copy)));
+      [](scoped_refptr<PolicyContainerHost>) {}, std::move(copy)));
 }
 
 void PolicyContainerHost::IssueKeepAliveHandle(

@@ -24,16 +24,10 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BlockPopupsAppInterface);
-
 using chrome_test_util::ContentSettingsButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::TabGridEditButton;
 
 namespace {
 
@@ -65,6 +59,11 @@ class ScopedBlockPopupsException {
     [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_ALLOW
                                  forPattern:pattern_];
   }
+
+  ScopedBlockPopupsException(const ScopedBlockPopupsException&) = delete;
+  ScopedBlockPopupsException& operator=(const ScopedBlockPopupsException&) =
+      delete;
+
   ~ScopedBlockPopupsException() {
     [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_DEFAULT
                                  forPattern:pattern_];
@@ -73,8 +72,6 @@ class ScopedBlockPopupsException {
  private:
   // The exception pattern that this object is managing.
   NSString* pattern_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBlockPopupsException);
 };
 }  // namespace
 
@@ -218,6 +215,7 @@ class ScopedBlockPopupsException {
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                                 IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                            grey_not(TabGridEditButton()),
                             grey_not(grey_accessibilityTrait(
                                 UIAccessibilityTraitNotEnabled)),
                             nil)] assertWithMatcher:grey_sufficientlyVisible()];

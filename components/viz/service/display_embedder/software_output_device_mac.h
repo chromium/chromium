@@ -9,7 +9,6 @@
 #include <list>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -23,6 +22,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceMac : public SoftwareOutputDevice {
  public:
   explicit SoftwareOutputDeviceMac(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  SoftwareOutputDeviceMac(const SoftwareOutputDeviceMac&) = delete;
+  SoftwareOutputDeviceMac& operator=(const SoftwareOutputDeviceMac&) = delete;
+
   ~SoftwareOutputDeviceMac() override;
 
   // SoftwareOutputDevice implementation.
@@ -73,8 +76,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceMac : public SoftwareOutputDevice {
   std::unique_ptr<SkCanvas> current_paint_canvas_;
 
   SkRegion last_copy_region_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputDeviceMac);
 };
 
 }  // namespace viz

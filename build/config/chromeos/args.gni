@@ -27,4 +27,12 @@ declare_args() {
 
   # Determines if we run the test in skylab, aka the CrOS labs.
   is_skylab = false
+
+  # Determines if we collect hardware information in chrome://system and
+  # feedback logs. A similar build flag "hw_details" is defined in Chrome OS
+  # (see https://crrev.com/c/3123455).
+  is_chromeos_with_hw_details = false
+
+  # Determines if we're willing to link against libinput
+  use_libinput = false
 }

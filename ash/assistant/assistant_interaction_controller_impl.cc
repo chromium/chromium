@@ -268,6 +268,8 @@ void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
     case AssistantVisibility::kVisible:
       OnUiVisible(entry_point.value());
       break;
+    case AssistantVisibility::kClosing:
+      break;
   }
 }
 

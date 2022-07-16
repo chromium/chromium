@@ -323,7 +323,12 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetRenderFrameHostFromId(
 ScopedJavaLocalRef<jobjectArray> WebContentsAndroid::GetAllRenderFrameHosts(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) const {
-  std::vector<RenderFrameHost*> frames = web_contents_->GetAllFrames();
+  std::vector<RenderFrameHost*> frames;
+  web_contents_->ForEachRenderFrameHost(base::BindRepeating(
+      [](std::vector<RenderFrameHost*>* frames, RenderFrameHostImpl* rfh) {
+        frames->push_back(rfh);
+      },
+      &frames));
   ScopedJavaLocalRef<jobjectArray> jframes =
       Java_WebContentsImpl_createRenderFrameHostArray(env, frames.size());
   for (size_t i = 0; i < frames.size(); i++) {
@@ -557,8 +562,8 @@ void WebContentsAndroid::AdjustSelectionByCharacterOffset(
 }
 
 bool WebContentsAndroid::InitializeRenderFrameForJavaScript() {
-  if (!web_contents_->GetFrameTree()
-           ->root()
+  if (!web_contents_->GetPrimaryFrameTree()
+           .root()
            ->render_manager()
            ->InitializeMainRenderFrameForImmediateUse()) {
     LOG(ERROR) << "Failed to initialize RenderFrame to evaluate javascript";
@@ -729,7 +734,7 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
           ui::AXMode(ui::kAXModeComplete.mode() | ui::AXMode::kHTMLMetadata),
           /* exclude_offscreen= */ false,
           /* max_nodes= */ 5000,
-          /* timeout= */ base::TimeDelta::FromSeconds(2));
+          /* timeout= */ base::Seconds(2));
 }
 
 ScopedJavaLocalRef<jstring> WebContentsAndroid::GetEncoding(
@@ -765,7 +770,7 @@ int WebContentsAndroid::DownloadImage(
     jint max_bitmap_size,
     jboolean bypass_cache,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  const uint32_t preferred_size = 0;
+  const gfx::Size preferred_size;
   return web_contents_->DownloadImage(
       *url::GURLAndroid::ToNativeGURL(env, jurl), is_fav_icon, preferred_size,
       max_bitmap_size, bypass_cache,
@@ -878,7 +883,7 @@ void WebContentsAndroid::SendOrientationChangeEvent(
   view->set_device_orientation(orientation);
   RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
   if (rwhva)
-    rwhva->UpdateScreenInfo(web_contents_->GetView()->GetNativeView());
+    rwhva->UpdateScreenInfo();
 
   web_contents_->OnScreenOrientationChange();
 }

@@ -100,11 +100,4 @@ public class ViewPositionObserver {
             notifyListeners();
         }
     }
-
-    /**
-     * Clears installed listener(s).
-     */
-    public void clearListener() {
-        mListeners.clear();
-    }
 }

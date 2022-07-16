@@ -103,6 +103,7 @@ void RecordDangerousDownloadWarningBypassed(
 }
 
 void RecordDownloadOpened(download::DownloadDangerType danger_type,
+                          download::DownloadContent download_content,
                           base::Time download_opened_time,
                           base::Time download_end_time,
                           bool show_download_in_folder) {
@@ -112,10 +113,123 @@ void RecordDownloadOpened(download::DownloadDangerType danger_type,
   std::string metric_suffix =
       show_download_in_folder ? ".ShowInFolder" : ".OpenDirectly";
   base::UmaHistogramCustomTimes(
-      "SBClientDownload.SafeDownloadOpenedLatency" + metric_suffix,
+      "SBClientDownload.SafeDownloadOpenedLatency2" + metric_suffix,
       /* sample */ download_opened_time - download_end_time,
-      /* min */ base::TimeDelta::FromSeconds(1),
-      /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
+      /* min */ base::Seconds(1),
+      /* max */ base::Days(1), /* buckets */ 50);
+
+  RecordDownloadOpenedFileType(download_content, download_opened_time,
+                               download_end_time);
+}
+
+void RecordDownloadOpenedFileType(download::DownloadContent download_content,
+                                  base::Time download_opened_time,
+                                  base::Time download_end_time) {
+  std::string download_content_str;
+  switch (download_content) {
+    case download::DownloadContent::UNRECOGNIZED:
+      download_content_str = "UNRECOGNIZED";
+      break;
+    case download::DownloadContent::TEXT:
+      download_content_str = "TEXT";
+      break;
+    case download::DownloadContent::IMAGE:
+      download_content_str = "IMAGE";
+      break;
+    case download::DownloadContent::AUDIO:
+      download_content_str = "AUDIO";
+      break;
+    case download::DownloadContent::VIDEO:
+      download_content_str = "VIDEO";
+      break;
+    case download::DownloadContent::OCTET_STREAM:
+      download_content_str = "OCTET_STREAM";
+      break;
+    case download::DownloadContent::PDF:
+      download_content_str = "PDF";
+      break;
+    case download::DownloadContent::DOCUMENT:
+      download_content_str = "DOCUMENT";
+      break;
+    case download::DownloadContent::SPREADSHEET:
+      download_content_str = "SPREADSHEET";
+      break;
+    case download::DownloadContent::PRESENTATION:
+      download_content_str = "PRESENTATION";
+      break;
+    case download::DownloadContent::ARCHIVE:
+      download_content_str = "ARCHIVE";
+      break;
+    case download::DownloadContent::EXECUTABLE:
+      download_content_str = "EXECUTABLE";
+      break;
+    case download::DownloadContent::DMG:
+      download_content_str = "DMG";
+      break;
+    case download::DownloadContent::CRX:
+      download_content_str = "CRX";
+      break;
+    case download::DownloadContent::WEB:
+      download_content_str = "WEB";
+      break;
+    case download::DownloadContent::EBOOK:
+      download_content_str = "EBOOK";
+      break;
+    case download::DownloadContent::FONT:
+      download_content_str = "FONT";
+      break;
+    case download::DownloadContent::APK:
+      download_content_str = "APK";
+      break;
+    case download::DownloadContent::MAX:
+      download_content_str = "MAX";
+      break;
+  }
+  base::UmaHistogramCustomTimes(
+      "SBClientDownload.SafeDownloadOpenedLatencyByContentType." +
+          download_content_str,
+      /* sample */ download_opened_time - download_end_time,
+      /* min */ base::Seconds(1),
+      /* max */ base::Days(1), /* buckets */ 50);
+}
+
+void RecordDownloadFileTypeAttributes(
+    DownloadFileType::DangerLevel danger_level,
+    bool has_user_gesture,
+    bool visited_referrer_before,
+    absl::optional<base::Time> last_bypass_time) {
+  if (danger_level != DownloadFileType::ALLOW_ON_USER_GESTURE) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "SBClientDownload.UserGestureFileType.Attributes",
+      UserGestureFileTypeAttributes::TOTAL_TYPE_CHECKED);
+  if (has_user_gesture) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        UserGestureFileTypeAttributes::HAS_USER_GESTURE);
+  }
+  if (visited_referrer_before) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        UserGestureFileTypeAttributes::HAS_REFERRER_VISIT);
+  }
+  if (has_user_gesture && visited_referrer_before) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        UserGestureFileTypeAttributes::
+            HAS_BOTH_USER_GESTURE_AND_REFERRER_VISIT);
+  }
+  if (last_bypass_time) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        UserGestureFileTypeAttributes::HAS_BYPASSED_DOWNLOAD_WARNING);
+    base::UmaHistogramCustomTimes(
+        "SBClientDownload.UserGestureFileType.LastBypassDownloadInterval",
+        /* sample */ base::Time::Now() - last_bypass_time.value(),
+        /* min */ base::Seconds(1),
+        /* max */ base::Days(1), /* buckets */ 50);
+  }
 }
 
 }  // namespace safe_browsing

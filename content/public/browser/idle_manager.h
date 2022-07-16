@@ -15,26 +15,10 @@ class Origin;
 
 namespace content {
 
-class IdleTimeProvider;
-
 // Provides an interface for handling mojo connections from the renderer,
 // keeping track of clients that are monitoring the user's idle state.
 class IdleManager {
  public:
-  // Provides an interface for calculating a user's idle time and screen state.
-  class IdleTimeProvider {
-   public:
-    IdleTimeProvider() = default;
-    virtual ~IdleTimeProvider() = default;
-
-    IdleTimeProvider(const IdleTimeProvider&) = delete;
-    IdleTimeProvider& operator=(const IdleTimeProvider&) = delete;
-
-    // See ui/base/idle/idle.h for the semantics of these methods.
-    virtual base::TimeDelta CalculateIdleTime() = 0;
-    virtual bool CheckIdleStateIsLocked() = 0;
-  };
-
   IdleManager() = default;
   virtual ~IdleManager() = default;
 

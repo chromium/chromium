@@ -111,6 +111,24 @@ void DesktopEnvironmentOptions::set_enable_remote_open_url(bool enabled) {
   enable_remote_open_url_ = enabled;
 }
 
+bool DesktopEnvironmentOptions::enable_remote_webauthn() const {
+  return enable_remote_webauthn_;
+}
+
+void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
+  enable_remote_webauthn_ = enabled;
+}
+
+const absl::optional<size_t>& DesktopEnvironmentOptions::clipboard_size()
+    const {
+  return clipboard_size_;
+}
+
+void DesktopEnvironmentOptions::set_clipboard_size(
+    absl::optional<size_t> clipboard_size) {
+  clipboard_size_ = std::move(clipboard_size);
+}
+
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
 #if defined(OS_WIN)

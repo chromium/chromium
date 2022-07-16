@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -22,6 +21,10 @@ class MEDIA_EXPORT CdmAdapterFactory final : public CdmFactory {
       base::RepeatingCallback<std::unique_ptr<CdmAuxiliaryHelper>()>;
 
   explicit CdmAdapterFactory(HelperCreationCB helper_creation_cb);
+
+  CdmAdapterFactory(const CdmAdapterFactory&) = delete;
+  CdmAdapterFactory& operator=(const CdmAdapterFactory&) = delete;
+
   ~CdmAdapterFactory() override;
 
   // CdmFactory implementation.
@@ -36,8 +39,6 @@ class MEDIA_EXPORT CdmAdapterFactory final : public CdmFactory {
  private:
   // Callback to create CdmAuxiliaryHelper for the created CDM.
   HelperCreationCB helper_creation_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmAdapterFactory);
 };
 
 }  // namespace media

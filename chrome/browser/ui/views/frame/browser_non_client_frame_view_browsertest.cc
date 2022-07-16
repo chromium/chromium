@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -15,9 +16,9 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -27,14 +28,20 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/theme_change_waiter.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/theme_provider.h"
 
 class BrowserNonClientFrameViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   BrowserNonClientFrameViewBrowserTest() = default;
+
+  BrowserNonClientFrameViewBrowserTest(
+      const BrowserNonClientFrameViewBrowserTest&) = delete;
+  BrowserNonClientFrameViewBrowserTest& operator=(
+      const BrowserNonClientFrameViewBrowserTest&) = delete;
+
   ~BrowserNonClientFrameViewBrowserTest() override = default;
 
   void SetUp() override {
@@ -52,10 +59,13 @@ class BrowserNonClientFrameViewBrowserTest
   // longer be hosted apps when BMO ships.
   void InstallAndLaunchBookmarkApp(
       absl::optional<GURL> app_url = absl::nullopt) {
-    blink::Manifest manifest;
+    blink::mojom::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
-    manifest.theme_color = app_theme_color_;
+    if (app_theme_color_) {
+      manifest.has_theme_color = true;
+      manifest.theme_color = *app_theme_color_;
+    }
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     GURL manifest_url = embedded_test_server()->GetURL("/manifest");
@@ -82,8 +92,6 @@ class BrowserNonClientFrameViewBrowserTest
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewBrowserTest);
 };
 
 // Tests the frame color for a normal browser window.
@@ -195,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        CustomTabBarIsVisibleInFullscreen) {
   InstallAndLaunchBookmarkApp();
 
-  ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com")));
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
@@ -207,6 +216,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        HTMLMetaThemeColorOverridesManifest) {
+  // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
+  // and becomes smaller because of that.  Investigate this and remove the line
+  // below if possible.
+  ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
+
   // Ensure we're not using the system theme on Linux.
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());

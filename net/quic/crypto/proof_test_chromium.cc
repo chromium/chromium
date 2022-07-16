@@ -223,8 +223,10 @@ TEST_P(ProofTest, TlsSignature) {
 
   quic::QuicSocketAddress client_address;
 
+  bool cert_matched_sni;
   quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain =
-      source->GetCertChain(server_address, client_address, hostname);
+      source->GetCertChain(server_address, client_address, hostname,
+                           &cert_matched_sni);
   ASSERT_GT(chain->certs.size(), 0ul);
 
   // Generate a value to be signed similar to the example in TLS 1.3 section

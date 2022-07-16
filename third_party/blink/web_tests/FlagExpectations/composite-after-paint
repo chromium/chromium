@@ -8,50 +8,5 @@
 virtual/composite-after-paint/* [ Skip ]
 virtual/stable/* [ Skip ]
 
-# They test Layer::ScrollsWithRespectTo() which is for pre-CompositeAfterPaint only.
-compositing/overflow/scrolls-with-respect-to-nested.html [ Skip ]
-compositing/overflow/scrolls-with-respect-to-transform.html [ Skip ]
-compositing/overflow/scrolls-with-respect-to.html [ Skip ]
-
-# Can't rebaseline because the file path is too long.
-virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Skip ]
-
-# Fail before CompositeAfterPaint but pass with it.
-crbug.com/802915 css3/blending/isolation-should-include-non-local-background.html [ Pass ]
-crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Pass ]
-crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Pass ]
-paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html [ Pass ]
-external/wpt/css/css-break/transform-000.html [ Pass ]
-external/wpt/css/css-break/transform-001.html [ Pass ]
-external/wpt/css/css-break/transform-002.html [ Pass ]
-crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Pass ]
-crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
-crbug.com/1183814 external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Pass ]
-crbug.com/1167352 external/wpt/css/css-will-change/will-change-transform-add-content.html [ Pass ]
-crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Pass ]
-
-# Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
-crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
-
-compositing/gestures/gesture-tapHighlight-composited-img.html [ Failure Pass ]
-
-# Need to force the video to be composited in this case, or change pre-CAP
-# to match CAP behavior.
-crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure ]
-
-# Cross-origin iframe layerization is buggy with empty iframes.
-crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
-crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
-
-# FragmentClip hierarchy issue. Will be fixed by LayoutNGBlockFragmentation.
-crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
-crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
-
-# These tests expect fragment stitching when composited, which isn't correct rendering.
-crbug.com/1058792 fast/multicol/composited-layer-with-transform.html [ Skip ]
-crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ Skip ]
-
-# Needs to meet requirement of DevTools for trace events.
-crbug.com/1191032 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure ]
-crbug.com/1191032 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
-crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash ]

@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -30,18 +29,23 @@ class PDFWebContentsHelperTest;
 
 // Per-WebContents class to handle PDF messages.
 class PDFWebContentsHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<PDFWebContentsHelper>,
+    : public content::WebContentsUserData<PDFWebContentsHelper>,
       public mojom::PdfService,
       public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
  public:
+  PDFWebContentsHelper(const PDFWebContentsHelper&) = delete;
+  PDFWebContentsHelper& operator=(const PDFWebContentsHelper&) = delete;
+
   ~PDFWebContentsHelper() override;
 
   static void CreateForWebContentsWithClient(
       content::WebContents* contents,
       std::unique_ptr<PDFWebContentsHelperClient> client);
+  static void BindPdfService(
+      mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
+      content::RenderFrameHost* rfh);
 
   // ui::TouchSelectionControllerClient :
   bool SupportsAnimation() const override;
@@ -57,7 +61,6 @@ class PDFWebContentsHelper
   void DidScroll() override;
 
   // ui::TouchSelectionMenuClient:
-  const char* GetType() override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;
@@ -91,9 +94,10 @@ class PDFWebContentsHelper
                         const gfx::PointF& right,
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
+  void GetPdfFindInPage(GetPdfFindInPageCallback callback) override;
 
-  content::WebContentsFrameReceiverSet<mojom::PdfService>
-      pdf_service_receivers_;
+  content::WebContents* const web_contents_;
+  content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
   std::unique_ptr<PDFWebContentsHelperClient> const client_;
   content::TouchSelectionControllerClientManager*
       touch_selection_controller_client_manager_ = nullptr;
@@ -107,9 +111,9 @@ class PDFWebContentsHelper
 
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  mojo::AssociatedRemote<mojom::PdfFindInPageFactory> find_factory_remote_;
 
-  DISALLOW_COPY_AND_ASSIGN(PDFWebContentsHelper);
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace pdf

@@ -4,6 +4,7 @@
 
 #include "content/public/test/test_storage_partition.h"
 
+#include "base/macros.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -65,10 +66,6 @@ TestStoragePartition::CreateURLLoaderNetworkObserverForNavigationRequest(
 
 storage::QuotaManager* TestStoragePartition::GetQuotaManager() {
   return quota_manager_;
-}
-
-AppCacheService* TestStoragePartition::GetAppCacheService() {
-  return app_cache_service_;
 }
 
 BackgroundSyncContext* TestStoragePartition::GetBackgroundSyncContext() {
@@ -170,7 +167,6 @@ TestStoragePartition::GetProtoDatabaseProviderForTesting() {
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
 HostZoomMap* TestStoragePartition::GetHostZoomMap() {
   return host_zoom_map_;
 }
@@ -182,12 +178,12 @@ HostZoomLevelContext* TestStoragePartition::GetHostZoomLevelContext() {
 ZoomLevelDelegate* TestStoragePartition::GetZoomLevelDelegate() {
   return zoom_level_delegate_;
 }
-#endif  // !defined(OS_ANDROID)
 
 void TestStoragePartition::ClearDataForOrigin(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
-    const GURL& storage_origin) {}
+    const GURL& storage_origin,
+    base::OnceClosure callback) {}
 
 void TestStoragePartition::ClearData(
     uint32_t remove_mask,

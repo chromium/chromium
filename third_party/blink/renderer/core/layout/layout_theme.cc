@@ -588,8 +588,10 @@ void LayoutTheme::SystemFont(CSSValueID system_font_id,
   font_description.SetSpecifiedSize(
       LayoutThemeFontProvider::SystemFontSize(system_font_id, document));
   font_description.SetIsAbsoluteSize(true);
+  const AtomicString& system_font =
+      LayoutThemeFontProvider::SystemFontFamily(system_font_id);
   font_description.FirstFamily().SetFamily(
-      LayoutThemeFontProvider::SystemFontFamily(system_font_id));
+      system_font, FontFamily::InferredTypeFor(system_font));
   font_description.SetGenericFamily(FontDescription::kNoFamily);
 }
 

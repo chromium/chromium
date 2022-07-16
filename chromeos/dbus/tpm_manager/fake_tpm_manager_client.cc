@@ -53,6 +53,12 @@ void FakeTpmManagerClient::GetVersionInfo(
   PostProtoResponse(std::move(callback), version_info_reply_);
 }
 
+void FakeTpmManagerClient::GetSupportedFeatures(
+    const ::tpm_manager::GetSupportedFeaturesRequest& request,
+    GetSupportedFeaturesCallback callback) {
+  PostProtoResponse(std::move(callback), supported_features_reply_);
+}
+
 void FakeTpmManagerClient::GetDictionaryAttackInfo(
     const ::tpm_manager::GetDictionaryAttackInfoRequest& request,
     GetDictionaryAttackInfoCallback callback) {
@@ -101,6 +107,10 @@ FakeTpmManagerClient::mutable_version_info_reply() {
   return &version_info_reply_;
 }
 
+::tpm_manager::GetSupportedFeaturesReply*
+FakeTpmManagerClient::mutable_supported_features_reply() {
+  return &supported_features_reply_;
+}
 ::tpm_manager::GetDictionaryAttackInfoReply*
 FakeTpmManagerClient::mutable_dictionary_attack_info_reply() {
   return &dictionary_attack_info_reply_;

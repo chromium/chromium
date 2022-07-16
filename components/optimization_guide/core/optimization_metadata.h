@@ -14,10 +14,6 @@ namespace optimization_guide {
 
 // Contains metadata that could be attached to an optimization provided by the
 // Optimization Guide.
-//
-// Note: If a new optimization metadata is added,
-// |OptimizationGuideHintsManager::AddHintsForTesting| should be updated
-// to handle it.
 class OptimizationMetadata {
  public:
   OptimizationMetadata();
@@ -70,6 +66,12 @@ class OptimizationMetadata {
   void set_loading_predictor_metadata(
       const proto::LoadingPredictorMetadata& loading_predictor_metadata) {
     loading_predictor_metadata_ = loading_predictor_metadata;
+  }
+
+  // Returns true if |this| contains no metadata.
+  bool empty() const {
+    return !any_metadata_ && !performance_hints_metadata_ &&
+           !public_image_metadata_ && loading_predictor_metadata_;
   }
 
  private:

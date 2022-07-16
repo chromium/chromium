@@ -39,6 +39,9 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       const NetLogWithSource& net_log);
 
+  QuicConnectionLogger(const QuicConnectionLogger&) = delete;
+  QuicConnectionLogger& operator=(const QuicConnectionLogger&) = delete;
+
   ~QuicConnectionLogger() override;
 
   // quic::QuicPacketCreator::DebugDelegateInterface
@@ -210,8 +213,6 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   const std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher_;
 
   QuicEventLogger event_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicConnectionLogger);
 };
 
 }  // namespace net

@@ -134,6 +134,12 @@ class PrintCompositorImplTest : public testing::Test {
 class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
  public:
   PrintCompositorImplCrashKeyTest() {}
+
+  PrintCompositorImplCrashKeyTest(const PrintCompositorImplCrashKeyTest&) =
+      delete;
+  PrintCompositorImplCrashKeyTest& operator=(
+      const PrintCompositorImplCrashKeyTest&) = delete;
+
   ~PrintCompositorImplCrashKeyTest() override {}
 
   void SetUp() override {
@@ -142,9 +148,6 @@ class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
   }
 
   void TearDown() override { crash_reporter::ResetCrashKeysForTesting(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintCompositorImplCrashKeyTest);
 };
 
 TEST_F(PrintCompositorImplTest, IsReadyToComposite) {

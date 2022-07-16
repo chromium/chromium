@@ -100,8 +100,6 @@ source_set("unit_tests") {
     "util_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":domain_reliability",
     "//base",

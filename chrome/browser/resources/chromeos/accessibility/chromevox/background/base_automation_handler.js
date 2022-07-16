@@ -104,7 +104,7 @@ BaseAutomationHandler = class {
     if (!DesktopAutomationHandler.announceActions &&
         (prevRange && !prevRange.requiresRecovery()) &&
         evt.eventFrom === 'action' &&
-        evt.eventFromAction !== ActionType.DO_DEFAULT) {
+        !BaseAutomationHandler.allowEventFromAction_(evt.eventFromAction)) {
       return;
     }
 
@@ -122,6 +122,16 @@ BaseAutomationHandler = class {
     output.withRichSpeechAndBraille(
         ChromeVoxState.instance.currentRange, prevRange, evt.type);
     output.go();
+  }
+
+  /**
+   * @param {ActionType} eventFromAction
+   * @return {boolean}
+   * @private
+   */
+  static allowEventFromAction_(eventFromAction) {
+    return eventFromAction === ActionType.DO_DEFAULT ||
+        eventFromAction === ActionType.SHOW_CONTEXT_MENU;
   }
 };
 });  // goog.scope

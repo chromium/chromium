@@ -21,7 +21,7 @@
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                                  const AccountId& account_id)
@@ -109,4 +109,4 @@ void UserPolicyMixin::SetUpPolicy() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

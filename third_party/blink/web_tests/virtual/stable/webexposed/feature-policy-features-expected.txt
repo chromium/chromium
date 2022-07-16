@@ -8,7 +8,6 @@ ch-device-memory
 ch-downlink
 ch-dpr
 ch-ect
-ch-lang
 ch-prefers-color-scheme
 ch-rtt
 ch-ua
@@ -31,6 +30,7 @@ fullscreen
 geolocation
 gyroscope
 hid
+idle-detection
 magnetometer
 microphone
 midi

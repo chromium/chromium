@@ -32,6 +32,9 @@ const int64_t kFlushIntervalInBytes = 10 << 20;  // 10MB.
 
 class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
  public:
+  CopyOrMoveImpl(const CopyOrMoveImpl&) = delete;
+  CopyOrMoveImpl& operator=(const CopyOrMoveImpl&) = delete;
+
   virtual ~CopyOrMoveImpl() = default;
   virtual void Run(CopyOrMoveOperationDelegate::StatusCallback callback) = 0;
   virtual void Cancel() = 0;
@@ -42,13 +45,13 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
       const CopyOrMoveOperationDelegate::OperationType operation_type,
       const FileSystemURL& src_url,
       const FileSystemURL& dest_url,
-      const CopyOrMoveOperationDelegate::CopyOrMoveOption option,
+      const CopyOrMoveOperationDelegate::CopyOrMoveOptionSet options,
       FileSystemOperation::CopyOrMoveProgressCallback progress_callback)
       : operation_runner_(operation_runner),
         operation_type_(operation_type),
         src_url_(src_url),
         dest_url_(dest_url),
-        option_(option),
+        options_(options),
         progress_callback_(std::move(progress_callback)) {}
 
   // Callback for sending progress events with the current number of processed
@@ -125,11 +128,10 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
   const CopyOrMoveOperationDelegate::OperationType operation_type_;
   const FileSystemURL src_url_;
   const FileSystemURL dest_url_;
-  const CopyOrMoveOperationDelegate::CopyOrMoveOption option_;
+  const CopyOrMoveOperationDelegate::CopyOrMoveOptionSet options_;
 
  private:
   const FileSystemOperation::CopyOrMoveProgressCallback progress_callback_;
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveImpl);
 };
 
 namespace {
@@ -144,24 +146,29 @@ class CopyOrMoveOnSameFileSystemImpl
       const CopyOrMoveOperationDelegate::OperationType operation_type,
       const FileSystemURL& src_url,
       const FileSystemURL& dest_url,
-      const CopyOrMoveOperationDelegate::CopyOrMoveOption option,
+      const CopyOrMoveOperationDelegate::CopyOrMoveOptionSet options,
       FileSystemOperation::CopyOrMoveProgressCallback progress_callback)
       : CopyOrMoveImpl(operation_runner,
                        operation_type,
                        src_url,
                        dest_url,
-                       option,
+                       options,
                        progress_callback) {}
+
+  CopyOrMoveOnSameFileSystemImpl(const CopyOrMoveOnSameFileSystemImpl&) =
+      delete;
+  CopyOrMoveOnSameFileSystemImpl& operator=(
+      const CopyOrMoveOnSameFileSystemImpl&) = delete;
 
   void Run(CopyOrMoveOperationDelegate::StatusCallback callback) override {
     if (operation_type_ == CopyOrMoveOperationDelegate::OPERATION_MOVE) {
       operation_runner_->MoveFileLocal(
-          src_url_, dest_url_, option_,
+          src_url_, dest_url_, options_,
           base::BindOnce(&CopyOrMoveOnSameFileSystemImpl::DidEndMove,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
     } else {
       operation_runner_->CopyFileLocal(
-          src_url_, dest_url_, option_,
+          src_url_, dest_url_, options_,
           base::BindRepeating(
               &CopyOrMoveOnSameFileSystemImpl::OnCopyOrMoveFileProgress,
               weak_factory_.GetWeakPtr()),
@@ -178,7 +185,6 @@ class CopyOrMoveOnSameFileSystemImpl
 
  private:
   base::WeakPtrFactory<CopyOrMoveOnSameFileSystemImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveOnSameFileSystemImpl);
 };
 
 // Specifically for cross file system copy/move operation, this class creates
@@ -193,18 +199,21 @@ class SnapshotCopyOrMoveImpl
       CopyOrMoveOperationDelegate::OperationType operation_type,
       const FileSystemURL& src_url,
       const FileSystemURL& dest_url,
-      CopyOrMoveOperationDelegate::CopyOrMoveOption option,
+      CopyOrMoveOperationDelegate::CopyOrMoveOptionSet options,
       CopyOrMoveFileValidatorFactory* validator_factory,
       FileSystemOperation::CopyOrMoveProgressCallback progress_callback)
       : CopyOrMoveImpl(operation_runner,
                        operation_type,
                        src_url,
                        dest_url,
-                       option,
+                       options,
                        progress_callback),
 
         validator_factory_(validator_factory),
         cancel_requested_(false) {}
+
+  SnapshotCopyOrMoveImpl(const SnapshotCopyOrMoveImpl&) = delete;
+  SnapshotCopyOrMoveImpl& operator=(const SnapshotCopyOrMoveImpl&) = delete;
 
   void Run(CopyOrMoveOperationDelegate::StatusCallback callback) override {
     OnCopyOrMoveFileProgress(0);
@@ -288,7 +297,7 @@ class SnapshotCopyOrMoveImpl
 
     OnCopyOrMoveFileProgress(file_info.size);
 
-    if (option_ == FileSystemOperation::OPTION_NONE) {
+    if (options_.Empty()) {
       RunAfterTouchFile(std::move(callback), base::File::FILE_OK);
       return;
     }
@@ -435,7 +444,6 @@ class SnapshotCopyOrMoveImpl
   std::unique_ptr<CopyOrMoveFileValidator> validator_;
   bool cancel_requested_;
   base::WeakPtrFactory<SnapshotCopyOrMoveImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SnapshotCopyOrMoveImpl);
 };
 
 // The size of buffer for StreamCopyHelper.
@@ -457,7 +465,7 @@ class StreamCopyOrMoveImpl
       CopyOrMoveOperationDelegate::OperationType operation_type,
       const FileSystemURL& src_url,
       const FileSystemURL& dest_url,
-      CopyOrMoveOperationDelegate::CopyOrMoveOption option,
+      CopyOrMoveOperationDelegate::CopyOrMoveOptionSet options,
       std::unique_ptr<FileStreamReader> reader,
       std::unique_ptr<FileStreamWriter> writer,
       FileSystemOperation::CopyOrMoveProgressCallback progress_callback)
@@ -465,12 +473,15 @@ class StreamCopyOrMoveImpl
                        operation_type,
                        src_url,
                        dest_url,
-                       option,
+                       options,
                        progress_callback),
         file_system_context_(file_system_context),
         reader_(std::move(reader)),
         writer_(std::move(writer)),
         cancel_requested_(false) {}
+
+  StreamCopyOrMoveImpl(const StreamCopyOrMoveImpl&) = delete;
+  StreamCopyOrMoveImpl& operator=(const StreamCopyOrMoveImpl&) = delete;
 
   void Run(CopyOrMoveOperationDelegate::StatusCallback callback) override {
     // Reader can be created even if the entry does not exist or the entry is
@@ -587,7 +598,7 @@ class StreamCopyOrMoveImpl
             dest_url_.mount_option().flush_policy(), kReadBufferSize,
             base::BindRepeating(&StreamCopyOrMoveImpl::OnCopyOrMoveFileProgress,
                                 weak_factory_.GetWeakPtr()),
-            base::TimeDelta::FromMilliseconds(
+            base::Milliseconds(
                 kMinProgressCallbackInvocationSpanInMilliseconds));
     copy_helper_->Run(base::BindOnce(&StreamCopyOrMoveImpl::RunAfterStreamCopy,
                                      weak_factory_.GetWeakPtr(),
@@ -613,7 +624,7 @@ class StreamCopyOrMoveImpl
       return;
     }
 
-    if (option_ == FileSystemOperation::OPTION_NONE) {
+    if (options_.Empty()) {
       RunAfterTouchFile(std::move(callback), base::File::FILE_OK);
       return;
     }
@@ -666,7 +677,6 @@ class StreamCopyOrMoveImpl
   std::unique_ptr<CopyOrMoveOperationDelegate::StreamCopyHelper> copy_helper_;
   bool cancel_requested_;
   base::WeakPtrFactory<StreamCopyOrMoveImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StreamCopyOrMoveImpl);
 };
 
 }  // namespace
@@ -813,7 +823,7 @@ CopyOrMoveOperationDelegate::CopyOrMoveOperationDelegate(
     const FileSystemURL& src_root,
     const FileSystemURL& dest_root,
     OperationType operation_type,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback)
@@ -821,11 +831,15 @@ CopyOrMoveOperationDelegate::CopyOrMoveOperationDelegate(
       src_root_(src_root),
       dest_root_(dest_root),
       operation_type_(operation_type),
-      option_(option),
+      options_(options),
       error_behavior_(error_behavior),
       progress_callback_(progress_callback),
       callback_(std::move(callback)) {
-  same_file_system_ = src_root_.IsInSameFileSystem(dest_root_);
+  // Force same_file_system_ = false if options include kForceCrossFilesystem.
+  same_file_system_ =
+      !options.Has(
+          FileSystemOperation::CopyOrMoveOption::kForceCrossFilesystem) &&
+      src_root_.IsInSameFileSystem(dest_root_);
 }
 
 CopyOrMoveOperationDelegate::~CopyOrMoveOperationDelegate() = default;
@@ -879,7 +893,7 @@ void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
            ->HasInplaceCopyImplementation(src_url.type()) ||
        operation_type_ == OPERATION_MOVE)) {
     impl = std::make_unique<CopyOrMoveOnSameFileSystemImpl>(
-        operation_runner(), operation_type_, src_url, dest_url, option_,
+        operation_runner(), operation_type_, src_url, dest_url, options_,
         progress_callback_);
   } else {
     // Cross filesystem case.
@@ -906,14 +920,14 @@ void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
       if (reader && writer) {
         impl = std::make_unique<StreamCopyOrMoveImpl>(
             operation_runner(), file_system_context(), operation_type_, src_url,
-            dest_url, option_, std::move(reader), std::move(writer),
+            dest_url, options_, std::move(reader), std::move(writer),
             progress_callback_);
       }
     }
 
     if (!impl) {
       impl = std::make_unique<SnapshotCopyOrMoveImpl>(
-          operation_runner(), operation_type_, src_url, dest_url, option_,
+          operation_runner(), operation_type_, src_url, dest_url, options_,
           validator_factory, progress_callback_);
     }
   }
@@ -955,7 +969,7 @@ void CopyOrMoveOperationDelegate::ProcessDirectory(const FileSystemURL& src_url,
 void CopyOrMoveOperationDelegate::PostProcessDirectory(
     const FileSystemURL& src_url,
     StatusCallback callback) {
-  if (option_ == FileSystemOperation::OPTION_NONE) {
+  if (options_.Empty()) {
     PostProcessDirectoryAfterTouchFile(src_url, std::move(callback),
                                        base::File::FILE_OK);
     return;
@@ -1097,7 +1111,7 @@ FileSystemURL CopyOrMoveOperationDelegate::CreateDestURL(
   src_root_.virtual_path().AppendRelativePath(src_url.virtual_path(),
                                               &relative);
   return file_system_context()->CreateCrackedFileSystemURL(
-      dest_root_.origin(), dest_root_.mount_type(), relative);
+      dest_root_.storage_key(), dest_root_.mount_type(), relative);
 }
 
 }  // namespace storage

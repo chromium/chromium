@@ -33,6 +33,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/build_time.h"
+#endif
+
 namespace {
 
 constexpr char kNoBrowserNoWindow[] = "NO_BROWSER";
@@ -42,8 +46,7 @@ constexpr char kSystemWebAppWindow[] = "SYSTEM_WEB_APP";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Give up if crash_reporter hasn't finished in this long.
-constexpr base::TimeDelta kMaximumWaitForCrashReporter =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMaximumWaitForCrashReporter = base::Minutes(1);
 #endif
 
 // Sometimes, the stack trace will contain an error message as the first line,
@@ -183,6 +186,12 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   params["browser"] = "Chrome";
   params["browser_version"] = platform.version;
   params["channel"] = platform.channel;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int64_t build_time =
+      (base::GetBuildTime() - base::Time::UnixEpoch()).InMilliseconds();
+  params["build_time_millis"] = base::NumberToString(build_time);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // base::SysInfo::OperatingSystemName() returns "Linux" on ChromeOS devices.
   params["os"] = "ChromeOS";
@@ -237,10 +246,8 @@ void ChromeJsErrorReportProcessor::CheckAndUpdateRecentErrorReports(
     const JavaScriptErrorReport& error_report,
     bool* should_send) {
   base::Time now = clock_->Now();
-  constexpr base::TimeDelta kTimeBetweenCleanings =
-      base::TimeDelta::FromHours(1);
-  constexpr base::TimeDelta kTimeBetweenDuplicateReports =
-      base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kTimeBetweenCleanings = base::Hours(1);
+  constexpr base::TimeDelta kTimeBetweenDuplicateReports = base::Hours(1);
   // Check for cleaning.
   if (last_recent_error_reports_cleaning_.is_null()) {
     // First time in this function, no need to clean.

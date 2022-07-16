@@ -36,6 +36,7 @@
 #include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/field_trials_provider.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -63,7 +64,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -71,6 +71,7 @@
 #include "ios/chrome/browser/metrics/chrome_browser_state_client.h"
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
+#include "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 #include "ios/chrome/browser/signin/ios_chrome_signin_status_metrics_provider_delegate.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
@@ -80,6 +81,7 @@
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/channel_info.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -196,8 +198,14 @@ std::string IOSChromeMetricsServiceClient::GetApplicationLocale() {
   return GetApplicationContext()->GetApplicationLocale();
 }
 
+const network_time::NetworkTimeTracker*
+IOSChromeMetricsServiceClient::GetNetworkTimeTracker() {
+  return GetApplicationContext()->GetNetworkTimeTracker();
+}
+
 bool IOSChromeMetricsServiceClient::GetBrand(std::string* brand_code) {
-  return ios::google_brand::GetBrand(brand_code);
+  brand_code->assign(ios::provider::GetBrandCode());
+  return true;
 }
 
 metrics::SystemProfileProto::Channel
@@ -321,6 +329,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<metrics::DemographicMetricsProvider>(
           std::make_unique<metrics::ChromeBrowserStateClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
+
+  metrics_service_->RegisterMetricsProvider(
+      CreateIOSProfileSessionMetricsProvider());
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
@@ -352,6 +363,12 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
     mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
     base::UmaHistogramMemoryLargeMB("Memory.Browser.MemoryFootprint",
                                     footprint_mb);
+    // The pseudo metric of Memory.Browser.MemoryFootprint. Only used to
+    // assess field trial data quality.
+    base::UmaHistogramMemoryLargeMB(
+        "UMA.Pseudo.Memory.Browser.MemoryFootprint",
+        metrics::GetPseudoMetricsSample(
+            static_cast<double>(task_info_data.phys_footprint) / 1024 / 1024));
 
     switch (UIApplication.sharedApplication.applicationState) {
       case UIApplicationStateActive:

@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/macros.h"
 #include "net/cert/internal/crl.h"
 #include "net/der/input.h"
 

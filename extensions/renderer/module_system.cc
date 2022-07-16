@@ -25,6 +25,15 @@
 #include "gin/converter.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_v8_features.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-message.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-script.h"
 
 namespace extensions {
 

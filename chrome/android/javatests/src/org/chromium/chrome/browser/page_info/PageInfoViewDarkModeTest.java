@@ -80,8 +80,9 @@ public class PageInfoViewDarkModeTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(
-                    activity.getModalDialogManagerSupplier(), null, OpenedFromSource.TOOLBAR)
-                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                    activity.getModalDialogManagerSupplier(), null, OpenedFromSource.TOOLBAR, null)
+                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION,
+                            /*fromStoreIcon=*/false);
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }

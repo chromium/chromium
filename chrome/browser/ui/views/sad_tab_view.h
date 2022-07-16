@@ -14,7 +14,7 @@ class WebContents;
 
 namespace views {
 class Label;
-class LabelButton;
+class MdTextButton;
 class WebView;
 }  // namespace views
 
@@ -35,6 +35,10 @@ class SadTabView : public SadTab, public views::View {
   METADATA_HEADER(SadTabView);
 
   SadTabView(content::WebContents* web_contents, SadTabKind kind);
+
+  SadTabView(const SadTabView&) = delete;
+  SadTabView& operator=(const SadTabView&) = delete;
+
   ~SadTabView() override;
 
   // Overridden from SadTab:
@@ -58,11 +62,9 @@ class SadTabView : public SadTab, public views::View {
   bool painted_ = false;
   views::Label* message_;
   std::vector<views::Label*> bullet_labels_;
-  views::LabelButton* action_button_;
+  views::MdTextButton* action_button_;
   views::Label* title_;
   views::WebView* owner_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SadTabView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SAD_TAB_VIEW_H__

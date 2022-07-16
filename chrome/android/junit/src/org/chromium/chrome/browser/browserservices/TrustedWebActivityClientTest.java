@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -96,8 +95,7 @@ public class TrustedWebActivityClientTest {
         setHasStatusBarBitmap(false);
         postNotification();
         verify(mNotificationBuilder)
-                .setStatusBarIconForRemoteApp(
-                        SERVICE_SMALL_ICON_ID, mServiceSmallIconBitmap, CLIENT_PACKAGE_NAME);
+                .setStatusBarIconForRemoteApp(SERVICE_SMALL_ICON_ID, mServiceSmallIconBitmap);
     }
 
 
@@ -105,8 +103,7 @@ public class TrustedWebActivityClientTest {
     public void doesntUseIconFromService_IfContentBarIconSet() {
         setHasStatusBarBitmap(true);
         postNotification();
-        verify(mNotificationBuilder, never())
-                .setStatusBarIconForRemoteApp(anyInt(), any(), anyString());
+        verify(mNotificationBuilder, never()).setStatusBarIconForRemoteApp(anyInt(), any());
     }
 
     @Test

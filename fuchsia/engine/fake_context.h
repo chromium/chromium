@@ -19,6 +19,10 @@
 class FakeFrame : public fuchsia::web::testing::Frame_TestBase {
  public:
   explicit FakeFrame(fidl::InterfaceRequest<fuchsia::web::Frame> request);
+
+  FakeFrame(const FakeFrame&) = delete;
+  FakeFrame& operator=(const FakeFrame&) = delete;
+
   ~FakeFrame() override;
 
   void set_on_set_listener_callback(base::OnceClosure callback) {
@@ -53,8 +57,6 @@ class FakeFrame : public fuchsia::web::testing::Frame_TestBase {
   fuchsia::web::NavigationController* navigation_controller_ = nullptr;
   fidl::BindingSet<fuchsia::web::NavigationController>
       navigation_controller_bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFrame);
 };
 
 // An implementation of Context that creates and binds FakeFrames.
@@ -63,6 +65,10 @@ class FakeContext : public fuchsia::web::testing::Context_TestBase {
   using CreateFrameCallback = base::RepeatingCallback<void(FakeFrame*)>;
 
   FakeContext();
+
+  FakeContext(const FakeContext&) = delete;
+  FakeContext& operator=(const FakeContext&) = delete;
+
   ~FakeContext() override;
 
   // Sets a callback that is invoked whenever new Frames are bound.
@@ -79,8 +85,6 @@ class FakeContext : public fuchsia::web::testing::Context_TestBase {
 
  private:
   CreateFrameCallback on_create_frame_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeContext);
 };
 
 #endif  // FUCHSIA_ENGINE_FAKE_CONTEXT_H_

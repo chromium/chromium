@@ -27,12 +27,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
+import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
@@ -100,14 +103,12 @@ public class AutofillAssistantOverlayUiTest {
     private AssistantOverlayCoordinator createCoordinator(
             AssistantOverlayModel model, @Nullable Bitmap overlayImage) throws ExecutionException {
         ChromeActivity activity = mTestRule.getActivity();
-        return runOnUiThreadBlocking(()
-                                             -> new AssistantOverlayCoordinator(activity,
-                                                     activity.getBrowserControlsManager(),
-                                                     activity.getCompositorViewHolder(),
-                                                     mTestRule.getActivity()
-                                                             .getRootUiCoordinatorForTesting()
-                                                             .getScrimCoordinator(),
-                                                     model));
+        return runOnUiThreadBlocking(() -> {
+            return new AssistantOverlayCoordinator(activity, activity.getBrowserControlsManager(),
+                    activity.getCompositorViewHolderForTesting(),
+                    mTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimCoordinator(),
+                    model);
+        });
     }
 
     /** Tests assumptions about the initial state of the infobox. */
@@ -208,9 +209,11 @@ public class AutofillAssistantOverlayUiTest {
         scrollIntoViewIfNeeded(mTestRule.getWebContents(), "touch_area_five");
         waitUntil(() -> checkElementOnScreen(mTestRule, "touch_area_five"));
         Rect rect = getBoundingRectForElement(getWebContents(), "touch_area_five");
+        Rect viewport = getViewport(getWebContents());
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.PARTIAL);
             model.set(AssistantOverlayModel.WEB_CONTENTS, getWebContents());
+            model.set(AssistantOverlayModel.VISUAL_VIEWPORT, new RectF(viewport));
             model.set(AssistantOverlayModel.TOUCHABLE_AREA,
                     Collections.singletonList(new AssistantOverlayRect(rect)));
         });
@@ -283,7 +286,23 @@ public class AutofillAssistantOverlayUiTest {
         }
     }
 
-    void tapElement(String elementId) throws Exception {
+    private void tapElement(String elementId) throws Exception {
         AutofillAssistantUiTestUtil.tapElement(mTestRule, elementId);
+    }
+
+    private Rect getViewport(WebContents webContents) throws Exception {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(webContents,
+                "(function() {"
+                        + " const v = window.visualViewport;"
+                        + " return ["
+                        + "   v.pageLeft, v.pageTop,"
+                        + "   v.pageLeft + v.width, v.pageTop + v.height"
+                        + " ];"
+                        + "})()");
+        javascriptHelper.waitUntilHasValue();
+        JSONArray values = new JSONArray(javascriptHelper.getJsonResultAndClear());
+        return new Rect(values.getInt(0), values.getInt(1), values.getInt(2), values.getInt(3));
     }
 }

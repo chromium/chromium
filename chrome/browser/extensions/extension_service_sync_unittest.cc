@@ -36,7 +36,9 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/sync_data.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/app_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
@@ -118,6 +120,9 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
                 expected_type == syncer::ModelType::APPS);
   }
 
+  StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
+  StatefulChangeProcessor& operator=(const StatefulChangeProcessor&) = delete;
+
   ~StatefulChangeProcessor() override {}
 
   // We let our parent class, FakeSyncChangeProcessor, handle saving the
@@ -171,8 +176,6 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
   // The expected ModelType of changes that this processor will see.
   const syncer::ModelType expected_type_;
   syncer::SyncDataList data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatefulChangeProcessor);
 };
 
 }  // namespace
@@ -231,6 +234,25 @@ class ExtensionServiceSyncTest
     return ExtensionSystem::Get(profile());
   }
 };
+
+TEST_F(ExtensionServiceSyncTest, DeleteAllInstalledBookMarkAppsDuringSync) {
+  InitializeEmptyExtensionService();
+
+  // Install the bookmark app.
+  InstallCRX(data_dir().AppendASCII("good.crx"),
+             ManifestLocation::kExternalPref, INSTALL_NEW,
+             Extension::FROM_BOOKMARK);
+  const Extension* extension = registry()->GetInstalledExtension(good_crx);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension->from_bookmark());
+  ASSERT_FALSE(extensions::util::ShouldSync(extension, profile()));
+
+  StartSyncing(syncer::EXTENSIONS);
+
+  // Should uninstall the bookmark app.
+  EXPECT_FALSE(
+      registry()->GetExtensionById(good_crx, ExtensionRegistry::EVERYTHING));
+}
 
 TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledComponent) {
   InitializeEmptyExtensionService();
@@ -684,7 +706,6 @@ TEST_F(ExtensionServiceSyncTest, GetSyncData) {
   EXPECT_EQ(data->version(), extension->version());
   EXPECT_EQ(extensions::ManifestURL::GetUpdateURL(extension),
             data->update_url());
-  EXPECT_EQ(extension->name(), data->name());
 }
 
 TEST_F(ExtensionServiceSyncTest, GetSyncDataDisableReasons) {
@@ -791,7 +812,6 @@ TEST_F(ExtensionServiceSyncTest, GetSyncDataTerminated) {
   EXPECT_EQ(data->version(), extension->version());
   EXPECT_EQ(extensions::ManifestURL::GetUpdateURL(extension),
             data->update_url());
-  EXPECT_EQ(extension->name(), data->name());
 }
 
 TEST_F(ExtensionServiceSyncTest, GetSyncDataFilter) {
@@ -1825,6 +1845,11 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
  public:
   BlocklistedExtensionSyncServiceTest() {}
 
+  BlocklistedExtensionSyncServiceTest(
+      const BlocklistedExtensionSyncServiceTest&) = delete;
+  BlocklistedExtensionSyncServiceTest& operator=(
+      const BlocklistedExtensionSyncServiceTest&) = delete;
+
   void SetUp() override {
     ExtensionServiceSyncTest::SetUp();
 
@@ -1875,8 +1900,6 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   extensions::TestBlocklist test_blocklist_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistedExtensionSyncServiceTest);
 };
 
 // Test that sync cannot enable blocklisted extensions.

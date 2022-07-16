@@ -25,6 +25,9 @@ class NonBlockingPushClient::Core
           delegate_task_runner,
       const base::WeakPtr<NonBlockingPushClient>& parent_push_client);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Must be called after being created.
   //
   // This is separated out from the constructor since posting tasks
@@ -59,8 +62,6 @@ class NonBlockingPushClient::Core
 
   const base::WeakPtr<NonBlockingPushClient> parent_push_client_;
   std::unique_ptr<PushClient> delegate_push_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NonBlockingPushClient::Core::Core(

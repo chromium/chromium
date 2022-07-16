@@ -21,6 +21,9 @@ namespace extensions {
 // control over the MimeHandlerViewGuest for the purposes of testing.
 class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
  public:
+  TestMimeHandlerViewGuest(const TestMimeHandlerViewGuest&) = delete;
+  TestMimeHandlerViewGuest& operator=(const TestMimeHandlerViewGuest&) = delete;
+
   static GuestViewBase* Create(content::WebContents* owner_web_contents);
 
   // Set a delay in the next creation of a guest's WebContents by |delay|
@@ -55,8 +58,6 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<TestMimeHandlerViewGuest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMimeHandlerViewGuest);
 };
 
 }  // namespace extensions

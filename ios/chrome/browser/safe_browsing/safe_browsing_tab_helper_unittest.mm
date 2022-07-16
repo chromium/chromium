@@ -69,7 +69,7 @@ class SafeBrowsingTabHelperTest
       bool for_main_frame = true,
       ui::PageTransition transition =
           ui::PageTransition::PAGE_TRANSITION_FIRST) {
-    web::WebStatePolicyDecider::RequestInfo request_info(
+    const web::WebStatePolicyDecider::RequestInfo request_info(
         transition, for_main_frame, /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/false);
     __block bool callback_called = false;
@@ -106,7 +106,8 @@ class SafeBrowsingTabHelperTest
           policy_decision = decision;
           callback_called = true;
         });
-    web_state_.ShouldAllowResponse(response, for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info(for_main_frame);
+    web_state_.ShouldAllowResponse(response, response_info,
                                    std::move(callback));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(callback_called);

@@ -34,6 +34,9 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
       base::OnceCallback<void(bool, const std::vector<uint8_t>&)>;
   using StatusCallback = base::OnceCallback<void(bool)>;
 
+  RemoteDescriptor(const RemoteDescriptor&) = delete;
+  RemoteDescriptor& operator=(const RemoteDescriptor&) = delete;
+
   // Read the descriptor with |auth_req|. When completed, |callback| will be
   // called.
   virtual void ReadAuth(bluetooth_v2_shlib::Gatt::Client::AuthReq auth_req,
@@ -62,9 +65,6 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
 
   RemoteDescriptor() = default;
   virtual ~RemoteDescriptor() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteDescriptor);
 };
 
 }  // namespace bluetooth

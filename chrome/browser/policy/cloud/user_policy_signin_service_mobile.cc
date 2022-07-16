@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -116,10 +116,10 @@ void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
 
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
-  base::TimeDelta retry_delay = base::TimeDelta::FromDays(3);
+  base::TimeDelta retry_delay = base::Days(3);
   if (connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET ||
       connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI) {
-    retry_delay = base::TimeDelta::FromDays(1);
+    retry_delay = base::Days(1);
   }
 
   base::Time last_check_time = base::Time::FromInternalValue(
@@ -130,7 +130,7 @@ void UserPolicySigninService::OnCloudPolicyServiceInitializationCompleted() {
   // Check immediately if no check was ever done before (last_check_time == 0),
   // or if the last check was in the future (?), or if we're already past the
   // next check time. Otherwise, delay checking until the next check time.
-  base::TimeDelta try_registration_delay = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta try_registration_delay = base::Seconds(5);
   if (now > last_check_time && now < next_check_time)
     try_registration_delay = next_check_time - now;
 

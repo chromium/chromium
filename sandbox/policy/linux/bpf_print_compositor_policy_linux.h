@@ -15,12 +15,14 @@ namespace policy {
 class PrintCompositorProcessPolicy : public BPFBasePolicy {
  public:
   PrintCompositorProcessPolicy();
+
+  PrintCompositorProcessPolicy(const PrintCompositorProcessPolicy&) = delete;
+  PrintCompositorProcessPolicy& operator=(const PrintCompositorProcessPolicy&) =
+      delete;
+
   ~PrintCompositorProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintCompositorProcessPolicy);
 };
 
 }  // namespace policy

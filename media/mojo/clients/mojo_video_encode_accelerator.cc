@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -32,6 +31,11 @@ class VideoEncodeAcceleratorClient
   VideoEncodeAcceleratorClient(
       VideoEncodeAccelerator::Client* client,
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver);
+
+  VideoEncodeAcceleratorClient(const VideoEncodeAcceleratorClient&) = delete;
+  VideoEncodeAcceleratorClient& operator=(const VideoEncodeAcceleratorClient&) =
+      delete;
+
   ~VideoEncodeAcceleratorClient() override = default;
 
   // mojom::VideoEncodeAcceleratorClient impl.
@@ -47,8 +51,6 @@ class VideoEncodeAcceleratorClient
  private:
   VideoEncodeAccelerator::Client* client_;
   mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncodeAcceleratorClient);
 };
 
 VideoEncodeAcceleratorClient::VideoEncodeAcceleratorClient(
@@ -136,10 +138,8 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
 
   // GPU memory path: Pass-through.
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    vea_->Encode(
-        frame, force_keyframe,
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),
-                       frame));
+    vea_->Encode(frame, force_keyframe,
+                 base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
     return;
   }
 
@@ -165,8 +165,7 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   }
   vea_->Encode(
       std::move(mojo_frame), force_keyframe,
-      base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),
-                     std::move(frame)));
+      base::BindOnce([](scoped_refptr<VideoFrame>) {}, std::move(frame)));
 }
 
 void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(

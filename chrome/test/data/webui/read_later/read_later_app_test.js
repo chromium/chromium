@@ -7,7 +7,7 @@ import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {flushTasks} from '../test_util.m.js';
+import {flushTasks} from '../test_util.js';
 
 import {TestReadLaterApiProxy} from './test_read_later_api_proxy.js';
 
@@ -108,6 +108,39 @@ suite('ReadLaterAppTest', () => {
     const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
     assertEquals(url.url, expectedUrl);
     assertTrue(updateReadStatus);
+  });
+
+  test('click on item passes event info', async () => {
+    const item = readLaterApp.shadowRoot.querySelector(
+        `[data-url="https://www.apple.com"]`);
+    item.dispatchEvent(new MouseEvent('click'));
+    const [, , click] = await testProxy.whenCalled('openURL');
+    assertFalse(
+        click.middleButton || click.altKey || click.ctrlKey || click.metaKey ||
+        click.shiftKey);
+    testProxy.resetResolver('openURL');
+
+    // Middle mouse button click.
+    item.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
+    const [, , auxClick] = await testProxy.whenCalled('openURL');
+    assertTrue(auxClick.middleButton);
+    assertFalse(
+        auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
+        auxClick.shiftKey);
+    testProxy.resetResolver('openURL');
+
+    // Modifier keys.
+    item.dispatchEvent(new MouseEvent('click', {
+      altKey: true,
+      ctrlKey: true,
+      metaKey: true,
+      shiftKey: true,
+    }));
+    const [, , modifiedClick] = await testProxy.whenCalled('openURL');
+    assertFalse(modifiedClick.middleButton);
+    assertTrue(
+        modifiedClick.altKey && modifiedClick.ctrlKey &&
+        modifiedClick.metaKey && modifiedClick.shiftKey);
   });
 
   test('Click on item mark as read button triggers actions', async () => {

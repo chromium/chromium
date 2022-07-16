@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 
 namespace chromeos {
@@ -26,6 +25,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
       base::OnceCallback<void(bool has_configuration,
                               const std::string& configuration)>;
 
+  OobeConfigurationClient(const OobeConfigurationClient&) = delete;
+  OobeConfigurationClient& operator=(const OobeConfigurationClient&) = delete;
+
   ~OobeConfigurationClient() override = default;
 
   // Factory function.
@@ -39,9 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
 
   // Create() should be used instead.
   OobeConfigurationClient() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationClient);
 };
 
 }  // namespace chromeos

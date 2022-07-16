@@ -117,8 +117,8 @@ bool IOSChromeNetworkDelegate::OnForcePrivacyMode(
   if (!cookie_settings_.get())
     return false;
 
-  return !cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
+  return !cookie_settings_->IsFullCookieAccessAllowed(url, site_for_cookies,
+                                                      top_frame_origin);
 }
 
 bool IOSChromeNetworkDelegate::

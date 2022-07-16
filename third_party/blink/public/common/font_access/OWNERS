@@ -1,6 +1,4 @@
-oyiptong@chromium.org
-jsbell@chromium.org
-
+file://content/browser/font_access/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

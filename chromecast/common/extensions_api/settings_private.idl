@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.settingsPrivate</code> API to get or set preferences
-// from the settings UI. Access is restricted to a whitelisted set of user
-// facing preferences.
+// from the settings UI. Access is restricted to a set of allowed user facing
+// preferences.
 namespace settingsPrivate {
   enum PrefType { BOOLEAN, NUMBER, STRING, URL, LIST, DICTIONARY };
 

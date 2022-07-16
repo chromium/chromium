@@ -2,6 +2,20 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+:root {
+  --color-selected-tab: black;
+  --color-background: #fff;
+  --color-highlight: #fffccf;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-selected-tab: white;
+    --color-background: #121212;
+    --color-highlight:  #03DCB0;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -56,7 +70,7 @@ ul {
 
 #tab-list .selected,
 #tab-list a:hover {
-  color: black;
+  color: var(--color-selected-tab);
 }
 
 /* Styling for text indicating a potential problem or error state. */

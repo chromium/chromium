@@ -81,6 +81,9 @@ scoped_refptr<base::RefCountedMemory> GetResource(
 // component extensions.
 class ResourceBundleFileLoader : public network::mojom::URLLoader {
  public:
+  ResourceBundleFileLoader(const ResourceBundleFileLoader&) = delete;
+  ResourceBundleFileLoader& operator=(const ResourceBundleFileLoader&) = delete;
+
   static void CreateAndStart(
       const network::ResourceRequest& request,
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -213,8 +216,6 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   base::WeakPtrFactory<ResourceBundleFileLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleFileLoader);
 };
 
 }  // namespace

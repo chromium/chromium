@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_button_controller.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
@@ -22,7 +21,7 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
  public:
   // The duration of showing or dismissing power button menu animation.
   static constexpr base::TimeDelta kMenuAnimationDuration =
-      base::TimeDelta::FromMilliseconds(250);
+      base::Milliseconds(250);
 
   // Distance of the menu animation transform.
   static constexpr int kMenuViewTransformDistanceDp = 16;

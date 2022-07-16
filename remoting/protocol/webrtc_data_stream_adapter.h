@@ -25,6 +25,10 @@ class WebrtcDataStreamAdapter : public MessagePipe,
  public:
   explicit WebrtcDataStreamAdapter(
       rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
+
+  WebrtcDataStreamAdapter(const WebrtcDataStreamAdapter&) = delete;
+  WebrtcDataStreamAdapter& operator=(const WebrtcDataStreamAdapter&) = delete;
+
   ~WebrtcDataStreamAdapter() override;
 
   std::string name() { return channel_->label(); }
@@ -74,8 +78,6 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   base::queue<PendingMessage> pending_messages_;
 
   base::WeakPtrFactory<WebrtcDataStreamAdapter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcDataStreamAdapter);
 };
 
 }  // namespace protocol

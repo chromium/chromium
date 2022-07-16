@@ -7,7 +7,7 @@
  */
 
 import {MultiStoreExceptionEntry} from 'chrome://settings/settings.js';
-import {createExceptionEntry} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
+import {createExceptionEntry} from './passwords_and_autofill_fake_data.js';
 
 suite('MultiStoreExceptionEntry', function() {
   test('verifyIds', function() {

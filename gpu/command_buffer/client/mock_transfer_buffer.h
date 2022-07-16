@@ -27,6 +27,9 @@ class MockTransferBuffer : public TransferBufferInterface {
                      unsigned int alignment,
                      bool initialize_fail);
 
+  MockTransferBuffer(const MockTransferBuffer&) = delete;
+  MockTransferBuffer& operator=(const MockTransferBuffer&) = delete;
+
   ~MockTransferBuffer() override;
 
   base::UnguessableToken shared_memory_guid() const override;
@@ -88,8 +91,6 @@ class MockTransferBuffer : public TransferBufferInterface {
   uint32_t actual_offset_;
   bool initialize_fail_;
   bool outstanding_result_pointer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTransferBuffer);
 };
 
 }  // namespace gpu

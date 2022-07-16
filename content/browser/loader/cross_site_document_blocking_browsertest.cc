@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -23,7 +22,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -38,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -52,7 +51,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -65,8 +64,8 @@ namespace content {
 
 using testing::Not;
 using testing::HasSubstr;
-using Action = network::CrossOriginReadBlocking::Action;
-using CorbMimeType = network::CrossOriginReadBlocking::MimeType;
+using Action = network::corb::CrossOriginReadBlocking::Action;
+using CorbMimeType = network::corb::CrossOriginReadBlocking::MimeType;
 using RequestInitiatorOriginLockCompatibility =
     network::InitiatorLockCompatibility;
 
@@ -99,20 +98,14 @@ std::ostream& operator<<(std::ostream& os, const CorbExpectations& value) {
 
 // Ensure the correct histograms are incremented for blocking events.
 // Assumes the resource type is XHR.
-void InspectHistograms(
-    const base::HistogramTester& histograms,
-    const CorbExpectations& expectations,
-    const std::string& resource_name,
-    bool special_request_initiator_origin_lock_check_for_appcache = false) {
+void InspectHistograms(const base::HistogramTester& histograms,
+                       const CorbExpectations& expectations,
+                       const std::string& resource_name) {
   FetchHistogramsFromChildProcesses();
 
-  auto expected_lock_compatibility =
-      special_request_initiator_origin_lock_check_for_appcache
-          ? network::InitiatorLockCompatibility::kBrowserProcess
-          : network::InitiatorLockCompatibility::kCompatibleLock;
   histograms.ExpectUniqueSample(
       "NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility",
-      expected_lock_compatibility, 1);
+      network::InitiatorLockCompatibility::kCompatibleLock, 1);
 
   CorbMimeType expected_mime_type = CorbMimeType::kInvalidMimeType;
   if (base::MatchPattern(resource_name, "*.html")) {
@@ -894,10 +887,11 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   interceptor.Verify(kShouldBeBlockedWithoutSniffing,
                      "no resource body needed for blocking verification");
 
-  // Verify that most response headers have been removed by CORB.
+  // Verify that all response headers have been removed by CORB.
   const std::string& headers =
       interceptor.response_head()->headers->raw_headers();
-  EXPECT_THAT(headers, HasSubstr("Access-Control-Allow-Origin: https://other"));
+  EXPECT_THAT(headers,
+              Not(HasSubstr("Access-Control-Allow-Origin: https://other")));
   EXPECT_THAT(headers, Not(HasSubstr("Cache-Control")));
   EXPECT_THAT(headers, Not(HasSubstr("Content-Language")));
   EXPECT_THAT(headers, Not(HasSubstr("Content-Length")));
@@ -1130,220 +1124,6 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, SharedWorker) {
 }
 #endif  // !defined(OS_ANDROID)
 
-// Tests what happens in a page covered by AppCache (where the AppCache manifest
-// doesn't cover any cross-origin resources).  In particular, requests from the
-// web page that get proxied by the AppCache to the network (falling back to the
-// network because they are not covered by the AppCache manifest) should still
-// be subject to CORB.
-// TODO(crbug.com/1030837): re-enable test once flakiness is addressed.
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
-                       DISABLED_AppCache_NetworkFallback) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // Prepare to intercept the network request at the IPC layer.
-  // This has to be done before the RenderFrameHostImpl is created.
-  GURL cross_site_url("http://cross-origin.com/site_isolation/nosniff.json");
-  RequestInterceptor interceptor(cross_site_url);
-
-  // Set up a separate http server, to allow sanity-checking that AppCache
-  // serves files despite the fact that the original server is down.
-  net::EmbeddedTestServer app_cache_content_server;
-  app_cache_content_server.AddDefaultHandlers(GetTestDataFilePath());
-  ASSERT_TRUE(app_cache_content_server.Start());
-
-  // Load the main page twice. The second navigation should have AppCache
-  // initialized for the page.
-  GURL main_url = app_cache_content_server.GetURL(
-      "/appcache/simple_page_with_manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  std::u16string expected_title = u"AppCache updated";
-  content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Turn off the server and sanity check that the resource is still available
-  // (because of AppCache).
-  ASSERT_TRUE(app_cache_content_server.ShutdownAndWaitUntilComplete());
-  {
-    const char kScriptTemplate[] = R"(
-        new Promise(function (resolve, reject) {
-            var img = document.createElement('img');
-            img.src = '/appcache/' + $1;
-            img.onload = _ => resolve('IMG LOADED');
-            img.onerror = reject;
-        })
-    )";
-    EXPECT_EQ("IMG LOADED",
-              content::EvalJs(shell(),
-                              content::JsReplace(kScriptTemplate, "logo.png")));
-  }
-
-  // Verify that CORB also works in presence of AppCache.
-  {
-    // Make sure that base::HistogramTester below starts with a clean slate.
-    FetchHistogramsFromChildProcesses();
-
-    // Fetch...
-    base::HistogramTester histograms;
-    const char kScriptTemplate[] = R"(
-        var img = document.createElement('img');
-        img.src = $1;
-        document.body.appendChild(img); )";
-    EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, cross_site_url)));
-    interceptor.WaitForRequestCompletion();
-
-    // Verify...
-    bool special_request_initiator_origin_lock_check_for_appcache = true;
-    InspectHistograms(histograms, kShouldBeBlockedWithoutSniffing,
-                      "nosniff.json",
-                      special_request_initiator_origin_lock_check_for_appcache);
-    interceptor.Verify(kShouldBeBlockedWithoutSniffing,
-                       "no resource body needed for blocking verification");
-  }
-}
-
-// Tests what happens in a page covered by AppCache, where the AppCache manifest
-// covers cross-origin resources.  In this case the cross-origin resource
-// requests will be triggered by AppCache-manifest-processing code (rather than
-// triggered directly by the web page / renderer process as in
-// AppCache_NetworkFallback).  Such manifest-triggered requests need to be
-// subject to CORB.
-//
-// This is a regression test for https://crbug.com/927471.
-// TODO(crbug.com/1030837): re-enable test once flakiness is addressed.
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
-                       DISABLED_AppCache_InManifest) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // Load the AppCached page and wait until the AppCache is populated (this will
-  // include the cross-origin
-  // http://cross-origin.com/site_isolation/nosniff.json from
-  // site_isolation/appcached_cross_origin_resource.manifest.
-  base::HistogramTester histograms;
-  GURL main_url = embedded_test_server()->GetURL(
-      "/site_isolation/appcached_cross_origin_resource.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  std::u16string expected_title = u"AppCache updated";
-  content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  // Verify that the request for nosniff.json was covered by CORB.
-  FetchHistogramsFromChildProcesses();
-  EXPECT_EQ(1, histograms.GetBucketCount(
-                   "SiteIsolation.XSD.Browser.Action",
-                   static_cast<int>(Action::kBlockedWithoutSniffing)));
-}
-
-// Tests that renderer will be terminated if it asks AppCache to initiate a
-// request with an invalid |request_initiator|.
-// TODO(crbug.com/1030837): re-enable test once flakiness is addressed.
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
-                       DISABLED_AppCache_InitiatorEnforcement) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // No kills are expected unless the fetch requesting process is locked to a
-  // specific site URL.  Therefore, the test should be skipped unless the full
-  // Site Isolation is enabled.
-  if (!AreAllSitesIsolatedForTesting())
-    return;
-
-  // Prepare to intercept the network request at the IPC layer in a way, that
-  // injects |spoofed_initiator| (simulating a compromised renderer that
-  // pretends to be making the request on behalf of another origin).
-  //
-  // Note that RequestInterceptor has to be constructed before the
-  // RenderFrameHostImpl is created.
-  GURL cross_site_url("http://cross-origin.com/site_isolation/nosniff.json");
-  RequestInterceptor interceptor(cross_site_url);
-  url::Origin spoofed_initiator =
-      url::Origin::Create(GURL("https://victim.example.com"));
-  interceptor.InjectRequestInitiator(spoofed_initiator);
-
-  // Load the main page twice. The second navigation should have AppCache
-  // initialized for the page.
-  GURL main_url = embedded_test_server()->GetURL(
-      "/appcache/simple_page_with_manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  std::u16string expected_title = u"AppCache updated";
-  content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Trigger an AppCache request with an incorrect |request_initiator| and
-  // verify that this will terminate the renderer process.
-  //
-  // Note that during the test, no renderer processes will be actually
-  // terminated, because the malicious/invalid message originates from within
-  // the test process (i.e. from URLLoaderInterceptor::Interceptor's
-  // CreateLoaderAndStart method which forwards the
-  // InjectRequestInitiator-modified request into
-  // AppCacheSubresourceURLFactory).  This necessitates testing via
-  // mojo::test::BadMessageObserver rather than via RenderProcessHostWatcher or
-  // RenderProcessHostBadMojoMessageWaiter.
-  mojo::test::BadMessageObserver bad_message_observer;
-  const char kScriptTemplate[] = R"(
-      var img = document.createElement('img');
-      img.src = $1;
-      document.body.appendChild(img); )";
-  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, cross_site_url)));
-  EXPECT_EQ("APPCACHE_SUBRESOURCE_URL_FACTORY_INVALID_INITIATOR",
-            bad_message_observer.WaitForBadMessage());
-}
-
-// Tests that renderer will be terminated if it asks AppCache to initiate a
-// cross-origin request with network::mojom::RequestMode::kNavigate.
-// TODO(crbug.com/1030837): re-enable test once flakiness is addressed.
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
-                       DISABLED_AppCache_NoNavigationsEnforcement) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // No kills are expected unless the fetch requesting process is locked to a
-  // specific site URL.  Therefore, the test should be skipped unless the full
-  // Site Isolation is enabled.
-  if (!AreAllSitesIsolatedForTesting())
-    return;
-
-  // Prepare to intercept the network request at the IPC layer in a way, that
-  // injects a spoofed fetch mode (simulating a compromised renderer that
-  // attempts to bypass CORB by using a fetch mode other than no-cors).
-  //
-  // Note that RequestInterceptor has to be constructed before the
-  // RenderFrameHostImpl is created.
-  GURL cross_site_url("http://cross-origin.com/site_isolation/nosniff.json");
-  RequestInterceptor interceptor(cross_site_url);
-  interceptor.InjectFetchMode(network::mojom::RequestMode::kNavigate);
-
-  // Load the main page twice. The second navigation should have AppCache
-  // initialized for the page.
-  GURL main_url = embedded_test_server()->GetURL(
-      "/appcache/simple_page_with_manifest.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  std::u16string expected_title = u"AppCache updated";
-  content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Trigger an AppCache request with an incorrect |request_initiator| and
-  // verify that this will terminate the renderer process.
-  //
-  // Note that during the test, no renderer processes will be actually
-  // terminated, because the malicious/invalid message originates from within
-  // the test process (i.e. from URLLoaderInterceptor::Interceptor's
-  // CreateLoaderAndStart method which forwards the
-  // InjectFetchMode-modified request into
-  // AppCacheSubresourceURLFactory).  This necessitates testing via
-  // mojo::test::BadMessageObserver rather than via RenderProcessHostWatcher or
-  // RenderProcessHostBadMojoMessageWaiter.
-  mojo::test::BadMessageObserver bad_message_observer;
-  const char kScriptTemplate[] = R"(
-      var img = document.createElement('img');
-      img.src = $1;
-      document.body.appendChild(img); )";
-  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, cross_site_url)));
-  EXPECT_EQ("APPCACHE_SUBRESOURCE_URL_FACTORY_NAVIGATE",
-            bad_message_observer.WaitForBadMessage());
-}
-
 // https://crbug.com/1218723 this is broken by SplitCacheByNetworkIsolationKey.
 IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
                        DISABLED_PrefetchIsNotImpacted) {
@@ -1446,7 +1226,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   std::string fetch_script =
       base::StringPrintf(fetch_script_template, kPrefetchResourcePath);
   EXPECT_EQ("<p>contents of the response</p>",
-            EvalJs(shell()->web_contents()->GetAllFrames()[1], fetch_script,
+            EvalJs(ChildFrameAt(shell()->web_contents(), 0), fetch_script,
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
@@ -1661,7 +1441,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
 
 // This test class sets up a link element for webbundle subresource loading.
 // e.g. <link rel=webbundle href=".../foo.wbn" resources="...">.
-class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
+class CrossSiteDocumentBlockingWebBundleTest
+    : public ContentBrowserTest,
+      public testing::WithParamInterface<std::string> {
  public:
   CrossSiteDocumentBlockingWebBundleTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
@@ -1673,17 +1455,12 @@ class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
   CrossSiteDocumentBlockingWebBundleTest& operator=(
       const CrossSiteDocumentBlockingWebBundleTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    ASSERT_TRUE(https_server_.InitializeAndListen());
-    command_line->AppendSwitchASCII(
-        network::switches::kHostResolverRules,
-        "MAP * " + https_server_.host_port_pair().ToString() +
-            ",EXCLUDE localhost");
-  }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param;
+  }
 
  protected:
   void SetupLinkWebBundleElementAndImgElement(const GURL& bundle_url,
@@ -1709,7 +1486,34 @@ class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
         shell(), JsReplace(kScriptTemplate, bundle_url, subresource_url)));
   }
 
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP * " + https_server_.host_port_pair().ToString() +
+            ",EXCLUDE localhost");
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
@@ -1719,10 +1523,11 @@ class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
 // 1) cross-origin bundle, 2) same-origin bundle
 // X
 // A). CORB-protected MIME type (e.g. text/json), B) other type (e.g. image/png)
-IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
                        CrossOriginWebBundleSubresoruceJson) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin.wbn");
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin" +
+                  GetParam() + ".wbn");
   GURL subresource_url("https://cross-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1733,10 +1538,11 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
       << "JSON in a cross-origin webbundle should be blocked by CORB";
 }
 
-IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
                        CrossOriginWebBundleSubresorucePng) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin.wbn");
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin" +
+                  GetParam() + ".wbn");
   GURL subresource_url("https://cross-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1747,10 +1553,11 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
       << "PNG in a cross-origin webbundle should not be blocked";
 }
 
-IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
                        SameOriginWebBundleSubresoruceJson) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://same-origin.test/web_bundle/same_origin.wbn");
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin" +
+                  GetParam() + ".wbn");
   GURL subresource_url("https://same-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1761,10 +1568,11 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
       << "JSON in a same-origin webbundle should not be blocked";
 }
 
-IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
                        SameOriginWebBundleSubresorucePng) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://same-origin.test/web_bundle/same_origin.wbn");
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin" +
+                  GetParam() + ".wbn");
   GURL subresource_url("https://same-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1774,5 +1582,11 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
   EXPECT_EQ("broken png", interceptor.response_body())
       << "PNG in a same-origin webbundle should not be blocked";
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    CrossSiteDocumentBlockingWebBundleTest,
+    CrossSiteDocumentBlockingWebBundleTest,
+    testing::Values("_b1", "_b2"),
+    CrossSiteDocumentBlockingWebBundleTest::DescribeParams);
 
 }  // namespace content

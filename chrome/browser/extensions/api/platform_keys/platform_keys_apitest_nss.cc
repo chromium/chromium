@@ -9,13 +9,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
@@ -51,6 +51,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
         key_permission_policy_(key_permission_policy),
         user_client_cert_slot_(user_client_cert_slot) {}
 
+  PlatformKeysTest(const PlatformKeysTest&) = delete;
+  PlatformKeysTest& operator=(const PlatformKeysTest&) = delete;
+
   void SetUpOnMainThread() override {
     if (!IsPreTest()) {
       // Set up the private slot before
@@ -74,10 +77,10 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 
     {
       base::RunLoop loop;
-      GetNSSCertDatabaseForProfile(
-          profile(),
-          base::BindOnce(&PlatformKeysTest::SetupTestCerts,
-                         base::Unretained(this), loop.QuitClosure()));
+      NssServiceFactory::GetForContext(profile())
+          ->UnsafelyGetNSSCertDatabaseForTesting(
+              base::BindOnce(&PlatformKeysTest::SetupTestCerts,
+                             base::Unretained(this), loop.QuitClosure()));
       loop.Run();
     }
 
@@ -234,8 +237,6 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   const bool key_permission_policy_;
   const UserClientCertSlot user_client_cert_slot_;
   crypto::ScopedTestNSSDB user_private_slot_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeysTest);
 };
 
 class TestSelectDelegate

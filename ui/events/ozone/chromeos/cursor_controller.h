@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -48,6 +47,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
   };
 
   static CursorController* GetInstance();
+
+  CursorController(const CursorController&) = delete;
+  CursorController& operator=(const CursorController&) = delete;
 
   void AddCursorObserver(CursorObserver* observer);
   void RemoveCursorObserver(CursorObserver* observer);
@@ -94,8 +96,6 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
 
   base::ObserverList<CursorObserver>::Unchecked cursor_observers_;
   mutable base::Lock cursor_observers_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorController);
 };
 
 }  // namespace ui

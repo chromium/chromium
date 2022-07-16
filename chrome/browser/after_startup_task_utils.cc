@@ -6,12 +6,11 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -25,6 +24,10 @@
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/views/linux_ui/linux_ui.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using content::BrowserThread;
 
@@ -139,6 +142,9 @@ class StartupObserver
     : public performance_manager::GraphOwned,
       public performance_manager::PageNode::ObserverDefaultImpl {
  public:
+  StartupObserver(const StartupObserver&) = delete;
+  StartupObserver& operator=(const StartupObserver&) = delete;
+
   ~StartupObserver() override = default;
 
   static void Start();
@@ -202,7 +208,6 @@ class StartupObserver
   }
 
   bool startup_complete_ = false;
-  DISALLOW_COPY_AND_ASSIGN(StartupObserver);
 };
 
 // static
@@ -218,13 +223,23 @@ void AfterStartupTaskUtils::StartMonitoringStartup() {
   // For Android, startup completion is signaled via
   // AfterStartupTaskUtils.java. We do not use the StartupObserver.
 #if !defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // For Lacros, there may not be a Browser created at startup.
+  if (chromeos::LacrosService::Get()->init_params()->initial_browser_action ==
+      crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
+    return;
+  }
+#endif
+
   StartupObserver::Start();
 #endif  // !defined(OS_ANDROID)
 
   // Add failsafe timeout
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete),
-      base::TimeDelta::FromMinutes(3));
+      base::Minutes(3));
 }
 
 void AfterStartupTaskUtils::PostTask(

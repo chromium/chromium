@@ -5,8 +5,14 @@
 
 from __future__ import print_function
 
+import datetime
 import logging
+import os
+import re
+import subprocess
 import sys
+
+import six
 
 from typ import expectations_parser
 from unexpected_passes_common import data_types
@@ -16,47 +22,120 @@ from unexpected_passes_common import result_output
 FINDER_DISABLE_COMMENT = 'finder:disable'
 FINDER_ENABLE_COMMENT = 'finder:enable'
 
+EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
+
 
 class Expectations(object):
-  def CreateTestExpectationMap(self, expectation_file, tests):
+  def CreateTestExpectationMap(self, expectation_files, tests, grace_period):
     """Creates an expectation map based off a file or list of tests.
 
     Args:
-      expectation_file: A filepath to an expectation file to read from, or None.
-          If a filepath is specified, |tests| must be None.
+      expectation_files: A filepath or list of filepaths to expectation files to
+          read from, or None. If a filepath is specified, |tests| must be None.
       tests: An iterable of strings containing test names to check. If
           specified, |expectation_file| must be None.
+      grace_period: An int specifying how many days old an expectation must
+          be in order to be parsed, i.e. how many days old an expectation must
+          be before it is a candidate for removal/modification.
 
     Returns:
       A data_types.TestExpectationMap, although all its BuilderStepMap contents
       will be empty.
     """
-    logging.info('Creating test expectation map')
-    assert expectation_file or tests
-    assert not (expectation_file and tests)
 
-    if expectation_file:
-      with open(expectation_file) as f:
-        content = f.read()
+    def AddContentToMap(content, ex_map, expectation_file_name):
+      list_parser = expectations_parser.TaggedTestListParser(content)
+      expectations_for_file = ex_map.setdefault(
+          expectation_file_name, data_types.ExpectationBuilderMap())
+      logging.debug('Parsed %d expectations', len(list_parser.expectations))
+      for e in list_parser.expectations:
+        if 'Skip' in e.raw_results:
+          continue
+        # Expectations that only have a Pass expectation (usually used to
+        # override a broader, failing expectation) are not handled by the
+        # unexpected pass finder, so ignore those.
+        if e.raw_results == ['Pass']:
+          continue
+        expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
+                                             e.reason)
+        assert expectation not in expectations_for_file
+        expectations_for_file[expectation] = data_types.BuilderStepMap()
+
+    logging.info('Creating test expectation map')
+    assert expectation_files or tests
+    assert not (expectation_files and tests)
+
+    expectation_map = data_types.TestExpectationMap()
+
+    if expectation_files:
+      if not isinstance(expectation_files, list):
+        expectation_files = [expectation_files]
+      for ef in expectation_files:
+        expectation_file_name = os.path.normpath(ef)
+        content = self._GetNonRecentExpectationContent(expectation_file_name,
+                                                       grace_period)
+        AddContentToMap(content, expectation_map, expectation_file_name)
     else:
+      expectation_file_name = ''
       content = '# results: [ RetryOnFailure ]\n'
       for t in tests:
         content += '%s [ RetryOnFailure ]\n' % t
-
-    list_parser = expectations_parser.TaggedTestListParser(content)
-    expectation_map = data_types.TestExpectationMap()
-    logging.debug('Parsed %d expectations', len(list_parser.expectations))
-    for e in list_parser.expectations:
-      if 'Skip' in e.raw_results:
-        continue
-      expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
-                                           e.reason)
-      expectations_for_test = expectation_map.setdefault(
-          e.test, data_types.ExpectationBuilderMap())
-      assert expectation not in expectations_for_test
-      expectations_for_test[expectation] = data_types.BuilderStepMap()
+      AddContentToMap(content, expectation_map, expectation_file_name)
 
     return expectation_map
+
+  def _GetNonRecentExpectationContent(self, expectation_file_path, num_days):
+    """Gets content from |expectation_file_path| older than |num_days| days.
+
+    Args:
+      expectation_file_path: A string containing a filepath pointing to an
+          expectation file.
+      num_days: An int containing how old an expectation in the given
+          expectation file must be to be included.
+
+    Returns:
+      The contents of the expectation file located at |expectation_file_path|
+      as a string with any recent expectations removed.
+    """
+    num_days = datetime.timedelta(days=num_days)
+    content = ''
+    # `git blame` output is normally in the format:
+    # revision (author date time timezone lineno) line_content
+    # The --porcelain option is meant to be more machine readable, but is much
+    # more difficult to parse for what we need to do here. In order to be able
+    # to split by whitespace easily, use -e to display author email instead of
+    # author name, which is guaranteed to not have spaces.
+    cmd = ['git', 'blame', '-e', expectation_file_path]
+    with open(os.devnull, 'w') as devnull:
+      blame_output = subprocess.check_output(cmd,
+                                             stderr=devnull).decode('utf-8')
+    for line in blame_output.splitlines(True):
+      if six.PY2:
+        split_line = line.split(None, 6)
+      else:
+        split_line = line.split(maxsplit=6)
+      # Handle blank lines.
+      if len(split_line) < 7:
+        content += '\n'
+        continue
+      _, _, date, _, _, _, line_content = split_line
+      if re.match(EXPECTATION_LINE_REGEX, line):
+        if six.PY2:
+          date_parts = date.split('-')
+          date = datetime.date(year=int(date_parts[0]),
+                               month=int(date_parts[1]),
+                               day=int(date_parts[2]))
+        else:
+          date = datetime.date.fromisoformat(date)
+        date_diff = datetime.date.today() - date
+        if date_diff > num_days:
+          content += line_content
+        else:
+          logging.debug('Omitting expectation %s because it is too new',
+                        line_content.rstrip())
+      else:
+        content += line_content
+    return content
 
   def RemoveExpectationsFromFile(self, expectations, expectation_file):
     """Removes lines corresponding to |expectations| from |expectation_file|.
@@ -163,8 +242,7 @@ class Expectations(object):
     """
     raise NotImplementedError()
 
-  def ModifySemiStaleExpectations(self, stale_expectation_map,
-                                  expectation_file):
+  def ModifySemiStaleExpectations(self, stale_expectation_map):
     """Modifies lines from |stale_expectation_map| in |expectation_file|.
 
     Prompts the user for each modification and provides debug information since
@@ -173,8 +251,6 @@ class Expectations(object):
     Args:
       stale_expectation_map: A data_types.TestExpectationMap containing stale
           expectations.
-      expectation_file: A filepath pointing to an expectation file to remove
-          lines from.
       file_handle: An optional open file-like object to output to. If not
           specified, stdout will be used.
 
@@ -182,18 +258,19 @@ class Expectations(object):
       A set of strings containing URLs of bugs associated with the modified
       (manually modified by the user or removed by the script) expectations.
     """
-    with open(expectation_file) as infile:
-      file_contents = infile.read()
-
     expectations_to_remove = []
     expectations_to_modify = []
-    for _, e, builder_map in stale_expectation_map.IterBuilderStepMaps():
+    modified_urls = set()
+    for expectation_file, e, builder_map in (
+        stale_expectation_map.IterBuilderStepMaps()):
+      with open(expectation_file) as infile:
+        file_contents = infile.read()
       line, line_number = self._GetExpectationLine(e, file_contents)
       expectation_str = None
       if not line:
         logging.error(
             'Could not find line corresponding to semi-stale expectation for '
-            '%s with tags %s and expected results %s' % e.test, e.tags,
+            '%s with tags %s and expected results %s', e.test, e.tags,
             e.expected_results)
         expectation_str = '[ %s ] %s [ %s ]' % (' '.join(
             e.tags), e.test, ' '.join(e.expected_results))
@@ -211,24 +288,24 @@ class Expectations(object):
       elif response == 'm':
         expectations_to_modify.append(e)
 
-    # It's possible that the user will introduce a typo while manually modifying
-    # an expectation, which will cause a parser error. Catch that now and give
-    # them chances to fix it so that they don't lose all of their work due to an
-    # early exit.
-    while True:
-      try:
-        with open(expectation_file) as infile:
-          file_contents = infile.read()
-        _ = expectations_parser.TaggedTestListParser(file_contents)
-        break
-      except expectations_parser.ParseError as error:
-        logging.error('Got parser error: %s', error)
-        logging.error(
-            'This probably means you introduced a typo, please fix it.')
-        _WaitForAnyUserInput()
+      # It's possible that the user will introduce a typo while manually
+      # modifying an expectation, which will cause a parser error. Catch that
+      # now and give them chances to fix it so that they don't lose all of their
+      # work due to an early exit.
+      while True:
+        try:
+          with open(expectation_file) as infile:
+            file_contents = infile.read()
+          _ = expectations_parser.TaggedTestListParser(file_contents)
+          break
+        except expectations_parser.ParseError as error:
+          logging.error('Got parser error: %s', error)
+          logging.error(
+              'This probably means you introduced a typo, please fix it.')
+          _WaitForAnyUserInput()
 
-    modified_urls = self.RemoveExpectationsFromFile(expectations_to_remove,
-                                                    expectation_file)
+      modified_urls |= self.RemoveExpectationsFromFile(expectations_to_remove,
+                                                       expectation_file)
     for e in expectations_to_modify:
       modified_urls.add(e.bug)
     return modified_urls
@@ -277,7 +354,7 @@ class Expectations(object):
     """
     seen_bugs = set()
 
-    expectation_files = self._GetExpectationFilepaths()
+    expectation_files = self.GetExpectationFilepaths()
 
     for ef in expectation_files:
       with open(ef) as infile:
@@ -289,7 +366,7 @@ class Expectations(object):
           seen_bugs.add(url)
     return set(affected_urls) - seen_bugs
 
-  def _GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self):
     """Gets all the filepaths to expectation files of interest.
 
     Returns:

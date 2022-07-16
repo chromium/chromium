@@ -36,6 +36,9 @@ class GL_EXPORT GLImageD3D : public GLImage {
              size_t plane_index = 0,
              Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr);
 
+  GLImageD3D(const GLImageD3D&) = delete;
+  GLImageD3D& operator=(const GLImageD3D&) = delete;
+
   // Safe downcast. Returns nullptr on failure.
   static GLImageD3D* FromGLImage(GLImage* image);
 
@@ -57,13 +60,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
 
   const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture() const {
     return texture_;
@@ -91,8 +87,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   ~GLImageD3D() override;
 
   void* egl_image_ = nullptr;  // EGLImageKHR
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageD3D);
 };
 
 }  // namespace gl

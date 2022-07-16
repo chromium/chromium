@@ -9,6 +9,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "build/build_config.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
@@ -16,8 +19,13 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
+#if defined(OS_MAC)
+#include "chrome/browser/image_editor/event_capture_mac.h"
+#endif
+
 namespace content {
 class WebContents;
+enum class Visibility;
 }
 
 namespace gfx {
@@ -30,10 +38,26 @@ class Layer;
 
 namespace image_editor {
 
+// Result codes to distinguish between how the capture mode was closed.
+enum class ScreenshotCaptureResultCode {
+  // Successful capture.
+  SUCCESS = 0,
+  // User navigated away from the primary web contents page while the capture
+  // mode was active.
+  USER_NAVIGATED_EXIT = 1,
+  // User exited the capture mode via key press.
+  USER_ESCAPE_EXIT = 2,
+  kMaxValue = USER_ESCAPE_EXIT
+};
+
 // Structure containing image data and any future metadata.
 struct ScreenshotCaptureResult {
   // The image obtained from capture. Empty on failure.
   gfx::Image image;
+  // The bounds of the screen during which capture took place. Empty on failure.
+  gfx::Rect screen_bounds;
+  // The result code of the capture describing why the user exited.
+  ScreenshotCaptureResultCode result_code;
 };
 
 // Callback for obtaining image data.
@@ -45,7 +69,9 @@ typedef base::OnceCallback<void(const ScreenshotCaptureResult&)>
 // ScreenshotFlow allows the user to enter a capture mode where they may drag
 // a capture rectangle over a WebContents. The class calls a OnceCallback with
 // the screenshot data contained in the region of interest.
-class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
+class ScreenshotFlow : public content::WebContentsObserver,
+                       public ui::LayerDelegate,
+                       public ui::EventHandler {
  public:
   enum class CaptureMode {
     // Default, capture is not active.
@@ -67,10 +93,26 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // copying to the clipboard or saving.
   void Start(ScreenshotCaptureCallback flow_callback);
 
+  // Runs the screen capture flow, capturing the entire viewport rather than
+  // a region selected by the user.
+  void StartFullscreenCapture(ScreenshotCaptureCallback flow_callback);
+
+  // Exits capture mode without running any callbacks.
+  void CancelCapture();
+
+  // Returns whether the capture mode is open or not.
+  bool IsCaptureModeActive();
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
  private:
+  class UnderlyingWebContentsObserver;
+
   // ui:EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnKeyEvent(ui::KeyEvent* event) override {}
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -88,12 +130,22 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // Removes the UI overlay and any listeners.
   void RemoveUIOverlay();
 
-  // Callback for initial internal screenshot capture;
-  void OnSnapshotComplete(gfx::Image snapshot);
+  // Captures a new screenshot for the chosen region, and runs the completion
+  // callback.
+  void CaptureAndRunScreenshotCompleteCallback(
+      ScreenshotCaptureResultCode result_code,
+      gfx::Rect region);
 
   // Completes the capture process for |region| and runs the callback provided
   // to Start().
-  void CompleteCapture(const gfx::Rect& region);
+  void CompleteCapture(ScreenshotCaptureResultCode result_code,
+                       const gfx::Rect& region);
+
+  // Completes the capture process and runs the |flow_callback| with provided
+  // |image| data sourced from |bounds|.
+  void RunScreenshotCompleteCallback(ScreenshotCaptureResultCode result_code,
+                                     gfx::Rect bounds,
+                                     gfx::Image image);
 
   // Paints the screenshot selection layer. The user's selection is left
   // unpainted to be hollowed out. |invalidation_region| specifies an optional
@@ -102,6 +154,9 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
                            const gfx::Rect& selection,
                            const gfx::Rect& invalidation_region);
 
+  // Requests to set the cursor type.
+  void SetCursor(ui::mojom::CursorType cursor_type);
+
   base::WeakPtr<ScreenshotFlow> weak_this_;
 
   // Whether we are in drag mode on this layer.
@@ -109,10 +164,18 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
       ScreenshotFlow::CaptureMode::NOT_CAPTURING;
 
   // Web Contents that we are capturing.
-  content::WebContents* web_contents_ = nullptr;  // unowned.
+  base::WeakPtr<content::WebContents> web_contents_;
+
+  // Observer for |web_contents_|.
+  std::unique_ptr<UnderlyingWebContentsObserver> web_contents_observer_;
 
   // Callback provided to Start().
   ScreenshotCaptureCallback flow_callback_;
+
+  // Mac-specific
+#if defined(OS_MAC)
+  std::unique_ptr<EventCaptureMac> event_capture_mac_;
+#endif
 
   // Selection rectangle coordinates.
   gfx::Point drag_start_;
@@ -124,13 +187,6 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // Our top-level layer that is superimposed over the browser window's root
   // layer while screen capture mode is active.
   std::unique_ptr<ui::Layer> screen_capture_layer_;
-
-  // Original window capture data providing the active capture area.
-  gfx::ImageSkia image_foreground_;
-
-  // Desaturated window capture data providing the background of region
-  // selection.
-  gfx::ImageSkia image_background_;
 
   base::WeakPtrFactory<ScreenshotFlow> weak_factory_{this};
 };

@@ -4,7 +4,7 @@
 """
 Here are rule classes which validate whether function-like objects
 (callback functions, operations in interfaces, etc) violate the rules described
-in Web IDL https://heycam.github.io/webidl/.
+in Web IDL https://webidl.spec.whatwg.org/.
 
 Each rule class must inherit RuleBase.
 """

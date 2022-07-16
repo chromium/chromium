@@ -68,4 +68,9 @@ public interface AutofillAssistantActionHandler {
      */
     void performAction(
             String name, String experimentIds, Bundle arguments, Callback<Boolean> callback);
+
+    /**
+     * Displays a generic error message to the user.
+     */
+    void showFatalError();
 }

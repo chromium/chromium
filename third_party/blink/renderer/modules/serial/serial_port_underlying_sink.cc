@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_sink.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
@@ -46,7 +48,9 @@ ScriptPromise SerialPortUnderlyingSink::write(
     DOMException* exception = pending_exception_;
     pending_exception_ = nullptr;
     serial_port_->UnderlyingSinkClosed();
-    exception_state.RethrowV8Exception(ToV8(exception, script_state));
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, exception)
+            .ToLocalChecked());
     return ScriptPromise();
   }
 
@@ -75,7 +79,9 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
   if (pending_exception_) {
     DOMException* exception = pending_exception_;
     pending_exception_ = nullptr;
-    exception_state.RethrowV8Exception(ToV8(exception, script_state));
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, exception)
+            .ToLocalChecked());
     serial_port_->UnderlyingSinkClosed();
     return ScriptPromise();
   }
@@ -100,7 +106,9 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
   if (pending_exception_) {
     DOMException* exception = pending_exception_;
     pending_exception_ = nullptr;
-    exception_state.RethrowV8Exception(ToV8(exception, script_state));
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, exception)
+            .ToLocalChecked());
     serial_port_->UnderlyingSinkClosed();
     return ScriptPromise();
   }
@@ -172,18 +180,23 @@ void SerialPortUnderlyingSink::WriteData() {
   DCHECK(buffer_source_);
 
   DOMArrayPiece array_piece(buffer_source_);
-  if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-    pending_exception_ = DOMException::Create(
-        "Buffer size exceeds maximum heap object size.", "DataError");
-    PipeClosed();
+  // From https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy, if the
+  // buffer source is detached then an empty byte sequence is returned, which
+  // means the write is complete.
+  if (array_piece.IsDetached()) {
+    buffer_source_ = nullptr;
+    offset_ = 0;
+    pending_operation_->Resolve();
+    pending_operation_ = nullptr;
     return;
   }
+
   const uint8_t* data = array_piece.Bytes();
-  const uint32_t length = static_cast<uint32_t>(array_piece.ByteLength());
+  const size_t length = array_piece.ByteLength();
 
   DCHECK_LT(offset_, length);
   data += offset_;
-  uint32_t num_bytes = length - offset_;
+  uint32_t num_bytes = base::saturated_cast<uint32_t>(length - offset_);
 
   MojoResult result =
       data_pipe_->WriteData(data, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);

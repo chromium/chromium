@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+
+#include <utility>
+#include <vector>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantChip_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantColor_jni.h"
@@ -14,8 +19,12 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDrawable_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoPopup_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantValue_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDependencyInjector_jni.h"
+#include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
+#include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/android/gurl_android.h"
@@ -179,7 +188,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
           return Java_AssistantDrawable_createRectangleShape(
               env, jbackground_color, jstroke_color, stroke_width_pixels,
               corner_radius_pixels);
-          break;
         }
         case ShapeDrawableProto::SHAPE_NOT_SET:
           return nullptr;
@@ -348,7 +356,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
-    const InfoPopupProto& info_popup_proto) {
+    const InfoPopupProto& info_popup_proto,
+    const std::string& close_display_str) {
   base::android::ScopedJavaLocalRef<jobject> jpositive_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jnegative_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jneutral_button = nullptr;
@@ -371,9 +380,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
   } else {
     // If no button is set in the proto, we add a Close button
     jpositive_button = Java_AssistantDialogButton_Constructor(
-        env,
-        base::android::ConvertUTF8ToJavaString(
-            env, l10n_util::GetStringUTF8(IDS_CLOSE)),
+        env, base::android::ConvertUTF8ToJavaString(env, close_display_str),
         nullptr);
   }
 
@@ -398,6 +405,15 @@ std::string SafeConvertJavaStringToNative(
     native_string = base::android::ConvertJavaStringToUTF8(env, jstring);
   }
   return native_string;
+}
+
+base::android::ScopedJavaLocalRef<jstring> ConvertNativeOptionalStringToJava(
+    JNIEnv* env,
+    const absl::optional<std::string> optional_string) {
+  if (!optional_string.has_value()) {
+    return nullptr;
+  }
+  return base::android::ConvertUTF8ToJavaString(env, *optional_string);
 }
 
 BottomSheetState ToNativeBottomSheetState(int state) {
@@ -473,7 +489,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
   return jlist;
 }
 
-std::map<std::string, std::string> CreateStringMapFromJava(
+base::flat_map<std::string, std::string> CreateStringMapFromJava(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& names,
     const base::android::JavaRef<jobjectArray>& values) {
@@ -482,12 +498,12 @@ std::map<std::string, std::string> CreateStringMapFromJava(
   std::vector<std::string> values_vector;
   base::android::AppendJavaStringArrayToStringVector(env, values,
                                                      &values_vector);
-  std::map<std::string, std::string> result;
+  std::vector<std::pair<std::string, std::string>> result;
   DCHECK_EQ(names_vector.size(), values_vector.size());
   for (size_t i = 0; i < names_vector.size(); ++i) {
-    result.insert(std::make_pair(names_vector[i], values_vector[i]));
+    result.emplace_back(names_vector[i], values_vector[i]);
   }
-  return result;
+  return base::flat_map<std::string, std::string>(std::move(result));
 }
 
 std::unique_ptr<TriggerContext> CreateTriggerContext(
@@ -496,12 +512,17 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
     const base::android::JavaRef<jstring>& jexperiment_ids,
     const base::android::JavaRef<jobjectArray>& jparameter_names,
     const base::android::JavaRef<jobjectArray>& jparameter_values,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
     jboolean onboarding_shown,
     jboolean is_direct_action,
     const base::android::JavaRef<jstring>& jinitial_url) {
+  auto script_parameters = std::make_unique<ScriptParameters>(
+      CreateStringMapFromJava(env, jparameter_names, jparameter_values));
+  script_parameters->UpdateDeviceOnlyParameters(CreateStringMapFromJava(
+      env, jdevice_only_parameter_names, jdevice_only_parameter_values));
   return std::make_unique<TriggerContext>(
-      std::make_unique<ScriptParameters>(
-          CreateStringMapFromJava(env, jparameter_names, jparameter_values)),
+      std::move(script_parameters),
       SafeConvertJavaStringToNative(env, jexperiment_ids),
       IsCustomTab(web_contents), onboarding_shown, is_direct_action,
       SafeConvertJavaStringToNative(env, jinitial_url),
@@ -515,6 +536,44 @@ bool IsCustomTab(content::WebContents* web_contents) {
   }
 
   return tab_android->IsCustomTab();
+}
+
+std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
+                                            ClientAndroid* client_android) {
+  jlong jtest_service_to_inject =
+      Java_AutofillAssistantDependencyInjector_getServiceToInject(
+          env, reinterpret_cast<intptr_t>(client_android));
+  std::unique_ptr<Service> test_service = nullptr;
+  if (jtest_service_to_inject) {
+    test_service.reset(static_cast<Service*>(
+        reinterpret_cast<void*>(jtest_service_to_inject)));
+  }
+  return test_service;
+}
+
+std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
+    JNIEnv* env) {
+  jlong jtest_service_request_sender_to_inject =
+      Java_AutofillAssistantDependencyInjector_getServiceRequestSenderToInject(
+          env);
+  std::unique_ptr<ServiceRequestSender> test_service_request_sender;
+  if (jtest_service_request_sender_to_inject) {
+    test_service_request_sender.reset(static_cast<ServiceRequestSender*>(
+        reinterpret_cast<void*>(jtest_service_request_sender_to_inject)));
+  }
+  return test_service_request_sender;
+}
+
+std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
+    JNIEnv* env) {
+  jlong jtest_tts_controller_to_inject =
+      Java_AutofillAssistantDependencyInjector_getTtsControllerToInject(env);
+  std::unique_ptr<AutofillAssistantTtsController> test_tts_controller;
+  if (jtest_tts_controller_to_inject) {
+    test_tts_controller.reset(static_cast<AutofillAssistantTtsController*>(
+        reinterpret_cast<void*>(jtest_tts_controller_to_inject)));
+  }
+  return test_tts_controller;
 }
 
 }  // namespace ui_controller_android_utils

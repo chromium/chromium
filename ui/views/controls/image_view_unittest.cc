@@ -47,6 +47,9 @@ class ImageViewTest : public ViewsTestBase,
  public:
   ImageViewTest() = default;
 
+  ImageViewTest(const ImageViewTest&) = delete;
+  ImageViewTest& operator=(const ImageViewTest&) = delete;
+
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -86,8 +89,6 @@ class ImageViewTest : public ViewsTestBase,
  private:
   ImageView* image_view_ = nullptr;
   Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageViewTest);
 };
 
 // Test the image origin of the internal ImageSkia is correct when it is

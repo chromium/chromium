@@ -37,6 +37,10 @@ web::WebUIIOSDataSource* CreateOmahaUIHTMLSource() {
 class OmahaDOMHandler : public WebUIIOSMessageHandler {
  public:
   OmahaDOMHandler();
+
+  OmahaDOMHandler(const OmahaDOMHandler&) = delete;
+  OmahaDOMHandler& operator=(const OmahaDOMHandler&) = delete;
+
   ~OmahaDOMHandler() override;
 
   // WebUIIOSMessageHandler implementation.
@@ -52,8 +56,6 @@ class OmahaDOMHandler : public WebUIIOSMessageHandler {
   // WeakPtr factory needed because this object might be deleted before
   // receiving the callbacks from the OmahaService.
   base::WeakPtrFactory<OmahaDOMHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmahaDOMHandler);
 };
 
 OmahaDOMHandler::OmahaDOMHandler() : weak_ptr_factory_(this) {}
@@ -61,7 +63,7 @@ OmahaDOMHandler::OmahaDOMHandler() : weak_ptr_factory_(this) {}
 OmahaDOMHandler::~OmahaDOMHandler() {}
 
 void OmahaDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestOmahaDebugInformation",
       base::BindRepeating(&OmahaDOMHandler::HandleRequestDebugInformation,
                           base::Unretained(this)));

@@ -200,13 +200,13 @@ Vector<String> InspectorMemoryAgent::Symbolize(
                   .ToString()
                   .c_str());
   // Populate cache with new entries.
-  size_t next_pos;
-  for (size_t pos = 0, i = 0;; pos = next_pos + 1, ++i) {
+  wtf_size_t next_pos;
+  for (wtf_size_t pos = 0, i = 0;; pos = next_pos + 1, ++i) {
     next_pos = text.find('\n', pos);
     if (next_pos == kNotFound)
       break;
     String line = text.Substring(pos, next_pos - pos);
-    size_t space_pos = line.ReverseFind(' ');
+    wtf_size_t space_pos = line.ReverseFind(' ');
     String name = line.Substring(space_pos == kNotFound ? 0 : space_pos + 1);
     symbols_cache_.insert(addresses_to_symbolize[i], name);
   }

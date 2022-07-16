@@ -6,9 +6,9 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
-import {TestLocalDataBrowserProxy} from 'chrome://test/settings/test_local_data_browser_proxy.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
+import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
@@ -26,9 +26,9 @@ suite('SiteDataTest', function() {
   setup(function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testBrowserProxy = new TestLocalDataBrowserProxy();
-    LocalDataBrowserProxyImpl.instance_ = testBrowserProxy;
+    LocalDataBrowserProxyImpl.setInstance(testBrowserProxy);
     siteData = document.createElement('site-data');
     siteData.filter = '';
   });

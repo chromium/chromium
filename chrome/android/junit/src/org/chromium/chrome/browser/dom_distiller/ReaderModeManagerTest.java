@@ -130,7 +130,7 @@ public class ReaderModeManagerTest {
         when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL))
                 .thenReturn(MOCK_URL);
 
-        mManager = new ReaderModeManager(mTab, mMessageDispatcher);
+        mManager = new ReaderModeManager(mTab, () -> mMessageDispatcher);
 
         // Ensure the tab observer is attached when the manager is created.
         verify(mTab).addObserver(mTabObserverCaptor.capture());

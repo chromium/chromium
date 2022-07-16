@@ -99,10 +99,10 @@ enum SearchResultType {
   OMNIBOX_SEARCH_SUGGEST_ENTITY,
   // A result from omnibox for suggested navigation.
   OMNIBOX_NAVSUGGEST,
-  // An answer rich entity result from omnibox.
-  OMNIBOX_RICH_ENTITY_ANSWER,
-  // A rich entity result from omnibox with image icon.
-  OMNIBOX_RICH_ENTITY_IMAGE_ENTITY,
+  // An answer result from Omnibox.
+  OMNIBOX_ANSWER,
+  // A calculator result from Omnibox.
+  OMNIBOX_CALCULATOR,
   // A local file search result.
   FILE_SEARCH,
   // A Drive file search result.

@@ -100,7 +100,7 @@ doc = domImpl.createDocument(nullString,nullString,nullDoctype);
     {
         success = false;
         try {
-            elem = doc.createElementNS("http://www.example.org/domts/wellformed01","LegalNameࢎ");
+            elem = doc.createElementNS("http://www.example.org/domts/wellformed01","LegalName}");
         }
         catch(ex) {
       success = (typeof(ex.code) != 'undefined' && ex.code == 5);
@@ -123,7 +123,7 @@ doc = domImpl.createDocument(nullString,nullString,nullDoctype);
        throw ex;
         }
          }
-        elem = doc.createElementNS("http://www.example.org/domts/wellformed01","LegalNameࢎ");
+        elem = doc.createElementNS("http://www.example.org/domts/wellformed01","LegalName}");
       retval = doc.appendChild(elem);
       doc.xmlVersion = "1.0";
 

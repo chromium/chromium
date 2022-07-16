@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_STORAGE_DURABLE_STORAGE_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_STORAGE_DURABLE_STORAGE_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/permissions/permission_context_base.h"
 
@@ -14,6 +13,12 @@ class DurableStoragePermissionContext
  public:
   explicit DurableStoragePermissionContext(
       content::BrowserContext* browser_context);
+
+  DurableStoragePermissionContext(const DurableStoragePermissionContext&) =
+      delete;
+  DurableStoragePermissionContext& operator=(
+      const DurableStoragePermissionContext&) = delete;
+
   ~DurableStoragePermissionContext() override = default;
 
   // PermissionContextBase implementation.
@@ -30,9 +35,6 @@ class DurableStoragePermissionContext
                             ContentSetting content_setting,
                             bool is_one_time) override;
   bool IsRestrictedToSecureOrigins() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DurableStoragePermissionContext);
 };
 
 #endif  // CHROME_BROWSER_STORAGE_DURABLE_STORAGE_PERMISSION_CONTEXT_H_

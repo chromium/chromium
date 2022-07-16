@@ -24,7 +24,7 @@
 #include "components/drive/drive_notification_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
-#include "google_apis/drive/time_util.h"
+#include "google_apis/common/time_util.h"
 
 using drive::EventLogger;
 using sync_file_system::SyncFileSystemServiceFactory;
@@ -52,25 +52,25 @@ SyncFileSystemInternalsHandler::~SyncFileSystemInternalsHandler() {
 }
 
 void SyncFileSystemInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &SyncFileSystemInternalsHandler::HandleGetServiceStatus,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLog",
       base::BindRepeating(&SyncFileSystemInternalsHandler::HandleGetLog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearLogs",
       base::BindRepeating(&SyncFileSystemInternalsHandler::HandleClearLogs,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getNotificationSource",
       base::BindRepeating(
           &SyncFileSystemInternalsHandler::HandleGetNotificationSource,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "observeTaskLog",
       base::BindRepeating(&SyncFileSystemInternalsHandler::HandleObserveTaskLog,
                           base::Unretained(this)));

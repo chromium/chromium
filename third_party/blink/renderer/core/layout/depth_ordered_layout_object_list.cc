@@ -12,33 +12,41 @@
 
 namespace blink {
 
-struct DepthOrderedLayoutObjectListData {
-  Vector<LayoutObjectWithDepth>& ordered_objects() { return ordered_objects_; }
-  HashSet<LayoutObject*>& objects() { return objects_; }
+class DepthOrderedLayoutObjectListData
+    : public GarbageCollected<DepthOrderedLayoutObjectListData> {
+ public:
+  DepthOrderedLayoutObjectListData() = default;
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(ordered_objects_);
+    visitor->Trace(objects_);
+  }
+
+  HeapVector<LayoutObjectWithDepth>& ordered_objects() {
+    return ordered_objects_;
+  }
+  HeapHashSet<Member<LayoutObject>>& objects() { return objects_; }
 
   // LayoutObjects sorted by depth (deepest first). This structure is only
   // populated at the beginning of enumerations. See ordered().
-  Vector<LayoutObjectWithDepth> ordered_objects_;
+  HeapVector<LayoutObjectWithDepth> ordered_objects_;
 
   // Outside of layout, LayoutObjects can be added and removed as needed such
   // as when style was changed or destroyed. They're kept in this hashset to
   // keep those operations fast.
-  HashSet<LayoutObject*> objects_;
+  HeapHashSet<Member<LayoutObject>> objects_;
 };
 
 DepthOrderedLayoutObjectList::DepthOrderedLayoutObjectList()
-    : data_(new DepthOrderedLayoutObjectListData) {}
+    : data_(MakeGarbageCollected<DepthOrderedLayoutObjectListData>()) {}
 
-DepthOrderedLayoutObjectList::~DepthOrderedLayoutObjectList() {
-  delete data_;
-}
+DepthOrderedLayoutObjectList::~DepthOrderedLayoutObjectList() = default;
 
 int DepthOrderedLayoutObjectList::size() const {
-  return data_->objects_.size();
+  return data_->objects().size();
 }
 
 bool DepthOrderedLayoutObjectList::IsEmpty() const {
-  return data_->objects_.IsEmpty();
+  return data_->objects().IsEmpty();
 }
 
 namespace {
@@ -62,8 +70,8 @@ void DepthOrderedLayoutObjectList::Add(LayoutObject& object) {
 }
 
 void DepthOrderedLayoutObjectList::Remove(LayoutObject& object) {
-  auto it = data_->objects_.find(&object);
-  if (it == data_->objects_.end())
+  auto it = data_->objects().find(&object);
+  if (it == data_->objects().end())
     return;
   DCHECK(ListModificationAllowedFor(object));
   data_->objects().erase(it);
@@ -71,8 +79,12 @@ void DepthOrderedLayoutObjectList::Remove(LayoutObject& object) {
 }
 
 void DepthOrderedLayoutObjectList::Clear() {
-  data_->objects_.clear();
-  data_->ordered_objects_.clear();
+  data_->objects().clear();
+  data_->ordered_objects().clear();
+}
+
+void LayoutObjectWithDepth::Trace(Visitor* visitor) const {
+  visitor->Trace(object);
 }
 
 unsigned LayoutObjectWithDepth::DetermineDepth(LayoutObject* object) {
@@ -83,17 +95,23 @@ unsigned LayoutObjectWithDepth::DetermineDepth(LayoutObject* object) {
   return depth;
 }
 
-const HashSet<LayoutObject*>& DepthOrderedLayoutObjectList::Unordered() const {
-  return data_->objects_;
+const HeapHashSet<Member<LayoutObject>>&
+DepthOrderedLayoutObjectList::Unordered() const {
+  return data_->objects();
 }
 
-const Vector<LayoutObjectWithDepth>& DepthOrderedLayoutObjectList::Ordered() {
+const HeapVector<LayoutObjectWithDepth>&
+DepthOrderedLayoutObjectList::Ordered() {
   if (data_->objects_.IsEmpty() || !data_->ordered_objects_.IsEmpty())
     return data_->ordered_objects_;
 
   CopyToVector(data_->objects_, data_->ordered_objects_);
   std::sort(data_->ordered_objects_.begin(), data_->ordered_objects_.end());
   return data_->ordered_objects_;
+}
+
+void DepthOrderedLayoutObjectList::Trace(Visitor* visitor) const {
+  visitor->Trace(data_);
 }
 
 }  // namespace blink

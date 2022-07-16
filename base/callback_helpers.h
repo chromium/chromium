@@ -143,41 +143,38 @@ class BASE_EXPORT ScopedClosureRunner {
   OnceClosure closure_;
 };
 
-// Creates a null callback.
-class BASE_EXPORT NullCallback {
- public:
-  template <typename R, typename... Args>
-  operator RepeatingCallback<R(Args...)>() const {
-    return RepeatingCallback<R(Args...)>();
-  }
-  template <typename R, typename... Args>
-  operator OnceCallback<R(Args...)>() const {
-    return OnceCallback<R(Args...)>();
-  }
-};
+// Returns a placeholder type that will implicitly convert into a null callback,
+// similar to how absl::nullopt / std::nullptr work in conjunction with
+// absl::optional and various smart pointer types.
+constexpr auto NullCallback() {
+  return internal::NullCallbackTag();
+}
 
-// Creates a callback that does nothing when called.
-class BASE_EXPORT DoNothing {
- public:
-  template <typename... Args>
-  operator RepeatingCallback<void(Args...)>() const {
-    return Repeatedly<Args...>();
-  }
-  template <typename... Args>
-  operator OnceCallback<void(Args...)>() const {
-    return Once<Args...>();
-  }
-  // Explicit way of specifying a specific callback type when the compiler can't
-  // deduce it.
-  template <typename... Args>
-  static RepeatingCallback<void(Args...)> Repeatedly() {
-    return BindRepeating([](Args... args) {});
-  }
-  template <typename... Args>
-  static OnceCallback<void(Args...)> Once() {
-    return BindOnce([](Args... args) {});
-  }
-};
+// Returns a placeholder type that will implicitly convert into a callback that
+// does nothing, similar to how absl::nullopt / std::nullptr work in conjunction
+// with absl::optional and various smart pointer types.
+constexpr auto DoNothing() {
+  return internal::DoNothingCallbackTag();
+}
+
+// Similar to the above, but with a type hint. Useful for disambiguating
+// among multiple function overloads that take callbacks with different
+// signatures:
+//
+// void F(base::OnceCallback<void()> callback);     // 1
+// void F(base::OnceCallback<void(int)> callback);  // 2
+//
+// F(base::NullCallbackAs<void()>());               // calls 1
+// F(base::DoNothingAs<void(int)>());               // calls 2
+template <typename Signature>
+constexpr auto NullCallbackAs() {
+  return internal::NullCallbackTag::WithSignature<Signature>();
+}
+
+template <typename Signature>
+constexpr auto DoNothingAs() {
+  return internal::DoNothingCallbackTag::WithSignature<Signature>();
+}
 
 // Useful for creating a Closure that will delete a pointer when invoked. Only
 // use this when necessary. In most cases MessageLoop::DeleteSoon() is a better

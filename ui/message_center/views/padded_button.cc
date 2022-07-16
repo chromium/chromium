@@ -6,12 +6,13 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -35,15 +36,9 @@ PaddedButton::PaddedButton(PressedCallback callback)
 
 void PaddedButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
-  auto* theme = GetNativeTheme();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SkColor background_color = theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationButtonBackground);
-  SetBackground(views::CreateSolidBackground(background_color));
-#else
+  const auto* color_provider = GetColorProvider();
   SkColor background_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_WindowBackground);
-#endif
+      color_provider->GetColor(ui::kColorWindowBackground);
   views::InkDrop::Get(this)->SetBaseColor(
       color_utils::GetColorWithMaxContrast(background_color));
 }

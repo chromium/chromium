@@ -64,7 +64,9 @@ enum class DownloadMimeTypeResult {
   LegacyPixarUniversalSceneDescription = 19,
   // model/vnd.usdz+zip MIME type.
   UniversalSceneDescription = 20,
-  kMaxValue = UniversalSceneDescription,
+  // text/vcard MIME type.
+  Vcard = 21,
+  kMaxValue = Vcard,
 };
 
 // Keyed Service which acts as web::DownloadController delegate and routes
@@ -73,6 +75,10 @@ class BrowserDownloadService : public KeyedService,
                                public web::DownloadControllerDelegate {
  public:
   explicit BrowserDownloadService(web::DownloadController* download_controller);
+
+  BrowserDownloadService(const BrowserDownloadService&) = delete;
+  BrowserDownloadService& operator=(const BrowserDownloadService&) = delete;
+
   ~BrowserDownloadService() override;
 
  private:
@@ -83,8 +89,6 @@ class BrowserDownloadService : public KeyedService,
   void OnDownloadControllerDestroyed(web::DownloadController*) override;
 
   web::DownloadController* download_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserDownloadService);
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_BROWSER_DOWNLOAD_SERVICE_H_

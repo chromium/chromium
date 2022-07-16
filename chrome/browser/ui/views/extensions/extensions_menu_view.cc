@@ -18,16 +18,18 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -165,7 +167,7 @@ void ExtensionsMenuView::Populate() {
       (ExtensionsMenuItemView::kIconSize.width() - kSettingsIconSize) / 2;
 
   footer->SetBorder(views::CreateEmptyBorder(
-      footer->border()->GetInsets() +
+      footer->GetInsets() +
       gfx::Insets(0, kSettingsIconHorizontalPadding, 0, 0)));
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() +
                                kSettingsIconHorizontalPadding);
@@ -262,11 +264,6 @@ ExtensionsMenuView::Section* ExtensionsMenuView::GetSectionForStatus(
   return section;
 }
 
-void ExtensionsMenuView::UpdateActionStates() {
-  for (ExtensionsMenuItemView* view : extensions_menu_items_)
-    view->view_controller()->UpdateState();
-}
-
 void ExtensionsMenuView::SortMenuItemsByName() {
   auto sort_section = [](Section* section) {
     if (section->menu_items->children().empty())
@@ -330,7 +327,8 @@ void ExtensionsMenuView::UpdateSectionVisibility() {
 }
 
 void ExtensionsMenuView::Update() {
-  UpdateActionStates();
+  for (ExtensionsMenuItemView* view : extensions_menu_items_)
+    view->view_controller()->UpdateState();
 
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
@@ -412,9 +410,9 @@ void ExtensionsMenuView::OnThemeChanged() {
   if (manage_extensions_button_) {
     manage_extensions_button_->SetImage(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(vector_icons::kSettingsIcon, kSettingsIconSize,
-                              GetNativeTheme()->GetSystemColor(
-                                  ui::NativeTheme::kColorId_MenuIconColor)));
+        gfx::CreateVectorIcon(
+            vector_icons::kSettingsIcon, kSettingsIconSize,
+            GetColorProvider()->GetColor(ui::kColorMenuIcon)));
   }
 }
 
@@ -464,7 +462,7 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
 
 void ExtensionsMenuView::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  UpdateActionStates();
+  Update();
 }
 
 void ExtensionsMenuView::OnToolbarModelInitialized() {

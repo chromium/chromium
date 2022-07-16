@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
@@ -34,6 +33,11 @@ class CrostiniUpgraderPageHandler
           pending_page,
       base::OnceClosure on_page_closed,
       base::OnceCallback<void(bool)> launch_callback);
+
+  CrostiniUpgraderPageHandler(const CrostiniUpgraderPageHandler&) = delete;
+  CrostiniUpgraderPageHandler& operator=(const CrostiniUpgraderPageHandler&) =
+      delete;
+
   ~CrostiniUpgraderPageHandler() override;
 
   // Send a close request to the web page.
@@ -79,8 +83,6 @@ class CrostiniUpgraderPageHandler
   bool restart_required_ = true;
 
   base::WeakPtrFactory<CrostiniUpgraderPageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgraderPageHandler);
 };
 
 }  // namespace chromeos

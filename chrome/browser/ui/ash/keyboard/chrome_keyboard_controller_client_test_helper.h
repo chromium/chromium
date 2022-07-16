@@ -25,6 +25,12 @@ class ChromeKeyboardControllerClientTestHelper {
   InitializeWithFake();
 
   ChromeKeyboardControllerClientTestHelper();
+
+  ChromeKeyboardControllerClientTestHelper(
+      const ChromeKeyboardControllerClientTestHelper&) = delete;
+  ChromeKeyboardControllerClientTestHelper& operator=(
+      const ChromeKeyboardControllerClientTestHelper&) = delete;
+
   ~ChromeKeyboardControllerClientTestHelper();
 
   void SetProfile(Profile* profile);
@@ -39,8 +45,6 @@ class ChromeKeyboardControllerClientTestHelper {
 
   // Used when InitializeWithFake is called.
   std::unique_ptr<FakeKeyboardController> fake_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardControllerClientTestHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_CONTROLLER_CLIENT_TEST_HELPER_H_

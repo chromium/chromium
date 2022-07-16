@@ -22,7 +22,7 @@
 //   class MyClass {
 //    public:
 //     void StartDoingStuff() {
-//       timer_.Start(FROM_HERE, TimeDelta::FromSeconds(1),
+//       timer_.Start(FROM_HERE, Seconds(1),
 //                    this, &MyClass::DoStuff);
 //     }
 //     void StopDoingStuff() {
@@ -67,7 +67,8 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/delayed_task_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -99,6 +100,9 @@ class BASE_EXPORT TimerBase {
   TimerBase(const Location& posted_from,
             TimeDelta delay,
             const TickClock* tick_clock);
+
+  TimerBase(const TimerBase&) = delete;
+  TimerBase& operator=(const TimerBase&) = delete;
 
   virtual ~TimerBase();
 
@@ -157,7 +161,11 @@ class BASE_EXPORT TimerBase {
   void StartInternal(const Location& posted_from, TimeDelta delay);
 
  private:
-  friend class BaseTimerTaskInternal;
+  friend class TaskDestructionDetector;
+
+  // Indicates that the scheduled task was destroyed from inside the queue.
+  // Stops the timer if it was running.
+  void OnTaskDestroyed();
 
   // Returns the task runner on which the task should be scheduled. If the
   // corresponding |task_runner_| field is null, the task runner for the current
@@ -207,10 +215,8 @@ class BASE_EXPORT TimerBase {
   // If true, |user_task_| is scheduled to run sometime in the future.
   bool is_running_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  WeakPtrFactory<TimerBase> weak_ptr_factory_
-      GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(TimerBase);
+  // The handle to the posted delayed task.
+  DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace internal
@@ -221,6 +227,10 @@ class BASE_EXPORT OneShotTimer : public internal::TimerBase {
  public:
   OneShotTimer();
   explicit OneShotTimer(const TickClock* tick_clock);
+
+  OneShotTimer(const OneShotTimer&) = delete;
+  OneShotTimer& operator=(const OneShotTimer&) = delete;
+
   ~OneShotTimer() override;
 
   // Start the timer to run at the given |delay| from now. If the timer is
@@ -249,8 +259,6 @@ class BASE_EXPORT OneShotTimer : public internal::TimerBase {
   void RunUserTask() final;
 
   OnceClosure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotTimer);
 };
 
 //-----------------------------------------------------------------------------
@@ -259,6 +267,10 @@ class BASE_EXPORT RepeatingTimer : public internal::TimerBase {
  public:
   RepeatingTimer();
   explicit RepeatingTimer(const TickClock* tick_clock);
+
+  RepeatingTimer(const RepeatingTimer&) = delete;
+  RepeatingTimer& operator=(const RepeatingTimer&) = delete;
+
   ~RepeatingTimer() override;
 
   RepeatingTimer(const Location& posted_from,
@@ -295,8 +307,6 @@ class BASE_EXPORT RepeatingTimer : public internal::TimerBase {
   void RunUserTask() override;
 
   RepeatingClosure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(RepeatingTimer);
 };
 
 //-----------------------------------------------------------------------------
@@ -306,6 +316,10 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::TimerBase {
  public:
   RetainingOneShotTimer();
   explicit RetainingOneShotTimer(const TickClock* tick_clock);
+
+  RetainingOneShotTimer(const RetainingOneShotTimer&) = delete;
+  RetainingOneShotTimer& operator=(const RetainingOneShotTimer&) = delete;
+
   ~RetainingOneShotTimer() override;
 
   RetainingOneShotTimer(const Location& posted_from,
@@ -342,8 +356,6 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::TimerBase {
   void RunUserTask() override;
 
   RepeatingClosure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(RetainingOneShotTimer);
 };
 
 //-----------------------------------------------------------------------------
@@ -377,12 +389,13 @@ class DelayTimer {
                BindRepeating(method, Unretained(receiver)),
                tick_clock) {}
 
+  DelayTimer(const DelayTimer&) = delete;
+  DelayTimer& operator=(const DelayTimer&) = delete;
+
   void Reset() { timer_.Reset(); }
 
  private:
   RetainingOneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayTimer);
 };
 
 }  // namespace base

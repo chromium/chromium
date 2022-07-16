@@ -12,8 +12,8 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -40,6 +40,11 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
 class ArcContentFileSystemFileStreamWriterTest : public testing::Test {
  public:
   ArcContentFileSystemFileStreamWriterTest() = default;
+
+  ArcContentFileSystemFileStreamWriterTest(
+      const ArcContentFileSystemFileStreamWriterTest&) = delete;
+  ArcContentFileSystemFileStreamWriterTest& operator=(
+      const ArcContentFileSystemFileStreamWriterTest&) = delete;
 
   ~ArcContentFileSystemFileStreamWriterTest() override = default;
 
@@ -108,11 +113,9 @@ class ArcContentFileSystemFileStreamWriterTest : public testing::Test {
   FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamWriterTest);
 };
 
 void NeverCalled(int unused) {

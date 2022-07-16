@@ -46,6 +46,10 @@ namespace {
 class Logger final : public LogOutputStream::Delegate {
  public:
   Logger() = default;
+
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
+
   ~Logger() override = default;
 
 #if defined(OS_ANDROID)
@@ -72,9 +76,6 @@ class Logger final : public LogOutputStream::Delegate {
   size_t OutputCap() override { return 0; }
   size_t LineWidth() override { return 0; }
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Logger);
 };
 
 bool WriteMinidumpLogFromFile(FileReaderInterface* file_reader) {

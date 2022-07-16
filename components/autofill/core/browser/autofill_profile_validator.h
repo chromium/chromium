@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -34,6 +33,9 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
   AutofillProfileValidator(
       std::unique_ptr<::i18n::addressinput::Source> source,
       std::unique_ptr<::i18n::addressinput::Storage> storage);
+
+  AutofillProfileValidator(const AutofillProfileValidator&) = delete;
+  AutofillProfileValidator& operator=(const AutofillProfileValidator&) = delete;
 
   ~AutofillProfileValidator() override;
 
@@ -60,6 +62,9 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
                       AddressValidator* validator,
                       AutofillProfileValidatorCallback on_validated);
 
+    ValidationRequest(const ValidationRequest&) = delete;
+    ValidationRequest& operator=(const ValidationRequest&) = delete;
+
     ~ValidationRequest();
 
     // Validates various fields of the |profile_|, and calls |on_validated_|.
@@ -76,7 +81,6 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
     bool has_responded_ = false;
     base::CancelableOnceCallback<void()> on_timeout_;
     base::WeakPtrFactory<ValidationRequest> weak_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(ValidationRequest);
   };
 
   friend class AutofillProfileValidatorTest;
@@ -92,8 +96,6 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
   // A map of the region code and the pending requests for that region code.
   std::map<std::string, std::vector<std::unique_ptr<ValidationRequest>>>
       pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileValidator);
 };
 
 }  // namespace autofill

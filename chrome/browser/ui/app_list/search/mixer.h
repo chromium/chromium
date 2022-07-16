@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class AppListModelUpdater;
@@ -38,6 +37,10 @@ class Mixer {
  public:
   Mixer(AppListModelUpdater* model_updater,
         SearchControllerImpl* search_controller);
+
+  Mixer(const Mixer&) = delete;
+  Mixer& operator=(const Mixer&) = delete;
+
   ~Mixer();
 
   // Adds a new mixer group. A "soft" maximum of |max_results| results will be
@@ -98,8 +101,6 @@ class Mixer {
   // Adaptive models used for re-ranking search results.
   std::unique_ptr<SearchResultRanker> search_result_ranker_;
   std::unique_ptr<ChipRanker> chip_ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(Mixer);
 };
 
 }  // namespace app_list

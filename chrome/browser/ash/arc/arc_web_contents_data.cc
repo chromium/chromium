@@ -9,6 +9,6 @@ namespace arc {
 // static
 const char ArcWebContentsData::kArcTransitionFlag[] = "ArcTransition";
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ArcWebContentsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ArcWebContentsData);
 
 }  // namespace arc

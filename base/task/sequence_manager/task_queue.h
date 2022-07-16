@@ -8,15 +8,19 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace perfetto {
+class EventContext;
+}
 
 namespace base {
 
@@ -33,8 +37,6 @@ class AssociatedThreadId;
 class SequenceManagerImpl;
 class TaskQueueImpl;
 }  // namespace internal
-
-class TimeDomain;
 
 // TODO(kraynov): Make TaskQueue to actually be an interface for TaskQueueImpl
 // and stop using ref-counting because we're no longer tied to task runner
@@ -146,16 +148,16 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
       return *this;
     }
 
-    Spec SetTimeDomain(TimeDomain* domain) {
-      time_domain = domain;
+    Spec SetNonWaking(bool non_waking_in) {
+      non_waking = non_waking_in;
       return *this;
     }
 
     const char* name;
     bool should_monitor_quiescence = false;
-    TimeDomain* time_domain = nullptr;
     bool should_notify_observers = true;
     bool delayed_fence_allowed = false;
+    bool non_waking = false;
   };
 
   // TODO(altimin): Make this private after TaskQueue/TaskQueueImpl refactoring.
@@ -303,13 +305,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Must be called on the thread this TaskQueue was created by.
   void SetBlameContext(trace_event::BlameContext* blame_context);
 
-  // Removes the task queue from the previous TimeDomain and adds it to
-  // |domain|.  This is a moderately expensive operation.
-  void SetTimeDomain(TimeDomain* domain);
-
-  // Returns the queue's current TimeDomain.  Can be called from any thread.
-  TimeDomain* GetTimeDomain() const;
-
   enum class InsertFencePosition {
     kNow,  // Tasks posted on the queue up till this point further may run.
            // All further tasks are blocked.
@@ -392,6 +387,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   using OnTaskCompletedHandler =
       RepeatingCallback<void(const Task&, TaskQueue::TaskTiming*, LazyNow*)>;
   using OnTaskPostedHandler = RepeatingCallback<void(const Task&)>;
+  using TaskExecutionTraceLogger =
+      RepeatingCallback<void(perfetto::EventContext&, const Task&)>;
 
   // Sets a handler to subscribe for notifications about started and completed
   // tasks.
@@ -410,6 +407,10 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // deadlocks. For example, PostTask should not be called directly and
   // ScopedDeferTaskPosting::PostOrDefer should be used instead.
   void SetOnTaskPostedHandler(OnTaskPostedHandler handler);
+
+  // Set a callback to fill trace event arguments associated with the task
+  // execution.
+  void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger);
 
   base::WeakPtr<TaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

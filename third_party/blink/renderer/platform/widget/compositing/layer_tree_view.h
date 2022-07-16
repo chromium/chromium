@@ -10,14 +10,12 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "cc/trees/swap_promise.h"
-#include "cc/trees/swap_promise_monitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
 #include "ui/gfx/geometry/rect.h"
@@ -92,8 +90,9 @@ class PLATFORM_EXPORT LayerTreeView
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit() override;
-  void DidCommit(base::TimeTicks commit_start_time) override;
+  void WillCommit(cc::CommitState*) override;
+  void DidCommit(base::TimeTicks commit_start_time,
+                 base::TimeTicks commit_finish_time) override;
   void DidCommitAndDrawFrame() override;
   void DidReceiveCompositorFrameAck() override {}
   void DidCompletePageScaleAnimation() override;

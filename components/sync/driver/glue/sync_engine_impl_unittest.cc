@@ -246,7 +246,7 @@ class SyncEngineImplTest : public testing::Test {
 
     if (expect_success) {
       EXPECT_TRUE(engine_types_.Empty());
-      engine_types_ = fake_manager_->GetEnabledTypes();
+      engine_types_ = fake_manager_->GetConnectedTypes();
     }
   }
 
@@ -583,8 +583,8 @@ TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
 TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
   InitializeBackend();
   backend_->StopSyncingForShutdown();
-  // Verify that call to DeactivateDataType doesn't assert.
-  backend_->DeactivateDataType(AUTOFILL);
+  // Verify that call to DisconnectDataType doesn't assert.
+  backend_->DisconnectDataType(AUTOFILL);
   backend_->Shutdown(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   backend_.reset();
 }

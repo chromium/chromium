@@ -115,7 +115,6 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
         } catch (IllegalStateException e) {
             // Failed to start service, maybe we're not whitelisted? Fallback to using
             // BackgroundTaskScheduler to start Chrome.
-            // TODO(knollr): Add metrics for this.
             Log.e(TAG, "Could not start background service", e);
             return false;
         }

@@ -25,6 +25,10 @@ namespace {
 
 class ContextMenuImageRequest : public ImageDecoder::ImageRequest {
  public:
+  ContextMenuImageRequest() = delete;
+  ContextMenuImageRequest(const ContextMenuImageRequest&) = delete;
+  ContextMenuImageRequest& operator=(const ContextMenuImageRequest&) = delete;
+
   static void Start(const JavaRef<jobject>& jcallback,
                     const std::vector<uint8_t>& thumbnail_data) {
     auto* request = new ContextMenuImageRequest(jcallback);
@@ -49,8 +53,6 @@ class ContextMenuImageRequest : public ImageDecoder::ImageRequest {
       : jcallback_(jcallback) {}
 
   const base::android::ScopedJavaGlobalRef<jobject> jcallback_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ContextMenuImageRequest);
 };
 
 chrome::mojom::ImageFormat ToChromeMojomImageFormat(int image_format) {

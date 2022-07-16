@@ -9,6 +9,7 @@ include_rules = [
   "+third_party/perfetto/include",
   "+third_party/perfetto/protos/perfetto",
   "+third_party/tcmalloc",
+  "+third_party/test_fonts",
 
   # These are implicitly brought in from the root, and we don't want them.
   "-ipc",

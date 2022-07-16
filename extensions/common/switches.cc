@@ -19,7 +19,11 @@ const char kAllowLegacyExtensionManifests[] =
     "allow-legacy-extension-manifests";
 
 // Adds the given extension ID to all the permission allowlists.
-const char kAllowlistedExtensionID[] = "whitelisted-extension-id";
+const char kAllowlistedExtensionID[] = "allowlisted-extension-id";
+// Provides the same functionality as kAllowlistedExtensionID.
+// TODO(b/204179234): Remove at the end of the deprecation period. Deprecated on
+// 10/2021.
+const char kDEPRECATED_AllowlistedExtensionID[] = "whitelisted-extension-id";
 
 // Enables extension options to be embedded in chrome://extensions rather than
 // a new tab.

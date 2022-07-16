@@ -52,6 +52,11 @@ class BluetoothPairingNotificationDelegate
                                        const std::string& address,
                                        const std::string& notification_id);
 
+  BluetoothPairingNotificationDelegate(
+      const BluetoothPairingNotificationDelegate&) = delete;
+  BluetoothPairingNotificationDelegate& operator=(
+      const BluetoothPairingNotificationDelegate&) = delete;
+
  protected:
   ~BluetoothPairingNotificationDelegate() override;
 
@@ -72,8 +77,6 @@ class BluetoothPairingNotificationDelegate
   // Address of the device being paired.
   const std::string address_;
   const std::string notification_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPairingNotificationDelegate);
 };
 
 BluetoothPairingNotificationDelegate::BluetoothPairingNotificationDelegate(
@@ -140,6 +143,11 @@ class BluetoothNotificationController::BluetoothPairedNotificationDelegate
  public:
   BluetoothPairedNotificationDelegate() = default;
 
+  BluetoothPairedNotificationDelegate(
+      const BluetoothPairedNotificationDelegate&) = delete;
+  BluetoothPairedNotificationDelegate& operator=(
+      const BluetoothPairedNotificationDelegate&) = delete;
+
  protected:
   ~BluetoothPairedNotificationDelegate() override = default;
 
@@ -149,9 +157,6 @@ class BluetoothNotificationController::BluetoothPairedNotificationDelegate
     if (TrayPopupUtils::CanOpenWebUISettings())
       Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPairedNotificationDelegate);
 };
 
 BluetoothNotificationController::BluetoothNotificationController(

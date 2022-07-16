@@ -18,7 +18,7 @@ extern const char kEnableIOSHandoffToOtherDevices[];
 extern const char kEnableSpotlightActions[];
 extern const char kEnableThirdPartyKeyboardWorkaround[];
 extern const char kEnableDiscoverFeed[];
-extern const char kEnableSigninRecallPromo[];
+extern const char kEnableUpgradeSigninPromo[];
 extern const char kInstallURLBlocklistHandlers[];
 
 extern const char kUserAgent[];

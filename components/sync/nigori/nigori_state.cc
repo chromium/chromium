@@ -4,12 +4,13 @@
 
 #include "components/sync/nigori/nigori_state.h"
 
+#include <vector>
+
 #include "base/base64.h"
 #include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/sync_encryption_handler.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -305,14 +306,10 @@ bool NigoriState::NeedsKeystoreReencryption() const {
           keystore_keys_cryptographer->GetLastKeystoreKeyName()) {
     return false;
   }
-  if (!cryptographer->HasKey(
-          keystore_keys_cryptographer->GetLastKeystoreKeyName())) {
-    // Keystore key rotation.
-    return true;
-  }
-  // Migration from backward compatible to full keystore mode.
-  return base::FeatureList::IsEnabled(
-      switches::kSyncTriggerFullKeystoreMigration);
+  // Either keystore key rotation or full keystore migration should be
+  // triggered, since default encryption key is not the last keystore key, while
+  // it should be.
+  return true;
 }
 
 ModelTypeSet NigoriState::GetEncryptedTypes() const {

@@ -47,6 +47,12 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
   if (!media_video_frame || !video_renderer) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
+    if (!media_video_frame) {
+      device->AddConsoleWarning(
+          "Cannot get valid video frame, maybe the"
+          "HTMLVideoElement is not loaded");
+    }
+
     return nullptr;
   }
 
@@ -56,14 +62,14 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
       context_provider_wrapper->ContextProvider()->IsContextLost())
     return nullptr;
 
-  const CanvasResourceParams params(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                                    kPremul_SkAlphaType);
   const auto intrinsic_size = IntSize(media_video_frame->natural_size());
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          intrinsic_size, params, /*is_origin_top_left=*/true);
+          SkImageInfo::MakeN32Premul(intrinsic_size.width(),
+                                     intrinsic_size.height()),
+          /*is_origin_top_left=*/true);
   if (!recyclable_canvas_resource) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
@@ -93,15 +99,17 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
   // Extract the format. If this format is invalid, Dawn will emit an error upon
   // ExternalTexture creation.
   WGPUTextureFormat format =
-      AsDawnType(resource_provider->ColorParams().GetSkColorType());
+      AsDawnType(resource_provider->GetSkImageInfo().colorType());
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
-          WGPUTextureUsage::WGPUTextureUsage_Sampled,
+          WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
           std::move(recyclable_canvas_resource));
 
   WGPUTextureViewDescriptor viewDesc = {};
+  viewDesc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
+  viewDesc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
   WGPUTextureView plane0 = device->GetProcs().textureCreateView(
       mailbox_texture->GetTexture(), &viewDesc);
 
@@ -132,8 +140,11 @@ GPUExternalTexture::GPUExternalTexture(
       mailbox_texture_(mailbox_texture) {}
 
 void GPUExternalTexture::Destroy() {
-  GetProcs().textureDestroy(mailbox_texture_->GetTexture());
+  WGPUTexture texture = mailbox_texture_->GetTexture();
+  GetProcs().textureReference(texture);
   mailbox_texture_.reset();
+  GetProcs().textureDestroy(texture);
+  GetProcs().textureRelease(texture);
 }
 
 }  // namespace blink

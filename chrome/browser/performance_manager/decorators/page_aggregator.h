@@ -22,6 +22,10 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
                        public NodeDataDescriberDefaultImpl {
  public:
   PageAggregator();
+
+  PageAggregator(const PageAggregator&) = delete;
+  PageAggregator& operator=(const PageAggregator&) = delete;
+
   ~PageAggregator() override;
 
  private:
@@ -42,8 +46,6 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
 
   // NodeDataDescriber implementation:
   base::Value DescribePageNodeData(const PageNode* node) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PageAggregator);
 };
 
 }  // namespace performance_manager

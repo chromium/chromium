@@ -59,7 +59,8 @@ std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
     content::BrowserContext* context) {
   auto service = std::make_unique<site_engagement::SiteEngagementService>(
       static_cast<Profile*>(context));
-  service->ResetBaseScoreForURL(GURL(kLaunchUrl).GetOrigin(), kEngagementScore);
+  service->ResetBaseScoreForURL(GURL(kLaunchUrl).DeprecatedGetOriginAsURL(),
+                                kEngagementScore);
   return std::move(service);
 }
 
@@ -98,13 +99,14 @@ class ContentIndexProviderImplTest : public testing::Test,
   }
   void OnContentProviderGoingDown() override {}
 
-  content::ContentIndexEntry CreateEntry(const std::string& id) {
+  content::ContentIndexEntry CreateEntry(const std::string& id,
+                                         bool is_top_level_context = true) {
     auto description = blink::mojom::ContentDescription::New(
         id, "title", "description", blink::mojom::ContentCategory::ARTICLE,
         std::vector<blink::mojom::ContentIconDefinitionPtr>(), "launch_url");
     return content::ContentIndexEntry(kServiceWorkerRegistrationId,
                                       std::move(description), GURL(kLaunchUrl),
-                                      base::Time::Now());
+                                      base::Time::Now(), is_top_level_context);
   }
 
  protected:
@@ -151,5 +153,11 @@ TEST_F(ContentIndexProviderImplTest, ObserverUpdates) {
     EXPECT_CALL(*this, OnItemRemoved(_));
     provider_->OnContentDeleted(kServiceWorkerRegistrationId,
                                 url::Origin::Create(GURL(kLaunchUrl)), "id");
+  }
+
+  {
+    EXPECT_CALL(*this, OnItemsAdded(_)).Times(0);
+    provider_->OnContentAdded(
+        CreateEntry("id", /* is_top_level_context= */ false));
   }
 }

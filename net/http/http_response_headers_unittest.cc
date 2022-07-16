@@ -2215,12 +2215,12 @@ TEST_F(HttpResponseHeadersCacheControlTest,
 TEST_F(HttpResponseHeadersCacheControlTest,
        MaxAgeWithLeadingandTrailingSpaces) {
   InitializeHeadersWithCacheControl("max-age= 7  ");
-  EXPECT_EQ(TimeDelta::FromSeconds(7), GetMaxAgeValue());
+  EXPECT_EQ(base::Seconds(7), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeFirstMatchUsed) {
   InitializeHeadersWithCacheControl("max-age=10, max-age=20");
-  EXPECT_EQ(TimeDelta::FromSeconds(10), GetMaxAgeValue());
+  EXPECT_EQ(base::Seconds(10), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeBogusFirstMatchUsed) {
@@ -2228,17 +2228,18 @@ TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeBogusFirstMatchUsed) {
   // ignored and so "max-age=20" is used.
   InitializeHeadersWithCacheControl(
       "max-age10, max-age=now, max-age=20, max-age=30");
-  EXPECT_EQ(TimeDelta::FromSeconds(20), GetMaxAgeValue());
+  EXPECT_EQ(base::Seconds(20), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeCaseInsensitive) {
   InitializeHeadersWithCacheControl("Max-aGe=15");
-  EXPECT_EQ(TimeDelta::FromSeconds(15), GetMaxAgeValue());
+  EXPECT_EQ(base::Seconds(15), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeOverflow) {
   InitializeHeadersWithCacheControl("max-age=99999999999999999999");
-  EXPECT_EQ(TimeDelta::FiniteMax().InSeconds(), GetMaxAgeValue().InSeconds());
+  EXPECT_EQ(base::TimeDelta::FiniteMax().InSeconds(),
+            GetMaxAgeValue().InSeconds());
 }
 
 struct MaxAgeTestData {
@@ -2308,14 +2309,14 @@ TEST_F(HttpResponseHeadersCacheControlTest,
 
 TEST_F(HttpResponseHeadersCacheControlTest, StaleWhileRevalidateValueReturned) {
   InitializeHeadersWithCacheControl("max-age=3600,stale-while-revalidate=7200");
-  EXPECT_EQ(TimeDelta::FromSeconds(7200), GetStaleWhileRevalidateValue());
+  EXPECT_EQ(base::Seconds(7200), GetStaleWhileRevalidateValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
        FirstStaleWhileRevalidateValueUsed) {
   InitializeHeadersWithCacheControl(
       "stale-while-revalidate=1,stale-while-revalidate=7200");
-  EXPECT_EQ(TimeDelta::FromSeconds(1), GetStaleWhileRevalidateValue());
+  EXPECT_EQ(base::Seconds(1), GetStaleWhileRevalidateValue());
 }
 
 struct GetCurrentAgeTestData {

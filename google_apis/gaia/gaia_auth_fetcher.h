@@ -90,6 +90,10 @@ class GaiaAuthFetcher {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  GaiaAuthFetcher(const GaiaAuthFetcher&) = delete;
+  GaiaAuthFetcher& operator=(const GaiaAuthFetcher&) = delete;
+
   virtual ~GaiaAuthFetcher();
 
   // Start a request to revoke |auth_token|.
@@ -405,8 +409,6 @@ class GaiaAuthFetcher {
   FRIEND_TEST_ALL_PREFIXES(GaiaAuthFetcherTest, ClientOAuthWithQuote);
   FRIEND_TEST_ALL_PREFIXES(GaiaAuthFetcherTest, ClientOAuthChallengeSuccess);
   FRIEND_TEST_ALL_PREFIXES(GaiaAuthFetcherTest, ClientOAuthChallengeQuote);
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcher);
 };
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_AUTH_FETCHER_H_

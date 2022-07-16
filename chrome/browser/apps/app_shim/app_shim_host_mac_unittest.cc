@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -64,6 +64,9 @@ class TestingAppShim : public chrome::mojom::AppShim {
   void SetBadgeLabel(const std::string& badge_label) override {}
   void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
                              profile_menu_items) override {}
+  void UpdateApplicationDockMenu(
+      std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
+      override {}
 
   bool received_launch_done_result_ = false;
   chrome::mojom::AppShimLaunchResult launch_done_result_ =
@@ -181,6 +184,8 @@ class AppShimHostTest : public testing::Test,
                              const base::FilePath& profile_path) override {}
   void OnShimOpenedUrls(AppShimHost* host,
                         const std::vector<GURL>& urls) override {}
+  void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                    const GURL& override_url) override {}
 
   chrome::mojom::AppShimLaunchResult launch_result_ =
       chrome::mojom::AppShimLaunchResult::kSuccess;

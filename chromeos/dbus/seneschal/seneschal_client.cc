@@ -29,6 +29,9 @@ class SeneschalClientImpl : public SeneschalClient {
  public:
   SeneschalClientImpl() = default;
 
+  SeneschalClientImpl(const SeneschalClientImpl&) = delete;
+  SeneschalClientImpl& operator=(const SeneschalClientImpl&) = delete;
+
   ~SeneschalClientImpl() override = default;
 
   void AddObserver(Observer* observer) override {
@@ -135,8 +138,6 @@ class SeneschalClientImpl : public SeneschalClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<SeneschalClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SeneschalClientImpl);
 };
 
 SeneschalClient::SeneschalClient() {

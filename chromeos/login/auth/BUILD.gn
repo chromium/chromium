@@ -41,6 +41,8 @@ component("auth") {
   sources = [
     "auth_attempt_state.cc",
     "auth_attempt_state.h",
+    "auth_session_authenticator.cc",
+    "auth_session_authenticator.h",
     "auth_status_consumer.cc",
     "auth_status_consumer.h",
     "authenticator.cc",

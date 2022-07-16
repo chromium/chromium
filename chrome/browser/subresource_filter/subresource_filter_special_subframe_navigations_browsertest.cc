@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSpecialSubframeNavigationsBrowserTest,
                                                 "data", "srcdoc"};
   ConfigureAsPhishingURL(url);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       subframe_names, {true, true, true, true, true}));
 
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSpecialSubframeNavigationsBrowserTest,
   // navigations.
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       subframe_names, {false, false, false, false, false}));
 }
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSpecialSubframeNavigationsBrowserTest,
   const GURL included_url(embedded_test_server()->GetURL(
       "a.com", "/subresource_filter/included_script.js"));
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // The root node will initiate the navigation; its grandchild node will be the
   // target of the navigation.
@@ -77,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSpecialSubframeNavigationsBrowserTest,
   navigation_observer.Wait();
 
   content::RenderFrameHost* target = content::FrameMatchingPredicate(
-      web_contents(), base::BindRepeating([](content::RenderFrameHost* rfh) {
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating([](content::RenderFrameHost* rfh) {
         return rfh->GetLastCommittedURL().scheme_piece() == url::kDataScheme;
       }));
   ASSERT_NE(target, nullptr);

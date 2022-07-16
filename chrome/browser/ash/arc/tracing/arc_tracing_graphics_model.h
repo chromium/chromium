@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
@@ -121,6 +120,10 @@ class ArcTracingGraphicsModel {
   class EventsContainer {
    public:
     EventsContainer();
+
+    EventsContainer(const EventsContainer&) = delete;
+    EventsContainer& operator=(const EventsContainer&) = delete;
+
     ~EventsContainer();
 
     void Reset();
@@ -139,13 +142,15 @@ class ArcTracingGraphicsModel {
     std::vector<BufferEvents> buffer_events_;
     // Global events that do not belong to any graphics buffer.
     BufferEvents global_events_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventsContainer);
   };
 
   using ViewMap = std::map<ViewId, EventsContainer>;
 
   ArcTracingGraphicsModel();
+
+  ArcTracingGraphicsModel(const ArcTracingGraphicsModel&) = delete;
+  ArcTracingGraphicsModel& operator=(const ArcTracingGraphicsModel&) = delete;
+
   ~ArcTracingGraphicsModel();
 
   // Trims container events by |trim_timestamp|. All global events are discarded
@@ -239,8 +244,6 @@ class ArcTracingGraphicsModel {
   ArcSystemModel system_model_;
   // Allows to have model incomplete, used in overview and in tests.
   bool skip_structure_validation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingGraphicsModel);
 };
 
 std::ostream& operator<<(std::ostream& os,

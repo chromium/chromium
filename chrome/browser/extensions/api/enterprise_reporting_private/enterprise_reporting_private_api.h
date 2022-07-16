@@ -30,15 +30,19 @@ class EnterpriseReportingPrivateGetDeviceIdFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("enterprise.reportingPrivate.getDeviceId",
                              ENTERPRISEREPORTINGPRIVATE_GETDEVICEID)
+
   EnterpriseReportingPrivateGetDeviceIdFunction();
+
+  EnterpriseReportingPrivateGetDeviceIdFunction(
+      const EnterpriseReportingPrivateGetDeviceIdFunction&) = delete;
+  EnterpriseReportingPrivateGetDeviceIdFunction& operator=(
+      const EnterpriseReportingPrivateGetDeviceIdFunction&) = delete;
 
   // ExtensionFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
   ~EnterpriseReportingPrivateGetDeviceIdFunction() override;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseReportingPrivateGetDeviceIdFunction);
 };
 
 #if !defined(OS_LINUX)

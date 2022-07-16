@@ -6,11 +6,14 @@
 #pylint: disable=protected-access
 
 import os
+import re
 import sys
 import tempfile
 import unittest
 
-if sys.version_info[0] == 2:
+import six
+
+if six.PY2:
   import mock
 else:
   import unittest.mock as mock
@@ -66,6 +69,36 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     # The output directory should not be a subdirectory of the working
     # directory.
     self.assertNotIn(self._working_dir, call_args[i + 1])
+
+  @mock.patch.object(omsgs.OutputManagerlessSkiaGoldSession, '_StoreDiffLinks')
+  @mock.patch.object(omsgs.OutputManagerlessSkiaGoldSession,
+                     '_RunCmdForRcAndOutput')
+  def test_explicitLocalPngDirectory(self, cmd_mock, _):
+    cmd_mock.return_value = (0, '')
+    if sys.platform == 'win32':
+      local_png_dir = 'c:\\tmp\\foo'
+    else:
+      local_png_dir = '/tmp/foo'
+    args = createSkiaGoldArgs(git_revision='a',
+                              skia_gold_local_png_write_directory=local_png_dir)
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    session = omsgs.OutputManagerlessSkiaGoldSession(self._working_dir, sgp,
+                                                     self._json_keys, None,
+                                                     None)
+    _, _ = session.Diff('name', None, None)
+    self.assertEqual(cmd_mock.call_count, 1)
+    if six.PY3:
+      call_args = cmd_mock.call_args.args[0]
+    else:
+      call_args = cmd_mock.call_args[0][0]
+    self.assertIn('--out-dir', call_args)
+    output_dir = call_args[call_args.index('--out-dir') + 1]
+    # Directory should be a subdirectory of the directory we gave and be made
+    # up of the image name and a timestamp.
+    parent_dir, sub_dir = output_dir.rsplit(os.sep, 1)
+    self.assertEqual(parent_dir, local_png_dir)
+    sub_dir = os.path.normpath(sub_dir)
+    self.assertIsNotNone(re.match(r'^name_\d+$', sub_dir))
 
 
 class OutputManagerlessSkiaGoldSessionStoreDiffLinksTest(

@@ -19,16 +19,16 @@ struct Referrer;
 // Object saving images to the system's album.
 @interface ImageSaver : NSObject
 
-// Init the ImageSaver with a |baseViewController| used to display alerts.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser;
+// Init the ImageSaver.
+- (instancetype)initWithBrowser:(Browser*)browser;
 
 // Fetches and saves the image at |url| to the system's album. |web_state| is
 // used for fetching image data by JavaScript and must not be nullptr.
-// |referrer| is used for download.
+// |referrer| is used for download. |baseViewController| used to display alerts.
 - (void)saveImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
-              webState:(web::WebState*)webState;
+              webState:(web::WebState*)webState
+    baseViewController:(UIViewController*)baseViewController;
 
 @end
 

@@ -49,6 +49,10 @@ class HomeButtonTest : public AshTestBase,
                        public testing::WithParamInterface<bool> {
  public:
   HomeButtonTest() = default;
+
+  HomeButtonTest(const HomeButtonTest&) = delete;
+  HomeButtonTest& operator=(const HomeButtonTest&) = delete;
+
   ~HomeButtonTest() override = default;
 
   // AshTestBase:
@@ -99,8 +103,6 @@ class HomeButtonTest : public AshTestBase,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeButtonTest);
 };
 
 // Tests home button visibility animations.
@@ -271,7 +273,7 @@ TEST_P(HomeButtonTest, SwipeUpToOpenFullscreenAppList) {
   end.set_y(shelf->GetIdealBounds().bottom() -
             AppListView::kDragSnapToPeekingThreshold + 10);
   GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 4 /* steps */);
+      start, end, base::Milliseconds(100), 4 /* steps */);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -285,7 +287,7 @@ TEST_P(HomeButtonTest, SwipeUpToOpenFullscreenAppList) {
   end.set_y(shelf->GetIdealBounds().bottom() -
             AppListView::kDragSnapToPeekingThreshold - 10);
   GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 4 /* steps */);
+      start, end, base::Milliseconds(100), 4 /* steps */);
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);

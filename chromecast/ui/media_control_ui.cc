@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/graphics/cast_window_manager.h"
@@ -25,8 +26,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kUpdateMediaTimePeriod =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kUpdateMediaTimePeriod = base::Seconds(1);
 const int kButtonSmallHeight = 56;
 const int kButtonBigHeight = 124;
 
@@ -218,7 +218,7 @@ void MediaControlUi::UpdateMediaTime() {
       last_media_time_ +
       (base::TimeTicks::Now() - last_media_timestamp_).InSecondsF();
   if (media_duration_ > 0.0) {
-    progress = std::min(std::max(0.0, progress), media_duration_);
+    progress = base::clamp(progress, 0.0, media_duration_);
     progress_bar_->SetValue(progress / media_duration_);
   }
 }

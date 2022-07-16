@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -34,8 +35,8 @@ TEST_F(CannedServiceWorkerHelperTest, Empty) {
   std::vector<GURL> scopes;
   scopes.push_back(GURL("https://host1:1/*"));
 
-  scoped_refptr<CannedServiceWorkerHelper> helper(
-      new CannedServiceWorkerHelper(ServiceWorkerContext()));
+  auto helper =
+      base::MakeRefCounted<CannedServiceWorkerHelper>(ServiceWorkerContext());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin));
@@ -54,8 +55,8 @@ TEST_F(CannedServiceWorkerHelperTest, Delete) {
   scopes2.push_back(GURL("https://example.com/app1/*"));
   scopes2.push_back(GURL("https://example.com/app2/*"));
 
-  scoped_refptr<CannedServiceWorkerHelper> helper(
-      new CannedServiceWorkerHelper(ServiceWorkerContext()));
+  auto helper =
+      base::MakeRefCounted<CannedServiceWorkerHelper>(ServiceWorkerContext());
 
   EXPECT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));
@@ -70,8 +71,8 @@ TEST_F(CannedServiceWorkerHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL origin2("devtools://abcdefghijklmnopqrstuvwxyz/");
   const std::vector<GURL> scopes;
 
-  scoped_refptr<CannedServiceWorkerHelper> helper(
-      new CannedServiceWorkerHelper(ServiceWorkerContext()));
+  auto helper =
+      base::MakeRefCounted<CannedServiceWorkerHelper>(ServiceWorkerContext());
 
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));

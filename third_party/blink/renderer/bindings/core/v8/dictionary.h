@@ -150,16 +150,6 @@ class CORE_EXPORT Dictionary final {
   v8::Local<v8::Object> dictionary_object_;  // an Object or empty
 };
 
-template <>
-struct NativeValueTraits<Dictionary>
-    : public NativeValueTraitsBase<Dictionary> {
-  static Dictionary NativeValue(v8::Isolate* isolate,
-                                v8::Local<v8::Value> value,
-                                ExceptionState& exception_state) {
-    return Dictionary(isolate, value, exception_state);
-  }
-};
-
 // DictionaryHelper is a collection of static methods for getting or
 // converting a value from Dictionary.
 // DEPRECATED, Use template <typename IDLType> Dictionary::Get.

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,6 +37,10 @@ struct IntentTestCase {
   int file_count;
 };
 
+void ActionCleanupCallbackStub() {
+  return;
+}
+
 }  // namespace
 
 class NearbyShareActionTest : public testing::Test {
@@ -52,7 +57,12 @@ class NearbyShareActionTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("testing_profile");
 
-    nearby_share_action_.SetNearbyShareDisabledByPolicyForTesting(false);
+    nearby_share_action_ = std::make_unique<NearbyShareAction>(profile_);
+    nearby_share_action_->SetNearbyShareDisabledByPolicyForTesting(false);
+    // Calling the cleanup callback means an error occurred in the function.
+    ASSERT_DEATH(ActionCleanupCallbackStub(), "");
+    nearby_share_action_->SetActionCleanupCallbackForArc(
+        base::BindOnce(&ActionCleanupCallbackStub));
   }
 
   std::vector<IntentTestCase> GetIntentTestCases() {
@@ -117,13 +127,13 @@ class NearbyShareActionTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   Profile* profile_;
-  NearbyShareAction nearby_share_action_;
+  std::unique_ptr<NearbyShareAction> nearby_share_action_;
 };
 
 TEST_F(NearbyShareActionTest, ShouldShowAction) {
   for (auto& test_case : GetIntentTestCases()) {
     EXPECT_EQ(
-        nearby_share_action_.ShouldShowAction(
+        nearby_share_action_->ShouldShowAction(
             std::move(test_case.intent), test_case.contains_hosted_document),
         test_case.should_show_action);
   }

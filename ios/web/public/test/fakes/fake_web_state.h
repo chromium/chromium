@@ -22,6 +22,7 @@
 
 @class NSURLRequest;
 @class NSURLResponse;
+class SessionCertificatePolicyCache;
 
 namespace web {
 
@@ -36,6 +37,8 @@ class FakeWebState : public WebState {
   OnceGetter CreateDefaultOnceGetter() override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
+  bool IsRealized() const final;
+  WebState* ForceRealized() final;
   bool IsWebUsageEnabled() const override;
   void SetWebUsageEnabled(bool enabled) override;
   UIView* GetView() override;
@@ -123,14 +126,14 @@ class FakeWebState : public WebState {
   // to PolicyDecision::Allow().
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info,
+      WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
   // Uses |policy_deciders| to determine whether the navigation corresponding to
   // |response| should be allowed. Calls |callback| with the decision. Defaults
   // to PolicyDecision::Allow().
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      WebStatePolicyDecider::ResponseInfo response_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
   std::u16string GetLastExecutedJavascript() const;
   // Returns a copy of the last added callback, if one has been added.
@@ -183,6 +186,22 @@ class FakeWebState : public WebState {
   base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
 
   base::WeakPtrFactory<FakeWebState> weak_factory_{this};
+};
+
+// FakeWebState doesn't provide a policy cache; this variant subclass adds one.
+class FakeWebStateWithPolicyCache : public FakeWebState {
+ public:
+  explicit FakeWebStateWithPolicyCache(BrowserState* browser_state);
+
+  ~FakeWebStateWithPolicyCache() override;
+
+  const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
+      const override;
+
+  SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;
+
+ private:
+  std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;
 };
 
 }  // namespace web

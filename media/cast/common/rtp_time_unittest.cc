@@ -23,48 +23,45 @@ TEST(RtpTimeDeltaTest, ConversionToAndFromTimeDelta) {
 
   // Conversions that are exact (i.e., do not require rounding).
   ASSERT_EQ(RtpTimeDelta::FromTicks(480),
-            RtpTimeDelta::FromTimeDelta(base::TimeDelta::FromMilliseconds(10),
-                                        kTimebase));
-  ASSERT_EQ(
-      RtpTimeDelta::FromTicks(96000),
-      RtpTimeDelta::FromTimeDelta(base::TimeDelta::FromSeconds(2), kTimebase));
-  ASSERT_EQ(base::TimeDelta::FromMilliseconds(10),
+            RtpTimeDelta::FromTimeDelta(base::Milliseconds(10), kTimebase));
+  ASSERT_EQ(RtpTimeDelta::FromTicks(96000),
+            RtpTimeDelta::FromTimeDelta(base::Seconds(2), kTimebase));
+  ASSERT_EQ(base::Milliseconds(10),
             RtpTimeDelta::FromTicks(480).ToTimeDelta(kTimebase));
-  ASSERT_EQ(base::TimeDelta::FromSeconds(2),
+  ASSERT_EQ(base::Seconds(2),
             RtpTimeDelta::FromTicks(96000).ToTimeDelta(kTimebase));
 
   // Conversions that are approximate (i.e., are rounded).
   for (int error_us = -3; error_us <= +3; ++error_us) {
     ASSERT_EQ(RtpTimeDelta::FromTicks(0),
-              RtpTimeDelta::FromTimeDelta(
-                  base::TimeDelta::FromMicroseconds(0 + error_us), kTimebase));
+              RtpTimeDelta::FromTimeDelta(base::Microseconds(0 + error_us),
+                                          kTimebase));
     ASSERT_EQ(RtpTimeDelta::FromTicks(1),
-              RtpTimeDelta::FromTimeDelta(
-                  base::TimeDelta::FromMicroseconds(21 + error_us), kTimebase));
+              RtpTimeDelta::FromTimeDelta(base::Microseconds(21 + error_us),
+                                          kTimebase));
     ASSERT_EQ(RtpTimeDelta::FromTicks(2),
-              RtpTimeDelta::FromTimeDelta(
-                  base::TimeDelta::FromMicroseconds(42 + error_us), kTimebase));
+              RtpTimeDelta::FromTimeDelta(base::Microseconds(42 + error_us),
+                                          kTimebase));
     ASSERT_EQ(RtpTimeDelta::FromTicks(3),
-              RtpTimeDelta::FromTimeDelta(
-                  base::TimeDelta::FromMicroseconds(63 + error_us), kTimebase));
+              RtpTimeDelta::FromTimeDelta(base::Microseconds(63 + error_us),
+                                          kTimebase));
     ASSERT_EQ(RtpTimeDelta::FromTicks(4),
+              RtpTimeDelta::FromTimeDelta(base::Microseconds(83 + error_us),
+                                          kTimebase));
+    ASSERT_EQ(RtpTimeDelta::FromTicks(11200000000000),
               RtpTimeDelta::FromTimeDelta(
-                  base::TimeDelta::FromMicroseconds(83 + error_us), kTimebase));
-    ASSERT_EQ(
-        RtpTimeDelta::FromTicks(11200000000000),
-        RtpTimeDelta::FromTimeDelta(base::TimeDelta::FromMicroseconds(
-                                        INT64_C(233333333333333) + error_us),
-                                    kTimebase));
+                  base::Microseconds(INT64_C(233333333333333) + error_us),
+                  kTimebase));
   }
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(21),
+  ASSERT_EQ(base::Microseconds(21),
             RtpTimeDelta::FromTicks(1).ToTimeDelta(kTimebase));
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(42),
+  ASSERT_EQ(base::Microseconds(42),
             RtpTimeDelta::FromTicks(2).ToTimeDelta(kTimebase));
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(63),
+  ASSERT_EQ(base::Microseconds(63),
             RtpTimeDelta::FromTicks(3).ToTimeDelta(kTimebase));
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(83),
+  ASSERT_EQ(base::Microseconds(83),
             RtpTimeDelta::FromTicks(4).ToTimeDelta(kTimebase));
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(INT64_C(233333333333333)),
+  ASSERT_EQ(base::Microseconds(INT64_C(233333333333333)),
             RtpTimeDelta::FromTicks(11200000000000).ToTimeDelta(kTimebase));
 }
 

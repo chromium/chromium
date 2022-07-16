@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 // Checks if given HWID correct.
 bool IsHWIDCorrect(const std::string& hwid);
@@ -15,12 +15,6 @@ bool IsHWIDCorrect(const std::string& hwid);
 // Checks if current machine has correct HWID.
 bool IsMachineHWIDCorrect();
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::IsMachineHWIDCorrect;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HWID_CHECKER_H_

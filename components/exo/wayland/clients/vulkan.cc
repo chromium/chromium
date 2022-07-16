@@ -30,12 +30,13 @@ class VulkanClient : ClientBase {
  public:
   VulkanClient() {}
 
+  VulkanClient(const VulkanClient&) = delete;
+  VulkanClient& operator=(const VulkanClient&) = delete;
+
   void Run(const ClientBase::InitParams& params);
 
  private:
   friend class ScopedVulkanRenderFrame;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanClient);
 };
 
 // ScopedVulkanRenderFrame class helps setting up all the state needed to begin
@@ -96,6 +97,10 @@ class ScopedVulkanRenderFrame {
     vkCmdBeginRenderPass(command_buffer_, &render_pass_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
   }
+
+  ScopedVulkanRenderFrame(const ScopedVulkanRenderFrame&) = delete;
+  ScopedVulkanRenderFrame& operator=(const ScopedVulkanRenderFrame&) = delete;
+
   ~ScopedVulkanRenderFrame() {
     vkCmdEndRenderPass(command_buffer_);
 
@@ -116,8 +121,6 @@ class ScopedVulkanRenderFrame {
  private:
   VulkanClient* const client_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVulkanRenderFrame);
 };
 
 void VulkanClient::Run(const ClientBase::InitParams& params) {

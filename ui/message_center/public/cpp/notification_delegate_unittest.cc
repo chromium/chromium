@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +14,10 @@ namespace message_center {
 class NotificationDelegateTest : public testing::Test {
  public:
   NotificationDelegateTest() = default;
+
+  NotificationDelegateTest(const NotificationDelegateTest&) = delete;
+  NotificationDelegateTest& operator=(const NotificationDelegateTest&) = delete;
+
   ~NotificationDelegateTest() override = default;
 
   void BodyClickCallback() { ++callback_count_; }
@@ -27,9 +30,6 @@ class NotificationDelegateTest : public testing::Test {
  protected:
   int callback_count_ = 0;
   absl::optional<int> last_button_index_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationDelegateTest);
 };
 
 TEST_F(NotificationDelegateTest, ClickDelegate) {

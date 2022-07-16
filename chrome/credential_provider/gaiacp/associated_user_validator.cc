@@ -32,10 +32,10 @@ namespace credential_provider {
 
 const base::TimeDelta
     AssociatedUserValidator::kDefaultTokenHandleValidationTimeout =
-        base::TimeDelta::FromMilliseconds(3000);
+        base::Milliseconds(3000);
 
 const base::TimeDelta AssociatedUserValidator::kTokenHandleValidityLifetime =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 const char AssociatedUserValidator::kTokenInfoUrl[] =
     "https://www.googleapis.com/oauth2/v2/tokeninfo";
@@ -227,9 +227,9 @@ bool AssociatedUserValidator::IsOnlineLoginStale(
     LOGFN(VERBOSE) << "GetUserProperty for " << kKeyLastTokenValid
                    << " failed. hr=" << putHR(hr);
     // DEPRECATED FLOW. Keeping it for backward compatibility.
-    HRESULT hr = GetUserProperty(
-        sid, base::UTF8ToWide(kKeyLastSuccessfulOnlineLoginMillis),
-        last_token_valid_millis, &last_token_valid_size);
+    hr = GetUserProperty(sid,
+                         base::UTF8ToWide(kKeyLastSuccessfulOnlineLoginMillis),
+                         last_token_valid_millis, &last_token_valid_size);
 
     if (FAILED(hr)) {
       LOGFN(VERBOSE) << "GetUserProperty for "
@@ -301,7 +301,7 @@ HRESULT AssociatedUserValidator::UpdateAssociatedSids(
       users_to_delete.insert(sid_to_association.first);
       continue;
     }
-    HRESULT hr = manager->FindUserBySID(sid.c_str(), nullptr, 0, nullptr, 0);
+    hr = manager->FindUserBySID(sid.c_str(), nullptr, 0, nullptr, 0);
     if (hr == HRESULT_FROM_WIN32(ERROR_NONE_MAPPED)) {
       users_to_delete.insert(sid_to_association.first);
       continue;
@@ -370,7 +370,7 @@ bool AssociatedUserValidator::DenySigninForUsersWithInvalidTokenHandles(
     if (GetAuthEnforceReason(sid) != EnforceAuthReason::NOT_ENFORCED &&
         !manager->IsUserDomainJoined(sid)) {
       LOGFN(VERBOSE) << "Revoking access for sid=" << sid;
-      HRESULT hr = ModifyUserAccess(policy, sid, false);
+      hr = ModifyUserAccess(policy, sid, false);
       if (FAILED(hr)) {
         LOGFN(ERROR) << "ModifyUserAccess sid=" << sid << " hr=" << putHR(hr);
       } else {

@@ -28,7 +28,6 @@ source_set("certificates") {
 
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/contacts",
@@ -84,7 +83,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/util/values:values_util",
     "//chrome/browser/nearby_sharing/client:test_support",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/contacts:test_support",

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 
