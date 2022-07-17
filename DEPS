@@ -870,7 +870,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/rts/model/mac-amd64',
-          'version': 'xDc41siE4nY0deOwIFkvKkq5Djww4Pjf4DSqys8dLMQC',
+          'version': 'Xp6AZD8oK4KtYcsOvj7_gxjxPrnxHWzfIeEQmSklgNEC',
         },
       ],
       'dep_type': 'cipd',
