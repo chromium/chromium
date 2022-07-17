@@ -132,6 +132,8 @@ const NGLayoutResult* NGFieldsetLayoutAlgorithm::Layout() {
       // break at that location.
       return RelayoutAndBreakEarlier<NGFieldsetLayoutAlgorithm>(
           container_builder_.EarlyBreak());
+    } else if (status == NGBreakStatus::kDisableFragmentation) {
+      return RelayoutWithoutFragmentation<NGFieldsetLayoutAlgorithm>();
     }
     DCHECK_EQ(status, NGBreakStatus::kContinue);
   } else {

@@ -2414,7 +2414,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool CanContainAbsolutePositionObjects() const {
     NOT_DESTROYED();
     return style_->CanContainAbsolutePositionObjects() ||
-           CanContainFixedPositionObjects();
+           CanContainFixedPositionObjects() ||
+           // crbug.com/1153042: If <fieldset> is an absolute container, its
+           // anonymous content box should be an absolute container.
+           (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
+            Parent()->StyleRef().CanContainAbsolutePositionObjects());
   }
   bool CanContainFixedPositionObjects() const {
     NOT_DESTROYED();

@@ -1645,6 +1645,14 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   if (IsA<LayoutView>(this) || IsSVGForeignObjectIncludingNG() ||
       IsTextControlIncludingNG())
     return true;
+
+  // crbug.com/1153042: If <fieldset> is a fixed container, its anonymous
+  // content box should be a fixed container.
+  if (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
+      Parent()->CanContainFixedPositionObjects()) {
+    return true;
+  }
+
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
 
   // For transform-style specifically, we want to consider the computed
@@ -1670,7 +1678,11 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
   if (!style)
     return false;
   return style->CanContainAbsolutePositionObjects() ||
-         ComputeIsFixedContainer(style);
+         ComputeIsFixedContainer(style) ||
+         // crbug.com/1153042: If <fieldset> is an absolute container, its
+         // anonymous content box should be an absolute container.
+         (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
+          Parent()->StyleRef().CanContainAbsolutePositionObjects());
 }
 
 gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(
