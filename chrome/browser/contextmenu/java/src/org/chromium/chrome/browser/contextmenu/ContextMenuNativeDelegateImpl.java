@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -58,20 +57,7 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
     @Override
     public void retrieveImageForShare(int imageFormat, Callback<Uri> callback) {
-        if (mNativePtr == 0) return;
 
-        Callback<ImageCallbackResult> imageRetrieveCallback = (result) -> {
-            ShareImageFileUtils.generateTemporaryUriFromData(
-                    result.imageData, result.extension, callback);
-        };
-
-        if (sHardcodedImageBytesForTesting != null) {
-            imageRetrieveCallback.onResult(createImageCallbackResultForTesting());
-        } else {
-            ContextMenuNativeDelegateImplJni.get().retrieveImageForShare(mNativePtr,
-                    ContextMenuNativeDelegateImpl.this, mRenderFrameHost, imageRetrieveCallback,
-                    MAX_SHARE_DIMEN_PX, MAX_SHARE_DIMEN_PX, imageFormat);
-        }
     }
 
     @Override

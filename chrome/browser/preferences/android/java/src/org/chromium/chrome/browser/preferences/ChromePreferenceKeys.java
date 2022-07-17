@@ -10,9 +10,6 @@ import org.chromium.components.browser_ui.accessibility.AccessibilityConstants;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI;
-import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
-
 /**
  * Contains String and {@link KeyPrefix} constants with the SharedPreferences keys used by Chrome.
  *
@@ -1031,8 +1028,6 @@ public final class ChromePreferenceKeys {
                 BLUETOOTH_NOTIFICATION_IDS,
                 CHROME_SURVEY_DOWNLOAD_ATTEMPTS.pattern(),
                 CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
-                CLIPBOARD_SHARED_URI,
-                CLIPBOARD_SHARED_URI_TIMESTAMP,
                 CLOUD_MANAGEMENT_CLIENT_ID,
                 CLOUD_MANAGEMENT_DM_TOKEN,
                 COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP,

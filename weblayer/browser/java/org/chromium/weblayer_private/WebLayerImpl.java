@@ -52,8 +52,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
@@ -67,7 +65,6 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ResourceBundle;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
@@ -319,17 +316,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         MediaStreamManager.onWebLayerInit();
         WebLayerNotificationChannels.updateChannelsIfNecessary();
-
-        Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
-
-        // Clear previously shared images from disk in the background.
-        new BackgroundOnlyAsyncTask<Void>() {
-            @Override
-            protected Void doInBackground() {
-                ShareImageFileUtils.clearSharedImages();
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         performDexFixIfNecessary(packageInfo);
 

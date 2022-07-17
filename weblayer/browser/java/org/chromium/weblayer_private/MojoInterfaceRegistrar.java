@@ -9,9 +9,7 @@ import org.chromium.blink.mojom.Authenticator;
 import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.service_manager.InterfaceRegistry;
-import org.chromium.webshare.mojom.ShareService;
 
 /**
  * Registers Java implementations of mojo interfaces.
@@ -19,16 +17,8 @@ import org.chromium.webshare.mojom.ShareService;
 class MojoInterfaceRegistrar {
     @CalledByNative
     private static void registerMojoInterfaces() {
-        InterfaceRegistrar.Registry.addWebContentsRegistrar(new WebContentsInterfaceRegistrar());
         InterfaceRegistrar.Registry.addRenderFrameHostRegistrar(
                 new RenderFrameHostInterfaceRegistrar());
-    }
-
-    private static class WebContentsInterfaceRegistrar implements InterfaceRegistrar<WebContents> {
-        @Override
-        public void registerInterfaces(InterfaceRegistry registry, final WebContents webContents) {
-            registry.addInterface(ShareService.MANAGER, new WebShareServiceFactory(webContents));
-        }
     }
 
     private static class RenderFrameHostInterfaceRegistrar

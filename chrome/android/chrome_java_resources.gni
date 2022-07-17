@@ -429,7 +429,6 @@ chrome_java_resources = [
   "java/res/drawable/incognito_history_placeholder_image.xml",
   "java/res/drawable/incognito_switch_track.xml",
   "java/res/drawable/infobar_autofill_cc.xml",
-  "java/res/drawable/lens_camera_icon.xml",
   "java/res/drawable/long_screenshot.xml",
   "java/res/drawable/material_tooltip_background.xml",
   "java/res/drawable/outline_chevron_right_24dp.xml",

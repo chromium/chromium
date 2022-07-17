@@ -1204,10 +1204,6 @@ extern const char kDesktopSharingHubEnabled[];
 extern const char kLastWhatsNewVersion[];
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-extern const char kLensRegionSearchEnabled[];
-#endif
-
 extern const char kPrivacyGuideViewed[];
 
 extern const char kCorsNonWildcardRequestHeadersSupport[];

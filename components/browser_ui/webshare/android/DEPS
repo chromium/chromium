@@ -1,5 +1,0 @@
-include_rules = [
-  "+mojo/public/java/system",
-  "+content/public/android/java",
-  "+ui/android/java",
-]

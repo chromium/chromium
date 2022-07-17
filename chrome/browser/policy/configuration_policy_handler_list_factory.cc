@@ -113,7 +113,6 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/search/contextual_search_policy_handler_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/default_download_dir_policy_handler.h"
@@ -254,9 +253,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kIsolateOriginsAndroid,
     prefs::kIsolateOrigins,
     base::Value::Type::STRING },
-  { key::kLensCameraAssistedSearchEnabled,
-    lens::kLensCameraAssistedSearchEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kSitePerProcessAndroid,
     prefs::kSitePerProcess,
     base::Value::Type::BOOLEAN },
@@ -436,9 +432,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::STRING },
   { key::kIsolatedAppsDeveloperModeAllowed,
     policy_prefs::kIsolatedAppsDeveloperModeAllowed,
-    base::Value::Type::BOOLEAN },
-  { key::kLensRegionSearchEnabled,
-    prefs::kLensRegionSearchEnabled,
     base::Value::Type::BOOLEAN },
   { key::kLocalFontsAllowedForUrls,
     prefs::kManagedLocalFontsAllowedForUrls,

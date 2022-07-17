@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -196,7 +195,6 @@ public class ChromeActivitySessionTracker {
         if (ApplicationStatus.isEveryActivityDestroyed()) {
             // These will all be re-initialized when a new Activity starts / upon next use.
             PartnerBrowserCustomizations.destroy();
-            ShareImageFileUtils.clearSharedImages();
         }
     }
 

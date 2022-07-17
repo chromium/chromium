@@ -8070,14 +8070,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chrome_branded && !is_android) {
-    sources += [
-      "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
-      "../browser/ui/views/lens/lens_side_panel_controller_unittest.cc",
-    ]
-    deps += [ "//chrome/browser/lens/region_search" ]
-  }
-
   if (is_fuchsia) {
     # Chrome on Fuchsia uses the system crash handler.
     # TODO(crbug.com/1186718): Enable when the implementation is capable of

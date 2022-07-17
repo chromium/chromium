@@ -235,12 +235,6 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#include "chrome/grit/theme_resources.h"
-#include "ui/base/resource/resource_bundle.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/open_with_menu.h"
 #include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
@@ -643,7 +637,7 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
   return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
   if (event_flags & ui::EF_MOUSE_BUTTON)
     return ui::MENU_SOURCE_MOUSE;
@@ -1693,11 +1687,6 @@ void RenderViewContextMenu::AppendPageItems() {
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendMediaRouterItem();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (IsRegionSearchEnabled()) {
-    AppendRegionSearchItem();
-  }
-#endif
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -3109,29 +3098,7 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 }
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const Browser* browser = GetBrowser();
-  const bool in_app =
-      browser && (browser->is_type_app() || browser->is_type_app_popup());
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(GetProfile());
-  if (!service)
-    return false;
-
-  const TemplateURL* provider = service->GetDefaultSearchProvider();
-  const bool provider_supports_image_search =
-      provider && !provider->image_url().empty() &&
-      provider->image_url_ref().IsValid(service->search_terms_data());
-  return base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-         !IsFrameInPdfViewer(GetRenderFrameHost()) &&
-         provider_supports_image_search &&
-         !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
-         !in_app &&
-         GetPrefs(browser_context_)
-             ->GetBoolean(prefs::kLensRegionSearchEnabled);
-#else
   return false;
-#endif
 }
 
 // Returns true if the item was appended.
@@ -3409,16 +3376,6 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
 void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!lens_region_search_controller_)
-    lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(source_web_contents_,
-                                                           GetBrowser());
-  bool use_fullscreen_capture =
-      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
-  lens_region_search_controller_->Start(use_fullscreen_capture,
-                                        is_google_default_search_provider);
-#endif
 }
 
 void RenderViewContextMenu::ExecSearchWebForImage() {

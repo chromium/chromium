@@ -45,10 +45,6 @@
 #include "net/log/net_log_capture_mode.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/browser_ui/share/android/intent_helper.h"
-#endif
-
 using content::BrowserThread;
 using content::WebContents;
 using content::WebUIMessageHandler;
@@ -305,15 +301,8 @@ void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
 #if BUILDFLAG(IS_ANDROID)
   if (file_to_send.empty())
     return;
-  std::string email;
-  std::string subject = "net_internals_log";
-  std::string title = "Issue number: ";
-  std::string body =
-      "Please add some informative text about the network issues.";
-  base::FilePath::StringType file_to_attach(file_to_send.value());
-  browser_ui::SendEmail(base::UTF8ToUTF16(email), base::UTF8ToUTF16(subject),
-                        base::UTF8ToUTF16(body), base::UTF8ToUTF16(title),
-                        base::UTF8ToUTF16(file_to_attach));
+  // TODO 通过jni实现sendEmali
+  DCHECK(file_to_send.empty());
 #endif
 }
 

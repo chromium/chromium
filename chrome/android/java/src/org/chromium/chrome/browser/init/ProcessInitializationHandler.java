@@ -59,8 +59,6 @@ import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
-import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
@@ -76,7 +74,6 @@ import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.SelectFileDialog;
 
 import java.io.File;
@@ -208,7 +205,6 @@ public class ProcessInitializationHandler {
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
         AppBannerManager.setAppDetailsDelegate(AppHooks.get().createAppDetailsDelegate());
         ChromeLifetimeController.initialize();
-        Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
     }
@@ -245,8 +241,6 @@ public class ProcessInitializationHandler {
                 DefaultBrowserInfo.initBrowserFetcher();
 
                 AfterStartupTaskUtils.setStartupComplete();
-
-                ShareImageFileUtils.clearSharedImages();
 
                 SelectFileDialog.clearCapturedCameraFiles();
 

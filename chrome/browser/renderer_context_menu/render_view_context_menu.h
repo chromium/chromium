@@ -31,10 +31,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
@@ -391,17 +387,6 @@ class RenderViewContextMenu
   // A one-time callback that will be called the next time a plugin action is
   // executed from a given render frame.
   ExecutePluginActionCallback execute_plugin_action_callback_;
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Controller for Lens Region Search feature. This controller will be
-  // destroyed as soon as the RenderViewContextMenu object is destroyed. The
-  // RenderViewContextMenu is reset every time it is shown, but persists between
-  // uses so that it doesn't go out of scope before finishing work. This means
-  // that when another context menu opens, the Lens Region Search feature will
-  // close if active.
-  std::unique_ptr<lens::LensRegionSearchController>
-      lens_region_search_controller_;
-#endif
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };

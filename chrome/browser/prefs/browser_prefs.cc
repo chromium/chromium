@@ -226,7 +226,6 @@
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/preferences/browser_prefs_android.h"
 #include "chrome/browser/android/usage_stats/usage_stats_bridge.h"
-#include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
@@ -1093,8 +1092,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(IS_ANDROID)
   ::android::RegisterPrefs(registry);
-
-  registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
 #else   // BUILDFLAG(IS_ANDROID)
   gcm::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
@@ -1554,9 +1551,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(
-      prefs::kLensRegionSearchEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
 #endif
