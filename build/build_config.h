@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // This file adds defines about the platform we're currently building on.
+// 该文件添加了关于我们当前正在构建的平台的定义。
 //
 //  Operating System:
 //    OS_AIX / OS_ANDROID / OS_ASMJS / OS_FREEBSD / OS_FUCHSIA / OS_IOS /
@@ -37,6 +38,7 @@
 #define BUILD_BUILD_CONFIG_H_
 
 // A set of macros to use for platform detection.
+// 一组用于平台检测的宏
 #if defined(__native_client__)
   // __native_client__ must be first, so that other OS_ defines are not set.
   #define OS_NACL 1
