@@ -24,8 +24,7 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
     scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
     scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
-    scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
-    scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper)
+    scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
     : cookie_helper_(std::move(cookie_helper)),
       database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
@@ -35,8 +34,7 @@ LocalDataContainer::LocalDataContainer(
       quota_helper_(std::move(quota_helper)),
       service_worker_helper_(std::move(service_worker_helper)),
       shared_worker_helper_(std::move(shared_worker_helper)),
-      cache_storage_helper_(std::move(cache_storage_helper)),
-      media_license_helper_(std::move(media_license_helper)) {}
+      cache_storage_helper_(std::move(cache_storage_helper)) {}
 
 LocalDataContainer::~LocalDataContainer() {}
 
@@ -115,13 +113,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (media_license_helper_.get()) {
-    batches_started_++;
-    media_license_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnMediaLicenseInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   model_->SetBatchExpectation(batches_started_, true);
 }
 
@@ -195,11 +186,4 @@ void LocalDataContainer::OnCacheStorageModelInfoLoaded(
   cache_storage_info_list_ = cache_storage_info;
   DCHECK(model_);
   model_->PopulateCacheStorageUsageInfo(this);
-}
-
-void LocalDataContainer::OnMediaLicenseInfoLoaded(
-    const MediaLicenseUsageInfoList& media_license_info) {
-  media_license_info_list_ = media_license_info;
-  DCHECK(model_);
-  model_->PopulateMediaLicenseInfo(this);
 }

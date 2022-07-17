@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -55,7 +54,6 @@ class LocalDataContainer {
   using SharedWorkerInfoList =
       std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
-  using MediaLicenseUsageInfoList = std::list<content::StorageUsageInfo>;
 
   LocalDataContainer(
       scoped_refptr<browsing_data::CookieHelper> cookie_helper,
@@ -67,8 +65,7 @@ class LocalDataContainer {
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
       scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
       scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
-      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
-      scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper);
+      scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
 
   LocalDataContainer(const LocalDataContainer&) = delete;
   LocalDataContainer& operator=(const LocalDataContainer&) = delete;
@@ -81,7 +78,6 @@ class LocalDataContainer {
 
  private:
   friend class CookiesTreeModel;
-  friend class CookieTreeMediaLicenseNode;
   friend class CookieTreeCookieNode;
   friend class CookieTreeDatabaseNode;
   friend class CookieTreeLocalStorageNode;
@@ -110,8 +106,6 @@ class LocalDataContainer {
   void OnSharedWorkerInfoLoaded(const SharedWorkerInfoList& shared_worker_info);
   void OnCacheStorageModelInfoLoaded(
       const CacheStorageUsageInfoList& cache_storage_info);
-  void OnMediaLicenseInfoLoaded(
-      const MediaLicenseUsageInfoList& media_license_usage_info);
 
   // Pointers to the helper objects, needed to retreive all the types of locally
   // stored data.
@@ -125,7 +119,6 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper_;
   scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper_;
   scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper_;
-  scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper_;
 
   // Storage for all the data that was retrieved through the helper objects.
   // The collected data is used for (re)creating the CookiesTreeModel.
@@ -139,7 +132,6 @@ class LocalDataContainer {
   ServiceWorkerUsageInfoList service_worker_info_list_;
   SharedWorkerInfoList shared_worker_info_list_;
   CacheStorageUsageInfoList cache_storage_info_list_;
-  MediaLicenseUsageInfoList media_license_info_list_;
 
   // A delegate, which must outlive this object. The update callbacks use the
   // delegate to deliver the updated data to the CookieTreeModel.

@@ -3413,9 +3413,6 @@
   <message name="IDS_SETTINGS_COOKIES_LOCAL_STORAGE" desc="Label for local storage (name of an HTML standard)">
     Local storage
   </message>
-  <message name="IDS_SETTINGS_COOKIES_MEDIA_LICENSE" desc="The text shown when there is an Media License in the Cookies table">
-    Media license
-  </message>
   <message name="IDS_SETTINGS_COOKIES_FILE_SYSTEM" desc="The text shown when there is a file system (name of an HTML standard) in the Cookies table">
     File system
   </message>

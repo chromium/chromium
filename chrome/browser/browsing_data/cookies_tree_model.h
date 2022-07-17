@@ -33,8 +33,6 @@ class CookieTreeIndexedDBNode;
 class CookieTreeIndexedDBsNode;
 class CookieTreeLocalStorageNode;
 class CookieTreeLocalStoragesNode;
-class CookieTreeMediaLicenseNode;
-class CookieTreeMediaLicensesNode;
 class CookieTreeQuotaNode;
 class CookieTreeServiceWorkerNode;
 class CookieTreeServiceWorkersNode;
@@ -90,8 +88,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_SHARED_WORKER,     // This is used for CookieTreeSharedWorkerNode.
       TYPE_CACHE_STORAGES,    // This is used for CookieTreeCacheStoragesNode.
       TYPE_CACHE_STORAGE,     // This is used for CookieTreeCacheStorageNode.
-      TYPE_MEDIA_LICENSES,    // This is used for CookieTreeMediaLicensesNode.
-      TYPE_MEDIA_LICENSE,     // This is used for CookieTreeMediaLicenseNode.
     };
 
     DetailedInfo();
@@ -119,8 +115,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
             shared_worker);
     DetailedInfo& InitCacheStorage(
         const content::StorageUsageInfo* storage_usage_info);
-    DetailedInfo& InitMediaLicense(
-        const content::StorageUsageInfo* storage_usage_info);
 
     NodeType node_type;
     url::Origin origin;
@@ -133,7 +127,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
     raw_ptr<const browsing_data::SharedWorkerHelper::SharedWorkerInfo>
         shared_worker_info = nullptr;
-    raw_ptr<const content::StorageUsageInfo> media_license_usage_info = nullptr;
   };
 
   CookieTreeNode() {}
@@ -224,7 +217,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeCacheStoragesNode* GetOrCreateCacheStoragesNode();
   CookieTreeQuotaNode* UpdateOrCreateQuotaNode(
       std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info);
-  CookieTreeMediaLicensesNode* GetOrCreateMediaLicensesNode();
 
   std::string canonicalized_host() const { return canonicalized_host_; }
 
@@ -256,7 +248,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   raw_ptr<CookieTreeServiceWorkersNode> service_workers_child_ = nullptr;
   raw_ptr<CookieTreeSharedWorkersNode> shared_workers_child_ = nullptr;
   raw_ptr<CookieTreeCacheStoragesNode> cache_storages_child_ = nullptr;
-  raw_ptr<CookieTreeMediaLicensesNode> media_licenses_child_ = nullptr;
 
   // The URL for which this node was initially created.
   GURL url_;
@@ -361,7 +352,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateServiceWorkerUsageInfo(LocalDataContainer* container);
   void PopulateSharedWorkerInfo(LocalDataContainer* container);
   void PopulateCacheStorageUsageInfo(LocalDataContainer* container);
-  void PopulateMediaLicenseInfo(LocalDataContainer* container);
 
   // Returns the Access Context Audit service provided to the cookies tree model
   // as part of the constructor, or nullptr if no service was provided.
@@ -439,9 +429,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
       LocalDataContainer* container,
       ScopedBatchUpdateNotifier* notifier,
       const std::u16string& filter);
-  void PopulateMediaLicenseInfoWithFilter(LocalDataContainer* container,
-                                          ScopedBatchUpdateNotifier* notifier,
-                                          const std::u16string& filter);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The extension special storage policy; see ExtensionsProtectingNode() above.

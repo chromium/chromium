@@ -116,7 +116,7 @@ std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
       shared_objects.local_storages(), shared_objects.session_storages(),
       shared_objects.indexed_dbs(), shared_objects.file_systems(), nullptr,
       shared_objects.service_workers(), shared_objects.shared_workers(),
-      shared_objects.cache_storages(), nullptr);
+      shared_objects.cache_storages());
 
   return std::make_unique<CookiesTreeModel>(std::move(container), nullptr);
 }

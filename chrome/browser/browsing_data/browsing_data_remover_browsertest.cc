@@ -64,7 +64,6 @@
 #include "base/threading/platform_thread.h"
 #endif
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/browser/media/library_cdm_test_helper.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -225,27 +224,9 @@ class BrowsingDataRemoverBrowserTest
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  // TODO(crbug.com/1231162): Remove this method once we migrate completely to
-  // the new backend.
-  int GetMediaLicenseCount() {
-    base::RunLoop run_loop;
-    int count = -1;
-    content::StoragePartition* partition =
-        browser()->profile()->GetDefaultStoragePartition();
-    scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper =
-        BrowsingDataMediaLicenseHelper::Create(
-            partition->GetFileSystemContext());
-    media_license_helper->StartFetching(base::BindLambdaForTesting(
-        [&](const std::list<content::StorageUsageInfo>& licenses) {
-          count = licenses.size();
-          LOG(INFO) << "Found " << count << " licenses.";
-          for (const auto& license : licenses)
-            LOG(INFO) << license.last_modified;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return count;
-  }
+  // TODO(crbug.com/1307796): Include quota nodes in CookieTreeModelCount to
+  // allow testing media licenses with TestSiteData().
+  int GetMediaLicenseCount() { return 0; }
 #endif
 
   inline void ExpectCookieTreeModelCount(int expected) {
@@ -1147,10 +1128,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   ExpectCookieTreeModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // The new media license backend will not store media licenses explicitly
-  // within CookieTreeModel, but the data will still be tracked through the
-  // quota system. GetMediaLicenseCount() is expected to always return 0 using
-  // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
   // nodes. `count` should be 1 here.
   int count = 0;
@@ -1197,10 +1174,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ExpectCookieTreeModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // The new media license backend will not store media licenses explicitly
-  // within CookieTreeModel, but the data will still be tracked through the
-  // quota system. GetMediaLicenseCount() is expected to always return 0 using
-  // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
   // nodes. `count` should be 1 here.
   int count = 0;
@@ -1217,10 +1190,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        MediaLicenseTimedDeletion) {
   const std::string kMediaLicenseType = "MediaLicense";
 
-  // The new media license backend will not store media licenses explicitly
-  // within CookieTreeModel, but the data will still be tracked through the
-  // quota system. GetMediaLicenseCount() is expected to always return 0 using
-  // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
   // nodes. `count` should be 1 here.
   int count = 0;
@@ -1292,10 +1261,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   EXPECT_EQ(0, GetMediaLicenseCount());
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  // The new media license backend will not store media licenses explicitly
-  // within CookieTreeModel, but the data will still be tracked through the
-  // quota system. GetMediaLicenseCount() is expected to always return 0 using
-  // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
   // nodes. `count` should be 1 here.
   int count = 0;

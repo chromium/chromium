@@ -44,7 +44,6 @@
 #include "base/threading/platform_thread.h"
 #endif
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/browser/media/library_cdm_test_helper.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -154,27 +153,9 @@ class IncognitoBrowsingDataBrowserTest
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  int GetMediaLicenseCount(Browser* browser = nullptr) {
-    if (!browser)
-      browser = GetBrowser();
-    base::RunLoop run_loop;
-    int count = -1;
-    content::StoragePartition* partition =
-        browser->profile()->GetDefaultStoragePartition();
-    scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper =
-        BrowsingDataMediaLicenseHelper::Create(
-            partition->GetFileSystemContext());
-    media_license_helper->StartFetching(base::BindLambdaForTesting(
-        [&](const std::list<content::StorageUsageInfo>& licenses) {
-          count = licenses.size();
-          LOG(INFO) << "Found " << count << " licenses.";
-          for (const auto& license : licenses)
-            LOG(INFO) << license.last_modified;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return count;
-  }
+  // TODO(crbug.com/1307796): Include quota nodes in CookieTreeModelCount to
+  // allow testing media licenses with TestSiteData().
+  int GetMediaLicenseCount(Browser* browser = nullptr) { return 0; }
 #endif
 
   inline void ExpectCookieTreeModelCount(Browser* browser, int expected) {

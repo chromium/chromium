@@ -74,11 +74,6 @@ int GetCategoryLabelID(CookieTreeNode::DetailedInfo::NodeType node_type) {
       {CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE,
        IDS_SETTINGS_COOKIES_CACHE_STORAGE},
 
-      {CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSES,
-       IDS_SETTINGS_COOKIES_MEDIA_LICENSE},
-      {CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE,
-       IDS_SETTINGS_COOKIES_MEDIA_LICENSE},
-
       {CookieTreeNode::DetailedInfo::TYPE_QUOTA,
        IDS_SETTINGS_COOKIES_QUOTA_STORAGE},
   };

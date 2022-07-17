@@ -31,7 +31,6 @@ const categoryLabels: {[key: string]: string} = {
   local_storage: loadTimeData.getString('cookieLocalStorage'),
   service_worker: loadTimeData.getString('cookieServiceWorker'),
   shared_worker: loadTimeData.getString('cookieSharedWorker'),
-  media_license: loadTimeData.getString('cookieMediaLicense'),
   quota: loadTimeData.getString('cookieQuotaStorage'),
 };
 
