@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2163152940313951844">અમાન્ય અક્ષર: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">પોર્ટુગીઝ, યુએસ આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" />નો વપરાશ કર્યો</translation>
 <translation id="2198315389084035571">સરળીકૃત ચાઇનીઝ</translation>
 <translation id="22085916256174561">કોરિયન</translation>
 <translation id="2208919847696382164">Linux વડે ઇન્સ્ટૉલ કરો</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">ટર્કિશ, F-કીબોર્ડ સાથે</translation>
 <translation id="2732839045120506979">વિયેતનામીઝ VNI</translation>
 <translation id="2735623501230989521">Parallels ડેસ્કટૉપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
+<translation id="2764206540577097904">તમે તમારા Google Workspaceના વ્યક્તિગત સ્ટોરેજનો પૂરો ઉપયોગ કરી લીધો છે.</translation>
 <translation id="2771816809568414714">ચીઝ</translation>
 <translation id="2781645665747935084">બેલ્જિયન</translation>
 <translation id="2782104745158847185">Linux ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં ભૂલ</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">વધુ ટૂંકા નામનો ઉપયોગ કરો</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી રહ્યાં છીએ…</translation>
 <translation id="2951236788251446349">જેલીફીશ</translation>
+<translation id="2958458230122209142">સ્ટોરેજ ઓછો છે, તમારા <ph name="TOTAL_SPACE" /> વ્યક્તિગત સ્ટોરેજમાંથી <ph name="REMAINING_PERCENTAGE" />% બાકી છે.</translation>
 <translation id="2977940621473452797">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. તમારું ડિવાઇસ જે ChromeOS પર ચાલે છે તેની સાથે આ સુસંગત નથી. તેના બદલે કૃપા કરીને Chrome વેબ સ્ટોર પર યોગ્ય ઍપ શોધો.</translation>
 <translation id="2984337792991268709">આજે <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> આઇટમ રિસ્ટોર કરી રહ્યાં છીએ…</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">આ ફોલ્ડરમાં સાચવેલી તમામ ફાઇલોનું ઑટોમૅટિક રીતે ઑનલાઇન બૅકઅપ લેવાય છે.</translation>
 <translation id="6825883775269213504">રશિયન</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> પસંદગીમાંથી કાઢી નાખ્યું.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> દ્વારા તેના Google Workspace સ્ટોરેજનો પૂરો ઉપયોગ કરવામાં આવ્યો છે.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="6861394552169064235">ફારસી</translation>
 <translation id="6862635236584086457">આ ફોલ્ડરમાં સાચવેલી તમામ ફાઇલોનું ઑટોમૅટિક રીતે ઑનલાઇન બૅકઅપ લેવાય છે</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">સ્વીડિશ</translation>
 <translation id="6990081529015358884">તમારી પાસે સ્થાન નથી</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ફોલ્ડર્સ પસંદ કર્યા</translation>
+<translation id="7008426324576352165">અપલોડ પૂર્ણ કરવા માટે તમારી સંસ્થાને વધુ સ્ટોરેજની જરૂર છે.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ઇન્સ્ટોલેશન નિષ્ફળ થયું.</translation>
 <translation id="7031639531908619281">ટર્કિશ</translation>
@@ -931,11 +936,13 @@
 <translation id="8919081441417203123">ડેનિશ</translation>
 <translation id="8965697826696209160">પર્યાપ્ત સ્થાન નથી.</translation>
 <translation id="8997962250644902079">ચાઇનીઝ (પરંપરાગત) પિનયિન</translation>
+<translation id="8998871447376656508">અપલોડ પૂર્ણ કરવા માટે તમારી Google Driveમાં પર્યાપ્ત સ્પેસ નથી.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="9017798300203431059">રશિયન ધ્વન્યાત્મક</translation>
 <translation id="9034924485347205037">Linux ફાઇલો</translation>
 <translation id="9035012421917565900">આઇટમને પાછી '<ph name="DESTINATION_NAME" />'માં ખસેડી શકાતી નથી, તેથી તમે આ ક્રિયાનો છેલ્લો ફેરફાર રદ કરી શકશો નહીંં.</translation>
 <translation id="9035689366572880647">વર્તમાન પિન દાખલ કરો</translation>
+<translation id="9037777873893411148">*સંસ્થાનો સ્ટોરેજ ભરાઈ ગયો છે</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
 <translation id="9046895021617826162">કનેક્ટ કરવું નિષ્ફળ</translation>
 <translation id="9065512565307033593">જો તમે ચકાસણી કરવામાં નિષ્ફળ રહ્યાં, તો તમારા નેટવર્કનો ઍક્સેસ બંધ થઈ જશે.</translation>

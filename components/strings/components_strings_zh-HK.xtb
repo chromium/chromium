@@ -457,7 +457,7 @@
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2148613324460538318">新增付款卡</translation>
 <translation id="2149968176347646218">連線不安全</translation>
-<translation id="2153609454945889823">安裝「Google Play 服務 - AR 適用」？</translation>
+<translation id="2153609454945889823">要安裝「Google Play 服務 (AR)」嗎？</translation>
 <translation id="2154054054215849342">您的網域無法使用同步處理功能</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -1119,7 +1119,7 @@
 <translation id="4040350669425716613">大專和大學</translation>
 <translation id="4056223980640387499">棕褐色</translation>
 <translation id="4058922952496707368">金鑰「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
-<translation id="4063924980214801036">使用裝置解鎖功能即可加快確認卡片的速度</translation>
+<translation id="4063924980214801036">使用裝置解鎖功能即可加快確認付款卡</translation>
 <translation id="4067098466788473230">助學金和獎學金</translation>
 <translation id="4067263367174615723">C1 (信封)</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
@@ -1806,7 +1806,7 @@
 <translation id="5921185718311485855">開啟</translation>
 <translation id="5921639886840618607">要將付款卡儲存至 Google 帳戶嗎？</translation>
 <translation id="5922853866070715753">快將完成</translation>
-<translation id="5923492272538889093">要使用裝置解鎖功能取代信用卡驗證碼嗎？</translation>
+<translation id="5923492272538889093">要使用裝置解鎖功能取代 CVC 嗎？</translation>
 <translation id="5928444777041341328">家居和園藝</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
 <translation id="5937560539988385583">已翻譯網頁</translation>
@@ -1980,7 +1980,7 @@
 <translation id="643051589346665201">變更 Google 密碼</translation>
 <translation id="6433490469411711332">編輯聯絡人資料</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 已拒絕連線。</translation>
-<translation id="6433797564277305076">現在就開始使用裝置解鎖功能，加快確認卡片的速度</translation>
+<translation id="6433797564277305076">現在就開始使用裝置解鎖功能，加快確認付款卡</translation>
 <translation id="6440503408713884761">已略過</translation>
 <translation id="6443406338865242315">您已安裝的擴充程式和外掛程式</translation>
 <translation id="6446163441502663861">Kahu (信封)</translation>
@@ -2452,7 +2452,7 @@
 <translation id="7696089921647603491">經典搖滾和懷舊音樂</translation>
 <translation id="7697066736081121494">Prc8 (信封)</translation>
 <translation id="769721561045429135">目前您有幾張卡只可在此裝置上使用。按一下 [繼續] 即可查看這些卡。</translation>
-<translation id="7698864304447945242">更新「Google Play 服務 - AR 適用」？</translation>
+<translation id="7698864304447945242">要更新「Google Play 服務 (AR)」嗎？</translation>
 <translation id="7699293099605015246">目前無法顯示文章</translation>
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />繼續前往 <ph name="SITE" /> 網站 (不安全) <ph name="END_LINK" /></translation>
