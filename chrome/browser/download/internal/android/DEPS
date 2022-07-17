@@ -7,7 +7,6 @@ include_rules = [
   "+chrome/browser/ui/messages/android",
   "+chrome/browser/util",
   "+components/browser_ui/modaldialog/android",
-  "+components/browser_ui/share/android",
   "+components/browser_ui/strings/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/util/android",

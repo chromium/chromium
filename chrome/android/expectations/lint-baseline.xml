@@ -6977,17 +6977,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ShareSourceAndroid.ANDROID_SHARE_SHEET, ShareSourceAndroid.CHROME_SHARE_SHEET, ShareSourceAndroid.DIRECT_SHARE"
-        errorLine1="                ANY_SHARE_HISTOGRAM_NAME, source, ShareSourceAndroid.COUNT);"
-        errorLine2="                                                                     ~~~~~">
-        <location
-            file="../../components/browser_ui/share/android/java/src/org/chromium/components/browser_ui/share/ShareHelper.java"
-            line="447"
-            column="70"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT"
         errorLine1="                    confirmIntent, NotificationUmaTracker.ActionType.SHARING_CONFIRM);"
         errorLine2="                                                                     ~~~~~~~~~~~~~~~">

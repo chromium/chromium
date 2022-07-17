@@ -11,113 +11,128 @@
     android:layout_height="match_parent"
     android:layout_weight="1" >
 
-    <org.chromium.chrome.browser.compositor.CompositorViewHolder
-        android:id="@+id/compositor_view_holder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <org.chromium.chrome.browser.ui.BottomContainer
-        android:id="@+id/bottom_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom" />
-
-    <ViewStub
-        android:id="@+id/keyboard_accessory_stub"
-        android:inflatedId="@+id/keyboard_accessory"
-        android:layout_height="@dimen/keyboard_accessory_height_with_shadow"
-        android:layout_width="match_parent"
-        android:layout_gravity="start|bottom"/>
-
-    <ViewStub
-        android:id="@+id/keyboard_accessory_sheet_stub"
-        android:layout_height="@dimen/keyboard_accessory_sheet_height"
-        android:layout_width="match_parent"
-        android:layout_gravity="start|bottom"/>
-
-    <ViewStub
-        android:id="@+id/tab_modal_dialog_container_stub"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:inflatedId="@+id/tab_modal_dialog_container" />
-
-    <!-- Please do not add anything in between tab_modal_dialog_container_stub and
-         tab_modal_dialog_container_sibling_view. -->
-    <ViewStub
-        android:id="@+id/tab_modal_dialog_container_sibling_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp" />
-
-    <org.chromium.components.messages.MessageContainer
-        android:id="@+id/message_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="start|top"
-        android:focusable="true" />
-
-    <FrameLayout
-        android:id="@+id/sheet_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false" />
-
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:background="#eecccccc"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         >
 
-        <TextView
-            android:id="@+id/tv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="后退"
-            android:textSize="12sp"
-            android:padding="8dp"
-            android:background="?android:selectableItemBackground"
-            />
 
-        <TextView
-            android:id="@+id/tv_forward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="前进"
-            android:textSize="12sp"
-            android:padding="8dp"
-            android:background="?android:selectableItemBackground"
-            />
-
-        <EditText
-            android:id="@+id/et_url"
+        <org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_width="0dp"
+            >
+
+            <org.chromium.chrome.browser.compositor.CompositorViewHolder
+                android:id="@+id/compositor_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <org.chromium.chrome.browser.ui.BottomContainer
+                android:id="@+id/bottom_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|bottom" />
+
+            <ViewStub
+                android:id="@+id/keyboard_accessory_stub"
+                android:inflatedId="@+id/keyboard_accessory"
+                android:layout_height="@dimen/keyboard_accessory_height_with_shadow"
+                android:layout_width="match_parent"
+                android:layout_gravity="start|bottom"/>
+
+            <ViewStub
+                android:id="@+id/keyboard_accessory_sheet_stub"
+                android:layout_height="@dimen/keyboard_accessory_sheet_height"
+                android:layout_width="match_parent"
+                android:layout_gravity="start|bottom"/>
+
+            <ViewStub
+                android:id="@+id/tab_modal_dialog_container_stub"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inflatedId="@+id/tab_modal_dialog_container" />
+
+            <!-- Please do not add anything in between tab_modal_dialog_container_stub and
+                 tab_modal_dialog_container_sibling_view. -->
+            <ViewStub
+                android:id="@+id/tab_modal_dialog_container_sibling_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+
+            <org.chromium.components.messages.MessageContainer
+                android:id="@+id/message_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_gravity="start|top"
+                android:focusable="true" />
+
+            <FrameLayout
+                android:id="@+id/sheet_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false" />
+
+        </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="42dp"
-            android:text="wwww.baidu.com"
-            android:textSize="12sp"
             android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:background="#eecccccc"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            >
 
-            />
+            <TextView
+                android:id="@+id/tv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="后退"
+                android:textSize="12sp"
+                android:padding="8dp"
+                android:background="?android:selectableItemBackground"
+                />
 
-        <TextView
-            android:id="@+id/tv_go"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="加载"
-            android:textSize="12sp"
-            android:padding="8dp"
-            android:background="?android:selectableItemBackground"
-            />
+            <TextView
+                android:id="@+id/tv_forward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="前进"
+                android:textSize="12sp"
+                android:padding="8dp"
+                android:background="?android:selectableItemBackground"
+                />
+
+            <EditText
+                android:id="@+id/et_url"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="42dp"
+                android:text="wwww.baidu.com"
+                android:textSize="12sp"
+                android:layout_gravity="bottom"
+
+                />
+
+            <TextView
+                android:id="@+id/tv_go"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="加载"
+                android:textSize="12sp"
+                android:padding="8dp"
+                android:background="?android:selectableItemBackground"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
-
-
 
 </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

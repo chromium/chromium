@@ -501,6 +501,7 @@ public final class BrowserViewController
      * Asks the user to confirm a page reload on a POSTed page.
      */
     public void showRepostFormWarningDialog() {
+        // TODO 确认是否重新提交表单
         ModalDialogProperties.Controller dialogController =
                 new SimpleModalDialogController(mModalDialogManager, (Integer dismissalCause) -> {
                     WebContents webContents = mTab == null ? null : mTab.getWebContents();

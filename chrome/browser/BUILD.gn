@@ -3218,7 +3218,6 @@ static_library("browser") {
       "//components/background_sync",
       "//components/bookmarks/common/android",
       "//components/browser_ui/accessibility/android",
-      "//components/browser_ui/share/android",
       "//components/browser_ui/site_settings/android",
       "//components/browser_ui/sms/android",
       "//components/browser_ui/util/android",
@@ -5885,10 +5884,6 @@ static_library("browser") {
       "renderer_context_menu/spelling_options_submenu_observer.cc",
       "renderer_context_menu/spelling_options_submenu_observer.h",
     ]
-  }
-
-  if (!is_android && is_chrome_branded) {
-    deps += [ "//chrome/browser/lens/region_search" ]
   }
 
   if (is_win || is_chromeos || is_mac) {

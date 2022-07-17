@@ -214,11 +214,6 @@ group("gn_all") {
       "//weblayer/test:weblayer_browsertests",
       "//weblayer/test:weblayer_unittests",
     ]
-    if (is_android) {
-      deps += [
-        "//weblayer/browser/android/javatests:weblayer_instrumentation_test_apk",
-      ]
-    }
   }
 
   if (!is_ios && !is_android) {

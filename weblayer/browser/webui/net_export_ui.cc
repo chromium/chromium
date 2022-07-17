@@ -20,10 +20,6 @@
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/grit/weblayer_resources.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/browser_ui/share/android/intent_helper.h"
-#endif
-
 namespace weblayer {
 
 namespace {
