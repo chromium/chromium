@@ -1386,6 +1386,9 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   DispatchOnRawResponse();
   ReportFlaggedResponseCookies();
 
+  if (memory_cache_)
+    memory_cache_->OnRedirect(url_request_.get(), request_destination_);
+
   const CrossOriginEmbedderPolicy kEmpty;
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
   const CrossOriginEmbedderPolicy& cross_origin_embedder_policy =

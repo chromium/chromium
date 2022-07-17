@@ -75,6 +75,19 @@ std::string GenerateCacheKeyForResourceRequest(
       /*use_single_keyed_cache=*/false, /*single_key_checksum=*/"");
 }
 
+std::string GenerateCacheKeyForURLRequest(
+    const net::URLRequest& url_request,
+    mojom::RequestDestination request_destination) {
+  bool is_subframe_document_resource =
+      request_destination == mojom::RequestDestination::kIframe;
+  return net::HttpCache::GenerateCacheKey(
+      url_request.url(), url_request.load_flags(),
+      url_request.isolation_info().network_isolation_key(),
+      /*upload_data_identifier=*/0, is_subframe_document_resource,
+      /*use_single_keyed_cache=*/false,
+      /*single_key_checksum=*/"");
+}
+
 bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
                                   const mojom::URLResponseHead& response,
                                   const base::RefCountedBytes& content) {
@@ -105,6 +118,32 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   return decision == corb::ResponseAnalyzer::Decision::kAllow;
 }
 
+// Checks whether Vary header in the cached response only has headers that the
+// in-memory cache can handle.
+bool VaryHasSupportedHeadersOnly(
+    const net::HttpResponseHeaders& cached_response_headers) {
+  size_t iter = 0;
+  std::string value;
+  while (cached_response_headers.EnumerateHeader(
+      &iter, net::HttpResponseHeaders::kVary, &value)) {
+    // Accept-Encoding will be set if missing.
+    if (value == net::HttpRequestHeaders::kAcceptEncoding)
+      continue;
+    // Origin header might be missing or already be specified by the client
+    // side. The underlying layer (URLLoader and //net) didn't set/update Origin
+    // header unless cross-origin redirects happened. The in-memory cache
+    // doesn't store response when redirects happened.
+    if (value == net::HttpRequestHeaders::kOrigin)
+      continue;
+
+    // TODO(https://crbug.com/1339708): Support more headers. We need to extract
+    // some header calculations from net::URLRequestHttpJob.
+    return false;
+  }
+
+  return true;
+}
+
 bool MatchVaryHeader(const ResourceRequest& resource_request,
                      const net::HttpVaryData& vary_data,
                      const net::HttpResponseHeaders& cached_response_headers,
@@ -114,15 +153,7 @@ bool MatchVaryHeader(const ResourceRequest& resource_request,
     return true;
   }
 
-  std::string vary_value;
-  // There should be Vary header when `vary_data` is valid.
-  CHECK(cached_response_headers.GetNormalizedHeader(
-      net::HttpResponseHeaders::kVary, &vary_value));
-
-  // Currently the in-memory cache can only handle Accept-Encoding header.
-  // TODO(https://crbug.com/1339708): Support more headers. We need to extract
-  // some header calculations from net::URLRequestHttpJob.
-  if (vary_value != net::HttpRequestHeaders::kAcceptEncoding)
+  if (!VaryHasSupportedHeadersOnly(cached_response_headers))
     return false;
 
   net::HttpRequestInfo request_info;
@@ -234,14 +265,8 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
   if (validation_type != net::VALIDATION_NONE)
     return nullptr;
 
-  bool is_subframe_document_resource =
-      request_destination == mojom::RequestDestination::kIframe;
-  std::string cache_key = net::HttpCache::GenerateCacheKey(
-      url_request->url(), url_request->load_flags(),
-      url_request->isolation_info().network_isolation_key(),
-      /*upload_data_identifier=*/0, is_subframe_document_resource,
-      /*use_single_keyed_cache=*/false,
-      /*single_key_checksum=*/"");
+  std::string cache_key =
+      GenerateCacheKeyForURLRequest(*url_request, request_destination);
 
   return std::make_unique<NetworkServiceMemoryCacheWriter>(
       weak_ptr_factory_.GetWeakPtr(), GetNextTraceId(), max_per_entry_bytes_,
@@ -410,6 +435,21 @@ void NetworkServiceMemoryCache::OnLoaderCompleted(
   auto it = url_loaders_.find(loader);
   DCHECK(it != url_loaders_.end());
   url_loaders_.erase(it);
+}
+
+void NetworkServiceMemoryCache::OnRedirect(
+    const net::URLRequest* url_request,
+    mojom::RequestDestination request_destination) {
+  DCHECK(url_request);
+
+  if (url_request->method() != net::HttpRequestHeaders::kGetMethod)
+    return;
+
+  std::string cache_key =
+      GenerateCacheKeyForURLRequest(*url_request, request_destination);
+  auto it = entries_.Peek(cache_key);
+  if (it != entries_.end())
+    EraseEntry(it);
 }
 
 void NetworkServiceMemoryCache::SetCurrentTimeForTesting(

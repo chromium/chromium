@@ -160,7 +160,7 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
   ~NetworkServiceMemoryCacheTest() override = default;
 
   void SetUp() override {
-    // The following setup similar to CorsURLLoaderFactoryTest.
+    should_redirect_in_cacheable_handler_ = false;
 
     test_server_.AddDefaultHandlers();
     test_server_.RegisterRequestHandler(
@@ -168,7 +168,12 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&CacheableWithoutContentLengthHandler));
     test_server_.RegisterRequestHandler(base::BindRepeating(&CorbCheckHandler));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &NetworkServiceMemoryCacheTest::CacheableOrRedirectHandler,
+        base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
+
+    // The following setup similar to CorsURLLoaderFactoryTest.
 
     network_service_ = NetworkService::CreateForTesting();
 
@@ -210,6 +215,10 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
 
   NetworkServiceMemoryCache& memory_cache() {
     return *network_context_->GetMemoryCache();
+  }
+
+  void MakeCacheableHandlerSendRedirect() {
+    should_redirect_in_cacheable_handler_ = true;
   }
 
   ResourceRequest CreateRequest(const std::string& relative_path) {
@@ -275,6 +284,25 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
   }
 
  private:
+  std::unique_ptr<net::test_server::HttpResponse> CacheableOrRedirectHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path_piece() != "/cacheable_or_redirect")
+      return nullptr;
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+    if (should_redirect_in_cacheable_handler_) {
+      response->set_code(net::HttpStatusCode::HTTP_FOUND);
+      response->AddCustomHeader("location", "/cacheable");
+    } else {
+      constexpr size_t kBodySize = 64;
+      response->AddCustomHeader("cache-control", "max-age=60");
+      response->set_content(std::string(kBodySize, 'a'));
+    }
+
+    return response;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
@@ -283,6 +311,8 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
 
   net::test_server::EmbeddedTestServer test_server_;
+
+  bool should_redirect_in_cacheable_handler_ = false;
 
   std::unique_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
   mojo::Remote<mojom::URLLoaderFactory> cors_url_loader_factory_remote_;
@@ -569,6 +599,19 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_VaryHeaderAcceptEncoding) {
   ASSERT_TRUE(CanServeFromMemoryCache(request));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_MultipleVaryHeader) {
+  ResourceRequest request =
+      CreateRequest("/echoheadercache?Accept-Encoding,Origin");
+  request.headers.SetHeader("accept-encoding", "gzip");
+  request.headers.SetHeader("origin", "https://a.test");
+
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  request.headers.SetHeader("origin", "https://b.test");
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
 // TODO(https://crbug.com/1339708): Change the test name and the expectation
 // once we implement appropriate Vary checks.
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedVaryHeaderCookie) {
@@ -579,13 +622,11 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedVaryHeaderCookie) {
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
-// TODO(https://crbug.com/1339708): Change the test name and the expectation
-// once we implement appropriate Vary checks.
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
   ResourceRequest request =
-      CreateRequest("/echoheadercache?Accept-Encoding,Origin");
+      CreateRequest("/echoheadercache?Accept-Encoding,X-Foo");
   request.headers.SetHeader("accept-encoding", "gzip");
-  request.headers.SetHeader("origin", "https://a.test");
+  request.headers.SetHeader("x-foo", "bar");
 
   StoreResponseToMemoryCache(request);
   ASSERT_FALSE(CanServeFromMemoryCache(request));
@@ -641,6 +682,28 @@ TEST_F(NetworkServiceMemoryCacheTest, EvictLeastRecentlyUsed) {
   ASSERT_TRUE(CanServeFromMemoryCache(request2));
   ASSERT_TRUE(CanServeFromMemoryCache(request3));
   ASSERT_EQ(memory_cache().total_bytes(), kBodySize * 2);
+}
+
+// Tests that a stored response is deleted when a subsequent request that
+// bypasses the cache results in a redirect.
+TEST_F(NetworkServiceMemoryCacheTest, CachedAfterRedirect) {
+  ResourceRequest request = CreateRequest("/cacheable_or_redirect");
+
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  MakeCacheableHandlerSendRedirect();
+  request.load_flags |= net::LOAD_BYPASS_CACHE;
+
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilRedirectReceived();
+  pair.loader_remote->FollowRedirect(
+      /*removed_headers=*/{}, /*modified_headers=*/{},
+      /*modified_cors_exempt_headers=*/{}, /*new_url=*/absl::nullopt);
+  pair.client->RunUntilComplete();
+
+  request.load_flags &= ~net::LOAD_BYPASS_CACHE;
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, Clear) {

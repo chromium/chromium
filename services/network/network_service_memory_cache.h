@@ -99,6 +99,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // Called when a custom URLLoader is completed.
   void OnLoaderCompleted(NetworkServiceMemoryCacheURLLoader* loader);
 
+  // Called when a redirect happens for a request.
+  void OnRedirect(const net::URLRequest* url_request,
+                  mojom::RequestDestination request_destination);
+
   void SetCurrentTimeForTesting(base::Time current_time);
 
   mojom::URLResponseHeadPtr GetResponseHeadForTesting(
