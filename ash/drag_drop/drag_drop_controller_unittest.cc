@@ -1428,25 +1428,35 @@ TEST_F(DragDropControllerTest, DragTabDoesNotCrashOnSourceWindowDestruction) {
   // Posted task will be run when the inner loop runs in StartDragAndDrop.
   ui::test::EventGenerator generator(window->GetRootWindow(), window);
   generator.PressLeftButton();
-  // For drag enter.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
-                                base::Unretained(&generator), 0, 1));
-  // Forces a |TabDragDropDelegate::source_window_| destruction.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce([](std::unique_ptr<views::Widget>) {}, std::move(widget)));
-  // For perform drop.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
-                                base::Unretained(&generator)));
 
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  int step = 0;
+  drag_drop_controller_->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        switch (step++) {
+          case 0:
+            // For drag enter.
+            generator.MoveMouseBy(0, 1);
+            break;
+          case 1:
+            // Forces a |TabDragDropDelegate::source_window_| destruction.
+            widget.reset();
+            break;
+          case 2:
+            // For perform more drag and drop.
+            generator.ReleaseLeftButton();
+            break;
+          default:
+            NOTREACHED();
+        }
+      }),
+      base::DoNothing());
+
   DragOperation operation = drag_drop_controller_->StartDragAndDrop(
       std::make_unique<ui::OSExchangeData>(), window->GetRootWindow(), window,
       gfx::Point(5, 5), ui::DragDropTypes::DRAG_NONE,
       ui::mojom::DragEventSource::kMouse);
 
+  EXPECT_EQ(step, 3);
   EXPECT_EQ(operation, DragOperation::kNone);
 }
 
