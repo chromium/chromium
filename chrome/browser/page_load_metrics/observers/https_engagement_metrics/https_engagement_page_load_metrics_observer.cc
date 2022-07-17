@@ -28,6 +28,16 @@ HttpsEngagementPageLoadMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+HttpsEngagementPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // Once prerendered pages have been activated we will want to report this
+  // metric. Statistics are only be reported when foreground_time is nonzero so
+  // there are no additional checks needed.
+  return CONTINUE_OBSERVING;
+}
+
 void HttpsEngagementPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!GetDelegate().DidCommit() || !GetDelegate().GetUrl().is_valid()) {
