@@ -17,6 +17,7 @@ from telemetry.internal.platform import gpu_info as tgi
 #   mesa_ge_20.1
 EXPECTATIONS_DRIVER_TAGS = frozenset([
     'mesa_lt_19.1',
+    'mesa_ge_21.0',
 ])
 
 # Driver tag format: VENDOR_OPERATION_VERSION

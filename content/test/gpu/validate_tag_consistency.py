@@ -58,7 +58,8 @@ TAG_HEADER = """\
 # SwiftShader
 # tags: [ swiftshader-gl no-swiftshader-gl ]
 # Driver
-# tags: [ mesa_lt_19.1 ]
+# tags: [ mesa_lt_19.1
+#         mesa_ge_21.0 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server

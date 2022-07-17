@@ -45,7 +45,8 @@
 # SwiftShader
 # tags: [ swiftshader-gl no-swiftshader-gl ]
 # Driver
-# tags: [ mesa_lt_19.1 ]
+# tags: [ mesa_lt_19.1
+#         mesa_ge_21.0 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -687,6 +688,9 @@ crbug.com/angleproject/4417 [ linux no-passthrough ] conformance2/rendering/fram
 # Driver tag doesn't work on the passthrough command decoder because the detected driver version is ANGLE's version.
 crbug.com/1081978 [ linux intel angle-opengl passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
 crbug.com/angleproject/4242 [ linux intel angle-opengl passthrough ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
+
+# Linux INTEL
+crbug.com/1310144 [ linux intel mesa_ge_21.0 ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 # Linux NVIDIA
 crbug.com/1343520 [ linux nvidia angle-opengl passthrough ] conformance2/textures/canvas/tex-2d-r8-red-unsigned_byte.html [ RetryOnFailure ]
