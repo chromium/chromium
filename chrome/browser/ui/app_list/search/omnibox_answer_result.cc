@@ -20,10 +20,8 @@
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -41,8 +39,23 @@ namespace {
 using Tag = ash::SearchResultTag;
 using TextItem = ash::SearchResultTextItem;
 using TextType = ash::SearchResultTextItemType;
+using CrosApiSearchResult = crosapi::mojom::SearchResult;
 
 constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
+
+// Convert from our Mojo page transition type into the UI equivalent.
+ui::PageTransition ToUiPageTransition(
+    CrosApiSearchResult::PageTransition transition) {
+  switch (transition) {
+    case CrosApiSearchResult::PageTransition::kTyped:
+      return ui::PAGE_TRANSITION_TYPED;
+    case CrosApiSearchResult::PageTransition::kGenerated:
+      return ui::PAGE_TRANSITION_GENERATED;
+    default:
+      NOTREACHED();
+      return ui::PAGE_TRANSITION_FIRST;
+  }
+}
 
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
@@ -64,88 +77,81 @@ ChromeSearchResult::IconInfo CreateAnswerIconInfo(
   return ChromeSearchResult::IconInfo(icon, dimension);
 }
 
+// Convert from our Mojo answer type to the corresponding Omnibox icon.
+const gfx::VectorIcon& AnswerTypeToVectorIcon(
+    CrosApiSearchResult::AnswerType type) {
+  switch (type) {
+    case CrosApiSearchResult::AnswerType::kCurrency:
+      return omnibox::kAnswerCurrencyIcon;
+    case CrosApiSearchResult::AnswerType::kDictionary:
+      return omnibox::kAnswerDictionaryIcon;
+    case CrosApiSearchResult::AnswerType::kFinance:
+      return omnibox::kAnswerFinanceIcon;
+    case CrosApiSearchResult::AnswerType::kSunrise:
+      return omnibox::kAnswerSunriseIcon;
+    case CrosApiSearchResult::AnswerType::kTranslation:
+      return omnibox::kAnswerTranslationIcon;
+    case CrosApiSearchResult::AnswerType::kWhenIs:
+      return omnibox::kAnswerWhenIsIcon;
+    default:
+      return omnibox::kAnswerDefaultIcon;
+  }
+}
+
 // Tries to extract the temperature and temperature units from
 // SuggestionAnswer::TextFields. For example, a text field containing "26°C" is
 // converted into the pair ("26", "°C"), and a text field containing "-5°F" is
 // converted into the pair ("-5", "°F").
 absl::optional<std::pair<std::u16string, std::u16string>> GetTemperature(
-    const SuggestionAnswer::TextFields& text_fields) {
-  if (text_fields.size() != 1)
+    const absl::optional<std::u16string>& text) {
+  if (!text.has_value() || text->empty())
     return absl::nullopt;
 
-  const std::u16string& text = text_fields[0].text();
-  size_t digits_end = text.find_last_of(u"0123456789");
+  size_t digits_end = text->find_last_of(u"0123456789");
   if (digits_end == std::u16string::npos)
     return absl::nullopt;
 
   size_t unit_start = digits_end + 1;
-  return std::make_pair(text.substr(0, unit_start), text.substr(unit_start));
+  return std::make_pair(text->substr(0, unit_start), text->substr(unit_start));
 }
 
-TextItem TextFieldToTextItem(const SuggestionAnswer::TextField& text_field) {
-  TextItem text_item(TextType::kString);
-  text_item.SetText(text_field.text());
-
+// Returns the tag vector for the given text type.
+ash::SearchResultTags TagsForText(const std::u16string& text,
+                                  CrosApiSearchResult::TextType type) {
   ash::SearchResultTags tags;
-  const auto length = text_field.text().length();
-  switch (text_field.style()) {
-    case SuggestionAnswer::TextStyle::POSITIVE:
+  const auto length = text.length();
+  switch (type) {
+    case CrosApiSearchResult::TextType::kPositive:
       tags.push_back(Tag(Tag::GREEN, 0, length));
       break;
-    case SuggestionAnswer::TextStyle::NEGATIVE:
+    case CrosApiSearchResult::TextType::kNegative:
       tags.push_back(Tag(Tag::RED, 0, length));
+      break;
+    case CrosApiSearchResult::TextType::kUrl:
+      tags.push_back(Tag(Tag::URL, 0, length));
       break;
     default:
       break;
   }
-  text_item.SetTextTags(tags);
-
-  return text_item;
+  return tags;
 }
 
-// Converts an ImageLine to TextVector, ignoring any additional text.
-std::vector<TextItem> ImageLineToTextVector(
-    const SuggestionAnswer::ImageLine& line) {
-  std::vector<TextItem> text_vector;
-  for (const auto& text_field : line.text_fields()) {
-    if (!text_vector.empty()) {
-      text_vector.push_back(CreateStringTextItem(u" "));
-    }
-    text_vector.push_back(TextFieldToTextItem(text_field));
-  }
-  return text_vector;
-}
-
-// Converts the line's additional text into a TextItem and appends it to the
-// supplied TextVector.
-void AppendAdditionalText(const SuggestionAnswer::ImageLine& line,
-                          std::vector<TextItem>& text_vector) {
-  if (!line.additional_text() || line.additional_text()->text().empty())
+// Converts the given text into a TextItem and appends it to the supplied
+// vector.
+void AppendTextItem(const std::u16string& line,
+                    const CrosApiSearchResult::TextType type,
+                    std::vector<TextItem>& text_vector) {
+  if (line.empty())
     return;
 
   if (!text_vector.empty()) {
     text_vector.push_back(CreateStringTextItem(u" "));
   }
 
-  text_vector.push_back(TextFieldToTextItem(*line.additional_text()));
-}
-
-// Converts AutocompleteMatch fields to a TextItem.
-std::vector<TextItem> MatchFieldsToTextVector(
-    const std::u16string& text,
-    const ACMatchClassifications& classifications) {
   TextItem text_item(TextType::kString);
-  text_item.SetText(text);
-
-  ash::SearchResultTags tags;
-  // Classifications include URL tags, which we need to convert, and MATCH tags,
-  // which we should ignore since the query highlighter will perform all the
-  // matching instead.
-  ACMatchClassificationsToTags(text, classifications, &tags,
-                               /*ignore_match=*/true);
-  text_item.SetTextTags(tags);
-
-  return {text_item};
+  text_item.SetText(line);
+  text_item.SetTextTags(TagsForText(line, type));
+  text_vector.push_back(text_item);
 }
 
 std::u16string ComputeAccessibleName(
@@ -164,33 +170,38 @@ std::u16string ComputeAccessibleName(
 OmniboxAnswerResult::OmniboxAnswerResult(
     Profile* profile,
     AppListControllerDelegate* list_controller,
-    AutocompleteController* autocomplete_controller,
-    const AutocompleteMatch& match,
+    crosapi::mojom::SearchResultPtr search_result,
     const std::u16string& query)
     : profile_(profile),
       list_controller_(list_controller),
-      autocomplete_controller_(autocomplete_controller),
-      match_(match),
-      query_(query) {
-  if (match_.search_terms_args && autocomplete_controller_) {
-    match_.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
-    autocomplete_controller_->SetMatchDestinationURL(&match_);
-  }
+      search_result_(std::move(search_result)),
+      query_(query),
+      contents_(search_result_->contents.value_or(u"")),
+      additional_contents_(search_result_->additional_contents.value_or(u"")),
+      description_(search_result_->description.value_or(u"")),
+      additional_description_(
+          search_result_->additional_description.value_or(u"")) {
   SetDisplayType(ash::features::IsProductivityLauncherEnabled()
                      ? DisplayType::kAnswerCard
                      : DisplayType::kList);
   SetResultType(ResultType::kOmnibox);
   SetCategory(Category::kSearchAndAssistant);
-  set_id(kOmniboxAnswerSchema + match_.stripped_destination_url.spec());
+
+  // mojo::StructPtr DCHECKs non-null on dereference.
+  DCHECK(search_result_->stripped_destination_url.has_value());
+  set_id(kOmniboxAnswerSchema +
+         search_result_->stripped_destination_url->spec());
 
   SetMetricsType(IsCalculatorResult() ? ash::OMNIBOX_CALCULATOR
                                       : ash::OMNIBOX_ANSWER);
 
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
-  set_relevance(match_.relevance / kMaxOmniboxScore);
+  set_relevance(search_result_->relevance / kMaxOmniboxScore);
 
-  if (AutocompleteMatch::IsSearchType(match_.type))
+  if (search_result_->is_omnibox_search ==
+      CrosApiSearchResult::OptionalBool::kTrue) {
     SetIsOmniboxSearch(true);
+  }
 
   UpdateIcon();
 
@@ -209,7 +220,9 @@ OmniboxAnswerResult::~OmniboxAnswerResult() {
 }
 
 void OmniboxAnswerResult::Open(int event_flags) {
-  list_controller_->OpenURL(profile_, match_.destination_url, match_.transition,
+  DCHECK(search_result_->destination_url.has_value());
+  list_controller_->OpenURL(profile_, *search_result_->destination_url,
+                            ToUiPageTransition(search_result_->page_transition),
                             ui::DispositionFromEventFlags(event_flags));
 }
 
@@ -221,34 +234,20 @@ void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {
 void OmniboxAnswerResult::UpdateIcon() {
   if (IsCalculatorResult()) {
     SetIcon(CreateAnswerIconInfo(omnibox::kCalculatorIcon));
-  } else if (IsWeatherResult() && !match_.answer->image_url().is_empty()) {
+  } else if (IsWeatherResult() &&
+             search_result_->image_url.value_or(GURL()).is_valid()) {
     // Weather icons are downloaded. Check this first so that the local
     // default answer icon can be used as a fallback if the URL is missing.
-    FetchImage(match_.answer->image_url());
+    FetchImage(*search_result_->image_url);
   } else {
     SetIcon(CreateAnswerIconInfo(
-        AutocompleteMatch::AnswerTypeToAnswerIcon(match_.answer->type())));
+        AnswerTypeToVectorIcon(search_result_->answer_type)));
   }
 }
 
 void OmniboxAnswerResult::UpdateTitleAndDetails() {
-  if (IsCalculatorResult()) {
-    // Calculator results come in two forms:
-    // 1) Answer in |match.contents|, empty description,
-    // 2) Query in |match.contents|, answer in |match.description|.
-    std::vector<TextItem> contents_vector =
-        MatchFieldsToTextVector(match_.contents, match_.contents_class);
-    if (match_.description.empty()) {
-      SetTitleTextVector({CreateStringTextItem(query_)});
-      SetDetailsTextVector(contents_vector);
-    } else {
-      SetTitleTextVector(contents_vector);
-      SetDetailsTextVector(MatchFieldsToTextVector(match_.description,
-                                                   match_.description_class));
-    }
-  } else if (IsWeatherResult()) {
-    const auto& second_line = match_.answer->second_line();
-    auto temperature = GetTemperature(second_line.text_fields());
+  if (IsWeatherResult()) {
+    auto temperature = GetTemperature(search_result_->description);
     if (temperature) {
       SetBigTitleTextVector({CreateStringTextItem(temperature->first)});
       SetBigTitleSuperscriptTextVector(
@@ -258,64 +257,69 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
       scoring().filter = true;
     }
 
-    if (second_line.accessibility_label()) {
-      SetTitleTextVector(
-          {CreateStringTextItem(*second_line.accessibility_label())});
+    if (search_result_->description_a11y_label.has_value()) {
+      SetTitleTextVector({CreateStringTextItem(
+          search_result_->description_a11y_label.value())});
     } else {
-      // If the weather condition text is missing, fall back to use
-      // `match_.contents`.
-      SetTitleTextVector(
-          MatchFieldsToTextVector(match_.contents, match_.contents_class));
+      std::vector<TextItem> title_vector;
+      AppendTextItem(contents_, search_result_->contents_type, title_vector);
+      SetTitleTextVector(title_vector);
     }
 
     std::vector<TextItem> details_vector;
-    AppendAdditionalText(second_line, details_vector);
+    AppendTextItem(additional_description_,
+                   search_result_->additional_description_type, details_vector);
     SetDetailsTextVector(details_vector);
   } else {
-    std::vector<TextItem> first_vector =
-        MatchFieldsToTextVector(match_.contents, match_.contents_class);
-    AppendAdditionalText(match_.answer->first_line(), first_vector);
+    // Not a weather result.
 
-    const auto& second_line = match_.answer->second_line();
-    auto second_vector = ImageLineToTextVector(second_line);
-    AppendAdditionalText(second_line, second_vector);
+    std::vector<TextItem> title_vector;
+    AppendTextItem(contents_, search_result_->contents_type, title_vector);
+    AppendTextItem(additional_contents_,
+                   search_result_->additional_contents_type, title_vector);
+    SetTitleTextVector(title_vector);
 
-    SetTitleTextVector(first_vector);
-    SetDetailsTextVector(second_vector);
+    std::vector<TextItem> details_vector;
+    AppendTextItem(description_, search_result_->description_type,
+                   details_vector);
+    AppendTextItem(additional_description_,
+                   search_result_->additional_description_type, details_vector);
+    SetDetailsTextVector(details_vector);
 
     // Dictionary answer details can be split over multiple lines.
     if (IsDictionaryResult())
       SetMultilineDetails(true);
   }
 
-  std::u16string accessible_name = ComputeAccessibleName(
+  const std::u16string accessible_name = ComputeAccessibleName(
       {big_title_text_vector(), title_text_vector(), details_text_vector()});
   SetAccessibleName(accessible_name);
 }
 
 void OmniboxAnswerResult::UpdateClassicTitleAndDetails() {
   if (IsCalculatorResult()) {
-    SetTitle(match_.contents);
-    ChromeSearchResult::Tags title_tags;
-    ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                 &title_tags);
-    SetTitleTags(title_tags);
+    // Match tags are the only possible tags for calculator results, so we can
+    // generate them here.
 
-    SetDetails(match_.description);
-    ChromeSearchResult::Tags details_tags;
-    ACMatchClassificationsToTags(match_.description, match_.description_class,
-                                 &details_tags);
-    SetDetailsTags(details_tags);
+    SetTitle(contents_);
+    SetTitleTags(CalculateTags(query_, contents_));
+
+    SetDetails(description_);
+    SetDetailsTags(CalculateTags(query_, description_));
   } else {
-    const auto* additional = match_.answer->first_line().additional_text();
+    // Non-calculator result.
+
     const std::u16string title =
-        additional && !additional->text().empty()
-            ? base::JoinString({match_.contents, additional->text()}, u" ")
-            : match_.contents;
+        additional_contents_.empty()
+            ? contents_
+            : base::JoinString({contents_, additional_contents_}, u" ");
     SetTitle(title);
 
-    auto details_vector = ImageLineToTextVector(match_.answer->second_line());
-    AppendAdditionalText(match_.answer->second_line(), details_vector);
+    std::vector<TextItem> details_vector;
+    AppendTextItem(description_, search_result_->description_type,
+                   details_vector);
+    AppendTextItem(additional_description_,
+                   search_result_->additional_description_type, details_vector);
     SetDetails(StringFromTextVector(details_vector));
   }
 }
@@ -342,17 +346,18 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
 }
 
 bool OmniboxAnswerResult::IsCalculatorResult() const {
-  return match_.type == AutocompleteMatchType::CALCULATOR;
+  return search_result_->answer_type ==
+         CrosApiSearchResult::AnswerType::kCalculator;
 }
 
 bool OmniboxAnswerResult::IsDictionaryResult() const {
-  return match_.answer.has_value() &&
-         match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
+  return search_result_->answer_type ==
+         CrosApiSearchResult::AnswerType::kDictionary;
 }
 
 bool OmniboxAnswerResult::IsWeatherResult() const {
-  return match_.answer.has_value() &&
-         match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER;
+  return search_result_->answer_type ==
+         CrosApiSearchResult::AnswerType::kWeather;
 }
 
 }  // namespace app_list

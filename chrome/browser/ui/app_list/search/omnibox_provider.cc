@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -191,8 +192,14 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
 
     if (!is_zero_state_input_ && IsAnswer(match) &&
         !ShouldFilterAnswer(match, last_query_)) {
+      // TODO(1228587): update the rest of the result types to accept a crosapi
+      //                SearchResultPtr so that they can also be used from
+      //                Lacros.
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
-          profile_, list_controller_, controller_.get(), match, last_query_));
+          profile_, list_controller_,
+          crosapi::CreateAnswerResult(match, controller_.get(), last_query_,
+                                      input_),
+          last_query_));
     } else if (match.type == AutocompleteMatchType::OPEN_TAB) {
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(

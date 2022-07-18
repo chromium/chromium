@@ -37,6 +37,7 @@ enum SearchResultType {
 
 // Struct represents search result.
 // Next min ID: 20
+// Next min version: 5
 [Stable]
 struct SearchResult {
   // Type of the result. Used to distinguish between different types of result.
@@ -129,6 +130,7 @@ struct SearchResult {
     kSunrise = 6,
     kTranslation = 7,
     kWhenIs = 8,
+    [MinVersion=4] kCalculator = 9,
   };
 
   // Enum representing special text types.

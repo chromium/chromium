@@ -6976,6 +6976,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/chromeos/launcher_search:search_util",
       "//chromeos/components/disks:prefs",
       "//components/arc/common",
       "//components/arc/common:arc_intent_helper_constants",

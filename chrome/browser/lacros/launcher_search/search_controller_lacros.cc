@@ -104,13 +104,16 @@ void SearchControllerLacros::OnResultChanged(AutocompleteController* controller,
 
   std::vector<mojom::SearchResultPtr> results;
   for (AutocompleteMatch match : autocomplete_controller_->result()) {
+    // Calculator results are honorary answer results.
+    const bool is_answer = match.answer.has_value() ||
+                           match.type == AutocompleteMatchType::CALCULATOR;
     auto result =
-        match.answer.has_value()
-            ? CreateAnswerResult(match, autocomplete_controller_.get(), input_)
-            : CreateResult(match, autocomplete_controller_.get(),
-                           favicon_cache_.get(),
-                           BookmarkModelFactory::GetForBrowserContext(profile_),
-                           query_, input_);
+        is_answer
+            ? CreateAnswerResult(match, autocomplete_controller_.get(), query_,
+                                 input_)
+            : CreateResult(
+                  match, autocomplete_controller_.get(), favicon_cache_.get(),
+                  BookmarkModelFactory::GetForBrowserContext(profile_), input_);
 
     results.push_back(std::move(result));
   }

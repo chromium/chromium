@@ -48,7 +48,8 @@ TEST(SearchUtilTest, CreateAnswerResult) {
   ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", &answer));
   match.answer = answer;
 
-  const auto result = CreateAnswerResult(match, nullptr, AutocompleteInput());
+  const auto result =
+      CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
   EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 1248);
   ASSERT_TRUE(result->destination_url.has_value());
@@ -82,8 +83,8 @@ TEST(SearchUtilTest, CreateResult) {
   match.description_class = {
       ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
 
-  const auto result = CreateResult(match, nullptr, nullptr, nullptr, u"query",
-                                   AutocompleteInput());
+  const auto result =
+      CreateResult(match, nullptr, nullptr, nullptr, AutocompleteInput());
   EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 300);
   ASSERT_TRUE(result->destination_url.has_value());
@@ -135,7 +136,8 @@ TEST(SearchUtilTest, CreateWeatherResult) {
       value->GetDict(), /* The answer type for 'weather'. */ u"8", &answer));
   match.answer = answer;
 
-  const auto result = CreateAnswerResult(match, nullptr, AutocompleteInput());
+  const auto result =
+      CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
   EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 1200);
   ASSERT_TRUE(result->destination_url.has_value());
@@ -157,6 +159,51 @@ TEST(SearchUtilTest, CreateWeatherResult) {
   ASSERT_TRUE(result->image_url.has_value());
   EXPECT_EQ(result->image_url.value(),
             GURL("https://www.weather.com.au/sunny.png"));
+}
+
+// Tests result conversion for a calculator result. A calculator result can
+// either have a description or no description; both possibilities are tested.
+TEST(SearchUtilTest, CreateCalculatorResult) {
+  // A match with the input in contents and the answer in desc.
+  AutocompleteMatch match_desc;
+  match_desc.relevance = 300;
+  match_desc.type = AutocompleteMatchType::CALCULATOR;
+  match_desc.destination_url = GURL("https://www.example.com.au/calc?q=1+2");
+  match_desc.contents = u"1+2";
+  match_desc.description = u"3";
+  match_desc.contents_class = {
+      ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
+  match_desc.description_class = {
+      ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
+
+  // A match with the answer in content and no desc.
+  AutocompleteMatch match_no_desc;
+  match_no_desc.relevance = 300;
+  match_no_desc.type = AutocompleteMatchType::CALCULATOR;
+  match_no_desc.destination_url = GURL("https://www.example.com.au/calc?q=1+2");
+  match_no_desc.contents = u"3";
+  match_no_desc.contents_class = {
+      ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
+
+  for (const auto& match : {match_desc, match_no_desc}) {
+    const auto result = CreateAnswerResult(match, /*controller=*/nullptr,
+                                           u"1+2", AutocompleteInput());
+    EXPECT_EQ(result->relevance, 300);
+    ASSERT_TRUE(result->destination_url.has_value());
+    EXPECT_EQ(result->destination_url.value(),
+              GURL("https://www.example.com.au/calc?q=1+2"));
+    EXPECT_EQ(result->is_omnibox_search,
+              mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_EQ(result->answer_type,
+              mojom::SearchResult::AnswerType::kCalculator);
+    ASSERT_TRUE(result->contents.has_value());
+    EXPECT_EQ(result->contents.value(), u"1+2");
+    ASSERT_TRUE(result->description.has_value());
+    EXPECT_EQ(result->description.value(), u"3");
+    EXPECT_EQ(result->contents_type, mojom::SearchResult::TextType::kUnset);
+    EXPECT_EQ(result->description_type, mojom::SearchResult::TextType::kUnset);
+  }
 }
 
 }  // namespace

@@ -10,6 +10,8 @@
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/suggestion_answer.h"
@@ -61,11 +63,24 @@ TEST_F(ClassicOmniboxAnswerResultTest, ClassicCalculatorResult) {
   match.contents = u"2+2";
   match.description = u"4";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"2+2",
+                                  AutocompleteInput()),
+      u"2+2");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kList);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
-  EXPECT_EQ(result.title(), u"2+2");
+
+  ASSERT_EQ(result.title_text_vector().size(), 1);
+  const auto& title = result.title_text_vector()[0];
+  size_t length = title.GetText().length();
+  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetText(), u"2+2");
+  EXPECT_THAT(
+      title.GetTextTags(),
+      testing::ElementsAre(TagEquals(Tag(Tag::Style::MATCH, 0, length))));
+
   EXPECT_EQ(result.details(), u"4");
 }
 
@@ -86,7 +101,11 @@ TEST_F(ClassicOmniboxAnswerResultTest, ClassicAnswerResult) {
   match.answer = answer;
   match.contents = u"contents";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                                  AutocompleteInput()),
+      u"query");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kList);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
@@ -100,7 +119,11 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResult) {
   match.contents = u"2+2";
   match.description = u"4";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                                  AutocompleteInput()),
+      u"query");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
@@ -123,7 +146,11 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResultNoDescription) {
   match.type = AutocompleteMatchType::CALCULATOR;
   match.contents = u"4";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"2+2");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"2+2",
+                                  AutocompleteInput()),
+      u"2+2");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
@@ -164,7 +191,11 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   match.contents = u"contents";
   match.description = u"description";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                                  AutocompleteInput()),
+      u"query");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
@@ -218,7 +249,11 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
   match.contents = u"contents";
   match.description = u"description";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                                  AutocompleteInput()),
+      u"query");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
   EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
@@ -280,7 +315,11 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
   match.contents = u"contents";
   match.description = u"description";
 
-  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  OmniboxAnswerResult result(
+      /*profile=*/nullptr, /*list_controller=*/nullptr,
+      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                                  AutocompleteInput()),
+      u"query");
   EXPECT_TRUE(result.multiline_details());
 }
 

@@ -9,10 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "components/omnibox/browser/autocomplete_match.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 
 class AppListControllerDelegate;
-class AutocompleteController;
 class BitmapFetcher;
 class Profile;
 
@@ -27,8 +26,7 @@ class OmniboxAnswerResult : public ChromeSearchResult,
  public:
   OmniboxAnswerResult(Profile* profile,
                       AppListControllerDelegate* list_controller,
-                      AutocompleteController* autocomplete_controller,
-                      const AutocompleteMatch& match,
+                      crosapi::mojom::SearchResultPtr search_result,
                       const std::u16string& query);
   ~OmniboxAnswerResult() override;
 
@@ -59,10 +57,15 @@ class OmniboxAnswerResult : public ChromeSearchResult,
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;
-  AutocompleteController* autocomplete_controller_;
-  AutocompleteMatch match_;
+  const crosapi::mojom::SearchResultPtr search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
+
+  // Cached unwrapped search result fields.
+  const std::u16string contents_;
+  const std::u16string additional_contents_;
+  const std::u16string description_;
+  const std::u16string additional_description_;
 
   base::WeakPtrFactory<OmniboxAnswerResult> weak_factory_{this};
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 
 #include "base/callback_helpers.h"
+#include "base/strings/string_piece.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -117,35 +118,38 @@ SearchResult::TextType ClassesToType(
   return SearchResult::TextType::kUnset;
 }
 
-SearchResultPtr CreateBaseResult(AutocompleteMatch& match,
+SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
                                  AutocompleteController* controller,
                                  const AutocompleteInput& input) {
+  AutocompleteMatch match_copy = match;
   SearchResultPtr result = SearchResult::New();
 
-  if (controller && match.search_terms_args) {
-    match.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
-    controller->SetMatchDestinationURL(&match);
+  if (controller && match_copy.search_terms_args) {
+    match_copy.search_terms_args->request_source =
+        TemplateURLRef::CROS_APP_LIST;
+    controller->SetMatchDestinationURL(&match_copy);
   }
 
   result->type = mojom::SearchResultType::kOmniboxResult;
-  result->relevance = match.relevance;
-  result->destination_url = match.destination_url;
+  result->relevance = match_copy.relevance;
+  result->destination_url = match_copy.destination_url;
 
-  if (controller && match.stripped_destination_url.spec().empty()) {
-    match.ComputeStrippedDestinationURL(
+  if (controller && match_copy.stripped_destination_url.spec().empty()) {
+    match_copy.ComputeStrippedDestinationURL(
         input,
         controller->autocomplete_provider_client()->GetTemplateURLService());
   }
-  result->stripped_destination_url = match.stripped_destination_url;
+  result->stripped_destination_url = match_copy.stripped_destination_url;
 
   if (ui::PageTransitionCoreTypeIs(
-          match.transition, ui::PageTransition::PAGE_TRANSITION_GENERATED)) {
+          match_copy.transition,
+          ui::PageTransition::PAGE_TRANSITION_GENERATED)) {
     result->page_transition = SearchResult::PageTransition::kGenerated;
   } else {
     result->page_transition = SearchResult::PageTransition::kTyped;
   }
 
-  result->is_omnibox_search = AutocompleteMatch::IsSearchType(match.type)
+  result->is_omnibox_search = AutocompleteMatch::IsSearchType(match_copy.type)
                                   ? SearchResult::OptionalBool::kTrue
                                   : SearchResult::OptionalBool::kFalse;
   return result;
@@ -167,12 +171,39 @@ int ProviderTypes() {
   return providers;
 }
 
-SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
+SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    AutocompleteController* controller,
+                                   base::StringPiece16 query,
                                    const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
   result->is_answer = SearchResult::OptionalBool::kTrue;
+
+  // Special case: calculator results (are the only answer results to) have no
+  // explicit answer data.
+  if (!match.answer.has_value()) {
+    DCHECK_EQ(match.type, AutocompleteMatchType::CALCULATOR);
+    result->answer_type = SearchResult::AnswerType::kCalculator;
+
+    // Calculator results come in two forms:
+    // 1) Answer in |contents|, empty |description|,
+    // 2) Query in |contents|, answer in |description|.
+    // For case 1, we should manually populate the query.
+    if (match.description.empty()) {
+      result->contents = std::u16string(query);
+      result->contents_type = mojom::SearchResult::TextType::kUnset;
+      result->description = match.contents;
+      result->description_type = ClassesToType(match.contents_class);
+    } else {
+      result->contents = match.contents;
+      result->contents_type = ClassesToType(match.contents_class);
+      result->description = match.description;
+      result->description_type = ClassesToType(match.description_class);
+    }
+
+    return result;
+  }
+
   result->answer_type = MatchTypeToAnswerType(match.answer->type());
 
   if (result->answer_type == SearchResult::AnswerType::kWeather) {
@@ -208,15 +239,18 @@ SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
   return result;
 }
 
-SearchResultPtr CreateResult(AutocompleteMatch& match,
+SearchResultPtr CreateResult(const AutocompleteMatch& match,
                              AutocompleteController* controller,
                              FaviconCache* favicon_cache,
                              bookmarks::BookmarkModel* bookmark_model,
-                             const std::u16string& query,
                              const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
   result->is_answer = SearchResult::OptionalBool::kFalse;
+  result->contents = match.contents;
+  result->contents_type = ClassesToType(match.contents_class);
+  result->description = match.description;
+  result->description_type = ClassesToType(match.description_class);
 
   if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       !match.image_url.is_empty()) {
@@ -244,22 +278,6 @@ SearchResultPtr CreateResult(AutocompleteMatch& match,
         bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
       result->omnibox_type = SearchResult::OmniboxType::kBookmark;
     }
-  }
-
-  // Calculator results come in two forms:
-  // 1) Answer in |contents|, empty |description|,
-  // 2) Query in |contents|, answer in |description|.
-  // For case 1, we should manually populate the query.
-  if (result->omnibox_type == SearchResult::OmniboxType::kCalculator &&
-      match.description.empty()) {
-    result->contents = query;
-    result->description = match.contents;
-    result->description_type = ClassesToType(match.contents_class);
-  } else {
-    result->contents = match.contents;
-    result->contents_type = ClassesToType(match.contents_class);
-    result->description = match.description;
-    result->description_type = ClassesToType(match.description_class);
   }
 
   return result;
