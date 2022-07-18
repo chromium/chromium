@@ -297,18 +297,18 @@ AuthResult AuthContext::VerifySenderNonce(
 
 AuthResult VerifyAndMapDigestAlgorithm(
     cast::channel::HashAlgorithm response_digest_algorithm,
-    net::DigestAlgorithm* digest_algorithm) {
+    cast_certificate::CastDigestAlgorithm* digest_algorithm) {
   switch (response_digest_algorithm) {
     case cast::channel::SHA1:
       RecordSignatureEvent(SIGNATURE_ALGORITHM_UNSUPPORTED);
-      *digest_algorithm = net::DigestAlgorithm::Sha1;
+      *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA1;
       if (base::FeatureList::IsEnabled(kEnforceSHA256Checking)) {
         return AuthResult("Unsupported digest algorithm.",
                           AuthResult::ERROR_DIGEST_UNSUPPORTED);
       }
       break;
     case cast::channel::SHA256:
-      *digest_algorithm = net::DigestAlgorithm::Sha256;
+      *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA256;
       break;
   }
   return AuthResult();
@@ -441,7 +441,7 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
     RecordSignatureEvent(SIGNATURE_EMPTY);
     return AuthResult("Signature is empty.", AuthResult::ERROR_SIGNATURE_EMPTY);
   }
-  net::DigestAlgorithm digest_algorithm;
+  cast_certificate::CastDigestAlgorithm digest_algorithm;
   AuthResult digest_result =
       VerifyAndMapDigestAlgorithm(response.hash_algorithm(), &digest_algorithm);
   if (!digest_result.success())

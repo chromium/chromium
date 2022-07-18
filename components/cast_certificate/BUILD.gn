@@ -41,6 +41,7 @@ static_library("cast_certificate") {
     ":cast_certificate_roots",
     "//base",
     "//net",
+    "//third_party/boringssl",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
 
     # Although we won't use the reader unless cast_allow_developer_certificate

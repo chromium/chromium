@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
@@ -22,19 +23,18 @@
 #include "net/cert/internal/cert_issuer_source_static.h"
 #include "net/cert/internal/certificate_policies.h"
 #include "net/cert/internal/common_cert_errors.h"
-#include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/parse_name.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/path_builder.h"
-#include "net/cert/internal/signature_algorithm.h"
 #include "net/cert/internal/simple_path_builder_delegate.h"
 #include "net/cert/internal/trust_store_in_memory.h"
-#include "net/cert/internal/verify_signed_data.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/digest.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 
 // Used specifically when CAST_ALLOW_DEVELOPER_CERTIFICATE is true:
 #include "base/command_line.h"
@@ -168,30 +168,41 @@ class CastPathBuilderDelegate : public net::SimplePathBuilderDelegate {
 
 class CertVerificationContextImpl : public CertVerificationContext {
  public:
-  // Save a copy of the passed in public key (DER) and common name (text).
-  CertVerificationContextImpl(const net::der::Input& spki,
-                              const base::StringPiece& common_name)
-      : spki_(spki.AsString()), common_name_(common_name) {}
+  // Save a copy of the passed in public key and common name (text).
+  CertVerificationContextImpl(bssl::UniquePtr<EVP_PKEY> key,
+                              base::StringPiece common_name)
+      : key_(std::move(key)), common_name_(common_name) {}
 
   bool VerifySignatureOverData(
       const base::StringPiece& signature,
       const base::StringPiece& data,
-      net::DigestAlgorithm digest_algorithm) const override {
-    // This code assumes the signature algorithm was RSASSA PKCS#1 v1.5 with
-    // |digest_algorithm|.
-    auto signature_algorithm =
-        net::SignatureAlgorithm::CreateRsaPkcs1(digest_algorithm);
+      CastDigestAlgorithm digest_algorithm) const override {
+    const EVP_MD* digest = nullptr;
+    switch (digest_algorithm) {
+      case CastDigestAlgorithm::SHA1:
+        digest = EVP_sha1();
+        break;
+      case CastDigestAlgorithm::SHA256:
+        digest = EVP_sha256();
+        break;
+    };
 
-    return net::VerifySignedData(
-        *signature_algorithm, net::der::Input(data),
-        net::der::BitString(net::der::Input(signature), 0),
-        net::der::Input(&spki_));
+    // Verify with RSASSA-PKCS1-v1_5 and |digest|.
+    auto signature_bytes = base::as_bytes(base::make_span(signature));
+    auto data_bytes = base::as_bytes(base::make_span(data));
+    bssl::ScopedEVP_MD_CTX ctx;
+    return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA &&
+           EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
+                                key_.get()) &&
+           EVP_DigestVerify(ctx.get(), signature_bytes.data(),
+                            signature_bytes.size(), data_bytes.data(),
+                            data_bytes.size());
   }
 
   std::string GetCommonName() const override { return common_name_; }
 
  private:
-  std::string spki_;
+  bssl::UniquePtr<EVP_PKEY> key_;
   std::string common_name_;
 };
 
@@ -268,7 +279,15 @@ void DetermineDeviceCertificatePolicy(
   if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name))
     return false;
 
-  *context = std::make_unique<CertVerificationContextImpl>(cert->tbs().spki_tlv,
+  // Get the public key for the certificate.
+  CBS spki;
+  CBS_init(&spki, cert->tbs().spki_tlv.UnsafeData(),
+           cert->tbs().spki_tlv.Length());
+  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&spki));
+  if (!key || CBS_len(&spki) != 0)
+    return false;
+
+  *context = std::make_unique<CertVerificationContextImpl>(std::move(key),
                                                            common_name);
   return true;
 }
@@ -392,14 +411,6 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     return CastCertError::ERR_CERTS_REVOKED;
 
   return CastCertError::OK;
-}
-
-std::unique_ptr<CertVerificationContext> CertVerificationContextImplForTest(
-    const base::StringPiece& spki) {
-  // Use a bogus CommonName, since this is just exposed for testing signature
-  // verification by unittests.
-  return std::make_unique<CertVerificationContextImpl>(net::der::Input(spki),
-                                                       "CommonName");
 }
 
 std::string CastCertErrorToString(CastCertError error) {

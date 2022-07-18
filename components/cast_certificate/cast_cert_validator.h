@@ -58,6 +58,12 @@ enum class CastCertError {
   ERR_UNEXPECTED,
 };
 
+// The digest algorithms supported with CertVerificationContext.
+enum class CastDigestAlgorithm {
+  SHA1,
+  SHA256,
+};
+
 // An object of this type is returned by the VerifyDeviceCert function, and can
 // be used for additional certificate-related operations, using the verified
 // certificate.
@@ -70,14 +76,14 @@ class CertVerificationContext {
 
   virtual ~CertVerificationContext() {}
 
-  // Use the public key from the verified certificate to verify a
-  // |digest_algorithm|WithRSAEncryption |signature| over arbitrary |data|.
-  // Both |signature| and |data| hold raw binary data. Returns true if the
-  // signature was correct.
+  // Use the public key from the verified certificate to verify an
+  // RSASSA-PKCS1-v1_5 |signature| over arbitrary |data|, with the specified
+  // |digest_algorithm|. Both |signature| and |data| hold raw binary data.
+  // Returns true if the signature was correct.
   virtual bool VerifySignatureOverData(
       const base::StringPiece& signature,
       const base::StringPiece& data,
-      net::DigestAlgorithm digest_algorithm) const = 0;
+      CastDigestAlgorithm digest_algorithm) const = 0;
 
   // Retrieve the Common Name attribute of the subject's distinguished name from
   // the verified certificate, if present.  Returns an empty string if no Common
@@ -137,14 +143,6 @@ class CertVerificationContext {
     const CastCRL* crl,
     CRLPolicy crl_policy,
     net::TrustStore* trust_store);
-
-// Exposed only for unit-tests, not for use in production code.
-// Production code would get a context from VerifyDeviceCert().
-//
-// Constructs a VerificationContext that uses the provided public key.
-// The common name will be hardcoded to some test value.
-std::unique_ptr<CertVerificationContext> CertVerificationContextImplForTest(
-    const base::StringPiece& spki);
 
 // Returns a string status messages for the CastCertError provided.
 std::string CastCertErrorToString(CastCertError error);

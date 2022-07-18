@@ -6,12 +6,13 @@
 
 #include "base/containers/contains.h"
 #include "net/cert/internal/parse_name.h"
-#include "net/cert/internal/signature_algorithm.h"
-#include "net/cert/internal/verify_signed_data.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/digest.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace openscreen::cast {
 
@@ -145,37 +146,42 @@ bool NetParsedCertificate::VerifySignedData(
     DigestAlgorithm algorithm,
     const ConstDataSpan& data,
     const ConstDataSpan& signature) const {
-  base::StringPiece signature_piece(
-      reinterpret_cast<const char*>(signature.data), signature.length);
-  base::StringPiece data_piece(reinterpret_cast<const char*>(data.data),
-                               data.length);
+  // TODO(davidben): This function only uses BoringSSL functions and the SPKI,
+  // which is already exported as GetSpkiTlv(). Remove this method altogether
+  // and move this into openscreen.
+  CBS spki;
+  CBS_init(&spki, cert_->tbs().spki_tlv.UnsafeData(),
+           cert_->tbs().spki_tlv.Length());
+  bssl::UniquePtr<EVP_PKEY> pubkey(EVP_parse_public_key(&spki));
+  if (!pubkey || CBS_len(&spki) != 0) {
+    return false;
+  }
 
-  net::DigestAlgorithm net_digest = net::DigestAlgorithm::Sha1;
+  const EVP_MD* digest;
   switch (algorithm) {
     case DigestAlgorithm::kSha1:
-      net_digest = net::DigestAlgorithm::Sha1;
+      digest = EVP_sha1();
       break;
     case DigestAlgorithm::kSha256:
-      net_digest = net::DigestAlgorithm::Sha256;
+      digest = EVP_sha256();
       break;
     case DigestAlgorithm::kSha384:
-      net_digest = net::DigestAlgorithm::Sha384;
+      digest = EVP_sha384();
       break;
     case DigestAlgorithm::kSha512:
-      net_digest = net::DigestAlgorithm::Sha512;
+      digest = EVP_sha512();
       break;
     default:
       return false;
   }
-  // This code assumes the signature algorithm was RSASSA PKCS#1 v1.5 with
-  // |digest_algorithm|.
-  auto signature_algorithm =
-      net::SignatureAlgorithm::CreateRsaPkcs1(net_digest);
 
-  return net::VerifySignedData(
-      *signature_algorithm, net::der::Input(data_piece),
-      net::der::BitString(net::der::Input(signature_piece), 0),
-      cert_->tbs().spki_tlv);
+  // Verify with RSASSA-PKCS1-v1_5 and |digest|.
+  bssl::ScopedEVP_MD_CTX ctx;
+  return EVP_PKEY_id(pubkey.get()) == EVP_PKEY_RSA &&
+         EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
+                              pubkey.get()) &&
+         EVP_DigestVerify(ctx.get(), signature.data, signature.length,
+                          data.data, data.length);
 }
 
 bool NetParsedCertificate::HasPolicyOid(const ConstDataSpan& oid) const {

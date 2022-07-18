@@ -126,11 +126,11 @@ void RunTest(CastCertError expected_result,
 
   // Test verification of some invalid signatures.
   EXPECT_FALSE(context->VerifySignatureOverData("bogus signature", "bogus data",
-                                                net::DigestAlgorithm::Sha256));
+                                                CastDigestAlgorithm::SHA256));
   EXPECT_FALSE(context->VerifySignatureOverData("", "bogus data",
-                                                net::DigestAlgorithm::Sha256));
+                                                CastDigestAlgorithm::SHA256));
   EXPECT_FALSE(
-      context->VerifySignatureOverData("", "", net::DigestAlgorithm::Sha256));
+      context->VerifySignatureOverData("", "", CastDigestAlgorithm::SHA256));
 
   // If valid signatures are known for this device certificate, test them.
   if (!optional_signed_data_file_name.empty()) {
@@ -140,12 +140,12 @@ void RunTest(CastCertError expected_result,
     // Test verification of a valid SHA1 signature.
     EXPECT_TRUE(context->VerifySignatureOverData(signature_data.signature_sha1,
                                                  signature_data.message,
-                                                 net::DigestAlgorithm::Sha1));
+                                                 CastDigestAlgorithm::SHA1));
 
     // Test verification of a valid SHA256 signature.
     EXPECT_TRUE(context->VerifySignatureOverData(
         signature_data.signature_sha256, signature_data.message,
-        net::DigestAlgorithm::Sha256));
+        CastDigestAlgorithm::SHA256));
   }
 }
 
