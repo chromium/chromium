@@ -30,7 +30,6 @@ accessibility/slot-poison.html [ Failure ]
 crbug.com/1343290 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
 
 # Temporarily disabled for DevTools.
-crbug.com/1304217 http/tests/devtools/text-source-map.js [ Skip ]
 
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
