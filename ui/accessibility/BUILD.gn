@@ -22,21 +22,11 @@ if (is_win) {
 mojom("ax_constants_mojo") {
   generate_java = true
   sources = [ "ax_constants.mojom" ]
-
-  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-  if (!is_android) {
-    webui_module_path = "/"
-  }
 }
 
 mojom_component("ax_enums_mojo") {
   generate_java = true
   sources = [ "ax_enums.mojom" ]
-
-  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-  if (!is_android) {
-    webui_module_path = "/"
-  }
 
   macro_prefix = "UI_ACCESSIBILITY_AX_MOJOM"
   output_prefix = "ui_accessibility_ax_mojom"

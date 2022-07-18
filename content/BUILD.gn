@@ -104,11 +104,6 @@ grit("content_resources") {
     "//url/mojom:url_mojom_origin_js",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
-
-  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-  if (!is_android) {
-    deps += [ "//ui/gfx/mojom:mojom_js" ]
-  }
 }
 
 grit("dev_ui_content_resources") {

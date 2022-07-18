@@ -61,12 +61,6 @@ ts_library("library") {
       "//ui/gfx/range/mojom:mojom_js__generator",
     ]
   }
-
-  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-  if (!is_android) {
-    in_files += [ "ui/gfx/mojom/transform.mojom-webui.js" ]
-    extra_deps += [ "//ui/gfx/mojom:mojom_js__generator" ]
-  }
 }
 
 # Copy bindings.d.ts file under the same location where other shared Mojo JS

@@ -52,11 +52,6 @@ const std::set<int> GetContentResourceIds() {
       IDR_URL_MOJO_HTML,
       IDR_URL_MOJO_JS,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-#if !BUILDFLAG(IS_ANDROID)
-      IDR_TRANSFORM_MOJO_WEBUI_JS,
-#endif
   };
 }
 

@@ -27,11 +27,6 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-  if (!is_android) {
-    webui_module_path = "/"
-  }
-
   cpp_typemaps = [
     {
       types = [
