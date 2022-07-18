@@ -18,7 +18,7 @@ struct wl_resource;
 
 namespace exo {
 
-class Capabilities;
+class SecurityDelegate;
 class DataOffer;
 
 namespace wayland {
@@ -61,18 +61,19 @@ wl_resource* GetDataOfferResource(const DataOffer* data_offer);
 void SetDataOfferResource(DataOffer* data_offer,
                           wl_resource* data_offer_resource);
 
-// Associates the given |display| with its |capabilities|.
-void SetCapabilities(wl_display* display, Capabilities* capabilities);
+// Associates the given |display| with its |security_delegate|.
+void SetSecurityDelegate(wl_display* display,
+                         SecurityDelegate* security_delegate);
 
-// Clears the capability association for |display|.
-void RemoveCapabilities(wl_display* display);
+// Clears the SecurityDelegate association for |display|.
+void RemoveSecurityDelegate(wl_display* display);
 
-// Returns the associated capabilities for this |display|.
-Capabilities* GetCapabilities(wl_display* display);
+// Returns the associated security_delegate for this |display|.
+SecurityDelegate* GetSecurityDelegate(wl_display* display);
 
-// Returns the associated capabilities for the display this |client| is
+// Returns the associated security_delegate for the display this |client| is
 // connected to.
-Capabilities* GetCapabilities(wl_client* client);
+SecurityDelegate* GetSecurityDelegate(wl_client* client);
 
 }  // namespace wayland
 }  // namespace exo

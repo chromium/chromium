@@ -115,7 +115,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void Pin(bool trusted) override {}
   void Unpin() override {}
   void SetSystemModal(bool system_modal) override {}
-  Capabilities* GetCapabilities() override;
+  SecurityDelegate* GetSecurityDelegate() override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -128,7 +128,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
     client_submits_surfaces_in_pixel_coordinates_ = enabled;
   }
 
-  void SetCapabilities(Capabilities* capabilities);
+  void SetSecurityDelegate(SecurityDelegate* security_delegate);
 
  protected:
   void UpdateDisplayOnTree();
@@ -185,7 +185,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   bool client_submits_surfaces_in_pixel_coordinates_ = false;
 
-  Capabilities* capabilities_ = nullptr;
+  SecurityDelegate* security_delegate_ = nullptr;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };

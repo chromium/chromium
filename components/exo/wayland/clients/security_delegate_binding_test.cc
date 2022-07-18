@@ -24,7 +24,7 @@ namespace exo::wayland {
 
 namespace {
 
-using CapabilityBindingTest = WaylandClientTest;
+using SecurityDelegateBindingTest = WaylandClientTest;
 
 class GlobalBindings {
  public:
@@ -39,6 +39,16 @@ class GlobalBindings {
         nullptr};
     wl_registry_add_listener(registry_, &compositor_binding_listener, this);
     wl_display_roundtrip(display);
+  }
+
+  ~GlobalBindings() {
+    zcr_remote_shell_v2_destroy(zcr_remote_shell_v2_);
+    zcr_remote_shell_v1_destroy(zcr_remote_shell_v1_);
+    zxdg_shell_v6_destroy(zxdg_shell_);
+    xdg_wm_base_destroy(xdg_wm_base_);
+    wl_shell_destroy(shell_);
+    wl_compositor_destroy(compositor_);
+    wl_registry_destroy(registry_);
   }
 
   struct wl_registry* registry() { return registry_; }
@@ -129,62 +139,78 @@ UserData* GetUserDataForInterface(Server* server,
 
 }  // namespace
 
-TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
+TEST_F(SecurityDelegateBindingTest, ShellSurfacesHaveSecurityDelegate) {
   // Due to a limitation in the viz::TestGpuServiceHolder, we are only allowed
   // one instance of the WaylandTestHelper. For this reason, all checks must be
   // done in a single test.
   struct wl_display* display = wl_display_connect(nullptr);
-  GlobalBindings gb(display);
-  Capabilities* server_capabilities =
-      GetCapabilities(GetServer()->GetWaylandDisplayForTesting());
-  ASSERT_NE(server_capabilities, nullptr);
+  auto gb = std::make_unique<GlobalBindings>(display);
+  SecurityDelegate* server_security_delegate =
+      GetSecurityDelegate(GetServer()->GetWaylandDisplayForTesting());
+  ASSERT_NE(server_security_delegate, nullptr);
+
+  wl_surface* sfc;
 
   // wl_shell_surface
-  wl_shell_get_shell_surface(gb.shell(),
-                             wl_compositor_create_surface(gb.compositor()));
+  sfc = wl_compositor_create_surface(gb->compositor());
+  wl_shell_surface* wl_sfc = wl_shell_get_shell_surface(gb->shell(), sfc);
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<ShellSurface>(GetServer(),
                                                   wl_shell_surface_interface)
-                ->GetCapabilities(),
-            server_capabilities);
+                ->GetSecurityDelegate(),
+            server_security_delegate);
+  wl_shell_surface_destroy(wl_sfc);
+  wl_surface_destroy(sfc);
 
   // xdg_surface
-  xdg_wm_base_get_xdg_surface(gb.xdg_wm_base(),
-                              wl_compositor_create_surface(gb.compositor()));
+  sfc = wl_compositor_create_surface(gb->compositor());
+  xdg_surface* xdg_sfc = xdg_wm_base_get_xdg_surface(gb->xdg_wm_base(), sfc);
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<WaylandXdgSurface>(GetServer(),
                                                        xdg_surface_interface)
-                ->shell_surface->GetCapabilities(),
-            server_capabilities);
+                ->shell_surface->GetSecurityDelegate(),
+            server_security_delegate);
+  xdg_surface_destroy(xdg_sfc);
+  wl_surface_destroy(sfc);
 
   // zxdg_surface
-  zxdg_shell_v6_get_xdg_surface(gb.zxdg_shell(),
-                                wl_compositor_create_surface(gb.compositor()));
+  sfc = wl_compositor_create_surface(gb->compositor());
+  zxdg_surface_v6* zxdg_sfc =
+      zxdg_shell_v6_get_xdg_surface(gb->zxdg_shell(), sfc);
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<WaylandXdgSurface>(
                 GetServer(), zxdg_surface_v6_interface)
-                ->shell_surface->GetCapabilities(),
-            server_capabilities);
+                ->shell_surface->GetSecurityDelegate(),
+            server_security_delegate);
+  zxdg_surface_v6_destroy(zxdg_sfc);
+  wl_surface_destroy(sfc);
 
   // zcr_remote_surface_v1
-  zcr_remote_shell_v1_get_remote_surface(
-      gb.zcr_remote_shell_v1(), wl_compositor_create_surface(gb.compositor()),
-      ZCR_REMOTE_SHELL_V1_CONTAINER_DEFAULT);
+  sfc = wl_compositor_create_surface(gb->compositor());
+  zcr_remote_surface_v1* zcr1_sfc = zcr_remote_shell_v1_get_remote_surface(
+      gb->zcr_remote_shell_v1(), sfc, ZCR_REMOTE_SHELL_V1_CONTAINER_DEFAULT);
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<ClientControlledShellSurface>(
                 GetServer(), zcr_remote_surface_v1_interface)
-                ->GetCapabilities(),
-            server_capabilities);
+                ->GetSecurityDelegate(),
+            server_security_delegate);
+  zcr_remote_surface_v1_destroy(zcr1_sfc);
+  wl_surface_destroy(sfc);
 
   // zcr_remote_surface_v2
-  zcr_remote_shell_v2_get_remote_surface(
-      gb.zcr_remote_shell_v2(), wl_compositor_create_surface(gb.compositor()),
-      ZCR_REMOTE_SHELL_V2_CONTAINER_DEFAULT);
+  sfc = wl_compositor_create_surface(gb->compositor());
+  zcr_remote_surface_v2* zcr2_sfc = zcr_remote_shell_v2_get_remote_surface(
+      gb->zcr_remote_shell_v2(), sfc, ZCR_REMOTE_SHELL_V2_CONTAINER_DEFAULT);
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<ClientControlledShellSurface>(
                 GetServer(), zcr_remote_surface_v2_interface)
-                ->GetCapabilities(),
-            server_capabilities);
+                ->GetSecurityDelegate(),
+            server_security_delegate);
+  zcr_remote_surface_v2_destroy(zcr2_sfc);
+  wl_surface_destroy(sfc);
+
+  gb.reset();
+  wl_display_disconnect(display);
 }
 
 }  // namespace exo::wayland

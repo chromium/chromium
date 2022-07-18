@@ -163,7 +163,7 @@ void remote_shell_get_remote_surface_v2(wl_client* client,
       wl_resource_create(client, &zcr_remote_surface_v2_interface,
                          wl_resource_get_version(resource), id);
 
-  shell_surface->SetCapabilities(GetCapabilities(client));
+  shell_surface->SetSecurityDelegate(GetSecurityDelegate(client));
 
   shell_surface->set_delegate(
       shell->CreateShellSurfaceDelegate(remote_surface_resource));
