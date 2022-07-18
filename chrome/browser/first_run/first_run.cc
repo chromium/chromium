@@ -382,18 +382,20 @@ void SetInitialPrefsPathForTesting(const base::FilePath& initial_prefs) {
 }
 
 std::unique_ptr<installer::InitialPreferences> LoadInitialPrefs() {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-
   base::FilePath initial_prefs_path;
-  if (!GetInitialPrefsPathForTesting().empty())
+  if (!GetInitialPrefsPathForTesting().empty()) {
     initial_prefs_path = GetInitialPrefsPathForTesting();
-  else if (command_line->HasSwitch(switches::kInitialPreferencesFile))
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else if (const base::CommandLine* command_line =
+                 base::CommandLine::ForCurrentProcess();
+             command_line->HasSwitch(switches::kInitialPreferencesFile)) {
     initial_prefs_path =
         command_line->GetSwitchValuePath(switches::kInitialPreferencesFile);
-  else
+#endif
+  } else {
     initial_prefs_path =
         base::FilePath(first_run::internal::InitialPrefsPath());
+  }
 
   if (initial_prefs_path.empty())
     return nullptr;

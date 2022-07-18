@@ -30,6 +30,7 @@
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
@@ -249,8 +250,19 @@ void ChromeFeatureListCreator::SetupInitialPrefs() {
   // On first run, we need to process the predictor preferences before the
   // browser's profile_manager object is created, but after ResourceBundle
   // is initialized.
+  // If the user specifies an initial preferences file, it is assumed that
+  // they want to reset the preferences regardless of whether it's the
+  // first run.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!first_run::IsChromeFirstRun() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kInitialPreferencesFile)) {
+    return;
+  }
+#else
   if (!first_run::IsChromeFirstRun())
     return;
+#endif
 
   installer_initial_prefs_ = first_run::LoadInitialPrefs();
   if (!installer_initial_prefs_)
