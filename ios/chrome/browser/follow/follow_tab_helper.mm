@@ -5,15 +5,16 @@
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 
 #import "base/callback.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "base/time/time.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
@@ -21,13 +22,13 @@
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,12 +39,18 @@ namespace {
 
 // The prefix of domain name that can be removed. It is used when generating the
 // follow item text.
-const std::string kRemovablePrefix = "www.";
-const int kVisitHostoryExclusiveDurationInHours = 1;
-const int kVisitHostoryDurationInDays = 14;
+const char kRemovablePrefix[] = "www.";
+
+// Number of visits before the follow IPH is presented.
 const int kDefaultDailyVisitMin = 3;
 const int kDefaultNumVisitMin = 3;
-const int kShowFollowIPHAfterLoadedInSeconds = 3;
+
+// Constants used to query for previous visit to the page.
+constexpr base::TimeDelta kVisitHostoryExclusiveDuration = base::Hours(1);
+constexpr base::TimeDelta kVisitHostoryDuration = base::Days(14);
+
+// Delay before displaying the IPH.
+constexpr base::TimeDelta kShowFollowIPHAfterLoaded = base::Seconds(3);
 
 }  // namespace.
 
@@ -61,7 +68,7 @@ void FollowTabHelper::CreateForWebState(web::WebState* web_state) {
 }
 
 FollowTabHelper::FollowTabHelper(web::WebState* web_state)
-    : web_state_(web_state), weak_ptr_factory_(this) {
+    : web_state_(web_state) {
   DCHECK(web_state_);
   web_state_observation_.Observe(web_state_);
 }
@@ -103,11 +110,11 @@ void FollowTabHelper::PageLoaded(
   // (FollowIPHCoordinator), so this class won't need to access browser_state
   // anymore, which brings convinience to testing.
 
-  // Set the eligible time to show IPH immidiately when page has loaded. The
-  // calculation to show the IPH takes longer, so eligibleTimeToShowIPH will be
-  // used later.
-  base::Time eligibleTimeToShowIPH =
-      base::Time::Now() + base::Seconds(kShowFollowIPHAfterLoadedInSeconds);
+  // Record when the page was successfully loaded. Computing whether the
+  // IPH needs to be displayed is done asynchronously and the time used
+  // to compute this will be removed from the delay before the IPH is
+  // displayed.
+  const base::Time page_load_time = base::Time::Now();
 
   // Do not update follow menu option and do not show IPH when browsing in
   // incognito.
@@ -127,58 +134,9 @@ void FollowTabHelper::PageLoaded(
       break;
     case web::PageLoadCompletionStatus::SUCCESS:
       FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
-          web_state, base::BindOnce(^(FollowWebPageURLs* web_page_urls) {
-            // Update follow menu option if needed.
-            if (follow_menu_updater_ && should_update_follow_item_) {
-              UpdateFollowMenuItem(web_page_urls);
-            }
-
-            // Show follow in-product help (IPH) if eligible.
-            BOOL channel_recommended =
-                ios::GetChromeBrowserProvider()
-                    .GetFollowProvider()
-                    ->GetRecommendedStatus(web_page_urls);
-
-            // Do not show follow IPH if:
-            // 1. The site is not recommended;
-            // 2. The IPH was shown too recently.
-            if (!channel_recommended || !IsFollowIPHShownFrequencyEligible())
-              return;
-
-            // Check if the site has enough visit count.
-            history::HistoryService* history_service =
-                ios::HistoryServiceFactory::GetForBrowserState(
-                    ChromeBrowserState::FromBrowserState(
-                        web_state_->GetBrowserState()),
-                    ServiceAccessType::EXPLICIT_ACCESS);
-            // Ignore any visits within the last hour so that we do not count
-            // the current visit to the page.
-            auto end_time = base::Time::Now() -
-                            base::Hours(kVisitHostoryExclusiveDurationInHours);
-            auto begin_time =
-                base::Time::Now() - base::Days(kVisitHostoryDurationInDays);
-
-            base::CancelableTaskTracker tracker;
-
-            // get history service
-            history_service->GetDailyVisitsToHost(
-                url, begin_time, end_time,
-                base::BindOnce(^(history::DailyVisitsResult result) {
-                  if (result.total_visits >= kDefaultNumVisitMin &&
-                      result.days_with_visits >= kDefaultDailyVisitMin) {
-                    if (base::Time::Now() >= eligibleTimeToShowIPH) {
-                      PresentFollowIPH();
-                    } else {
-                      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-                          FROM_HERE,
-                          base::BindOnce(&FollowTabHelper::PresentFollowIPH,
-                                         weak_ptr_factory_.GetWeakPtr()),
-                          eligibleTimeToShowIPH - base::Time::Now());
-                    }
-                  }
-                }),
-                &tracker);
-          }));
+          web_state,
+          base::BindOnce(&FollowTabHelper::OnSuccessfulPageLoad,
+                         weak_ptr_factory_.GetWeakPtr(), url, page_load_time));
   }
 }
 
@@ -187,6 +145,65 @@ void FollowTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK(web_state_observation_.IsObservingSource(web_state));
   web_state_observation_.Reset();
   web_state_ = nullptr;
+}
+
+void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
+                                           base::Time page_load_time,
+                                           FollowWebPageURLs* web_page_urls) {
+  // Update follow menu option if needed.
+  if (follow_menu_updater_ && should_update_follow_item_) {
+    UpdateFollowMenuItem(web_page_urls);
+  }
+
+  // Show follow in-product help (IPH) if eligible.
+  const bool channel_recommended =
+      ios::GetChromeBrowserProvider().GetFollowProvider()->GetRecommendedStatus(
+          web_page_urls);
+
+  // Do not show follow IPH if:
+  // 1. The site is not recommended;
+  // 2. The IPH was shown too recently.
+  if (!channel_recommended || !IsFollowIPHShownFrequencyEligible())
+    return;
+
+  // Check if the site has enough visit count.
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()),
+          ServiceAccessType::EXPLICIT_ACCESS);
+
+  // Ignore any visits within the last hour so that we do not count
+  // the current visit to the page.
+  const base::Time end_time = page_load_time - kVisitHostoryExclusiveDuration;
+  const base::Time begin_time = page_load_time - kVisitHostoryDuration;
+
+  // Get daily visit count for `url` from the history service.
+  history_service->GetDailyVisitsToHost(
+      url, begin_time, end_time,
+      base::BindOnce(&FollowTabHelper::OnDailyVisitQueryResult,
+                     weak_ptr_factory_.GetWeakPtr(), page_load_time),
+      &history_task_tracker_);
+}
+
+void FollowTabHelper::OnDailyVisitQueryResult(
+    base::Time page_load_time,
+    history::DailyVisitsResult result) {
+  // Do not display the IPH if there are not enough visits.
+  if (result.total_visits < kDefaultNumVisitMin ||
+      result.days_with_visits < kDefaultDailyVisitMin)
+    return;
+
+  // Check how much time remains before the IPH needs to be displayed.
+  const base::TimeDelta elapsed_time = base::Time::Now() - page_load_time;
+  if (elapsed_time >= kShowFollowIPHAfterLoaded) {
+    PresentFollowIPH();
+  } else {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FollowTabHelper::PresentFollowIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kShowFollowIPHAfterLoaded - elapsed_time);
+  }
 }
 
 void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
@@ -200,10 +217,9 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
         ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
             web_page_urls);
 
-    std::string domainName = web_frame->GetSecurityOrigin().host();
-    if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
-      domainName =
-          domainName.substr(kRemovablePrefix.length(), domainName.length());
+    std::string domain_name = web_frame->GetSecurityOrigin().host();
+    if (base::StartsWith(domain_name, kRemovablePrefix)) {
+      domain_name = domain_name.substr(strlen(kRemovablePrefix));
     }
 
     bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
@@ -212,7 +228,7 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
         updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
                                            status:status
                                        domainName:base::SysUTF8ToNSString(
-                                                      domainName)
+                                                      domain_name)
                                           enabled:enabled];
   }
 
