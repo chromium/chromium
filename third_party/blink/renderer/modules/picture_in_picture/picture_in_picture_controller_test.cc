@@ -537,6 +537,19 @@ TEST_F(PictureInPictureControllerTest,
   EXPECT_EQ(Service().source_bounds(), gfx::Rect(173, 173, 20, 20));
 }
 
+TEST_F(PictureInPictureControllerTest, VideoIsNotAllowedIfAutoPip) {
+  EXPECT_EQ(PictureInPictureControllerImpl::Status::kEnabled,
+            PictureInPictureControllerImpl::From(GetDocument())
+                .IsElementAllowed(*Video(), /*report_failure=*/false));
+
+  // Simulate auto-pip mode.
+  Video()->SetPersistentState(true);
+
+  EXPECT_EQ(PictureInPictureControllerImpl::Status::kAutoPipAndroid,
+            PictureInPictureControllerImpl::From(GetDocument())
+                .IsElementAllowed(*Video(), /*report_failure=*/false));
+}
+
 TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .pictureInPictureWindow());

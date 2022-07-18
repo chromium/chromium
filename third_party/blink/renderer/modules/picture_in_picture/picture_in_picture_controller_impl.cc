@@ -109,6 +109,9 @@ PictureInPictureControllerImpl::IsElementAllowed(
   if (video_element.FastHasAttribute(html_names::kDisablepictureinpictureAttr))
     return Status::kDisabledByAttribute;
 
+  if (video_element.IsInAutoPIP())
+    return Status::kAutoPipAndroid;
+
   return Status::kEnabled;
 }
 

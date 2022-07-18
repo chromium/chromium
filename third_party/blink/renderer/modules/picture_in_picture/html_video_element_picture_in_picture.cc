@@ -35,6 +35,7 @@ const char kUserGestureRequired[] =
     "Picture-in-Picture.";
 const char kDisablePictureInPicturePresent[] =
     "\"disablePictureInPicture\" attribute is present.";
+const char kAutoPipAndroid[] = "The video is currently in auto-pip mode.";
 
 }  // namespace
 
@@ -116,6 +117,10 @@ void HTMLVideoElementPictureInPicture::CheckIfPictureInPictureIsAllowed(
     case Status::kDisabledBySystem:
       exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                         kNotAvailable);
+      return;
+    case Status::kAutoPipAndroid:
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        kAutoPipAndroid);
       return;
     case Status::kEnabled:
       break;

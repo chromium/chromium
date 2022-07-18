@@ -47,6 +47,7 @@ class CORE_EXPORT PictureInPictureController
     kDisabledBySystem,
     kDisabledByPermissionsPolicy,
     kDisabledByAttribute,
+    kAutoPipAndroid,
   };
 
   // Enter Picture-in-Picture for a video element and resolve promise if any.
