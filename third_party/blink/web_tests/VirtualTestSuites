@@ -1015,6 +1015,7 @@
               "external/wpt/accessibility/crashtests/validation-message.html",
               "external/wpt/accessibility/crashtests/displaylocked-serialize.html",
               "external/wpt/dom/ranges/Range-deleteContents.html",
+              "external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated.html",
               "editing/text-iterator/auto-expand-details.html",
               "editing/text-iterator/auto-expand-details-shadowdom.html"],
     "args": ["--force-renderer-accessibility"]

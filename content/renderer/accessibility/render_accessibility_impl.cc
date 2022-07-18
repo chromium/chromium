@@ -963,8 +963,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // be linked to their parent, leading to a dangerous situation for some
   // platforms, where events are fired on objects not connected to the root. For
   // example, on Mac, this can lead to a lockup in AppKit.
-  if (!document.GetFrame()->GetEmbeddingToken())
-    return;
+  CHECK(document.GetFrame()->GetEmbeddingToken());
 
   DCHECK(document.IsAccessibilityEnabled())
       << "SendPendingAccessibilityEvents should not do any work when nothing "
