@@ -736,7 +736,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   defaultBrowser.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
-  defaultBrowser.iconImageName = kDefaultBrowserWorldImageName;
+
+  if (UseSymbols()) {
+    defaultBrowser.symbolView = ElevatedTableViewSymbolWithBackground(
+        DefaultSettingsRootSymbol(kDefaultBrowserSymbol),
+        [UIColor colorNamed:kPurple600Color]);
+  } else {
+    defaultBrowser.iconImageName = kDefaultBrowserWorldImageName;
+  }
 
   return defaultBrowser;
 }
@@ -756,13 +763,26 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       base::SysUTF16ToNSString(GetDefaultSearchEngineName(
           ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
 
-  _defaultSearchEngineItem =
-      [self detailItemWithType:SettingsItemTypeSearchEngine
-                             text:l10n_util::GetNSString(
-                                      IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)
-                       detailText:defaultSearchEngineName
-                    iconImageName:kSettingsSearchEngineImageName
-          accessibilityIdentifier:kSettingsSearchEngineCellId];
+  if (UseSymbols()) {
+    _defaultSearchEngineItem = [self
+             detailItemWithType:SettingsItemTypeSearchEngine
+                           text:l10n_util::GetNSString(
+                                    IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)
+                     detailText:defaultSearchEngineName
+                     symbolView:ElevatedTableViewSymbolWithBackground(
+                                    DefaultSettingsRootSymbol(kSearchSymbol),
+                                    [UIColor colorNamed:kPurple600Color])
+        accessibilityIdentifier:kSettingsSearchEngineCellId];
+  } else {
+    _defaultSearchEngineItem =
+        [self detailItemWithType:SettingsItemTypeSearchEngine
+                               text:l10n_util::GetNSString(
+                                        IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)
+                         detailText:defaultSearchEngineName
+                      iconImageName:kSettingsSearchEngineImageName
+            accessibilityIdentifier:kSettingsSearchEngineCellId];
+  }
+
   return _defaultSearchEngineItem;
 }
 
@@ -1025,7 +1045,23 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   detailItem.iconImageName = iconImageName;
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
+  return detailItem;
+}
 
+- (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
+                                          text:(NSString*)text
+                                    detailText:(NSString*)detailText
+                                    symbolView:(UIView*)symbolView
+                       accessibilityIdentifier:
+                           (NSString*)accessibilityIdentifier {
+  TableViewDetailIconItem* detailItem =
+      [[TableViewDetailIconItem alloc] initWithType:type];
+  detailItem.text = text;
+  detailItem.detailText = detailText;
+  detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  detailItem.accessibilityIdentifier = accessibilityIdentifier;
+  detailItem.symbolView = symbolView;
   return detailItem;
 }
 

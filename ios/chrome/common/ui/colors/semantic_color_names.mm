@@ -54,6 +54,7 @@ NSString* const kGreen500Color = @"green_500_color";
 NSString* const kGreen700Color = @"green_700_color";
 NSString* const kRedColor = @"red_color";
 NSString* const kRed500Color = @"red_500_color";
+NSString* const kPurple600Color = @"purple_600_color";
 
 #pragma mark - Grey Palette
 NSString* const kGrey50Color = @"grey_50_color";

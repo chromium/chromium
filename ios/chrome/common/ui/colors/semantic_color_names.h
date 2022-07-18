@@ -79,6 +79,9 @@ extern NSString* const kRedColor;
 // Other shades of red from the palette.
 extern NSString* const kRed500Color;
 
+// Purple 600.
+extern NSString* const kPurple600Color;
+
 // Grey Color Palette.
 extern NSString* const kGrey50Color;
 extern NSString* const kGrey100Color;
