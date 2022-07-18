@@ -94,11 +94,6 @@ void LayoutNGFieldset::InsertedIntoTree() {
   LayoutBlock* fieldset_content =
       LayoutBlock::CreateAnonymousWithParentAndDisplay(this, display);
   LayoutBox::AddChild(fieldset_content);
-  // Update CanContainFixedPositionObjects flag again though
-  // CreateAnonymousWithParentAndDisplay() already called it because
-  // ComputeIsFixedContainer() depends on Parent().
-  fieldset_content->SetCanContainFixedPositionObjects(
-      fieldset_content->ComputeIsFixedContainer(fieldset_content->Style()));
 }
 
 void LayoutNGFieldset::UpdateAnonymousChildStyle(
@@ -164,6 +159,13 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style.SetOverflowX(StyleRef().OverflowX());
   child_style.SetOverflowY(StyleRef().OverflowY());
   child_style.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
+
+  // If the FIELDSET is an OOF container, the anonymous content box should be
+  // an OOF container to steal OOF objects under the FIELDSET.
+  if (CanContainFixedPositionObjects())
+    child_style.SetContain(kContainsPaint);
+  else if (StyleRef().CanContainAbsolutePositionObjects())
+    child_style.SetPosition(EPosition::kRelative);
 }
 
 bool LayoutNGFieldset::IsOfType(LayoutObjectType type) const {
