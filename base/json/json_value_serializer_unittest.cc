@@ -70,18 +70,19 @@ void CheckJSONIsStillTheSame(const Value& value) {
   str_serializer.set_pretty_print(true);
   ASSERT_TRUE(str_serializer.Serialize(value));
   // Unify line endings between platforms.
-  ReplaceSubstringsAfterOffset(&serialized_json, 0,
-                               kWinLineEnds, kLinuxLineEnds);
+  ReplaceSubstringsAfterOffset(&serialized_json, 0, kWinLineEnds,
+                               kLinuxLineEnds);
   // Now compare the input with the output.
   ASSERT_EQ(kProperJSON, serialized_json);
 }
 
 void ValidateJsonList(const std::string& json) {
-  absl::optional<Value> list = JSONReader::Read(json);
+  absl::optional<Value> value = JSONReader::Read(json);
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  ASSERT_EQ(1U, list->GetListDeprecated().size());
-  const Value& elt = list->GetListDeprecated()[0];
+  ASSERT_EQ(1U, list->size());
+  const Value& elt = (*list)[0];
   ASSERT_TRUE(elt.is_int());
   ASSERT_EQ(1, elt.GetInt());
 }
@@ -218,19 +219,20 @@ TEST(JSONValueDeserializerTest, AllowTrailingComma) {
 
 TEST(JSONValueSerializerTest, Roundtrip) {
   static const char kOriginalSerialization[] =
-    "{\"bool\":true,\"double\":3.14,\"int\":42,\"list\":[1,2],\"null\":null}";
+      "{\"bool\":true,\"double\":3.14,\"int\":42,\"list\":[1,2],\"null\":null}";
   JSONStringValueDeserializer deserializer(kOriginalSerialization);
-  std::unique_ptr<Value> root_dict = deserializer.Deserialize(nullptr, nullptr);
+  std::unique_ptr<Value> root = deserializer.Deserialize(nullptr, nullptr);
+  ASSERT_TRUE(root);
+  const Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
-  ASSERT_TRUE(root_dict->is_dict());
 
-  Value* null_value = root_dict->FindKey("null");
+  const Value* null_value = root_dict->Find("null");
   ASSERT_TRUE(null_value);
   ASSERT_TRUE(null_value->is_none());
 
-  ASSERT_TRUE(root_dict->FindBoolKey("bool").value());
-  ASSERT_EQ(42, root_dict->FindIntKey("int").value());
-  ASSERT_DOUBLE_EQ(3.14, root_dict->FindDoubleKey("double").value());
+  ASSERT_TRUE(root_dict->FindBool("bool").value());
+  ASSERT_EQ(42, root_dict->FindInt("int").value());
+  ASSERT_DOUBLE_EQ(3.14, root_dict->FindDouble("double").value());
 
   std::string test_serialization;
   JSONStringValueSerializer mutable_serializer(&test_serialization);
@@ -247,13 +249,10 @@ TEST(JSONValueSerializerTest, Roundtrip) {
 #define JSON_NEWLINE "\n"
 #endif
   const std::string pretty_serialization =
-    "{" JSON_NEWLINE
-    "   \"bool\": true," JSON_NEWLINE
-    "   \"double\": 3.14," JSON_NEWLINE
-    "   \"int\": 42," JSON_NEWLINE
-    "   \"list\": [ 1, 2 ]," JSON_NEWLINE
-    "   \"null\": null" JSON_NEWLINE
-    "}" JSON_NEWLINE;
+      "{" JSON_NEWLINE "   \"bool\": true," JSON_NEWLINE
+      "   \"double\": 3.14," JSON_NEWLINE "   \"int\": 42," JSON_NEWLINE
+      "   \"list\": [ 1, 2 ]," JSON_NEWLINE "   \"null\": null" JSON_NEWLINE
+      "}" JSON_NEWLINE;
 #undef JSON_NEWLINE
   ASSERT_EQ(pretty_serialization, test_serialization);
 }
@@ -289,12 +288,12 @@ TEST(JSONValueSerializerTest, StringEscape) {
       "\xC3\xB1\xC3\xB2\xC3\xB3\xC3\xB4\xC3\xB5\xC3\xB6\xC3\xB7\xC3\xB8\xC3\xB9"
       "\xC3\xBA\xC3\xBB\xC3\xBC\xC3\xBD\xC3\xBE\xC3\xBF";
 
-  std::string expected_output = "{\"all_chars\":\"" + all_chars_expected +
-                                 "\"}";
+  std::string expected_output =
+      "{\"all_chars\":\"" + all_chars_expected + "\"}";
   // Test JSONWriter interface
   std::string output_js;
-  Value valueRoot(Value::Type::DICTIONARY);
-  valueRoot.SetStringKey("all_chars", all_chars);
+  Value::Dict valueRoot;
+  valueRoot.Set("all_chars", all_chars);
   JSONWriter::Write(valueRoot, &output_js);
   ASSERT_EQ(expected_output, output_js);
 
@@ -306,9 +305,9 @@ TEST(JSONValueSerializerTest, StringEscape) {
 
 TEST(JSONValueSerializerTest, UnicodeStrings) {
   // unicode string json -> escaped ascii text
-  Value root(Value::Type::DICTIONARY);
+  Value::Dict root;
   std::u16string test(u"\x7F51\x9875");
-  root.SetStringKey("web", test);
+  root.Set("web", test);
 
   static const char kExpected[] = "{\"web\":\"\xE7\xBD\x91\xE9\xA1\xB5\"}";
 
@@ -322,16 +321,17 @@ TEST(JSONValueSerializerTest, UnicodeStrings) {
   std::unique_ptr<Value> deserial_root =
       deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(deserial_root);
-  const std::string* web_value = deserial_root->FindStringKey("web");
+  const Value::Dict* deserial_root_dict = deserial_root->GetIfDict();
+  const std::string* web_value = deserial_root_dict->FindString("web");
   ASSERT_TRUE(web_value);
   ASSERT_EQ("\xE7\xBD\x91\xE9\xA1\xB5", *web_value);
 }
 
 TEST(JSONValueSerializerTest, HexStrings) {
   // hex string json -> escaped ascii text
-  Value root(Value::Type::DICTIONARY);
+  Value::Dict root;
   std::u16string test(u"\x01\x02");
-  root.SetStringKey("test", test);
+  root.Set("test", test);
 
   static const char kExpected[] = "{\"test\":\"\\u0001\\u0002\"}";
 
@@ -345,7 +345,8 @@ TEST(JSONValueSerializerTest, HexStrings) {
   std::unique_ptr<Value> deserial_root =
       deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(deserial_root);
-  const std::string* test_value = deserial_root->FindStringKey("test");
+  Value::Dict* deserial_root_dict = deserial_root->GetIfDict();
+  const std::string* test_value = deserial_root_dict->FindString("test");
   ASSERT_TRUE(test_value);
   ASSERT_EQ("\u0001\u0002", *test_value);
 
@@ -354,7 +355,8 @@ TEST(JSONValueSerializerTest, HexStrings) {
   JSONStringValueDeserializer deserializer2(kEscapedChars);
   deserial_root = deserializer2.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(deserial_root);
-  test_value = deserial_root->FindStringKey("test");
+  deserial_root_dict = deserial_root->GetIfDict();
+  test_value = deserial_root_dict->FindString("test");
   ASSERT_TRUE(test_value);
   ASSERT_EQ("go", *test_value);
 }
@@ -368,11 +370,12 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   ValidateJsonList("[ 1 //// ,2\r\n ]");
 
   // It's ok to have a comment in a string.
-  absl::optional<Value> list = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+  absl::optional<Value> value = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  ASSERT_EQ(1U, list->GetListDeprecated().size());
-  const Value& elt = list->GetListDeprecated()[0];
+  ASSERT_EQ(1U, list->size());
+  const Value& elt = (*list)[0];
   ASSERT_TRUE(elt.is_string());
   ASSERT_EQ("// ok\n /* foo */ ", elt.GetString());
 
@@ -398,18 +401,19 @@ TEST_F(JSONFileValueSerializerTest, Roundtrip) {
   ASSERT_TRUE(PathExists(original_file_path));
 
   JSONFileValueDeserializer deserializer(original_file_path);
-  std::unique_ptr<Value> root_dict = deserializer.Deserialize(nullptr, nullptr);
+  std::unique_ptr<Value> root = deserializer.Deserialize(nullptr, nullptr);
+  ASSERT_TRUE(root);
+  const Value::Dict* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
-  ASSERT_TRUE(root_dict->is_dict());
 
-  Value* null_value = root_dict->FindKey("null");
+  const Value* null_value = root_dict->Find("null");
   ASSERT_TRUE(null_value);
   ASSERT_TRUE(null_value->is_none());
 
-  ASSERT_TRUE(root_dict->FindBoolKey("bool").value());
-  ASSERT_EQ(42, root_dict->FindIntKey("int").value());
+  ASSERT_TRUE(root_dict->FindBool("bool").value());
+  ASSERT_EQ(42, root_dict->FindInt("int").value());
 
-  const std::string* string_value = root_dict->FindStringKey("string");
+  const std::string* string_value = root_dict->FindString("string");
   ASSERT_TRUE(string_value);
   ASSERT_EQ("hello", *string_value);
 

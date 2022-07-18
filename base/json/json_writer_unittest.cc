@@ -59,16 +59,16 @@ TEST(JSONWriterTest, NestedTypes) {
 
   // Writer unittests like empty list/dict nesting,
   // list list nesting, etc.
-  Value root_dict(Value::Type::DICTIONARY);
-  Value::ListStorage list_storage;
-  Value inner_dict(Value::Type::DICTIONARY);
-  inner_dict.SetIntKey("inner int", 10);
-  list_storage.push_back(std::move(inner_dict));
-  Value empty_dict(Value::Type::DICTIONARY);
-  list_storage.push_back(std::move(empty_dict));
-  list_storage.push_back(Value(Value::Type::LIST));
-  list_storage.push_back(Value(true));
-  root_dict.SetKey("list", Value(std::move(list_storage)));
+  Value::Dict root_dict;
+  Value::List list_storage;
+  Value::Dict inner_dict;
+  inner_dict.Set("inner int", 10);
+  list_storage.Append(std::move(inner_dict));
+  Value::Dict empty_dict;
+  list_storage.Append(std::move(empty_dict));
+  list_storage.Append(Value::List());
+  list_storage.Append(true);
+  root_dict.Set("list", Value(std::move(list_storage)));
 
   // The pretty-printer uses a different newline style on Windows than on
   // other platforms.
@@ -83,12 +83,9 @@ TEST(JSONWriterTest, NestedTypes) {
   EXPECT_EQ("{\"list\":[{\"inner int\":10},{},[],true]}", output_js);
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       root_dict, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
-  EXPECT_EQ("{" JSON_NEWLINE
-            "   \"list\": [ {" JSON_NEWLINE
-            "      \"inner int\": 10" JSON_NEWLINE
-            "   }, {" JSON_NEWLINE
-            "   }, [  ], true ]" JSON_NEWLINE
-            "}" JSON_NEWLINE,
+  EXPECT_EQ("{" JSON_NEWLINE "   \"list\": [ {" JSON_NEWLINE
+            "      \"inner int\": 10" JSON_NEWLINE "   }, {" JSON_NEWLINE
+            "   }, [  ], true ]" JSON_NEWLINE "}" JSON_NEWLINE,
             output_js);
 
 #undef JSON_NEWLINE
@@ -97,18 +94,18 @@ TEST(JSONWriterTest, NestedTypes) {
 TEST(JSONWriterTest, KeysWithPeriods) {
   std::string output_js;
 
-  Value period_dict(Value::Type::DICTIONARY);
-  period_dict.SetIntKey("a.b", 3);
-  period_dict.SetIntKey("c", 2);
-  Value period_dict2(Value::Type::DICTIONARY);
-  period_dict2.SetIntKey("g.h.i.j", 1);
-  period_dict.SetKey("d.e.f", std::move(period_dict2));
+  Value::Dict period_dict;
+  period_dict.Set("a.b", 3);
+  period_dict.Set("c", 2);
+  Value::Dict period_dict2;
+  period_dict2.Set("g.h.i.j", 1);
+  period_dict.Set("d.e.f", std::move(period_dict2));
   EXPECT_TRUE(JSONWriter::Write(period_dict, &output_js));
   EXPECT_EQ("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}", output_js);
 
-  Value period_dict3(Value::Type::DICTIONARY);
-  period_dict3.SetIntPath("a.b", 2);
-  period_dict3.SetIntKey("a.b", 1);
+  Value::Dict period_dict3;
+  period_dict3.SetByDottedPath("a.b", 2);
+  period_dict3.Set("a.b", 1);
   EXPECT_TRUE(JSONWriter::Write(period_dict3, &output_js));
   EXPECT_EQ("{\"a\":{\"b\":2},\"a.b\":1}", output_js);
 }
@@ -126,24 +123,24 @@ TEST(JSONWriterTest, BinaryValues) {
       root, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_TRUE(output_js.empty());
 
-  Value::ListStorage binary_list_storage;
-  binary_list_storage.push_back(Value(kBufferSpan));
-  binary_list_storage.push_back(Value(5));
-  binary_list_storage.push_back(Value(kBufferSpan));
-  binary_list_storage.push_back(Value(2));
-  binary_list_storage.push_back(Value(kBufferSpan));
+  Value::List binary_list_storage;
+  binary_list_storage.Append(Value(kBufferSpan));
+  binary_list_storage.Append(5);
+  binary_list_storage.Append(Value(kBufferSpan));
+  binary_list_storage.Append(2);
+  binary_list_storage.Append(Value(kBufferSpan));
   Value binary_list(std::move(binary_list_storage));
   EXPECT_FALSE(JSONWriter::Write(binary_list, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_list, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_EQ("[5,2]", output_js);
 
-  Value binary_dict(Value::Type::DICTIONARY);
-  binary_dict.SetKey("a", Value(kBufferSpan));
-  binary_dict.SetIntKey("b", 5);
-  binary_dict.SetKey("c", Value(kBufferSpan));
-  binary_dict.SetIntKey("d", 2);
-  binary_dict.SetKey("e", Value(kBufferSpan));
+  Value::Dict binary_dict;
+  binary_dict.Set("a", Value(kBufferSpan));
+  binary_dict.Set("b", 5);
+  binary_dict.Set("c", Value(kBufferSpan));
+  binary_dict.Set("d", 2);
+  binary_dict.Set("e", Value(kBufferSpan));
   EXPECT_FALSE(JSONWriter::Write(binary_dict, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_dict, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));

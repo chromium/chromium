@@ -20,7 +20,8 @@ namespace {
 // Very simple messages.
 struct SimpleMessage {
   enum SimpleEnum {
-    FOO, BAR,
+    FOO,
+    BAR,
   };
   int foo;
   std::string bar;
@@ -49,7 +50,10 @@ struct SimpleMessage {
   }
 
   static bool GetValueString(const base::Value* value, std::string* result) {
-    const std::string* str = value->FindStringKey("val");
+    const Value::Dict* dict = value->GetIfDict();
+    if (!dict)
+      return false;
+    const std::string* str = dict->FindString("val");
     if (!str)
       return false;
     if (result)
@@ -65,13 +69,10 @@ struct SimpleMessage {
     converter->RegisterCustomField<SimpleEnum>(
         "simple_enum", &SimpleMessage::simple_enum, &ParseSimpleEnum);
     converter->RegisterRepeatedInt("ints", &SimpleMessage::ints);
-    converter->RegisterCustomValueField<bool>("bstruct",
-                                              &SimpleMessage::bstruct,
-                                              &HasFieldPresent);
+    converter->RegisterCustomValueField<bool>(
+        "bstruct", &SimpleMessage::bstruct, &HasFieldPresent);
     converter->RegisterRepeatedCustomValue<std::string>(
-        "string_values",
-        &SimpleMessage::string_values,
-        &GetValueString);
+        "string_values", &SimpleMessage::string_values, &GetValueString);
   }
 };
 

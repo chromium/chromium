@@ -84,16 +84,18 @@ TEST(JSONReaderTest, EmbeddedComments) {
   EXPECT_EQ("sample string", root->GetString());
   root = JSONReader::Read("[1, /* comment, 2 ] */ \n 3]");
   ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_list());
-  ASSERT_EQ(2u, root->GetListDeprecated().size());
-  ASSERT_TRUE(root->GetListDeprecated()[0].is_int());
-  EXPECT_EQ(1, root->GetListDeprecated()[0].GetInt());
-  ASSERT_TRUE(root->GetListDeprecated()[1].is_int());
-  EXPECT_EQ(3, root->GetListDeprecated()[1].GetInt());
+  Value::List* list = root->GetIfList();
+  ASSERT_TRUE(list);
+  ASSERT_EQ(2u, list->size());
+  ASSERT_TRUE((*list)[0].is_int());
+  EXPECT_EQ(1, (*list)[0].GetInt());
+  ASSERT_TRUE((*list)[1].is_int());
+  EXPECT_EQ(3, (*list)[1].GetInt());
   root = JSONReader::Read("[1, /*a*/2, 3]");
   ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_list());
-  EXPECT_EQ(3u, root->GetListDeprecated().size());
+  list = root->GetIfList();
+  ASSERT_TRUE(list);
+  EXPECT_EQ(3u, (*list).size());
   root = JSONReader::Read("/* comment **/42");
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->is_int());
@@ -289,10 +291,11 @@ TEST(JSONReaderTest, InvalidStrings) {
 }
 
 TEST(JSONReaderTest, BasicArray) {
-  absl::optional<Value> list = JSONReader::Read("[true, false, null]");
+  absl::optional<Value> root = JSONReader::Read("[true, false, null]");
+  ASSERT_TRUE(root);
+  Value::List* list = root->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(3U, list->GetListDeprecated().size());
+  EXPECT_EQ(3U, list->size());
 
   // Test with trailing comma.  Should be parsed the same as above.
   absl::optional<Value> root2 =
@@ -302,26 +305,29 @@ TEST(JSONReaderTest, BasicArray) {
 }
 
 TEST(JSONReaderTest, EmptyArray) {
-  absl::optional<Value> list = JSONReader::Read("[]");
+  absl::optional<Value> value = JSONReader::Read("[]");
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  EXPECT_TRUE(list->GetListDeprecated().empty());
+  EXPECT_TRUE(list->empty());
 }
 
 TEST(JSONReaderTest, CompleteArray) {
-  absl::optional<Value> list = JSONReader::Read("[\"a\", 3, 4.56, null]");
+  absl::optional<Value> value = JSONReader::Read("[\"a\", 3, 4.56, null]");
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(4U, list->GetListDeprecated().size());
+  EXPECT_EQ(4U, list->size());
 }
 
 TEST(JSONReaderTest, NestedArrays) {
-  absl::optional<Value> list = JSONReader::Read(
+  absl::optional<Value> value = JSONReader::Read(
       "[[true], [], {\"smell\": \"nice\",\"taste\": \"yummy\" }, [false, [], "
       "[null]], null]");
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(5U, list->GetListDeprecated().size());
+  EXPECT_EQ(5U, list->size());
 
   // Lots of trailing commas.
   absl::optional<Value> root2 = JSONReader::Read(
@@ -349,12 +355,13 @@ TEST(JSONReaderTest, InvalidArrays) {
 
 TEST(JSONReaderTest, ArrayTrailingComma) {
   // Valid if we set |allow_trailing_comma| to true.
-  absl::optional<Value> list =
+  absl::optional<Value> value =
       JSONReader::Read("[true,]", JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  ASSERT_EQ(1U, list->GetListDeprecated().size());
-  const Value& value1 = list->GetListDeprecated()[0];
+  ASSERT_EQ(1U, list->size());
+  const Value& value1 = (*list)[0];
   ASSERT_TRUE(value1.is_bool());
   EXPECT_TRUE(value1.GetBool());
 }
@@ -375,22 +382,22 @@ TEST(JSONReaderTest, EmptyDictionary) {
 }
 
 TEST(JSONReaderTest, CompleteDictionary) {
-  absl::optional<Value> dict_val = JSONReader::Read(
+  absl::optional<Value> root1 = JSONReader::Read(
       "{\"number\":9.87654321, \"null\":null , \"\\x53\" : \"str\", \"bool\": "
       "false, \"more\": {} }");
-  ASSERT_TRUE(dict_val);
-  ASSERT_TRUE(dict_val->is_dict());
-  auto double_val = dict_val->FindDoubleKey("number");
+  ASSERT_TRUE(root1);
+  const Value::Dict* root1_dict = root1->GetIfDict();
+  ASSERT_TRUE(root1_dict);
+  auto double_val = root1_dict->FindDouble("number");
   ASSERT_TRUE(double_val);
   EXPECT_DOUBLE_EQ(9.87654321, *double_val);
-  const Value* null_val =
-      dict_val->FindKeyOfType("null", base::Value::Type::NONE);
+  const Value* null_val = root1_dict->Find("null");
   ASSERT_TRUE(null_val);
   EXPECT_TRUE(null_val->is_none());
-  const std::string* str_val = dict_val->FindStringKey("S");
+  const std::string* str_val = root1_dict->FindString("S");
   ASSERT_TRUE(str_val);
   EXPECT_EQ("str", *str_val);
-  auto bool_val = dict_val->FindBoolKey("bool");
+  auto bool_val = root1_dict->FindBool("bool");
   ASSERT_TRUE(bool_val);
   ASSERT_FALSE(*bool_val);
 
@@ -399,8 +406,9 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "false, \"more\": {},}",
       JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
-  ASSERT_TRUE(root2->is_dict());
-  EXPECT_EQ(*dict_val, *root2);
+  Value::Dict* root2_dict = root2->GetIfDict();
+  ASSERT_TRUE(root2_dict);
+  EXPECT_EQ(*root1_dict, *root2_dict);
 
   // Test newline equivalence.
   root2 = JSONReader::Read(
@@ -413,8 +421,9 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "}\n",
       JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
-  ASSERT_TRUE(root2->is_dict());
-  EXPECT_EQ(*dict_val, *root2);
+  root2_dict = root2->GetIfDict();
+  ASSERT_TRUE(root2);
+  EXPECT_EQ(*root1_dict, *root2_dict);
 
   root2 = JSONReader::Read(
       "{\r\n"
@@ -426,24 +435,26 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "}\r\n",
       JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
-  ASSERT_TRUE(root2->is_dict());
-  EXPECT_EQ(*dict_val, *root2);
+  root2_dict = root2->GetIfDict();
+  ASSERT_TRUE(root2_dict);
+  EXPECT_EQ(*root1_dict, *root2_dict);
 }
 
 TEST(JSONReaderTest, NestedDictionaries) {
-  absl::optional<Value> dict_val = JSONReader::Read(
+  absl::optional<Value> root1 = JSONReader::Read(
       "{\"inner\":{\"array\":[true, 3, 4.56, null]},\"false\":false,\"d\":{}}");
-  ASSERT_TRUE(dict_val);
-  ASSERT_TRUE(dict_val->is_dict());
-  const Value* inner_dict = dict_val->FindDictKey("inner");
+  ASSERT_TRUE(root1);
+  const base::Value::Dict* root1_dict = root1->GetIfDict();
+  ASSERT_TRUE(root1_dict);
+  const Value::Dict* inner_dict = root1_dict->FindDict("inner");
   ASSERT_TRUE(inner_dict);
-  const Value* inner_array = inner_dict->FindListKey("array");
+  const Value::List* inner_array = inner_dict->FindList("array");
   ASSERT_TRUE(inner_array);
-  EXPECT_EQ(4U, inner_array->GetListDeprecated().size());
-  auto bool_value = dict_val->FindBoolKey("false");
+  EXPECT_EQ(4U, inner_array->size());
+  auto bool_value = root1_dict->FindBool("false");
   ASSERT_TRUE(bool_value);
   EXPECT_FALSE(*bool_value);
-  inner_dict = dict_val->FindDictKey("d");
+  inner_dict = root1_dict->FindDict("d");
   EXPECT_TRUE(inner_dict);
 
   absl::optional<Value> root2 = JSONReader::Read(
@@ -451,46 +462,48 @@ TEST(JSONReaderTest, NestedDictionaries) {
       "},\"false\":false,\"d\":{},}",
       JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
-  EXPECT_EQ(*dict_val, *root2);
+  EXPECT_EQ(*root1_dict, *root2);
 }
 
 TEST(JSONReaderTest, DictionaryKeysWithPeriods) {
-  absl::optional<Value> dict_val =
+  absl::optional<Value> root =
       JSONReader::Read("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}");
-  ASSERT_TRUE(dict_val);
-  ASSERT_TRUE(dict_val->is_dict());
+  ASSERT_TRUE(root);
+  Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_TRUE(root_dict);
 
-  auto integer_value = dict_val->FindIntKey("a.b");
+  auto integer_value = root_dict->FindInt("a.b");
   ASSERT_TRUE(integer_value);
   EXPECT_EQ(3, *integer_value);
-  integer_value = dict_val->FindIntKey("c");
+  integer_value = root_dict->FindInt("c");
   ASSERT_TRUE(integer_value);
   EXPECT_EQ(2, *integer_value);
-  const Value* inner_dict = dict_val->FindDictKey("d.e.f");
+  const Value::Dict* inner_dict = root_dict->FindDict("d.e.f");
   ASSERT_TRUE(inner_dict);
-  EXPECT_EQ(1U, inner_dict->DictSize());
-  integer_value = inner_dict->FindIntKey("g.h.i.j");
+  EXPECT_EQ(1U, inner_dict->size());
+  integer_value = inner_dict->FindInt("g.h.i.j");
   ASSERT_TRUE(integer_value);
   EXPECT_EQ(1, *integer_value);
 
-  dict_val = JSONReader::Read("{\"a\":{\"b\":2},\"a.b\":1}");
-  ASSERT_TRUE(dict_val->is_dict());
-  const Value* integer_path_value =
-      dict_val->FindPathOfType({"a", "b"}, base::Value::Type::INTEGER);
+  root = JSONReader::Read("{\"a\":{\"b\":2},\"a.b\":1}");
+  ASSERT_TRUE(root);
+  root_dict = root->GetIfDict();
+  ASSERT_TRUE(root_dict);
+  const Value* integer_path_value = root_dict->FindByDottedPath("a.b");
   ASSERT_TRUE(integer_path_value);
   EXPECT_EQ(2, integer_path_value->GetInt());
-  integer_value = dict_val->FindIntKey("a.b");
+  integer_value = root_dict->FindInt("a.b");
   ASSERT_TRUE(integer_value);
   EXPECT_EQ(1, *integer_value);
 }
 
 TEST(JSONReaderTest, DuplicateKeys) {
-  absl::optional<Value> dict_val =
-      JSONReader::Read("{\"x\":1,\"x\":2,\"y\":3}");
-  ASSERT_TRUE(dict_val);
-  ASSERT_TRUE(dict_val->is_dict());
+  absl::optional<Value> root = JSONReader::Read("{\"x\":1,\"x\":2,\"y\":3}");
+  ASSERT_TRUE(root);
+  const Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_TRUE(root_dict);
 
-  auto integer_value = dict_val->FindIntKey("x");
+  auto integer_value = root_dict->FindInt("x");
   ASSERT_TRUE(integer_value);
   EXPECT_EQ(2, *integer_value);
 }
@@ -536,10 +549,11 @@ TEST(JSONReaderTest, StackOverflow) {
   for (int i = 0; i < 5000; ++i)
     not_evil.append("[],");
   not_evil.append("[]]");
-  absl::optional<Value> list = JSONReader::Read(not_evil);
+  absl::optional<Value> value = JSONReader::Read(not_evil);
+  ASSERT_TRUE(value);
+  Value::List* list = value->GetIfList();
   ASSERT_TRUE(list);
-  ASSERT_TRUE(list->is_list());
-  EXPECT_EQ(5001U, list->GetListDeprecated().size());
+  EXPECT_EQ(5001U, list->size());
 }
 
 TEST(JSONReaderTest, UTF8Input) {
@@ -551,8 +565,9 @@ TEST(JSONReaderTest, UTF8Input) {
 
   root = JSONReader::Read("{\"path\": \"/tmp/\xc3\xa0\xc3\xa8\xc3\xb2.png\"}");
   ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_dict());
-  const std::string* maybe_string = root->FindStringKey("path");
+  const Value::Dict* root_dict = root->GetIfDict();
+  ASSERT_TRUE(root_dict);
+  const std::string* maybe_string = root_dict->FindString("path");
   ASSERT_TRUE(maybe_string);
   EXPECT_EQ("/tmp/\xC3\xA0\xC3\xA8\xC3\xB2.png", *maybe_string);
 
@@ -709,34 +724,35 @@ TEST(JSONReaderTest, StringOptimizations) {
         "}",
         JSON_PARSE_RFC);
     ASSERT_TRUE(root);
-    ASSERT_TRUE(root->is_dict());
+    Value::Dict* root_dict = root->GetIfDict();
+    ASSERT_TRUE(root_dict);
 
-    Value* dict = root->FindDictKey("test");
+    Value::Dict* dict = root_dict->FindDict("test");
     ASSERT_TRUE(dict);
-    Value* list = root->FindListKey("list");
+    Value::List* list = root_dict->FindList("list");
     ASSERT_TRUE(list);
 
-    Value* to_move = dict->FindKey("foo");
+    Value* to_move = dict->Find("foo");
     ASSERT_TRUE(to_move);
     dict_literal_0 = std::move(*to_move);
-    to_move = dict->FindKey("bar");
+    to_move = dict->Find("bar");
     ASSERT_TRUE(to_move);
     dict_literal_1 = std::move(*to_move);
-    to_move = dict->FindKey("baz");
+    to_move = dict->Find("baz");
     ASSERT_TRUE(to_move);
     dict_string_0 = std::move(*to_move);
-    to_move = dict->FindKey("moo");
+    to_move = dict->Find("moo");
     ASSERT_TRUE(to_move);
     dict_string_1 = std::move(*to_move);
-    ASSERT_TRUE(dict->RemoveKey("foo"));
-    ASSERT_TRUE(dict->RemoveKey("bar"));
-    ASSERT_TRUE(dict->RemoveKey("baz"));
-    ASSERT_TRUE(dict->RemoveKey("moo"));
+    ASSERT_TRUE(dict->Remove("foo"));
+    ASSERT_TRUE(dict->Remove("bar"));
+    ASSERT_TRUE(dict->Remove("baz"));
+    ASSERT_TRUE(dict->Remove("moo"));
 
-    ASSERT_EQ(2u, list->GetListDeprecated().size());
-    list_value_0 = std::move(list->GetListDeprecated()[0]);
-    list_value_1 = std::move(list->GetListDeprecated()[1]);
-    list->ClearList();
+    ASSERT_EQ(2u, list->size());
+    list_value_0 = std::move((*list)[0]);
+    list_value_1 = std::move((*list)[1]);
+    list->clear();
   }
 
   ASSERT_TRUE(dict_literal_0.is_bool());
@@ -808,11 +824,11 @@ TEST(JSONReaderTest, Decode4ByteUtf8Char) {
   const char kUtf8Data[] = "[\"😇\",[],[],[],{\"google:suggesttype\":[]}]";
   absl::optional<Value> root = JSONReader::Read(kUtf8Data, JSON_PARSE_RFC);
   ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_list());
-  Value::ListView lv = root->GetListDeprecated();
-  ASSERT_EQ(5u, lv.size());
-  ASSERT_TRUE(lv[0].is_string());
-  EXPECT_EQ("\xF0\x9F\x98\x87", lv[0].GetString());
+  Value::List* list = root->GetIfList();
+  ASSERT_TRUE(list);
+  ASSERT_EQ(5u, list->size());
+  ASSERT_TRUE((*list)[0].is_string());
+  EXPECT_EQ("\xF0\x9F\x98\x87", (*list)[0].GetString());
 }
 
 TEST(JSONReaderTest, DecodeUnicodeNonCharacter) {
