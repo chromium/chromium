@@ -16,8 +16,9 @@ const minify =
 const path = require('path');
 const fs = require('fs/promises');
 
-// Regex to extract the CSS contents out of the HTML string.
-const REGEX = /^<style>(?<content>.+)<\/style>$/;
+// Regex to extract the CSS contents out of the HTML string. It matches anything
+// that is wrapped by a '<style>...</style>' pair.
+const REGEX = /^<style>(?<content>[\s\S]+)<\/style>$/;
 
 async function processFile(inputFile, outputFile) {
   // Read file.

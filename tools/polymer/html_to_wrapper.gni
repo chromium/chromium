@@ -63,6 +63,9 @@ template("html_to_wrapper") {
 
     if (defined(invoker.minify) && invoker.minify) {
       args += [ "--minify" ]
+
+      # Declare additional dependency.
+      inputs += [ "//tools/polymer/html_minifier.js" ]
     }
   }
 }

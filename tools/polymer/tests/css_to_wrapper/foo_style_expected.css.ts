@@ -8,6 +8,9 @@ styleMod.innerHTML = `
     <style include="other1 other2">
 div {
   font-size: 2rem;
+  --foo-bar: calc(var(--foo-bar1)
+      - var(--foo-bar2)
+      - 3 * var(--foo-bar3));
 }
     </style>
   </template>

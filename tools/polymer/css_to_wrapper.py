@@ -217,6 +217,12 @@ def main(argv):
     makedirs(out_folder_for_file, exist_ok=True)
     with io.open(path.join(out_folder, in_file) + extension, mode='wb') as f:
       f.write(wrapper.encode('utf-8'))
+
+  if args.minify:
+    # Delete the temporary folder that was holding minified CSS files, no
+    # longer needed.
+    shutil.rmtree(tmp_out_dir)
+
   return
 
 
