@@ -857,8 +857,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       [[SadTabCoordinator alloc] initWithBaseViewController:self.viewController
                                                     browser:self.browser];
   [self.sadTabCoordinator setOverscrollDelegate:self.viewController];
-  self.viewController.sadTabViewController =
-      self.sadTabCoordinator.viewController;
 
   /* SharingCoordinator is created and started by an ActivityServiceCommand */
 

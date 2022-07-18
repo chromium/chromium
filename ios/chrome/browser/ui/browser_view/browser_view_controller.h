@@ -131,12 +131,6 @@ typedef struct {
 @property(nonatomic, strong)
     UIViewController* infobarModalOverlayContainerViewController;
 
-// The sad tab view controller. Only used to add the sad tab view (if any) to
-// snapshots.
-// TODO(crbug.com/1272491): Refactor snapshotting to remove the need for this
-// property.
-@property(nonatomic, strong) UIViewController* sadTabViewController;
-
 // Positioner for activity services attached to the toolbar.
 @property(nonatomic, readonly) id<ActivityServicePositioner>
     activityServicePositioner;
