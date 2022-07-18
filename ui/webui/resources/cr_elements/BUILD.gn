@@ -66,6 +66,9 @@ if (is_chromeos_ash) {
     out_manifest = "$target_gen_dir/$preprocess_src_manifest"
 
     in_files = [
+      "chromeos/cr_picture/cr_camera.js",
+      "chromeos/cr_picture/cr_picture_list.js",
+      "chromeos/cr_picture/cr_picture_pane.js",
       "chromeos/cr_picture/cr_picture_types.js",
       "chromeos/cr_picture/png.js",
       "chromeos/cr_picture/webcam_utils.js",
@@ -223,10 +226,10 @@ if (include_polymer) {
     if (is_chromeos_ash) {
       in_files += [
         "chromeos/cros_color_overrides.m.js",
-        "chromeos/cr_picture/cr_camera.js",
-        "chromeos/cr_picture/cr_picture_list.js",
-        "chromeos/cr_picture/cr_picture_pane.js",
-        "chromeos/cr_picture/icons.js",
+        "chromeos/cr_picture/cr_camera.html.js",
+        "chromeos/cr_picture/cr_picture_list.html.js",
+        "chromeos/cr_picture/cr_picture_pane.html.js",
+        "chromeos/cr_picture/icons.html.js",
       ]
     }
   }

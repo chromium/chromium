@@ -19,7 +19,7 @@ group("polymer3_elements") {
   public_deps = [ ":cros_color_overrides_module" ]
 
   if (is_chromeos_ash) {
-    public_deps += [ "cr_picture:web_components" ]
+    public_deps += [ "cr_picture:html_wrapper_files" ]
   }
 }
 

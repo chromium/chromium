@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 
 assert(is_chromeos)
 
@@ -55,12 +55,13 @@ if (is_chromeos_ash) {
     ]
   }
 
-  html_to_js("web_components") {
-    js_files = [
-      "cr_camera.js",
-      "cr_picture_list.js",
-      "cr_picture_pane.js",
-      "icons.js",
+  html_to_wrapper("html_wrapper_files") {
+    in_files = [
+      "cr_camera.html",
+      "cr_picture_list.html",
+      "cr_picture_pane.html",
+      "icons.html",
     ]
+    use_js = true
   }
 }

@@ -87,31 +87,30 @@ def main(argv):
       generated_files.append(
           os.path.normpath(os.path.relpath(l[len(token):], args.out_dir)))
 
-  generated_files.sort()
   args.js_files.sort()
+  generated_files_set = set(generated_files)
 
-  unexpected_file = None
   for i, _js_file in enumerate(args.js_files):
     js_file = os.path.normpath(_js_file)
 
-    if os.path.dirname(js_file) != os.path.dirname(generated_files[i]):
-      unexpected_file = generated_files[i]
-      break
+    expected_file = base = os.path.splitext(js_file)[0] + '.d.ts'
 
-    base = os.path.splitext(os.path.basename(js_file))[0]
-    if base + '.d.ts' != os.path.basename(generated_files[i]):
-      unexpected_file = generated_files[i]
-      break
+    if expected_file in generated_files_set:
+      # Remove the file from the set, to check at the end if any unexpected
+      # files were generated.
+      generated_files_set.remove(expected_file)
+
+  unexpected_files_found = len(generated_files_set) > 0
 
   # Delete all generated files to not pollute the gen/ folder with any invalid
   # files, which could cause problems on subsequent builds.
-  if unexpected_file is not None:
+  if unexpected_files_found:
     for f in generated_files:
       os.remove(os.path.join(args.out_dir, f))
 
     raise Exception(\
-        'Unexpected file \'%s\' generated, deleting all generated files.' \
-        % unexpected_file)
+        'Unexpected file(s) \'%s\' generated, deleting all generated files.' \
+        % generated_files_set)
 
 
 if __name__ == '__main__':

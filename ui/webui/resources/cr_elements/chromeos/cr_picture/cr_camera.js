@@ -11,16 +11,17 @@ import '../../shared_style_css.m.js';
 import '../../cr_icon_button/cr_icon_button.m.js';
 import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import './icons.js';
+import './icons.html.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './cr_camera.html.js';
 import * as webcamUtils from './webcam_utils.js';
 
 Polymer({
   is: 'cr-camera',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     /** Strings provided by host */

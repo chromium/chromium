@@ -17,13 +17,14 @@ import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './cr_picture_list.html.js';
 import {CrPicture} from './cr_picture_types.js';
 import {convertImageSequenceToPng, isEncodedPngDataUrlAnimated} from './png.js';
 
 Polymer({
   is: 'cr-picture-list',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     cameraPresent: Boolean,
