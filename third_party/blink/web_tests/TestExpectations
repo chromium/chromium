@@ -3430,7 +3430,6 @@ crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporti
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure ]
 crbug.com/626703 external/wpt/shadow-dom/shadow-style-invalidation-vw-units.html [ Failure ]
 crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/shadow-dom/shadow-style-invalidation-vw-units.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-persistence.tentative.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=fetch&eligible=event-source [ Timeout ]
