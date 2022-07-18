@@ -5376,7 +5376,10 @@ class DeclarativeNetRequestResourceTypeBrowserTest
 };
 
 // These are split into two tests to prevent a timeout. See crbug.com/787957.
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest, Test1) {
+//
+// First test disabled because of flakes. See crbug.com/1345215.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest,
+                       DISABLED_Test1) {
   ASSERT_NO_FATAL_FAILURE(LoadExtension());
   RunTests({{"block_subframe.com", kSubframe},
             {"block_stylesheet.com", kStylesheet},
