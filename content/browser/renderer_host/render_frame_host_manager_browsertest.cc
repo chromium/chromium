@@ -105,22 +105,6 @@ bool ExpectSameSiteInstance() {
          !CanCrossSiteNavigationsProactivelySwapBrowsingInstances();
 }
 
-const char kOpenUrlViaClickTargetFunc[] =
-    "(function(url) {\n"
-    "  var lnk = document.createElement(\"a\");\n"
-    "  lnk.href = url;\n"
-    "  lnk.rel = 'opener';\n"
-    "  lnk.target = \"_blank\";\n"
-    "  document.body.appendChild(lnk);\n"
-    "  lnk.click();\n"
-    "})";
-
-// Adds a link with given url and target=_blank, and clicks on it.
-void OpenUrlViaClickTarget(const ToRenderFrameHost& adapter, const GURL& url) {
-  EXPECT_TRUE(ExecuteScript(adapter, std::string(kOpenUrlViaClickTargetFunc) +
-                                         "(\"" + url.spec() + "\");"));
-}
-
 content::RenderFrameHostChangedCallback GetAsyncScriptExecutorCallback(
     std::string callback_script) {
   return base::BindOnce(
@@ -2626,69 +2610,6 @@ IN_PROC_BROWSER_TEST_P(RFHMProcessPerTabTest, MAYBE_BackFromWebUI) {
   EXPECT_EQ(original_url, shell()->web_contents()->GetLastCommittedURL());
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
-}
-
-// crbug.com/372360
-// The test loads url1, opens a link pointing to url2 in a new tab, and
-// navigates the new tab to url1.
-// The following is needed for the bug to happen:
-//  - url1 must require webui bindings;
-//  - navigating to url2 in the site instance of url1 should not swap
-//   browsing instances, but should require a new site instance.
-//
-// The test is currently blocking the migration to WebUIConfig because it relies
-// on WebUIs incorrectly returning the same type.
-// TODO(crbug.com/1318357): Re-enable by creating a different situation that
-// causes the bug when site isolation is enabled, or delete.
-IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DISABLED_WebUIGetsBindings) {
-  GURL url1(std::string(kChromeUIScheme) + "://" +
-            std::string(kChromeUIUkmHost));
-  GURL url2(std::string(kChromeUIScheme) + "://" +
-            std::string(kChromeUIHistogramHost));
-
-  // Visit a WebUI page with bindings.
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
-  SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
-  int process1_id = site_instance1->GetProcess()->GetID();
-
-  // Open a new tab. Initially it gets a render view in the original tab's
-  // current site instance.
-  TestNavigationObserver nav_observer(nullptr);
-  nav_observer.StartWatchingNewWebContents();
-  ShellAddedObserver shao;
-  OpenUrlViaClickTarget(shell(), url2);
-  nav_observer.Wait();
-  Shell* new_shell = shao.GetShell();
-  WebContentsImpl* new_web_contents =
-      static_cast<WebContentsImpl*>(new_shell->web_contents());
-  SiteInstance* site_instance2 = new_web_contents->GetSiteInstance();
-  int process2_id = site_instance2->GetProcess()->GetID();
-
-  // The 2nd WebUI page should swap to a different process (and SiteInstance),
-  // but should stay in the same BrowsingInstance as the 1st WebUI page.
-  EXPECT_NE(process1_id, process2_id);
-  EXPECT_NE(site_instance2, site_instance1);
-  EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
-            static_cast<SiteInstanceImpl*>(site_instance1)->group());
-  EXPECT_TRUE(site_instance2->IsRelatedSiteInstance(site_instance1));
-
-  RenderFrameProxyHost* initial_rfph =
-      new_web_contents->GetRenderManagerForTesting()
-          ->current_frame_host()
-          ->browsing_context_state()
-          ->GetRenderFrameProxyHost(
-              static_cast<SiteInstanceImpl*>(site_instance1)->group());
-  ASSERT_TRUE(initial_rfph);
-
-  // Navigate to url1 and check bindings.
-  EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(new_shell, url1));
-  // The navigation should have used the first SiteInstance, otherwise
-  // |initial_rvh| did not have a chance to be used.
-  EXPECT_EQ(new_web_contents->GetSiteInstance(), site_instance1);
-  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
-            new_web_contents->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // crbug.com/424526

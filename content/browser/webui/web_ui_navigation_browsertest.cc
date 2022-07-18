@@ -724,6 +724,113 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   EXPECT_EQ(GURL(), child->GetLastCommittedURL());
 }
 
+const char kOpenUrlViaClickTargetFunc[] =
+    "(function(url) {\n"
+    "  var lnk = document.createElement(\"a\");\n"
+    "  lnk.href = url;\n"
+    "  lnk.rel = 'opener';\n"
+    "  lnk.target = \"_blank\";\n"
+    "  document.body.appendChild(lnk);\n"
+    "  lnk.click();\n"
+    "})";
+
+// Adds a link with given url and target=_blank, and clicks on it.
+void OpenUrlViaClickTarget(const ToRenderFrameHost& adapter, const GURL& url) {
+  EXPECT_TRUE(ExecuteScript(adapter, std::string(kOpenUrlViaClickTargetFunc) +
+                                         "(\"" + url.spec() + "\");"));
+}
+
+// Verify that two WebUIs with a shared domain have different SiteInstance
+// and BrowsingInstance even when the WebUI is opened from the other WebUI. Even
+// though they share a domain, their hosts are different, so they have different
+// WebUI types which triggers a BrowsingInstance swap.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       SharedDomainDifferentSiteInstanceNavigation) {
+  GURL url1("chrome://foo.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+  GURL url2("chrome://bar.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+
+  // Visit a WebUI page with bindings.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
+  int process1_id = site_instance1->GetProcess()->GetID();
+
+  // Visit the second WebUI page with bindings. Even though the navigation
+  // itself doesn't intend to swap BrowsingInstances, we still swap them due to
+  // a change in WebUI type.
+  EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(shell(), url2));
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  SiteInstance* site_instance2 = shell()->web_contents()->GetSiteInstance();
+  int process2_id = site_instance2->GetProcess()->GetID();
+
+  // The 2nd WebUI page should swap to a different process, SiteInstance,
+  // and BrowsingInstance.
+  EXPECT_NE(process1_id, process2_id);
+  EXPECT_NE(site_instance2, site_instance1);
+  EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
+            static_cast<SiteInstanceImpl*>(site_instance1)->group());
+  EXPECT_FALSE(site_instance2->IsRelatedSiteInstance(site_instance1));
+}
+
+// Verify that two WebUIs with a shared domain have different SiteInstance
+// and BrowsingInstance even when the WebUI is opened from the other WebUI. Even
+// though they share a domain, their hosts are different, so they have different
+// WebUI types which triggers a BrowsingInstance swap.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       SharedDomainDifferentSiteInstanceUrlClick) {
+  GURL url1("chrome://foo.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+  GURL url2("chrome://bar.web-ui/title1.html?bindings=" +
+            base::NumberToString(BINDINGS_POLICY_WEB_UI));
+
+  // Visit a WebUI page with bindings.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
+  int process1_id = site_instance1->GetProcess()->GetID();
+
+  // Open a new tab.
+  TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  ShellAddedObserver shao;
+  OpenUrlViaClickTarget(shell(), url2);
+  nav_observer.Wait();
+  Shell* new_shell = shao.GetShell();
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  SiteInstance* site_instance2 = new_web_contents->GetSiteInstance();
+  int process2_id = site_instance2->GetProcess()->GetID();
+
+  // The 2nd WebUI page should swap to a different process, SiteInstance,
+  // and BrowsingInstance.
+  EXPECT_NE(process1_id, process2_id);
+  EXPECT_NE(site_instance2, site_instance1);
+  EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
+            static_cast<SiteInstanceImpl*>(site_instance1)->group());
+  EXPECT_FALSE(site_instance2->IsRelatedSiteInstance(site_instance1));
+
+  // TODO(crbug.com/1044951): Since we swap BrowsingInstances, we shouldn't
+  // keep a proxy for the second tab in the first tab's SiteInstance.
+  RenderFrameProxyHost* initial_rfph =
+      new_web_contents->GetRenderManagerForTesting()
+          ->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(
+              static_cast<SiteInstanceImpl*>(site_instance1)->group());
+  ASSERT_TRUE(initial_rfph);
+
+  // Navigate to url1 and check bindings.
+  EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(new_shell, url1));
+  EXPECT_NE(new_web_contents->GetSiteInstance(), site_instance1);
+  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
+            new_web_contents->GetPrimaryMainFrame()->GetEnabledBindings());
+}
+
 // Used to test browser-side checks by disabling some renderer-side checks.
 class WebUINavigationDisabledWebSecurityBrowserTest
     : public WebUINavigationBrowserTest {
