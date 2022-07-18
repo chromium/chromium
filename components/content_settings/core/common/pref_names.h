@@ -87,6 +87,8 @@ extern const char kQuietNotificationPermissionUiDisabledTime[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNotificationsVibrateEnabled[];
+extern const char kDesktopSitePeripheralSettingEnabled[];
+extern const char kDesktopSiteDisplaySettingEnabled[];
 #endif
 
 }  // namespace prefs

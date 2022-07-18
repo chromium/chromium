@@ -107,6 +107,18 @@
   <message name="IDS_ENABLE_NOTIFICATIONS_VIBRATE_SUMMARY" desc="Summary for the preference to enable vibration for notifications">
     Notifications may vibrate the device
   </message>
+    <message name="IDS_ENABLE_DESKTOP_SITE_PERIPHERAL_TITLE" translateable="false" desc="Title for the preference to enable peripheral setting for request desktop site">
+    Accessories
+  </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_PERIPHERAL_SUMMARY" translateable="false" desc="Summary for the preference to enable peripheral setting for request desktop site">
+    Always request desktop site if a keyboard, trackpad, or mouse is attached
+  </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_TITLE" translateable="false" desc="Title for the preference to enable display setting for request desktop site">
+    Displays
+  </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_SUMMARY" translateable="false" desc="Summary for the preference to enable display setting for request desktop site">
+    Always request desktop site if a monitor is connected
+  </message>
 
   <!-- Site settings: general category strings -->
 

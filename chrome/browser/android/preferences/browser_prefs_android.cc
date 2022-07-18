@@ -8,6 +8,7 @@
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/notifications/notification_platform_bridge_android.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -20,6 +21,11 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   NotificationPlatformBridgeAndroid::RegisterProfilePrefs(registry);
+  // TODO(shuyng): Use PrefRegistrySimple for RDS prefs registration.
+  registry->RegisterBooleanPref(prefs::kDesktopSitePeripheralSettingEnabled,
+                                false);
+  registry->RegisterBooleanPref(prefs::kDesktopSiteDisplaySettingEnabled,
+                                false);
 }
 
 }  // namespace android
