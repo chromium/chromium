@@ -7145,3 +7145,4 @@ crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripti
 
 # Sheriff 2022-07-18
 crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Skip ]
+crbug.com/1345205 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/style-background-image.https.html [ Skip ]
