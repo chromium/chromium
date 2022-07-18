@@ -25,10 +25,14 @@ To test the Chrome Root store, do the following:
 
   `--enable-features=ChromeRootStoreUsed`
 
-As of 2022-06, an example of a web site that is trusted by Windows Root Store
-but not by Chrome Root Store is https://rootcertificateprograms.edicom.es/. This
-can be used to test if Chrome Root Store is turned on or not (for best results
-use a fresh incognito window to avoid any caching issues).
+  As of 2022-06, an example of a web site that is trusted by Windows Root Store
+  but not by Chrome Root Store is https://rootcertificateprograms.edicom.es/.
+  This can be used to test if Chrome Root Store is turned on or not (for best
+  results use a fresh incognito window to avoid any caching issues).
+
+* On 105.0.5122.0 or higher on Mac, run Chrome with the following flag:
+
+  `--enable-features=ChromeRootStoreUsed,CertVerifierBuiltin:impl/4`
 
 If you're running 104.0.5110.0 or higher, the currently used Chrome Root Store
 version can be seen in a [NetLog
