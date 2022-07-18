@@ -306,19 +306,18 @@ absl::optional<GURL> ConnectorsService::GetLearnMoreUrl(
   return connectors_manager_->GetLearnMoreUrl(connector, tag);
 }
 
-bool ConnectorsService::GetBypassJustificationRequired(
+absl::optional<bool> ConnectorsService::GetBypassJustificationRequired(
     AnalysisConnector connector,
     const std::string& tag) {
   if (!ConnectorsEnabled())
-    return false;
+    return absl::nullopt;
 
   return connectors_manager_->GetBypassJustificationRequired(connector, tag);
 }
 
-bool ConnectorsService::HasExtraUiToDisplay(AnalysisConnector connector,
-                                            const std::string& tag) {
-  return GetCustomMessage(connector, tag) || GetLearnMoreUrl(connector, tag) ||
-         GetBypassJustificationRequired(connector, tag);
+bool ConnectorsService::HasCustomInfoToDisplay(AnalysisConnector connector,
+                                               const std::string& tag) {
+  return GetCustomMessage(connector, tag) || GetLearnMoreUrl(connector, tag);
 }
 
 std::vector<std::string> ConnectorsService::GetAnalysisServiceProviderNames(
