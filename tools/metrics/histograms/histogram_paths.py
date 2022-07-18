@@ -62,6 +62,11 @@ ALL_TEST_XMLS = [path_util.GetInputFile(f) for f in ALL_TEST_XMLS_RELATIVE]
 (TEST_ENUMS_XML, TEST_HISTOGRAMS_XML, TEST_SUFFIXES_XML,
  TEST_UKM_XML) = ALL_TEST_XMLS
 
+TEST_XML_WITH_COMPONENTS_RELATIVE = (
+    'tools/metrics/histograms/test_data/components/histograms.xml')
+TEST_XML_WITH_COMPONENTS = path_util.GetInputFile(
+    TEST_XML_WITH_COMPONENTS_RELATIVE)
+
 # The path to the `histogram_index` file.
 HISTOGRAMS_INDEX = path_util.GetInputFile(
     'tools/metrics/histograms/histograms_index.txt')

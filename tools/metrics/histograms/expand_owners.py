@@ -330,7 +330,7 @@ def _UpdateHistogramOwners(histogram, owner_to_replace, owners_to_add):
       histogram.insertBefore(owner_to_add, node_after_owners_file)
 
 
-def _AddHistogramComponent(histogram, component):
+def AddHistogramComponent(histogram, component):
   """Makes a DOM Element for the component and adds it to the given histogram.
 
   Args:
@@ -405,4 +405,4 @@ def ExpandHistogramsOWNERS(histograms):
       component = _ExtractComponentViaDirmd(os.path.dirname(path))
       if component and component not in components_with_dom_elements:
         components_with_dom_elements.add(component)
-        _AddHistogramComponent(histogram, component)
+        AddHistogramComponent(histogram, component)

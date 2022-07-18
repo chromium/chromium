@@ -169,6 +169,66 @@ def MergeTrees(trees, should_expand_owners):
   return doc
 
 
+def _GetComponentFromMetadataFile(filename):
+  """Extracts a component string from the metadata file.
+
+  Args:
+    filename: The filename for the metadata file.
+
+  Returns:
+    The component name as a string.
+  """
+  with open(filename, 'r') as f:
+    for line in f.read().splitlines():
+      # component line looks like '[\s+]component: "name"[\s+]'.
+      line = line.strip()
+      if line.startswith('component:'):
+        component = line[line.find('"') + 1:-1]
+        if component:
+          return component
+  return None
+
+
+def _AddComponentFromMetadataFile(tree, filename):
+  """Adds the component from the metadata file to the DOM tree.
+
+  Args:
+    tree: A histogram.xml DOM tree.
+    filename: The name of the metadata file.
+
+  Returns:
+    The updated tree with the component (optionally) added.
+  """
+  component = _GetComponentFromMetadataFile(filename)
+  if component:
+    histograms = tree.getElementsByTagName('histograms')
+    if histograms:
+      iter_matches = extract_histograms.IterElementsWithTag
+      for histogram in iter_matches(histograms[0], 'histogram'):
+        expand_owners.AddHistogramComponent(histogram, component)
+  return tree
+
+
+def _BuildDOMTreeWithComponentMetadata(filename_or_file):
+  """Builds the DOM tree for the given file.
+
+  Args:
+    filename_or_file: The string filename or the file handle for histograms.xml.
+
+  Returns:
+    The histograms.xml DOM tree with (optional) component metadata.
+  """
+  tree = xml.dom.minidom.parse(filename_or_file)
+  if isinstance(filename_or_file, str):
+    # If we can find a metadata file in the same directory, we try to extract
+    # a component from it.
+    metadata_filename = os.path.join(os.path.dirname(filename_or_file),
+                                     'DIR_METADATA')
+    if os.path.exists(metadata_filename):
+      return _AddComponentFromMetadataFile(tree, metadata_filename)
+  return tree
+
+
 def MergeFiles(filenames=[], files=[], should_expand_owners=False):
   """Merges a list of histograms.xml files.
 
@@ -184,7 +244,7 @@ def MergeFiles(filenames=[], files=[], should_expand_owners=False):
   """
   # minidom.parse() takes both files and filenames:
   all_files = files + filenames
-  trees = [xml.dom.minidom.parse(f) for f in all_files]
+  trees = [_BuildDOMTreeWithComponentMetadata(f) for f in all_files]
   return MergeTrees(trees, should_expand_owners)
 
 

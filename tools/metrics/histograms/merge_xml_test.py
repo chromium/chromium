@@ -222,13 +222,45 @@ class MergeXmlTest(unittest.TestCase):
 </histogram-configuration>
 """)
 
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         expand_owners.Error,
         'The histogram Caffeination must have a valid primary owner, i.e. a '
         'Googler with an @google.com or @chromium.org email address. Please '
         'manually update the histogram with a valid primary owner.'):
       merge_xml.MergeTrees([histograms_without_valid_first_owner],
                            should_expand_owners=True)
+
+  def testMergeFiles_WithComponentMetadata(self):
+    merged = merge_xml.PrettyPrintMergedFiles(
+        [histogram_paths.TEST_XML_WITH_COMPONENTS_RELATIVE])
+    expected_merged_xml = """
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Test.Histogram" units="seconds" expires_after="M104">
+  <owner>person@chromium.org</owner>
+  <owner>team-alias@chromium.org</owner>
+  <component>Test&gt;Component</component>
+  <summary>Summary 2</summary>
+</histogram>
+
+<histogram name="Test.Histogram.WithComponent" enum="TestEnum"
+    expires_after="M104">
+  <owner>uma@chromium.org</owner>
+  <owner>team-alias@chromium.org</owner>
+  <component>First&gt;Component</component>
+  <component>Test&gt;Component</component>
+  <summary>A enum histogram.</summary>
+</histogram>
+
+</histograms>
+
+<histogram_suffixes_list/>
+
+</histogram-configuration>
+"""
+    self.assertMultiLineEqual(expected_merged_xml.strip(), merged.strip())
 
 
 if __name__ == '__main__':

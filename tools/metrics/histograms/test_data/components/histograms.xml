@@ -1,0 +1,21 @@
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Test.Histogram" units="seconds" expires_after="M104">
+  <owner>person@chromium.org</owner>
+  <owner>team-alias@chromium.org</owner>
+  <summary>Summary 2</summary>
+</histogram>
+
+<histogram name="Test.Histogram.WithComponent" enum="TestEnum"
+    expires_after="M104">
+  <owner>uma@chromium.org</owner>
+  <owner>team-alias@chromium.org</owner>
+  <component>First&gt;Component</component>
+  <summary>A enum histogram.</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
