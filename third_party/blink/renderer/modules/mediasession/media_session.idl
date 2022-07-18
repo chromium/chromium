@@ -39,7 +39,7 @@ callback MediaSessionActionHandler = void (MediaSessionActionDetails details);
     [Measure, RaisesException] void setActionHandler(MediaSessionAction action,
                                     MediaSessionActionHandler? handler);
 
-    [Measure, RaisesException, RuntimeEnabled=MediaSessionPosition]
+    [Measure, RaisesException]
     void setPositionState(optional MediaPositionState state = {});
 
     [Measure, RuntimeEnabled=MediaSessionWebRTC]

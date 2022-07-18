@@ -1458,10 +1458,6 @@
       status: "stable",
     },
     {
-      name: "MediaSessionPosition",
-      status: "stable",
-    },
-    {
       name: "MediaSessionWebRTC",
     },
     {
