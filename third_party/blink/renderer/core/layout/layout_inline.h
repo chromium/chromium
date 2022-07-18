@@ -261,10 +261,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     return FirstLineBoxTopLeftInternal().value_or(PhysicalOffset());
   }
 
-  void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
-                          TransformState&,
-                          MapCoordinatesFlags mode) const override;
-
   PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline(
       MapCoordinatesFlags = 0) const final;
 

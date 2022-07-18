@@ -13674,8 +13674,7 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   local_frame->GetFrame()
       ->GetDocument()
       ->GetLayoutView()
-      ->MapToVisualRectInAncestorSpace(
-          nullptr, rect, viewport_intersection_flags, kDefaultVisualRectFlags);
+      ->MapToVisualRectInAncestorSpace(nullptr, rect);
   EXPECT_EQ(PhysicalRect(7, 0, 25, 24), rect);
 
   // Without the main frame overflow clip the rect should not be clipped and the
@@ -13685,7 +13684,6 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
       ->GetDocument()
       ->GetLayoutView()
       ->MapToVisualRectInAncestorSpace(nullptr, mainframe_rect,
-                                       viewport_intersection_flags,
                                        kDontApplyMainFrameOverflowClip);
   EXPECT_EQ(PhysicalRect(7, -11, 25, 35), mainframe_rect);
 }

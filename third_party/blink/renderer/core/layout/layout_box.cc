@@ -3152,43 +3152,6 @@ LayoutUnit LayoutBox::PerpendicularContainingBlockLogicalHeight() const {
       LayoutUnit(logical_height_length.Value()));
 }
 
-void LayoutBox::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
-                                   TransformState& transform_state,
-                                   MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  bool is_fixed_pos = StyleRef().GetPosition() == EPosition::kFixed;
-
-  // If this box has a transform or contains paint, it acts as a fixed position
-  // container for fixed descendants, and may itself also be fixed position. So
-  // propagate 'fixed' up only if this box is fixed position.
-  if (CanContainFixedPositionObjects() && !is_fixed_pos)
-    mode &= ~kIsFixed;
-  else if (is_fixed_pos)
-    mode |= kIsFixed;
-
-  LayoutBoxModelObject::MapLocalToAncestor(ancestor, transform_state, mode);
-}
-
-void LayoutBox::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
-                                   TransformState& transform_state,
-                                   MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  if (this == ancestor)
-    return;
-
-  bool is_fixed_pos = StyleRef().GetPosition() == EPosition::kFixed;
-
-  // If this box has a transform or contains paint, it acts as a fixed position
-  // container for fixed descendants, and may itself also be fixed position. So
-  // propagate 'fixed' up only if this box is fixed position.
-  if (CanContainFixedPositionObjects() && !is_fixed_pos)
-    mode &= ~kIsFixed;
-  else if (is_fixed_pos)
-    mode |= kIsFixed;
-
-  LayoutBoxModelObject::MapAncestorToLocal(ancestor, transform_state, mode);
-}
-
 PhysicalOffset LayoutBox::OffsetFromContainerInternal(
     const LayoutObject* o,
     bool ignore_scroll_offset) const {
@@ -3846,16 +3809,11 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     return true;
   }
 
-  if (auto* layout_view = DynamicTo<LayoutView>(container)) {
-    bool use_fixed_position_adjustment =
-        position == EPosition::kFixed && container == ancestor;
-    return layout_view->MapToVisualRectInAncestorSpaceInternal(
-        ancestor, transform_state, use_fixed_position_adjustment ? kIsFixed : 0,
-        visual_rect_flags);
-  } else {
-    return container->MapToVisualRectInAncestorSpaceInternal(
-        ancestor, transform_state, visual_rect_flags);
-  }
+  if (IsFixedPositioned() && container == ancestor && container->IsLayoutView())
+    transform_state.Move(To<LayoutView>(container)->OffsetForFixedPosition());
+
+  return container->MapToVisualRectInAncestorSpaceInternal(
+      ancestor, transform_state, visual_rect_flags);
 }
 
 void LayoutBox::InflateVisualRectForFilter(

@@ -3164,13 +3164,6 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
     transform_state.Move(-ancestor->OffsetFromAncestor(container),
                          preserve3d ? TransformState::kAccumulateTransform
                                     : TransformState::kFlattenTransform);
-    // If the ancestor is fixed, then the rect is already in its coordinates so
-    // doesn't need viewport-adjusting.
-    auto* layout_view = DynamicTo<LayoutView>(container);
-    if (ancestor->StyleRef().GetPosition() != EPosition::kFixed &&
-        layout_view && StyleRef().GetPosition() == EPosition::kFixed) {
-      transform_state.Move(layout_view->OffsetForFixedPosition());
-    }
     return;
   }
 
@@ -3229,13 +3222,6 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   if (skip_info.AncestorSkipped()) {
     container_offset = ancestor->OffsetFromAncestor(container);
     transform_state.Move(-container_offset);
-    // If the ancestor is fixed, then the rect is already in its coordinates so
-    // doesn't need viewport-adjusting.
-    auto* layout_view = DynamicTo<LayoutView>(container);
-    if (ancestor->StyleRef().GetPosition() != EPosition::kFixed &&
-        layout_view && StyleRef().GetPosition() == EPosition::kFixed) {
-      transform_state.Move(layout_view->OffsetForFixedPosition());
-    }
   }
 }
 
@@ -3395,6 +3381,10 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
     bool ignore_scroll_offset) const {
   NOT_DESTROYED();
   DCHECK(container->IsScrollContainer());
+
+  if (IsFixedPositioned() && container->IsLayoutView())
+    return PhysicalOffset();
+
   const auto* box = To<LayoutBox>(container);
   if (!ignore_scroll_offset)
     return -box->ScrolledContentOffset();

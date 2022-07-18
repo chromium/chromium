@@ -409,12 +409,6 @@ void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
     transform_state.ApplyTransform(t);
   }
 
-  if ((mode & kIsFixed) && frame_view_) {
-    transform_state.Move(OffsetForFixedPosition());
-    // IsFixed flag is only applicable within this LayoutView.
-    mode &= ~kIsFixed;
-  }
-
   if (ancestor == this)
     return;
 
@@ -442,7 +436,7 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
       // A LayoutView is a containing block for fixed-position elements, so
       // don't carry this state across frames.
       parent_doc_layout_object->MapAncestorToLocal(ancestor, transform_state,
-                                                   mode & ~kIsFixed);
+                                                   mode);
 
       transform_state.Move(
           parent_doc_layout_object->PhysicalContentBoxOffset());
@@ -456,9 +450,6 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   } else {
     DCHECK(this == ancestor || !ancestor);
   }
-
-  if (mode & kIsFixed)
-    transform_state.Move(OffsetForFixedPosition());
 }
 
 LogicalSize LayoutView::InitialContainingBlockSize() const {
@@ -488,44 +479,11 @@ void LayoutView::InvalidatePaintForViewAndDescendants() {
   SetSubtreeShouldDoFullPaintInvalidation();
 }
 
-bool LayoutView::MapToVisualRectInAncestorSpace(
-    const LayoutBoxModelObject* ancestor,
-    PhysicalRect& rect,
-    MapCoordinatesFlags mode,
-    VisualRectFlags visual_rect_flags) const {
-  NOT_DESTROYED();
-  bool intersects = true;
-  if (MapToVisualRectInAncestorSpaceInternalFastPath(
-          ancestor, rect, visual_rect_flags, intersects))
-    return intersects;
-
-  TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 gfx::QuadF(gfx::RectF(rect)));
-  intersects = MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state,
-                                                      mode, visual_rect_flags);
-  transform_state.Flatten();
-  rect = PhysicalRect::EnclosingRect(
-      transform_state.LastPlanarQuad().BoundingBox());
-  return intersects;
-}
-
 bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
-  return MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state, 0,
-                                                visual_rect_flags);
-}
-
-bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
-    const LayoutBoxModelObject* ancestor,
-    TransformState& transform_state,
-    MapCoordinatesFlags mode,
-    VisualRectFlags visual_rect_flags) const {
-  NOT_DESTROYED();
-  if (mode & kIsFixed)
-    transform_state.Move(OffsetForFixedPosition());
 
   // Apply our transform if we have one (because of full page zooming).
   if (Layer() && Layer()->Transform()) {

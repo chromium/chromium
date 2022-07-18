@@ -8,8 +8,6 @@
 namespace blink {
 
 enum MapCoordinatesMode {
-  kIsFixed = 1 << 0,
-
   // Only needed in some special cases to intentionally ignore transforms.
   kIgnoreTransforms = 1 << 2,
 

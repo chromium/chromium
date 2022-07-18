@@ -1919,13 +1919,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanRenderBorderImage() const;
 
-  void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
-                          TransformState&,
-                          MapCoordinatesFlags) const override;
-  void MapAncestorToLocal(const LayoutBoxModelObject*,
-                          TransformState&,
-                          MapCoordinatesFlags) const override;
-
   LayoutBlock* PercentHeightContainer() const {
     NOT_DESTROYED();
     return rare_data_ ? rare_data_->percent_height_container_ : nullptr;

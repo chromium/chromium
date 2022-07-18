@@ -239,8 +239,8 @@ WebViewImpl* TouchActionTest::SetupTest(String file) {
 
 gfx::Rect WindowClipRect(const LocalFrameView& frame_view) {
   PhysicalRect clip_rect(PhysicalOffset(), PhysicalSize(frame_view.Size()));
-  frame_view.GetLayoutView()->MapToVisualRectInAncestorSpace(
-      nullptr, clip_rect, 0, kDefaultVisualRectFlags);
+  frame_view.GetLayoutView()->MapToVisualRectInAncestorSpace(nullptr,
+                                                             clip_rect);
   return ToEnclosingRect(clip_rect);
 }
 

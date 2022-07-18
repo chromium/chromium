@@ -190,6 +190,11 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 #  document-transition
 # Some additional bugs that are caused by painting problems are also within this section.
 
+# The tests happened to pass with two bugs canceled each other. Now they fail
+# with the first bug fixed. Will be fixed when the second bug is fixed (crrev.com/c/3752748).
+crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor-iframe.html [ Failure ]
+crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
+
 # --- CanvasFormattedText tests ---
 # Fails on linux-rel even though actual and expected appear the same.
 crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]

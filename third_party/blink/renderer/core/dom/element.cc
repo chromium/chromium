@@ -2055,8 +2055,8 @@ gfx::Rect Element::VisibleBoundsInVisualViewport() const {
   // returns the viewport-visible rect in the root frame's coordinate space.
   // MapToVisualRectInAncestorSpace applies ancestors' frame's clipping but does
   // not apply (overflow) element clipping.
-  GetDocument().View()->GetLayoutView()->MapToVisualRectInAncestorSpace(
-      nullptr, rect, kTraverseDocumentBoundaries, kDefaultVisualRectFlags);
+  GetDocument().View()->GetLayoutView()->MapToVisualRectInAncestorSpace(nullptr,
+                                                                        rect);
 
   // TODO(layout-dev): Callers of this method don't expect the offset of the
   // local frame root from a remote top-level frame to be applied here. They

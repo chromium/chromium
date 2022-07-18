@@ -2029,15 +2029,6 @@ void LayoutInline::InvalidateDisplayItemClients(
     paint_invalidator.InvalidateDisplayItemClient(*box, invalidation_reason);
 }
 
-void LayoutInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
-                                      TransformState& transform_state,
-                                      MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  if (CanContainFixedPositionObjects())
-    mode &= ~kIsFixed;
-  LayoutBoxModelObject::MapLocalToAncestor(ancestor, transform_state, mode);
-}
-
 PhysicalRect LayoutInline::DebugRect() const {
   NOT_DESTROYED();
   return PhysicalRect(ToEnclosingRect(PhysicalLinesBoundingBox()));

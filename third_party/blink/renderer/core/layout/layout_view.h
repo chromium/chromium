@@ -141,24 +141,14 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void UpdateAfterLayout() override;
 
   // See comments for the equivalent method on LayoutObject.
-  bool MapToVisualRectInAncestorSpace(const LayoutBoxModelObject* ancestor,
-                                      PhysicalRect&,
-                                      MapCoordinatesFlags mode,
-                                      VisualRectFlags) const;
-
   // |ancestor| can be nullptr, which will map the rect to the main frame's
   // space, even if the main frame is remote (or has intermediate remote
   // frames in the chain).
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,
-      MapCoordinatesFlags,
-      VisualRectFlags) const;
-
-  bool MapToVisualRectInAncestorSpaceInternal(
-      const LayoutBoxModelObject* ancestor,
-      TransformState&,
       VisualRectFlags = kDefaultVisualRectFlags) const override;
+
   PhysicalOffset OffsetForFixedPosition() const;
   PhysicalOffset PixelSnappedOffsetForFixedPosition() const;
 
