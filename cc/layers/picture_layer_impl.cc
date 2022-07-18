@@ -230,10 +230,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     Occlusion occlusion = draw_properties().occlusion_in_content_space;
 
     EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
     SolidColorLayerImpl::AppendSolidQuads(
         render_pass, occlusion, shared_quad_state, scaled_visible_layer_rect,
-        SkColor4f::FromColor(raster_source_->GetSolidColor()),
+        raster_source_->GetSolidColor(),
         !layer_tree_impl()->settings().enable_edge_anti_aliasing,
         effect_node->blend_mode, append_quads_data);
     return;

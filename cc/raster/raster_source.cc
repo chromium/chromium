@@ -181,9 +181,9 @@ bool RasterSource::IsSolidColor() const {
   return is_solid_color_;
 }
 
-SkColor RasterSource::GetSolidColor() const {
+SkColor4f RasterSource::GetSolidColor() const {
   DCHECK(IsSolidColor());
-  return solid_color_.toSkColor();
+  return solid_color_;
 }
 
 bool RasterSource::HasRecordings() const {

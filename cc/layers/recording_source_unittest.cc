@@ -336,10 +336,10 @@ TEST(RecordingSourceTest, AnalyzeIsSolid) {
     recording_source->SetRecordingScaleFactor(recording_scale);
 
     PaintFlags solid_flags;
-    SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
+    SkColor4f solid_color{0.1f, 0.2f, 0.3f, 1.0f};
     solid_flags.setColor(solid_color);
 
-    SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
+    SkColor4f non_solid_color{0.2f, 0.3f, 0.4f, 0.5f};
     PaintFlags non_solid_flags;
     non_solid_flags.setColor(non_solid_color);
 

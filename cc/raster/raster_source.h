@@ -88,7 +88,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Returns the color of the raster source if it is solid color. The results
   // are unspecified if IsSolidColor returns false.
-  SkColor GetSolidColor() const;
+  SkColor4f GetSolidColor() const;
 
   // Returns the recorded layer size of this raster source.
   gfx::Size GetSize() const;
