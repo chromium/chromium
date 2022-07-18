@@ -25,6 +25,19 @@ bool IsSystemProcessForCommandLine(const base::CommandLine& command_line) {
 
 }  // namespace
 
+bool IsPrefersForCommandLine(const base::CommandLine& command_line) {
+#if BUILDFLAG(IS_WIN)
+  const absl::optional<tagging::TagArgs> tag_args =
+      GetTagArgsForCommandLine(command_line).tag_args;
+  return tag_args && !tag_args->apps.empty() &&
+         tag_args->apps.front().needs_admin &&
+         *tag_args->apps.front().needs_admin ==
+             tagging::AppArgs::NeedsAdmin::kPrefers;
+#else
+  return false;
+#endif
+}
+
 UpdaterScope GetUpdaterScopeForCommandLine(
     const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_WIN)

@@ -520,23 +520,24 @@ ProcessExitResult WMain(HMODULE module) {
   if (args_result.exit_code != SUCCESS_EXIT_CODE)
     return args_result;
 
-  if (CommandString cmd_line;
-      !::IsUserAnAdmin() && cmd_line.assign(L"updater.exe") &&
-      cmd_line.append(cmd_line_args.get()) &&
-      GetUpdaterScopeForCommandLine(base::CommandLine::FromString(
-          cmd_line.get())) == UpdaterScope::kSystem) {
-    ProcessExitResult run_elevated_result =
-        HandleRunElevated(base::CommandLine::FromString(::GetCommandLineW()));
-    if (run_elevated_result.exit_code !=
-        RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS) {
-      return run_elevated_result;
-    }
+  if (!::IsUserAnAdmin()) {
+    const base::CommandLine command_line =
+        base::CommandLine::FromString(::GetCommandLineW());
+    if (GetUpdaterScopeForCommandLine(command_line) == UpdaterScope::kSystem) {
+      ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
+      if (run_elevated_result.exit_code !=
+              RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS ||
+          !IsPrefersForCommandLine(command_line)) {
+        return run_elevated_result;
+      }
 
-    // Could not elevate. So fall through to install as a per-user app.
-    if (!cmd_line_args.append(L" --") ||
-        !cmd_line_args.append(
-            base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
-      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+      // "needsadmin=prefers" case: Could not elevate. So fall through to
+      // install as a per-user app.
+      if (!cmd_line_args.append(L" --") ||
+          !cmd_line_args.append(
+              base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
+        return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+      }
     }
   }
 

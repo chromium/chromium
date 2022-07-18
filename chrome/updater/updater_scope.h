@@ -34,6 +34,9 @@ inline std::ostream& operator<<(std::ostream& os, UpdaterScope scope) {
   return os << UpdaterScopeToString(scope).c_str();
 }
 
+// Returns `true` if the tag has a "needsadmin=prefers" argument.
+bool IsPrefersForCommandLine(const base::CommandLine& command_line);
+
 // Returns the scope of the updater, which is either per-system or per-user.
 // The updater scope is determined from the `command_line` argument.
 UpdaterScope GetUpdaterScopeForCommandLine(

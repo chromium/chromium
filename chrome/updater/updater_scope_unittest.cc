@@ -20,12 +20,14 @@ class GetUpdaterScopeForCommandLineTest : public testing::Test {
 
 TEST_F(GetUpdaterScopeForCommandLineTest, NoParams) {
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
+  EXPECT_FALSE(IsPrefersForCommandLine(command_line_));
 }
 
 TEST_F(GetUpdaterScopeForCommandLineTest, System) {
   command_line_.AppendSwitch(kSystemSwitch);
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
             UpdaterScope::kSystem);
+  EXPECT_FALSE(IsPrefersForCommandLine(command_line_));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -33,6 +35,7 @@ TEST_F(GetUpdaterScopeForCommandLineTest, System) {
 TEST_F(GetUpdaterScopeForCommandLineTest, Prefers) {
   command_line_.AppendSwitch(kCmdLinePrefersUser);
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
+  EXPECT_FALSE(IsPrefersForCommandLine(command_line_));
 }
 
 TEST_F(GetUpdaterScopeForCommandLineTest, System_And_Prefers) {
@@ -40,6 +43,7 @@ TEST_F(GetUpdaterScopeForCommandLineTest, System_And_Prefers) {
   command_line_.AppendSwitch(kCmdLinePrefersUser);
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
             UpdaterScope::kSystem);
+  EXPECT_FALSE(IsPrefersForCommandLine(command_line_));
 }
 
 TEST_F(GetUpdaterScopeForCommandLineTest, TagPrefers) {
@@ -50,6 +54,7 @@ TEST_F(GetUpdaterScopeForCommandLineTest, TagPrefers) {
       "needsadmin=prefers&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
             UpdaterScope::kSystem);
+  EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
 }
 
 TEST_F(GetUpdaterScopeForCommandLineTest, Prefers_And_TagPrefers) {
@@ -60,6 +65,7 @@ TEST_F(GetUpdaterScopeForCommandLineTest, Prefers_And_TagPrefers) {
       "appname=TestApp3&"
       "needsadmin=prefers&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
+  EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
 }
 
 #endif
