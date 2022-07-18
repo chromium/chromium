@@ -71,6 +71,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -1191,6 +1192,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     profile_builder.AddTestingFactory(
         ChromeSigninClientFactory::GetInstance(),
         base::BindRepeating(&signin::BuildTestSigninClient));
+    profile_builder.AddTestingFactory(
+        WebDataServiceFactory::GetInstance(),
+        WebDataServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1924,7 +1928,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest, RemoveUkmUrls) {
 
 // Verify that clearing autofill form data works.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalLastHour) {
-  GetProfile()->CreateWebDataService();
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
@@ -1946,7 +1949,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalLastHour) {
 // Verify the clearing of autofill profiles added / modified more than 30 days
 // ago.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalOlderThan30Days) {
-  GetProfile()->CreateWebDataService();
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
@@ -1984,7 +1986,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalOlderThan30Days) {
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
-  GetProfile()->CreateWebDataService();
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
@@ -2005,7 +2006,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        StrikeDatabaseEmptyOnAutofillRemoveEverything) {
-  GetProfile()->CreateWebDataService();
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
@@ -2031,7 +2031,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 // Verify that clearing autofill form data works.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        AutofillOriginsRemovedWithHistory) {
-  GetProfile()->CreateWebDataService();
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
@@ -3426,7 +3425,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
 // Verify that clearing secure payment confirmation credentials data works.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        RemoveSecurePaymentConfirmationCredentials) {
-  GetProfile()->CreateWebDataService();
   RemoveSecurePaymentConfirmationCredentialsTester tester(GetProfile());
   tester.ExpectCallClearSecurePaymentConfirmationCredentials(1);
 

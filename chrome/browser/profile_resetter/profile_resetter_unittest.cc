@@ -157,7 +157,6 @@ void ProfileResetterTest::SetUp() {
   extensions::ExtensionServiceTestBase::SetUp();
   InitializeEmptyExtensionService();
 
-  profile()->CreateWebDataService();
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
   resetter_ = std::make_unique<ProfileResetter>(profile());

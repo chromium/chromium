@@ -15,8 +15,6 @@
 TemplateURLServiceFactoryTestUtil::TemplateURLServiceFactoryTestUtil(
     TestingProfile* profile)
     : profile_(profile) {
-  profile_->CreateWebDataService();
-
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile_,
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));

@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -56,9 +57,10 @@ class SyncServiceFactoryTest : public testing::Test {
                               HistoryServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
-    profile_ = builder.Build();
     // Some services will only be created if there is a WebDataService.
-    profile_->CreateWebDataService();
+    builder.AddTestingFactory(WebDataServiceFactory::GetInstance(),
+                              WebDataServiceFactory::GetDefaultFactory());
+    profile_ = builder.Build();
   }
 
   void TearDown() override {

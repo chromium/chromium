@@ -61,6 +61,9 @@ class WebDataServiceFactory
 
   static WebDataServiceFactory* GetInstance();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend struct base::DefaultSingletonTraits<WebDataServiceFactory>;
 

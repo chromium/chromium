@@ -94,7 +94,6 @@ class SettingsResetPromptModelTest
         testing_pref_service()->registry());
 #endif  // !BUILDFLAG(IS_WIN)
 
-    profile_->CreateWebDataService();
     TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
 

@@ -50,7 +50,6 @@
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -59,8 +58,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_key.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -89,7 +86,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
-#include "components/webdata_services/web_data_service_wrapper.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -153,21 +149,6 @@ using testing::NiceMock;
 using testing::Return;
 
 namespace {
-
-void TestProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
-                              sql::InitStatus status,
-                              const std::string& diagnostics) {
-  NOTREACHED();
-}
-
-std::unique_ptr<KeyedService> BuildWebDataService(
-    content::BrowserContext* context) {
-  const base::FilePath& context_path = context->GetPath();
-  return std::make_unique<WebDataServiceWrapper>(
-      context_path, g_browser_process->GetApplicationLocale(),
-      content::GetUIThreadTaskRunner({}),
-      base::BindRepeating(&TestProfileErrorCallback));
-}
 
 std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
     content::BrowserContext* context) {
@@ -548,11 +529,6 @@ TestingProfile::~TestingProfile() {
   // Shutdown storage partitions before we post a task to delete
   // the resource context.
   ShutdownStoragePartitions();
-}
-
-void TestingProfile::CreateWebDataService() {
-  WebDataServiceFactory::GetInstance()->SetTestingFactory(
-      this, base::BindRepeating(&BuildWebDataService));
 }
 
 void TestingProfile::SetGuestSession(bool guest) {

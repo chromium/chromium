@@ -85,6 +85,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       TestingFactories testing_factories = {});
 
   // Creates a WebDataService. If not invoked, the web data service is null.
+  // TODO(crbug.com/1106699): Remove this API and adopt the Builder instead.
   void CreateWebDataService();
 
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
