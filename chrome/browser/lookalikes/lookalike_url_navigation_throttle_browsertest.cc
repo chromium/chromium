@@ -1555,6 +1555,26 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                            embedded_test_server()->GetURL("example.net", "/"));
 }
 
+// Test Combo Squatting heuristic. In this test, if kNavigatedUrl is
+// Combo Squatting, the metrics should be recorded but no interstitial
+// page (full page warning) is shown.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       ComboSquatting_ShouldRecordMetricsWithoutUI) {
+  base::HistogramTester histograms;
+  const GURL kNavigatedUrl = GetURL("google-login.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(lookalikes::kHistogramName,
+                               NavigationSuggestionEvent::kComboSquatting, 1);
+
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kComboSquatting);
+  CheckUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
+}
+
 scoped_refptr<net::X509Certificate> LoadCertificate() {
   constexpr char kCertFileName[] = "prime256v1-sha256-google-com.public.pem";
 

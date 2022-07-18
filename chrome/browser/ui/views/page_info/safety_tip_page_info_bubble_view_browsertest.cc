@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
 // Tests that Safety Tips don't trigger when using a scoped allowlist.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       DoesntTriggersOnScopedAllowlist) {
+                       DoesntTriggerOnScopedAllowlist) {
   // This domain is one edit from google.com, but is allowed to spoof google.
   const GURL kNavigatedUrl = GetURL("googlee.com");
   const GURL kTargetUrl = GetURL("google.com");
@@ -1323,6 +1323,28 @@ IN_PROC_BROWSER_TEST_F(
   CheckRecordedHeuristicsUkmCount(2);
   CheckHeuristicsUkmRecord({kNavigatedUrl, {true, false, false}}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, {true, false, false}}, 1);
+}
+
+// Test that a Safety Tips is not shown and metrics are recorded when
+// a combo squatting url is flagged.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       DoesntTriggerOnComboSquatting) {
+  base::HistogramTester histograms;
+  const GURL kNavigatedUrl = GetURL("google-login.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(lookalikes::kHistogramName,
+                               NavigationSuggestionEvent::kComboSquatting, 1);
+
+  // TODO(crbug.com/1343630): keyword (embedded keyword) heuristic should
+  // be removed from the code. The last `false` value in
+  // the input of CheckHeuristicsUkmRecord is correlated to this heuristic.
+  CheckRecordedHeuristicsUkmCount(1);
+  CheckHeuristicsUkmRecord({kNavigatedUrl, {false, false, true}}, 0);
 }
 
 // Tests for Digital Asset Links for lookalike checks.
