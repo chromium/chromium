@@ -8,34 +8,28 @@ import json
 import os
 import sys
 
-POLICY_TEMPLATES_PATH = os.path.join('.', 'policy_templates.json')
+POLICY_TEMPLATES_PATH =  os.path.join(
+  os.path.dirname(__file__), 'policy_templates.json')
 
-def GetPolicyTemplates(path = POLICY_TEMPLATES_PATH):
-  '''Returns an object containing the policy templates found at `path`.
+def GetPolicyTemplates():
+  '''Returns an object containing the policy templates.'''
 
-    Args:
-      path: A path to the policy templates definitions.
-  '''
-  with open(path, 'r', encoding='utf-8') as f:
+  with open(POLICY_TEMPLATES_PATH, 'r', encoding='utf-8') as f:
     return eval(f.read())
 
 
 def main():
-  '''Converts the policy templates found at  `src` into a JSON file at `dest`.
+  '''Generates the a JSON file at `dest` with all the policy definitions.
 
     Args:
-      src: A path to the policy templates definitions.
       dest: A path to the policy templates generated definitions.
   '''
   parser = argparse.ArgumentParser()
-  parser.add_argument('--src', dest='source', default=POLICY_TEMPLATES_PATH)
   parser.add_argument('--dest', dest='dest')
   args = parser.parse_args()
 
-  data = GetPolicyTemplates(os.path.join(args.source))
-
   with open(os.path.join(args.dest), 'w+', encoding='utf-8') as dest:
-    json.dump(data, dest, indent=2, sort_keys=True)
+    json.dump(GetPolicyTemplates(), dest, indent=2, sort_keys=True)
 
 
 if '__main__' == __name__:

@@ -196,8 +196,6 @@ action("generate_policy_templates") {
   args = [
     "--dest",
     rebase_path(policy_templates_generated_json_path, root_build_dir),
-    "--src",
-    rebase_path("resources/policy_templates.json", root_build_dir),
   ]
 }
 
