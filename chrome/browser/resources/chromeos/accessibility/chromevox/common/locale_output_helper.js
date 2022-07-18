@@ -10,6 +10,8 @@
  * https://en.wikipedia.org/wiki/Locale_(computer_software)
  */
 
+import {Msgs} from './msgs.js';
+
 export class LocaleOutputHelper {
   /** @private */
   constructor() {

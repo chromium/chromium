@@ -7,6 +7,7 @@
  */
 import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {Msgs} from '../common/msgs.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';

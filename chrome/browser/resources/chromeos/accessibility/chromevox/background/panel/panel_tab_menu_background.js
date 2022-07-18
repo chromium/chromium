@@ -7,6 +7,8 @@
  * panel.
  */
 
+import {Msgs} from '../../common/msgs.js';
+
 export class PanelTabMenuBackground {
   /**
    * @param {number} windowId

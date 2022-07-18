@@ -15,7 +15,6 @@ goog.require('BridgeHelper');
 goog.require('EarconDescription');
 goog.require('KeyCode');
 goog.require('LogStore');
-goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');

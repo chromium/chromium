@@ -9,6 +9,7 @@ import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
+import {Msgs} from '../../common/msgs.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {EventSourceState} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';

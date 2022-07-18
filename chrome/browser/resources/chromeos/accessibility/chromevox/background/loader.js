@@ -28,7 +28,6 @@ goog.require('LibLouis');
 goog.require('LibLouis.FormType');
 goog.require('LogStore');
 goog.require('LogType');
-goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');

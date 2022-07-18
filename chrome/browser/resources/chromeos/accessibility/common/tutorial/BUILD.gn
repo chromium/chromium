@@ -61,6 +61,7 @@ js_library("lesson_menu") {
 }
 
 js_library("localization") {
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
 js_library("main_menu") {

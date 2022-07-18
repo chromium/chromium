@@ -6,6 +6,8 @@
  * @fileoverview ChromeVox braille command data.
  */
 
+import {Msgs} from '../msgs.js';
+
 export const BrailleCommandData = {};
 
 /**

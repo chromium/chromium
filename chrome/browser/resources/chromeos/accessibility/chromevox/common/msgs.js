@@ -7,9 +7,7 @@
  * @fileoverview Defines methods related to retrieving translated messages.
  */
 
-goog.provide('Msgs');
-
-Msgs = class {
+export class Msgs {
   constructor() {}
 
   /**
@@ -102,7 +100,7 @@ Msgs = class {
     }
     return message;
   }
-};
+}
 
 /**
  * The namespace for all Chromevox messages.

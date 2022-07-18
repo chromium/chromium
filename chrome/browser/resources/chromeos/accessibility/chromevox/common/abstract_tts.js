@@ -8,6 +8,8 @@
  *
  */
 
+import {Msgs} from './msgs.js';
+
 /**
  * Creates a new instance.
  * @implements {TtsInterface}

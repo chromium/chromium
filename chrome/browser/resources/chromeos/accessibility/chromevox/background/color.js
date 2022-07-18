@@ -6,6 +6,8 @@
  * @fileoverview Provides color matching services for ChromeVox.
  */
 
+import {Msgs} from '../common/msgs.js';
+
 export const Color = {};
 
 /**

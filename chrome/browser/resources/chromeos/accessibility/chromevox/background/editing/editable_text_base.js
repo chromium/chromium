@@ -14,6 +14,7 @@
  * or to provide other customizations.
  */
 import {AbstractTts} from '../../common/abstract_tts.js';
+import {Msgs} from '../../common/msgs.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 
 /**

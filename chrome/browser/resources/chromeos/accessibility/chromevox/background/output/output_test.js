@@ -1,7 +1,6 @@
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 GEN_INCLUDE([
   '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js',
 ]);
@@ -109,6 +108,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await importModule(
         ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
         '/chromevox/background/output/output_types.js');
+    await importModule('Msgs', '/chromevox/common/msgs.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();

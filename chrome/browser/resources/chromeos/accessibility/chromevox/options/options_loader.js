@@ -12,7 +12,6 @@ goog.require('BluetoothBrailleDisplayManager');
 goog.require('ChromeVox');
 goog.require('LibLouis');
 goog.require('LibLouis.FormType');
-goog.require('Msgs');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TtsInterface');

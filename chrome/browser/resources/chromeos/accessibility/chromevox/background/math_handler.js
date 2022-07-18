@@ -6,6 +6,7 @@
  * @fileoverview Handles math output and exploration.
  */
 import {CursorRange} from '../../common/cursors/range.js';
+import {Msgs} from '../common/msgs.js';
 
 /**
  * Initializes math for output and exploration.

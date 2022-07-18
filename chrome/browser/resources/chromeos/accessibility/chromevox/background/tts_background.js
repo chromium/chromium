@@ -8,6 +8,7 @@
  */
 
 import {AbstractTts} from '../common/abstract_tts.js';
+import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ChromeTtsBase} from '../common/tts_base.js';
 

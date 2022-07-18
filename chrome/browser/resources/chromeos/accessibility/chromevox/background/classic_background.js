@@ -8,6 +8,7 @@
 import {AbstractTts} from '../common/abstract_tts.js';
 import {CompositeTts} from '../common/composite_tts.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
+import {Msgs} from '../common/msgs.js';
 
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
