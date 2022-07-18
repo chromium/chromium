@@ -25,16 +25,9 @@ namespace internal {
 // the second one 16. We could technically return something different for
 // malloc() and operator new(), but this would complicate things, and most of
 // our allocations are presumably coming from operator new() anyway.
-//
-// __STDCPP_DEFAULT_NEW_ALIGNMENT__ is C++17. As such, it is not defined on all
-// platforms, as Chrome's requirement is C++14 as of 2020.
-#if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
 constexpr size_t kAlignment =
     std::max(alignof(max_align_t),
              static_cast<size_t>(__STDCPP_DEFAULT_NEW_ALIGNMENT__));
-#else
-constexpr size_t kAlignment = alignof(max_align_t);
-#endif
 static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
