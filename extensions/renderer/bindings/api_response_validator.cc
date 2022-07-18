@@ -123,6 +123,7 @@ void APIResponseValidator::ValidateEvent(
       "test.onMessage",
       // https://crbug.com/1343611.
       "runtime.onMessage",
+      "contextMenus.onClicked",
   };
 
   if (base::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
