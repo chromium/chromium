@@ -6,3 +6,10 @@ include_rules = [
     "+base/trace_event",
     "+third_party/perfetto/include/perfetto/tracing",
 ]
+
+specific_include_rules = {
+    ".*_test\.cc": [
+        # Some tests use base::RunLoop.
+        "+base/run_loop.h",
+    ],
+}

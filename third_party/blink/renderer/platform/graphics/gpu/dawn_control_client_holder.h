@@ -47,6 +47,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
   const DawnProcTable& GetProcs() const { return procs_; }
+  void MarkContextLost();
   bool IsContextLost() const;
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
       const IntSize& size,
@@ -57,11 +58,14 @@ class PLATFORM_EXPORT DawnControlClientHolder
   friend class RefCounted<DawnControlClientHolder>;
   ~DawnControlClientHolder();
 
+  bool context_lost_ = false;
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<gpu::webgpu::APIChannel> api_channel_;
   DawnProcTable procs_;
   WebGPURecyclableResourceCache recyclable_resource_cache_;
+
+  base::WeakPtrFactory<DawnControlClientHolder> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

@@ -9,6 +9,7 @@ include_rules = [
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
+    "+gpu/command_buffer/client/webgpu_interface_stub.h",
     "+media/base/video_frame.h",
     "+services/metrics/public/cpp/ukm_builders.h",
 ]

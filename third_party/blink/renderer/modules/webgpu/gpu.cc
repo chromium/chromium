@@ -277,4 +277,9 @@ void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.insert(buffer);
 }
 
+void GPU::SetDawnControlClientHolderForTesting(
+    scoped_refptr<DawnControlClientHolder> dawn_control_client) {
+  dawn_control_client_ = std::move(dawn_control_client);
+}
+
 }  // namespace blink
