@@ -4904,8 +4904,10 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
   };
 };
 
+// TODO(crbug.com/1345215): Re-enable this test. It was disabled because of
+// flakiness.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
-                       Test1) {
+                       DISABLED_Test1) {
   std::vector<RuleData> rule_data = {
       {1, 4, "allowAllRequests", "page_with_two_frames\\.html", true,
        std::vector<std::string>({"main_frame"})},
@@ -4967,8 +4969,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
           {requests[1], requests[2], requests[3], requests[4], requests[5]});
 }
 
+// TODO(crbug.com/1345215): Re-enable this test. It was disabled because of
+// flakiness.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
-                       Test4) {
+                       DISABLED_Test4) {
   std::vector<RuleData> rule_data = {
       {1, 6, "allowAllRequests", "page_with_two_frames\\.html", true,
        std::vector<std::string>({"main_frame"})},
@@ -5376,10 +5380,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
 };
 
 // These are split into two tests to prevent a timeout. See crbug.com/787957.
-//
-// First test disabled because of flakes. See crbug.com/1345215.
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest,
-                       DISABLED_Test1) {
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest, Test1) {
   ASSERT_NO_FATAL_FAILURE(LoadExtension());
   RunTests({{"block_subframe.com", kSubframe},
             {"block_stylesheet.com", kStylesheet},
