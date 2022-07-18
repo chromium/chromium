@@ -129,10 +129,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     return nullptr;
   }
   if (!pixel_data.empty()) {
-    SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
-                                         ResourceFormatToClosestSkColorType(
-                                             /*gpu_compositing=*/true, format),
-                                         alpha_type);
+    SkImageInfo info = backing->AsSkImageInfo();
     SkPixmap pixmap(info, pixel_data.data(), info.minRowBytes());
 
     if (!backing->UploadFromMemory(pixmap))

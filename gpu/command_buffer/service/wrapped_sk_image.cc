@@ -60,13 +60,6 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   return estimated_size;
 }
 
-SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
-  return SkImageInfo::Make(size.width(), size.height(),
-                           ResourceFormatToClosestSkColorType(
-                               /*gpu_compositing=*/true, format),
-                           kOpaque_SkAlphaType);
-}
-
 class WrappedSkImage : public ClearTrackingSharedImageBacking {
  public:
   WrappedSkImage(base::PassKey<WrappedSkImageFactory>,
@@ -316,7 +309,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                 pixels.data(), pixels.size(), GrMipMapped::kNo,
                 GrProtected::kNo);
       } else {
-        auto info = MakeSkImageInfo(size(), format());
+        auto info = AsSkImageInfo();
         if (!stride)
           stride = info.minRowBytes();
         SkPixmap pixmap(info, pixels.data(), stride);

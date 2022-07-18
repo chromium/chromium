@@ -618,11 +618,8 @@ SharedImageRepresentationMemoryImpl::~SharedImageRepresentationMemoryImpl() =
     default;
 
 SkPixmap SharedImageRepresentationMemoryImpl::BeginReadAccess() {
-  SkImageInfo info = SkImageInfo::Make(
-      backing()->size().width(), backing()->size().height(),
-      viz::ResourceFormatToClosestSkColorType(true, backing()->format()),
-      backing()->alpha_type(), backing()->color_space().ToSkColorSpace());
-  return SkPixmap(info, image_memory_->memory(), image_memory_->stride());
+  return SkPixmap(backing()->AsSkImageInfo(), image_memory_->memory(),
+                  image_memory_->stride());
 }
 
 std::unique_ptr<SharedImageRepresentationMemory>

@@ -437,11 +437,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   }
 
   void WritePixels(const base::span<const uint8_t>& pixel_data, size_t stride) {
-    auto info = SkImageInfo::Make(size().width(), size().height(),
-                                  ResourceFormatToClosestSkColorType(
-                                      /*gpu_compositing=*/true, format()),
-                                  kOpaque_SkAlphaType);
-    SkPixmap pixmap(info, pixel_data.data(), stride);
+    SkPixmap pixmap(AsSkImageInfo(), pixel_data.data(), stride);
     UploadFromMemory(pixmap);
   }
 

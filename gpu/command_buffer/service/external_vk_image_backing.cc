@@ -1024,13 +1024,9 @@ bool ExternalVkImageBacking::WritePixelsWithData(
   auto* gr_context = context_state_->gr_context();
   WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
 
-  auto info = SkImageInfo::Make(size().width(), size().height(),
-                                ResourceFormatToClosestSkColorType(
-                                    /*gpu_compositing=*/true, format()),
-                                kOpaque_SkAlphaType);
-  SkPixmap pixmap(info, pixel_data.data(), stride);
+  SkPixmap pixmap(AsSkImageInfo(), pixel_data.data(), stride);
   if (!gr_context->updateBackendTexture(backend_texture_, &pixmap,
-                                        /*levels=*/1, nullptr, nullptr)) {
+                                        /*numLevels=*/1, nullptr, nullptr)) {
     DLOG(ERROR) << "updateBackendTexture() failed.";
   }
 
