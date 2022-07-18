@@ -11,7 +11,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/common/ui/util/image_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,18 +24,6 @@ constexpr CGFloat kCellLabelsWidthProportion = 3.f;
 
 // Minimum cell height when the cell has 2 lines.
 constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
-
-// Offset of the background image used to create the elevated effect.
-constexpr CGFloat kBackgroundImageOffset = 1;
-
-// Background image color alpha.
-constexpr CGFloat kBackgroundColorAlpha = 0.1;
-
-// Background image corner radius.
-constexpr CGFloat kBackgroundCornerRadius = 7;
-
-// Background blur radius.
-constexpr CGFloat kBackgroundBlurRadius = 3;
 
 }  // namespace
 
@@ -58,9 +45,8 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
   cell.textLabel.text = self.text;
   [cell setDetailText:self.detailText];
 
-  if (self.symbolImage) {
-    [cell setSymbolImage:self.symbolImage
-         backgroundColor:self.symbolBackgroundColor];
+  if (self.symbolView) {
+    [cell setSymbolView:self.symbolView];
   } else {
     // Update the icon image, if one is present.
     UIImage* iconImage = nil;
@@ -93,6 +79,8 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
 @end
 
 @implementation TableViewDetailIconCell {
+  UIView* _iconContainerView;
+  UIView* _symbolView;
   UIImageView* _iconImageView;
   NSLayoutConstraint* _iconHiddenConstraint;
   NSLayoutConstraint* _iconVisibleConstraint;
@@ -107,11 +95,18 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
   if (self) {
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
+    _iconContainerView = [[UIView alloc] init];
+    _iconContainerView.hidden = YES;
+    _iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconContainerView.autoresizesSubviews = YES;
+    _iconContainerView.clipsToBounds = YES;
+    [contentView addSubview:_iconContainerView];
 
     _iconImageView = [[UIImageView alloc] init];
-    _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconImageView.hidden = YES;
-    [contentView addSubview:_iconImageView];
+    _iconImageView.translatesAutoresizingMaskIntoConstraints = YES;
+    _iconImageView.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [_iconContainerView addSubview:_iconImageView];
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -131,7 +126,7 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
     _iconVisibleConstraint = [_textStackView.leadingAnchor
-        constraintEqualToAnchor:_iconImageView.trailingAnchor
+        constraintEqualToAnchor:_iconContainerView.trailingAnchor
                        constant:kTableViewImagePadding];
 
     _minimumCellHeightConstraint = [contentView.heightAnchor
@@ -144,15 +139,15 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
     _minimumCellHeightConstraint.active = YES;
 
     [NSLayoutConstraint activateConstraints:@[
-      // Image.
-      [_iconImageView.leadingAnchor
+      // Icon container.
+      [_iconContainerView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor
+      [_iconContainerView.widthAnchor
           constraintEqualToConstant:kTableViewIconImageSize],
-      [_iconImageView.heightAnchor
-          constraintEqualToAnchor:_iconImageView.widthAnchor],
-      [_iconImageView.centerYAnchor
+      [_iconContainerView.heightAnchor
+          constraintEqualToAnchor:_iconContainerView.widthAnchor],
+      [_iconContainerView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
 
       // Text labels.
@@ -178,33 +173,22 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
   return self;
 }
 
-- (void)setSymbolImage:(UIImage*)image
-       backgroundColor:(UIColor*)backgroundColor {
-  BOOL hidden = (image == nil);
-  _iconImageView.hidden = hidden;
+- (void)setSymbolView:(UIView*)symbolView {
+  [_symbolView removeFromSuperview];
+  _symbolView = nil;
+
+  _symbolView = symbolView;
+  _symbolView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _symbolView.frame = _iconContainerView.bounds;
+  [_iconContainerView addSubview:_symbolView];
+
+  BOOL hidden = (symbolView == nil);
+  _iconContainerView.hidden = hidden;
   if (hidden) {
     _iconVisibleConstraint.active = NO;
     _iconHiddenConstraint.active = YES;
   } else {
-    _iconImageView.backgroundColor = backgroundColor;
-    _iconImageView.layer.cornerRadius = kBackgroundCornerRadius;
-    CGFloat centerPoint = kTableViewIconImageSize / 2;
-
-    UIImage* blurredImage = BlurredImageWithImage(image, kBackgroundBlurRadius);
-    UIImageView* backgroundImageView =
-        [[UIImageView alloc] initWithImage:blurredImage];
-    backgroundImageView.center =
-        CGPointMake(centerPoint, centerPoint + kBackgroundImageOffset);
-    backgroundImageView.tintColor =
-        [UIColor.blackColor colorWithAlphaComponent:kBackgroundColorAlpha];
-    [_iconImageView addSubview:backgroundImageView];
-
-    UIImageView* foregroundImageView =
-        [[UIImageView alloc] initWithImage:image];
-    foregroundImageView.center = CGPointMake(centerPoint, centerPoint);
-    foregroundImageView.tintColor = UIColor.whiteColor;
-    [_iconImageView addSubview:foregroundImageView];
-
     _iconHiddenConstraint.active = NO;
     _iconVisibleConstraint.active = YES;
   }
@@ -214,10 +198,10 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
   if (image == nil && _iconImageView.image == nil) {
     return;
   }
+  _iconImageView.image = image;
 
   BOOL hidden = (image == nil);
-  _iconImageView.image = image;
-  _iconImageView.hidden = hidden;
+  _iconContainerView.hidden = hidden;
   if (hidden) {
     _iconVisibleConstraint.active = NO;
     _iconHiddenConstraint.active = YES;
@@ -293,6 +277,7 @@ constexpr CGFloat kBackgroundBlurRadius = 3;
 
   [self setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
   [self setIconImage:nil];
+  [self setSymbolView:nil];
   [self setDetailText:nil];
 }
 

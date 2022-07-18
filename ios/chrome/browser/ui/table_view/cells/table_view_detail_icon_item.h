@@ -16,10 +16,7 @@
 @property(nonatomic, copy) NSString* iconImageName;
 
 // The symbol leading icon. If empty, no icon will be shown.
-@property(nonatomic, copy) UIImage* symbolImage;
-
-// The background color for the leading `symbolImage`.
-@property(nonatomic, copy) UIColor* symbolBackgroundColor;
+@property(nonatomic, strong) UIView* symbolView;
 
 // The main text string.
 @property(nonatomic, copy) NSString* text;
@@ -56,11 +53,9 @@
 // the full width of the cell.
 - (void)setIconImage:(UIImage*)image;
 
-// Sets the leading symbol image with an elevated effect and its background
-// color. If set to nil, the icon will be hidden and the text labels will
-// expand to fill the full width of the cell.
-- (void)setSymbolImage:(UIImage*)image
-       backgroundColor:(UIColor*)backgroundColor;
+// Sets the leading `symbolImageView` icon. If set to nil, the icon will be
+// hidden and the text labels will expand to fill the full width of the cell.
+- (void)setSymbolView:(UIView*)symbolImageView;
 
 // Sets the detail text. `detailText` can be nil (or empty) to hide the detail
 // text.
