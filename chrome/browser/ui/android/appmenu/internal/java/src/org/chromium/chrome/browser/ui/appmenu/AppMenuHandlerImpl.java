@@ -53,7 +53,7 @@ class AppMenuHandlerImpl
     private final AppMenuDelegate mAppMenuDelegate;
     private final View mDecorView;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final Supplier<Integer> mWindowY;
+    private final Supplier<Rect> mAppRect;
 
     private Callback<Integer> mTestOptionsItemSelectedListener;
 
@@ -77,12 +77,12 @@ class AppMenuHandlerImpl
      *            activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
-     * @param windowY Vertical offset of the Window from the origin.
+     * @param appRect Supplier of the app area in Window that the menu should fit in.
      */
     public AppMenuHandlerImpl(Context context, AppMenuPropertiesDelegate delegate,
             AppMenuDelegate appMenuDelegate, View decorView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, View hardwareButtonAnchorView,
-            Supplier<Integer> windowY) {
+            Supplier<Rect> appRect) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -90,7 +90,7 @@ class AppMenuHandlerImpl
         mBlockers = new ArrayList<>();
         mObservers = new ArrayList<>();
         mHardwareButtonMenuAnchor = hardwareButtonAnchorView;
-        mWindowY = windowY;
+        mAppRect = appRect;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -199,9 +199,7 @@ class AppMenuHandlerImpl
         registerViewBinders(customViewBinders, customViewTypeOffsetMap, adapter,
                 mDelegate.shouldShowIconBeforeItem());
 
-        // Get the height and width of the display.
-        Rect appRect = new Rect();
-        mDecorView.getWindowVisibleDisplayFrame(appRect);
+        Rect appRect = mAppRect.get();
 
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
@@ -210,9 +208,6 @@ class AppMenuHandlerImpl
             appRect.right = mDecorView.getWidth();
             appRect.bottom = mDecorView.getHeight();
         }
-
-        // Take into account the vertical offset of the Window.
-        appRect.bottom -= mWindowY.get();
 
         Point pt = new Point();
         display.getSize(pt);

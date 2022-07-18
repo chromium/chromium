@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewConfiguration;
 
@@ -57,12 +58,12 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      *         activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
-     * @param windowY Vertical offset of the Window from the origin.
+     * @param appRect Supplier of the app area in Window that the menu should fit in.
      */
     public AppMenuCoordinatorImpl(Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MenuButtonDelegate buttonDelegate, AppMenuDelegate appMenuDelegate, View decorView,
-            View hardwareButtonAnchorView, Supplier<Integer> windowY) {
+            View hardwareButtonAnchorView, Supplier<Rect> appRect) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
@@ -70,7 +71,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
 
         mAppMenuHandler =
                 new AppMenuHandlerImpl(mContext, mAppMenuPropertiesDelegate, mAppMenuDelegate,
-                        decorView, activityLifecycleDispatcher, hardwareButtonAnchorView, windowY);
+                        decorView, activityLifecycleDispatcher, hardwareButtonAnchorView, appRect);
     }
 
     @Override
