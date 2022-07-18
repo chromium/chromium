@@ -1043,8 +1043,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
 // after taking response away. Without prerender, these prefetches could have
 // helped improve the performance of loading SRPs, so it is necessary to
 // understand the percentage of failing ones.
+// TODO(https://crbug.com/1344850): Flaky.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       PrerenderFailAfterResponseServed) {
+                       DISABLED_PrerenderFailAfterResponseServed) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
