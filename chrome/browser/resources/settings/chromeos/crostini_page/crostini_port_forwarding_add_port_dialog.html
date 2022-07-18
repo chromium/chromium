@@ -63,10 +63,11 @@
       </div>
     </div>
     <template is="dom-if" if="[[showContainerSelect_(allContainers)]]" restamp>
-      <settings-crostini-container-select
+      <settings-guest-os-container-select
           containers="[[allContainers]]"
-          selected-container-id="{{containerId_}}">
-      </settings-crostini-container-select>
+          selected-container-id="{{containerId_}}"
+          default-vm-name="[[defaultVmName_]]">
+      </settings-guest-os-container-select>
     </template>
     <div slot="body">
       <cr-input id="portLabelInput"

@@ -16,6 +16,20 @@ export const CROSTINI_TYPE = 'crostini';
 export const PLUGIN_VM_TYPE = 'pluginVm';
 
 /**
+ * Non-js key names are kept to match c++ style keys in prefs.
+ * @typedef {{vm_name: ?string,
+ *            container_name: ?string}}
+ */
+export let GuestId;
+
+/**
+ * |ipv4| below is null if the container is not currently running.
+ * @typedef {{id: !GuestId,
+ *            ipv4: ?string}}
+ */
+export let ContainerInfo;
+
+/**
  * @fileoverview A helper object used by the both the Crostini and Plugin VM
  * sections to manage the file sharing and USB sharing.
  */

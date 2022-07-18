@@ -13,11 +13,13 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../../settings_shared_css.js';
-import './crostini_container_select.js';
+import '../guest_os/guest_os_container_select.js';
 
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, GuestId, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class CrostiniPortForwardingAddPortDialog extends PolymerElement {
@@ -71,6 +73,12 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
         value() {
           return DEFAULT_CONTAINER_ID;
         },
+      },
+
+      /** @private {string} */
+      defaultVmName_: {
+        type: String,
+        value: DEFAULT_CROSTINI_VM,
       },
 
       /**

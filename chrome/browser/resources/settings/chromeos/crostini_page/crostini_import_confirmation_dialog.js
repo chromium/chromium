@@ -13,7 +13,9 @@ import '../../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, GuestId} from './crostini_browser_proxy.js';
+import {GuestId} from '../guest_os/guest_os_browser_proxy.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {

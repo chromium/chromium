@@ -18,11 +18,12 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
+import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CONTAINER_ID, GuestId} from './crostini_browser_proxy.js';
-import {equalContainerId} from './crostini_container_select.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /**
  * @constructor
@@ -119,6 +120,12 @@ class SettingsCrostiniExportImportElement extends
         value() {
           return DEFAULT_CONTAINER_ID;
         },
+      },
+
+      /** @private {string} */
+      defaultVmName_: {
+        type: String,
+        value: DEFAULT_CROSTINI_VM,
       },
 
       /**

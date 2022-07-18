@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-crostini-container-select' is a component enabling a
+ * @fileoverview 'settings-guest-os-container-select' is a component enabling a
  * user to select a target container from a list stored in prefs.
  */
 import 'chrome://resources/cr_elements/md_select_css.m.js';
@@ -11,7 +11,7 @@ import '../../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerInfo, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
+import {ContainerInfo, GuestId} from './guest_os_browser_proxy.js';
 
 /**
  * @param {!GuestId} first
@@ -27,8 +27,8 @@ export function equalContainerId(first, second) {
  * @param {!GuestId} id
  * @return string
  */
-export function containerLabel(id) {
-  if (id.vm_name === DEFAULT_CROSTINI_VM) {
+export function containerLabel(id, defaultVmName) {
+  if (defaultVmName != null && id.vm_name === defaultVmName) {
     return id.container_name;
   }
   return id.vm_name + ':' + id.container_name;
@@ -38,7 +38,7 @@ export function containerLabel(id) {
 /** @polymer */
 class ContainerSelectElement extends PolymerElement {
   static get is() {
-    return 'settings-crostini-container-select';
+    return 'settings-guest-os-container-select';
   }
 
   static get template() {
@@ -53,6 +53,14 @@ class ContainerSelectElement extends PolymerElement {
       selectedContainerId: {
         type: Object,
         notify: true,
+      },
+
+      /**
+       * @type {?string}
+       */
+      defaultVmName: {
+        type: String,
+        value: null,
       },
 
       /**
@@ -85,7 +93,7 @@ class ContainerSelectElement extends PolymerElement {
    * @private
    */
   containerLabel_(id) {
-    return containerLabel(id);
+    return containerLabel(id, this.defaultVmName);
   }
 }
 

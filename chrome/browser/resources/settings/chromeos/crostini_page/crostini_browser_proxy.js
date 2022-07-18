@@ -7,17 +7,11 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 
 // Identifiers for the default Crostini VM and container.
 /** @type {string} */ export const DEFAULT_CROSTINI_VM = 'termina';
 /** @type {string} */ export const DEFAULT_CROSTINI_CONTAINER = 'penguin';
-
-/**
- * Non-js key names are kept to match c++ style keys in prefs.
- * @typedef {{vm_name: string,
- *            container_name: string}}
- */
-export let GuestId;
 
 /** @type {!GuestId} */ export const DEFAULT_CONTAINER_ID = {
   vm_name: DEFAULT_CROSTINI_VM,
@@ -74,13 +68,6 @@ export const PortState = {
 
 export const MIN_VALID_PORT_NUMBER = 1024;   // Minimum 16-bit integer value.
 export const MAX_VALID_PORT_NUMBER = 65535;  // Maximum 16-bit integer value.
-
-/**
- * |ipv4| below is null if the container is not currently running.
- * @typedef {{id: !GuestId,
- *            ipv4: ?string}}
- */
-export let ContainerInfo;
 
 /**
  * @fileoverview A helper object used by the "Linux Apps" (Crostini) section

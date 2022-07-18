@@ -747,7 +747,7 @@ suite('CrostiniPageTests', function() {
         const portLabelInput = subpage.root.querySelector('#portLabelInput');
         portLabelInput.value = 'Some Label';
         const select =
-            subpage.root.querySelector('settings-crostini-container-select');
+            subpage.root.querySelector('settings-guest-os-container-select');
         selectContainerByIndex(select, 1);
 
         subpage.root.querySelector('cr-dialog cr-button[id="continue"]')

@@ -23,11 +23,12 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
+import {containerLabel, equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
-import {containerLabel, equalContainerId} from './crostini_container_select.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /**
  * @constructor
@@ -290,7 +291,9 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
    * @private
    */
   containerLabel_(id) {
-    return this.showContainerId_(this.allPorts_, id) ? containerLabel(id) : '';
+    return this.showContainerId_(this.allPorts_, id) ?
+        containerLabel(id, DEFAULT_CROSTINI_VM) :
+        '';
   }
 
   /**

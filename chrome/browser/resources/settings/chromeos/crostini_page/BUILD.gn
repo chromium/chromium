@@ -15,7 +15,6 @@ js_type_check("closure_compile_module") {
     ":crostini_arc_adb_confirmation_dialog",
     ":crostini_browser_proxy",
     ":crostini_confirmation_dialog",
-    ":crostini_container_select",
     ":crostini_disk_resize_confirmation_dialog",
     ":crostini_disk_resize_dialog",
     ":crostini_export_import",
@@ -59,6 +58,7 @@ js_library("crostini_arc_adb_confirmation_dialog") {
 
 js_library("crostini_browser_proxy") {
   deps = [
+    "../guest_os:guest_os_browser_proxy",
     "//skia/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:cr.m",
@@ -70,14 +70,6 @@ js_library("crostini_confirmation_dialog") {
   deps = [
     ":crostini_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("crostini_container_select") {
-  deps = [
-    ":crostini_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -112,6 +104,8 @@ js_library("crostini_export_import") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
+    "../guest_os:guest_os_browser_proxy",
+    "../guest_os:guest_os_container_select",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -121,6 +115,7 @@ js_library("crostini_export_import") {
 js_library("crostini_import_confirmation_dialog") {
   deps = [
     ":crostini_browser_proxy",
+    "../guest_os:guest_os_browser_proxy",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -154,10 +149,11 @@ js_library("crostini_page") {
 js_library("crostini_port_forwarding") {
   deps = [
     ":crostini_browser_proxy",
-    ":crostini_container_select",
     ":crostini_port_forwarding_add_port_dialog",
     "..:metrics_recorder",
     "..:prefs_behavior",
+    "../guest_os:guest_os_browser_proxy",
+    "../guest_os:guest_os_container_select",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
@@ -175,8 +171,9 @@ js_library("crostini_port_forwarding") {
 js_library("crostini_port_forwarding_add_port_dialog") {
   deps = [
     ":crostini_browser_proxy",
-    ":crostini_container_select",
     "..:metrics_recorder",
+    "../guest_os:guest_os_browser_proxy",
+    "../guest_os:guest_os_container_select",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
@@ -192,6 +189,7 @@ js_library("crostini_extra_containers") {
     ":crostini_extra_containers_create_dialog",
     "..:metrics_recorder",
     "..:prefs_behavior",
+    "../guest_os:guest_os_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
@@ -209,6 +207,7 @@ js_library("crostini_extra_containers_create_dialog") {
   deps = [
     ":crostini_browser_proxy",
     "..:metrics_recorder",
+    "../guest_os:guest_os_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -261,7 +260,6 @@ html_to_js("web_components") {
     "crostini_arc_adb_confirmation_dialog.js",
     "crostini_arc_adb.js",
     "crostini_confirmation_dialog.js",
-    "crostini_container_select.js",
     "crostini_disk_resize_confirmation_dialog.js",
     "crostini_disk_resize_dialog.js",
     "crostini_export_import.js",

@@ -18,12 +18,13 @@
     <template is="dom-if" if="[[showContainerSelect_]]" restamp>
       <div class="secondary" id="secondaryText">
         Container to backup
-        <settings-crostini-container-select
+        <settings-guest-os-container-select
           class="container-select"
           id="exportContainerSelect"
           containers="[[allContainers_]]"
-          selected-container-id="{{exportContainerId_}}">
-        </settings-crostini-container-select>
+          selected-container-id="{{exportContainerId_}}"
+          default-vm-name="[[defaultVmName_]]">
+        </settings-guest-os-container-select>
       </div>
     </template>
   </div>
@@ -39,12 +40,13 @@
     <template is="dom-if" if="[[showContainerSelect_]]" restamp>
       <div class="secondary" id="secondaryText">
         Container to restore
-        <settings-crostini-container-select
+        <settings-guest-os-container-select
           class="container-select"
           id="importContainerSelect"
           containers="[[allContainers_]]"
-          selected-container-id="{{importContainerId_}}">
-        </settings-crostini-container-select>
+          selected-container-id="{{importContainerId_}}"
+          default-vm-name="[[defaultVmName_]]">
+        </settings-guest-os-container-select>
       </div>
     </template>
   </div>

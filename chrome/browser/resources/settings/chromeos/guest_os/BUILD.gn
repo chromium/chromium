@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":guest_os_browser_proxy",
+    ":guest_os_container_select",
     ":guest_os_shared_paths",
     ":guest_os_shared_usb_devices",
   ]
@@ -23,9 +24,18 @@ js_library("guest_os_browser_proxy") {
   ]
 }
 
+js_library("guest_os_container_select") {
+  deps = [
+    ":guest_os_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("guest_os_shared_usb_devices") {
   deps = [
     ":guest_os_browser_proxy",
+    ":guest_os_container_select",
     "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -45,6 +55,7 @@ js_library("guest_os_shared_paths") {
 
 html_to_js("web_components") {
   js_files = [
+    "guest_os_container_select.js",
     "guest_os_shared_usb_devices.js",
     "guest_os_shared_paths.js",
   ]
