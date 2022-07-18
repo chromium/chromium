@@ -12,7 +12,6 @@
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,17 +29,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId TermsOfServiceScreenView::kScreenId;
-
 TermsOfServiceScreenHandler::TermsOfServiceScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.TermsOfServiceScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-TermsOfServiceScreenHandler::~TermsOfServiceScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+TermsOfServiceScreenHandler::~TermsOfServiceScreenHandler() = default;
 
 void TermsOfServiceScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -59,64 +51,26 @@ void TermsOfServiceScreenHandler::DeclareLocalizedValues(
                IDS_TERMS_OF_SERVICE_SCREEN_RETRY_BUTTON);
 }
 
-void TermsOfServiceScreenHandler::SetScreen(TermsOfServiceScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-  screen_ = screen;
-}
-
 void TermsOfServiceScreenHandler::Show(const std::string& manager) {
-  manager_ = manager;
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-  // Update the UI to show an error message or the Terms of Service.
-  UpdateTermsOfServiceInUI();
-
   base::Value::Dict data;
-  data.Set("manager", manager_);
+  data.Set("manager", manager);
 
   ShowInWebUI(std::move(data));
 }
 
-void TermsOfServiceScreenHandler::Hide() {}
-
 void TermsOfServiceScreenHandler::OnLoadError() {
-  load_error_ = true;
-  terms_of_service_ = "";
-  UpdateTermsOfServiceInUI();
+  terms_loaded_ = false;
+  CallExternalAPI("setTermsOfServiceLoadError");
 }
 
 void TermsOfServiceScreenHandler::OnLoadSuccess(
     const std::string& terms_of_service) {
-  load_error_ = false;
-  terms_of_service_ = terms_of_service;
-  UpdateTermsOfServiceInUI();
+  terms_loaded_ = true;
+  CallExternalAPI("setTermsOfService", terms_of_service);
 }
 
 bool TermsOfServiceScreenHandler::AreTermsLoaded() {
-  return !load_error_ && !terms_of_service_.empty();
-}
-
-void TermsOfServiceScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show(manager_);
-    show_on_init_ = false;
-  }
-}
-
-void TermsOfServiceScreenHandler::UpdateTermsOfServiceInUI() {
-  if (!IsJavascriptAllowed())
-    return;
-
-  // If either `load_error_` or `terms_of_service_` is set, the download of the
-  // Terms of Service has completed and the UI should be updated. Otherwise, the
-  // download is still in progress and the UI will be updated when the
-  // OnLoadError() or the OnLoadSuccess() callback is called.
-  if (load_error_)
-    CallJS("login.TermsOfServiceScreen.setTermsOfServiceLoadError");
-  else if (!terms_of_service_.empty())
-    CallJS("login.TermsOfServiceScreen.setTermsOfService", terms_of_service_);
+  return terms_loaded_;
 }
 
 }  // namespace chromeos

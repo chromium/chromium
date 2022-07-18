@@ -36,7 +36,7 @@ class TermsOfServiceScreen : public BaseScreen {
   enum class ScreenState : int { LOADING = 0, LOADED = 1, ERROR = 2 };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  TermsOfServiceScreen(TermsOfServiceScreenView* view,
+  TermsOfServiceScreen(base::WeakPtr<TermsOfServiceScreenView> view,
                        const ScreenExitCallback& exit_callback);
 
   TermsOfServiceScreen(const TermsOfServiceScreen&) = delete;
@@ -52,9 +52,6 @@ class TermsOfServiceScreen : public BaseScreen {
 
   // Called when the user retries to obtain the Terms of Service.
   void OnRetry();
-
-  // Called when view is destroyed so there is no dead reference to it.
-  void OnViewDestroyed(TermsOfServiceScreenView* view);
 
   // Set callback to wait for file saving in tests.
   static void SetTosSavedCallbackForTesting(base::OnceClosure callback);
@@ -74,7 +71,7 @@ class TermsOfServiceScreen : public BaseScreen {
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Start downloading the Terms of Service.
   void StartDownload();
@@ -94,7 +91,7 @@ class TermsOfServiceScreen : public BaseScreen {
   // Runs callback for tests.
   void OnTosSavedForTesting();
 
-  TermsOfServiceScreenView* view_;
+  base::WeakPtr<TermsOfServiceScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> terms_of_service_loader_;

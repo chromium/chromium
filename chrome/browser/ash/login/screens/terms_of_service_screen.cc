@@ -81,21 +81,16 @@ std::string TermsOfServiceScreen::GetResultString(Result result) {
 }
 
 TermsOfServiceScreen::TermsOfServiceScreen(
-    TermsOfServiceScreenView* view,
+    base::WeakPtr<TermsOfServiceScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(TermsOfServiceScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->SetScreen(this);
 }
 
-TermsOfServiceScreen::~TermsOfServiceScreen() {
-  if (view_)
-    view_->SetScreen(nullptr);
-}
+TermsOfServiceScreen::~TermsOfServiceScreen() = default;
 
 void TermsOfServiceScreen::OnDecline() {
   exit_callback_.Run(Result::DECLINED);
@@ -123,11 +118,6 @@ void TermsOfServiceScreen::OnRetry() {
     return;
 
   StartDownload();
-}
-
-void TermsOfServiceScreen::OnViewDestroyed(TermsOfServiceScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 bool TermsOfServiceScreen::MaybeSkip(WizardContext* context) {
@@ -166,13 +156,10 @@ void TermsOfServiceScreen::ShowImpl() {
   StartDownload();
 }
 
-void TermsOfServiceScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void TermsOfServiceScreen::HideImpl() {}
 
-void TermsOfServiceScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void TermsOfServiceScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kBack)
     OnDecline();
   else if (action_id == kAccept)
@@ -180,7 +167,7 @@ void TermsOfServiceScreen::OnUserActionDeprecated(
   else if (action_id == kRetry)
     OnRetry();
   else
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
 }
 
 void TermsOfServiceScreen::StartDownload() {

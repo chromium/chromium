@@ -626,7 +626,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnLocaleSwitchScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(
-      oobe_ui->GetView<TermsOfServiceScreenHandler>(),
+      oobe_ui->GetView<TermsOfServiceScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnTermsOfServiceScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<SyncConsentScreen>(

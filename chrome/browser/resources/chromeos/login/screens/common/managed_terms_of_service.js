@@ -74,21 +74,6 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     return ManagedTermsState;
   }
 
-  // Whether the screen is still loading.
-  isLoading_() {
-    return this.uiStep == ManagedTermsState.LOADING;
-  }
-
-  // Whether the screen has finished loading.
-  isLoaded_() {
-    return this.uiStep == ManagedTermsState.LOADED;
-  }
-
-  // Whether the screen is in an error state.
-  hasError_() {
-    return this.uiStep == ManagedTermsState.ERROR;
-  }
-
   get EXTERNAL_API() {
     return ['setTermsOfServiceLoadError',
             'setTermsOfService'];
@@ -118,13 +103,6 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
    * @private
    */
   onTermsOfServiceAccepted_() {
-    // Ignore on-tap events when disabled.
-    // TODO: Polymer Migration - Remove this when the migration is finished.
-    // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.acceptButtonDisabled_) {
-      return;
-    }
-
     this.backButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
     this.userActed('accept');
@@ -135,13 +113,6 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
    * @private
    */
   onTosBackButtonPressed_() {
-    // Ignore on-tap events when disabled.
-    // TODO: Polymer Migration - Remove this when the migration is finished.
-    // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.backButtonDisabled_) {
-      return;
-    }
-
     this.backButtonDisabled_ = true;
     this.retryButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
@@ -153,15 +124,10 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
    * @private
    */
   onTosRetryButtonPressed_() {
-    // Ignore on-tap events when disabled.
-    // TODO: Polymer Migration - Remove this when the migration is finished.
-    // See: https://github.com/Polymer/polymer/issues/4685
-    if (this.retryButtonDisabled_) {
-      return;
-    }
-
     this.retryButtonDisabled_ = true;
     this.userActed('retry');
+    // Show loading state while retrying.
+    this.setUIStep(ManagedTermsState.LOADING);
   }
 
   /**

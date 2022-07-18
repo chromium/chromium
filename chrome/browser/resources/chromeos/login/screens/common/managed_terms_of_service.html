@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
 
     <!-- ERROR DIALOG -->
-    <oobe-adaptive-dialog id="termsOfServiceErrorDialog" role="dialog"
+    <oobe-adaptive-dialog id="step-error" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'termsOfServiceError')]]"
         for-step="error">
       <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
@@ -57,7 +57,7 @@
     <!-- NORMAL DIALOG -->
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
-    <oobe-adaptive-dialog id="termsOfServiceDialog" role="dialog"
+    <oobe-adaptive-dialog id="step-loaded" role="dialog"
         aria-labelledby="title" for-step="loaded" no-lazy>
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
 

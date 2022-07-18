@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
@@ -2020,7 +2021,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
 
   // Wait for the Terms of Service to finish downloading.
   ash::test::OobeJS()
-      .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".isLoaded_()")
+      .CreateVisibilityWaiter(true, {"terms-of-service", "step-loaded"})
       ->Wait();
 
   // Verify that the locale and keyboard layout have been applied.
@@ -2518,17 +2519,16 @@ class TermsOfServiceDownloadTest : public DeviceLocalAccountTest,
     ash::test::UserSessionManagerTestApi(ash::UserSessionManager::GetInstance())
         .SetShouldLaunchBrowserInTests(false);
   }
+
+  bool UseValidURL() const { return GetParam(); }
 };
 
 IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
-  // Parameterization for using valid and invalid URLs.
-  const bool use_valid_url = GetParam();
-
   // Specify Terms of Service URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   device_local_account_policy_.payload().mutable_termsofserviceurl()->set_value(
       embedded_test_server()
-          ->GetURL(std::string("/") + (use_valid_url
+          ->GetURL(std::string("/") + (UseValidURL()
                                            ? kExistentTermsOfServicePath
                                            : kNonexistentTermsOfServicePath))
           .spec());
@@ -2542,24 +2542,16 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   profile_prepared.Wait();
 
   // Verify that the Terms of Service screen is being shown.
-  auto* wizard_controller = ash::WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-  ASSERT_TRUE(wizard_controller->current_screen());
-  EXPECT_EQ(chromeos::TermsOfServiceScreenView::kScreenId.AsId(),
-            wizard_controller->current_screen()->screen_id());
+  ash::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId).Wait();
 
   // Wait for the Terms of Service to finish loading.
 
-  if (!use_valid_url) {
+  if (!UseValidURL()) {
     // The Terms of Service URL was invalid. Verify that the screen is showing
     // an error and the accept button is disabled.
     ash::test::OobeJS()
-        .CreateVisibilityWaiter(
-            true, {"terms-of-service", "termsOfServiceErrorDialog"})
+        .CreateVisibilityWaiter(true, {"terms-of-service", "step-error"})
         ->Wait();
-
-    ash::test::OobeJS().ExpectTrue(GetOobeElementPath({"terms-of-service"}) +
-                                   ".hasError_()");
 
     ash::test::OobeJS().ExpectDisabledPath(
         {"terms-of-service", "acceptButton"});
@@ -2567,7 +2559,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   }
 
   ash::test::OobeJS()
-      .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".isLoaded_()")
+      .CreateVisibilityWaiter(true, {"terms-of-service", "step-loaded"})
       ->Wait();
 
   ash::test::OobeJS()
@@ -2605,8 +2597,9 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   }
   EXPECT_EQ(terms_of_service, content);
 
-  ash::test::OobeJS().ExpectFalse(GetOobeElementPath({"terms-of-service"}) +
-                                  ".hasError_()");
+  ash::test::OobeJS()
+      .CreateVisibilityWaiter(false, {"terms-of-service", "step-error"})
+      ->Wait();
 
   ash::test::OobeJS().ExpectEnabledPath({"terms-of-service", "acceptButton"});
 
@@ -2616,14 +2609,12 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   WaitForSessionStart();
 }
 
-// TODO(crbug.com/1303612): Flaky test.
-IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest,
-                       DISABLED_DeclineTermsOfService) {
+IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, DeclineTermsOfService) {
   // Specify Terms of Service URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   device_local_account_policy_.payload().mutable_termsofserviceurl()->set_value(
       embedded_test_server()
-          ->GetURL(std::string("/") + (GetParam()
+          ->GetURL(std::string("/") + (UseValidURL()
                                            ? kExistentTermsOfServicePath
                                            : kNonexistentTermsOfServicePath))
           .spec());
@@ -2637,15 +2628,21 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest,
   profile_prepared.Wait();
 
   // Verify that the Terms of Service screen is being shown.
-  auto* wizard_controller = ash::WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-  ASSERT_TRUE(wizard_controller->current_screen());
-  EXPECT_EQ(chromeos::TermsOfServiceScreenView::kScreenId.AsId(),
-            wizard_controller->current_screen()->screen_id());
+  ash::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId).Wait();
 
-  // Click the back button.
-  ash::test::OobeJS().ClickOnPath({"terms-of-service", "backButton"});
-
+  if (!UseValidURL()) {
+    ash::test::OobeJS()
+        .CreateVisibilityWaiter(true, {"terms-of-service", "step-error"})
+        ->Wait();
+    ash::test::TapOnPathAndWaitForOobeToBeDestroyed(
+        {"terms-of-service", "errorBackButton"});
+  } else {
+    ash::test::OobeJS()
+        .CreateVisibilityWaiter(true, {"terms-of-service", "step-loaded"})
+        ->Wait();
+    ash::test::TapOnPathAndWaitForOobeToBeDestroyed(
+        {"terms-of-service", "backButton"});
+  }
   EXPECT_TRUE(session_manager_client()->session_stopped());
 }
 
