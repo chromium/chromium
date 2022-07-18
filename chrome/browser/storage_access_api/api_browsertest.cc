@@ -40,6 +40,7 @@
 #include "ui/base/window_open_disposition.h"
 
 using content::BrowserThread;
+using testing::Gt;
 
 namespace {
 
@@ -153,9 +154,8 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
 
 // Validate that if an iframe requests access that cookies become unblocked for
 // just that top-level/third-party combination.
-// TODO(http://crbug.com/1090625): Flaky-failing on Linux, Mac, and Windows.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       DISABLED_ThirdPartyCookiesIFrameRequestsAccess) {
+                       ThirdPartyCookiesIFrameRequestsAccess) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -183,30 +183,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  // Our use counter should not have fired yet, so we should have 0 occurrences.
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kStorageAccessAPI_HasStorageAccess_Method, 0);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kStorageAccessAPI_requestStorageAccess_Method,
-      0);
-
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is sent:
   NavigateFrameTo("b.com", "/echoheader?cookie");
   EXPECT_EQ(GetFrameContent(), "thirdparty=1");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "thirdparty=1");
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
-
-  // Since the frame has navigated we should see the use counter telem appear.
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kStorageAccessAPI_HasStorageAccess_Method, 1);
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::kStorageAccessAPI_requestStorageAccess_Method,
-      1);
 
   // Navigate iframe to othersite.com and verify that the cookie is not sent.
   NavigateFrameTo("othersite.com", "/echoheader?cookie");
@@ -272,6 +254,19 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_EQ(GetNestedFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(
+          kUseCounterHistogram,
+          blink::mojom::WebFeature::kStorageAccessAPI_HasStorageAccess_Method),
+      Gt(0));
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kUseCounterHistogram,
+                  blink::mojom::WebFeature::
+                      kStorageAccessAPI_requestStorageAccess_Method),
+              Gt(0));
 }
 
 // Validate that the Storage Access API does not override any explicit user
