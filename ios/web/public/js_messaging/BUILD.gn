@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("js_messaging") {
   deps = [
@@ -28,4 +29,20 @@ source_set("js_messaging") {
 compile_ts("util_scripts") {
   allow_js = true
   sources = [ "resources/utils.ts" ]
+}
+
+# `compile_ts` and `optimize_js` targets are defined separately here instead of
+# combined using `optimize_ts` because it allows `gcrweb` target's
+# compiled TypeScript to be used as a dependency by other TypeScript targets.
+compile_ts("gcrweb") {
+  sources = [ "resources/gcrweb.ts" ]
+}
+
+optimize_js("gcrweb_js") {
+  _script = filter_include(get_target_outputs(":gcrweb"), [ "*gcrweb.js" ])
+  primary_script = _script[0]
+  sources = _script
+  output_name = "gcrweb"
+
+  deps = [ ":gcrweb" ]
 }

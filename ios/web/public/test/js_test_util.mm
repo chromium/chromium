@@ -76,7 +76,7 @@ NSString* GetPageScript(NSString* script_file_name) {
 NSString* GetSharedScripts() {
   // Scripts must be all injected at once because as soon as __gCrWeb exists,
   // injection is assumed to be done and __gCrWeb.message is used.
-  return [NSString stringWithFormat:@"%@; %@; %@", GetPageScript(@"base"),
+  return [NSString stringWithFormat:@"%@; %@; %@", GetPageScript(@"gcrweb"),
                                     GetPageScript(@"common"),
                                     GetPageScript(@"message")];
 }

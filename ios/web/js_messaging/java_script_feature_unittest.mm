@@ -26,7 +26,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureScript) {
       web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
   auto feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base", document_start_injection_time, target_frames_all);
+          "gcrweb", document_start_injection_time, target_frames_all);
 
   EXPECT_EQ(document_start_injection_time, feature_script.GetInjectionTime());
   EXPECT_EQ(target_frames_all, feature_script.GetTargetFrames());
@@ -50,7 +50,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureScript) {
 TEST_F(JavaScriptFeatureTest, FeatureScriptReinjectionBehavior) {
   auto once_feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base",
+          "gcrweb",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
           web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
           web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
@@ -58,7 +58,7 @@ TEST_F(JavaScriptFeatureTest, FeatureScriptReinjectionBehavior) {
 
   auto reinject_feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base",
+          "gcrweb",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
           web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
           web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
@@ -73,7 +73,7 @@ TEST_F(JavaScriptFeatureTest, FeatureScriptReinjectionBehavior) {
 TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
   auto feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base",
+          "gcrweb",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
           web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
           web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
@@ -98,36 +98,6 @@ TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
                                                  @"window.__gCrWeb.someData"));
 }
 
-// Tests that FeatureScripts are re-injected when created with
-// |ReinjectionBehavior::kReinjectOnDocumentRecreation|.
-TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorReinject) {
-  auto feature_script =
-      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base",
-          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
-          web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
-              kReinjectOnDocumentRecreation);
-
-  WKWebView* web_view = [[WKWebView alloc] init];
-  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
-
-  // Ensure __gCrWeb was injected.
-  ASSERT_TRUE(web::test::ExecuteJavaScript(
-      web_view, @"try { !!window.__gCrWeb; } catch (err) {false;}"));
-
-  // Store a value within |window.__gCrWeb|.
-  web::test::ExecuteJavaScript(web_view, @"window.__gCrWeb.someData = 1;");
-  ASSERT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
-                                                 @"window.__gCrWeb.someData"));
-
-  // Execute feature script again, which should overwrite |window.__gCrWeb|.
-  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
-  // The |someData| value should no longer exist.
-  EXPECT_FALSE(web::test::ExecuteJavaScript(
-      web_view, @"try { window.__gCrWeb.someData; } catch (err) {false;}"));
-}
-
 // Tests creating a JavaScriptFeature.
 TEST_F(JavaScriptFeatureTest, CreateFeature) {
   auto document_start_injection_time =
@@ -136,7 +106,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeature) {
       web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
   const web::JavaScriptFeature::FeatureScript feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base", document_start_injection_time, target_frames_all);
+          "gcrweb", document_start_injection_time, target_frames_all);
 
   auto any_content_world =
       web::JavaScriptFeature::ContentWorld::kAnyContentWorld;
@@ -199,7 +169,7 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithDependentFeature) {
       web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
   const web::JavaScriptFeature::FeatureScript dependent_feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "base", document_start_injection_time, target_frames_all);
+          "gcrweb", document_start_injection_time, target_frames_all);
 
   auto document_end_injection_time =
       web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd;

@@ -30,7 +30,7 @@ NSString* GetSharedScripts() {
   // Scripts must be all injected at once because as soon as __gCrWeb exists,
   // injection is assumed to be done and __gCrWeb.message is used.
   return [NSString stringWithFormat:@"%@; %@; %@",
-                                    web::test::GetPageScript(@"base"),
+                                    web::test::GetPageScript(@"gcrweb"),
                                     web::test::GetPageScript(@"common"),
                                     web::test::GetPageScript(@"message")];
 }

@@ -27,7 +27,6 @@ source_set("web") {
   ]
 
   deps = [
-    ":base_js",
     ":common_js",
     ":core",
     ":js_resources",
@@ -48,6 +47,7 @@ source_set("web") {
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net",
     "//ios/web/public",
+    "//ios/web/public/js_messaging:gcrweb_js",
     "//ios/web/public/security",
     "//ios/web/public/session",
     "//ios/web/security",
@@ -651,13 +651,6 @@ optimize_js("share_workaround_js") {
 
   primary_script = "web_state/js/resources/share_workaround.js"
   sources = [ "web_state/js/resources/share_workaround.js" ]
-}
-
-optimize_js("base_js") {
-  visibility = [ ":web" ]
-
-  primary_script = "web_state/js/resources/base.js"
-  sources = [ "web_state/js/resources/base.js" ]
 }
 
 optimize_js("common_js") {
