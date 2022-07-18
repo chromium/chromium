@@ -123,7 +123,7 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
   GURL src_url_;
 
   // The delegate to be called when an utterance event is fired.
-  raw_ptr<UtteranceEventDelegate, DanglingUntriaged> event_delegate_ = nullptr;
+  raw_ptr<UtteranceEventDelegate> event_delegate_ = nullptr;
 
   // The parsed options.
   std::string voice_name_;

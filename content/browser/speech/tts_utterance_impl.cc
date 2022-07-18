@@ -87,11 +87,13 @@ void TtsUtteranceImpl::OnTtsEvent(TtsEventType event_type,
   if (IsFinalTtsEventType(event_type))
     finished_ = true;
 
-  if (event_delegate_)
-    event_delegate_->OnTtsEvent(this, event_type, char_index, length,
-                                error_message);
+  UtteranceEventDelegate* delegate = event_delegate_;
+
   if (finished_)
     event_delegate_ = nullptr;
+
+  if (delegate)
+    delegate->OnTtsEvent(this, event_type, char_index, length, error_message);
 }
 
 void TtsUtteranceImpl::Finish() {
