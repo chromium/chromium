@@ -149,6 +149,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   std::string play_store_version_;
 
+  std::string device_fingerprint_;
+
   std::string encoded_device_configuration_proto_;
 
   bool ash_ready_ = false;

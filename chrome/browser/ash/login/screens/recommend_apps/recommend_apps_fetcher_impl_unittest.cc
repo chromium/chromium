@@ -49,6 +49,8 @@ namespace {
 // Values set in ArcFeatures created by CreateArcFeaturesForTest.
 constexpr char kTestArcSdkVersion[] = "25";
 constexpr char kTestArcPlayStoreVersion[] = "81010860";
+constexpr char kTestDeviceFingerprint[] =
+    "google/product/device:1/R105-14925.0/1234567:user/release-keys";
 const char* const kTestArcAbiList[] = {"x86", "x86_64"};
 const char* const kTestArcFeatures[] = {"android.hardware.faketouch",
                                         "android.software.home_screen"};
@@ -87,6 +89,7 @@ bool IsNewRecommendedAppsEnabled() {
 arc::ArcFeatures CreateArcFeaturesForTest() {
   arc::ArcFeatures arc_features;
   arc_features.build_props["ro.build.version.sdk"] = kTestArcSdkVersion;
+  arc_features.build_props["ro.build.fingerprint"] = kTestDeviceFingerprint;
   arc_features.play_store_version = kTestArcPlayStoreVersion;
 
   std::vector<std::string> abi_list(std::begin(kTestArcAbiList),
@@ -166,6 +169,8 @@ class AppListRequestHeaderReader {
  public:
   explicit AppListRequestHeaderReader(network::ResourceRequest* request) {
     request->headers.GetHeader("X-DFE-Sdk-Version", &sdk_version_);
+    request->headers.GetHeader("X-DFE-Device-Fingerprint",
+                               &device_fingerprint_);
     request->headers.GetHeader("X-DFE-Chromesky-Client-Version",
                                &play_store_version_);
     DecodeDeviceConfigHeader(request);
@@ -177,6 +182,8 @@ class AppListRequestHeaderReader {
       const AppListRequestHeaderReader& other) = delete;
 
   const std::string& sdk_version() const { return sdk_version_; }
+
+  const std::string& device_fingerprint() const { return device_fingerprint_; }
 
   const std::string& play_store_version() const { return play_store_version_; }
 
@@ -237,6 +244,7 @@ class AppListRequestHeaderReader {
   }
 
   std::string sdk_version_;
+  std::string device_fingerprint_;
   std::string play_store_version_;
   device_configuration::DeviceConfigurationProto device_config_;
 };
@@ -333,6 +341,9 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   void VerifyArcRequestHeaders(
       const AppListRequestHeaderReader& header_reader) {
     EXPECT_EQ(kTestArcSdkVersion, header_reader.sdk_version());
+    // TODO(crbug.com/1345149): Verify that fingerprint is only set when
+    // kAppDiscoveryForOobe is enabled.
+    EXPECT_EQ(kTestDeviceFingerprint, header_reader.device_fingerprint());
     EXPECT_EQ(kTestArcPlayStoreVersion, header_reader.play_store_version());
     EXPECT_EQ(std::vector<std::string>(std::begin(kTestArcAbiList),
                                        std::end(kTestArcAbiList)),
@@ -471,6 +482,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
   AppListRequestHeaderReader header_reader(request);
 
   EXPECT_EQ("", header_reader.sdk_version());
+  EXPECT_EQ("", header_reader.device_fingerprint());
   EXPECT_EQ("", header_reader.play_store_version());
   EXPECT_EQ(std::vector<std::string>(), header_reader.GetNativePlatforms());
   EXPECT_EQ(std::vector<std::string>(),
