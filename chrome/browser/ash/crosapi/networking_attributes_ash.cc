@@ -14,8 +14,8 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
-#include "chromeos/network/network_util.h"
 #include "components/user_manager/user.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

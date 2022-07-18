@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
-#define CHROMEOS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
 
 #include <set>
 #include <string>
@@ -72,4 +72,4 @@ class PolicyCertificateProvider {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_

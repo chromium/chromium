@@ -19,9 +19,9 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/network/network_policy_observer.h"
 
 namespace base {
 class Clock;

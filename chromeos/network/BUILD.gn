@@ -19,75 +19,15 @@ component("network") {
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
   ]
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//base:i18n",
-    "//chromeos/ash/components/network",
-    "//chromeos/components/onc",
-    "//chromeos/dbus/shill",
-    "//chromeos/login/login_state",
-    "//components/device_event_log",
-    "//components/onc",
-    "//dbus",
-    "//net",
-  ]
-
-  # Allow circular dependency from sub-directories of
-  # chromeos/ash/components/network.
-  allow_circular_includes_from = [
-    "//chromeos/ash/components/network",
-    "//chromeos/ash/components/network/metrics",
-    "//chromeos/ash/components/network/onc",
-    "//chromeos/ash/components/network/proxy",
-  ]
-  sources = [
-    "network_ip_config.cc",
-    "network_ip_config.h",
-    "network_metadata_observer.cc",
-    "network_metadata_observer.h",
-    "network_name_util.cc",
-    "network_name_util.h",
-    "network_profile.cc",
-    "network_profile.h",
-    "network_util.cc",
-    "network_util.h",
-    "policy_applicator.cc",
-    "policy_applicator.h",
-    "policy_certificate_provider.h",
-    "policy_util.cc",
-    "policy_util.h",
-    "profile_policies.cc",
-    "profile_policies.h",
-    "system_token_cert_db_storage.cc",
-    "system_token_cert_db_storage.h",
-  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   deps = [
-    ":network",
-    "//base",
-    "//base/test:test_support",
-    "//chromeos:test_utils",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/network:unit_tests",
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/ash/components/network/proxy:unit_tests",
-    "//components/onc",
-    "//crypto",
-    "//crypto:test_support",
-    "//net",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  sources = [
-    "network_name_util_unittest.cc",
-    "network_util_unittest.cc",
-    "profile_policies_unittest.cc",
-    "system_token_cert_db_storage_unittest.cc",
   ]
 }

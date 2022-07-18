@@ -9,7 +9,7 @@
 
 #include "base/values.h"
 #include "chromeos/ash/components/network/managed_state.h"
-#include "chromeos/network/network_util.h"
+#include "chromeos/ash/components/network/network_util.h"
 
 namespace chromeos {
 

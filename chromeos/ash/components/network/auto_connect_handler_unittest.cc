@@ -24,7 +24,7 @@
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"

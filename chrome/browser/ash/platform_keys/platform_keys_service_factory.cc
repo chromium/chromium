@@ -18,7 +18,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"

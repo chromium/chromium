@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "chromeos/network/policy_certificate_provider.h"
+#include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "net/cert/scoped_nss_types.h"
 
 namespace net {

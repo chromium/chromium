@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/network/network_policy_observer.h"
+#include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

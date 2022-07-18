@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_UTIL_H_
-#define CHROMEOS_NETWORK_NETWORK_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UTIL_H_
 
 // This header is introduced to make it easy to switch from chromeos_network.cc
 // to Chrome's own DBus code.  crosbug.com/16557
@@ -164,4 +164,4 @@ using ::chromeos::WifiAccessPoint;
 using ::chromeos::WifiAccessPointVector;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_NETWORK_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UTIL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_name_util.h"
+#include "chromeos/ash/components/network/network_name_util.h"
 
 #include <stddef.h>
 

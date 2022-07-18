@@ -18,8 +18,8 @@
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_profile_observer.h"
-#include "chromeos/network/policy_applicator.h"
-#include "chromeos/network/profile_policies.h"
+#include "chromeos/ash/components/network/policy_applicator.h"
+#include "chromeos/ash/components/network/profile_policies.h"
 
 namespace base {
 class Value;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_PROFILE_POLICIES_H_
-#define CHROMEOS_NETWORK_PROFILE_POLICIES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_
 
 #include <string>
 
@@ -202,4 +202,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_PROFILE_POLICIES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_

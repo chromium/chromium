@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_util.h"
+#include "chromeos/ash/components/network/network_util.h"
 
 #include <stddef.h>
 
@@ -14,8 +14,8 @@
 
 using chromeos::CellularScanResult;
 using chromeos::network_util::NetmaskToPrefixLength;
-using chromeos::network_util::PrefixLengthToNetmask;
 using chromeos::network_util::ParseCellularScanResults;
+using chromeos::network_util::PrefixLengthToNetmask;
 
 typedef testing::Test NetworkUtilTest;
 

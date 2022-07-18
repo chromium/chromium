@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_POLICY_OBSERVER_H_
-#define CHROMEOS_NETWORK_NETWORK_POLICY_OBSERVER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_POLICY_OBSERVER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_POLICY_OBSERVER_H_
 
 #include <string>
-
 
 namespace chromeos {
 
@@ -47,4 +46,4 @@ namespace ash {
 using ::chromeos::NetworkPolicyObserver;
 }
 
-#endif  // CHROMEOS_NETWORK_NETWORK_POLICY_OBSERVER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_POLICY_OBSERVER_H_

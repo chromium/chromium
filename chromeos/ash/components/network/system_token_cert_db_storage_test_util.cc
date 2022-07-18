@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "net/cert/nss_cert_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

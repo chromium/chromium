@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/policy_util.h"
+#include "chromeos/ash/components/network/policy_util.h"
 
 #include <memory>
 #include <utility>
@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_profile.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/network/network_profile.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

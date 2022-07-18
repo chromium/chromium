@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_POLICY_APPLICATOR_H_
-#define CHROMEOS_NETWORK_POLICY_APPLICATOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_APPLICATOR_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_APPLICATOR_H_
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "chromeos/network/network_profile.h"
+#include "chromeos/ash/components/network/network_profile.h"
 
 namespace chromeos {
 
@@ -167,4 +167,4 @@ class PolicyApplicator {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_POLICY_APPLICATOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_APPLICATOR_H_

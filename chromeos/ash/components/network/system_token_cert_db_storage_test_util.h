@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_TEST_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_TEST_UTIL_H_
 
-#include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 
 #include "memory"
 

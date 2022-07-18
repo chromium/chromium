@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
-#include "chromeos/network/network_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(https://crbug.com/1164001): remove when GeolocationHandler move to ash.

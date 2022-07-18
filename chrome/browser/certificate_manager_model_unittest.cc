@@ -22,8 +22,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#include "chromeos/network/policy_certificate_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {

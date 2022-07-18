@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_policy_observer.h"
+#include "chromeos/ash/components/network/network_policy_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/profile_policies.h"
+#include "chromeos/ash/components/network/profile_policies.h"
 
 #include <iterator>
 #include <string>
@@ -11,10 +11,10 @@
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/variable_expander.h"
-#include "chromeos/network/policy_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

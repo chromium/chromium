@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
-#define CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -116,4 +116,4 @@ namespace ash {
 using ::chromeos::SystemTokenCertDbStorage;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_

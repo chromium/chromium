@@ -15,7 +15,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_util.h"
+#include "chromeos/ash/components/network/network_util.h"
 #include "url/gurl.h"
 
 namespace network {
