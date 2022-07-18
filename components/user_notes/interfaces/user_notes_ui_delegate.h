@@ -33,14 +33,14 @@ class UserNotesUIDelegate {
 
   // Called when the user successfully creates a new note in the UI.
   virtual void OnNoteCreationDone(const base::UnguessableToken& id,
-                                  const std::string& note_content) = 0;
+                                  const std::u16string& note_content) = 0;
 
   // Called when the user aborts the note creation process in the UI.
   virtual void OnNoteCreationCancelled(const base::UnguessableToken& id) = 0;
 
   // Called when the user edits an existing note in the UI.
   virtual void OnNoteEdited(const base::UnguessableToken& id,
-                            const std::string& note_content) = 0;
+                            const std::u16string& note_content) = 0;
 };
 
 }  // namespace user_notes

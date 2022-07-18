@@ -55,7 +55,7 @@ void UserNoteStorageImpl::GetNotesById(
 }
 
 void UserNoteStorageImpl::UpdateNote(const UserNote* model,
-                                     std::string note_body_text,
+                                     std::u16string note_body_text,
                                      bool is_creation) {
   database_.AsyncCall(&UserNoteDatabase::UpdateNote)
       .WithArgs(model, note_body_text, is_creation)

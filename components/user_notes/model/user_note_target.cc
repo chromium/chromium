@@ -7,7 +7,7 @@
 namespace user_notes {
 
 UserNoteTarget::UserNoteTarget(TargetType type,
-                               const std::string& original_text,
+                               const std::u16string& original_text,
                                GURL target_page,
                                const std::string& selector)
     : type_(type),

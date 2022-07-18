@@ -15,13 +15,13 @@ std::unique_ptr<UserNoteMetadata> GetTestUserNoteMetadata() {
 }
 
 std::unique_ptr<UserNoteBody> GetTestUserNoteBody() {
-  return std::make_unique<UserNoteBody>("test note");
+  return std::make_unique<UserNoteBody>(u"test note");
 }
 
 std::unique_ptr<UserNoteTarget> GetTestUserNotePageTarget(
     const std::string& url) {
   return std::make_unique<UserNoteTarget>(UserNoteTarget::TargetType::kPage,
-                                          /*original_text=*/"", GURL(url),
+                                          /*original_text=*/u"", GURL(url),
                                           /*selector=*/"");
 }
 

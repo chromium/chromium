@@ -45,7 +45,7 @@ class UserNoteStorageImpl : public UserNoteStorage {
       override;
 
   void UpdateNote(const UserNote* model,
-                  std::string note_body_text,
+                  std::u16string note_body_text,
                   bool is_creation = false) override;
 
   void DeleteNote(const base::UnguessableToken& id) override;

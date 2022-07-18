@@ -6,7 +6,7 @@
 
 namespace user_notes {
 
-UserNoteBody::UserNoteBody(const std::string& plain_text_value)
+UserNoteBody::UserNoteBody(const std::u16string& plain_text_value)
     : plain_text_value_(plain_text_value) {}
 
 UserNoteBody::~UserNoteBody() = default;

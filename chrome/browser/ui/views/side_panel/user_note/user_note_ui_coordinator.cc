@@ -99,7 +99,7 @@ void UserNoteUICoordinator::OnNoteDeleted(const base::UnguessableToken& id,
 
 void UserNoteUICoordinator::OnNoteCreationDone(
     const base::UnguessableToken& id,
-    const std::string& note_content) {
+    const std::u16string& note_content) {
   auto* service =
       user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
   service->OnNoteCreationDone(id, note_content);
@@ -115,7 +115,7 @@ void UserNoteUICoordinator::OnNoteCreationCancelled(
 }
 
 void UserNoteUICoordinator::OnNoteUpdated(const base::UnguessableToken& id,
-                                          const std::string& note_content) {
+                                          const std::u16string& note_content) {
   auto* service =
       user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
   service->OnNoteEdited(id, note_content);

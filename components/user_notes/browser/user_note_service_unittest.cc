@@ -77,7 +77,7 @@ class MockUserNoteStorage : public UserNoteStorage {
   MOCK_METHOD(void,
               UpdateNote,
               (const UserNote* model,
-               std::string note_body_text,
+               std::u16string note_body_text,
                bool is_creation),
               (override));
 
@@ -964,10 +964,10 @@ TEST_F(UserNoteServiceTest, OnNoteModelsFetched) {
   note_changes.emplace_back(std::move(change1));
   note_changes.emplace_back(std::move(change2));
 
-  const std::string kText0 = "updated note 0";
-  const std::string kText2 = "updated note 2";
-  const std::string kText4 = "new note 4";
-  const std::string kText5 = "new note 5";
+  const std::u16string kText0 = u"updated note 0";
+  const std::u16string kText2 = u"updated note 2";
+  const std::u16string kText4 = u"new note 4";
+  const std::u16string kText5 = u"new note 5";
   const std::string url1 = frame1->GetLastCommittedURL().spec();
   const std::string url2 = frame2->GetLastCommittedURL().spec();
   auto note0 = std::make_unique<UserNote>(
@@ -1018,13 +1018,13 @@ TEST_F(UserNoteServiceTest, OnNoteModelsFetched) {
   EXPECT_TRUE(DoesManagerExistForId(note_ids_[4], manager1));
   EXPECT_TRUE(DoesManagerExistForId(note_ids_[5], manager2));
 
-  std::string actual_text_0 =
+  std::u16string actual_text_0 =
       note_service_->GetNoteModel(note_ids_[0])->body().plain_text_value();
-  std::string actual_text_2 =
+  std::u16string actual_text_2 =
       note_service_->GetNoteModel(note_ids_[2])->body().plain_text_value();
-  std::string actual_text_4 =
+  std::u16string actual_text_4 =
       note_service_->GetNoteModel(note_ids_[4])->body().plain_text_value();
-  std::string actual_text_5 =
+  std::u16string actual_text_5 =
       note_service_->GetNoteModel(note_ids_[5])->body().plain_text_value();
   EXPECT_EQ(actual_text_0, kText0);
   EXPECT_EQ(actual_text_2, kText2);

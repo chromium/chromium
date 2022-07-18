@@ -96,10 +96,10 @@ class UserNoteService : public KeyedService,
                       content::RenderFrameHost* rfh) override;
   void OnNoteDeleted(const base::UnguessableToken& id) override;
   void OnNoteCreationDone(const base::UnguessableToken& id,
-                          const std::string& note_content) override;
+                          const std::u16string& note_content) override;
   void OnNoteCreationCancelled(const base::UnguessableToken& id) override;
   void OnNoteEdited(const base::UnguessableToken& id,
-                    const std::string& note_content) override;
+                    const std::u16string& note_content) override;
 
   // UserNoteStorage implementation
   void OnNotesChanged() override;

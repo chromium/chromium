@@ -62,8 +62,8 @@ class UserNoteView : public views::View {
  private:
   void CreateOrUpdateNoteView(UserNoteView::State state,
                               base::Time date,
-                              const std::string content,
-                              const std::string quote);
+                              const std::u16string content,
+                              const std::u16string quote);
   void OnCancelUserNote(UserNoteView::State state);
   void OnAddUserNote();
   void OnSaveUserNote();
@@ -72,11 +72,11 @@ class UserNoteView : public views::View {
   void OnEditUserNote(int event_flags);
   void OnDeleteUserNote(int event_flags);
   void OnLearnUserNote(int event_flags);
-  void SetCreatingOrEditState(const std::string content,
+  void SetCreatingOrEditState(const std::u16string content,
                               UserNoteView::State state);
   void SetDefaultOrDetachedState(base::Time date,
-                                 const std::string content,
-                                 const std::string quote);
+                                 const std::u16string content,
+                                 const std::u16string quote);
 
   raw_ptr<user_notes::UserNoteInstance> user_note_instance_;
   raw_ptr<views::Textarea> text_area_ = nullptr;

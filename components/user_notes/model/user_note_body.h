@@ -14,21 +14,21 @@ class UserNoteBody {
  public:
   enum BodyType { PLAIN_TEXT = 0, RICH_TEXT, IMAGE };
 
-  explicit UserNoteBody(const std::string& plain_text_value);
+  explicit UserNoteBody(const std::u16string& plain_text_value);
   ~UserNoteBody();
   UserNoteBody(const UserNoteBody&) = delete;
   UserNoteBody& operator=(const UserNoteBody&) = delete;
 
   BodyType type() const { return type_; }
 
-  const std::string& plain_text_value() const { return plain_text_value_; }
+  const std::u16string& plain_text_value() const { return plain_text_value_; }
 
  private:
   // The type of body this note has. Currently only plain text is supported.
   BodyType type_ = BodyType::PLAIN_TEXT;
 
   // The note body in plain text
-  std::string plain_text_value_;
+  std::u16string plain_text_value_;
 };
 
 }  // namespace user_notes

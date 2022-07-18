@@ -39,7 +39,7 @@ class UserNoteDatabase {
       std::vector<base::UnguessableToken> ids);
 
   bool UpdateNote(const UserNote* model,
-                  std::string note_body_text,
+                  std::u16string note_body_text,
                   bool is_creation);
 
   bool DeleteNote(const base::UnguessableToken& id);
@@ -65,7 +65,7 @@ class UserNoteDatabase {
   bool InitSchema();
 
   // Called by UpdateNote() with is_creation=true to create a new note.
-  bool CreateNote(const UserNote* model, std::string note_body_text);
+  bool CreateNote(const UserNote* model, std::u16string note_body_text);
 
   bool CreateSchema();
 

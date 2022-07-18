@@ -61,11 +61,11 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   void OnNoteDeleted(const base::UnguessableToken& id,
                      UserNoteView* user_note_view);
   void OnNoteCreationDone(const base::UnguessableToken& id,
-                          const std::string& note_content);
+                          const std::u16string& note_content);
   void OnNoteCreationCancelled(const base::UnguessableToken& id,
                                UserNoteView* user_note_view);
   void OnNoteUpdated(const base::UnguessableToken& id,
-                     const std::string& note_content);
+                     const std::u16string& note_content);
 
   // UserNoteUI overrides
   void FocusNote(const base::UnguessableToken& guid) override;

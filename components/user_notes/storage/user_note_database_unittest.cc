@@ -57,7 +57,7 @@ class UserNoteDatabaseTest : public testing::Test {
 
   void check_notes_body_from_db(UserNoteDatabase* user_note_db,
                                 const base::UnguessableToken& id,
-                                const std::string& text) {
+                                const std::u16string& text) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(user_note_db->sequence_checker_);
 
     sql::Statement statement(user_note_db->db_.GetCachedStatement(
@@ -68,7 +68,7 @@ class UserNoteDatabaseTest : public testing::Test {
     EXPECT_TRUE(statement.Step());
 
     EXPECT_EQ(1, statement.ColumnCount());
-    EXPECT_EQ(text, statement.ColumnString(0));
+    EXPECT_EQ(text, statement.ColumnString16(0));
   }
 
  private:
@@ -161,11 +161,11 @@ TEST_F(UserNoteDatabaseTest, CreateNote) {
       new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                    GetTestUserNotePageTarget());
 
-  bool create_note =
-      user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
+                                             /*is_creation=*/true);
   EXPECT_TRUE(create_note);
 
-  check_notes_body_from_db(&user_note_db, note_id, "new test note");
+  check_notes_body_from_db(&user_note_db, note_id, u"new test note");
   delete user_note;
 }
 
@@ -178,14 +178,14 @@ TEST_F(UserNoteDatabaseTest, UpdateNote) {
       new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                    GetTestUserNotePageTarget());
 
-  bool create_note =
-      user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
+                                             /*is_creation=*/true);
   bool update_note =
-      user_note_db.UpdateNote(user_note, "edit test note", false);
+      user_note_db.UpdateNote(user_note, u"edit test note", false);
   EXPECT_TRUE(create_note);
   EXPECT_TRUE(update_note);
 
-  check_notes_body_from_db(&user_note_db, note_id, "edit test note");
+  check_notes_body_from_db(&user_note_db, note_id, u"edit test note");
   delete user_note;
 }
 
@@ -198,8 +198,8 @@ TEST_F(UserNoteDatabaseTest, DeleteNote) {
       new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                    GetTestUserNotePageTarget());
 
-  bool create_note =
-      user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+  bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
+                                             /*is_creation=*/true);
   EXPECT_TRUE(create_note);
   bool delete_note = user_note_db.DeleteNote(note_id);
   EXPECT_TRUE(delete_note);
@@ -217,9 +217,10 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
   for (int i = 0; i < 3; i++) {
     base::UnguessableToken note_id = base::UnguessableToken::Create();
     ids.emplace_back(note_id);
-    std::string original_text = "original text " + base::NumberToString(i);
+    std::u16string original_text =
+        u"original text " + base::NumberToString16(i);
     std::string selector = "selector " + base::NumberToString(i);
-    std::string body = "new test note " + base::NumberToString(i);
+    std::u16string body = u"new test note " + base::NumberToString16(i);
     GURL url = GURL("https://www.test.com/");
     auto test_target = std::make_unique<UserNoteTarget>(
         UserNoteTarget::TargetType::kPageText, original_text, url, selector);
@@ -239,10 +240,10 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
   for (std::unique_ptr<UserNote>& note : notes) {
     EXPECT_EQ(ids[i].ToString(), note->id().ToString());
     EXPECT_EQ("https://www.test.com/", note->target().target_page().spec());
-    EXPECT_EQ("original text " + base::NumberToString(i),
+    EXPECT_EQ(u"original text " + base::NumberToString16(i),
               note->target().original_text());
     EXPECT_EQ("selector " + base::NumberToString(i), note->target().selector());
-    EXPECT_EQ("new test note " + base::NumberToString(i),
+    EXPECT_EQ(u"new test note " + base::NumberToString16(i),
               note->body().plain_text_value());
     EXPECT_EQ(UserNoteTarget::TargetType::kPageText, note->target().type());
     i++;
@@ -260,7 +261,7 @@ TEST_F(UserNoteDatabaseTest, DeleteAllNotes) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget());
-    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+    bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
                                                /*is_creation=*/true);
     EXPECT_TRUE(create_note);
     delete user_note;
@@ -284,7 +285,7 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForOrigin) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
-    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+    bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
                                                /*is_creation=*/true);
     EXPECT_TRUE(create_note);
     delete user_note;
@@ -310,7 +311,7 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForUrl) {
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
-    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+    bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
                                                /*is_creation=*/true);
     EXPECT_TRUE(create_note);
     delete user_note;
@@ -340,7 +341,7 @@ TEST_F(UserNoteDatabaseTest, GetNoteMetadataForUrls) {
     UserNote* user_note =
         new UserNote(note_id, std::move(note_metadata), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
-    bool create_note = user_note_db.UpdateNote(user_note, "new test note",
+    bool create_note = user_note_db.UpdateNote(user_note, u"new test note",
                                                /*is_creation=*/true);
     EXPECT_TRUE(create_note);
     delete user_note;

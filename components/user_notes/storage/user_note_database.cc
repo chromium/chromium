@@ -178,7 +178,7 @@ std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
     return nullptr;
   DCHECK_EQ(1, statement_notes_body.ColumnCount());
   auto body =
-      std::make_unique<UserNoteBody>(statement_notes_body.ColumnString(0));
+      std::make_unique<UserNoteBody>(statement_notes_body.ColumnString16(0));
 
   // Get original_text and selector from notes_text_target.
   sql::Statement statement_notes_text_target(
@@ -191,7 +191,7 @@ std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
   if (!statement_notes_text_target.Step())
     return nullptr;
   DCHECK_EQ(2, statement_notes_text_target.ColumnCount());
-  std::string original_text = statement_notes_text_target.ColumnString(0);
+  std::u16string original_text = statement_notes_text_target.ColumnString16(0);
   std::string selector = statement_notes_text_target.ColumnString(1);
   auto target = std::make_unique<UserNoteTarget>(
       static_cast<UserNoteTarget::TargetType>(type), original_text, GURL(url),
@@ -202,7 +202,7 @@ std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
 }
 
 bool UserNoteDatabase::CreateNote(const UserNote* model,
-                                  std::string note_body_text) {
+                                  std::u16string note_body_text) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!EnsureDBInit())
@@ -246,7 +246,7 @@ bool UserNoteDatabase::CreateNote(const UserNote* model,
     return false;
 
   notes_text_target.BindString(0, model->id().ToString());
-  notes_text_target.BindString(1, model->target().original_text());
+  notes_text_target.BindString16(1, model->target().original_text());
   notes_text_target.BindString(2, model->target().selector());
 
   if (!notes_text_target.Run())
@@ -261,7 +261,7 @@ bool UserNoteDatabase::CreateNote(const UserNote* model,
 
   notes_body.BindString(0, model->id().ToString());
   notes_body.BindInt(1, UserNoteBody::BodyType::PLAIN_TEXT);
-  notes_body.BindString(2, note_body_text);
+  notes_body.BindString16(2, note_body_text);
 
   if (!notes_body.Run())
     return false;
@@ -271,7 +271,7 @@ bool UserNoteDatabase::CreateNote(const UserNote* model,
 }
 
 bool UserNoteDatabase::UpdateNote(const UserNote* model,
-                                  std::string note_body_text,
+                                  std::u16string note_body_text,
                                   bool is_creation) {
   if (is_creation) {
     return CreateNote(model, note_body_text);
@@ -294,7 +294,7 @@ bool UserNoteDatabase::UpdateNote(const UserNote* model,
   if (!update_notes_body.is_valid())
     return false;
 
-  update_notes_body.BindString(0, note_body_text);
+  update_notes_body.BindString16(0, note_body_text);
   update_notes_body.BindString(1, model->id().ToString());
 
   if (!update_notes_body.Run())

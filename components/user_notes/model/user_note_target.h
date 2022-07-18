@@ -17,7 +17,7 @@ class UserNoteTarget {
   enum TargetType { kPage = 0, kPageText };
 
   explicit UserNoteTarget(TargetType type,
-                          const std::string& original_text,
+                          const std::u16string& original_text,
                           GURL target_page,
                           const std::string& selector);
   ~UserNoteTarget();
@@ -25,7 +25,7 @@ class UserNoteTarget {
   UserNoteTarget& operator=(const UserNoteTarget&) = delete;
 
   TargetType type() const { return type_; }
-  const std::string& original_text() const { return original_text_; }
+  const std::u16string& original_text() const { return original_text_; }
   const GURL& target_page() const { return target_page_; }
   const std::string& selector() const { return selector_; }
 
@@ -35,7 +35,7 @@ class UserNoteTarget {
 
   // The original text to which the note was attached. Useful if the page
   // changes. Empty for `TargetType::PAGE`.
-  std::string original_text_;
+  std::u16string original_text_;
 
   // The URL of the page the note is attached to.
   GURL target_page_;

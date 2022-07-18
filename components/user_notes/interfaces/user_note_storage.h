@@ -56,7 +56,7 @@ class UserNoteStorage {
 
   // Saves a brand-new note or a modified note to disk.
   virtual void UpdateNote(const UserNote* model,
-                          std::string note_body_text,
+                          std::u16string note_body_text,
                           bool is_creation = false) = 0;
 
   // Deletes a note from disk.

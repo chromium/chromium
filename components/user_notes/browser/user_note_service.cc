@@ -211,7 +211,7 @@ void UserNoteService::OnNoteDeleted(const base::UnguessableToken& id) {
 }
 
 void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
-                                         const std::string& note_content) {
+                                         const std::u16string& note_content) {
   DCHECK(IsUserNotesEnabled());
 
   // Retrieve the partial note from the creation map and send it to the storage
@@ -246,7 +246,7 @@ void UserNoteService::OnNoteCreationCancelled(
 }
 
 void UserNoteService::OnNoteEdited(const base::UnguessableToken& id,
-                                   const std::string& note_content) {
+                                   const std::u16string& note_content) {
   DCHECK(IsUserNotesEnabled());
   const UserNote* note = GetNoteModel(id);
   if (!note)
@@ -303,15 +303,10 @@ void UserNoteService::InitializeNewNoteForCreation(
   if (!is_page_level && !has_renderer_agent)
     return;
 
-  // TODO(bokan): The original_text is used in UI where it's converted to
-  // UTF-16, however, the model currently uses std::string which assumes it's
-  // UTF-8. Convert the model to UTF-16 and remove this conversion.
-  std::string original_text = base::UTF16ToUTF8(selected_text);
-
   auto target = std::make_unique<UserNoteTarget>(
       is_page_level ? UserNoteTarget::TargetType::kPage
                     : UserNoteTarget::TargetType::kPageText,
-      original_text, GURL(frame->GetLastCommittedURL()), serialized_selector);
+      selected_text, GURL(frame->GetLastCommittedURL()), serialized_selector);
 
   // TODO(gujen): This partial note creation logic will be moved to an API
   // exposed by the storage layer in order to keep the creation of UserNote
@@ -320,7 +315,7 @@ void UserNoteService::InitializeNewNoteForCreation(
   base::Time now = base::Time::Now();
   int note_version = 1;
   auto metadata = std::make_unique<UserNoteMetadata>(now, now, note_version);
-  auto body = std::make_unique<UserNoteBody>(/*plain_text_value=*/"");
+  auto body = std::make_unique<UserNoteBody>(/*plain_text_value=*/u"");
 
   auto partial_note = std::make_unique<UserNote>(
       base::UnguessableToken::Create(), std::move(metadata), std::move(body),

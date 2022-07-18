@@ -53,7 +53,7 @@ class MockUserNoteStorage : public user_notes::UserNoteStorage {
 
   // No-op.
   void UpdateNote(const user_notes::UserNote* model,
-                  std::string note_body_text,
+                  std::u16string note_body_text,
                   bool is_creation = false) override {}
 
   // No-op.

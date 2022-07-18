@@ -58,7 +58,7 @@ class UserNoteInstanceTest : public UserNoteBaseTest {
 
     // Original text, target URL and selector are not used in these tests.
     auto target = std::make_unique<UserNoteTarget>(
-        type, /*original_text=*/"", GURL("https://www.example.com/"),
+        type, /*original_text=*/u"", GURL("https://www.example.com/"),
         /*selector=*/"");
     UserNoteService::ModelMapEntry entry(
         std::make_unique<UserNote>(id, GetTestUserNoteMetadata(),

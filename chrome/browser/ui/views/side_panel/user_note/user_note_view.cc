@@ -44,9 +44,8 @@ constexpr int kUserNoteQuoteViewId = 182;
 // Layout structure:
 //
 // [note_text     ]  <--- user note body.
-std::unique_ptr<views::Label> CreateBodyLabel(const std::string note_text) {
-  auto user_note_body =
-      std::make_unique<views::Label>(base::UTF8ToUTF16(note_text), 16);
+std::unique_ptr<views::Label> CreateBodyLabel(const std::u16string note_text) {
+  auto user_note_body = std::make_unique<views::Label>(note_text);
   user_note_body->SetTextStyle(views::style::STYLE_PRIMARY);
   user_note_body->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   user_note_body->SetMultiLine(true);
@@ -70,8 +69,8 @@ std::unique_ptr<views::View> CreateHeaderView(std::u16string note_date,
   auto user_note_header = std::make_unique<views::View>();
 
   // User note date
-  views::Label* user_note_date = user_note_header->AddChildView(
-      std::make_unique<views::Label>(note_date, 10));
+  views::Label* user_note_date =
+      user_note_header->AddChildView(std::make_unique<views::Label>(note_date));
   user_note_date->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   user_note_date->SetMultiLine(false);
   user_note_date->SetTextStyle(views::style::STYLE_HINT);
@@ -111,7 +110,7 @@ std::unique_ptr<views::View> CreateHeaderView(std::u16string note_date,
 //
 // [quote     ]  <--- user note quote.
 std::unique_ptr<views::View> CreateTargetTextView(
-    const std::string note_quote) {
+    const std::u16string note_quote) {
   auto user_note_quote_container = std::make_unique<views::View>();
 
   // User note quote
@@ -122,7 +121,7 @@ std::unique_ptr<views::View> CreateTargetTextView(
   user_note_quote_container->SetBackground(
       views::CreateSolidBackground(SkColorSetRGB(r_color, g_color, b_color)));
   auto* user_note_quote = user_note_quote_container->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(note_quote), 16));
+      std::make_unique<views::Label>(note_quote));
   user_note_quote->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   user_note_quote->SetMultiLine(true);
   user_note_quote->SetMaxLines(user_note_quote_max_lines);
@@ -265,8 +264,8 @@ UserNoteView::UserNoteView(UserNoteUICoordinator* coordinator,
 UserNoteView::~UserNoteView() = default;
 
 void UserNoteView::SetDefaultOrDetachedState(base::Time date,
-                                             const std::string content,
-                                             const std::string quote) {
+                                             const std::u16string content,
+                                             const std::u16string quote) {
   if (user_note_header_) {
     user_note_header_->SetVisible(true);
     views::Label* date_view = views::AsViewClass<views::Label>(
@@ -288,13 +287,13 @@ void UserNoteView::SetDefaultOrDetachedState(base::Time date,
 
   if (user_note_body_) {
     user_note_body_->SetVisible(true);
-    user_note_body_->SetText(base::UTF8ToUTF16(content));
+    user_note_body_->SetText(content);
   } else {
     user_note_body_ = AddChildView(CreateBodyLabel(content));
   }
 }
 
-void UserNoteView::SetCreatingOrEditState(const std::string content,
+void UserNoteView::SetCreatingOrEditState(const std::u16string content,
                                           UserNoteView::State state) {
   if (text_area_) {
     text_area_->SetVisible(true);
@@ -303,7 +302,7 @@ void UserNoteView::SetCreatingOrEditState(const std::string content,
   }
 
   if (!content.empty())
-    text_area_->SetText(base::UTF8ToUTF16(content));
+    text_area_->SetText(content);
 
   if (button_container_) {
     button_container_->SetVisible(true);
@@ -321,14 +320,14 @@ void UserNoteView::SetCreatingOrEditState(const std::string content,
 
 void UserNoteView::CreateOrUpdateNoteView(UserNoteView::State state,
                                           base::Time date,
-                                          const std::string content,
-                                          const std::string quote) {
+                                          const std::u16string content,
+                                          const std::u16string quote) {
   switch (state) {
     case UserNoteView::State::kDefault:
-      SetDefaultOrDetachedState(date, content, /*quote =*/std::string());
+      SetDefaultOrDetachedState(date, content, /*quote =*/std::u16string());
       break;
     case UserNoteView::State::kCreating:
-      SetCreatingOrEditState(/*content =*/std::string(), state);
+      SetCreatingOrEditState(/*content =*/std::u16string(), state);
       break;
     case UserNoteView::State::kDetached:
       SetDefaultOrDetachedState(date, content, quote);
@@ -404,12 +403,10 @@ void UserNoteView::OnAddUserNote() {
   button_container_->SetVisible(false);
 
   // Show default state
-  CreateOrUpdateNoteView(UserNoteView::State::kDefault, date,
-                         base::UTF16ToUTF8(note_content),
-                         /*quote =*/std::string());
+  CreateOrUpdateNoteView(UserNoteView::State::kDefault, date, note_content,
+                         /*quote =*/std::u16string());
 
-  coordinator_->OnNoteCreationDone(user_note_id(),
-                                   base::UTF16ToUTF8(note_content));
+  coordinator_->OnNoteCreationDone(user_note_id(), note_content);
 }
 
 void UserNoteView::OnEditUserNote(int event_flags) {
@@ -424,8 +421,8 @@ void UserNoteView::OnEditUserNote(int event_flags) {
 
     // Show editing state
     CreateOrUpdateNoteView(UserNoteView::State::kEditing, base::Time(),
-                           base::UTF16ToUTF8(note_content),
-                           /*quote =*/std::string());
+                           note_content,
+                           /*quote =*/std::u16string());
   }
 }
 
@@ -453,11 +450,9 @@ void UserNoteView::OnSaveUserNote() {
   button_container_->SetVisible(false);
 
   // Show default state
-  CreateOrUpdateNoteView(
-      user_note_quote_ ? UserNoteView::State::kDetached
-                       : UserNoteView::State::kDefault,
-      date, base::UTF16ToUTF8(note_content),
-      !note_quote.empty() ? base::UTF16ToUTF8(note_quote) : std::string());
+  CreateOrUpdateNoteView(user_note_quote_ ? UserNoteView::State::kDetached
+                                          : UserNoteView::State::kDefault,
+                         date, note_content, note_quote);
 
-  coordinator_->OnNoteUpdated(user_note_id(), base::UTF16ToUTF8(note_content));
+  coordinator_->OnNoteUpdated(user_note_id(), note_content);
 }
