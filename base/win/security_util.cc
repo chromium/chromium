@@ -20,11 +20,14 @@
 namespace base {
 namespace win {
 
-bool GrantAccessToPath(const FilePath& path,
-                       const std::vector<Sid>& sids,
-                       DWORD access_mask,
-                       DWORD inheritance,
-                       bool recursive) {
+namespace {
+
+bool AddACEToPath(const FilePath& path,
+                  const std::vector<Sid>& sids,
+                  DWORD access_mask,
+                  DWORD inheritance,
+                  bool recursive,
+                  ACCESS_MODE access_mode) {
   DCHECK(!path.empty());
   if (sids.empty())
     return true;
@@ -47,7 +50,7 @@ bool GrantAccessToPath(const FilePath& path,
   auto entries_interator = access_entries.begin();
   for (const Sid& sid : sids) {
     EXPLICIT_ACCESS& new_access = *entries_interator++;
-    new_access.grfAccessMode = GRANT_ACCESS;
+    new_access.grfAccessMode = access_mode;
     new_access.grfAccessPermissions = access_mask;
     new_access.grfInheritance = inheritance;
     ::BuildTrusteeWithSid(&new_access.Trustee, sid.GetPSID());
@@ -88,6 +91,26 @@ bool GrantAccessToPath(const FilePath& path,
   }
 
   return true;
+}
+
+}  // namespace
+
+bool GrantAccessToPath(const FilePath& path,
+                       const std::vector<Sid>& sids,
+                       DWORD access_mask,
+                       DWORD inheritance,
+                       bool recursive) {
+  return AddACEToPath(path, sids, access_mask, inheritance, recursive,
+                      GRANT_ACCESS);
+}
+
+bool DenyAccessToPath(const FilePath& path,
+                      const std::vector<Sid>& sids,
+                      DWORD access_mask,
+                      DWORD inheritance,
+                      bool recursive) {
+  return AddACEToPath(path, sids, access_mask, inheritance, recursive,
+                      DENY_ACCESS);
 }
 
 std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids) {

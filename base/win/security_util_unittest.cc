@@ -23,6 +23,7 @@ namespace {
 constexpr wchar_t kBaseDacl[] = L"D:P(A;;FA;;;WD)";
 constexpr wchar_t kTest1Dacl[] = L"D:PAI(A;;FR;;;AU)(A;;FA;;;WD)";
 constexpr wchar_t kTest2Dacl[] = L"D:PAI(A;;FA;;;BA)(A;;FA;;;AU)(A;;FA;;;WD)";
+constexpr wchar_t kTest1DenyDacl[] = L"D:PAI(D;;FR;;;LG)(A;;FA;;;WD)";
 constexpr wchar_t kTest1DaclNoInherit[] = L"D:P(A;;FR;;;AU)(A;;FA;;;WD)";
 constexpr wchar_t kTest2DaclNoInherit[] =
     L"D:P(A;;FA;;;BA)(A;;FA;;;AU)(A;;FA;;;WD)";
@@ -39,6 +40,7 @@ constexpr wchar_t kTest3InheritedDacl[] = L"D:(A;ID;FR;;;AU)(A;ID;FA;;;WD)";
 constexpr wchar_t kNoWriteDacDacl[] = L"D:(D;;WD;;;OW)(A;;FRSD;;;WD)";
 
 constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
+constexpr wchar_t kLocalGuestSid[] = L"LG";
 
 std::wstring GetFileDacl(const FilePath& path) {
   PSECURITY_DESCRIPTOR sd;
@@ -134,6 +136,19 @@ TEST(SecurityUtilTest, GrantAccessToPathFileNoInherit) {
   EXPECT_TRUE(
       GrantAccessToPath(path, *sids2, GENERIC_ALL, NO_INHERITANCE, false));
   EXPECT_EQ(kTest2DaclNoInherit, GetFileDacl(path));
+}
+
+TEST(SecurityUtilTest, DenyAccessToPathFile) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath path = temp_dir.GetPath().Append(L"test");
+  ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
+  EXPECT_EQ(kBaseDacl, GetFileDacl(path));
+  auto sids = Sid::FromSddlStringVector({kLocalGuestSid});
+  ASSERT_TRUE(sids);
+  EXPECT_TRUE(
+      DenyAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, true));
+  EXPECT_EQ(kTest1DenyDacl, GetFileDacl(path));
 }
 
 TEST(SecurityUtilTest, GrantAccessToPathDirectory) {
