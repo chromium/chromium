@@ -31,8 +31,6 @@ bool ShouldIgnoreAXEvent(ax::mojom::Event event_type) {
     case ax::mojom::Event::kDocumentSelectionChanged:
     case ax::mojom::Event::kDocumentTitleChanged:
     case ax::mojom::Event::kExpandedChanged:
-    case ax::mojom::Event::kLoadComplete:
-    case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kRowCollapsed:
     case ax::mojom::Event::kRowCountChanged:
     case ax::mojom::Event::kRowExpanded:
@@ -57,6 +55,8 @@ bool ShouldIgnoreAXEvent(ax::mojom::Event event_type) {
     case ax::mojom::Event::kLayoutComplete:
     case ax::mojom::Event::kLiveRegionCreated:
     case ax::mojom::Event::kLiveRegionChanged:
+    case ax::mojom::Event::kLoadComplete:
+    case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kLocationChanged:
     case ax::mojom::Event::kMediaStartedPlaying:
     case ax::mojom::Event::kMediaStoppedPlaying:
@@ -142,8 +142,6 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-    case ui::AXEventGenerator::Event::LOAD_START:
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
     case ui::AXEventGenerator::Event::MENU_POPUP_START:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:

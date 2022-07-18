@@ -93,6 +93,11 @@ void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
     case ax::mojom::Event::kAutocorrectionOccured:
       mac_notification = ui::NSAccessibilityAutocorrectionOccurredNotification;
       break;
+    case ax::mojom::Event::kLoadComplete:
+      if (!ShouldFireLoadCompleteNotification())
+        return;
+      mac_notification = ui::NSAccessibilityLoadCompleteNotification;
+      break;
     default:
       return;
   }
@@ -250,11 +255,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
       mac_notification = ui::NSAccessibilityLiveRegionCreatedNotification;
       break;
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-      if (!ShouldFireLoadCompleteNotification())
-        return;
-      mac_notification = ui::NSAccessibilityLoadCompleteNotification;
-      break;
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
       // Calling NSAccessibilityPostNotification on a menu which is about to be
       // closed/destroyed is possible, but the event does not appear to be
@@ -383,7 +383,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::LOAD_START:
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:

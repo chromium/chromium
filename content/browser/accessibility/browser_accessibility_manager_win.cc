@@ -77,7 +77,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerWin() {
 BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     const ui::AXTreeUpdate& initial_tree,
     BrowserAccessibilityDelegate* delegate)
-    : BrowserAccessibilityManager(delegate), load_complete_pending_(false) {
+    : BrowserAccessibilityManager(delegate) {
   ui::win::CreateATLModuleIfNeeded();
   Initialize(initial_tree);
 }
@@ -124,8 +124,11 @@ void BrowserAccessibilityManagerWin::FireFocusEvent(
 void BrowserAccessibilityManagerWin::FireBlinkEvent(ax::mojom::Event event_type,
                                                     BrowserAccessibility* node,
                                                     int action_request_id) {
+  DCHECK(CanFireEvents());
+
   BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
                                               action_request_id);
+
   switch (event_type) {
     case ax::mojom::Event::kClicked:
       if (node->GetData().IsInvocable())
@@ -135,6 +138,10 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(ax::mojom::Event event_type,
       // Event tests use kEndOfTest as a sentinel to mark the end of the test.
       FireUiaAccessibilityEvent(
           ui::UiaRegistrarWin::GetInstance().GetTestCompleteEventId(), node);
+      break;
+    case ax::mojom::Event::kLoadComplete:
+      FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_LOAD_COMPLETE, node);
+      FireUiaAccessibilityEvent(UIA_AsyncContentLoadedEventId, node);
       break;
     case ax::mojom::Event::kLocationChanged:
       FireWinAccessibilityEvent(IA2_EVENT_VISIBLE_DATA_CHANGED, node);
@@ -159,24 +166,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     BrowserAccessibility* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
-  bool can_fire_events = CanFireEvents();
-
-  if (event_type == ui::AXEventGenerator::Event::LOAD_COMPLETE &&
-      can_fire_events)
-    load_complete_pending_ = false;
-
-  if (load_complete_pending_ && can_fire_events && GetRoot()) {
-    load_complete_pending_ = false;
-    FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_LOAD_COMPLETE, GetRoot());
-    FireUiaAccessibilityEvent(UIA_AsyncContentLoadedEventId, GetRoot());
-  }
-
-  if (!can_fire_events && !load_complete_pending_ &&
-      event_type == ui::AXEventGenerator::Event::LOAD_COMPLETE && GetRoot() &&
-      !GetRoot()->IsOffscreen() && GetRoot()->IsPlatformDocumentWithContent()) {
-    load_complete_pending_ = true;
-  }
-
   switch (event_type) {
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
       FireUiaPropertyChangedEvent(UIA_AccessKeyPropertyId, node);
@@ -359,10 +348,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireUiaPropertyChangedEvent(UIA_LiveSettingPropertyId, node);
       HandleAriaPropertiesChangedEvent(*node);
       break;
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-      FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_LOAD_COMPLETE, node);
-      FireUiaAccessibilityEvent(UIA_AsyncContentLoadedEventId, node);
-      break;
     case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
       FireUiaAccessibilityEvent(UIA_LayoutInvalidatedEventId, node);
       break;
@@ -502,7 +487,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
     case ui::AXEventGenerator::Event::FOCUS_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
-    case ui::AXEventGenerator::Event::LOAD_START:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::PARENT_CHANGED:

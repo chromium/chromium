@@ -390,10 +390,6 @@ bool AXPlatformNodeDelegateBase::IsPlatformDocument() const {
   return ui::IsPlatformDocument(GetRole());
 }
 
-bool AXPlatformNodeDelegateBase::IsPlatformDocumentWithContent() const {
-  return IsPlatformDocument() && GetChildCount();
-}
-
 bool AXPlatformNodeDelegateBase::IsDescendantOfAtomicTextField() const {
   // TODO(nektar): Add const to all tree traversal methods and remove
   // const_cast.

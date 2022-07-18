@@ -117,7 +117,7 @@ void ViewsAXTreeManagerTest::SetUp() {
   ASSERT_NE(nullptr, manager_);
   manager()->SetGeneratedEventCallbackForTesting(base::BindRepeating(
       &ViewsAXTreeManagerTest::OnGeneratedEvent, base::Unretained(this)));
-  WaitFor(ui::AXEventGenerator::Event::LOAD_COMPLETE);
+  WaitFor(ui::AXEventGenerator::Event::SUBTREE_CREATED);
 }
 
 void ViewsAXTreeManagerTest::TearDown() {

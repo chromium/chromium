@@ -745,15 +745,6 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
   DCHECK_EQ(tree_, tree);
   DCHECK(tree->root());
 
-  if (new_tree_data.loaded && !old_tree_data.loaded &&
-      ShouldFireLoadEvents(tree->root())) {
-    // TODO(crbug.com/1342649) This may no longer be necessary, because
-    // Blink now fires more reliable load complete events. We are currently
-    // handling both in BrowserAccessibilityManager::OnAccesssibilityEvents().
-    // These are likely redundant.
-    AddEvent(tree->root(), Event::LOAD_COMPLETE);
-  }
-
   if (new_tree_data.title != old_tree_data.title)
     AddEvent(tree->root(), Event::DOCUMENT_TITLE_CHANGED);
 
@@ -824,13 +815,6 @@ void AXEventGenerator::OnAtomicUpdateFinished(
     const std::vector<Change>& changes) {
   DCHECK_EQ(tree_, tree);
   DCHECK(tree->root());
-
-  if (root_changed && ShouldFireLoadEvents(tree->root())) {
-    if (tree->data().loaded)
-      AddEvent(tree->root(), Event::LOAD_COMPLETE);
-    else
-      AddEvent(tree->root(), Event::LOAD_START);
-  }
 
   for (const auto& change : changes) {
     DCHECK(change.node);
@@ -976,16 +960,6 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
         if (entry.first != ax::mojom::IntListAttribute::kRadioGroupIds)
           callback(entry);
       });
-}
-
-// Attempts to suppress load-related events that we presume no AT will be
-// interested in under any circumstances, such as pages which have no size.
-bool AXEventGenerator::ShouldFireLoadEvents(AXNode* node) {
-  if (always_fire_load_complete_)
-    return true;
-
-  return node->data().relative_bounds.bounds.width() ||
-         node->data().relative_bounds.bounds.height();
 }
 
 void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
@@ -1314,10 +1288,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "liveRelevantChanged";
     case AXEventGenerator::Event::LIVE_STATUS_CHANGED:
       return "liveStatusChanged";
-    case AXEventGenerator::Event::LOAD_COMPLETE:
-      return "loadComplete";
-    case AXEventGenerator::Event::LOAD_START:
-      return "loadStart";
     case AXEventGenerator::Event::MENU_ITEM_SELECTED:
       return "menuItemSelected";
     case ui::AXEventGenerator::Event::MENU_POPUP_END:

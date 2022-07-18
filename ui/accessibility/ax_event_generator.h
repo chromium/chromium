@@ -86,8 +86,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     LIVE_RELEVANT_CHANGED,
     // Fired only on the root of the ARIA live region.
     LIVE_STATUS_CHANGED,
-    LOAD_COMPLETE,
-    LOAD_START,
     MENU_ITEM_SELECTED,
     MENU_POPUP_END,
     MENU_POPUP_START,
@@ -246,10 +244,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // same order they were added.
   void AddEvent(ui::AXNode* node, Event event);
 
-  void set_always_fire_load_complete(bool val) {
-    always_fire_load_complete_ = val;
-  }
-
   void AddEventsForTesting(const AXNode& node,
                            const std::set<EventParams>& events);
 
@@ -329,7 +323,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void FireValueInTextFieldChangedEventIfNecessary(AXTree* tree,
                                                    AXNode* target_node);
   void FireRelationSourceEvents(AXTree* tree, AXNode* target_node);
-  bool ShouldFireLoadEvents(AXNode* node);
 
   // Remove excessive events for a tree update containing node.
   // We remove certain events on a node when it flips its IGNORED state to
@@ -363,8 +356,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // `Event::PARENT_CHANGED` on any of their children because they were
   // previously unknown to ATs.
   std::set<AXNodeID> nodes_to_suppress_parent_changed_on_;
-
-  bool always_fire_load_complete_ = false;
 
   // Helper that tracks live regions.
   std::unique_ptr<AXLiveRegionTracker> live_region_tracker_;

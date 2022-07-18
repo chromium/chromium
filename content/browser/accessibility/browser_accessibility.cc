@@ -1522,10 +1522,6 @@ bool BrowserAccessibility::IsPlatformDocument() const {
   return ui::IsPlatformDocument(GetRole());
 }
 
-bool BrowserAccessibility::IsPlatformDocumentWithContent() const {
-  return IsPlatformDocument() && GetChildCount();
-}
-
 gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()
     const {
   BrowserAccessibility* lowest_platform_ancestor =

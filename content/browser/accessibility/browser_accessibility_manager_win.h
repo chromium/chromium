@@ -131,12 +131,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
 
-  // Keep track of if we got a "load complete" event but were unable to fire
-  // it because of no HWND, because otherwise JAWS can get very confused.
-  // TODO(dmazzoni): a better fix would be to always have an HWND.
-  // http://crbug.com/521877
-  bool load_complete_pending_;
-
   // Since there could be multiple aria property changes on a node and we only
   // want to fire UIA_AriaPropertiesPropertyId once for that node, we use the
   // set here to keep track of the unique nodes that had aria property changes,

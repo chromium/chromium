@@ -825,10 +825,6 @@ bool AXPlatformNodeBase::IsPlatformDocument() const {
   return delegate_ && delegate_->IsPlatformDocument();
 }
 
-bool AXPlatformNodeBase::IsPlatformDocumentWithContent() const {
-  return delegate_ && delegate_->IsPlatformDocumentWithContent();
-}
-
 bool AXPlatformNodeBase::IsStructuredAnnotation() const {
   // The node represents a structured annotation if it can trace back to a
   // target node that is being annotated.

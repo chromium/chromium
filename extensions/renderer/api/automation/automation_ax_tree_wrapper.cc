@@ -46,7 +46,6 @@ AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     : tree_id_(tree_id), owner_(owner), event_generator_(&tree_) {
   tree_.AddObserver(this);
   ui::AXTreeManagerMap::GetInstance().AddTreeManager(tree_id, this);
-  event_generator_.set_always_fire_load_complete(true);
 }
 
 AutomationAXTreeWrapper::~AutomationAXTreeWrapper() {
@@ -133,9 +132,8 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   // Currently language detection only runs once for initial load complete, any
   // content loaded after this will not have language detection performed for
   // it.
-  for (const auto& targeted_event : event_generator_) {
-    if (targeted_event.event_params.event ==
-        ui::AXEventGenerator::Event::LOAD_COMPLETE) {
+  for (const auto& event : event_bundle.events) {
+    if (event.event_type == ax::mojom::Event::kLoadComplete) {
       tree_.language_detection_manager->DetectLanguages();
       tree_.language_detection_manager->LabelLanguages();
 

@@ -596,7 +596,6 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // reparented node or a newly-shown dialog box.
   BrowserAccessibility* focus = GetFocus();
   std::vector<ui::AXEventGenerator::TargetedEvent> deferred_events;
-  bool received_load_start_event = false;
   bool received_load_complete_event = false;
   for (const auto& targeted_event : event_generator()) {
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
@@ -607,14 +606,6 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
     if (!event_target || !event_target->CanFireEvents())
       continue;
-
-    if (targeted_event.event_params.event ==
-        ui::AXEventGenerator::Event::LOAD_COMPLETE) {
-      received_load_complete_event = true;
-    } else if (targeted_event.event_params.event ==
-               ui::AXEventGenerator::Event::LOAD_START) {
-      received_load_start_event = true;
-    }
 
     // IsDescendantOf() also returns true in the case of equality.
     if (focus && focus != event_target && focus->IsDescendantOf(event_target))
@@ -667,29 +658,22 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (event.event_type == ax::mojom::Event::kHover)
       root_manager->CacheHitTestResult(event_target);
 
-    // TODO(accessibility): No platform is doing anything with kLoadComplete
-    // events from Blink, even though we sometimes fire this event explicitly
-    // for the purpose of notifying platform ATs. See, for instance,
-    // RenderAccessibilityImpl::SendPendingAccessibilityEvents(). This should
-    // be resolved in a to-be-determined fashion. In the meantime, if we have
-    // a Blink load-complete event and do not have a generated load-complete
-    // event, behave as if we did have the generated event so platforms are
-    // notified.
-    if (event.event_type == ax::mojom::Event::kLoadComplete &&
-        !received_load_complete_event) {
-      FireGeneratedEvent(ui::AXEventGenerator::Event::LOAD_COMPLETE,
-                         retargeted);
+    if (event.event_type == ax::mojom::Event::kLoadComplete) {
+      DCHECK_EQ(event_target, GetRoot());
+      DCHECK(event_target->IsPlatformDocument());
       received_load_complete_event = true;
-    } else if (event.event_type == ax::mojom::Event::kLoadStart &&
-               !received_load_start_event) {
+    }
+
+    if (event.event_type == ax::mojom::Event::kLoadStart) {
+      DCHECK_EQ(event_target, GetRoot());
+      DCHECK(event_target->IsPlatformDocument());
       // If we already have a load-complete event, the load-start event is no
       // longer relevant. In addition, some code checks for the presence of
       // the "busy" state when firing a platform load-start event. If the page
       // is no longer loading, this state will have been removed and the check
       // will fail.
-      if (!received_load_complete_event)
-        FireGeneratedEvent(ui::AXEventGenerator::Event::LOAD_START, retargeted);
-      received_load_start_event = true;
+      if (received_load_complete_event)
+        continue;  // Skip firing load start event.
     }
 
     FireBlinkEvent(event.event_type, retargeted, event.action_request_id);

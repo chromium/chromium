@@ -345,8 +345,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-    case ui::AXEventGenerator::Event::LOAD_START:
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
     case ui::AXEventGenerator::Event::MENU_POPUP_START:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:

@@ -7443,9 +7443,9 @@ int AXPlatformNodeWin::MSAAState() const {
   // Exposing the busy state on the root web area means the NVDA user will end
   // up without a virtualBuffer until the page fully loads. So if we have
   // content, don't expose the busy state.
-  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
-      !IsPlatformDocumentWithContent()) {
-    msaa_state |= STATE_SYSTEM_BUSY;
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy)) {
+    if (!IsPlatformDocument() || !GetChildCount())
+      msaa_state |= STATE_SYSTEM_BUSY;
   }
 
   if (HasState(ax::mojom::State::kCollapsed))

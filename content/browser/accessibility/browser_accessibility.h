@@ -469,7 +469,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsChildOfLeaf() const override;
   bool IsDescendantOfAtomicTextField() const override;
   bool IsPlatformDocument() const override;
-  bool IsPlatformDocumentWithContent() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
   bool IsIgnored() const override;

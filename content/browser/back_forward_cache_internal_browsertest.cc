@@ -3567,12 +3567,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // Use Screen Reader.
   EnableAccessibilityForWebContents(shell()->web_contents());
 
-  // Wait until we receive the LOAD_COMPLETE AX event. This means that the
-  // LOAD_START event has definitely already passed and any LOAD_START we see
+  // Wait until we receive the kLoadComplete AX event. This means that the
+  // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
       shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::LOAD_COMPLETE);
+      ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3615,9 +3615,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
     ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
                       {reason}, FROM_HERE);
   } else {
-    AccessibilityNotificationWaiter waiter_start(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::LOAD_START);
+    AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
+                                                 ui::kAXModeComplete,
+                                                 ax::mojom::Event::kLoadStart);
     // Ensure that |rfh_a| is successfully restored from bfcache and that we see
     // LOAD_START event.
     EXPECT_EQ(current_frame_host(), rfh_a.get());
