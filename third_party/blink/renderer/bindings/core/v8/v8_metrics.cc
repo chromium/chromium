@@ -165,14 +165,17 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_LE(0, event.main_thread_atomic.weak_wall_clock_duration_in_us);
   DCHECK_LE(0, event.main_thread_atomic.compact_wall_clock_duration_in_us);
   DCHECK_LE(0, event.main_thread_atomic.sweep_wall_clock_duration_in_us);
+  // Incremental marking and sweeping may be uninitialized; the other values
+  // must be uninitialized.
+  DCHECK_EQ(-1, event.main_thread_incremental.total_wall_clock_duration_in_us);
+  DCHECK_LE(-1, event.main_thread_incremental.mark_wall_clock_duration_in_us);
+  DCHECK_EQ(-1, event.main_thread_incremental.weak_wall_clock_duration_in_us);
+  DCHECK_EQ(-1,
+            event.main_thread_incremental.compact_wall_clock_duration_in_us);
+  DCHECK_LE(-1, event.main_thread_incremental.sweep_wall_clock_duration_in_us);
   // TODO(chromium:1154636): Also check for the following when they are
   // populated:
 #if 0
-  DCHECK_LE(0, event.main_thread_incremental.total_wall_clock_duration_in_us);
-  DCHECK_LE(0, event.main_thread_incremental.mark_wall_clock_duration_in_us);
-  DCHECK_LE(0, event.main_thread_incremental.weak_wall_clock_duration_in_us);
-  DCHECK_LE(0, event.main_thread_incremental.compact_wall_clock_duration_in_us);
-  DCHECK_LE(0, event.main_thread_incremental.sweep_wall_clock_duration_in_us);
   DCHECK_LE(0, event.objects.bytes_before);
   DCHECK_LE(0, event.objects.bytes_after);
   DCHECK_LE(0, event.objects.bytes_freed);
@@ -225,14 +228,18 @@ void V8MetricsRecorder::AddMainThreadEvent(
                                     event.main_thread_atomic);
 
   // Report incremental marking/sweeping metrics:
-  UMA_HISTOGRAM_TIMES(
-      "V8.GC.Cycle.MainThread.Full.Incremental.Mark",
-      base::Microseconds(
-          event.main_thread_incremental.mark_wall_clock_duration_in_us));
-  UMA_HISTOGRAM_TIMES(
-      "V8.GC.Cycle.MainThread.Full.Incremental.Sweep",
-      base::Microseconds(
-          event.main_thread_incremental.sweep_wall_clock_duration_in_us));
+  if (event.main_thread_incremental.mark_wall_clock_duration_in_us >= 0) {
+    UMA_HISTOGRAM_TIMES(
+        "V8.GC.Cycle.MainThread.Full.Incremental.Mark",
+        base::Microseconds(
+            event.main_thread_incremental.mark_wall_clock_duration_in_us));
+  }
+  if (event.main_thread_incremental.sweep_wall_clock_duration_in_us >= 0) {
+    UMA_HISTOGRAM_TIMES(
+        "V8.GC.Cycle.MainThread.Full.Incremental.Sweep",
+        base::Microseconds(
+            event.main_thread_incremental.sweep_wall_clock_duration_in_us));
+  }
 
   // TODO(chromium:1154636): emit the following when they are populated:
   // - event.objects
@@ -270,14 +277,19 @@ void V8MetricsRecorder::AddMainThreadEvent(
                                       ".Cpp", event.main_thread_atomic_cpp);
 
     // Report incremental marking/sweeping metrics:
-    UMA_HISTOGRAM_TIMES(
-        "V8.GC.Cycle.MainThread.Full.Incremental.Mark.Cpp",
-        base::Microseconds(
-            event.main_thread_incremental_cpp.mark_wall_clock_duration_in_us));
-    UMA_HISTOGRAM_TIMES(
-        "V8.GC.Cycle.MainThread.Full.Incremental.Sweep.Cpp",
-        base::Microseconds(
-            event.main_thread_incremental_cpp.sweep_wall_clock_duration_in_us));
+    if (event.main_thread_incremental_cpp.mark_wall_clock_duration_in_us >= 0) {
+      UMA_HISTOGRAM_TIMES(
+          "V8.GC.Cycle.MainThread.Full.Incremental.Mark.Cpp",
+          base::Microseconds(event.main_thread_incremental_cpp
+                                 .mark_wall_clock_duration_in_us));
+    }
+    if (event.main_thread_incremental_cpp.sweep_wall_clock_duration_in_us >=
+        0) {
+      UMA_HISTOGRAM_TIMES(
+          "V8.GC.Cycle.MainThread.Full.Incremental.Sweep.Cpp",
+          base::Microseconds(event.main_thread_incremental_cpp
+                                 .sweep_wall_clock_duration_in_us));
+    }
 
     // Report size metrics:
     DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
@@ -335,11 +347,11 @@ void V8MetricsRecorder::AddMainThreadEvent(
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalMark& event,
     ContextId context_id) {
-  if (event.wall_clock_duration_in_us != -1) {
+  if (event.wall_clock_duration_in_us >= 0) {
     UMA_HISTOGRAM_TIMES("V8.GC.Event.MainThread.Full.Incremental.Mark",
                         base::Microseconds(event.wall_clock_duration_in_us));
   }
-  if (event.cpp_wall_clock_duration_in_us != -1) {
+  if (event.cpp_wall_clock_duration_in_us >= 0) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
         "V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp",
@@ -350,11 +362,11 @@ void V8MetricsRecorder::AddMainThreadEvent(
 void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionFullMainThreadIncrementalSweep& event,
     ContextId context_id) {
-  if (event.wall_clock_duration_in_us != -1) {
+  if (event.wall_clock_duration_in_us >= 0) {
     UMA_HISTOGRAM_TIMES("V8.GC.Event.MainThread.Full.Incremental.Sweep",
                         base::Microseconds(event.wall_clock_duration_in_us));
   }
-  if (event.cpp_wall_clock_duration_in_us != -1) {
+  if (event.cpp_wall_clock_duration_in_us >= 0) {
     // This is only a latency event.
     UMA_HISTOGRAM_TIMES(
         "V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp",
