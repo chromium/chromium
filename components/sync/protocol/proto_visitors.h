@@ -35,6 +35,7 @@
 #include "components/sync/protocol/priority_preference_specifics.pb.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -831,6 +832,26 @@ VISIT_PROTO_FIELDS(const sync_pb::ReadingListSpecifics& proto) {
   VISIT(first_read_time_us);
   VISIT(update_title_time_us);
   VISIT(estimated_read_time_seconds);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupSpecifics& proto) {
+  VISIT(guid);
+  VISIT(creation_time_windows_epoch_micros);
+  VISIT(update_time_windows_epoch_micros);
+  VISIT(group);
+  VISIT(tab);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroup& proto) {
+  VISIT(position);
+  VISIT(title);
+  VISIT(color);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {
+  VISIT(position);
+  VISIT(group_guid);
+  VISIT(url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {

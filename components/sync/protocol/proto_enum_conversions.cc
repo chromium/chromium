@@ -157,6 +157,27 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::SavedTabGroup::SavedTabGroupColor color) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SavedTabGroup, SavedTabGroupColor,
+                     SAVED_TAB_GROUP_COLOR_UNSPECIFIED,
+                     SAVED_TAB_GROUP_COLOR_ORANGE);
+  switch (color) {
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_GREY);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_BLUE);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_RED);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_YELLOW);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_GREEN);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_PINK);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_PURPLE);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_CYAN);
+    ENUM_CASE(sync_pb::SavedTabGroup, SAVED_TAB_GROUP_COLOR_ORANGE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::SearchEngineSpecifics::ActiveStatus is_active) {
   ASSERT_ENUM_BOUNDS(sync_pb::SearchEngineSpecifics, ActiveStatus,
                      ACTIVE_STATUS_UNSPECIFIED, ACTIVE_STATUS_FALSE);

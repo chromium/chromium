@@ -48,6 +48,7 @@ sync_protocol_sources = [
   "printers_authorization_server_specifics.proto",
   "priority_preference_specifics.proto",
   "reading_list_specifics.proto",
+  "saved_tab_group_specifics.proto",
   "search_engine_specifics.proto",
   "security_event_specifics.proto",
   "send_tab_to_self_specifics.proto",

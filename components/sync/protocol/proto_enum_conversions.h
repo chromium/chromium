@@ -12,6 +12,7 @@
 #include "components/sync/protocol/get_updates_caller_info.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -51,6 +52,8 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 
 const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status);
+
+const char* ProtoEnumToString(sync_pb::SavedTabGroup::SavedTabGroupColor color);
 
 const char* ProtoEnumToString(
     sync_pb::SearchEngineSpecifics::ActiveStatus is_active);

@@ -41,6 +41,7 @@ import "components/sync/protocol/printer_specifics.proto";
 import "components/sync/protocol/printers_authorization_server_specifics.proto";
 import "components/sync/protocol/priority_preference_specifics.proto";
 import "components/sync/protocol/reading_list_specifics.proto";
+import "components/sync/protocol/saved_tab_group_specifics.proto";
 import "components/sync/protocol/search_engine_specifics.proto";
 import "components/sync/protocol/security_event_specifics.proto";
 import "components/sync/protocol/send_tab_to_self_specifics.proto";
@@ -157,6 +158,7 @@ message EntitySpecifics {
     WebauthnCredentialSpecifics webauthn_credential = 895275;
     HistorySpecifics history = 963985;
     PrintersAuthorizationServerSpecifics printers_authorization_server = 974304;
+    SavedTabGroupSpecifics saved_tab_group = 1004874;
   }
   reserved 218175;
   reserved "wifi_credential";
