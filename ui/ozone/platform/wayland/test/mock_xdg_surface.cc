@@ -52,8 +52,8 @@ void SetWindowGeometry(wl_client* client,
                        int32_t y,
                        int32_t width,
                        int32_t height) {
-  GetUserDataAs<MockXdgSurface>(resource)->SetWindowGeometry(x, y, width,
-                                                             height);
+  GetUserDataAs<MockXdgSurface>(resource)->SetWindowGeometry(
+      {x, y, width, height});
 }
 
 void SetMaximized(wl_client* client, wl_resource* resource) {

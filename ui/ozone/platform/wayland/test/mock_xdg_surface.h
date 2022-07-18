@@ -39,8 +39,7 @@ class MockXdgSurface : public ServerObject {
   ~MockXdgSurface() override;
 
   MOCK_METHOD1(AckConfigure, void(uint32_t serial));
-  MOCK_METHOD4(SetWindowGeometry,
-               void(int32_t x, int32_t y, int32_t width, int32_t height));
+  MOCK_METHOD1(SetWindowGeometry, void(const gfx::Rect&));
 
   void set_xdg_toplevel(std::unique_ptr<MockXdgTopLevel> xdg_toplevel) {
     xdg_toplevel_ = std::move(xdg_toplevel);

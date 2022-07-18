@@ -124,10 +124,11 @@ void WaylandTest::SetKeyboardFocusedWindow(WaylandWindow* window) {
 }
 
 void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
-                                     int width,
-                                     int height,
+                                     const gfx::Size& size,
                                      uint32_t serial,
                                      struct wl_array* states) {
+  const int32_t width = size.width();
+  const int32_t height = size.height();
   // In xdg_shell_v6+, both surfaces send serial configure event and toplevel
   // surfaces send other data like states, heights and widths.
   // Please note that toplevel surfaces may not exist if the surface was created
@@ -157,7 +158,7 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
 
 void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
-  SendConfigureEvent(xdg_surface, 0, 0, 1, state.get());
+  SendConfigureEvent(xdg_surface, {0, 0}, 1, state.get());
 }
 
 void WaylandTest::InitializeSurfaceAugmenter() {

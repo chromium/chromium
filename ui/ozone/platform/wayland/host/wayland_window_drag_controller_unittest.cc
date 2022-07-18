@@ -863,12 +863,12 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
 
   // Maximize and check restored bounds is correctly set.
-  gfx::Rect maximized_bounds = {0, 0, 1024, 768};
-  EXPECT_CALL(delegate_, OnBoundsChanged(testing::Eq(maximized_bounds)));
+  constexpr gfx::Rect kMaximizedBounds{1024, 768};
+  EXPECT_CALL(delegate_, OnBoundsChanged(testing::Eq(kMaximizedBounds)));
   window_->Maximize();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
-  SendConfigureEvent(surface_->xdg_surface(), maximized_bounds.width(),
-                     maximized_bounds.height(), 1, states.get());
+  SendConfigureEvent(surface_->xdg_surface(), kMaximizedBounds.size(), 1,
+                     states.get());
   Sync();
   auto restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(original_bounds, restored_bounds);

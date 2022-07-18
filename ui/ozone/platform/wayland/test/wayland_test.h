@@ -57,8 +57,7 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
 
   // Sends configure event for the |xdg_surface|.
   void SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
-                          int width,
-                          int height,
+                          const gfx::Size& size,
                           uint32_t serial,
                           struct wl_array* states);
 
