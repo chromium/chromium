@@ -406,7 +406,7 @@ void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
 }
 
 void AddHistogramSample(void* hist, int sample) {
-  base::Histogram* histogram = static_cast<base::Histogram*>(hist);
+  auto* histogram = static_cast<base::HistogramBase*>(hist);
   histogram->Add(sample);
 }
 
