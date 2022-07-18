@@ -37,32 +37,23 @@ suite('ReadAnythingAppTest', () => {
     chrome.readAnything.setFontNameForTesting('Standard font');
     assertFontName('"Standard font"');
 
-    chrome.readAnything.setFontNameForTesting('Sans');
-    assertFontName('Sans');
+    chrome.readAnything.setFontNameForTesting('Sans-serif');
+    assertFontName('sans-serif');
 
     chrome.readAnything.setFontNameForTesting('Serif');
     assertFontName('serif');
 
-    chrome.readAnything.setFontNameForTesting('Arial');
-    assertFontName('Arial');
+    chrome.readAnything.setFontNameForTesting('Avenir');
+    assertFontName('avenir');
 
-    chrome.readAnything.setFontNameForTesting('Roboto');
-    assertFontName('Roboto');
-
-    chrome.readAnything.setFontNameForTesting('Courier New');
-    assertFontName('"Courier New"');
+    chrome.readAnything.setFontNameForTesting('Comic Neue');
+    assertFontName('"Comic Neue"');
 
     chrome.readAnything.setFontNameForTesting('Comic Sans MS');
     assertFontName('"Comic Sans MS"');
 
-    chrome.readAnything.setFontNameForTesting('Webdings');
-    assertFontName('Webdings');
-
-    chrome.readAnything.setFontNameForTesting('Impact');
-    assertFontName('Impact');
-
-    chrome.readAnything.setFontNameForTesting('foo_bar_baz');
-    assertFontName('"Standard font"');
+    chrome.readAnything.setFontNameForTesting('Poppins');
+    assertFontName('poppins');
   });
 
   test('updateContent paragraph', () => {

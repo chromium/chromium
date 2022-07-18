@@ -149,27 +149,23 @@ TEST_F(ReadAnythingModelTest, MaximumFontScaleIsEnforced) {
 
 TEST_F(ReadAnythingModelTest, FontModelIsValidFontName) {
   EXPECT_TRUE(GetFontModel()->IsValidFontName("Standard font"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Sans"));
+  EXPECT_TRUE(GetFontModel()->IsValidFontName("Sans-serif"));
   EXPECT_TRUE(GetFontModel()->IsValidFontName("Serif"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Arial"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Roboto"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Courier New"));
+  EXPECT_TRUE(GetFontModel()->IsValidFontName("Avenir"));
+  EXPECT_TRUE(GetFontModel()->IsValidFontName("Comic Neue"));
   EXPECT_TRUE(GetFontModel()->IsValidFontName("Comic Sans MS"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Webdings"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Impact"));
+  EXPECT_TRUE(GetFontModel()->IsValidFontName("Poppins"));
   EXPECT_FALSE(GetFontModel()->IsValidFontName("xxyyzz"));
 }
 
 TEST_F(ReadAnythingModelTest, FontModelGetCurrentFontName) {
   EXPECT_EQ("Standard font", GetFontModel()->GetFontNameAt(0));
-  EXPECT_EQ("Sans", GetFontModel()->GetFontNameAt(1));
+  EXPECT_EQ("Sans-serif", GetFontModel()->GetFontNameAt(1));
   EXPECT_EQ("Serif", GetFontModel()->GetFontNameAt(2));
-  EXPECT_EQ("Arial", GetFontModel()->GetFontNameAt(3));
-  EXPECT_EQ("Roboto", GetFontModel()->GetFontNameAt(4));
-  EXPECT_EQ("Courier New", GetFontModel()->GetFontNameAt(5));
-  EXPECT_EQ("Comic Sans MS", GetFontModel()->GetFontNameAt(6));
-  EXPECT_EQ("Webdings", GetFontModel()->GetFontNameAt(7));
-  EXPECT_EQ("Impact", GetFontModel()->GetFontNameAt(8));
+  EXPECT_EQ("Avenir", GetFontModel()->GetFontNameAt(3));
+  EXPECT_EQ("Comic Neue", GetFontModel()->GetFontNameAt(4));
+  EXPECT_EQ("Comic Sans MS", GetFontModel()->GetFontNameAt(5));
+  EXPECT_EQ("Poppins", GetFontModel()->GetFontNameAt(6));
 }
 
 #endif  // !defined(ADDRESS_SANITIZER)

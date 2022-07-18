@@ -57,7 +57,7 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
 };
 
 TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
-  std::string expected_font_name = "Arial";
+  std::string expected_font_name = "Avenir";
 
   MockOnFontChoiceChanged(3);
 

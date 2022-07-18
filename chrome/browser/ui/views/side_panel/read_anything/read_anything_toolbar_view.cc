@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/cc_macros.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -45,20 +47,21 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       std::make_unique<ReadAnythingFontCombobox>(font_combobox_delegate);
 
   // Create the decrease/increase text size buttons.
-  // TODO(1266555): These use placeholder text, update for final UI.
   auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       gfx::CreateVectorIcon(vector_icons::kTextDecreaseIcon, kSmallIconSize,
                             gfx::kGoogleGrey700),
-      u"Decrease font size");
+      l10n_util::GetStringUTF16(
+          IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       gfx::CreateVectorIcon(vector_icons::kTextIncreaseIcon, kLargeIconSize,
                             gfx::kGoogleGrey700),
-      u"Increase font size");
+      l10n_util::GetStringUTF16(
+          IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
@@ -104,6 +107,12 @@ std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
   separator_container->AddChildView(std::move(separator));
 
   return separator_container;
+}
+
+void ReadAnythingToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kToolbar;
+  node_data->SetDescription(
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TOOLBAR_LABEL));
 }
 
 ReadAnythingToolbarView::~ReadAnythingToolbarView() {

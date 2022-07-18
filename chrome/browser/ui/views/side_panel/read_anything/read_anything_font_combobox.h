@@ -29,6 +29,9 @@ class ReadAnythingFontCombobox : public views::Combobox {
 
   void FontNameChangedCallback();
 
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
   raw_ptr<ReadAnythingFontCombobox::Delegate> delegate_;
 
   base::WeakPtrFactory<ReadAnythingFontCombobox> weak_pointer_factory_{this};

@@ -96,16 +96,13 @@ void ReadAnythingModel::NotifyFontSizeChanged() {
 }
 
 ReadAnythingFontModel::ReadAnythingFontModel() {
-  // TODO(1266555): Replace these with proper versions once finalized.
   font_choices_.emplace_back(u"Standard font");
-  font_choices_.emplace_back(u"Sans");
+  font_choices_.emplace_back(u"Sans-serif");
   font_choices_.emplace_back(u"Serif");
-  font_choices_.emplace_back(u"Arial");
-  font_choices_.emplace_back(u"Roboto");
-  font_choices_.emplace_back(u"Courier New");
+  font_choices_.emplace_back(u"Avenir");
+  font_choices_.emplace_back(u"Comic Neue");
   font_choices_.emplace_back(u"Comic Sans MS");
-  font_choices_.emplace_back(u"Webdings");
-  font_choices_.emplace_back(u"Impact");
+  font_choices_.emplace_back(u"Poppins");
   font_choices_.shrink_to_fit();
 }
 
@@ -148,13 +145,13 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
   return base::UTF16ToUTF8(font_choices_[index]);
 }
 
-// This method uses the text from the drop down at |index| and creates the
-// string that will be sent to the UI to use in the CSS for the panel.
+// This method uses the text from the drop down at |index| and constructs a
+// FontList to be used by the |ReadAnythingFontCombobox::MenuModel| to make
+// each option to display in its associated font.
 // This text is not visible to the user.
 // We append 'Arial' and '18px' to have a back-up font and a set size in case
 // the chosen font does not work for some reason.
-// E.g. User chooses 'Roboto', this method returns 'Roboto, Arial, 18px'.
-// TODO(1266555): Finalize font choices and approach with UI/UX.
+// E.g. User chooses 'Serif', this method returns 'Serif, Arial, 18px'.
 std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
   base::StringAppendF(&font_label, "%s", ", Arial, 18px");

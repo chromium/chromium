@@ -46,6 +46,9 @@ class ReadAnythingToolbarView : public views::View,
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();
 
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
   std::unique_ptr<views::View> Separator();
 
   raw_ptr<views::Combobox> font_combobox_;
