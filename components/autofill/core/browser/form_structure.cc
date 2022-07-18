@@ -1786,14 +1786,13 @@ void FormStructure::RationalizeAddressStateCountry(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   // Walk on the sections of state and country indexes simultaneously. If they
-  // both point to the same section, it means that that section includes both
-  // the country and the state type. This means that no that rationalization is
-  // needed. So, walk both pointers forward. Otherwise, look at the section that
-  // appears earlier on the form. That section doesn't have any field of the
-  // other type. Rationalize the fields on the earlier section if needed. Walk
-  // the pointer that points to the earlier section forward. Stop when both
-  // sections of indexes are processed. (This resembles the merge in the merge
-  // sort.)
+  // both point to the same section, it means that the section includes both the
+  // country and the state type. This means that no rationalization is needed.
+  // So, walk both pointers forward. Otherwise, look at the section that appears
+  // earlier on the form. That section doesn't have any field of the other type.
+  // Rationalize the fields on the earlier section if needed. Walk the pointer
+  // that points to the earlier section forward. Stop when both sections of
+  // indexes are processed. (This resembles the merge in the merge sort.)
   sections_of_state_indexes->Reset();
   sections_of_country_indexes->Reset();
 
