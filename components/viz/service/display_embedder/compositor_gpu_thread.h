@@ -57,8 +57,13 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
       uint64_t new_size,
       gpu::GpuPeakMemoryAllocationSource source) override;
 
+  // These methods are called when chrome application is backgrounded and
+  // foregrounded.
   void OnBackgrounded();
   void OnForegrounded();
+
+  // This method is usually called only for low end devices on android.
+  void OnBackgroundCleanup();
 
  private:
   CompositorGpuThread(
@@ -70,6 +75,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   void HandleMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnBackgroundedOnCompositorGpuThread();
 
   raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   const bool enable_watchdog_;

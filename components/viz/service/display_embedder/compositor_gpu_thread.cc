@@ -260,6 +260,35 @@ void CompositorGpuThread::OnMemoryAllocatedChange(
 void CompositorGpuThread::OnBackgrounded() {
   if (watchdog_thread_)
     watchdog_thread_->OnBackgrounded();
+
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CompositorGpuThread::OnBackgroundedOnCompositorGpuThread,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CompositorGpuThread::OnBackgroundedOnCompositorGpuThread() {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+
+  if (shared_context_state_) {
+    shared_context_state_->PurgeMemory(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+  }
+}
+
+void CompositorGpuThread::OnBackgroundCleanup() {
+  if (!task_runner()->BelongsToCurrentThread()) {
+    task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&CompositorGpuThread::OnBackgroundCleanup,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (shared_context_state_) {
+    shared_context_state_->MarkContextLost();
+    shared_context_state_.reset();
+  }
 }
 
 void CompositorGpuThread::OnForegrounded() {

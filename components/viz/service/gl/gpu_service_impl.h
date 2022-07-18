@@ -387,6 +387,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void OnBackgroundedOnMainThread();
   void OnForegroundedOnMainThread();
 
+  void OnBackgroundCleanupGpuMainThread();
+  void OnBackgroundCleanupCompositorGpuThread();
+
   // Ensure that all peak memory tracking occurs on the main thread as all
   // MemoryTracker are created on that thread. All requests made before
   // GpuServiceImpl::InitializeWithHost will be enqueued.
