@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -77,6 +78,10 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
 
   if (hours_to_full.has_value())
     notification->set_priority(message_center::SYSTEM_PRIORITY);
+  notification->set_accent_color(
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+          ? gfx::kGoogleGreen300
+          : gfx::kGoogleGreen600);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
