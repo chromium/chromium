@@ -70,6 +70,10 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   MockReadAnythingCoordinatorObserver coordinator_observer_;
 };
 
+// TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
+// tests on asan mac.
+#if !BUILDFLAG(IS_MAC) || !defined(ADDRESS_SANITIZER)
+
 TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {
   // Model and controller are constructed when ReadAnythingCoordinator is
   // constructed, before Side Panel is shown.
@@ -110,3 +114,5 @@ TEST_F(ReadAnythingCoordinatorTest, ActivatesAndDeactivatesController) {
   entry->OnEntryHidden();
   EXPECT_FALSE(IsControllerActive());
 }
+
+#endif  // !defined(ADDRESS_SANITIZER)
