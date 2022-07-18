@@ -48,14 +48,13 @@ const void* const kUserDataKey = &kUserDataKey;
 // Returns the font names previously stored to the specified key.
 std::vector<std::string> GetFontNamesFromPrefsForKey(Profile* profile,
                                                      const char* pref_name) {
-  const base::Value* font_name_list = profile->GetPrefs()->GetList(pref_name);
-  DCHECK(font_name_list && font_name_list->is_list());
-  const auto font_name_list_view = font_name_list->GetListDeprecated();
-  if (font_name_list_view.empty())
+  const base::Value::List& font_name_list =
+      profile->GetPrefs()->GetValueList(pref_name);
+  if (font_name_list.empty())
     return {};
 
   std::vector<std::string> font_names;
-  for (const auto& font_name_value : font_name_list_view) {
+  for (const auto& font_name_value : font_name_list) {
     if (const std::string* font_name = font_name_value.GetIfString())
       font_names.push_back(*font_name);
   }
@@ -66,11 +65,10 @@ std::vector<std::string> GetFontNamesFromPrefsForKey(Profile* profile,
 void SaveFontNamesToPref(Profile* profile,
                          const char* pref_name,
                          const std::vector<std::string>& font_family_names) {
-  std::vector<base::Value> font_family_names_values;
+  base::Value::List font_family_names_values;
   for (auto& name : font_family_names)
-    font_family_names_values.push_back(base::Value(name));
-  profile->GetPrefs()->Set(pref_name,
-                           base::Value(std::move(font_family_names_values)));
+    font_family_names_values.Append(name);
+  profile->GetPrefs()->SetList(pref_name, std::move(font_family_names_values));
 }
 
 // FontPrewarmerCoordinator is responsible for coordinating with the renderer
