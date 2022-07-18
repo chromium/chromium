@@ -12,6 +12,8 @@
 #include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -48,6 +50,13 @@ class LoginLogoutReporterBrowserTest
   LoginLogoutReporterBrowserTest& operator=(
       const LoginLogoutReporterBrowserTest&) = delete;
 
+  ~LoginLogoutReporterBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    login_manager_.set_should_launch_browser(true);
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+  }
+
   void SetUpStubAuthenticatorAndAttemptLogin(
       AuthFailure::FailureReason failure_reason = AuthFailure::NONE) {
     const UserContext user_context =
@@ -78,6 +87,16 @@ class LoginLogoutReporterBrowserTest
         {ash::kReportDeviceLoginLogout});
   }
 
+  Record GetNextLoginLogoutRecord(MissiveClientTestObserver* observer) {
+    std::tuple<Priority, Record> enqueued_record =
+        observer->GetNextEnqueuedRecord();
+    Priority priority = std::get<0>(enqueued_record);
+    Record record = std::get<1>(enqueued_record);
+
+    EXPECT_THAT(priority, Eq(Priority::SECURITY));
+    return record;
+  }
+
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId)};
@@ -85,7 +104,8 @@ class LoginLogoutReporterBrowserTest
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
 };
 
-IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginSuccessful) {
+IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,
+                       LoginSuccessfulThenLogout) {
   SetIsReportLoginLogoutPolicyEnabled(true);
 
   MissiveClientTestObserver observer(Destination::LOGIN_LOGOUT_EVENTS);
@@ -93,20 +113,25 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginSuccessful) {
   test::WaitForPrimaryUserSessionStart();
   base::RunLoop().RunUntilIdle();
 
-  std::tuple<Priority, Record> enqueued_record =
-      observer.GetNextEnqueuedRecord();
-  Priority priority = std::get<0>(enqueued_record);
-  Record record = std::get<1>(enqueued_record);
+  Record login_record = GetNextLoginLogoutRecord(&observer);
 
-  EXPECT_FALSE(observer.HasNewEnqueuedRecords());
-  EXPECT_THAT(priority, Eq(Priority::SECURITY));
-  LoginLogoutRecord record_data;
-  ASSERT_TRUE(record_data.ParseFromString(record.data()));
-  EXPECT_THAT(record_data.session_type(),
+  LoginLogoutRecord login_record_data;
+  ASSERT_TRUE(login_record_data.ParseFromString(login_record.data()));
+  EXPECT_THAT(login_record_data.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
-  EXPECT_FALSE(record_data.has_affiliated_user());
-  ASSERT_TRUE(record_data.has_login_event());
-  EXPECT_FALSE(record_data.login_event().has_failure());
+  EXPECT_FALSE(login_record_data.has_affiliated_user());
+  ASSERT_TRUE(login_record_data.has_login_event());
+  EXPECT_FALSE(login_record_data.login_event().has_failure());
+
+  ash::Shell::Get()->session_controller()->RequestSignOut();
+  Record logout_record = GetNextLoginLogoutRecord(&observer);
+
+  LoginLogoutRecord logout_record_data;
+  ASSERT_TRUE(logout_record_data.ParseFromString(logout_record.data()));
+  EXPECT_THAT(logout_record_data.session_type(),
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+  EXPECT_FALSE(logout_record_data.has_affiliated_user());
+  EXPECT_TRUE(logout_record_data.has_logout_event());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginFailed) {
@@ -117,26 +142,16 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginFailed) {
       AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(MissiveClient::Get());
-  MissiveClient::TestInterface* const fake_missive =
-      MissiveClient::Get()->GetTestInterface();
-  ASSERT_TRUE(fake_missive);
+  Record login_record = GetNextLoginLogoutRecord(&observer);
 
-  std::tuple<Priority, Record> enqueued_record =
-      observer.GetNextEnqueuedRecord();
-  Priority priority = std::get<0>(enqueued_record);
-  Record record = std::get<1>(enqueued_record);
-
-  EXPECT_FALSE(observer.HasNewEnqueuedRecords());
-  EXPECT_THAT(priority, Eq(Priority::SECURITY));
-  LoginLogoutRecord record_data;
-  ASSERT_TRUE(record_data.ParseFromString(record.data()));
-  EXPECT_THAT(record_data.session_type(),
+  LoginLogoutRecord failed_login_record_data;
+  ASSERT_TRUE(failed_login_record_data.ParseFromString(login_record.data()));
+  EXPECT_THAT(failed_login_record_data.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
-  EXPECT_FALSE(record_data.has_affiliated_user());
-  ASSERT_TRUE(record_data.has_login_event());
-  ASSERT_TRUE(record_data.login_event().has_failure());
-  EXPECT_THAT(record_data.login_event().failure().reason(),
+  EXPECT_FALSE(failed_login_record_data.has_affiliated_user());
+  ASSERT_TRUE(failed_login_record_data.has_login_event());
+  ASSERT_TRUE(failed_login_record_data.login_event().has_failure());
+  EXPECT_THAT(failed_login_record_data.login_event().failure().reason(),
               LoginFailureReason::AUTHENTICATION_ERROR);
 }
 
