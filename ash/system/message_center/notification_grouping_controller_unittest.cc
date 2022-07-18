@@ -267,4 +267,29 @@ TEST_F(NotificationGroupingControllerTest,
   waiter.Wait(GetPopupView(id0)->message_view()->layer());
 }
 
+TEST_F(NotificationGroupingControllerTest,
+       ParentNotificationRemovedDuringAnimation) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1;
+  const GURL url(u"http://test-url.com/");
+
+  id0 = AddNotificationWithOriginUrl(url);
+  id1 = AddNotificationWithOriginUrl(url);
+
+  // Remove the first notification before the animation completes.
+  message_center->RemoveNotification(id0, true);
+
+  // Wait for the animation to end to ensure there is no crash
+  LayerAnimationStoppedWaiter waiter;
+  waiter.Wait(GetPopupView(id0)->message_view()->layer());
+
+  // Make sure the second notification is still there.
+  EXPECT_FALSE(message_center->FindNotificationById(id0));
+  EXPECT_TRUE(message_center->FindNotificationById(id1));
+}
+
 }  // namespace ash

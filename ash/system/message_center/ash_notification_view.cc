@@ -618,9 +618,6 @@ void AshNotificationView::AnimateSingleToGroup(
   ash::message_center_utils::InitLayerForAnimations(image_container_view());
   ash::message_center_utils::InitLayerForAnimations(action_buttons_row());
 
-  message_center::Notification* parent_notification =
-      message_center::MessageCenter::Get()->FindNotificationById(parent_id);
-
   auto on_animation_ended = base::BindOnce(
       [](base::WeakPtr<ash::AshNotificationView> parent,
          views::View* left_content, views::View* right_content,
@@ -628,9 +625,14 @@ void AshNotificationView::AnimateSingleToGroup(
          views::View* image_container_view, views::View* action_buttons_row,
          AshNotificationExpandButton* expand_button,
          NotificationGroupingController* grouping_controller,
-         const std::string& notification_id, std::string parent_id,
-         message_center::Notification* parent_notification) {
+         const std::string& notification_id, std::string parent_id) {
         if (!parent)
+          return;
+
+        auto* parent_notification =
+            message_center::MessageCenter::Get()->FindNotificationById(
+                parent_id);
+        if (!parent_notification)
           return;
 
         grouping_controller->ConvertFromSingleToGroupNotificationAfterAnimation(
@@ -653,7 +655,7 @@ void AshNotificationView::AnimateSingleToGroup(
       weak_factory_.GetWeakPtr(), left_content_, right_content(),
       message_label_in_expanded_state_, image_container_view(),
       action_buttons_row(), expand_button_, grouping_controller,
-      notification_id, parent_id, parent_notification);
+      notification_id, parent_id);
 
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(std::move(on_animation_ended));
