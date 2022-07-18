@@ -186,6 +186,12 @@ GLGetProcAddressProc g_get_proc_address;
 
 void CleanupNativeLibraries(void* due_to_fallback) {
   if (g_libraries) {
+#if BUILDFLAG(IS_MAC)
+    // Mac `NativeLibrary` is heap-allocated, so always unload to ensure they're
+    // freed.
+    for (auto* library : *g_libraries)
+      base::UnloadNativeLibrary(library);
+#else
     // We do not call base::UnloadNativeLibrary() for these libraries as
     // unloading libGL without closing X display is not allowed. See
     // https://crbug.com/250813 for details.
@@ -200,6 +206,7 @@ void CleanupNativeLibraries(void* due_to_fallback) {
       for (auto* library : *g_libraries)
         base::UnloadNativeLibrary(library);
     }
+#endif  // BUILDFLAG(IS_MAC)
     delete g_libraries;
     g_libraries = nullptr;
   }
