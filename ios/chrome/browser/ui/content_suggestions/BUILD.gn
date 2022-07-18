@@ -2,6 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("start_suggest") {
+  sources = [
+    "start_suggest_service_factory.h",
+    "start_suggest_service_factory.mm",
+    "start_suggest_service_response_bridge.h",
+    "start_suggest_service_response_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/search:start_suggest",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/autocomplete",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/search_engines",
+    "//services/network/public/cpp",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("content_suggestions") {
   sources = [
     "content_suggestions_category_wrapper.h",
