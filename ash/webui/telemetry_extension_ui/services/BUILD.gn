@@ -18,10 +18,6 @@ source_set("telemetry_services") {
     "lid_observer.h",
     "power_observer.cc",
     "power_observer.h",
-    "probe_service.cc",
-    "probe_service.h",
-    "probe_service_converters.cc",
-    "probe_service_converters.h",
     "system_events_service.cc",
     "system_events_service.h",
   ]
@@ -42,8 +38,6 @@ source_set("telemetry_services_test") {
   sources = [
     "fake_diagnostics_service.cc",
     "fake_diagnostics_service.h",
-    "fake_probe_service.cc",
-    "fake_probe_service.h",
   ]
 
   deps = [
@@ -58,8 +52,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "diagnostics_service_converters_unittest.cc",
-    "probe_service_converters_unittest.cc",
-    "probe_service_unittest.cc",
     "system_events_service_unittest.cc",
   ]
   deps = [

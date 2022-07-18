@@ -10,10 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

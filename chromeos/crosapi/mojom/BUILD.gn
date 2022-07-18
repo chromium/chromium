@@ -66,6 +66,7 @@ mojom("mojom") {
     "power.mojom",
     "prefs.mojom",
     "printing_metrics.mojom",
+    "probe_service.mojom",
     "remoting.mojom",
     "resource_manager.mojom",
     "screen_manager.mojom",

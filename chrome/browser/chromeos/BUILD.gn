@@ -3625,6 +3625,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:arc_test_support",
     "//chrome/browser/ash/crosapi:unit_tests",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/telemetry_extension:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ash_test_support",

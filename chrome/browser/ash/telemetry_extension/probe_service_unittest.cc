@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/telemetry_extension_ui/services/probe_service.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service.h"
 
 #include <cstdint>
 #include <utility>

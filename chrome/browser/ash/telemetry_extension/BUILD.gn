@@ -1,0 +1,60 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
+
+source_set("telemetry_extension") {
+  sources = [
+    "probe_service.cc",
+    "probe_service.h",
+    "probe_service_converters.cc",
+    "probe_service_converters.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus",
+    "//chromeos/dbus/debug_daemon",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_probe_service.cc",
+    "fake_probe_service.h",
+  ]
+
+  deps = [
+    ":telemetry_extension",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "probe_service_converters_unittest.cc",
+    "probe_service_unittest.cc",
+  ]
+  deps = [
+    ":telemetry_extension",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus",
+    "//chromeos/dbus/debug_daemon",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

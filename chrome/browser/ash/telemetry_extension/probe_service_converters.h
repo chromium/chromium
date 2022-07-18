@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_CONVERTERS_H_
-#define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_CONVERTERS_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_CONVERTERS_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_CONVERTERS_H_
 
 #include <cstdint>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
 #include "base/check.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom-forward.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom-forward.h"
 
 namespace ash {
 
@@ -168,4 +168,4 @@ std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
 }  // namespace converters
 }  // namespace ash
 
-#endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_CONVERTERS_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_CONVERTERS_H_

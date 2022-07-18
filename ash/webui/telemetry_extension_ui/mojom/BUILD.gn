@@ -10,7 +10,6 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   sources = [
     "diagnostics_service.mojom",
-    "probe_service.mojom",
     "system_events_service.mojom",
   ]
 }

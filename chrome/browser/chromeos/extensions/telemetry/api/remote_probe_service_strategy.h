@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
