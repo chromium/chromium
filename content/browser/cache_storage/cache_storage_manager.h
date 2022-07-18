@@ -65,13 +65,13 @@ class CONTENT_EXPORT CacheStorageManager
 
   // Map a database identifier (computed from a storage key) to the path.
   static base::FilePath ConstructStorageKeyPath(
-      const base::FilePath& root_path,
+      const base::FilePath& profile_path,
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner);
 
-  // Map a BuckeLocator to the path.
-  base::FilePath ConstructBucketPath(
-      const base::FilePath& root_path,
+  // Map a database identifier (computed from a BucketLocator) to the path.
+  static base::FilePath ConstructBucketPath(
+      const base::FilePath& profile_path,
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner);
 
@@ -112,7 +112,10 @@ class CONTENT_EXPORT CacheStorageManager
   void NotifyCacheContentChanged(const blink::StorageKey& storage_key,
                                  const std::string& name);
 
-  base::FilePath root_path() const { return root_path_; }
+  base::FilePath profile_path() const { return profile_path_; }
+
+  static base::FilePath ConstructFirstPartyDefaultRootPath(
+      const base::FilePath& profile_path);
 
   // This method is called when the last CacheStorageHandle for a particular
   // instance is destroyed and its reference count drops to zero.
@@ -172,13 +175,19 @@ class CONTENT_EXPORT CacheStorageManager
     return scheduler_task_runner_;
   }
 
-  bool IsMemoryBacked() const { return root_path_.empty(); }
+  void ListStorageKeysOnTaskRunner(
+      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
+      std::vector<mojo::StructPtr<storage::mojom::StorageUsageInfo>> usages);
+
+  bool IsMemoryBacked() const { return profile_path_.empty(); }
 
   // MemoryPressureListener callback
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
-  base::FilePath root_path_;
+  // Stores the storage partition (profile) path unless the CacheStorage should
+  // be in-memory only, in which case this is empty.
+  const base::FilePath profile_path_;
   const scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
 

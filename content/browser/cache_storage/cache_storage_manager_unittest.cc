@@ -1615,7 +1615,8 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithPadding) {
   EXPECT_TRUE(Open(storage_key1_, "foo"));
   base::FilePath storage_dir =
       CacheStorageCache::From(callback_cache_handle_)->path().DirName();
-  base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+  base::FilePath index_path =
+      storage_dir.AppendASCII(CacheStorage::kIndexFileName);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
@@ -1721,7 +1722,8 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
   DestroyStorageManager();
 
   // Save a copy of the V1 index.
-  base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+  base::FilePath index_path =
+      storage_dir.AppendASCII(CacheStorage::kIndexFileName);
   EXPECT_TRUE(base::PathExists(index_path));
   base::FilePath backup_index_path = storage_dir.AppendASCII("index.txt.bak");
   EXPECT_TRUE(base::CopyFile(index_path, backup_index_path));
@@ -1798,7 +1800,8 @@ TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
   DestroyStorageManager();
 
   // Save a copy of the V1 index.
-  base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+  base::FilePath index_path =
+      storage_dir.AppendASCII(CacheStorage::kIndexFileName);
   EXPECT_TRUE(base::PathExists(index_path));
   base::FilePath backup_index_path = storage_dir.AppendASCII("index.txt.bak");
   EXPECT_TRUE(base::CopyFile(index_path, backup_index_path));
@@ -1903,7 +1906,7 @@ TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
   auto* legacy_manager =
       static_cast<CacheStorageManager*>(cache_manager_.get());
   base::FilePath origin_path = CacheStorageManager::ConstructStorageKeyPath(
-      legacy_manager->root_path(), storage_key1_,
+      legacy_manager->profile_path(), storage_key1_,
       storage::mojom::CacheStorageOwner::kCacheAPI);
   base::FilePath unreferenced_path = origin_path.AppendASCII("bar");
   EXPECT_TRUE(CreateDirectory(unreferenced_path));
@@ -2522,11 +2525,12 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     // Create an empty directory for the cache_storage files.
     auto* legacy_manager =
         static_cast<CacheStorageManager*>(cache_manager_.get());
-    base::FilePath manager_dir = legacy_manager->root_path();
+    base::FilePath profile_path = legacy_manager->profile_path();
     base::FilePath storage_dir = CacheStorageManager::ConstructStorageKeyPath(
-        manager_dir, storage_key1_,
+        profile_path, storage_key1_,
         storage::mojom::CacheStorageOwner::kCacheAPI);
-    EXPECT_TRUE(base::CreateDirectory(manager_dir));
+    EXPECT_TRUE(base::CreateDirectory(
+        CacheStorageManager::ConstructFirstPartyDefaultRootPath(profile_path)));
 
     // Destroy the manager while we operate on the underlying files.
     DestroyStorageManager();
@@ -2543,7 +2547,8 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
                                     /*recursive=*/true));
 
     // Read the index file from disk.
-    base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+    base::FilePath index_path =
+        storage_dir.AppendASCII(CacheStorage::kIndexFileName);
     std::string protobuf;
     EXPECT_TRUE(base::ReadFileToString(index_path, &protobuf));
     proto::CacheStorageIndex original_index;

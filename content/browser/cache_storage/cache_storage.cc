@@ -77,6 +77,7 @@ void SizeRetrievedFromAllCaches(std::unique_ptr<int64_t> accumulator,
 }  // namespace
 
 const char CacheStorage::kIndexFileName[] = "index.txt";
+const char CacheStorage::kCacheStorage[] = "CacheStorage";
 
 struct CacheStorage::CacheMatchResponse {
   CacheMatchResponse() = default;
@@ -236,7 +237,7 @@ class CacheStorage::MemoryLoader : public CacheStorage::CacheLoader {
 class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
  public:
   SimpleCacheLoader(
-      const base::FilePath& origin_path,
+      const base::FilePath& directory_path,
       base::SequencedTaskRunner* cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -251,7 +252,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
                     cache_storage,
                     storage_key,
                     owner),
-        origin_path_(origin_path) {}
+        directory_path_(directory_path) {}
 
   std::unique_ptr<CacheStorageCache> CreateCache(
       const std::string& cache_name,
@@ -261,7 +262,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     DCHECK(base::Contains(cache_name_to_cache_dir_, cache_name));
 
     std::string cache_dir = cache_name_to_cache_dir_[cache_name];
-    base::FilePath cache_path = origin_path_.AppendASCII(cache_dir);
+    base::FilePath cache_path = directory_path_.AppendASCII(cache_dir);
     return CacheStorageCache::CreatePersistentCache(
         storage_key_, owner_, cache_name, cache_storage_, cache_path,
         scheduler_task_runner_, quota_manager_proxy_, blob_storage_context_,
@@ -275,7 +276,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     PostTaskAndReplyWithResult(
         cache_task_runner_.get(), FROM_HERE,
         base::BindOnce(&SimpleCacheLoader::PrepareNewCacheDirectoryInPool,
-                       origin_path_),
+                       directory_path_),
         base::BindOnce(&SimpleCacheLoader::PrepareNewCacheCreateCache,
                        weak_ptr_factory_.GetWeakPtr(), cache_name,
                        std::move(callback)));
@@ -326,7 +327,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     DCHECK(base::Contains(doomed_cache_to_path_, cache));
 
     base::FilePath cache_path =
-        origin_path_.AppendASCII(doomed_cache_to_path_[cache]);
+        directory_path_.AppendASCII(doomed_cache_to_path_[cache]);
     doomed_cache_to_path_.erase(cache);
 
     cache_task_runner_->PostTask(
@@ -378,9 +379,9 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     bool success = protobuf_index.SerializeToString(&serialized);
     DCHECK(success);
 
-    base::FilePath tmp_path = origin_path_.AppendASCII("index.txt.tmp");
+    base::FilePath tmp_path = directory_path_.AppendASCII("index.txt.tmp");
     base::FilePath index_path =
-        origin_path_.AppendASCII(CacheStorage::kIndexFileName);
+        directory_path_.AppendASCII(CacheStorage::kIndexFileName);
 
     PostTaskAndReplyWithResult(
         cache_task_runner_.get(), FROM_HERE,
@@ -413,7 +414,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     PostTaskAndReplyWithResult(
         cache_task_runner_.get(), FROM_HERE,
         base::BindOnce(&SimpleCacheLoader::ReadAndMigrateIndexInPool,
-                       origin_path_, quota_manager_proxy_, storage_key_),
+                       directory_path_, quota_manager_proxy_, storage_key_),
         base::BindOnce(&SimpleCacheLoader::LoadIndexDidReadIndex,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -453,8 +454,8 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     }
 
     cache_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&DeleteUnreferencedCachesInPool, origin_path_,
-                                  std::move(cache_dirs)));
+        FROM_HERE, base::BindOnce(&DeleteUnreferencedCachesInPool,
+                                  directory_path_, std::move(cache_dirs)));
     std::move(callback).Run(std::move(index));
   }
 
@@ -570,7 +571,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     return index;
   }
 
-  const base::FilePath origin_path_;
+  const base::FilePath directory_path_;
   std::map<std::string, std::string> cache_name_to_cache_dir_;
   std::map<CacheStorageCache*, std::string> doomed_cache_to_path_;
 
@@ -593,7 +594,7 @@ CacheStorage::CacheStorage(
       scheduler_(
           new CacheStorageScheduler(CacheStorageSchedulerClient::kStorage,
                                     scheduler_task_runner)),
-      origin_path_(path),
+      directory_path_(path),
       cache_task_runner_(cache_task_runner),
       quota_manager_proxy_(quota_manager_proxy),
       blob_storage_context_(std::move(blob_storage_context)),
@@ -607,8 +608,9 @@ CacheStorage::CacheStorage(
   }
 
   cache_loader_ = base::WrapUnique<CacheLoader>(new SimpleCacheLoader(
-      origin_path_, cache_task_runner_.get(), std::move(scheduler_task_runner),
-      quota_manager_proxy, blob_storage_context_, this, storage_key, owner));
+      directory_path_, cache_task_runner_.get(),
+      std::move(scheduler_task_runner), quota_manager_proxy,
+      blob_storage_context_, this, storage_key, owner));
 
 #if BUILDFLAG(IS_ANDROID)
   app_status_listener_ =

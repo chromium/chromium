@@ -31,6 +31,7 @@
 #include "content/browser/cache_storage/cache_storage.pb.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/storage_directory_util.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -129,103 +130,123 @@ void RecordIndexValidationResult(IndexResult value) {
                                 value);
 }
 
-// Open the various cache directories' index files and extract their storage
-// keys, sizes (if current), and last modified times.
-std::vector<storage::mojom::StorageUsageInfoPtr>
-GetStorageKeysAndLastModifiedOnTaskRunner(
-    std::vector<storage::mojom::StorageUsageInfoPtr> usages,
-    base::FilePath root_path,
-    storage::mojom::CacheStorageOwner owner) {
-  base::FileEnumerator file_enum(root_path, false /* recursive */,
-                                 base::FileEnumerator::DIRECTORIES);
+base::FilePath ConstructOriginPath(const base::FilePath& profile_path,
+                                   const url::Origin& origin,
+                                   storage::mojom::CacheStorageOwner owner) {
+  base::FilePath first_party_default_root_path =
+      CacheStorageManager::ConstructFirstPartyDefaultRootPath(profile_path);
 
-  base::FilePath path;
-  while (!(path = file_enum.Next()).empty()) {
-    base::FilePath index_path = path.AppendASCII(CacheStorage::kIndexFileName);
-    base::File::Info file_info;
-    base::Time index_last_modified;
-    if (GetFileInfo(index_path, &file_info))
-      index_last_modified = file_info.last_modified;
-    std::string protobuf;
-    base::ReadFileToString(path.AppendASCII(CacheStorage::kIndexFileName),
-                           &protobuf);
-
-    proto::CacheStorageIndex index;
-    if (!index.ParseFromString(protobuf)) {
-      RecordIndexValidationResult(IndexResult::kFailedToParse);
-      continue;
-    }
-
-    IndexResult rv = ValidateIndex(index);
-    if (rv != IndexResult::kOk) {
-      RecordIndexValidationResult(rv);
-      continue;
-    }
-
-    blink::StorageKey storage_key;
-    if (index.has_storage_key()) {
-      absl::optional<blink::StorageKey> result =
-          blink::StorageKey::Deserialize(index.storage_key());
-      if (!result) {
-        RecordIndexValidationResult(IndexResult::kInvalidStorageKey);
-        continue;
-      }
-      storage_key = result.value();
-    } else {
-      // TODO(https://crbug.com/1199077): Since index file migrations happen
-      // lazily, it's plausible that the index file we are reading doesn't have
-      // a storage key yet. For now, fall back to creating the storage key
-      // from the origin. This should be removed after either enough time has
-      // passed for most caches to have been migrated naturally or after we
-      // implement follow-on code that can force a migration.
-      storage_key =
-          blink::StorageKey(url::Origin::Create(GURL(index.origin())));
-    }
-    DCHECK(!storage_key.origin().GetURL().is_empty());
-
-    auto origin_path = CacheStorageManager::ConstructStorageKeyPath(
-        root_path, storage_key, owner);
-    if (path != origin_path) {
-      storage::mojom::CacheStorageOwner other_owner =
-          owner == storage::mojom::CacheStorageOwner::kCacheAPI
-              ? storage::mojom::CacheStorageOwner::kBackgroundFetch
-              : storage::mojom::CacheStorageOwner::kCacheAPI;
-      auto other_owner_path = CacheStorageManager::ConstructStorageKeyPath(
-          root_path, storage_key, other_owner);
-      // Some of the paths in the |root_path| directory are for a different
-      // |owner|.  That is valid and expected, but if the path doesn't match
-      // the calculated path for either |owner|, then it is invalid.
-      if (path != other_owner_path)
-        RecordIndexValidationResult(IndexResult::kPathMismatch);
-      continue;
-    }
-
-    int64_t storage_size =
-        GetCacheStorageSize(path, index_last_modified, index);
-
-    usages.emplace_back(storage::mojom::StorageUsageInfo::New(
-        storage_key.origin(), storage_size, file_info.last_modified));
-    RecordIndexValidationResult(IndexResult::kOk);
+  std::string identifier = storage::GetIdentifierFromOrigin(origin);
+  if (owner != storage::mojom::CacheStorageOwner::kCacheAPI) {
+    identifier += "-" + base::NumberToString(static_cast<int>(owner));
   }
-
-  return usages;
+  const std::string origin_hash = base::SHA1HashString(identifier);
+  const std::string origin_hash_hex = base::ToLowerASCII(
+      base::HexEncode(origin_hash.c_str(), origin_hash.length()));
+  return first_party_default_root_path.AppendASCII(origin_hash_hex);
 }
 
-// Used by QuotaClient which only wants the storage keys that have data in the
-// default bucket. Keep this function to return a vector of StorageKeys, instead
-// of buckets.
-std::vector<blink::StorageKey> ListStorageKeysOnTaskRunner(
-    base::FilePath root_path,
-    storage::mojom::CacheStorageOwner owner) {
-  std::vector<storage::mojom::StorageUsageInfoPtr> usages =
-      GetStorageKeysAndLastModifiedOnTaskRunner(
-          std::vector<storage::mojom::StorageUsageInfoPtr>(), root_path, owner);
+void ValidateAndAddUsageFromPath(
+    const base::FilePath& index_file_directory_path,
+    storage::mojom::CacheStorageOwner owner,
+    const base::FilePath& profile_path,
+    std::vector<storage::mojom::StorageUsageInfoPtr>& usages) {
+  if (!base::PathExists(index_file_directory_path)) {
+    return;
+  }
+  base::FilePath index_path =
+      index_file_directory_path.AppendASCII(CacheStorage::kIndexFileName);
+  base::File::Info file_info;
+  base::Time index_last_modified;
+  if (GetFileInfo(index_path, &file_info))
+    index_last_modified = file_info.last_modified;
+  std::string protobuf;
+  base::ReadFileToString(index_path, &protobuf);
 
-  std::vector<blink::StorageKey> out_storage_keys;
-  for (const storage::mojom::StorageUsageInfoPtr& usage : usages)
-    out_storage_keys.emplace_back(blink::StorageKey(usage->origin));
+  proto::CacheStorageIndex index;
+  if (!index.ParseFromString(protobuf)) {
+    RecordIndexValidationResult(IndexResult::kFailedToParse);
+    return;
+  }
 
-  return out_storage_keys;
+  IndexResult rv = ValidateIndex(index);
+  if (rv != IndexResult::kOk) {
+    RecordIndexValidationResult(rv);
+    return;
+  }
+
+  blink::StorageKey storage_key;
+  if (index.has_storage_key()) {
+    absl::optional<blink::StorageKey> result =
+        blink::StorageKey::Deserialize(index.storage_key());
+    if (!result) {
+      RecordIndexValidationResult(IndexResult::kInvalidStorageKey);
+      return;
+    }
+    storage_key = result.value();
+  } else {
+    // TODO(https://crbug.com/1199077): Since index file migrations happen
+    // lazily, it's plausible that the index file we are reading doesn't have
+    // a storage key yet. For now, fall back to creating the storage key
+    // from the origin. Once enough time has passed it should be safe to treat
+    // this case as an index validation error.
+    storage_key = blink::StorageKey(url::Origin::Create(GURL(index.origin())));
+  }
+  DCHECK(!storage_key.origin().GetURL().is_empty());
+
+  auto origin_path = CacheStorageManager::ConstructStorageKeyPath(
+      profile_path, storage_key, owner);
+  if (index_file_directory_path != origin_path) {
+    storage::mojom::CacheStorageOwner other_owner =
+        owner == storage::mojom::CacheStorageOwner::kCacheAPI
+            ? storage::mojom::CacheStorageOwner::kBackgroundFetch
+            : storage::mojom::CacheStorageOwner::kCacheAPI;
+    auto other_owner_path = CacheStorageManager::ConstructStorageKeyPath(
+        profile_path, storage_key, other_owner);
+    // Some of the paths in the |index_file_directory_path| directory are for a
+    // different |owner|.  That is valid and expected, but if the path doesn't
+    // match the calculated path for either |owner|, then it is invalid.
+    if (index_file_directory_path != other_owner_path)
+      RecordIndexValidationResult(IndexResult::kPathMismatch);
+    return;
+  }
+
+  int64_t storage_size = GetCacheStorageSize(index_file_directory_path,
+                                             index_last_modified, index);
+
+  usages.emplace_back(storage::mojom::StorageUsageInfo::New(
+      storage_key.origin(), storage_size, file_info.last_modified));
+  RecordIndexValidationResult(IndexResult::kOk);
+}
+
+// Open the various cache directories' index files and extract their storage
+// keys, sizes (if current), and last modified times.
+void GetStorageKeysAndLastModifiedOnTaskRunner(
+    scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages,
+    base::FilePath profile_path,
+    storage::mojom::CacheStorageOwner owner,
+    base::OnceCallback<void(std::vector<storage::mojom::StorageUsageInfoPtr>)>
+        callback) {
+  // TODO(awillia): This is in braces so that in a future CL when we add code to
+  // search the directory for third-party / named bucket index files we don't
+  // need new variable names.
+  {
+    base::FilePath first_party_default_buckets_root_path =
+        CacheStorageManager::ConstructFirstPartyDefaultRootPath(profile_path);
+
+    base::FileEnumerator file_enum(first_party_default_buckets_root_path,
+                                   false /* recursive */,
+                                   base::FileEnumerator::DIRECTORIES);
+
+    base::FilePath path;
+    while (!(path = file_enum.Next()).empty()) {
+      ValidateAndAddUsageFromPath(path, owner, profile_path, usages);
+    }
+  }
+
+  scheduler_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(usages)));
 }
 
 void AllOriginSizesReported(
@@ -251,7 +272,7 @@ void OneOriginSizeReported(base::OnceClosure callback,
 
 // static
 scoped_refptr<CacheStorageManager> CacheStorageManager::Create(
-    const base::FilePath& path,
+    const base::FilePath& profile_path,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -261,22 +282,17 @@ scoped_refptr<CacheStorageManager> CacheStorageManager::Create(
   DCHECK(quota_manager_proxy);
   DCHECK(blob_storage_context);
 
-  base::FilePath root_path = path;
-  if (!path.empty()) {
-    root_path = path.Append(storage::kServiceWorkerDirectory)
-                    .AppendASCII("CacheStorage");
-  }
-
   return base::WrapRefCounted(new CacheStorageManager(
-      root_path, std::move(cache_task_runner), std::move(scheduler_task_runner),
-      std::move(quota_manager_proxy), std::move(blob_storage_context)));
+      profile_path, std::move(cache_task_runner),
+      std::move(scheduler_task_runner), std::move(quota_manager_proxy),
+      std::move(blob_storage_context)));
 }
 
 // static
 scoped_refptr<CacheStorageManager> CacheStorageManager::CreateForTesting(
     CacheStorageManager* old_manager) {
   scoped_refptr<CacheStorageManager> manager(new CacheStorageManager(
-      old_manager->root_path(), old_manager->cache_task_runner(),
+      old_manager->profile_path(), old_manager->cache_task_runner(),
       old_manager->scheduler_task_runner(), old_manager->quota_manager_proxy_,
       old_manager->blob_storage_context_));
   return manager;
@@ -306,7 +322,7 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
       cache_storage_map_.find({storage_key, owner});
   if (it == cache_storage_map_.end()) {
     CacheStorage* cache_storage = new CacheStorage(
-        ConstructBucketPath(root_path_, bucket_locator, owner),
+        ConstructBucketPath(profile_path_, bucket_locator, owner),
         IsMemoryBacked(), cache_task_runner_.get(), scheduler_task_runner_,
         quota_manager_proxy_, blob_storage_context_, this, storage_key, owner);
     cache_storage_map_[{storage_key, owner}] = base::WrapUnique(cache_storage);
@@ -333,7 +349,7 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
       cache_storage_map_.find({storage_key, owner});
   if (it == cache_storage_map_.end()) {
     CacheStorage* cache_storage = new CacheStorage(
-        ConstructStorageKeyPath(root_path_, storage_key, owner),
+        ConstructStorageKeyPath(profile_path_, storage_key, owner),
         IsMemoryBacked(), cache_task_runner_.get(), scheduler_task_runner_,
         quota_manager_proxy_, blob_storage_context_, this, storage_key, owner);
     cache_storage_map_[{storage_key, owner}] = base::WrapUnique(cache_storage);
@@ -397,12 +413,14 @@ void CacheStorageManager::GetAllStorageKeysUsage(
     return;
   }
 
-  cache_task_runner_->PostTaskAndReplyWithResult(
+  cache_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&GetStorageKeysAndLastModifiedOnTaskRunner,
-                     std::move(usages), root_path_, owner),
-      base::BindOnce(&CacheStorageManager::GetAllStorageKeysUsageGetSizes,
-                     base::WrapRefCounted(this), std::move(callback)));
+      base::BindOnce(
+          &GetStorageKeysAndLastModifiedOnTaskRunner,
+          base::WrapRefCounted(scheduler_task_runner_.get()), std::move(usages),
+          profile_path_, owner,
+          base::BindOnce(&CacheStorageManager::GetAllStorageKeysUsageGetSizes,
+                         base::WrapRefCounted(this), std::move(callback))));
 }
 
 // TODO(https://crbug.com/1304786):  Rename to or add GetAllBucketsUsageGetSizes
@@ -462,8 +480,8 @@ void CacheStorageManager::GetStorageKeyUsage(
   }
   cache_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&base::PathExists,
-                     ConstructStorageKeyPath(root_path_, storage_key, owner)),
+      base::BindOnce(&base::PathExists, ConstructStorageKeyPath(
+                                            profile_path_, storage_key, owner)),
       base::BindOnce(&CacheStorageManager::GetStorageKeyUsageDidGetExists,
                      base::WrapRefCounted(this), storage_key, owner,
                      std::move(callback)));
@@ -503,10 +521,16 @@ void CacheStorageManager::GetStorageKeys(
     return;
   }
 
-  PostTaskAndReplyWithResult(
-      cache_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ListStorageKeysOnTaskRunner, root_path_, owner),
-      std::move(callback));
+  std::vector<storage::mojom::StorageUsageInfoPtr> usages;
+
+  cache_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &GetStorageKeysAndLastModifiedOnTaskRunner,
+          base::WrapRefCounted(scheduler_task_runner_.get()), std::move(usages),
+          profile_path_, owner,
+          base::BindOnce(&CacheStorageManager::ListStorageKeysOnTaskRunner,
+                         base::WrapRefCounted(this), std::move(callback))));
 }
 
 // TODO(https://crbug.com/1304786): rename to or add DeleteBucketData
@@ -531,8 +555,8 @@ void CacheStorageManager::DeleteStorageKeyData(
 
   cache_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&base::PathExists,
-                     ConstructStorageKeyPath(root_path_, storage_key, owner)),
+      base::BindOnce(&base::PathExists, ConstructStorageKeyPath(
+                                            profile_path_, storage_key, owner)),
       base::BindOnce(&CacheStorageManager::DeleteStorageKeyDataDidGetExists,
                      base::WrapRefCounted(this), storage_key, owner,
                      std::move(callback)));
@@ -613,18 +637,18 @@ void CacheStorageManager::DeleteStorageKeyDidClose(
 
   PostTaskAndReplyWithResult(
       cache_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&DeleteDir,
-                     ConstructStorageKeyPath(root_path_, storage_key, owner)),
+      base::BindOnce(&DeleteDir, ConstructStorageKeyPath(profile_path_,
+                                                         storage_key, owner)),
       base::BindOnce(&DeleteStorageKeyDidDeleteDir, std::move(callback)));
 }
 
 CacheStorageManager::CacheStorageManager(
-    const base::FilePath& path,
+    const base::FilePath& profile_path,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context)
-    : root_path_(path),
+    : profile_path_(profile_path),
       cache_task_runner_(std::move(cache_task_runner)),
       scheduler_task_runner_(std::move(scheduler_task_runner)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -635,39 +659,32 @@ CacheStorageManager::CacheStorageManager(
   DCHECK(blob_storage_context_);
 }
 
+// TODO(awillia): This will be removed.
 // static
 base::FilePath CacheStorageManager::ConstructStorageKeyPath(
-    const base::FilePath& root_path,
+    const base::FilePath& profile_path,
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner) {
-  // TODO(https://crbug.com/1199077): This identifier needs to be updated to
-  // include the full serialization of `storage_key`.
-  std::string identifier =
-      storage::GetIdentifierFromOrigin(storage_key.origin());
-  if (owner != storage::mojom::CacheStorageOwner::kCacheAPI) {
-    identifier += "-" + std::to_string(static_cast<int>(owner));
-  }
-  const std::string origin_hash = base::SHA1HashString(identifier);
-  const std::string origin_hash_hex = base::ToLowerASCII(
-      base::HexEncode(origin_hash.c_str(), origin_hash.length()));
-  return root_path.AppendASCII(origin_hash_hex);
+  return ConstructOriginPath(profile_path, storage_key.origin(), owner);
 }
 
+// static
 base::FilePath CacheStorageManager::ConstructBucketPath(
-    const base::FilePath& root_path,
+    const base::FilePath& profile_path,
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner) {
   if (bucket_locator.is_default &&
       bucket_locator.storage_key.IsFirstPartyContext()) {
     // Default-bucket & first-party partition:
     // {{storage_partition_path}}/Service Worker/CacheStorage/{origin_hash}/...
-    return CacheStorageManager::ConstructStorageKeyPath(
-        root_path, bucket_locator.storage_key, owner);
+    return ConstructOriginPath(profile_path,
+                               bucket_locator.storage_key.origin(), owner);
   }
   // Non-default bucket & first/third-party partition:
   // {{storage_partition_path}}/WebStorage/{{bucket_id}}/CacheStorage/...
-  return quota_manager_proxy_->GetClientBucketPath(
-      bucket_locator, storage::QuotaClientType::kServiceWorkerCache);
+  return storage::CreateClientBucketPath(
+      profile_path, bucket_locator,
+      storage::QuotaClientType::kServiceWorkerCache);
 }
 
 // static
@@ -687,6 +704,28 @@ void CacheStorageManager::OnMemoryPressure(
   for (auto& entry : cache_storage_map_) {
     entry.second->ReleaseUnreferencedCaches();
   }
+}
+
+// static
+base::FilePath CacheStorageManager::ConstructFirstPartyDefaultRootPath(
+    const base::FilePath& profile_path) {
+  return profile_path.Append(storage::kServiceWorkerDirectory)
+      .AppendASCII(CacheStorage::kCacheStorage);
+}
+
+// Used by QuotaClient which only wants the storage keys that have data in the
+// default bucket. Keep this function to return a vector of StorageKeys, instead
+// of buckets.
+void CacheStorageManager::ListStorageKeysOnTaskRunner(
+    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
+    std::vector<mojo::StructPtr<storage::mojom::StorageUsageInfo>> usages) {
+  std::vector<blink::StorageKey> out_storage_keys;
+  for (const storage::mojom::StorageUsageInfoPtr& usage : usages)
+    out_storage_keys.emplace_back(blink::StorageKey(usage->origin));
+
+  scheduler_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(out_storage_keys)));
 }
 
 }  // namespace content

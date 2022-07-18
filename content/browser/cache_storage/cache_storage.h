@@ -76,6 +76,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       base::OnceCallback<void(std::vector<std::string> cache_names)>;
 
   static const char kIndexFileName[];
+  static const char kCacheStorage[];
 
   CacheStorage(const base::FilePath& origin_path,
                bool memory_only,
@@ -354,7 +355,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   std::unique_ptr<CacheStorageIndex> cache_index_;
 
   // The file path for this CacheStorage.
-  base::FilePath origin_path_;
+  base::FilePath directory_path_;
 
   // The TaskRunner to run file IO on.
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
