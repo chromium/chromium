@@ -115,6 +115,7 @@ static_library("libwebp_mux") {
 
 source_set("libwebp_dsp_headers") {
   public = [
+    "src/src/dsp/cpu.h",
     "src/src/dsp/dsp.h",
     "src/src/dsp/lossless.h",
     "src/src/dsp/lossless_common.h",
@@ -350,11 +351,117 @@ static_library("libwebp_enc") {
   deps = [
     ":libwebp_dec",
     ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
 
   allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
+}
+
+source_set("libwebp_sharpyuv_dsp_headers") {
+  public = [ "src/sharpyuv/sharpyuv_dsp.h" ]
+}
+
+static_library("libwebp_sharpyuv") {
+  sources = [
+    "src/sharpyuv/sharpyuv.c",
+    "src/sharpyuv/sharpyuv.h",
+    "src/sharpyuv/sharpyuv_csp.c",
+    "src/sharpyuv/sharpyuv_csp.h",
+    "src/sharpyuv/sharpyuv_gamma.c",
+    "src/sharpyuv/sharpyuv_gamma.h",
+  ]
+  configs += [ ":libwebp_config_internal" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  all_dependent_configs = [ ":libwebp_config" ]
+
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv_dsp",
+    ":libwebp_webp",
+  ]
+}
+
+static_library("libwebp_sharpyuv_dsp") {
+  sources = [
+    "src/sharpyuv/sharpyuv_dsp.c",
+    "src/sharpyuv/sharpyuv_dsp.h",
+  ]
+  configs += [ ":libwebp_config_internal" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  all_dependent_configs = [ ":libwebp_config" ]
+
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv_sse2",
+    ":libwebp_webp",
+  ]
+  if (use_dsp_neon) {
+    deps += [ ":libwebp_sharpyuv_neon" ]
+  }
+}
+
+if (use_dsp_neon) {
+  static_library("libwebp_sharpyuv_neon") {
+    sources = [ "src/sharpyuv/sharpyuv_neon.c" ]
+
+    deps = [
+      ":libwebp_dsp_headers",
+      ":libwebp_sharpyuv_dsp_headers",
+    ]
+
+    configs += [ ":libwebp_config_internal" ]
+
+    if (set_opt_level) {
+      configs -= [ "//build/config/compiler:default_optimization" ]
+      configs += [ "//build/config/compiler:optimize_max" ]
+    }
+
+    if (current_cpu == "arm") {
+      # behavior similar to *.c.neon in an Android.mk
+      configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+      cflags = [ "-mfpu=neon" ]
+    } else if (current_cpu == "arm64" && !is_clang) {
+      # avoid an ICE with gcc-4.9: b/15574841
+      cflags = [ "-frename-registers" ]
+    }
+  }
+}  # use_dsp_neon
+
+static_library("libwebp_sharpyuv_sse2") {
+  sources = [ "src/sharpyuv/sharpyuv_sse2.c" ]
+  configs += [ ":libwebp_config_internal" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  all_dependent_configs = [ ":libwebp_config" ]
+  if (!is_msan) {
+    if ((current_cpu == "x86" || current_cpu == "x64") &&
+        (!is_win || is_clang)) {
+      cflags = [ "-msse2" ]
+    }
+  }
+  public_deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv_dsp_headers",
+  ]
 }
 
 config("libwebp_utils_warnings") {

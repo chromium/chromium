@@ -1,8 +1,8 @@
 Name: WebP image encoder/decoder
 Short Name: libwebp
 URL: http://developers.google.com/speed/webp
-Version: 20ef03ee351d4ff03fc5ff3ec4804a879d1b9d5c
-CPEPrefix: cpe:/a:webmproject:libwebp:1.2.2
+Version: a8e366166ab57bb1b4aaf6739fc775515bc71b51
+CPEPrefix: cpe:/a:webmproject:libwebp:1.2.3
 License: BSD
 License File: LICENSE
 Security Critical: Yes
