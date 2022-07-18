@@ -518,13 +518,17 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   // Focus the stylus writable element for current touch sequence as we have
   // detected writing has started.
   LocalFrame* frame = GetPage()->GetFocusController().FocusedFrame();
-  if (!frame)
+  if (!frame) {
     std::move(callback).Run(absl::nullopt, absl::nullopt);
+    return;
+  }
 
   Element* stylus_writable_element =
       frame->GetEventHandler().CurrentTouchDownElement();
-  if (!stylus_writable_element)
+  if (!stylus_writable_element) {
     std::move(callback).Run(absl::nullopt, absl::nullopt);
+    return;
+  }
 
   if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
     text_control->Focus();
