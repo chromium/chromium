@@ -170,6 +170,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histogram
     name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2022-11-20">
+  <obsolete>
+    Deprecated in 06/2022. Replaced by Commerce.ShoppingService.ProductInfo.*.
+  </obsolete>
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -182,6 +185,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed"
     enum="Boolean" expires_after="2022-11-20">
+  <obsolete>
+    Deprecated in 06/2022. Replaced by Commerce.ShoppingService.ProductInfo.*.
+  </obsolete>
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -341,6 +347,29 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
   <token key="LocationIdentifier" variants="LocationIdentifiers"/>
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
+</histogram>
+
+<histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
+    enum="ShoppingDataProviderFallback" expires_after="2023-06-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records whick type of fallback data (javascript on-page heuristics) was used
+    when filling in gaps from Optimization Guide. This does not track whether
+    the page was actually bookmarked, it only indicates what information might
+    be missing or how often we get supplementary images when on a product page.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataUsed"
+    enum="Boolean" expires_after="2023-06-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records whether fallback data (javascript on-page heuristics) was used to
+    supplement the data provided by Optimization Guide. This does not track
+    whether the page was actually bookmarked.
+  </summary>
 </histogram>
 
 <histogram name="Commerce.SignIn.AccountWaaStatus"

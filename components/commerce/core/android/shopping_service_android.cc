@@ -40,6 +40,31 @@ void ShoppingServiceAndroid::GetProductInfoForUrl(
                           ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
+ScopedJavaLocalRef<jobject>
+ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_gurl) {
+  CHECK(shopping_service_);
+
+  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+
+  absl::optional<ProductInfo> info =
+      shopping_service_->GetAvailableProductInfoForUrl(url);
+
+  ScopedJavaLocalRef<jobject> info_java_object(nullptr);
+  if (info.has_value()) {
+    info_java_object = Java_ShoppingService_createProductInfo(
+        env, ConvertUTF8ToJavaString(env, info->title),
+        url::GURLAndroid::FromNativeGURL(env, GURL(info->image_url)),
+        info->product_cluster_id, info->offer_id,
+        ConvertUTF8ToJavaString(env, info->currency_code), info->amount_micros,
+        ConvertUTF8ToJavaString(env, info->country_code));
+  }
+
+  return info_java_object;
+}
+
 void ShoppingServiceAndroid::HandleProductInfoCallback(
     JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,

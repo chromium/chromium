@@ -14,6 +14,7 @@
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 class GURL;
 
@@ -33,6 +34,11 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data {
                             const JavaParamRef<jobject>& obj,
                             const JavaParamRef<jobject>& j_gurl,
                             const JavaParamRef<jobject>& j_callback);
+
+  ScopedJavaLocalRef<jobject> GetAvailableProductInfoForUrl(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& obj,
+      const JavaParamRef<jobject>& j_gurl);
 
   void GetMerchantInfoForUrl(JNIEnv* env,
                              const JavaParamRef<jobject>& obj,
