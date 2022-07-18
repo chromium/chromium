@@ -265,9 +265,11 @@ source_set("feed_app_agent") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed:discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/ntp:features",
   ]
+  frameworks = [ "BackgroundTasks.framework" ]
 }
 
 source_set("app_internal") {

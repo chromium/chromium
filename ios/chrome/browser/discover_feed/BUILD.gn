@@ -54,5 +54,8 @@ source_set("discover_feed_factory") {
 
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "feed_constants.h" ]
+  sources = [
+    "feed_constants.h",
+    "feed_constants.mm",
+  ]
 }
