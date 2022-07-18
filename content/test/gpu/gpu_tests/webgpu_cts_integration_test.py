@@ -316,6 +316,9 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       if JAVASCRIPT_DURATION not in self.additionalTags:
         self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % timeout
       raise
+    except websockets.exceptions.ConnectionClosedOK as e:
+      raise RuntimeError(
+          'Detected closed websocket - likely caused by renderer crash') from e
     finally:
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
