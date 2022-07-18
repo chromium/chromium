@@ -8,10 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package chromeos.assistant;
 
-// TODO(https://crbug.com/1164001): Remove 'public' notion when internal codes
-// update the path for assistant service to ch/ash/services/assistant.
-import public "chromeos/ash/services/assistant/public/proto/activity_control_settings_ui.proto";
-import public "chromeos/ash/services/assistant/public/proto/activity_control_settings_common.proto";
+import "activity_control_settings_ui.proto";
+import "activity_control_settings_common.proto";
 
 // Parameters to ConsentFlowUi.
 message ConsentFlowUiSelector {

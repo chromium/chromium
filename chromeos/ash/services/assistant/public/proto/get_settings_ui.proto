@@ -8,10 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package chromeos.assistant;
 
-// TODO(https://crbug.com/1164001): Remove 'public' notion when internal codes
-// update the path for assistant service to ch/ash/services/assistant.
-import public "chromeos/ash/services/assistant/public/proto/header.proto";
-import public "chromeos/ash/services/assistant/public/proto/settings_ui.proto";
+import "header.proto";
+import "settings_ui.proto";
 
 // GetSettingsUi.
 message GetSettingsUiRequest {

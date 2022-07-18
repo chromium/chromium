@@ -8,13 +8,11 @@ option optimize_for = LITE_RUNTIME;
 
 package chromeos.assistant;
 
-// TODO(https://crbug.com/1164001): Remove 'public' notion when internal codes
-// update the path for assistant service to ch/ash/services/assistant.
-import public "chromeos/ash/services/assistant/public/proto/about_me_settings_ui.proto";
-import public "chromeos/ash/services/assistant/public/proto/assistant_device_settings_ui.proto";
-import public "chromeos/ash/services/assistant/public/proto/consent_flow_ui.proto";
-import public "chromeos/ash/services/assistant/public/proto/email_opt_in_ui.proto";
-import public "chromeos/ash/services/assistant/public/proto/gaia_user_context_ui.proto";
+import "about_me_settings_ui.proto";
+import "assistant_device_settings_ui.proto";
+import "consent_flow_ui.proto";
+import "email_opt_in_ui.proto";
+import "gaia_user_context_ui.proto";
 
 message SettingsUi {
   optional AboutMeSettingsUi about_me_settings = 5;

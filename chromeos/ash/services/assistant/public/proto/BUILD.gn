@@ -8,7 +8,6 @@ import("//third_party/protobuf/proto_library.gni")
 assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
 
 proto_library("proto") {
-  proto_in_dir = "//"
   sources = [
     "about_me_settings_ui.proto",
     "activity_control_settings_common.proto",
