@@ -84,7 +84,7 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   auto unpacker = unpackers_[directory];
   if (unpacker) {
     unpacker->CleanUp();
-    // Wait fore the task runner to clean up the UnpackParams object.
+    // Wait for the task runner to clean up the UnpackParams object.
     while (!unpacker->CleanUpDone()) {
       // Yield until the cancellation tasks are done.
       base::PlatformThread::Sleep(base::Microseconds(1));
