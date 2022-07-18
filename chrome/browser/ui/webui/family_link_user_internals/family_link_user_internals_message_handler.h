@@ -14,10 +14,6 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 // The implementation for the chrome://family-link-user-internals page.
 class FamilyLinkUserInternalsMessageHandler
     : public content::WebUIMessageHandler,
@@ -43,9 +39,9 @@ class FamilyLinkUserInternalsMessageHandler
 
   SupervisedUserService* GetSupervisedUserService();
 
-  void HandleRegisterForEvents(const base::ListValue* args);
-  void HandleGetBasicInfo(const base::ListValue* args);
-  void HandleTryURL(const base::ListValue* args);
+  void HandleRegisterForEvents(const base::Value::List& args);
+  void HandleGetBasicInfo(const base::Value::List& args);
+  void HandleTryURL(const base::Value::List& args);
 
   void SendBasicInfo();
   void SendFamilyLinkUserSettings(const base::DictionaryValue* settings);

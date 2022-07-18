@@ -123,19 +123,19 @@ FamilyLinkUserInternalsMessageHandler::
 void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "registerForEvents",
       base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getBasicInfo",
       base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "tryURL",
       base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::HandleTryURL,
                           base::Unretained(this)));
@@ -158,8 +158,8 @@ FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
-    const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated().empty());
+    const base::Value::List& args) {
+  DCHECK(args.empty());
   AllowJavascript();
   if (scoped_observation_.IsObserving())
     return;
@@ -168,18 +168,17 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   SendBasicInfo();
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
-    const base::ListValue* args) {
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
-  if (!args->GetListDeprecated()[0].is_string() ||
-      !args->GetListDeprecated()[1].is_string())
+    const base::Value::List& args) {
+  DCHECK_EQ(2u, args.size());
+  if (!args[0].is_string() || !args[1].is_string())
     return;
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& url_str = args->GetListDeprecated()[1].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& url_str = args[1].GetString();
 
   GURL url = url_formatter::FixupURL(url_str, std::string());
   if (!url.is_valid())
