@@ -74,8 +74,8 @@ class TestStoragePartition : public StoragePartition {
   }
   network::mojom::CookieManager* GetCookieManagerForBrowserProcess() override;
 
-  void CreateHasTrustTokensAnswerer(
-      mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+  void CreateTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>

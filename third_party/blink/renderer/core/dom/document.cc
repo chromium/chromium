@@ -6219,18 +6219,18 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
     return promise;
   }
 
-  if (!data_->has_trust_tokens_answerer_.is_bound()) {
+  if (!data_->trust_token_query_answerer_.is_bound()) {
     GetFrame()->GetBrowserInterfaceBroker().GetInterface(
-        data_->has_trust_tokens_answerer_.BindNewPipeAndPassReceiver(
+        data_->trust_token_query_answerer_.BindNewPipeAndPassReceiver(
             GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)));
-    data_->has_trust_tokens_answerer_.set_disconnect_handler(
-        WTF::Bind(&Document::HasTrustTokensAnswererConnectionError,
+    data_->trust_token_query_answerer_.set_disconnect_handler(
+        WTF::Bind(&Document::TrustTokenQueryAnswererConnectionError,
                   WrapWeakPersistent(this)));
   }
 
-  data_->pending_has_trust_tokens_resolvers_.insert(resolver);
+  data_->pending_trust_token_query_resolvers_.insert(resolver);
 
-  data_->has_trust_tokens_answerer_->HasTrustTokens(
+  data_->trust_token_query_answerer_->HasTrustTokens(
       issuer_origin,
       WTF::Bind(
           [](WeakPersistent<ScriptPromiseResolver> resolver,
@@ -6239,7 +6239,7 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
             // If there was a Mojo connection error, the promise was already
             // resolved and deleted.
             if (!base::Contains(
-                    document->data_->pending_has_trust_tokens_resolvers_,
+                    document->data_->pending_trust_token_query_resolvers_,
                     resolver)) {
               return;
             }
@@ -6257,7 +6257,7 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
                   "have exceeded its number-of-issuers limit?)"));
             }
 
-            document->data_->pending_has_trust_tokens_resolvers_.erase(
+            document->data_->pending_trust_token_query_resolvers_.erase(
                 resolver);
           },
           WrapWeakPersistent(resolver), WrapWeakPersistent(this)));
@@ -6265,16 +6265,16 @@ ScriptPromise Document::hasTrustToken(ScriptState* script_state,
   return promise;
 }
 
-void Document::HasTrustTokensAnswererConnectionError() {
-  data_->has_trust_tokens_answerer_.reset();
-  for (const auto& resolver : data_->pending_has_trust_tokens_resolvers_) {
+void Document::TrustTokenQueryAnswererConnectionError() {
+  data_->trust_token_query_answerer_.reset();
+  for (const auto& resolver : data_->pending_trust_token_query_resolvers_) {
     ScriptState* state = resolver->GetScriptState();
     ScriptState::Scope scope(state);
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "Internal error retrieving hasTrustToken response."));
+        "Internal error retrieving trust token response."));
   }
-  data_->pending_has_trust_tokens_resolvers_.clear();
+  data_->pending_trust_token_query_resolvers_.clear();
 }
 
 static bool IsValidNameNonASCII(const LChar* characters, unsigned length) {

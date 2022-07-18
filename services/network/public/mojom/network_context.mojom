@@ -884,8 +884,9 @@ interface NetworkContext {
       IsolationInfo isolation_info,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
-  // Provides a HasTrustTokensAnswerer scoped to the given top-frame origin
-  // (subsequent calls to its HasTrustTokens(issuer) method will attempt to
+  // Provides a TrustTokenQueryAnswerer scoped to the given top-frame origin
+  // (subsequent calls to its HasTrustTokens(issuer) and
+  // HasRedemptionRecord(issuer) methods will attempt to
   // associate |issuer| with |top_frame_origin|, in the sense of
   // TrustTokenStore::SetAssociation, and reject if |top_frame_origin| is
   // already at its number-of-associated-issuers limit).
@@ -898,8 +899,8 @@ interface NetworkContext {
   // The first is a general security requirement; the second is in order to
   // ensure that the origin has a unique serialization (and, consequently, is
   // suitable for keying persistent Trust Tokens state).
-  GetHasTrustTokensAnswerer(
-      pending_receiver<HasTrustTokensAnswerer> has_trust_tokens_answerer,
+  GetTrustTokenQueryAnswerer(
+      pending_receiver<TrustTokenQueryAnswerer> trust_token_query_answerer,
       url.mojom.Origin top_frame_origin);
 
   // Clears persistent Trust Tokens data keyed by the origins in |filter|, and

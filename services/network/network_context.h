@@ -245,8 +245,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override;
-  void GetHasTrustTokensAnswerer(
-      mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,
+  void GetTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
   void ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
                            base::OnceClosure done) override;
@@ -740,10 +740,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::unique_ptr<PendingTrustTokenStore> trust_token_store_;
 
   // Ordering: this must be after |trust_token_store_| since the
-  // HasTrustTokensAnswerers are provided non-owning pointers to
+  // TrustTokenQueryAnswerers are provided non-owning pointers to
   // |trust_token_store_|.
-  mojo::UniqueReceiverSet<mojom::HasTrustTokensAnswerer>
-      has_trust_tokens_answerers_;
+  mojo::UniqueReceiverSet<mojom::TrustTokenQueryAnswerer>
+      trust_token_query_answerers_;
 
   // Whether the user is blocking Trust Tokens, value provided by the
   // PrivacySandboxSettings service.

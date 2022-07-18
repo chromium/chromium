@@ -67,8 +67,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override {}
-  void GetHasTrustTokensAnswerer(
-      mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,
+  void GetTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) override {}
   void GetStoredTrustTokenCounts(
       GetStoredTrustTokenCountsCallback callback) override {}

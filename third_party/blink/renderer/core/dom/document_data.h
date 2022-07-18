@@ -24,12 +24,12 @@ namespace blink {
 class DocumentData final : public GarbageCollected<DocumentData> {
  public:
   explicit DocumentData(ExecutionContext* context)
-      : permission_service_(context), has_trust_tokens_answerer_(context) {}
+      : permission_service_(context), trust_token_query_answerer_(context) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(permission_service_);
-    visitor->Trace(has_trust_tokens_answerer_);
-    visitor->Trace(pending_has_trust_tokens_resolvers_);
+    visitor->Trace(trust_token_query_answerer_);
+    visitor->Trace(pending_trust_token_query_resolvers_);
     visitor->Trace(email_regexp_);
   }
 
@@ -41,18 +41,18 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // Mojo remote used to answer API calls asking whether the user has trust
   // tokens (https://github.com/wicg/trust-token-api). The other endpoint
   // is in the network service, which may crash and restart. To handle this:
-  //   1. |pending_has_trust_tokens_resolvers_| keeps track of promises
-  // depending on |has_trust_tokens_answerer_|'s answers;
-  //   2. |HasTrustTokensAnswererConnectionError| handles connection errors by
+  //   1. |pending_trust_token_query_resolvers_| keeps track of promises
+  // depending on |trust_token_query_answerer_|'s answers;
+  //   2. |TrustTokenQueryAnswererConnectionError| handles connection errors by
   // rejecting all pending promises and clearing the pending set.
-  HeapMojoRemote<network::mojom::blink::HasTrustTokensAnswerer>
-      has_trust_tokens_answerer_;
+  HeapMojoRemote<network::mojom::blink::TrustTokenQueryAnswerer>
+      trust_token_query_answerer_;
 
   // In order to be able to answer promises when the Mojo remote disconnects,
   // maintain all pending promises here, deleting them on successful completion
   // or on connection error, whichever comes first.
   HeapHashSet<Member<ScriptPromiseResolver>>
-      pending_has_trust_tokens_resolvers_;
+      pending_trust_token_query_resolvers_;
 
   // To do email regex checks.
   Member<ScriptRegexp> email_regexp_;

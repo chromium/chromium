@@ -1479,12 +1479,12 @@ void StoragePartitionImpl::CreateRestrictedCookieManager(
   }
 }
 
-void StoragePartitionImpl::CreateHasTrustTokensAnswerer(
-    mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+void StoragePartitionImpl::CreateTrustTokenQueryAnswerer(
+    mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
     const url::Origin& top_frame_origin) {
   DCHECK(initialized_);
-  GetNetworkContext()->GetHasTrustTokensAnswerer(std::move(receiver),
-                                                 top_frame_origin);
+  GetNetworkContext()->GetTrustTokenQueryAnswerer(std::move(receiver),
+                                                  top_frame_origin);
 }
 
 storage::QuotaManager* StoragePartitionImpl::GetQuotaManager() {

@@ -117,12 +117,12 @@
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_transaction_factory.h"
 #include "services/network/trust_tokens/expiry_inspecting_record_expiry_delegate.h"
-#include "services/network/trust_tokens/has_trust_tokens_answerer.h"
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"
 #include "services/network/trust_tokens/sqlite_trust_token_persister.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
+#include "services/network/trust_tokens/trust_token_query_answerer.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_builder_mojo.h"
@@ -803,8 +803,8 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
       std::move(receiver));
 }
 
-void NetworkContext::GetHasTrustTokensAnswerer(
-    mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,
+void NetworkContext::GetTrustTokenQueryAnswerer(
+    mojo::PendingReceiver<mojom::TrustTokenQueryAnswerer> receiver,
     const url::Origin& top_frame_origin) {
   // Only called when Trust Tokens is enabled, i.e. trust_token_store_ is
   // non-null.
@@ -818,13 +818,13 @@ void NetworkContext::GetHasTrustTokensAnswerer(
       network_service_->trust_token_key_commitments();
 
   // It's safe to dereference |suitable_top_frame_origin| here as, during the
-  // process of vending the HasTrustTokensAnswerer, the browser ensures that
+  // process of vending the TrustTokenQueryAnswerer, the browser ensures that
   // the requesting context's top frame origin is suitable for Trust Tokens.
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       std::move(*suitable_top_frame_origin), trust_token_store_.get(),
       key_commitment_getter);
 
-  has_trust_tokens_answerers_.Add(std::move(answerer), std::move(receiver));
+  trust_token_query_answerers_.Add(std::move(answerer), std::move(receiver));
 }
 
 void NetworkContext::GetStoredTrustTokenCounts(

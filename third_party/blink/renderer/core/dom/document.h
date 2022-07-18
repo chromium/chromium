@@ -2072,9 +2072,9 @@ class CORE_EXPORT Document : public ContainerNode,
                                    mojom::blink::FocusType focus_type);
   void DisplayNoneChangedForFrame();
 
-  // Handles a connection error to |has_trust_tokens_answerer_| by rejecting all
-  // pending promises created by |hasTrustToken|.
-  void HasTrustTokensAnswererConnectionError();
+  // Handles a connection error to |trust_token_query_answerer_| by rejecting
+  // all pending promises created by |hasTrustToken|.
+  void TrustTokenQueryAnswererConnectionError();
 
   void RunPostPrerenderingActivationSteps();
 

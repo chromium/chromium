@@ -307,23 +307,24 @@ class WithTrustTokensEnabled {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests Trust Tokens clearing by calling HasTrustTokensAnswerer::HasTrustTokens
-// with a HasTrustTokensAnswerer obtained from the provided NetworkContext.
+// Tests Trust Tokens clearing by calling
+// TrustTokenQueryAnswerer::HasTrustTokens with a TrustTokenQueryAnswerer
+// obtained from the provided NetworkContext.
 //
 // The Trust Tokens functionality places a cap of 2 distinct arguments to the
 // |issuer| argument of
-//       HasTrustTokensAnswerer(origin)::HasTrustTokens(issuer)
+//       TrustTokenQueryAnswerer(origin)::HasTrustTokens(issuer)
 // for each top-frame origin |origin|. (This limit is recorded in persistent
 // storage scoped to the origin |origin| and is not related to the lifetime of
-// the specific HasTrustTokensAnswerer object.)
+// the specific TrustTokenQueryAnswerer object.)
 //
-// To add an origin, the tester creates a HasTrustTokensAnswerer parameterized
+// To add an origin, the tester creates a TrustTokenQueryAnswerer parameterized
 // by |origin| and calls HasTrustTokens with two distinct "priming" issuer
 // arguments. This will make the Trust Tokens persistent storage record that
 // |origin| is associated with each of these issuers, with the effect that
 // (barring a data clear) subsequent HasTrustTokens calls with different issuer
 // arguments will fail. To check if an origin is present, the tester calls
-//    HasTrustTokensAnswerer(origin)::HasTrustTokens(issuer)
+//    TrustTokenQueryAnswerer(origin)::HasTrustTokens(issuer)
 // with an |issuer| argument distinct from the two earlier "priming" issuers.
 // This third HasTrustTokens call will error out exactly if |origin| was
 // previously added by AddOrigin.
@@ -338,8 +339,8 @@ class TrustTokensTester {
       : network_context_(network_context) {}
 
   void AddOrigin(const url::Origin& origin) {
-    mojo::Remote<network::mojom::HasTrustTokensAnswerer> answerer;
-    network_context_->GetHasTrustTokensAnswerer(
+    mojo::Remote<network::mojom::TrustTokenQueryAnswerer> answerer;
+    network_context_->GetTrustTokenQueryAnswerer(
         answerer.BindNewPipeAndPassReceiver(), origin);
 
     // Calling HasTrustTokens will associate the issuer argument with the
@@ -366,8 +367,8 @@ class TrustTokensTester {
   }
 
   bool HasOrigin(const url::Origin& origin) {
-    mojo::Remote<network::mojom::HasTrustTokensAnswerer> answerer;
-    network_context_->GetHasTrustTokensAnswerer(
+    mojo::Remote<network::mojom::TrustTokenQueryAnswerer> answerer;
+    network_context_->GetTrustTokenQueryAnswerer(
         answerer.BindNewPipeAndPassReceiver(), origin);
 
     base::RunLoop run_loop;

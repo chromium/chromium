@@ -99,9 +99,9 @@ using ::testing::ElementsAreArray;
 
 class DocumentTest : public PageTestBase {
  public:
-  static void SimulateHasTrustTokensAnswererConnectionError(
+  static void SimulateTrustTokenQueryAnswererConnectionError(
       Document* document) {
-    document->HasTrustTokensAnswererConnectionError();
+    document->TrustTokenQueryAnswererConnectionError();
   }
 
  protected:
@@ -1134,7 +1134,7 @@ TEST(Document, HandlesDisconnectDuringHasTrustToken) {
   auto promise =
       document.hasTrustToken(scope.GetScriptState(), "https://issuer.example",
                              scope.GetExceptionState());
-  DocumentTest::SimulateHasTrustTokensAnswererConnectionError(&document);
+  DocumentTest::SimulateTrustTokenQueryAnswererConnectionError(&document);
 
   ASSERT_TRUE(promise.IsAssociatedWith(scope.GetScriptState()));
 
@@ -1167,11 +1167,11 @@ TEST(Document, RejectsHasTrustTokenCallFromNonHttpNonHttpsDocument) {
 }
 
 namespace {
-class MockHasTrustTokensAnswerer
-    : public network::mojom::blink::HasTrustTokensAnswerer {
+class MockTrustTokenQueryAnswerer
+    : public network::mojom::blink::TrustTokenQueryAnswerer {
  public:
   enum Outcome { kError, kTrue, kFalse };
-  explicit MockHasTrustTokensAnswerer(Outcome outcome) : outcome_(outcome) {}
+  explicit MockTrustTokenQueryAnswerer(Outcome outcome) : outcome_(outcome) {}
 
   void HasTrustTokens(
       const ::scoped_refptr<const ::blink::SecurityOrigin>& issuer,
@@ -1199,25 +1199,26 @@ class MockHasTrustTokensAnswerer
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
     receiver_.Bind(
-        mojo::PendingReceiver<network::mojom::blink::HasTrustTokensAnswerer>(
+        mojo::PendingReceiver<network::mojom::blink::TrustTokenQueryAnswerer>(
             std::move(handle)));
   }
 
  private:
   Outcome outcome_;
-  mojo::Receiver<network::mojom::blink::HasTrustTokensAnswerer> receiver_{this};
+  mojo::Receiver<network::mojom::blink::TrustTokenQueryAnswerer> receiver_{
+      this};
 };
 }  // namespace
 
 TEST(Document, HasTrustTokenSuccess) {
   V8TestingScope scope(KURL("https://secure.example"));
 
-  MockHasTrustTokensAnswerer answerer(MockHasTrustTokensAnswerer::kTrue);
+  MockTrustTokenQueryAnswerer answerer(MockTrustTokenQueryAnswerer::kTrue);
 
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      network::mojom::blink::HasTrustTokensAnswerer::Name_,
-      WTF::BindRepeating(&MockHasTrustTokensAnswerer::Bind,
+      network::mojom::blink::TrustTokenQueryAnswerer::Name_,
+      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
@@ -1234,18 +1235,18 @@ TEST(Document, HasTrustTokenSuccess) {
   EXPECT_TRUE(promise_tester.Value().V8Value()->IsTrue());
 
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      network::mojom::blink::HasTrustTokensAnswerer::Name_, {});
+      network::mojom::blink::TrustTokenQueryAnswerer::Name_, {});
 }
 
 TEST(Document, HasTrustTokenSuccessWithFalseValue) {
   V8TestingScope scope(KURL("https://secure.example"));
 
-  MockHasTrustTokensAnswerer answerer(MockHasTrustTokensAnswerer::kFalse);
+  MockTrustTokenQueryAnswerer answerer(MockTrustTokenQueryAnswerer::kFalse);
 
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      network::mojom::blink::HasTrustTokensAnswerer::Name_,
-      WTF::BindRepeating(&MockHasTrustTokensAnswerer::Bind,
+      network::mojom::blink::TrustTokenQueryAnswerer::Name_,
+      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
@@ -1262,18 +1263,18 @@ TEST(Document, HasTrustTokenSuccessWithFalseValue) {
   EXPECT_TRUE(promise_tester.Value().V8Value()->IsFalse());
 
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      network::mojom::blink::HasTrustTokensAnswerer::Name_, {});
+      network::mojom::blink::TrustTokenQueryAnswerer::Name_, {});
 }
 
 TEST(Document, HasTrustTokenOperationError) {
   V8TestingScope scope(KURL("https://secure.example"));
 
-  MockHasTrustTokensAnswerer answerer(MockHasTrustTokensAnswerer::kError);
+  MockTrustTokenQueryAnswerer answerer(MockTrustTokenQueryAnswerer::kError);
 
   Document& document = scope.GetDocument();
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      network::mojom::blink::HasTrustTokensAnswerer::Name_,
-      WTF::BindRepeating(&MockHasTrustTokensAnswerer::Bind,
+      network::mojom::blink::TrustTokenQueryAnswerer::Name_,
+      WTF::BindRepeating(&MockTrustTokenQueryAnswerer::Bind,
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
@@ -1291,7 +1292,7 @@ TEST(Document, HasTrustTokenOperationError) {
                              DOMExceptionCode::kOperationError));
 
   document.GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-      network::mojom::blink::HasTrustTokensAnswerer::Name_, {});
+      network::mojom::blink::TrustTokenQueryAnswerer::Name_, {});
 }
 
 /**

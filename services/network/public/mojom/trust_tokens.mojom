@@ -150,11 +150,11 @@ struct HasTrustTokensResult {
 // This interface is implicitly scoped to a top-level origin that is
 // (1) potentially trustworthy and (2) either HTTP or HTTPS. (All Trust Tokens
 // state is keyed by origins satisfying those two conditions.)
-interface HasTrustTokensAnswerer {
+interface TrustTokenQueryAnswerer {
   // Returns whether the user has any trust tokens issued by |issuer|. While
   // these tokens' storage is globally- (or, at least, NetworkContext-) scoped,
   // the method will only return a yes/no result if |issuer| is associated with
-  // the top-level origin implicit in this instance of HasTrustTokensAnswerer.
+  // the top-level origin implicit in this instance of TrustTokenQueryAnswerer.
   //
   // Concretely, this method:
   //
@@ -163,7 +163,7 @@ interface HasTrustTokensAnswerer {
   // if not;
   // - checks if internal storage is initialized, returning kUnavailable if not;
   // - attempts to associate |issuer| with the top-level origin to which this
-  // HasTrustTokensAnswerer is scoped, returning kResourceExhausted on failure;
+  // TrustTokenQueryAnswerer is scoped, returning kResourceExhausted on failure;
   // and
   // - if all of these conditions pass, returns kOk alongside a boolean
   // denoting whether the user possesses any trust tokens issued by |issuer|.

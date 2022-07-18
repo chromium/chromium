@@ -43,8 +43,8 @@ TestStoragePartition::GetCookieManagerForBrowserProcess() {
   return cookie_manager_for_browser_process_;
 }
 
-void TestStoragePartition::CreateHasTrustTokensAnswerer(
-    mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+void TestStoragePartition::CreateTrustTokenQueryAnswerer(
+    mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
     const url::Origin& top_frame_origin) {
   NOTREACHED() << "Not implemented.";
 }

@@ -120,8 +120,8 @@ class CONTENT_EXPORT StoragePartition {
   virtual network::mojom::CookieManager*
   GetCookieManagerForBrowserProcess() = 0;
 
-  virtual void CreateHasTrustTokensAnswerer(
-      mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+  virtual void CreateTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) = 0;
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>

@@ -1813,8 +1813,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // 2. Trust Tokens must be enabled (network::features::kTrustTokens).
   //
   // 3. This frame's origin must be potentially trustworthy.
-  void BindHasTrustTokensAnswerer(
-      mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver);
+  void BindTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver);
 
   // Creates connections to WebUSB interfaces bound to this frame.
   void CreateWebUsbService(

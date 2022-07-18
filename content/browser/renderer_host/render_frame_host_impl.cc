@@ -10712,8 +10712,8 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
       std::move(receiver), CreateCookieAccessObserver());
 }
 
-void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
-    mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver) {
+void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
+    mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver) {
   auto top_frame_origin = ComputeTopFrameOrigin(GetLastCommittedOrigin());
 
   // A check at the callsite in the renderer ensures a correctly functioning
@@ -10723,7 +10723,7 @@ void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
        top_frame_origin.scheme() != url::kHttpsScheme) ||
       !network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
     mojo::ReportBadMessage(
-        "Attempted to get a HasTrustTokensAnswerer for a non-trustworthy or "
+        "Attempted to get a TrustTokenQueryAnswerer for a non-trustworthy or "
         "non-HTTP/HTTPS top-frame origin.");
     return;
   }
@@ -10733,7 +10733,7 @@ void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
   // RuntimeEnabledFeature's).
   if (!base::FeatureList::IsEnabled(network::features::kTrustTokens)) {
     mojo::ReportBadMessage(
-        "Attempted to get a HasTrustTokensAnswerer with Trust Tokens "
+        "Attempted to get a TrustTokenQueryAnswerer with Trust Tokens "
         "disabled.");
     return;
   }
@@ -10743,7 +10743,7 @@ void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
   // request "is coming from a secure context"---but there's currently no
   // direct way to perform such a check in the browser.
 
-  GetProcess()->GetStoragePartition()->CreateHasTrustTokensAnswerer(
+  GetProcess()->GetStoragePartition()->CreateTrustTokenQueryAnswerer(
       std::move(receiver), ComputeTopFrameOrigin(GetLastCommittedOrigin()));
 }
 

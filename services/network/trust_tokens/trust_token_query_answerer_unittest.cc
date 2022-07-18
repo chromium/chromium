@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/trust_tokens/has_trust_tokens_answerer.h"
+#include "services/network/trust_tokens/trust_token_query_answerer.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -40,12 +40,12 @@ class TestTrustTokenKeyCommitmentGetter
   mojom::TrustTokenKeyCommitmentResultPtr result_;
 };
 
-TEST(HasTrustTokensAnswerer, HandlesInsecureIssuerOrigin) {
+TEST(TrustTokenQueryAnswerer, TokenQueryHandlesInsecureIssuerOrigin) {
   PendingTrustTokenStore pending_store;
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(
           std::vector<std::string>{"issuing key"});
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
       &pending_store, key_commitment_getter.get());
 
@@ -63,12 +63,12 @@ TEST(HasTrustTokensAnswerer, HandlesInsecureIssuerOrigin) {
   EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kInvalidArgument);
 }
 
-TEST(HasTrustTokensAnswerer, HandlesNonHttpNonHttpsIssuerOrigin) {
+TEST(TrustTokenQueryAnswerer, TokenQueryHandlesNonHttpNonHttpsIssuerOrigin) {
   PendingTrustTokenStore pending_store;
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(
           std::vector<std::string>{"issuing key"});
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
       &pending_store, key_commitment_getter.get());
 
@@ -87,7 +87,7 @@ TEST(HasTrustTokensAnswerer, HandlesNonHttpNonHttpsIssuerOrigin) {
   EXPECT_EQ(result->status, mojom::TrustTokenOperationStatus::kInvalidArgument);
 }
 
-TEST(HasTrustTokensAnswerer, HandlesFailureToAssociateIssuer) {
+TEST(TrustTokenQueryAnswerer, TokenQueryHandlesFailureToAssociateIssuer) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
 
   const SuitableTrustTokenOrigin kToplevel =
@@ -107,7 +107,7 @@ TEST(HasTrustTokensAnswerer, HandlesFailureToAssociateIssuer) {
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(
           std::vector<std::string>{"issuing key"});
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       kToplevel, &pending_store, key_commitment_getter.get());
 
   mojom::HasTrustTokensResultPtr result;
@@ -126,7 +126,7 @@ TEST(HasTrustTokensAnswerer, HandlesFailureToAssociateIssuer) {
             mojom::TrustTokenOperationStatus::kResourceExhausted);
 }
 
-TEST(HasTrustTokensAnswerer, SuccessWithNoTokens) {
+TEST(TrustTokenQueryAnswerer, TokenQuerySuccessWithNoTokens) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
   TrustTokenStore* raw_store = store.get();
 
@@ -141,7 +141,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithNoTokens) {
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(
           std::vector<std::string>{"issuing key"});
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       kToplevel, &pending_store, key_commitment_getter.get());
 
   mojom::HasTrustTokensResultPtr result;
@@ -160,7 +160,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithNoTokens) {
   EXPECT_TRUE(raw_store->IsAssociated(kIssuer, kToplevel));
 }
 
-TEST(HasTrustTokensAnswerer, SuccessWithTokens) {
+TEST(TrustTokenQueryAnswerer, TokenQuerySuccessWithTokens) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
   TrustTokenStore* raw_store = store.get();
 
@@ -176,7 +176,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithTokens) {
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(
           std::vector<std::string>{issuing_key});
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       kToplevel, &pending_store, key_commitment_getter.get());
 
   // Populate the store, giving the issuer a key commitment for the key "issuing
@@ -196,7 +196,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithTokens) {
   EXPECT_TRUE(result->has_trust_tokens);
 }
 
-TEST(HasTrustTokensAnswerer, SuccessWithNoTokensAllKeysAreInvalid) {
+TEST(TrustTokenQueryAnswerer, TokenQuerySuccessWithNoTokensAllKeysAreInvalid) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
   TrustTokenStore* raw_store = store.get();
 
@@ -214,7 +214,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithNoTokensAllKeysAreInvalid) {
   // create test commitment getter with the valid key
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(valid_issuing_keys);
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       kToplevel, &pending_store, key_commitment_getter.get());
 
   // store tokens with invalid keys
@@ -239,7 +239,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithNoTokensAllKeysAreInvalid) {
   EXPECT_EQ(raw_store->CountTokens(kIssuer), 0);
 }
 
-TEST(HasTrustTokensAnswerer, SuccessWithTokensSomeKeysAreInvalid) {
+TEST(TrustTokenQueryAnswerer, TokenQuerySuccessWithTokensSomeKeysAreInvalid) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
   TrustTokenStore* raw_store = store.get();
 
@@ -257,7 +257,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithTokensSomeKeysAreInvalid) {
   // create test commitment getter with the valid keys
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(valid_issuing_keys);
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       kToplevel, &pending_store, key_commitment_getter.get());
 
   // store three tokens with invalid issuing keys
@@ -286,7 +286,8 @@ TEST(HasTrustTokensAnswerer, SuccessWithTokensSomeKeysAreInvalid) {
   EXPECT_EQ(raw_store->CountTokens(kIssuer), 2);
 }
 
-TEST(HasTrustTokensAnswerer, SuccessWithNoTokensNoCommitmentsForIssuer) {
+TEST(TrustTokenQueryAnswerer,
+     TokenQuerySuccessWithNoTokensNoCommitmentsForIssuer) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
   TrustTokenStore* raw_store = store.get();
 
@@ -304,7 +305,7 @@ TEST(HasTrustTokensAnswerer, SuccessWithNoTokensNoCommitmentsForIssuer) {
 
   auto key_commitment_getter =
       std::make_unique<TestTrustTokenKeyCommitmentGetter>(issuing_keys);
-  auto answerer = std::make_unique<HasTrustTokensAnswerer>(
+  auto answerer = std::make_unique<TrustTokenQueryAnswerer>(
       kToplevel, &pending_store, key_commitment_getter.get());
 
   // store tokens with issuer 1

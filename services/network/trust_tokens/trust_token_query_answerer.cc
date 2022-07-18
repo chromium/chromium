@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/trust_tokens/has_trust_tokens_answerer.h"
+#include "services/network/trust_tokens/trust_token_query_answerer.h"
 
 #include "base/memory/ptr_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -14,7 +14,7 @@
 
 namespace network {
 
-HasTrustTokensAnswerer::HasTrustTokensAnswerer(
+TrustTokenQueryAnswerer::TrustTokenQueryAnswerer(
     SuitableTrustTokenOrigin top_frame_origin,
     PendingTrustTokenStore* pending_trust_token_store,
     const SynchronousTrustTokenKeyCommitmentGetter* key_commitment_getter)
@@ -25,10 +25,10 @@ HasTrustTokensAnswerer::HasTrustTokensAnswerer(
   DCHECK(key_commitment_getter);
 }
 
-HasTrustTokensAnswerer::~HasTrustTokensAnswerer() = default;
+TrustTokenQueryAnswerer::~TrustTokenQueryAnswerer() = default;
 
-void HasTrustTokensAnswerer::HasTrustTokens(const url::Origin& issuer,
-                                            HasTrustTokensCallback callback) {
+void TrustTokenQueryAnswerer::HasTrustTokens(const url::Origin& issuer,
+                                             HasTrustTokensCallback callback) {
   absl::optional<SuitableTrustTokenOrigin> maybe_suitable_issuer =
       SuitableTrustTokenOrigin::Create(issuer);
 
@@ -39,12 +39,13 @@ void HasTrustTokensAnswerer::HasTrustTokens(const url::Origin& issuer,
     return;
   }
 
-  pending_trust_token_store_->ExecuteOrEnqueue(base::BindOnce(
-      &HasTrustTokensAnswerer::AnswerQueryWithStore, weak_factory_.GetWeakPtr(),
-      std::move(*maybe_suitable_issuer), std::move(callback)));
+  pending_trust_token_store_->ExecuteOrEnqueue(
+      base::BindOnce(&TrustTokenQueryAnswerer::AnswerTokenQueryWithStore,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(*maybe_suitable_issuer), std::move(callback)));
 }
 
-void HasTrustTokensAnswerer::AnswerQueryWithStore(
+void TrustTokenQueryAnswerer::AnswerTokenQueryWithStore(
     const SuitableTrustTokenOrigin& issuer,
     HasTrustTokensCallback callback,
     TrustTokenStore* trust_token_store) {
