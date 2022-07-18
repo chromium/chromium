@@ -23,6 +23,17 @@
 
 namespace ash {
 
+namespace {
+// A cmp function is needed to create a set of
+// `google_apis::calendar::CalendarEvent`.
+struct CmpEvent {
+  bool operator()(const google_apis::calendar::CalendarEvent& event1,
+                  const google_apis::calendar::CalendarEvent& event2) const {
+    return event1.start_time().date_time() < event2.start_time().date_time();
+  }
+};
+}  // namespace
+
 class CalendarEventFetch;
 
 // A simple std::list of calendar events, used to store a single day's events
@@ -90,11 +101,7 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Cancels any pending event fetch for `start_of_month`.
   void CancelFetch(const base::Time& start_of_month);
 
-  // Same as `FindEvents`, except that return of any events on `day` constitutes
-  // "use" in the most-recently-used sense, so the month that includes day will
-  // then be promoted to most-recently-used status.  Use this to get events if
-  // you want to make the month in which `day` resides less likely to be pruned
-  // if we need to trim down to stay within storage limits.
+  // Gets the number of events of the passed in day.
   int EventsNumberOfDay(base::Time day, SingleDayEventList* events);
 
   // Finds the event list of the given day, with no impact on our MRU list.  Use
@@ -105,49 +112,27 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Checks the `FetchingStatus` of a given start time.
   FetchingStatus FindFetchingStatus(base::Time start_time) const;
 
-  // Dumps our internal state to logs.
-  void DebugDump();
-
   // Redistributes all the fetched events to the date map with the
   // time difference. This method is only called when there's a timezone change.
   void RedistributeEvents();
 
-  // Checks whether `start_of_month` is further than we've gone, so far, from
-  // the on-screen month with which the calendar was opened and, if it has, then
-  // update our max distance.
-  void UpdateMaxDistanceBrowsed(const base::Time& start_of_month);
-
- protected:
-  // Fetch events for `start_of_month`.
-  virtual void MaybeFetchMonth(base::Time start_of_month);
+  // Dumps our internal state to logs.
+  void DebugDump();
 
  private:
   // For unit tests.
-  friend class TestableCalendarModel;
   friend class CalendarModelTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarMonthViewTest;
-  friend class CalendarModelFunctionTest;
   friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
-
-  // Methods for dumping various event containers/representations to logs.
-  void DebugDumpEventLarge(const char* prefix,
-                           const google_apis::calendar::CalendarEvent* event);
-  void DebugDumpEventSmall(std::ostringstream* out,
-                           const char* prefix,
-                           const google_apis::calendar::CalendarEvent* event);
-  void DebugDumpEvents(std::ostringstream* out, const char* prefix);
-  void DebugDumpMruMonths(std::ostringstream* out, const char* prefix);
-  void DebugDumpNonPrunableMonths(std::ostringstream* out, const char* prefix);
-  void DebugDumpMonthsFetched(std::ostringstream* out, const char* prefix);
 
   // Checks if the event has allowed statuses and is eligible for insertion.
   bool ShouldInsertEvent(
       const google_apis::calendar::CalendarEvent* event) const;
 
   // Checks if the event spans more than one day.
-  bool IsMultiDayEvent(google_apis::calendar::CalendarEvent* event) const;
+  bool IsMultiDayEvent(const google_apis::calendar::CalendarEvent* event) const;
 
   // Inserts a single `event` that spans more than one day in the EventCache.
   void InsertMultiDayEvent(const google_apis::calendar::CalendarEvent* event,
@@ -195,13 +180,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // most-recently-used to least-recently-used.
   void PromoteMonth(base::Time start_of_month);
 
-  // Returns the number of events that this `day` contains. If `events` is
-  // non-nullptr then we assign it to the EventList for `day`. Callers should
-  // NOT cache `events` themselves, and should instead just call this method
-  // again if they need to.
-  int EventsNumberOfDayInternal(base::Time day,
-                                SingleDayEventList* events) const;
-
   // Actual callback invoked when an event fetch is complete.
   void OnEventsFetched(base::Time start_of_month,
                        google_apis::ApiErrorCode error,
@@ -217,6 +195,20 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
 
   // Deletes month from `pending_fetches_`. For testing only.
   void DeletePendingFetchesForTesting(base::Time start_of_month);
+
+  // Methods for dumping various event containers/representations to logs.
+  void DebugDumpOnEventFetched(const google_apis::calendar::EventList* events,
+                               base::Time start_of_month);
+  void DebugDumpEventSmall(std::ostringstream* out,
+                           const char* prefix,
+                           const google_apis::calendar::CalendarEvent* event);
+  void DebugDumpEventLarge(const char* prefix,
+                           const google_apis::calendar::CalendarEvent* event);
+
+  void DebugDumpEvents(std::ostringstream* out, const char* prefix);
+  void DebugDumpMruMonths(std::ostringstream* out, const char* prefix);
+  void DebugDumpNonPrunableMonths(std::ostringstream* out, const char* prefix);
+  void DebugDumpMonthsFetched(std::ostringstream* out, const char* prefix);
 
   // Internal storage for fetched events, with each fetched month having a
   // map of days to events.
