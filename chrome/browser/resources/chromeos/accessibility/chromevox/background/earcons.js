@@ -44,8 +44,8 @@ export class Earcons extends AbstractEarcons {
   /**
    * Plays the specified earcon sound.
    * @param {Earcon} earcon An earcon identifier.
-   * @param {Object=} opt_location A location associated with the earcon such as
-   *     a control's bounding rectangle.
+   * @param {chrome.automation.Rect=} opt_location A location associated with
+   *     the earcon such as a control's bounding rectangle.
    * @override
    */
   playEarcon(earcon, opt_location) {

@@ -11,7 +11,6 @@ goog.provide('BackgroundBridge');
 
 goog.require('BridgeConstants');
 goog.require('BridgeHelper');
-goog.require('BridgeTargets');
 
 BackgroundBridge.BrailleBackground = {
   /**
@@ -94,7 +93,7 @@ BackgroundBridge.ChromeVoxPrefs = {
   async setPref(key, value) {
     return BridgeHelper.sendMessage(
         BridgeConstants.ChromeVoxPrefs.TARGET,
-        Bridgeconstants.ChromeVoxPrefs.Action.SET_PREF, {key, value});
+        BridgeConstants.ChromeVoxPrefs.Action.SET_PREF, {key, value});
   },
 };
 
@@ -137,7 +136,8 @@ BackgroundBridge.CommandHandler = {
 BackgroundBridge.EventSourceState = {
   /**
    * Gets the current event source.
-   * @return {!Promise<EventSourceType>}
+   * TODO(accessibility): this type is ES6; replace once possible.
+   * @return {!Promise<string>}
    */
   async get() {
     return BridgeHelper.sendMessage(
@@ -160,8 +160,8 @@ BackgroundBridge.GestureCommandHandler = {
 
 BackgroundBridge.EventStreamLogger = {
   /**
-   * @param {chrome.automation.EventType} eventType
-   * @param {boolean} checked
+   * @param {chrome.automation.EventType} name
+   * @param {boolean} enabled
    * @return {!Promise}
    */
   async notifyEventStreamFilterChanged(name, enabled) {
@@ -191,8 +191,8 @@ BackgroundBridge.LogStore = {
    */
   async getLogs() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.LOG_STORE,
-        BridgeConstants.PanelBackground.Action.GET_LOGS);
+        BridgeConstants.LogStore.TARGET,
+        BridgeConstants.LogStore.Action.GET_LOGS);
   },
 };
 
@@ -204,7 +204,7 @@ BackgroundBridge.PanelBackground = {
         BridgeConstants.PanelBackground.Action.CLEAR_SAVED_NODE);
   },
 
-  /** @param {string=} opt_activatedMenuTitle */
+  /** @param {*=} opt_activatedMenuTitle */
   async createAllNodeMenuBackgrounds(opt_activatedMenuTitle) {
     return BridgeHelper.sendMessage(
         BridgeConstants.PanelBackground.TARGET,

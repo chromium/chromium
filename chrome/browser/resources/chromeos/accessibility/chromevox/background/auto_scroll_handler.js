@@ -205,7 +205,8 @@ export class AutoScrollHandler {
 
     // If the focus has been changed for some reason, do nothing to
     // prevent disturbing the latest navigation.
-    if (!this.rangeBeforeScroll_.equals(ChromeVoxState.instance.currentRange)) {
+    if (!ChromeVoxState.instance.currentRange ||
+        !this.rangeBeforeScroll_.equals(ChromeVoxState.instance.currentRange)) {
       return;
     }
 

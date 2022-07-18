@@ -11,7 +11,7 @@ export class PanelInterface {
    * Close the menus and restore focus to the page. If a menu item's callback
    * was queued, execute it once focus is restored.
    */
-  closeMenusAndRestoreFocus() {}
+  async closeMenusAndRestoreFocus() {}
 
   /**
    * A callback function to be executed to perform the action from selecting

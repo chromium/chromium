@@ -11,20 +11,20 @@ goog.provide('BridgeHelper');
 goog.require('BridgeAction');
 goog.require('BridgeTarget');
 
-/** @typedef {!Object<BridgeAction, Function>} */
+/** @typedef {!Object<BridgeAction|string, Function>} */
 let TargetHandlers;
 
-/** @private {!Object<BridgeTarget, TargetHandlers>} */
+/** @private {!Object<BridgeTarget|string, TargetHandlers>} */
 BridgeHelper.handlers_ = {};
 
 /**
  * This function should only be used by Bridges (e.g. BackgroundBridge,
  * PanelBridge) and not called directly by other classes.
  *
- * @param {BridgeTarget} target The name of the class that will handle this
- *     request.
- * @param {BridgeAction} action The name of the intended function or, if not a
- *     direct method of the class, a pseudo-function name.
+ * @param {BridgeTarget|string} target The name of the class that will handle
+ *     this request.
+ * @param {BridgeAction|string} action The name of the intended function or, if
+ *     not a direct method of the class, a pseudo-function name.
  * @param {*=} value An optional single parameter to include with the message.
  *     If the method takes multiple parameters, they are passed as named members
  *     of an object literal.
@@ -38,10 +38,10 @@ BridgeHelper.sendMessage = (target, action, value) => {
 };
 
 /**
- * @param {BridgeTarget} target The name of the class that is registering the
- *     handler.
- * @param {BridgeAction} action The name of the intended function or, if not a
- *     direct method of the class, a pseudo-function name.
+ * @param {BridgeTarget|string} target The name of the class that is registering
+ *     the handler.
+ * @param {BridgeAction|string} action The name of the intended function or, if
+ *     not a direct method of the class, a pseudo-function name.
  * @param {Function} handler A function that performs the indicated action. It
  *     may optionally take a single parameter, and may have an optional return
  *         value that will be forwarded to the requestor.
@@ -49,6 +49,9 @@ BridgeHelper.sendMessage = (target, action, value) => {
  *         of an object literal.
  */
 BridgeHelper.registerHandler = (target, action, handler) => {
+  if (!target || !action) {
+    return;
+  }
   if (!BridgeHelper.handlers_[target]) {
     BridgeHelper.handlers_[target] = {};
   }

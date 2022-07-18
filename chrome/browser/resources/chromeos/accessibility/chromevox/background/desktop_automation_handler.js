@@ -868,6 +868,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(focus));
+    if (!ChromeVoxState.instance.currentRange) {
+      return;
+    }
 
     o.withRichSpeechAndBraille(
          ChromeVoxState.instance.currentRange, null, evt.type)

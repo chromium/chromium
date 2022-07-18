@@ -15,7 +15,7 @@ import {FocusBounds} from '../focus_bounds.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
-import {OutputFormatParser} from './output_format_parser.js';
+import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputRulesStr} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';

@@ -9,6 +9,7 @@
 import {CursorRange} from '../../../common/cursors/range.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
+import {Output} from '../output/output.js';
 import {OutputEventType} from '../output/output_types.js';
 
 import {ISearch} from './i_search.js';
@@ -124,7 +125,13 @@ export class PanelBackground {
     if (this.iSearch_) {
       this.iSearch_.clear();
     }
-    this.iSearch_ = new ISearch(this.savedNode_);
+    // TODO(accessibility): not sure if this actually works anymore since all
+    // the refactoring.
+    if (!ChromeVoxState.instance.currentRange ||
+        !ChromeVoxState.instance.currentRange.start) {
+      return;
+    }
+    this.iSearch_ = new ISearch(ChromeVoxState.instance.currentRange.start);
     this.iSearch_.handler = this;
   }
 

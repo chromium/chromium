@@ -105,6 +105,11 @@ export class BaseAutomationHandler {
 
     ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
 
+    // Because Closure doesn't know this is non-null.
+    if (!ChromeVoxState.instance.currentRange) {
+      return;
+    }
+
     // Don't output if focused node hasn't changed. Allow focus announcements
     // when interacting via touch. Touch never sets focus without a double tap.
     if (prevRange && evt.type === 'focus' &&

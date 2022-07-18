@@ -441,8 +441,10 @@ export class OptionsPage {
    */
   static setEventStreamFilter(name, enabled) {
     BackgroundBridge.ChromeVoxPrefs.setPref(name, enabled);
+
+    // TODO(accessibility): the below cast needs to be validated.
     BackgroundBridge.EventStreamLogger.notifyEventStreamFilterChanged(
-        name, enabled);
+        /** @type {chrome.automation.EventType} */ (name), enabled);
   }
 
   /**

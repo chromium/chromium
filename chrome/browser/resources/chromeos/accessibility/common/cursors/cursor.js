@@ -119,8 +119,8 @@ export class Cursor {
 
   /**
    * Gives a function that returns true for leaf types for |unit| navigations.
-   * @param {!cursor.Unit} unit
-   * @return {function}
+   * @param {!CursorUnit} unit
+   * @return {AutomationPredicate.Unary}
    */
   static getLeafPredForUnit(unit) {
     switch (unit) {
@@ -245,7 +245,7 @@ export class Cursor {
    * given direction using the given movement type.
    * @param {CursorUnit} unit
    * @param {CursorMovement} movement
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @return {!Cursor} The moved cursor.
    */
   move(unit, movement, dir) {

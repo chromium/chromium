@@ -500,7 +500,6 @@ js_type_check("closure_compile") {
     ":chromevox_es6_library",
     ":chromevox_library",
   ]
-  closure_flags = [ "js_module_root=../" ]
 }
 
 js_library("chromevox_library") {

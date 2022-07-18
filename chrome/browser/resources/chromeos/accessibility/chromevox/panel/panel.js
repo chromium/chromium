@@ -58,8 +58,8 @@ export class Panel extends PanelInterface {
     /** @type {Element} @private */
     Panel.searchContainer_ = $('search-container');
 
-    /** @type {Element} @private */
-    Panel.searchInput_ = $('search');
+    /** @type {!Element} @private */
+    Panel.searchInput_ = /** @type {!Element} */ ($('search'));
 
     /** @type {Element} @private */
     Panel.brailleTableElement_ = $('braille-table');
@@ -456,10 +456,10 @@ export class Panel extends PanelInterface {
       // Add all open tabs to the Tabs menu.
       const data = await BackgroundBridge.PanelBackground.getTabMenuData();
       for (const menuInfo of data) {
-        tabsMenu.addMenuItem(
-            menuInfo.title, '', '', '',
-            () => BackgroundBridge.PanelTabMenuBackground.focus(
-                menuInfo.windowId, menuInfo.tabId));
+        tabsMenu.addMenuItem(menuInfo.title, '', '', '', () => {
+          BackgroundBridge.PanelBackground.focusTab(
+              menuInfo.windowId, menuInfo.tabId);
+        });
       }
 
       if (Panel.sessionState !== 'IN_SESSION') {
@@ -1241,6 +1241,9 @@ Panel.lastMenu_ = '';
 
 /** @private {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
 Panel.nodeMenuDictionary_ = {};
+
+/** @public {boolean} */
+Panel.disableRestartTutorialNudgesForTesting = false;
 
 window.addEventListener('load', function() {
   Panel.init();

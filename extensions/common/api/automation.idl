@@ -887,7 +887,7 @@ enum SortDirectionType {
 
     // The rendered location (as a bounding box) of this node in global
     // screen coordinates.
-    Rect? location;
+    Rect location;
 
     // Determines the location of the text within the node specified by
     // |startIndex| and |endIndex|, inclusively. Invokes |callback| with the
@@ -1377,6 +1377,9 @@ enum SortDirectionType {
 
     // The sort direction of this node.
     SortDirectionType sortDirection;
+
+    // Explicitly set to true when this node is clickable.
+    boolean clickable;
 
     //
     // Actions.

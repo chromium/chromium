@@ -33,6 +33,7 @@ import {PageLoadSoundHandler} from './page_load_sound_handler.js';
 import {PanelBackground} from './panel/panel_background.js';
 import {ChromeVoxPrefs} from './prefs.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
+import {TtsBackground} from './tts_background.js';
 
 /**
  * @fileoverview The entry point for all ChromeVox related code for the
@@ -223,7 +224,7 @@ export class Background extends ChromeVoxState {
 
   /** @override */
   set typingEcho(newTypingEcho) {
-    localStorage['typingEcho'] = value;
+    localStorage['typingEcho'] = newTypingEcho;
   }
 
   /**
@@ -380,7 +381,7 @@ export class Background extends ChromeVoxState {
     textarea.remove();
     ChromeVox.tts.speak(
         Msgs.getMsg(eventType, [clipboardContent]), QueueMode.FLUSH);
-    ChromeVoxState.instance.pageSel_ = null;
+    ChromeVoxState.instance.pageSel = null;
   }
 
   /** @private */

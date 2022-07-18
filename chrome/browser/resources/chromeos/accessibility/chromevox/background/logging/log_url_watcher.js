@@ -18,7 +18,8 @@ export class LogUrlWatcher {
     ChromeVoxState.addObserver(LogUrlWatcher.instance);
     // Initialize using the current range.
     if (ChromeVoxState.instance) {
-      this.onCurrentRangeChanged(ChromeVoxState.instance.currentRange);
+      LogUrlWatcher.instance.onCurrentRangeChanged(
+          ChromeVoxState.instance.currentRange);
     }
   }
 

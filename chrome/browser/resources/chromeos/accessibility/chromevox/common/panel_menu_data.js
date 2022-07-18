@@ -46,7 +46,6 @@ let PanelNodeMenuItemData;
 /** @typedef {{title: string, windowId: number, tabId: number}} */
 PanelTabMenuItemData;
 
-/** @const {!Array<!PanelNodeMenuData>} */
 ALL_NODE_MENU_DATA = [
   {
     menuId: PanelNodeMenuId.HEADING,

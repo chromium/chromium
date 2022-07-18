@@ -41,12 +41,12 @@ export class PanelNodeMenuBackground {
 
   /** @param {number} callbackNodeIndex */
   static focusNodeCallback(callbackNodeIndex) {
-    if (callbackNodeIndex < 0 ||
-        callbackNodeIndex >= PanelNodeMenuBackground.callbackNodes_.length) {
+    if (!PanelNodeMenuBackground.callbackNodes_[callbackNodeIndex]) {
       return;
     }
     ChromeVoxState.instance.navigateToRange(CursorRange.fromNode(
-        PanelNodeMenuBackground.callbackNodes_[callbackNodeIndex]));
+        /** @type {!AutomationNode} */ (
+            PanelNodeMenuBackground.callbackNodes_[callbackNodeIndex])));
   }
 
   /**

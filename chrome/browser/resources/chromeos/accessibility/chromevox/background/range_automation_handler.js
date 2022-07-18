@@ -56,7 +56,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
   onCurrentRangeChanged(newRange, opt_fromEditing) {
     if (this.node_) {
       this.removeAllListeners();
-      this.node_ = undefined;
+      this.node_ = null;
     }
 
     if (!newRange || !newRange.start.node || !newRange.end.node) {
@@ -240,7 +240,6 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     const oldFocusBounds = FocusBounds.get();
     const startRect = cur.start.node.location;
     const endRect = cur.end.node.location;
-
     const found =
         oldFocusBounds.some(rect => this.areRectsEqual_(rect, startRect)) &&
         oldFocusBounds.some(rect => this.areRectsEqual_(rect, endRect));
