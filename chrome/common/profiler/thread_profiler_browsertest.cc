@@ -156,7 +156,6 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 // These threads are not currently profiled on Android.
-#define MAYBE_BrowserProcessIOThread DISABLED_BrowserProcessIOThread
 #define MAYBE_GpuProcessMainThread DISABLED_GpuProcessMainThread
 #define MAYBE_GpuProcessIOThread DISABLED_GpuProcessIOThread
 #define MAYBE_GpuProcessCompositorThread DISABLED_GpuProcessCompositorThread
@@ -164,7 +163,6 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 #define MAYBE_NetworkServiceProcessIOThread \
   DISABLED_NetworkServiceProcessIOThread
 #else
-#define MAYBE_BrowserProcessIOThread BrowserProcessIOThread
 #define MAYBE_GpuProcessMainThread GpuProcessMainThread
 #define MAYBE_GpuProcessIOThread GpuProcessIOThread
 #define MAYBE_GpuProcessCompositorThread GpuProcessCompositorThread
@@ -180,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessMainThread) {
                              metrics::BROWSER_PROCESS, metrics::MAIN_THREAD));
 }
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
-                       MAYBE_BrowserProcessIOThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessIOThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::BROWSER_PROCESS, metrics::IO_THREAD));
 }

@@ -171,7 +171,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kBrowser,
       metrics::CallStackProfileParams::Thread::kMain));
-  EXPECT_FALSE(config()->IsEnabledForThread(
+  EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kBrowser,
       metrics::CallStackProfileParams::Thread::kIo));
 
