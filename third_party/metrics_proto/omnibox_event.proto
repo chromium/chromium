@@ -93,7 +93,8 @@ message OmniboxEventProto {
   // the field |typing_duration_ms|.
   optional int64 duration_since_last_default_match_update_ms = 13;
 
-  // The type of page currently displayed when the user used the omnibox.
+  // The type of page the user was on when they used the omnibox. Or the type of
+  // page for which suggestions were prefetched from the server.
   enum PageClassification {
     // An invalid URL; shouldn't happen.
     INVALID_SPEC = 0;
@@ -119,8 +120,8 @@ message OmniboxEventProto {
     // on this list.
     OTHER = 4;
 
-    // The instant new tab page enum value was deprecated on August 2, 2013.
-    OBSOLETE_INSTANT_NTP = 5;
+    // The instant new tab page.
+    OBSOLETE_INSTANT_NTP = 5;  // DEPRECATED on August 2, 2013.
 
     // The user is on a search result page that does search term replacement.
     // This means the search terms are shown in the omnibox instead of the URL.
@@ -132,8 +133,8 @@ message OmniboxEventProto {
     INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS = 7;
 
     // The new tab page in which this omnibox interaction first started with the
-    // user having focus in the fakebox. Note that this started being replaced
-    // by NTP_REALBOX in Aug 2020 and will eventually be obsolete.
+    // user having focus in the fakebox. This is replaced by NTP_REALBOX.
+    // DEPRECATED on Aug 17, 2020.
     INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS = 8;
 
     // The user is on a search result page that does not do search term
@@ -164,29 +165,28 @@ message OmniboxEventProto {
     // Android's Search Widget started directly from Launcher.
     ANDROID_SEARCH_WIDGET = 16;
 
-    START_SURFACE_HOMEPAGE = 17;  // DEPRECATED. Android's Start surface
-                                  // homepage.
-
-    START_SURFACE_NEW_TAB = 18;  // DEPRECATED. New Tab with Omnibox focused
-                                 // when Android's start surface finale is
-                                 // enabled.
+    // Android's Start surface homepage.
+    START_SURFACE_HOMEPAGE = 17;  // DEPRECATED on Jun 17, 2022.
+    // New Tab with Omnibox focused with Android's start surface finale enabled.
+    START_SURFACE_NEW_TAB = 18;  // DEPRECATED on Jun 17, 2022.
 
     // Android's improved Search Widget with new suggestions.
     ANDROID_SHORTCUTS_WIDGET = 19;
 
-    // The new tab page zero-prefix suggestion prefetch.
+    // The New Tab Page zero-prefix suggestion prefetch.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
     NTP_ZPS_PREFETCH = 20;
 
     // Android's auxiliary search backend.
     ANDROID_AUXILIARY_SEARCH = 21;
 
-    // Android's search resumption module which offers suggestions based on a
-    // search results page that the user was on.
-    SEARCH_RESUMPTION_SEARCH_RESULT_PAGE = 22;
-
-    // Android's search resumption module which offers suggestions based on a
-    // non-search-results page that the user was on.
-    SEARCH_RESUMPTION_OTHER = 23;
+    // The Search Results Page zero-prefix suggestion prefetch.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
+    SRP_ZPS_PREFETCH = 22;
 
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
