@@ -625,7 +625,7 @@ class SingleTestRunner(object):
         if driver_output.image_hash != expected_driver_output.image_hash:
             max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
                 self._test_name)
-            diff, err_str = self._port.diff_image(
+            diff, stats, err_str = self._port.diff_image(
                 expected_driver_output.image,
                 driver_output.image,
                 max_channel_diff=max_channel_diff,
@@ -633,6 +633,8 @@ class SingleTestRunner(object):
 
             if diff:
                 driver_output.image_diff = diff
+            if stats:
+                driver_output.image_diff_stats = stats
 
             if err_str:
                 _log.error('  %s : %s', self._test_name, err_str)
@@ -756,13 +758,15 @@ class SingleTestRunner(object):
         elif reference_driver_output.image_hash != actual_driver_output.image_hash:
             max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
                 self._test_name)
-            diff, err_str = self._port.diff_image(
+            diff, stats, err_str = self._port.diff_image(
                 reference_driver_output.image,
                 actual_driver_output.image,
                 max_channel_diff=max_channel_diff,
                 max_pixels_diff=max_pixels_diff)
             if diff:
                 actual_driver_output.image_diff = diff
+            if stats:
+                actual_driver_output.image_diff_stats = stats
 
             if err_str:
                 _log.error(err_str)

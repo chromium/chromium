@@ -378,8 +378,8 @@ class WPTResultsProcessor(object):
             )
             artifacts[screenshot_key] = [screenshot_subpath]
 
-        diff_bytes, error = self.port.diff_image(expected_image_bytes,
-                                                 actual_image_bytes)
+        diff_bytes, _, error = self.port.diff_image(expected_image_bytes,
+                                                    actual_image_bytes)
         if diff_bytes and not error:
             diff_subpath = self._write_png_artifact(
                 diff_bytes,

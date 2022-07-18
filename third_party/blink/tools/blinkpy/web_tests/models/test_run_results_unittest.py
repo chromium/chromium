@@ -136,9 +136,19 @@ def summarized_results(port,
             get_result('failures/expected/keyboard.html', ResultType.Skip),
             expected, test_is_slow)
 
+        dummy_expected = DriverOutput(None, None, None, None)
+        dummy_actual = DriverOutput(None, None, None, None)
+        dummy_actual.image_diff_stats = {
+            'maxDifference': 20,
+            'totalPixels': 50
+        }
+        image_hash_failure = test_failures.FailureImageHashMismatch(
+            dummy_actual, dummy_expected)
+
         initial_results.add(
-            get_result('failures/expected/text.html', ResultType.Failure),
-            expected, test_is_slow)
+            test_results.TestResult('failures/expected/text.html',
+                                    failures=[image_hash_failure]), expected,
+            test_is_slow)
 
         all_retry_results = [
             run_results(port, extra_skipped_tests),
@@ -335,6 +345,19 @@ class SummarizedResultsTest(unittest.TestCase):
             extra_skipped_tests=['passes/text.html'])
         actual = summary['tests']['passes']['text.html']['expected']
         self.assertEquals(sorted(list(actual.split(" "))), ['PASS', 'SKIP'])
+
+    def test_summarized_results_image_diff_stats(self):
+        self.port._options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
+        actual = summary['tests']['failures']['expected']['text.html'][
+            'image_diff_stats']
+        self.assertEqual(actual, {'maxDifference': 20, 'totalPixels': 50})
+        self.assertNotIn(
+            'image_diff_stats',
+            summary['tests']['failures']['expected']['keyboard.html'])
 
     def test_summarized_results_wontfix(self):
         self.port._options.builder_name = 'dummy builder'

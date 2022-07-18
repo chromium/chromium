@@ -319,6 +319,12 @@ def summarize_results(port_obj,
                         failure.text_mismatch_category()
                     break
 
+        for failure in initial_result.failures:
+            if isinstance(failure, test_failures.FailureImageHashMismatch):
+                test_dict['image_diff_stats'] = \
+                    failure.actual_driver_output.image_diff_stats
+                break
+
         # Note: is_unexpected and is_regression are intended to reflect the
         # *last* result. In the normal use case (stop retrying failures
         # once they pass), this is equivalent to saying that all of the

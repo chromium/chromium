@@ -755,17 +755,21 @@ class TestPort(Port):
                    max_pixels_diff=None):
         diffed = actual_contents != expected_contents
         if not actual_contents and not expected_contents:
-            return (None, None)
+            return (None, None, None)
         if not actual_contents or not expected_contents:
-            return (True, None)
+            return (True, None, None)
         if diffed:
             mock_diff = '\n'.join([
                 '< %s' % base64.b64encode(expected_contents).decode('utf-8'),
                 '---',
                 '> %s' % base64.b64encode(actual_contents).decode('utf-8'),
             ])
-            return (mock_diff, None)
-        return (None, None)
+            mock_stats = {
+                "maxDifference": 100,
+                "maxPixels": len(actual_contents)
+            }
+            return (mock_diff, mock_stats, None)
+        return (None, None, None)
 
     def web_tests_dir(self):
         return WEB_TEST_DIR

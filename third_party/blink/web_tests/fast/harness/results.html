@@ -881,6 +881,16 @@ const Report = {
     let menu = div.querySelector(".result-menu");
     for (let toolbar of Report.getResultToolbars(test))
       menu.appendChild(toolbar);
+
+    if (test.image_diff_stats) {
+      let diff_stats = document.createElement("div");
+      diff_stats.classList.add("image-diff-stats")
+      diff_stats.innerHTML = "<b>Max Channel Difference:</b> " +
+        test.image_diff_stats.maxDifference + ", <b>Total Pixels Different:</b> " +
+        test.image_diff_stats.totalPixels
+      menu.appendChild(diff_stats)
+    }
+
     return div;
   }
 }; // Report

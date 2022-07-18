@@ -610,11 +610,11 @@ class Port(object):
         """
         # If only one of them exists, return that one.
         if not actual_contents and not expected_contents:
-            return (None, None)
+            return (None, None, None)
         if not actual_contents:
-            return (expected_contents, None)
+            return (expected_contents, None, None)
         if not expected_contents:
-            return (actual_contents, None)
+            return (actual_contents, None, None)
 
         tempdir = self._filesystem.mkdtemp()
 
@@ -649,19 +649,30 @@ class Port(object):
                 map(str, max_pixels_diff))))
 
         result = None
+        stats = None
         err_str = None
+
+        def handle_output(output):
+            if output:
+                match = re.search(
+                    "Found pixels_different: (\d+), max_channel_diff: (\d+)",
+                    output)
+                _log.debug(output)
+
+                if match:
+                    return {
+                        "maxDifference": int(match.group(2)),
+                        "totalPixels": int(match.group(1))
+                    }
+            return None
+
         try:
             output = self._executive.run_command(command)
-            # Log the output, to enable user debugging of a diff hidden by fuzzy
-            # expectations. This is useful when tightening fuzzy bounds.
-            if output:
-                _log.debug(output)
+            stats = handle_output(output)
         except ScriptError as error:
             if error.exit_code == 1:
                 result = self._filesystem.read_binary_file(diff_filename)
-                # Log the output, to enable user debugging of the diff.
-                if error.output:
-                    _log.debug(error.output)
+                stats = handle_output(error.output)
             else:
                 err_str = 'Image diff returned an exit code of %s. See http://crbug.com/278596' % error.exit_code
         except OSError as error:
@@ -669,7 +680,7 @@ class Port(object):
         finally:
             self._filesystem.rmtree(str(tempdir))
 
-        return (result, err_str or None)
+        return (result, stats, err_str or None)
 
     def driver_name(self):
         if self.get_option('driver_name'):

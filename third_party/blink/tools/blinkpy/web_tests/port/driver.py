@@ -134,6 +134,7 @@ class DriverOutput(object):
         self.image = image  # May be empty-string if the test crashes.
         self.image_hash = image_hash
         self.image_diff = None  # image_diff gets filled in after construction.
+        self.image_diff_stats = None  # Number of changed pixels, etc.
         self.audio = audio  # Binary format is port-dependent.
         self.crash = crash
         self.crashed_process_name = crashed_process_name
