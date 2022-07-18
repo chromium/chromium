@@ -27864,6 +27864,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SidePanel.Assistant.Shown">
+  <owner>brunobraga@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the assistant side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Bookmarks.FolderClose">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -27888,10 +27896,40 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Bookmarks.Shown">
+  <owner>johntlee@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the bookmarks side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.Feed.Shown">
+  <owner>jianli@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>Recorded when the feed side panel entry is shown.</description>
+</action>
+
 <action name="SidePanel.Hide">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>The user closed the side panel.</description>
+</action>
+
+<action name="SidePanel.HistoryClusters.Shown">
+  <owner>mfacey@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the history clusters side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.ReadAnything.Shown">
+  <owner>abigailbklein@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the read anything side panel entry is shown.
+  </description>
 </action>
 
 <action name="SidePanel.ReadingList.AddCurrentPage">
@@ -27910,10 +27948,34 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.ReadingList.Shown">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the reading list side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Show">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>The user opened the side panel.</description>
+</action>
+
+<action name="SidePanel.SideSearch.Shown">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the side search side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.UserNotes.Shown">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user notes side panel entry is shown.
+  </description>
 </action>
 
 <action name="Signin_Abort_Signin">

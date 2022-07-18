@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
@@ -20,6 +22,8 @@ class SidePanelEntryObserver;
 class SidePanelEntry final {
  public:
   // Note this order matches that of the combobox options in the side panel.
+  // If adding a new Id here, you must also update id_to_histogram_name_map_
+  // below.
   enum class Id {
     // Global Entries
     kReadingList,
@@ -34,10 +38,9 @@ class SidePanelEntry final {
     kAssistant
   };
 
-  // TODO(pbos): Add an icon ImageModel here.
   SidePanelEntry(Id id,
                  std::u16string name,
-                 const ui::ImageModel icon,
+                 ui::ImageModel icon,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
                      create_content_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
@@ -76,6 +79,8 @@ class SidePanelEntry final {
 
   base::RepeatingCallback<std::unique_ptr<views::View>()>
       create_content_callback_;
+
+  base::TimeTicks entry_shown_timestamp_;
 
   base::ObserverList<SidePanelEntryObserver> observers_;
 

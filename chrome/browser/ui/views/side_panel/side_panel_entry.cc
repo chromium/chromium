@@ -6,11 +6,12 @@
 
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
 SidePanelEntry::SidePanelEntry(
     Id id,
     std::u16string name,
-    const ui::ImageModel icon,
+    ui::ImageModel icon,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback)
     : id_(id),
@@ -37,11 +38,14 @@ void SidePanelEntry::ClearCachedView() {
 }
 
 void SidePanelEntry::OnEntryShown() {
+  entry_shown_timestamp_ = base::TimeTicks::Now();
+  SidePanelUtil::RecordEntryShownMetrics(id_);
   for (SidePanelEntryObserver& observer : observers_)
     observer.OnEntryShown(this);
 }
 
 void SidePanelEntry::OnEntryHidden() {
+  SidePanelUtil::RecordEntryHiddenMetrics(id_, entry_shown_timestamp_);
   for (SidePanelEntryObserver& observer : observers_)
     observer.OnEntryHidden(this);
 }

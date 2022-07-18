@@ -1133,6 +1133,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SidePanel.{SidePanelEntries}.ShownDuration" units="ms"
+    expires_after="2023-06-04">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records how long the {SidePanelEntries} side panel entry was open for
+    (capped at 1 hour). This is recorded in SidePanelEntry::OnEntryHidden when
+    the entry is hidden (ie. switching entries or the side panel closing).
+  </summary>
+  <token key="SidePanelEntries">
+    <variant name="Assistant"/>
+    <variant name="Bookmarks"/>
+    <variant name="Feed"/>
+    <variant name="HistoryClusters"/>
+    <variant name="Lens"/>
+    <variant name="ReadAnything"/>
+    <variant name="ReadingList"/>
+    <variant name="SideSearch"/>
+    <variant name="UserNotes"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
