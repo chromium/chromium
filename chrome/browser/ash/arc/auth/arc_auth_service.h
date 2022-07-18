@@ -90,7 +90,6 @@ class ArcAuthService : public KeyedService,
   void ReportMetrics(mojom::MetricsType metrics_type, int32_t value) override;
   void ReportAccountCheckStatus(mojom::AccountCheckStatus status) override;
   void ReportAccountReauthReason(mojom::ReauthReason reason) override;
-  void ReportAndroidIdSource(mojom::AndroidIdSource source) override;
   void ReportManagementChangeStatus(
       mojom::ManagementChangeStatus status) override;
   void RequestPrimaryAccountInfo(

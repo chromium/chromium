@@ -403,6 +403,7 @@ struct ArcAccountInfo {
 };
 
 // Next Method ID: 22.
+// Deprecated method IDs: 21
 interface AuthHost {
   // Notifies Chrome that the authorization flow is completed and provides
   // |result| and |account| that was authorized.
@@ -479,9 +480,6 @@ interface AuthHost {
 
   // Reports the reason for doing auth despite device being provisioned earlier.
   [MinVersion=27] ReportAccountReauthReason@20(ReauthReason reason);
-
-  // Reports AndroidId source during provisioning.
-  [MinVersion=28] ReportAndroidIdSource@21(AndroidIdSource source);
 };
 
 // Next Method ID: 7

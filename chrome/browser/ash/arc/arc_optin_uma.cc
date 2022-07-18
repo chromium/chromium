@@ -199,12 +199,6 @@ void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
       status);
 }
 
-void UpdateAndroidIdSource(mojom::AndroidIdSource source,
-                           const Profile* profile) {
-  base::UmaHistogramEnumeration(
-      GetHistogramNameByUserType("Arc.Auth.AndroidIdSource", profile), source);
-}
-
 void UpdateAuthCodeFetcherProxyBypassUMA(bool proxy_bypassed,
                                          const Profile* profile) {
   base::UmaHistogramBoolean(
