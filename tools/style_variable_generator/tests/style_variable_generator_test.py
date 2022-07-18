@@ -99,13 +99,6 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator.generate_single_mode = Modes.DARK
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
-    def testDebugPlaceholder(self):
-        expected_file_name = 'colors_test_debug_placeholder_expected.css'
-        self.generator.generator_options = {
-            'debug_placeholder': 'DEBUG_CSS_GOES_HERE\n'
-        }
-        self.assertEqualToFile(self.generator.Render(), expected_file_name)
-
     def testUntypedCSS(self):
         self.generator = CSSStyleGenerator()
         self.AddJSONFilesToModel(['untyped_css_test.json5'])

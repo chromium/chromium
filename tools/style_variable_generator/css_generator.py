@@ -58,8 +58,6 @@ class CSSStyleGenerator(BaseGenerator):
             self.GetInputFiles(),
             'dark_mode_selector':
             self.generator_options.get('dark_mode_selector', None),
-            'debug_placeholder':
-            self.generator_options.get('debug_placeholder', ''),
             'suppress_sources_comment':
             self.generator_options.get('suppress_sources_comment', False),
             'Modes':

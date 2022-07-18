@@ -90,13 +90,4 @@ SkColor ResolveColor(ColorName color_name,
   }
 }
 
-char kDebugOverrideCssString[] = "html:not(body) {\n"
-{%- for obj in colors %}
-{%-   if obj.mode_values[Modes.DEBUG] %}
-    "  {{obj.name | to_css_var_name}}-rgb: {{obj.mode_values[Modes.DEBUG] | css_color_rgb}};\n"
-    "  {{obj.name | to_css_var_name}}: {{css_color_var(obj.name, obj.mode_values[Modes.DEBUG])}};\n"
-{%-    endif %}
-{%-  endfor %}
-    "}\n";
-
 }  // namespace {{namespace_name}}

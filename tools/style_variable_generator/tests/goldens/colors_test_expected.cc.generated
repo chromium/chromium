@@ -83,11 +83,4 @@ SkColor ResolveColor(ColorName color_name,
   }
 }
 
-char kDebugOverrideCssString[] = "html:not(body) {\n"
-    "  --cros-text-color-primary-rgb: var(--cros-toggle-color-rgb);\n"
-    "  --cros-text-color-primary: var(--cros-toggle-color);\n"
-    "  --cros-toggle-color-rgb: 255, 255, 255;\n"
-    "  --cros-toggle-color: rgb(var(--cros-toggle-color-rgb));\n"
-    "}\n";
-
 }  // namespace colors_test_expected

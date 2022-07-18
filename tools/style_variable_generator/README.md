@@ -123,13 +123,6 @@ you can control the switch to dark/light mode, in production always prefer to
 use the default behavior which will respect operating system level dark mode
 switches.
 
-**Debug placeholder**
-
-`--generator-option 'debug_placeholder=$i18n{CROS_COLORS_DEBUG_OVERRIDES}'`
-
-Adds the given token to the CSS output. Chromium will overwrite this token with
-the debug color CSS when the file is served and debug colors are enabled.
-
 **Suppress Sources Comment**
 
 If true suppresses adding a comment to the generated output file with a list of all the sources used to generate the file.

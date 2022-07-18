@@ -40,7 +40,5 @@ COMPONENT_EXPORT(colors_test_expected) SkColor ResolveColor(
     bool is_dark_mode = DarkModeEnabled(),
     bool use_debug_colors = DebugColorsEnabled());
 
-COMPONENT_EXPORT(colors_test_expected) extern char kDebugOverrideCssString[];
-
 }  // namespace colors_test_expected
 #endif  // TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
