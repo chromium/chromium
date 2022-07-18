@@ -8,8 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "base/rand_util.h"
 #include "chrome/common/privacy_budget/types.h"
-#include "components/ukm/ukm_service.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -54,19 +52,19 @@ PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
     count_flag_.push_back(0);
 
     // Used to construct the Reid Surface Key.
-    std::vector<blink::IdentifiableToken> tokens;
+    std::vector<uint64_t> surface_hashes;
 
     // Add the list of surfaces to the map and add the surface value to token
     // vector to prepare for the Reid key generation.
     for (const blink::IdentifiableSurface& surface : surface_list) {
       surface_map.insert_or_assign(surface,
                                    absl::optional<blink::IdentifiableToken>());
-      tokens.emplace_back(surface.GetInputHash());
+      surface_hashes.emplace_back(surface.GetInputHash());
     }
     // Create surface key of Reid score type corresponding to this block.
     blink::IdentifiableSurface reid_key =
-        blink::IdentifiableSurface::FromTypeAndToken(kReidScoreType,
-                                                     base::make_span(tokens));
+        blink::IdentifiableSurface::FromTypeAndToken(
+            kReidScoreType, base::make_span(surface_hashes));
     // Add the map surfaces to the storage under the new Reid key.
     surfaces_and_values_.insert_or_assign(reid_key, surface_map);
   }

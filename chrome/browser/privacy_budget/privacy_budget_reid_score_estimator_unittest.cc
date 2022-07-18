@@ -34,7 +34,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
   // Initialize the settings with random surface keys.
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
       true, 0, 0, "", "", "",
-      "2077075229;1122849309,3996426525;517825053;1983694109", "1,2");
+      "18446744073709551615;1122849309,3996426525;517825053;1983694109", "1,2");
   auto reid_storage =
       std::make_unique<PrivacyBudgetReidScoreEstimator>(settings);
 
@@ -46,10 +46,11 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
   // Create manually one of the expected Reid surface keys.
   constexpr auto kReidScoreType =
       blink::IdentifiableSurface::Type::kReidScoreEstimator;
-  auto surface_1 = blink::IdentifiableSurface::FromMetricHash(2077075229);
-  auto surface_2 = blink::IdentifiableSurface::FromMetricHash(1122849309);
-  std::vector<blink::IdentifiableToken> tokens{surface_1.GetInputHash(),
-                                               surface_2.GetInputHash()};
+  auto surface_1 =
+      blink::IdentifiableSurface::FromMetricHash(18446744073709551615u);
+  auto surface_2 = blink::IdentifiableSurface::FromMetricHash(1122849309u);
+  std::vector<uint64_t> tokens{surface_1.GetInputHash(),
+                               surface_2.GetInputHash()};
   auto expected_surface = blink::IdentifiableSurface::FromTypeAndToken(
       kReidScoreType, base::make_span(tokens));
 
@@ -68,7 +69,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
      UpdateStorageWithNewValues) {
   // Initialize the settings with random surface keys.
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "2077075229;1122849309", "1");
+      true, 0, 0, "", "", "", "18446744073709551615;1122849309", "1");
   auto reid_storage =
       std::make_unique<PrivacyBudgetReidScoreEstimator>(settings);
 
@@ -77,8 +78,8 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
   // Making sure the storage is not empty.
   EXPECT_TRUE(surface_maps->size() == 1);
 
-  // Process values for 2 surfaces.
-  auto surface_1 = blink::IdentifiableSurface::FromMetricHash(2077075229);
+  auto surface_1 =
+      blink::IdentifiableSurface::FromMetricHash(18446744073709551615u);
   int64_t token1 = 1234;
 
   reid_storage->ProcessForReidScore(surface_1,
