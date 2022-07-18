@@ -53,6 +53,7 @@
 #include "ash/display/persistent_window_controller.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/projecting_observer.h"
+#include "ash/display/refresh_rate_throttle_controller.h"
 #include "ash/display/resolution_notification_controller.h"
 #include "ash/display/screen_ash.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -643,6 +644,7 @@ Shell::~Shell() {
   display_configuration_observer_.reset();
   display_prefs_.reset();
   display_alignment_controller_.reset();
+  refresh_rate_throttle_controller_.reset();
 
   // Remove the focus from any window. This will prevent overhead and side
   // effects (e.g. crashes) from changing focus during shutdown.
@@ -1460,6 +1462,12 @@ void Shell::InitializeDisplayManager() {
 
   projecting_observer_ =
       std::make_unique<ProjectingObserver>(display_manager_->configurator());
+
+  if (base::FeatureList::IsEnabled(features::kSeamlessRefreshRateSwitching)) {
+    refresh_rate_throttle_controller_ =
+        std::make_unique<RefreshRateThrottleController>(
+            display_manager_->configurator(), PowerStatus::Get());
+  }
 
   display_prefs_ = std::make_unique<DisplayPrefs>(local_state_);
 

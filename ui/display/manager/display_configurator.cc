@@ -898,6 +898,13 @@ void DisplayConfigurator::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void DisplayConfigurator::MaybeSetRefreshRateThrottleState(
+    int64_t display_id,
+    RefreshRateThrottleState state) {
+  VLOG(4) << "Request refresh rate throttle state for display_id: "
+          << display_id << " to state: " << state;
+}
+
 void DisplayConfigurator::SuspendDisplays(ConfigurationCallback callback) {
   if (configurator_disabled()) {
     std::move(callback).Run(false);

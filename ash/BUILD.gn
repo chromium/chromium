@@ -440,6 +440,8 @@ component("ash") {
     "display/privacy_screen_controller.h",
     "display/projecting_observer.cc",
     "display/projecting_observer.h",
+    "display/refresh_rate_throttle_controller.cc",
+    "display/refresh_rate_throttle_controller.h",
     "display/resolution_notification_controller.cc",
     "display/resolution_notification_controller.h",
     "display/root_window_transformers.cc",

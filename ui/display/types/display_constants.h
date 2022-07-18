@@ -117,6 +117,12 @@ enum PrivacyScreenState {
   kPrivacyScreenStateLast = kNotSupported,
 };
 
+// The requested state for refresh rate throttling.
+enum RefreshRateThrottleState {
+  kRefreshRateThrottleEnabled,
+  kRefreshRateThrottleDisabled,
+};
+
 // Defines the float values closest to repeating decimal scale factors.
 constexpr float kDsf_1_777 = 1.77777779102325439453125f;
 constexpr float kDsf_2_252 = 2.2522523403167724609375f;

@@ -238,6 +238,12 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // current set of connected displays).
   void SetDisplayMode(MultipleDisplayState new_state);
 
+  // Request the display's refresh rate to be throttled. Currently
+  // only supports internal displays. If the underlying panel/display driver
+  // do not support this, it is a no-op.
+  void MaybeSetRefreshRateThrottleState(int64_t display_id,
+                                        RefreshRateThrottleState state);
+
   // NativeDisplayDelegate::Observer overrides:
   void OnConfigurationChanged() override;
   void OnDisplaySnapshotsInvalidated() override;

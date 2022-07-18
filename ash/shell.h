@@ -181,6 +181,7 @@ class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
 class RgbKeyboardManager;
+class RefreshRateThrottleController;
 class ResizeShadowController;
 class ResolutionNotificationController;
 class RootWindowController;
@@ -407,6 +408,10 @@ class ASH_EXPORT Shell : public SessionObserver,
   DisplayPrefs* display_prefs() { return display_prefs_.get(); }
   DisplayConfigurationController* display_configuration_controller() {
     return display_configuration_controller_.get();
+  }
+
+  RefreshRateThrottleController* refresh_rate_throttle_controller() {
+    return refresh_rate_throttle_controller_.get();
   }
 
   DisplayAlignmentController* display_alignment_controller() {
@@ -923,6 +928,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplayConfigurationController>
       display_configuration_controller_;
   std::unique_ptr<DisplayConfigurationObserver> display_configuration_observer_;
+  std::unique_ptr<RefreshRateThrottleController>
+      refresh_rate_throttle_controller_;
 
   std::unique_ptr<ScreenPinningController> screen_pinning_controller_;
 
