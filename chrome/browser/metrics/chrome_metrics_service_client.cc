@@ -58,7 +58,6 @@
 #include "chrome/browser/privacy_budget/privacy_budget_metrics_provider.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -117,7 +116,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_service.h"
 #include "google_apis/google_api_keys.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -651,7 +649,7 @@ void ChromeMetricsServiceClient::Initialize() {
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_, this, local_state);
 
-  notification_listeners_active_ = RegisterForNotifications();
+  observers_active_ = RegisterObservers();
   RegisterMetricsServiceProviders();
 
   if (IsMetricsReportingForceEnabled() ||
@@ -1004,14 +1002,7 @@ void ChromeMetricsServiceClient::RecordCommandLineMetrics() {
   }
 }
 
-bool ChromeMetricsServiceClient::RegisterForNotifications() {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-
+bool ChromeMetricsServiceClient::RegisterObservers() {
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
           base::BindRepeating(
@@ -1031,6 +1022,8 @@ bool ChromeMetricsServiceClient::RegisterForNotifications() {
       all_profiles_succeeded = false;
     }
   }
+  profile_manager_observer_.Observe(g_browser_process->profile_manager());
+
   return all_profiles_succeeded;
 }
 
@@ -1086,33 +1079,18 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   return true;
 }
 
-void ChromeMetricsServiceClient::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
-    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
-      metrics_service_->OnApplicationNotIdle();
-      break;
-
-    case chrome::NOTIFICATION_PROFILE_ADDED: {
-      bool success =
-          RegisterForProfileEvents(content::Source<Profile>(source).ptr());
-      // On failure, set `notification_listeners_active_` to false which will
-      // disable UKM reporting via UpdateRunningServices().
-      if (!success && notification_listeners_active_) {
-        notification_listeners_active_ = false;
-        UpdateRunningServices();
-      }
-      break;
-    }
-
-    default:
-      NOTREACHED();
+void ChromeMetricsServiceClient::OnProfileAdded(Profile* profile) {
+  bool success = RegisterForProfileEvents(profile);
+  // On failure, set `observers_active_` to false which will
+  // disable UKM reporting via UpdateRunningServices().
+  if (!success && observers_active_) {
+    observers_active_ = false;
+    UpdateRunningServices();
   }
+}
+
+void ChromeMetricsServiceClient::OnProfileManagerDestroying() {
+  profile_manager_observer_.Reset();
 }
 
 void ChromeMetricsServiceClient::LoadingStateChanged(bool /*is_loading*/) {
@@ -1152,6 +1130,23 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool total_purge) {
 
   // Signal service manager to enable/disable UKM based on new states.
   UpdateRunningServices();
+}
+
+void ChromeMetricsServiceClient::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (!scoped_observations_.IsObservingSource(host))
+    scoped_observations_.AddObservation(host);
+}
+
+void ChromeMetricsServiceClient::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  metrics_service_->OnApplicationNotIdle();
+}
+
+void ChromeMetricsServiceClient::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  scoped_observations_.RemoveObservation(host);
 }
 
 // static
@@ -1220,18 +1215,18 @@ bool ChromeMetricsServiceClient::IsUkmAllowedWithExtensionsForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedWithExtensionsForAllProfiles();
 }
 
-bool g_notification_listeners_failed = false;
+bool g_observer_registration_failed = false;
 void ChromeMetricsServiceClient::SetNotificationListenerSetupFailedForTesting(
     bool simulate_failure) {
-  g_notification_listeners_failed = simulate_failure;
+  g_observer_registration_failed = simulate_failure;
 }
 
 bool ChromeMetricsServiceClient::
     AreNotificationListenersEnabledOnAllProfiles() {
   // For testing
-  if (g_notification_listeners_failed)
+  if (g_observer_registration_failed)
     return false;
-  return notification_listeners_active_;
+  return observers_active_;
 }
 
 std::string ChromeMetricsServiceClient::GetAppPackageNameIfLoggable() {

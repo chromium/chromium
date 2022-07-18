@@ -28,6 +28,7 @@ class MetricsServicesWebContentsObserver
   // content::WebContentsObserver overrides:
   void DidStartLoading() override;
   void DidStopLoading() override;
+  void OnRendererUnresponsive(content::RenderProcessHost* host) override;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

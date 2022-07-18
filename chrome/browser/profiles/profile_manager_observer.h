@@ -26,7 +26,9 @@ class ProfileManagerObserver : public base::CheckedObserver {
   // shuts down. See https://crbug.com/88586
   virtual void OnProfileMarkedForPermanentDeletion(Profile* profile) {}
 
-  // Called when the profile manager is destroying.
+  // Called when the profile manager is destroying. As the `ProfileManager` is
+  // owned by the `BrowserProcessImpl`, this will only be called during
+  // shutdown.
   virtual void OnProfileManagerDestroying() {}
 };
 

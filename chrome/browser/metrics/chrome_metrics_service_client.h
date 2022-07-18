@@ -15,12 +15,16 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -29,8 +33,9 @@
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -53,10 +58,13 @@ class MetricsStateManager;
 
 // ChromeMetricsServiceClient provides an implementation of MetricsServiceClient
 // that depends on chrome/.
-class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
-                                   public content::NotificationObserver,
-                                   public ukm::HistoryDeleteObserver,
-                                   public ukm::UkmConsentStateObserver {
+class ChromeMetricsServiceClient
+    : public metrics::MetricsServiceClient,
+      public ukm::HistoryDeleteObserver,
+      public ukm::UkmConsentStateObserver,
+      public content::RenderProcessHostObserver,
+      public content::RenderProcessHostCreationObserver,
+      public ProfileManagerObserver {
  public:
   ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
   ChromeMetricsServiceClient& operator=(const ChromeMetricsServiceClient&) =
@@ -125,6 +133,19 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // ukm::UkmConsentStateObserver:
   void OnUkmAllowedStateChanged(bool must_purge) override;
 
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+
   // Determine what to do with a file based on filename. Visible for testing.
   using IsProcessRunningFunction = bool (*)(base::ProcessId);
   static metrics::FileMetricsProvider::FilterAction FilterBrowserMetricsFiles(
@@ -167,16 +188,11 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // until the machine becomes active, such as precluding UMA uploads unless
   // there was recent activity.
   // Returns true if registration was successful for all profiles.
-  bool RegisterForNotifications();
+  bool RegisterObservers();
 
   // Call to listen for events on the selected profile's services.
-  // Returns true if we registered for all notifications we wanted successfully.
+  // Returns true if we registered all observers successfully.
   bool RegisterForProfileEvents(Profile* profile);
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
@@ -207,13 +223,11 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // The UkmService that |this| is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
-  content::NotificationRegistrar registrar_;
-
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;
 
-  // Whether we registered all notification listeners successfully.
-  bool notification_listeners_active_ = false;
+  // Whether we successfully registered all observers of various types.
+  bool observers_active_ = false;
 
   // Saved callback received from CollectFinalMetricsForLog().
   base::OnceClosure collect_final_metrics_done_callback_;
@@ -239,6 +253,13 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // Subscription for receiving callbacks that user metrics consent has changed.
   base::CallbackListSubscription per_user_consent_change_subscription_;
 #endif
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      scoped_observations_{this};
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};
 };
