@@ -22,34 +22,12 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId ResetView::kScreenId;
 
-ResetScreenHandler::ResetScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.ResetScreen.userActed");
-}
+ResetScreenHandler::ResetScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-ResetScreenHandler::~ResetScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void ResetScreenHandler::Bind(ResetScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void ResetScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
+ResetScreenHandler::~ResetScreenHandler() = default;
 
 void ResetScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
-}
-
-void ResetScreenHandler::Hide() {
 }
 
 void ResetScreenHandler::DeclareLocalizedValues(
@@ -96,24 +74,9 @@ void ResetScreenHandler::DeclareLocalizedValues(
   builder->Add("confirmResetButton", IDS_RESET_SCREEN_POPUP_CONFIRM_BUTTON);
 }
 
-void ResetScreenHandler::DeclareJSCallbacks() {
-  AddCallback("ResetScreen.setTpmFirmwareUpdateChecked",
-              &ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked);
-}
-
-void ResetScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed())
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
 void ResetScreenHandler::SetIsRollbackAvailable(bool value) {
   is_rollback_available_ = value;
-  CallJS("login.ResetScreen.setIsRollbackAvailable", value);
+  CallExternalAPI("setIsRollbackAvailable", value);
 }
 
 // Only serve the request if the confirmation dialog isn't being shown.
@@ -122,31 +85,32 @@ void ResetScreenHandler::SetIsRollbackRequested(bool value) {
     return;
 
   is_rollback_requested_ = value;
-  CallJS("login.ResetScreen.setIsRollbackRequested", value);
+
+  CallExternalAPI("setIsRollbackRequested", value);
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateAvailable(bool value) {
-  CallJS("login.ResetScreen.setIsTpmFirmwareUpdateAvailable", value);
+  CallExternalAPI("setIsTpmFirmwareUpdateAvailable", value);
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateChecked(bool value) {
   is_tpm_firmware_update_checked_ = value;
-  CallJS("login.ResetScreen.setIsTpmFirmwareUpdateChecked", value);
+  CallExternalAPI("setIsTpmFirmwareUpdateChecked", value);
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateEditable(bool value) {
-  CallJS("login.ResetScreen.setIsTpmFirmwareUpdateEditable", value);
+  CallExternalAPI("setIsTpmFirmwareUpdateEditable", value);
 }
 
 void ResetScreenHandler::SetTpmFirmwareUpdateMode(
     tpm_firmware_update::Mode value) {
   mode_ = value;
-  CallJS("login.ResetScreen.setTpmFirmwareUpdateMode", static_cast<int>(value));
+  CallExternalAPI("setTpmFirmwareUpdateMode", static_cast<int>(value));
 }
 
 void ResetScreenHandler::SetShouldShowConfirmationDialog(bool value) {
   is_showing_confirmation_dialog_ = value;
-  CallJS("login.ResetScreen.setShouldShowConfirmationDialog", value);
+  CallExternalAPI("setShouldShowConfirmationDialog", value);
 }
 
 void ResetScreenHandler::SetConfirmationDialogClosed() {
@@ -155,7 +119,7 @@ void ResetScreenHandler::SetConfirmationDialogClosed() {
 
 void ResetScreenHandler::SetScreenState(State value) {
   state_ = value;
-  CallJS("login.ResetScreen.setScreenState", static_cast<int>(value));
+  CallExternalAPI("setScreenState", static_cast<int>(value));
 }
 
 ResetView::State ResetScreenHandler::GetScreenState() {

@@ -32,7 +32,7 @@ class ScopedGuestButtonBlocker;
 // will end up in the device restart.
 class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
  public:
-  ResetScreen(ResetView* view,
+  ResetScreen(base::WeakPtr<ResetView> view,
               ErrorScreen* error_screen,
               const base::RepeatingClosure& exit_callback);
 
@@ -40,9 +40,6 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   ResetScreen& operator=(const ResetScreen&) = delete;
 
   ~ResetScreen() override;
-
-  // Called when view is destroyed so there's no dead reference to it.
-  void OnViewDestroyed(ResetView* view);
 
   // Registers Local State preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -69,7 +66,7 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   // BaseScreen implementation:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) final;
 
   // UpdateEngineClient::Observer implementation:
@@ -88,7 +85,7 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
 
   void ShowHelpArticle(HelpAppLauncher::HelpTopic topic);
 
-  ResetView* view_;
+  base::WeakPtr<ResetView> view_;
   ErrorScreen* error_screen_;
   base::RepeatingClosure exit_callback_;
 

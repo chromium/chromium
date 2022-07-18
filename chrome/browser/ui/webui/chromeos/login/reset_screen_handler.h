@@ -5,27 +5,21 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RESET_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RESET_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class ResetScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between ResetScreen and its actual
 // representation, either views based or WebUI.
-class ResetView {
+class ResetView : public base::SupportsWeakPtr<ResetView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"reset"};
+  inline constexpr static StaticOobeScreenId kScreenId{"reset", "ResetScreen"};
 
-  virtual ~ResetView() {}
+  virtual ~ResetView() = default;
 
-  virtual void Bind(ash::ResetScreen* screen) = 0;
-  virtual void Unbind() = 0;
   virtual void Show() = 0;
-  virtual void Hide() = 0;
 
   enum class State {
     kRestartRequired = 0,
@@ -64,17 +58,11 @@ class ResetScreenHandler : public ResetView,
 
   ~ResetScreenHandler() override;
 
-  // ResetView implementation:
-  void Bind(ash::ResetScreen* screen) override;
-  void Unbind() override;
   void Show() override;
-  void Hide() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void DeclareJSCallbacks() override;
-  void InitializeDeprecated() override;
   void SetIsRollbackAvailable(bool value) override;
   void SetIsRollbackRequested(bool value) override;
   void SetIsTpmFirmwareUpdateAvailable(bool value) override;
@@ -92,11 +80,6 @@ class ResetScreenHandler : public ResetView,
 
  private:
   void HandleSetTpmFirmwareUpdateChecked(bool value);
-
-  ash::ResetScreen* screen_ = nullptr;
-
-  // If true, InitializeDeprecated() will call Show().
-  bool show_on_init_ = false;
 
   ResetView::State state_ = ResetView::State::kRestartRequired;
   tpm_firmware_update::Mode mode_ = tpm_firmware_update::Mode::kNone;

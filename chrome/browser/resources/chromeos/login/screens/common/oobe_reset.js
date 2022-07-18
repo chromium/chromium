@@ -444,7 +444,7 @@ class OobeReset extends ResetScreenElementBase {
    */
   onTPMFirmwareUpdateChanged_() {
     const checked = this.$.tpmFirmwareUpdateCheckbox.checked;
-    chrome.send('ResetScreen.setTpmFirmwareUpdateChecked', [checked]);
+    this.userActed(['tpmfirmware-update-checked', checked]);
   }
 
   /**

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -51,6 +52,8 @@ constexpr const char kUserActionResetShowConfirmationPressed[] =
     "show-confirmation";
 constexpr const char kUserActionResetResetConfirmationDismissed[] =
     "reset-confirm-dismissed";
+constexpr const char kUserActionTpmFirmwareUpdateChecked[] =
+    "tpmfirmware-update-checked";
 constexpr const char kUserActionTPMFirmwareUpdateLearnMore[] =
     "tpm-firmware-update-learn-more-link";
 
@@ -154,11 +157,11 @@ void ResetScreen::CheckIfPowerwashAllowed(
   std::move(callback).Run(is_reset_allowed, absl::nullopt);
 }
 
-ResetScreen::ResetScreen(ResetView* view,
+ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,
                          ErrorScreen* error_screen,
                          const base::RepeatingClosure& exit_callback)
     : BaseScreen(ResetView::kScreenId, OobeScreenPriority::SCREEN_RESET),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
       tpm_firmware_update_checker_(
@@ -168,7 +171,6 @@ ResetScreen::ResetScreen(ResetView* view,
                     &tpm_firmware_update::GetAvailableUpdateModes)) {
   DCHECK(view_);
   if (view_) {
-    view_->Bind(this);
     view_->SetScreenState(ResetView::State::kRestartRequired);
     view_->SetIsRollbackAvailable(false);
     view_->SetIsRollbackRequested(false);
@@ -181,8 +183,6 @@ ResetScreen::ResetScreen(ResetView* view,
 }
 
 ResetScreen::~ResetScreen() {
-  if (view_)
-    view_->Unbind();
   UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
@@ -274,36 +274,52 @@ void ResetScreen::ShowImpl() {
 }
 
 void ResetScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-
   scoped_guest_button_blocker_.reset();
 }
 
-void ResetScreen::OnViewDestroyed(ResetView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
-void ResetScreen::OnUserActionDeprecated(const std::string& action_id) {
-  if (action_id == kUserActionCancelReset)
+void ResetScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+  if (action_id == kUserActionCancelReset) {
     OnCancel();
-  else if (action_id == kUserActionResetRestartPressed)
+    return;
+  }
+  if (action_id == kUserActionResetRestartPressed) {
     OnRestart();
-  else if (action_id == kUserActionResetPowerwashPressed)
+    return;
+  }
+  if (action_id == kUserActionResetPowerwashPressed) {
     OnPowerwash();
-  else if (action_id == kUserActionResetLearnMorePressed)
+    return;
+  }
+  if (action_id == kUserActionResetLearnMorePressed) {
     ShowHelpArticle(HelpAppLauncher::HELP_POWERWASH);
-  else if (action_id == kUserActionResetRollbackToggled)
+    return;
+  }
+  if (action_id == kUserActionResetRollbackToggled) {
     OnToggleRollback();
-  else if (action_id == kUserActionResetShowConfirmationPressed)
+    return;
+  }
+  if (action_id == kUserActionResetShowConfirmationPressed) {
     OnShowConfirm();
-  else if (action_id == kUserActionResetResetConfirmationDismissed)
+    return;
+  }
+  if (action_id == kUserActionResetResetConfirmationDismissed) {
     OnConfirmationDismissed();
-  else if (action_id == kUserActionTPMFirmwareUpdateLearnMore)
+    return;
+  }
+  if (action_id == kUserActionTPMFirmwareUpdateLearnMore) {
     ShowHelpArticle(HelpAppLauncher::HELP_TPM_FIRMWARE_UPDATE);
-  else
-    BaseScreen::OnUserActionDeprecated(action_id);
+    return;
+  }
+  if (action_id == kUserActionTpmFirmwareUpdateChecked) {
+    CHECK_EQ(args.size(), 2);
+    bool checked = args[1].GetBool();
+    if (view_) {
+      view_->SetIsTpmFirmwareUpdateChecked(checked);
+    }
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 bool ResetScreen::HandleAccelerator(LoginAcceleratorAction action) {
