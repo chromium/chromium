@@ -1,0 +1,2 @@
+div.accessibilityAttributeNames.has(AXPosition)='yes'
+div.accessibilityAttributeValue(AXPosition)='NSPoint: {10, 657}'
