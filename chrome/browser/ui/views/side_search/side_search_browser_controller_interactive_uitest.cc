@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/side_search/side_search_browsertest.h"
 #include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
@@ -43,12 +41,7 @@ class SideSearchBrowserControllerTest
       scoped_feature_list_.InitWithFeatures({features::kSideSearch},
                                             {features::kSideSearchDSESupport});
     }
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
-  }
-  void TearDown() override {
-    InProcessBrowserTest::TearDown();
-    scoped_feature_list_.Reset();
   }
 
   base::HistogramTester histogram_tester_;
@@ -462,13 +455,25 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
       "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 1);
 }
 
-// Only test the side search icon view chip in the DSE configuration.
-using SideSearchIconViewTest = SideSearchBrowserControllerTest;
-INSTANTIATE_TEST_SUITE_P(All, SideSearchIconViewTest, testing::Values(true));
+// Only tested for the Side Search DSE configuration.
+class SideSearchIconViewTest : public SideSearchBrowserTest {
+ public:
+  // SideSearchBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSideSearch, features::kSideSearchDSESupport}, {});
+    SideSearchBrowserTest::SetUp();
+  }
+
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Tests that metrics correctly capture whether the label was visible when the
 // entrypoint was toggled.
-IN_PROC_BROWSER_TEST_P(SideSearchIconViewTest,
+IN_PROC_BROWSER_TEST_F(SideSearchIconViewTest,
                        LabelVisibilityMetricsCorrectlyEmittedWhenToggled) {
   auto* button_view = GetSidePanelButtonFor(browser());
   ASSERT_NE(nullptr, button_view);
@@ -513,189 +518,17 @@ IN_PROC_BROWSER_TEST_P(SideSearchIconViewTest,
       SideSearchPageActionLabelVisibility::kNotVisible, 1);
 }
 
-// Fixture for testing side panel v2 only
-// TODO(yuhengh): Break this away to its own test file.
-class SideSearchV2Test : public SideSearchBrowserControllerTest {
+// Fixture for testing side panel clobbering behavior with global panels. Only
+// tested for the Side Search DSE configuration.
+class SideSearchDSEClobberingTest : public SideSearchBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kUnifiedSidePanel}, {});
-    SideSearchBrowserControllerTest::SetUp();
-  }
-  void TearDown() override {
-    SideSearchBrowserControllerTest::TearDown();
-    scoped_feature_list_.Reset();
-  }
-  SidePanel* GetSidePanelFor(Browser* browser) override {
-    return BrowserViewFor(browser)->right_aligned_side_panel();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Only instantiate tests for DSE configuration.
-INSTANTIATE_TEST_SUITE_P(All, SideSearchV2Test, ::testing::Values(true));
-
-IN_PROC_BROWSER_TEST_P(SideSearchV2Test, SwitchSidePanelInSingleTab) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting();
-
-  // Tab 0 with side search available and open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  NotifyButtonClick(browser());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to reading list side panel.
-  coordinator->Show(SidePanelEntry::Id::kReadingList);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch back to side search side panel.
-  coordinator->Show(SidePanelEntry::Id::kSideSearch);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-}
-
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1341272): Test is flaky on Mac.
-#define MAYBE_SwitchTabsWithGlobalSidePanel \
-  DISABLED_SwitchTabsWithGlobalSidePanel
-#else
-#define MAYBE_SwitchTabsWithGlobalSidePanel SwitchTabsWithGlobalSidePanel
-#endif
-IN_PROC_BROWSER_TEST_P(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting();
-
-  // Tab 0 without side search available and open with reading list.
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  coordinator->Show(SidePanelEntry::Id::kReadingList);
-  EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Tab 1 with side search available and open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  NotifyButtonClick(browser());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Tab 2 with side search available and open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  NotifyButtonClick(browser());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Tab 3 with side search available but not open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to tab 0, side panel is open with reading list.
-  ActivateTabAt(browser(), 0);
-  EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to tab 1, side panel is open with side search.
-  ActivateTabAt(browser(), 1);
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to tab 2, side panel is open with side search.
-  ActivateTabAt(browser(), 2);
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to tab 3, side panel is open with reading list.
-  ActivateTabAt(browser(), 3);
-  EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-}
-
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1340387): Test is flaky on Mac.
-#define MAYBE_SwitchTabsWithoutGlobalSidePanel \
-  DISABLED_SwitchTabsWithoutGlobalSidePanel
-#else
-#define MAYBE_SwitchTabsWithoutGlobalSidePanel SwitchTabsWithoutGlobalSidePanel
-#endif
-IN_PROC_BROWSER_TEST_P(SideSearchV2Test,
-                       MAYBE_SwitchTabsWithoutGlobalSidePanel) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* coordinator = browser_view->side_panel_coordinator();
-
-  // Tab 0 without side search available.
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_EQ(nullptr, coordinator->GetCurrentSidePanelEntryForTesting());
-
-  // Tab 1 with side search available and open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  NotifyButtonClick(browser());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Tab 2 with side search available and open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  NotifyButtonClick(browser());
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Tab 3 with side search available but not open.
-  AppendTab(browser(), GetMatchingSearchUrl());
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_EQ(nullptr, coordinator->GetCurrentSidePanelEntryForTesting());
-
-  // Switch to tab 0, side panel is closed.
-  ActivateTabAt(browser(), 0);
-  EXPECT_EQ(nullptr, coordinator->GetCurrentSidePanelEntryForTesting());
-
-  // Switch to tab 1, side panel is open with side search.
-  ActivateTabAt(browser(), 1);
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to tab 2, side panel is open with side search.
-  ActivateTabAt(browser(), 2);
-  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->id());
-
-  // Switch to tab 3, side panel is closed.
-  ActivateTabAt(browser(), 3);
-  EXPECT_EQ(nullptr, coordinator->GetCurrentSidePanelEntryForTesting());
-}
-
-// Fixture for testing side panel clobbering behavior with global panels.
-class SideSearchDSEClobberingTest : public SideSearchBrowserControllerTest {
- public:
-  // SideSearchBrowserControllerTest:
+  // SideSearchBrowserTest:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelImprovedClobbering}, {});
-    SideSearchBrowserControllerTest::SetUp();
-  }
-  void TearDown() override {
-    SideSearchBrowserControllerTest::TearDown();
-    scoped_feature_list_.Reset();
+        {features::kSideSearch, features::kSideSearchDSESupport,
+         features::kSidePanelImprovedClobbering},
+        {});
+    SideSearchBrowserTest::SetUp();
   }
 
   // Immediately open and make visible the global side panel.
@@ -766,12 +599,7 @@ class SideSearchDSEClobberingTest : public SideSearchBrowserControllerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Only instantiate tests for the DSE configuration.
-INSTANTIATE_TEST_SUITE_P(All,
-                         SideSearchDSEClobberingTest,
-                         ::testing::Values(true));
-
-IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
                        GlobalBrowserSidePanelIsToggleable) {
   auto* global_panel = GetGlobalSidePanelFor(browser());
   EXPECT_FALSE(global_panel->GetVisible());
@@ -787,7 +615,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
 #define MAYBE_ContextualPanelsDoNotClobberGlobalPanels \
   ContextualPanelsDoNotClobberGlobalPanels
 #endif
-IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
                        MAYBE_ContextualPanelsDoNotClobberGlobalPanels) {
   SetupBrowserForClobberingTests(browser());
   auto* global_panel = GetGlobalSidePanelFor(browser());
@@ -810,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
   EXPECT_TRUE(side_search_panel->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
                        OpeningGlobalPanelsClosesAllContextualPanels) {
   auto* global_panel = GetGlobalSidePanelFor(browser());
   auto* side_search_panel = GetSidePanelFor(browser());
@@ -852,7 +680,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
 #define MAYBE_ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows \
   ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows
 #endif
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SideSearchDSEClobberingTest,
     MAYBE_ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows) {
   // Open two browsers with three tabs each. Both have open global side panel
@@ -905,7 +733,7 @@ IN_PROC_BROWSER_TEST_P(
 #define MAYBE_ClosingTheContextualPanelClosesAllBrowserPanels \
   ClosingTheContextualPanelClosesAllBrowserPanels
 #endif
-IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
                        MAYBE_ClosingTheContextualPanelClosesAllBrowserPanels) {
   SetupBrowserForClobberingTests(browser());
   auto* global_panel = GetGlobalSidePanelFor(browser());
@@ -934,7 +762,7 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
 #define MAYBE_ClosingTheGlobalPanelClosesAllBrowserPanels \
   ClosingTheGlobalPanelClosesAllBrowserPanels
 #endif
-IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
                        MAYBE_ClosingTheGlobalPanelClosesAllBrowserPanels) {
   SetupBrowserForClobberingTests(browser());
   auto* global_panel = GetGlobalSidePanelFor(browser());

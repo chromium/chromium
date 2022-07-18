@@ -9379,6 +9379,7 @@ if (!is_android) {
         "../browser/ui/views/side_search/side_search_browser_controller_interactive_uitest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.h",
+        "../browser/ui/views/side_search/unified_side_search_controller_interactive_uitest.cc",
         "../browser/ui/views/ssl_client_certificate_selector_browsertest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.h",

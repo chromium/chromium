@@ -45,6 +45,7 @@ bool IsSearchURLMatch(const GURL& url) {
 }  // namespace
 
 void SideSearchBrowserTest::SetUpOnMainThread() {
+  ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   host_resolver()->AddRule("*", "127.0.0.1");
   embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
       &SideSearchBrowserTest::HandleRequest, base::Unretained(this)));
