@@ -120,8 +120,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     private boolean mRequiresTriStateSetting;
     // Whether four-state ContentSetting is required.
     private boolean mRequiresFourStateSetting;
-    // Locally-saved reference to the "notifications_quiet_ui" preference to allow hiding/showing
-    // it.
+    // The "notifications_quiet_ui" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mNotificationsQuietUiPref;
 
     @Nullable
@@ -893,7 +892,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         FOUR_STATE_COOKIE_TOGGLE_KEY);
         // TODO(crbug.com/1104836): Remove the old third-party cookie blocking UI
         Preference notificationsVibrate = screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
-        Preference notificationsQuietUi = screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
+        mNotificationsQuietUiPref = screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
         Preference explainProtectedMediaKey = screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY);
         PreferenceGroup allowedGroup = (PreferenceGroup) screen.findPreference(ALLOWED_GROUP);
         PreferenceGroup blockedGroup = (PreferenceGroup) screen.findPreference(BLOCKED_GROUP);
@@ -922,7 +921,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             maybeShowOsWarning(screen);
 
             screen.removePreference(notificationsVibrate);
-            screen.removePreference(notificationsQuietUi);
+            screen.removePreference(mNotificationsQuietUiPref);
             screen.removePreference(explainProtectedMediaKey);
             screen.removePreference(allowedGroup);
             screen.removePreference(blockedGroup);
@@ -941,15 +940,15 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             }
 
             if (getSiteSettingsDelegate().isQuietNotificationPromptsFeatureEnabled()) {
-                notificationsQuietUi.setOnPreferenceChangeListener(this);
+                mNotificationsQuietUiPref.setOnPreferenceChangeListener(this);
             } else {
-                screen.removePreference(notificationsQuietUi);
+                screen.removePreference(mNotificationsQuietUiPref);
             }
 
             updateNotificationsSecondaryControls();
         } else {
             screen.removePreference(notificationsVibrate);
-            screen.removePreference(notificationsQuietUi);
+            screen.removePreference(mNotificationsQuietUiPref);
         }
 
         // Only show the link that explains protected content settings when needed.
@@ -1069,24 +1068,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         if (!getSiteSettingsDelegate().isQuietNotificationPromptsFeatureEnabled()) return;
 
-        // The notifications quiet ui checkbox.
-        ChromeBaseCheckBoxPreference quiet_ui_pref =
-                (ChromeBaseCheckBoxPreference) getPreferenceScreen().findPreference(
-                        NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
-
         if (categoryEnabled) {
-            if (quiet_ui_pref == null) {
-                getPreferenceScreen().addPreference(mNotificationsQuietUiPref);
-                quiet_ui_pref = (ChromeBaseCheckBoxPreference) getPreferenceScreen().findPreference(
-                        NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
-            }
+            getPreferenceScreen().addPreference(mNotificationsQuietUiPref);
             PrefService prefService = UserPrefs.get(browserContextHandle);
-            quiet_ui_pref.setChecked(
+            mNotificationsQuietUiPref.setChecked(
                     prefService.getBoolean(ENABLE_QUIET_NOTIFICATION_PERMISSION_UI));
-        } else if (quiet_ui_pref != null) {
-            // Save a reference to allow re-adding it to the screen.
-            mNotificationsQuietUiPref = quiet_ui_pref;
-            getPreferenceScreen().removePreference(quiet_ui_pref);
+        } else {
+            getPreferenceScreen().removePreference(mNotificationsQuietUiPref);
         }
     }
 
