@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
-#include "chromeos/dbus/vm_launch/launch.pb.h"
+#include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 
 class Profile;
 

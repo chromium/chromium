@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_LAUNCHER_H_
 
 #include "chrome/browser/ash/borealis/infra/expected.h"
-#include "chromeos/dbus/vm_launch/launch.pb.h"
+#include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 
 namespace guest_os::launcher {
 

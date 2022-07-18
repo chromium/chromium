@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/vm_sk_forwarding/sk_forwarding.pb.h"
+#include "chromeos/ash/components/dbus/vm_sk_forwarding/sk_forwarding.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

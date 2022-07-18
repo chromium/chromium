@@ -4,6 +4,7 @@
 
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
 
@@ -52,4 +53,49 @@ source_set("unit_tests") {
     "userdataauth/install_attributes_client_unittest.cc",
     "userdataauth/userdataauth_client_unittest.cc",
   ]
+}
+
+proto_library("metrics_event_proto") {
+  sources =
+      [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/metrics_event"
+}
+
+proto_library("plugin_vm_service_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/plugin_vm_service/plugin_vm_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/plugin_vm_service"
+}
+
+proto_library("vm_applications_apps_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_applications/apps.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_applications"
+}
+
+proto_library("vm_disk_management_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_disk_management/disk_management.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_disk_management"
+}
+
+proto_library("vm_launch_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_launch/launch.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_launch"
+}
+
+proto_library("vm_sk_forwarding_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/vm_sk_forwarding/sk_forwarding.proto",
+  ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_sk_forwarding"
+}
+
+proto_library("vm_permission_service_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_permission_service/vm_permission_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/vm_permission_service"
 }

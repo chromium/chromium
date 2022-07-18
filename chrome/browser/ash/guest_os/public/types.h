@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_TYPES_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_TYPES_H_
 
-#include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 namespace guest_os {
 
 using VmType = vm_tools::apps::VmType;

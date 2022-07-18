@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/vm_launch/launch.pb.h"
+#include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/vm_launch/dbus-constants.h"
 

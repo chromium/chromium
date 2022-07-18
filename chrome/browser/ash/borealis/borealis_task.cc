@@ -31,8 +31,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
-#include "chromeos/dbus/vm_launch/launch.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {

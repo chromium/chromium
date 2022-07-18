@@ -10,7 +10,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 
 class TestingProfile;
 
