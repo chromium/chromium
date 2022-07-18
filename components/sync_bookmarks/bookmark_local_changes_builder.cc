@@ -46,24 +46,24 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
     DCHECK(entity);
     DCHECK(entity->IsUnsynced());
-    const sync_pb::EntityMetadata* metadata = entity->metadata();
+    const sync_pb::EntityMetadata& metadata = entity->metadata();
 
     auto data = std::make_unique<syncer::EntityData>();
-    data->id = metadata->server_id();
-    data->creation_time = syncer::ProtoTimeToTime(metadata->creation_time());
+    data->id = metadata.server_id();
+    data->creation_time = syncer::ProtoTimeToTime(metadata.creation_time());
     data->modification_time =
-        syncer::ProtoTimeToTime(metadata->modification_time());
+        syncer::ProtoTimeToTime(metadata.modification_time());
 
-    DCHECK(!metadata->client_tag_hash().empty());
+    DCHECK(!metadata.client_tag_hash().empty());
     data->client_tag_hash =
-        syncer::ClientTagHash::FromHashed(metadata->client_tag_hash());
-    DCHECK(metadata->is_deleted() ||
+        syncer::ClientTagHash::FromHashed(metadata.client_tag_hash());
+    DCHECK(metadata.is_deleted() ||
            data->client_tag_hash ==
                syncer::ClientTagHash::FromUnhashed(
                    syncer::BOOKMARKS,
                    entity->bookmark_node()->guid().AsLowercaseString()));
 
-    if (!metadata->is_deleted()) {
+    if (!metadata.is_deleted()) {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();
       DCHECK(!node->is_permanent_node());
 
@@ -81,17 +81,17 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       DCHECK(node);
       DCHECK_EQ(syncer::ClientTagHash::FromUnhashed(
                     syncer::BOOKMARKS, node->guid().AsLowercaseString()),
-                syncer::ClientTagHash::FromHashed(metadata->client_tag_hash()));
+                syncer::ClientTagHash::FromHashed(metadata.client_tag_hash()));
 
       const bookmarks::BookmarkNode* parent = node->parent();
       const SyncedBookmarkTrackerEntity* parent_entity =
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
       DCHECK(parent_entity);
-      data->legacy_parent_id = parent_entity->metadata()->server_id();
+      data->legacy_parent_id = parent_entity->metadata().server_id();
       // Assign specifics only for the non-deletion case. In case of deletion,
       // EntityData should contain empty specifics to indicate deletion.
       data->specifics = CreateSpecificsFromBookmarkNode(
-          node, bookmark_model_, metadata->unique_position(),
+          node, bookmark_model_, metadata.unique_position(),
           /*force_favicon_load=*/true);
       // TODO(crbug.com/1058376): check after finishing if we need to use full
       // title instead of legacy canonicalized one.
@@ -100,11 +100,11 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
     auto request = std::make_unique<syncer::CommitRequestData>();
     request->entity = std::move(data);
-    request->sequence_number = metadata->sequence_number();
-    request->base_version = metadata->server_version();
+    request->sequence_number = metadata.sequence_number();
+    request->base_version = metadata.server_version();
     // Specifics hash has been computed in the tracker when this entity has been
     // added/updated.
-    request->specifics_hash = metadata->specifics_hash();
+    request->specifics_hash = metadata.specifics_hash();
 
     bookmark_tracker_->MarkCommitMayHaveStarted(entity);
 

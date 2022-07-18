@@ -109,7 +109,7 @@ syncer::UniquePosition ComputeUniquePositionForTrackedBookmarkNode(
   // TODO(crbug.com/1113139): precompute UniquePosition to prevent its
   // calculation on each remote update.
   return syncer::UniquePosition::FromProto(
-      child_entity->metadata()->unique_position());
+      child_entity->metadata().unique_position());
 }
 
 size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
@@ -289,9 +289,9 @@ void BookmarkRemoteUpdatesHandler::Process(
     }
 
     // Ignore updates that have already been seen according to the version.
-    if (tracked_entity && tracked_entity->metadata()->server_version() >=
+    if (tracked_entity && tracked_entity->metadata().server_version() >=
                               update->response_version) {
-      if (update_entity.id == tracked_entity->metadata()->server_id()) {
+      if (update_entity.id == tracked_entity->metadata().server_id()) {
         // Seen this update before. This update may be a reflection and may have
         // missing the GUID in specifics. Next reupload will populate GUID in
         // specifics and this codepath will not repeat indefinitely. This logic
@@ -373,7 +373,7 @@ void BookmarkRemoteUpdatesHandler::Process(
         bookmark_tracker_->GetAllEntities();
     for (const SyncedBookmarkTrackerEntity* entity : all_entities) {
       // No need to recommit tombstones and permanent nodes.
-      if (entity->metadata()->is_deleted()) {
+      if (entity->metadata().is_deleted()) {
         continue;
       }
       DCHECK(entity->bookmark_node());
@@ -381,7 +381,7 @@ void BookmarkRemoteUpdatesHandler::Process(
         continue;
       }
       if (entities_with_up_to_date_encryption.count(
-              entity->metadata()->server_id()) != 0) {
+              entity->metadata().server_id()) != 0) {
         continue;
       }
       bookmark_tracker_->IncrementSequenceNumber(entity);
@@ -690,7 +690,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
          !tracked_entity->bookmark_node()->is_permanent_node());
   DCHECK(!IsPermanentNodeUpdate(update_entity));
 
-  if (tracked_entity->metadata()->is_deleted() && update_entity.is_deleted()) {
+  if (tracked_entity->metadata().is_deleted() && update_entity.is_deleted()) {
     // Both have been deleted, delete the corresponding entity from the tracker.
     bookmark_tracker_->Remove(tracked_entity);
     DLOG(WARNING) << "Conflict: CHANGES_MATCH";
@@ -708,7 +708,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
 
   DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark()));
 
-  if (tracked_entity->metadata()->is_deleted()) {
+  if (tracked_entity->metadata().is_deleted()) {
     // Only local node has been deleted. It should be restored from the server
     // data as a remote creation.
     bookmark_tracker_->Remove(tracked_entity);
@@ -803,7 +803,7 @@ void BookmarkRemoteUpdatesHandler::ReuploadEntityIfNeeded(
     const syncer::EntityData& entity_data,
     const SyncedBookmarkTrackerEntity* tracked_entity) {
   DCHECK(tracked_entity);
-  DCHECK_EQ(tracked_entity->metadata()->server_id(), entity_data.id);
+  DCHECK_EQ(tracked_entity->metadata().server_id(), entity_data.id);
   DCHECK(!tracked_entity->bookmark_node() ||
          !tracked_entity->bookmark_node()->is_permanent_node());
 

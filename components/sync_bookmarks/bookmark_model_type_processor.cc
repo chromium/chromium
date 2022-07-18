@@ -509,17 +509,17 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   if (!entity) {
     return;
   }
-  const sync_pb::EntityMetadata* metadata = entity->metadata();
+  const sync_pb::EntityMetadata& metadata = entity->metadata();
   // Copy data to an EntityData object to reuse its conversion
   // ToDictionaryValue() methods.
   syncer::EntityData data;
-  data.id = metadata->server_id();
+  data.id = metadata.server_id();
   data.creation_time = node->date_added();
   data.modification_time =
-      syncer::ProtoTimeToTime(metadata->modification_time());
+      syncer::ProtoTimeToTime(metadata.modification_time());
   data.name = base::UTF16ToUTF8(node->GetTitle());
   data.specifics = CreateSpecificsFromBookmarkNode(
-      node, bookmark_model_, metadata->unique_position(),
+      node, bookmark_model_, metadata.unique_position(),
       /*force_favicon_load=*/false);
 
   if (node->is_permanent_node()) {
@@ -534,13 +534,13 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     const SyncedBookmarkTrackerEntity* parent_entity =
         bookmark_tracker_->GetEntityForBookmarkNode(parent);
     DCHECK(parent_entity);
-    data.legacy_parent_id = parent_entity->metadata()->server_id();
+    data.legacy_parent_id = parent_entity->metadata().server_id();
   }
 
   std::unique_ptr<base::DictionaryValue> data_dictionary =
       data.ToDictionaryValue();
   // Set ID value as in legacy directory-based implementation, "s" means server.
-  data_dictionary->SetString("ID", "s" + metadata->server_id());
+  data_dictionary->SetString("ID", "s" + metadata.server_id());
   if (node->is_permanent_node()) {
     // Hardcode the parent of permanent nodes.
     data_dictionary->SetString("PARENT_ID", "BOOKMARKS_ROOT");
@@ -551,9 +551,9 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   }
   data_dictionary->SetInteger("LOCAL_EXTERNAL_ID", node->id());
   data_dictionary->SetInteger("positionIndex", index);
-  data_dictionary->SetKey("metadata",
-                          base::Value::FromUniquePtrValue(
-                              syncer::EntityMetadataToValue(*metadata)));
+  data_dictionary->SetKey(
+      "metadata",
+      base::Value::FromUniquePtrValue(syncer::EntityMetadataToValue(metadata)));
   data_dictionary->SetString("modelType", "Bookmarks");
   data_dictionary->SetBoolean("IS_DIR", node->is_folder());
   all_nodes->Append(

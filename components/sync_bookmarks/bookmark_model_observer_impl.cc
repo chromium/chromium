@@ -128,7 +128,7 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   DCHECK(entity);
 
-  const std::string& sync_id = entity->metadata()->server_id();
+  const std::string& sync_id = entity->metadata().server_id();
   const base::Time modification_time = base::Time::Now();
   const syncer::UniquePosition unique_position =
       ComputePosition(*new_parent, new_index, sync_id);
@@ -137,7 +137,7 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
       CreateSpecificsFromBookmarkNode(node, model, unique_position.ToProto(),
                                       /*force_favicon_load=*/true);
 
-  bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
+  bookmark_tracker_->Update(entity, entity->metadata().server_version(),
                             modification_time, specifics);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
@@ -176,7 +176,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     // the bookmark model contains to bookmarks with the same GUID.
     DCHECK(!entity->bookmark_node()) << "Added bookmark with duplicate GUID";
     bookmark_tracker_->UndeleteTombstoneForBookmarkNode(entity, node);
-    bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
+    bookmark_tracker_->Update(entity, entity->metadata().server_version(),
                               creation_time, specifics);
   } else {
     entity = bookmark_tracker_->Add(node, node->guid().AsLowercaseString(),
@@ -267,7 +267,7 @@ void BookmarkModelObserverImpl::BookmarkNodeChanged(
   }
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model, entity->metadata()->unique_position(),
+      node, model, entity->metadata().unique_position(),
       /*force_favicon_load=*/true);
   ProcessUpdate(entity, specifics);
 }
@@ -307,7 +307,7 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
   }
 
   const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model, entity->metadata()->unique_position(),
+      node, model, entity->metadata().unique_position(),
       /*force_favicon_load=*/false);
 
   // TODO(crbug.com/1094825): implement |base_specifics_hash| similar to
@@ -472,7 +472,7 @@ syncer::UniquePosition BookmarkModelObserverImpl::ComputePosition(
     // No predecessor, insert before the successor.
     return syncer::UniquePosition::Before(
         syncer::UniquePosition::FromProto(
-            successor_entity->metadata()->unique_position()),
+            successor_entity->metadata().unique_position()),
         suffix);
   }
 
@@ -480,16 +480,16 @@ syncer::UniquePosition BookmarkModelObserverImpl::ComputePosition(
     // No successor, insert after the predecessor
     return syncer::UniquePosition::After(
         syncer::UniquePosition::FromProto(
-            predecessor_entity->metadata()->unique_position()),
+            predecessor_entity->metadata().unique_position()),
         suffix);
   }
 
   // Both predecessor and successor, insert in the middle.
   return syncer::UniquePosition::Between(
       syncer::UniquePosition::FromProto(
-          predecessor_entity->metadata()->unique_position()),
+          predecessor_entity->metadata().unique_position()),
       syncer::UniquePosition::FromProto(
-          successor_entity->metadata()->unique_position()),
+          successor_entity->metadata().unique_position()),
       suffix);
 }
 
@@ -513,7 +513,7 @@ void BookmarkModelObserverImpl::ProcessUpdate(
     return;
   }
 
-  bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
+  bookmark_tracker_->Update(entity, entity->metadata().server_version(),
                             /*modification_time=*/base::Time::Now(), specifics);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
@@ -533,7 +533,7 @@ void BookmarkModelObserverImpl::ProcessDelete(
   DCHECK(entity);
   // If the entity hasn't been committed and doesn't have an inflight commit
   // request, simply remove it from the tracker.
-  if (entity->metadata()->server_version() == syncer::kUncommittedVersion &&
+  if (entity->metadata().server_version() == syncer::kUncommittedVersion &&
       !entity->commit_may_have_started()) {
     bookmark_tracker_->Remove(entity);
     return;
@@ -551,7 +551,7 @@ syncer::UniquePosition BookmarkModelObserverImpl::GetUniquePositionForNode(
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   DCHECK(entity);
   return syncer::UniquePosition::FromProto(
-      entity->metadata()->unique_position());
+      entity->metadata().unique_position());
 }
 
 syncer::UniquePosition BookmarkModelObserverImpl::UpdateUniquePositionForNode(
@@ -568,7 +568,7 @@ syncer::UniquePosition BookmarkModelObserverImpl::UpdateUniquePositionForNode(
   DCHECK(entity);
   const std::string suffix = syncer::GenerateSyncableBookmarkHash(
       bookmark_tracker_->model_type_state().cache_guid(),
-      entity->metadata()->server_id());
+      entity->metadata().server_id());
   const base::Time modification_time = base::Time::Now();
 
   syncer::UniquePosition new_unique_position;
@@ -583,7 +583,7 @@ syncer::UniquePosition BookmarkModelObserverImpl::UpdateUniquePositionForNode(
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
       node, bookmark_model, new_unique_position.ToProto(),
       /*force_favicon_load=*/true);
-  bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
+  bookmark_tracker_->Update(entity, entity->metadata().server_version(),
                             modification_time, specifics);
 
   // Mark the entity that it needs to be committed.

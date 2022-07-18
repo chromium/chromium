@@ -1166,7 +1166,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // The sync id in the tracker should have been updated.
   EXPECT_THAT(tracker()->GetEntityForSyncId(kOriginatorClientItemId), IsNull());
   EXPECT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
-  EXPECT_THAT(entity->metadata()->server_id(), Eq(kSyncId));
+  EXPECT_THAT(entity->metadata().server_id(), Eq(kSyncId));
   EXPECT_THAT(entity->bookmark_node(), Eq(node));
 }
 
@@ -1236,7 +1236,7 @@ TEST_F(
   EXPECT_THAT(tracker()->GetEntityForSyncId(kBookmarkGuid.AsLowercaseString()),
               IsNull());
   EXPECT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
-  EXPECT_THAT(entity->metadata()->server_id(), Eq(kSyncId));
+  EXPECT_THAT(entity->metadata().server_id(), Eq(kSyncId));
   EXPECT_THAT(entity->bookmark_node(), Eq(node));
 }
 
@@ -1568,7 +1568,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   entity = tracker()->GetEntityForGUID(kGuid);
   ASSERT_THAT(entity, NotNull());
   EXPECT_THAT(entity->IsUnsynced(), Eq(false));
-  EXPECT_THAT(entity->metadata()->is_deleted(), Eq(false));
+  EXPECT_THAT(entity->metadata().is_deleted(), Eq(false));
 
   // The bookmark should have been resurrected.
   EXPECT_THAT(bookmark_bar_node->children().size(), Eq(1u));

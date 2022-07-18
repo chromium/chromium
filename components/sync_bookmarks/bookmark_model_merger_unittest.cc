@@ -189,7 +189,7 @@ syncer::UniquePosition PositionOf(const bookmarks::BookmarkNode* node,
   const SyncedBookmarkTrackerEntity* entity =
       tracker.GetEntityForBookmarkNode(node);
   return syncer::UniquePosition::FromProto(
-      entity->metadata()->unique_position());
+      entity->metadata().unique_position());
 }
 
 bool PositionsInTrackerMatchModel(const bookmarks::BookmarkNode* node,

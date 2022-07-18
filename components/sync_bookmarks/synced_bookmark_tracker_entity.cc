@@ -34,58 +34,57 @@ void HashSpecifics(const sync_pb::EntitySpecifics& specifics,
 
 SyncedBookmarkTrackerEntity::SyncedBookmarkTrackerEntity(
     const bookmarks::BookmarkNode* bookmark_node,
-    std::unique_ptr<sync_pb::EntityMetadata> metadata)
+    sync_pb::EntityMetadata metadata)
     : bookmark_node_(bookmark_node), metadata_(std::move(metadata)) {
-  DCHECK(metadata_);
   if (bookmark_node) {
-    DCHECK(!metadata_->is_deleted());
+    DCHECK(!metadata_.is_deleted());
   } else {
-    DCHECK(metadata_->is_deleted());
+    DCHECK(metadata_.is_deleted());
   }
 }
 
 SyncedBookmarkTrackerEntity::~SyncedBookmarkTrackerEntity() = default;
 
 bool SyncedBookmarkTrackerEntity::IsUnsynced() const {
-  return metadata_->sequence_number() > metadata_->acked_sequence_number();
+  return metadata_.sequence_number() > metadata_.acked_sequence_number();
 }
 
 bool SyncedBookmarkTrackerEntity::MatchesData(
     const syncer::EntityData& data) const {
-  if (metadata_->is_deleted() || data.is_deleted()) {
+  if (metadata_.is_deleted() || data.is_deleted()) {
     // In case of deletion, no need to check the specifics.
-    return metadata_->is_deleted() == data.is_deleted();
+    return metadata_.is_deleted() == data.is_deleted();
   }
   return MatchesSpecificsHash(data.specifics);
 }
 
 bool SyncedBookmarkTrackerEntity::MatchesSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) const {
-  DCHECK(!metadata_->is_deleted());
+  DCHECK(!metadata_.is_deleted());
   DCHECK_GT(specifics.ByteSize(), 0);
   std::string hash;
   HashSpecifics(specifics, &hash);
-  return hash == metadata_->specifics_hash();
+  return hash == metadata_.specifics_hash();
 }
 
 bool SyncedBookmarkTrackerEntity::MatchesFaviconHash(
     const std::string& favicon_png_bytes) const {
-  DCHECK(!metadata_->is_deleted());
-  return metadata_->bookmark_favicon_hash() ==
+  DCHECK(!metadata_.is_deleted());
+  return metadata_.bookmark_favicon_hash() ==
          base::PersistentHash(favicon_png_bytes);
 }
 
 void SyncedBookmarkTrackerEntity::PopulateFaviconHashIfUnset(
     const std::string& favicon_png_bytes) {
-  if (metadata_->has_bookmark_favicon_hash()) {
+  if (metadata_.has_bookmark_favicon_hash()) {
     return;
   }
 
-  metadata_->set_bookmark_favicon_hash(base::PersistentHash(favicon_png_bytes));
+  metadata_.set_bookmark_favicon_hash(base::PersistentHash(favicon_png_bytes));
 }
 
 syncer::ClientTagHash SyncedBookmarkTrackerEntity::GetClientTagHash() const {
-  return syncer::ClientTagHash::FromHashed(metadata_->client_tag_hash());
+  return syncer::ClientTagHash::FromHashed(metadata_.client_tag_hash());
 }
 
 size_t SyncedBookmarkTrackerEntity::EstimateMemoryUsage() const {

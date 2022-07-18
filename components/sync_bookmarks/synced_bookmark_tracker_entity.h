@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_SYNCED_BOOKMARK_TRACKER_ENTITY_H_
 #define COMPONENTS_SYNC_BOOKMARKS_SYNCED_BOOKMARK_TRACKER_ENTITY_H_
 
-#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 
 namespace sync_pb {
-class EntityMetadata;
 class EntitySpecifics;
 }  // namespace sync_pb
 
@@ -31,10 +30,9 @@ namespace sync_bookmarks {
 // is not reused for bookmarks for historic reasons.
 class SyncedBookmarkTrackerEntity {
  public:
-  // |bookmark_node| can be null for tombstones. |metadata| must not be null.
-  SyncedBookmarkTrackerEntity(
-      const bookmarks::BookmarkNode* bookmark_node,
-      std::unique_ptr<sync_pb::EntityMetadata> metadata);
+  // |bookmark_node| can be null for tombstones.
+  SyncedBookmarkTrackerEntity(const bookmarks::BookmarkNode* bookmark_node,
+                              sync_pb::EntityMetadata metadata);
   SyncedBookmarkTrackerEntity(const SyncedBookmarkTrackerEntity&) = delete;
   SyncedBookmarkTrackerEntity(SyncedBookmarkTrackerEntity&&) = delete;
   ~SyncedBookmarkTrackerEntity();
@@ -73,9 +71,9 @@ class SyncedBookmarkTrackerEntity {
     bookmark_node_ = bookmark_node;
   }
 
-  const sync_pb::EntityMetadata* metadata() const { return metadata_.get(); }
+  const sync_pb::EntityMetadata& metadata() const { return metadata_; }
 
-  sync_pb::EntityMetadata* metadata() { return metadata_.get(); }
+  sync_pb::EntityMetadata* MutableMetadata() { return &metadata_; }
 
   bool commit_may_have_started() const { return commit_may_have_started_; }
   void set_commit_may_have_started(bool value) {
@@ -94,7 +92,7 @@ class SyncedBookmarkTrackerEntity {
   raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
 
   // Serializable Sync metadata.
-  const std::unique_ptr<sync_pb::EntityMetadata> metadata_;
+  sync_pb::EntityMetadata metadata_;
 
   // Whether there could be a commit sent to the server for this entity. It's
   // used to protect against sending tombstones for entities that have never
