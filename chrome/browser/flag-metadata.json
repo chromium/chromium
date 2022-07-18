@@ -3430,16 +3430,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "files-archivemount",
-    "owners": [ "fdegros", "nigeltao", "msalomao" ],
-    "expiry_milestone": 112
-  },
-  {
-    "name": "files-archivemount2",
-    "owners": [ "fdegros", "nigeltao", "msalomao" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "files-extract-archive",
     "owners": [ "adanilo", "simmonsjosh@google.com" ],
     "expiry_milestone": 112

@@ -618,38 +618,6 @@ void PostProcessFoundTasks(
 
   std::set<std::string> disabled_actions;
 
-  // kFilesArchivemount2 controls what subset of filename extensions listed in
-  // ui/file_manager/file_manager/manifest.json allows the "mount-archive"
-  // action. If kFilesArchivemount2 is enabled, everything listed in
-  // manifest.json is allowed.
-  if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount2)) {
-    for (const auto& entry : entries) {
-      // Deny-list: "slow-mounter" compressed formats.
-      if (entry.path.MatchesFinalExtension(".bz") ||
-          entry.path.MatchesFinalExtension(".bz2") ||
-          entry.path.MatchesFinalExtension(".gz") ||
-          entry.path.MatchesFinalExtension(".lz") ||
-          entry.path.MatchesFinalExtension(".lzma") ||
-          entry.path.MatchesFinalExtension(".taz") ||
-          entry.path.MatchesFinalExtension(".tb2") ||
-          entry.path.MatchesFinalExtension(".tbz") ||
-          entry.path.MatchesFinalExtension(".tbz2") ||
-          entry.path.MatchesFinalExtension(".tgz") ||
-          entry.path.MatchesFinalExtension(".tlz") ||
-          entry.path.MatchesFinalExtension(".tlzma") ||
-          entry.path.MatchesFinalExtension(".txz") ||
-          entry.path.MatchesFinalExtension(".tz") ||
-          entry.path.MatchesFinalExtension(".tz2") ||
-          entry.path.MatchesFinalExtension(".tzst") ||
-          entry.path.MatchesFinalExtension(".xz") ||
-          entry.path.MatchesFinalExtension(".z") ||
-          entry.path.MatchesFinalExtension(".zst")) {
-        disabled_actions.emplace("mount-archive");
-        break;
-      }
-    }
-  }
-
 #if !BUILDFLAG(ENABLE_PDF)
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)

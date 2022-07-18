@@ -5139,10 +5139,6 @@ const char kFilesAppExperimentalDescription[] =
     "Enable experimental UI features for Files app. Experimental features are "
     "expected to be non functional to end users.";
 
-const char kFilesArchivemount2Name[] = "Archivemount in Files App (2nd Tier)";
-const char kFilesArchivemount2Description[] =
-    "Enable mounting additional archive formats in File Manager.";
-
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";
