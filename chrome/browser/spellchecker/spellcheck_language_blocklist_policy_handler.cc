@@ -35,7 +35,7 @@ bool SpellcheckLanguageBlocklistPolicyHandler::CheckPolicySettings(
   const base::Value* value = nullptr;
   bool ok = CheckAndGetValue(policies, errors, &value);
 
-  std::vector<base::Value> blocklisted;
+  base::Value::List blocklisted;
   std::vector<std::string> unknown;
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
@@ -72,7 +72,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
 
   // Set the blocklisted dictionaries preference based on this policy's values,
   // and emit warnings for unknown or duplicate languages.
-  std::vector<base::Value> blocklisted;
+  base::Value::List blocklisted;
   std::vector<std::string> unknown;
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
@@ -96,7 +96,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
 
 void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
     const policy::PolicyMap& policies,
-    std::vector<base::Value>* const blocklisted,
+    base::Value::List* const blocklisted,
     std::vector<std::string>* const unknown,
     std::vector<std::string>* const duplicates) {
   const base::Value* value =
@@ -131,7 +131,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
         // wins. Put the language in the list of duplicates.
         duplicates->emplace_back(std::move(current_language));
       } else {
-        blocklisted->emplace_back(std::move(current_language));
+        blocklisted->Append(std::move(current_language));
       }
     }
   }

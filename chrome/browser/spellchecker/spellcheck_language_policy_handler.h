@@ -30,7 +30,7 @@ class SpellcheckLanguagePolicyHandler
 
  private:
   void SortForcedLanguages(const policy::PolicyMap& policies,
-                           std::vector<base::Value>* const forced,
+                           base::Value::List* const forced,
                            std::vector<std::string>* const unknown);
 };
 

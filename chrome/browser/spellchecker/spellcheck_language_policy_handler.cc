@@ -33,7 +33,7 @@ bool SpellcheckLanguagePolicyHandler::CheckPolicySettings(
   const base::Value* value = nullptr;
   bool ok = CheckAndGetValue(policies, errors, &value);
 
-  std::vector<base::Value> forced;
+  base::Value::List forced;
   std::vector<std::string> unknown;
   SortForcedLanguages(policies, &forced, &unknown);
 
@@ -64,7 +64,7 @@ void SpellcheckLanguagePolicyHandler::ApplyPolicySettings(
 
   // Set the forced dictionaries preference based on this policy's values,
   // and emit warnings for unknown languages.
-  std::vector<base::Value> forced;
+  base::Value::List forced;
   std::vector<std::string> unknown;
   SortForcedLanguages(policies, &forced, &unknown);
 
@@ -81,7 +81,7 @@ void SpellcheckLanguagePolicyHandler::ApplyPolicySettings(
 
 void SpellcheckLanguagePolicyHandler::SortForcedLanguages(
     const policy::PolicyMap& policies,
-    std::vector<base::Value>* const forced,
+    base::Value::List* const forced,
     std::vector<std::string>* const unknown) {
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
@@ -89,7 +89,7 @@ void SpellcheckLanguagePolicyHandler::SortForcedLanguages(
     return;
 
   // Separate the valid languages from the unknown / unsupported languages.
-  for (const base::Value& language : value->GetListDeprecated()) {
+  for (const base::Value& language : value->GetList()) {
     std::string candidate_language(
         base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL));
     std::string current_language =
@@ -98,7 +98,7 @@ void SpellcheckLanguagePolicyHandler::SortForcedLanguages(
     if (current_language.empty()) {
       unknown->emplace_back(language.GetString());
     } else {
-      forced->emplace_back(std::move(current_language));
+      forced->Append(std::move(current_language));
     }
   }
 }
