@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
 
 #include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -14,7 +17,6 @@
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -54,15 +55,45 @@ namespace {
 
 using testing::_;
 
-const char16_t kFullQuery[] = u"Hello World";
-const char16_t kExampleDescription[] = u"A website";
+const char16_t kFullQuery[] = u"match";
+const char16_t kExampleContents[] = u"https://contentsmatchurl.com";
+const char16_t kExampleDescription[] = u"description match";
 const char kExampleUrl[] = "http://example.com/hello";
 const int kRelevance = 750;
 const double kAppListRelevance = 0.5;
 const char16_t kExampleKeyword[] = u"example.com";
-const int kExampleContentsClass =
-    ACMatchClassification::URL | ACMatchClassification::MATCH;
-const int kExampleDescriptionClass = ACMatchClassification::MATCH;
+
+// Verify that it's safe to create static instances of the following.
+static_assert(std::is_destructible<ACMatchClassification>::value &&
+              std::is_destructible<ash::SearchResultTag>::value);
+
+// Example contents is a URL, and includes a substring matching the example
+// query.
+
+const ACMatchClassification kExampleContentsClass[] = {
+    {/*offset=*/0, /*style=*/ACMatchClassification::URL},
+    {/*offset=*/16,
+     /*style=*/ACMatchClassification::URL | ACMatchClassification::MATCH},
+    {/*offset=*/21, /*style=*/ACMatchClassification::URL},
+};
+
+const ash::SearchResultTag kExpectedExampleContentsTags[] = {
+    {/*styles=*/ash::SearchResultTag::URL, /*start=*/0, /*end=*/16},
+    {/*styles=*/ash::SearchResultTag::URL | ash::SearchResultTag::MATCH,
+     /*start=*/16, /*end=*/21},
+    {/*styles=*/ash::SearchResultTag::URL, /*start=*/21, /*end=*/28},
+};
+
+// Example description is not a URL but does include a matching substring.
+
+const ACMatchClassification kExampleDescriptionClass[] = {
+    {/*offset=*/0, /*style=*/ACMatchClassification::NONE},
+    {/*offset=*/12, /*style=*/ACMatchClassification::MATCH},
+};
+
+const ash::SearchResultTag kExpectedExampleDescriptionTags[] = {
+    {/*styles=*/ash::SearchResultTag::MATCH, /*start=*/12, /*end=*/17},
+};
 
 // The bytes of a 16x16 yellow square PNG image. Encoded in base64 for
 // convenience.
@@ -90,14 +121,33 @@ bool ImageSkiasEqual(const gfx::ImageSkia& a, const gfx::ImageSkia& b) {
 }
 
 // Returns true if the given text vector has one text entry that equals the
-// given text, and one tag that matches the given tag.
+// given text, and tags that match the given tags.
+//
+// Would use an absl::Span to capture static array lengths, but absl isn't yet
+// allowed in these unit tests.
+template <int ArraySize>
 bool IsSingletonTextVector(const std::vector<ash::SearchResultTextItem>& v,
                            const std::u16string& text,
-                           int styles) {
-  return v.size() == 1 &&
-         v[0].GetType() == ash::SearchResultTextItemType::kString &&
-         v[0].GetText() == text && v[0].GetTextTags().size() == 1 &&
-         v[0].GetTextTags()[0].styles == styles;
+                           const ash::SearchResultTag (&tags)[ArraySize]) {
+  if (v.size() != 1 ||
+      v[0].GetType() != ash::SearchResultTextItemType::kString ||
+      v[0].GetText() != text) {
+    return false;
+  }
+
+  // Check that tags match.
+  const auto& result_tags = v[0].GetTextTags();
+  if (result_tags.size() != ArraySize)
+    return false;
+
+  for (int i = 0; i < ArraySize; ++i) {
+    if (result_tags[i].styles != tags[i].styles ||
+        result_tags[i].range != tags[i].range) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -138,12 +188,8 @@ class OmniboxResultTest : public testing::Test {
 
   std::unique_ptr<OmniboxResult> CreateOmniboxResult(
       const std::string& destination_url,
-      const std::u16string& contents,
-      int contents_class,
-      const std::u16string& description,
-      int description_class,
       AutocompleteMatchType::Type type,
-      const GURL& image_url) {
+      const GURL& image_url = GURL()) {
     AutocompleteMatch match;
     match.search_terms_args =
         std::make_unique<TemplateURLRef::SearchTermsArgs>(kFullQuery);
@@ -152,11 +198,14 @@ class OmniboxResultTest : public testing::Test {
     match.destination_url = GURL(destination_url);
     match.stripped_destination_url = match.destination_url;
 
-    match.contents = contents;
-    match.contents_class = {{0, contents_class}};
+    match.contents = kExampleContents;
+    match.contents_class = ACMatchClassifications(
+        std::begin(kExampleContentsClass), std::end(kExampleContentsClass));
 
-    match.description = description;
-    match.description_class = {{0, description_class}};
+    match.description = kExampleDescription;
+    match.description_class =
+        ACMatchClassifications(std::begin(kExampleDescriptionClass),
+                               std::end(kExampleDescriptionClass));
 
     match.type = type;
     match.keyword = kExampleKeyword;
@@ -165,17 +214,6 @@ class OmniboxResultTest : public testing::Test {
     return std::make_unique<OmniboxResult>(
         profile_.get(), app_list_controller_delegate_.get(), nullptr,
         favicon_cache_.get(), input_, match, false);
-  }
-
-  // Convenience version of the above method that only sets the most-useful
-  // properties.
-  std::unique_ptr<OmniboxResult> CreateOmniboxResult(
-      const std::string& url,
-      AutocompleteMatchType::Type type,
-      const GURL& image_url = GURL()) {
-    return CreateOmniboxResult(url, kFullQuery, kExampleContentsClass,
-                               kExampleDescription, kExampleDescriptionClass,
-                               type, image_url);
   }
 
   const GURL& GetLastOpenedUrl() const {
@@ -209,8 +247,8 @@ TEST_F(OmniboxResultTest, Basic) {
   std::unique_ptr<OmniboxResult> result =
       CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL);
 
+  EXPECT_EQ(kExampleContents, result->details());
   EXPECT_EQ(kExampleDescription, result->title());
-  EXPECT_EQ(kFullQuery, result->details());
   EXPECT_EQ(kAppListRelevance, result->relevance());
 
   result->Open(0);
@@ -352,19 +390,18 @@ TEST_F(OmniboxResultTest, GenericIcon) {
 // Test that URLs with descriptions have their contents and descriptions
 // swapped.
 TEST_F(OmniboxResultTest, UrlText) {
-  const auto result = CreateOmniboxResult(
-      "https://example.com", u"contents",
-      ACMatchClassification::URL | ACMatchClassification::MATCH, u"description",
-      ACMatchClassification::MATCH, AutocompleteMatchType::HISTORY_URL,
-      /*image_url=*/GURL());
+  // Uses the default example contents and description.
+  const auto result = CreateOmniboxResult("https://example.com",
+                                          AutocompleteMatchType::HISTORY_URL);
 
   // The output title should be the input description and the output details
   // should be the input contents.
-  EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(), u"description",
-                                    ash::SearchResultTag::MATCH));
-  EXPECT_TRUE(IsSingletonTextVector(
-      result->details_text_vector(), u"contents",
-      ash::SearchResultTag::MATCH | ash::SearchResultTag::URL));
+  EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
+                                    kExampleDescription,
+                                    kExpectedExampleDescriptionTags));
+  EXPECT_TRUE(IsSingletonTextVector(result->details_text_vector(),
+                                    kExampleContents,
+                                    kExpectedExampleContentsTags));
 
   // Accessible name should not be set.
   EXPECT_TRUE(result->accessible_name().empty());
@@ -372,20 +409,18 @@ TEST_F(OmniboxResultTest, UrlText) {
 
 // Test that descriptions are displayed for rich entities.
 TEST_F(OmniboxResultTest, RichEntityText) {
+  // Uses the default example contents and description.
   const auto result = CreateOmniboxResult(
-      "https://example.com", u"contents",
-      ACMatchClassification::URL | ACMatchClassification::MATCH, u"description",
-      ACMatchClassification::MATCH,
-      AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
       GURL("https://example.com/icon.png"));
 
   // Both contents and description should be displayed.
-  EXPECT_TRUE(IsSingletonTextVector(
-      result->title_text_vector(), u"contents",
-      ash::SearchResultTag::MATCH | ash::SearchResultTag::URL));
+  EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
+                                    kExampleContents,
+                                    kExpectedExampleContentsTags));
   EXPECT_TRUE(IsSingletonTextVector(result->details_text_vector(),
-                                    u"description",
-                                    ash::SearchResultTag::MATCH));
+                                    kExampleDescription,
+                                    kExpectedExampleDescriptionTags));
 
   // Accessible name should be set.
   EXPECT_NE(std::u16string::npos, result->accessible_name().find(u"contents"));
@@ -394,16 +429,14 @@ TEST_F(OmniboxResultTest, RichEntityText) {
 // Test that there is no description, but an accessible name, for search
 // results.
 TEST_F(OmniboxResultTest, SearchResultText) {
+  // Uses the default example contents and description.
   const auto result = CreateOmniboxResult(
-      "https://example.com", u"contents",
-      ACMatchClassification::URL | ACMatchClassification::MATCH, u"description",
-      ACMatchClassification::MATCH, AutocompleteMatchType::SEARCH_SUGGEST,
-      /*image_url=*/GURL());
+      "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
 
   // Title should be populated, but details shouldn't be.
-  EXPECT_TRUE(IsSingletonTextVector(
-      result->title_text_vector(), u"contents",
-      ash::SearchResultTag::MATCH | ash::SearchResultTag::URL));
+  EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
+                                    kExampleContents,
+                                    kExpectedExampleContentsTags));
   EXPECT_TRUE(result->details_text_vector().empty());
 
   // Accessible name should be set.
