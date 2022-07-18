@@ -22,4 +22,7 @@ void MockPermissionController::RequestPermissionsFromCurrentDocument(
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {}
+
+void MockPermissionController::ResetPermission(blink::PermissionType permission,
+                                               const url::Origin& origin) {}
 }  // namespace content

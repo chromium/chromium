@@ -55,6 +55,8 @@ class MockPermissionController : public PermissionController {
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
+  void ResetPermission(blink::PermissionType permission,
+                       const url::Origin& origin) override;
 };
 
 }  // namespace content

@@ -12,4 +12,13 @@ const base::Feature kPushMessagingDisallowSenderIDs{
 const base::Feature kPushSubscriptionWithExpirationTime{
     "PushSubscriptionWithExpirationTime", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kRevokeNotificationsPermissionIfDisabledOnAppLevel{
+    "RevokeNotificationsPermissionIfDisabledOnAppLevel",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kNotificationRevocationGracePeriodInDays[] =
+    "notifications_revocation_grace_period";
+#endif
+
 }  // namespace features

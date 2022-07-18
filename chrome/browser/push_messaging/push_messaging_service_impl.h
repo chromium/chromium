@@ -37,9 +37,12 @@
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 class GURL;
+class PrefRegistrySimple;
+class PrefService;
 class Profile;
 class PushMessagingAppIdentifier;
 class PushMessagingServiceTest;
+class FCMRevocationTest;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
@@ -99,6 +102,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // Gets the permission status for the given |origin|.
   blink::mojom::PermissionStatus GetPermissionStatus(const GURL& origin,
                                                      bool user_visible);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Registers Local State prefs used by this class.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+#endif
 
   // gcm::GCMAppHandler implementation.
   void ShutdownHandler() override;
@@ -187,15 +195,30 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       base::RepeatingClosure callback);
   void SetRemoveExpiredSubscriptionsCallbackForTesting(
       base::OnceClosure closure);
+  void set_enabled_app_level_notification_permission_for_testing(bool enabled) {
+    enabled_app_level_notification_permission_for_testing_ = enabled;
+  }
+  void set_prefs_for_testing(PrefService* prefs_for_testing) {
+    prefs_for_testing_ = prefs_for_testing;
+  }
 
  private:
   friend class PushMessagingBrowserTestBase;
   friend class PushMessagingServiceTest;
+  friend class FCMRevocationTest;
   FRIEND_TEST_ALL_PREFIXES(PushMessagingBrowserTest, PushEventOnShutdown);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, NormalizeSenderInfo);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, PayloadEncryptionTest);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest,
                            TestMultipleIncomingPushMessages);
+#if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(FCMRevocationTest,
+                           TestPermissionRevocationClearPreferences);
+  FRIEND_TEST_ALL_PREFIXES(FCMRevocationTest,
+                           TestPermissionRevocationNoPermissionFirstMessage);
+  FRIEND_TEST_ALL_PREFIXES(FCMRevocationTest,
+                           TestPermissionRevocationGracePeriodIsOver);
+#endif
 
   // A subscription is pending until it has succeeded or failed.
   void IncreasePushSubscriptionCount(int add, bool is_pending);
@@ -229,6 +252,18 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       int64_t service_worker_registration_id);
 
   void CheckOriginForAbuseAndDispatchNextMessage();
+
+#if BUILDFLAG(IS_ANDROID)
+  //  Verifies if Chrome has Android app-level Notifications permission. If
+  //  app-level permission is missing, `message` will be ignored, and site-level
+  //  Notifications permission and FCM will be revoked.
+  //
+  //  Returns true if `message` should be ignored, returns false otherwise.
+  bool CheckAndRevokeNotificationPermissionIfNeeded(
+      const std::string& app_id,
+      const gcm::IncomingMessage& message,
+      const PushMessagingAppIdentifier& app_identifier);
+#endif
 
   // Subscribe methods ---------------------------------------------------------
 
@@ -466,6 +501,9 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   bool shutdown_started_ = false;
 
   int render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
+
+  absl::optional<bool> enabled_app_level_notification_permission_for_testing_;
+  absl::optional<PrefService*> prefs_for_testing_;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };

@@ -6,7 +6,10 @@ package org.chromium.components.permissions;
 
 import android.os.Build;
 
+import androidx.core.app.NotificationManagerCompat;
+
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
@@ -118,5 +121,12 @@ public class PermissionUtil {
                 ContextualNotificationPermissionRequester.getInstance();
         return contextualPermissionRequester != null
                 && contextualPermissionRequester.doesAppLevelSettingsAllowSiteNotifications();
+    }
+
+    @CalledByNative
+    private static boolean areAppLevelNotificationsEnabled() {
+        NotificationManagerCompat manager =
+                NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+        return manager.areNotificationsEnabled();
     }
 }

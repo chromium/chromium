@@ -329,6 +329,11 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
       std::move(wrapper));
 }
 
+void PermissionControllerImpl::ResetPermission(blink::PermissionType permission,
+                                               const url::Origin& origin) {
+  ResetPermission(permission, origin.GetURL(), origin.GetURL());
+}
+
 blink::mojom::PermissionStatus
 PermissionControllerImpl::DeprecatedGetPermissionStatus(
     PermissionType permission,

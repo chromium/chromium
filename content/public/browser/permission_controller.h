@@ -79,6 +79,10 @@ class CONTENT_EXPORT PermissionController
       bool user_gesture,
       base::OnceCallback<void(
           const std::vector<blink::mojom::PermissionStatus>&)> callback) = 0;
+
+  // Sets the permission back to its default for the `origin`.
+  virtual void ResetPermission(blink::PermissionType permission,
+                               const url::Origin& origin) = 0;
 };
 
 }  // namespace content

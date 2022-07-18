@@ -50,6 +50,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_background_services_context.h"
@@ -77,6 +78,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/PushMessagingServiceObserver_jni.h"
+#include "chrome/browser/android/shortcut_helper.h"
+#include "components/permissions/android/android_permission_util.h"
+#include "components/prefs/pref_service.h"
 #endif
 
 using instance_id::InstanceID;
@@ -110,6 +114,24 @@ const char kSenderIdRegistrationDeprecatedMessage[] =
     "The provided application server key is not a VAPID key. Only VAPID keys "
     "will be supported in the future. For more information check "
     "https://crbug.com/979235.";
+
+#if BUILDFLAG(IS_ANDROID)
+// The serialized base::Time used for Notifications permission revocation grace
+// period checks. This is usually the time at which the first push message was
+// received without app-level Notifications permission. An empty
+// (default-constructed) base::Time if there is no known time without app-level
+// Notifications permission.
+const char kNotificationsPermissionRevocationGracePeriodDate[] =
+    "notifications_permission_revocation_grace_period";
+
+// The grace period that will be applied before site-level Notifications
+// permissions will be revoked and FCM unsubscribed.
+int GetNotificationsRevocationGracePeriodInDays() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kRevokeNotificationsPermissionIfDisabledOnAppLevel,
+      features::kNotificationRevocationGracePeriodInDays, 3);
+}
+#endif
 
 void RecordDeliveryStatus(blink::mojom::PushEventStatus status) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus", status);
@@ -347,8 +369,8 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
         refresher_.FindActiveAppIdentifier(app_id);
     if (!refresh_identifier) {
       DeliverMessageCallback(app_id, GURL::EmptyGURL(),
-                             -1 /* kInvalidServiceWorkerRegistrationId */,
-                             message, false /* did_enqueue_message */,
+                             /*service_worker_registration_id=*/-1, message,
+                             /*did_enqueue_message=*/false,
                              blink::mojom::PushEventStatus::UNKNOWN_APP_ID);
       return;
     }
@@ -361,6 +383,15 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
       /* was_encrypted= */ message.decrypted, std::string() /* error_message */,
       message.decrypted ? message.raw_data : std::string());
 
+#if BUILDFLAG(IS_ANDROID)
+  if (CheckAndRevokeNotificationPermissionIfNeeded(app_id, message,
+                                                   app_identifier)) {
+    // `message` is processed inside
+    // `CheckAndRevokeNotificationPermissionIfNeeded()`.
+    return;
+  }
+#endif
+
   if (IsPermissionSet(app_identifier.origin())) {
     messages_pending_permission_check_.emplace(app_id, message);
     // Start abusive origin verification only if no other verification is in
@@ -371,7 +402,7 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
     // Drop message and unregister if origin has lost push permission.
     DeliverMessageCallback(app_id, app_identifier.origin(),
                            app_identifier.service_worker_registration_id(),
-                           message, false /* did_enqueue_message */,
+                           message, /*did_enqueue_message=*/false,
                            blink::mojom::PushEventStatus::PERMISSION_DENIED);
   }
 }
@@ -401,6 +432,77 @@ void PushMessagingServiceImpl::CheckOriginForAbuseAndDispatchNextMessage() {
                          weak_factory_.GetWeakPtr(), std::move(message)));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool PushMessagingServiceImpl::CheckAndRevokeNotificationPermissionIfNeeded(
+    const std::string& app_id,
+    const gcm::IncomingMessage& message,
+    const PushMessagingAppIdentifier& app_identifier) {
+  if (!base::FeatureList::IsEnabled(
+          features::kRevokeNotificationsPermissionIfDisabledOnAppLevel)) {
+    return false;
+  }
+
+  bool has_app_level_notification_permission =
+      enabled_app_level_notification_permission_for_testing_.has_value()
+          ? enabled_app_level_notification_permission_for_testing_.value()
+          : permissions::AreAppLevelNotificationsEnabled();
+
+  bool contains_webapk = ShortcutHelper::DoesOriginContainAnyInstalledWebApk(
+      app_identifier.origin());
+  bool contains_twa =
+      ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
+          app_identifier.origin());
+  bool contains_installed_webapp = contains_twa || contains_webapk;
+
+  // If Notifications permission delegation is enabled, for the
+  // `app_identifier.origin()`, we should not revoke permissions because
+  // Notifications permissions are automatically synced with an installed app.
+  if (contains_installed_webapp)
+    return false;
+
+  PrefService* prefs = prefs_for_testing_.has_value()
+                           ? prefs_for_testing_.value()
+                           : g_browser_process->local_state();
+
+  if (has_app_level_notification_permission) {
+    // Chrome has app-level Notifications permission. Reset the grace period
+    // flag and continue as normal.
+    prefs->ClearPref(kNotificationsPermissionRevocationGracePeriodDate);
+    return false;
+  }
+
+  // Chrome has no app-level Notifications permission.
+  blink::mojom::PushEventStatus status;
+
+  if (prefs->GetTime(kNotificationsPermissionRevocationGracePeriodDate) ==
+      base::Time()) {
+    prefs->SetTime(kNotificationsPermissionRevocationGracePeriodDate,
+                   base::Time::Now());
+  }
+
+  base::TimeDelta permission_revocation_activated_duration =
+      base::Time::Now() -
+      prefs->GetTime(kNotificationsPermissionRevocationGracePeriodDate);
+  if (permission_revocation_activated_duration.InDays() <
+      GetNotificationsRevocationGracePeriodInDays()) {
+    // Ignore a push message during the grace period.
+    status = blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_IGNORE;
+  } else {
+    // Revoke site-level Notifications permission & FCM.
+    status = blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_UNSUBSCRIBE;
+
+    profile_->GetPermissionController()->ResetPermission(
+        blink::PermissionType::NOTIFICATIONS,
+        url::Origin::Create(app_identifier.origin()));
+  }
+
+  DeliverMessageCallback(app_id, app_identifier.origin(),
+                         app_identifier.service_worker_registration_id(),
+                         message, /*did_enqueue_message=*/false, status);
+  return true;
+}
+#endif
+
 void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
     PendingMessage message,
     AbusiveOriginPermissionRevocationRequest::Outcome outcome) {
@@ -421,7 +523,7 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
   int64_t service_worker_registration_id =
       app_identifier.service_worker_registration_id();
 
-  // It is possible that Notifications permission has been revoked by an user
+  // It is possible that Notifications permission has been revoked by a user
   // during abusive origin verification.
   if (outcome == AbusiveOriginPermissionRevocationRequest::Outcome::
                      PERMISSION_NOT_REVOKED &&
@@ -441,7 +543,7 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
     // Drop message and unregister if origin has lost push permission.
     DeliverMessageCallback(
         message.app_id, origin, service_worker_registration_id, message.message,
-        false /* did_enqueue_message */,
+        /*did_enqueue_message=*/false,
         outcome == AbusiveOriginPermissionRevocationRequest::Outcome::
                        PERMISSION_NOT_REVOKED
             ? blink::mojom::PushEventStatus::PERMISSION_DENIED
@@ -471,7 +573,7 @@ void PushMessagingServiceImpl::
   auto deliver_message_callback = base::BindOnce(
       &PushMessagingServiceImpl::DeliverMessageCallback,
       weak_factory_.GetWeakPtr(), app_id, origin,
-      service_worker_registration_id, message, true /* did_enqueue_message */);
+      service_worker_registration_id, message, /*did_enqueue_message=*/true);
 
   // It is possible that Notification permissions have been revoked by a user
   // while handling previous messages for |origin|.
@@ -553,6 +655,13 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
       break;
     case blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR:
       // Do nothing, and hope the error is transient.
+      break;
+    case blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_IGNORE:
+      // Do nothing, ignore push messages during the grace period.
+      break;
+    case blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_UNSUBSCRIBE:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::NO_APP_LEVEL_PERMISSION;
       break;
     case blink::mojom::PushEventStatus::UNKNOWN_APP_ID:
       unsubscribe_reason =
@@ -845,6 +954,14 @@ blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
             blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+void PushMessagingServiceImpl::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kNotificationsPermissionRevocationGracePeriodDate,
+                             base::Time());
+}
+#endif
 
 bool PushMessagingServiceImpl::SupportNonVisibleMessages() {
   return false;

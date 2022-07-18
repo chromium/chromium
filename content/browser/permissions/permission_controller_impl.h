@@ -105,6 +105,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
+  void ResetPermission(blink::PermissionType permission,
+                       const url::Origin& origin) override;
 
   struct Subscription;
   using SubscriptionsMap =

@@ -61,6 +61,7 @@
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
+#include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
@@ -1064,6 +1065,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ProfileAttributesStorage::RegisterPrefs(registry);
   ProfileNetworkContextService::RegisterLocalStatePrefs(registry);
   profiles::RegisterPrefs(registry);
+#if BUILDFLAG(IS_ANDROID)
+  PushMessagingServiceImpl::RegisterPrefs(registry);
+#endif
   RegisterScreenshotPrefs(registry);
   safe_browsing::RegisterLocalStatePrefs(registry);
   secure_origin_allowlist::RegisterPrefs(registry);
