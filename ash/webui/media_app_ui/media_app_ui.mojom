@@ -21,6 +21,12 @@ interface PageHandler {
   // Toggles "browser" fullscreen mode for the window.
   ToggleBrowserFullscreenMode() => ();
   // Checks if the file path for the file represented by the provided transfer
+  // token is in a filesystem that ARC is able to write to. Returns false if
+  // |token| can't be resolved to a path.
+  IsFileArcWritable(
+      pending_remote<blink.mojom.FileSystemAccessTransferToken> token)
+      => (bool writable);
+  // Checks if the file path for the file represented by the provided transfer
   // token is writable according to Ash. Returns false if |token| can't be
   // resolved to a path.
   IsFileBrowserWritable(

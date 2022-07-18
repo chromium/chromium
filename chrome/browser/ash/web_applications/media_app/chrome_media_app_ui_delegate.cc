@@ -10,9 +10,11 @@
 #include "ash/webui/media_app_ui/file_system_access_helpers.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -60,6 +62,16 @@ void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
   }
 }
 
+void ChromeMediaAppUIDelegate::IsFileArcWritable(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+    base::OnceCallback<void(bool)> is_file_arc_writable_callback) {
+  ash::ResolveTransferToken(
+      std::move(token), web_ui_->GetWebContents(),
+      base::BindOnce(&ChromeMediaAppUIDelegate::IsFileArcWritableImpl,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(is_file_arc_writable_callback)));
+}
+
 void ChromeMediaAppUIDelegate::EditInPhotos(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     const std::string& mime_type,
@@ -69,6 +81,51 @@ void ChromeMediaAppUIDelegate::EditInPhotos(
       base::BindOnce(&ChromeMediaAppUIDelegate::EditInPhotosImpl,
                      weak_ptr_factory_.GetWeakPtr(), mime_type,
                      std::move(edit_in_photos_callback)));
+}
+
+void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
+    base::OnceCallback<void(bool)> is_file_arc_writable_callback,
+    absl::optional<storage::FileSystemURL> url) {
+  if (!url.has_value()) {
+    std::move(is_file_arc_writable_callback).Run(false);
+    return;
+  }
+
+  using file_manager::Volume;
+  using file_manager::VolumeManager;
+  using file_manager::VolumeType;
+  VolumeManager* const volume_manager =
+      VolumeManager::Get(web_ui_->GetWebContents()->GetBrowserContext());
+
+  base::WeakPtr<Volume> volume =
+      volume_manager->FindVolumeFromPath(url->path());
+
+  if (!volume) {
+    std::move(is_file_arc_writable_callback).Run(false);
+    return;
+  }
+
+  switch (volume->type()) {
+    case VolumeType::VOLUME_TYPE_DOWNLOADS_DIRECTORY:
+    case VolumeType::VOLUME_TYPE_REMOVABLE_DISK_PARTITION:
+    case VolumeType::VOLUME_TYPE_ANDROID_FILES:
+      std::move(is_file_arc_writable_callback).Run(true);
+      return;
+    case VolumeType::VOLUME_TYPE_TESTING:
+    case VolumeType::VOLUME_TYPE_GOOGLE_DRIVE:
+    case VolumeType::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
+    case VolumeType::VOLUME_TYPE_PROVIDED:
+    case VolumeType::VOLUME_TYPE_MTP:
+    case VolumeType::VOLUME_TYPE_MEDIA_VIEW:
+    case VolumeType::VOLUME_TYPE_CROSTINI:
+    case VolumeType::VOLUME_TYPE_DOCUMENTS_PROVIDER:
+    case VolumeType::VOLUME_TYPE_SMB:
+    case VolumeType::VOLUME_TYPE_SYSTEM_INTERNAL:
+    case VolumeType::VOLUME_TYPE_GUEST_OS:
+    case VolumeType::NUM_VOLUME_TYPE:
+      std::move(is_file_arc_writable_callback).Run(false);
+      return;
+  }
 }
 
 void ChromeMediaAppUIDelegate::EditInPhotosImpl(

@@ -12,6 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/media_session_service.h"
@@ -48,6 +51,7 @@
 #include "extensions/browser/entry_info.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/aura/window.h"
@@ -1376,6 +1380,47 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   folder.Refresh();
   EXPECT_EQ(1u, folder.files().size());
   EXPECT_EQ("thumbs.db", folder.files()[0].BaseName().value());
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, CheckArcWritable) {
+  WaitForTestSystemAppInstall();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Create a new filesystem which represents a mounted archive. ARC should
+  // never be able to write to such a filesystem.
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+      "archive", storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), temp_dir.GetPath()));
+  file_manager::VolumeManager::Get(profile())->AddVolumeForTesting(
+      temp_dir.GetPath(), file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE,
+      chromeos::DEVICE_TYPE_UNKNOWN, true /* read_only */);
+
+  // Copy the test image into the new filesystem.
+  base::FilePath image_path = temp_dir.GetPath().Append(kFileJpeg640x480);
+  EXPECT_TRUE(base::CopyFile(TestFile(kFileJpeg640x480), image_path));
+
+  // Open the image.
+  base::RunLoop run_loop;
+  platform_util::OpenItem(
+      profile(), image_path, platform_util::OPEN_FILE,
+      base::BindLambdaForTesting(
+          [&](OpenOperationResult result) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  content::WebContents* web_ui = PrepareActiveBrowserForTest();
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
+  bool result;
+  constexpr char kScript[] =
+      "lastLoadedReceivedFileList().item(0).isArcWritable()"
+      ".then(result => domAutomationController.send(result));";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(app, kScript, &result));
+  EXPECT_FALSE(result);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,

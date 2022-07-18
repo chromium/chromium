@@ -32,12 +32,18 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
   // MediaAppUIDelegate:
   absl::optional<std::string> OpenFeedbackDialog() override;
   void ToggleBrowserFullscreenMode() override;
+  void IsFileArcWritable(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      base::OnceCallback<void(bool)> is_file_arc_writable_callback) override;
   void EditInPhotos(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       const std::string& mime_type,
       base::OnceCallback<void()> edit_in_photos_callback) override;
 
  private:
+  void IsFileArcWritableImpl(
+      base::OnceCallback<void(bool)> is_file_arc_writable_callback,
+      absl::optional<storage::FileSystemURL> url);
   void EditInPhotosImpl(const std::string& mime_type,
                         base::OnceCallback<void()> edit_in_photos_callback,
                         absl::optional<storage::FileSystemURL> url);

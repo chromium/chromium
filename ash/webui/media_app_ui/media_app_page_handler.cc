@@ -11,10 +11,8 @@
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash {
@@ -53,6 +51,13 @@ void MediaAppPageHandler::ToggleBrowserFullscreenMode(
     ToggleBrowserFullscreenModeCallback callback) {
   media_app_ui_->delegate()->ToggleBrowserFullscreenMode();
   std::move(callback).Run();
+}
+
+void MediaAppPageHandler::IsFileArcWritable(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+    IsFileArcWritableCallback callback) {
+  media_app_ui_->delegate()->IsFileArcWritable(std::move(token),
+                                               std::move(callback));
 }
 
 void MediaAppPageHandler::IsFileBrowserWritable(

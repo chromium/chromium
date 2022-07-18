@@ -28,6 +28,12 @@ class MediaAppUIDelegate {
   // Toggles fullscreen mode on the Browser* hosting this MediaApp instance.
   virtual void ToggleBrowserFullscreenMode() = 0;
 
+  // Checks whether file represented by the provided transfer token is within a
+  // filesystem that ARC is able to write to.
+  virtual void IsFileArcWritable(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      base::OnceCallback<void(bool)> is_file_arc_writable_callback) = 0;
+
   // Launches the file represented by the provided transfer token in the Photos
   // Android app with an intent to edit.
   virtual void EditInPhotos(

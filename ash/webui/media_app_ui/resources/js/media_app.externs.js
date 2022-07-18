@@ -58,6 +58,13 @@ mediaApp.AbstractFile.prototype.fromClipboard;
  */
 mediaApp.AbstractFile.prototype.error;
 /**
+ * A function that queries the original file's path to see if it is in a
+ * filesystem that ARC is able to write to. Returns a promise that resolves once
+ * this has been determined.
+ * @type {function(): !Promise<boolean>|undefined}
+ */
+mediaApp.AbstractFile.prototype.isArcWritable;
+/**
  * A function that queries the original file's path to see if it is writable
  * according to Ash. Returns a promise that resolves once this has been
  * determined.

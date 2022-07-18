@@ -15,6 +15,7 @@ export const Message = {
   DELETE_FILE: 'delete-file',
   EDIT_IN_PHOTOS: 'edit-in-photos',
   IFRAME_READY: 'iframe-ready',
+  IS_FILE_ARC_WRITABLE: 'is-file-arc-writable',
   IS_FILE_BROWSER_WRITABLE: 'is-file-browser-writable',
   LOAD_EXTRA_FILES: 'load-extra-files',
   LOAD_FILES: 'load-files',
@@ -62,6 +63,17 @@ export let FileContext;
  * }}
  */
 export let LoadFilesMessage;
+
+/**
+ * Message sent by the unprivileged context to the privileged context to check
+ * whether or not the current file is writable according to ARC. If the supplied
+ * file `token` is invalid the request is rejected.
+ * @typedef {{token: number}}
+ */
+export let IsFileArcWritableMessage;
+
+/** @typedef {{writable: boolean}} */
+export let IsFileArcWritableResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context to check
