@@ -10,17 +10,18 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/extensions/request_file_system_dialog_view.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/common/api/file_system.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
@@ -112,7 +113,7 @@ void ConsentProvider::RequestConsent(
   // If it's a kiosk app running in manual-launch kiosk session, then show
   // the confirmation dialog.
   if (KioskModeInfo::IsKioskOnly(&extension) &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp()) {
+      profiles::IsChromeAppKioskSession()) {
     delegate_->ShowDialog(
         extension, host, volume, writable,
         base::BindOnce(&DialogResultToConsent, std::move(callback)));
@@ -128,7 +129,7 @@ bool ConsentProvider::IsGrantable(const Extension& extension) {
 
   const bool is_running_in_kiosk_session =
       KioskModeInfo::IsKioskOnly(&extension) &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+      profiles::IsChromeAppKioskSession();
 
   return is_allowlisted_component || is_running_in_kiosk_session;
 }
@@ -208,9 +209,9 @@ void ConsentProviderDelegate::ShowNotification(
 }
 
 bool ConsentProviderDelegate::IsAutoLaunched(const Extension& extension) {
-  ash::KioskAppManager::App app_info;
-  return ash::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
-         app_info.was_auto_launched_with_zero_delay;
+  return ExtensionsBrowserClient::Get()
+      ->GetKioskDelegate()
+      ->IsAutoLaunchedKioskApp(extension.id());
 }
 
 bool ConsentProviderDelegate::IsAllowlistedComponent(
