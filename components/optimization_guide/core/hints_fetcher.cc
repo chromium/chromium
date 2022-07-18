@@ -294,14 +294,6 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount",
       valid_urls.size());
 
-  // |active_url_loader_| should not retry on 5xx errors since the server may
-  // already be overloaded. |active_url_loader_| should retry on network changes
-  // since the network stack may receive the connection change event later than
-  // |this|.
-  static const int kMaxRetries = 1;
-  active_url_loader_->SetRetryOptions(
-      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
-
   // It's safe to use |base::Unretained(this)| here because |this| owns
   // |active_url_loader_| and the callback will be canceled if
   // |active_url_loader_| is destroyed.

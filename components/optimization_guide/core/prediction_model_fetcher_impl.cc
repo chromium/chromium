@@ -119,13 +119,6 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
   url_loader_->AttachStringForUpload(serialized_request,
                                      "application/x-protobuf");
 
-  // |url_loader_| should not retry on 5xx errors since the server may already
-  // be overloaded.  |url_loader_| should retry on network changes since the
-  // network stack may receive the connection change event later than |this|.
-  static const int kMaxRetries = 1;
-  url_loader_->SetRetryOptions(
-      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
-
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&PredictionModelFetcherImpl::OnURLLoadComplete,
