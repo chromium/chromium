@@ -883,6 +883,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
                                bool is_browser_startup_complete,
                                blink::ServiceWorkerStatusCode status);
 
+  // The caller of MaybeTimeoutRequest must increase reference count of |this|
+  // to avoid it deleted during the execution.
   bool MaybeTimeoutRequest(const InflightRequestTimeoutInfo& info);
   void SetAllRequestExpirations(const base::TimeTicks& expiration);
 
