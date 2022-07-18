@@ -4,6 +4,7 @@
 
 #include "components/blocked_content/android/popup_blocked_message_delegate.h"
 
+#include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

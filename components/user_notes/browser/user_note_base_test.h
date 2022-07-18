@@ -14,6 +14,7 @@
 #include "components/user_notes/browser/user_note_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 
 namespace user_notes {

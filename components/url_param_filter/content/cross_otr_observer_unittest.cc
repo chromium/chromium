@@ -4,6 +4,7 @@
 
 #include "components/url_param_filter/content/cross_otr_observer.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"

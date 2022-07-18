@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
 class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {

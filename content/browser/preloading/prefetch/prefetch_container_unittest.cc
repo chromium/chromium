@@ -12,6 +12,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"

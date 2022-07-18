@@ -4,6 +4,7 @@
 
 #include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"

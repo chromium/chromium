@@ -18,7 +18,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -36,6 +35,9 @@ class AuraTestHelper;
 }  // namespace aura
 
 namespace blink {
+struct ParsedPermissionsPolicyDeclaration;
+using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
+
 namespace web_pref {
 struct WebPreferences;
 }
@@ -60,15 +62,16 @@ namespace content {
 
 class BrowserContext;
 class ContentBrowserConsistencyChecker;
+class InputMsgWatcher;
 class MockAgentSchedulingGroupHostFactory;
 class MockRenderProcessHost;
 class MockRenderProcessHostFactory;
 class NavigationController;
 class RenderProcessHostFactory;
+class TestNavigationURLLoaderFactory;
 class TestRenderFrameHostFactory;
 class TestRenderViewHostFactory;
 class TestRenderWidgetHostFactory;
-class TestNavigationURLLoaderFactory;
 class WebContents;
 
 // An interface and utility for driving tests of RenderFrameHost.

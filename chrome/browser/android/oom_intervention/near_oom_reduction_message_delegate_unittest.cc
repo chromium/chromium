@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/oom_intervention/near_oom_reduction_message_delegate.h"
 
+#include "base/android/jni_android.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/grit/generated_resources.h"

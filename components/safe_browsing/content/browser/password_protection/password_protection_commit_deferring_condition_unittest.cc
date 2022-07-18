@@ -13,6 +13,7 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"

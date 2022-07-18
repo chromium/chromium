@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"

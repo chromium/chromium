@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "components/continuous_search/browser/test/fake_search_result_extractor.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"

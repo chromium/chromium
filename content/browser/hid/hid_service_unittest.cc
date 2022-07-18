@@ -17,6 +17,7 @@
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"

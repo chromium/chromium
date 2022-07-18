@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
+#include "base/android/jni_android.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"

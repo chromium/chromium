@@ -21,6 +21,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
+#include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using testing::_;
 

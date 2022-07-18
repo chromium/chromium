@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

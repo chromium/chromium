@@ -47,6 +47,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 using content::BrowserThread;
 using content::WebContents;

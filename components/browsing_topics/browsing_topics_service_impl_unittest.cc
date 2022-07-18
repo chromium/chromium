@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"

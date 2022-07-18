@@ -9,6 +9,8 @@
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class PresentationRequestNotificationItemTest

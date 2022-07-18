@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/android_theme_resources.h"

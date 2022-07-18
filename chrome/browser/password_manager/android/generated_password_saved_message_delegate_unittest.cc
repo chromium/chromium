@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
+#include "base/android/jni_android.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
