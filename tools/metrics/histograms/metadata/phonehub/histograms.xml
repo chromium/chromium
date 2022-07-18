@@ -50,6 +50,16 @@ chromium-metrics-reviews@google.com.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen"
+    units="ms" expires_after="2023-02-01">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time since the last successful discovery of the phone. Emitted when the
+    PhoneHub tray bubble is opened prior to connected to the phone.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.BubbleOpened.Connectable.Page" enum="PhoneHubScreen"
     expires_after="2023-02-01">
   <owner>jonmann@chromium.org</owner>

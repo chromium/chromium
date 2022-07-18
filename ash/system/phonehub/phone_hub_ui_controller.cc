@@ -199,6 +199,12 @@ void PhoneHubUiController::RecordStatusOnBubbleOpened() {
 void PhoneHubUiController::OnGetHostLastSeenTimestamp(
     UiState ui_state_when_opened,
     absl::optional<base::Time> timestamp) {
+  if (timestamp) {
+    base::UmaHistogramLongTimes(
+        "PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen",
+        base::Time::Now() - timestamp.value());
+  }
+
   // Only log when we've seen the host phone within the last 2 minutes.
   if (!timestamp || base::Time::Now() - timestamp.value() > base::Minutes(2)) {
     return;
