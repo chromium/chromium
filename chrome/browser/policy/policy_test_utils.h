@@ -40,8 +40,6 @@ class PolicyTest : public PlatformBrowserTest {
 
   void SetUpOnMainThread() override;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
   void SetScreenshotPolicy(bool enabled);
 
   void UpdateProviderPolicy(const PolicyMap& policy);

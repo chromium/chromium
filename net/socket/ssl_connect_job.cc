@@ -277,7 +277,7 @@ int SSLConnectJob::DoTransportConnect() {
   absl::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
   if (ech_retry_configs_) {
-    DCHECK(base::FeatureList::IsEnabled(features::kEncryptedClientHello));
+    DCHECK(ssl_client_context()->EncryptedClientHelloEnabled());
     DCHECK(endpoint_result_);
     endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
   }
@@ -391,7 +391,7 @@ int SSLConnectJob::DoSSLConnect() {
   ssl_config.privacy_mode = params_->privacy_mode();
   ssl_config.disable_legacy_crypto = disable_legacy_crypto_with_fallback_;
 
-  if (base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
+  if (ssl_client_context()->EncryptedClientHelloEnabled()) {
     if (ech_retry_configs_) {
       ssl_config.ech_config_list = *ech_retry_configs_;
     } else if (endpoint_result_) {
@@ -445,7 +445,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
       endpoint_result_ && !endpoint_result_->metadata.ech_config_list.empty();
 
   if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED &&
-      base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
+      ssl_client_context()->EncryptedClientHelloEnabled()) {
     // We used ECH, and the server could not decrypt the ClientHello. However,
     // it was able to handshake with the public name and send authenticated
     // retry configs. If this is not the first time around, retry the connection

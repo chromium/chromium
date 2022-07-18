@@ -34,6 +34,8 @@
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/log/net_log.h"
 #include "net/socket/transport_client_socket_pool.h"
+#include "net/ssl/ssl_config_service.h"
+#include "net/ssl/test_ssl_config_service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -163,6 +165,10 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
 
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_host_resolver(std::move(resolver));
+    auto ssl_config_service =
+        std::make_unique<TestSSLConfigService>(SSLContextConfig());
+    ssl_config_service_ = ssl_config_service.get();
+    context_builder->set_ssl_config_service(std::move(ssl_config_service));
     request_context_ = context_builder->Build();
 
     if (mode == SecureDnsMode::kAutomatic) {
@@ -171,7 +177,7 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
     }
   }
 
-  void AddHostWithEch(const url::SchemeHostPort host,
+  void AddHostWithEch(const url::SchemeHostPort& host,
                       const IPAddress& address,
                       base::span<const uint8_t> ech_config_list) {
     doh_server_.AddAddressRecord(host.host(), address);
@@ -185,6 +191,7 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
   TestDohServer doh_server_;
   scoped_refptr<net::TestHostResolverProc> host_resolver_proc_;
   std::unique_ptr<URLRequestContext> request_context_;
+  raw_ptr<TestSSLConfigService> ssl_config_service_;
 };
 
 // A convenience wrapper over `DnsOverHttpsIntegrationTest` that also starts an
@@ -455,10 +462,10 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
   AddHostWithEch(url::SchemeHostPort(url), addr.front().address(),
                  ech_config_list);
 
-  for (bool ech_enabled : {true, false}) {
-    SCOPED_TRACE(ech_enabled);
+  for (bool feature_enabled : {true, false}) {
+    SCOPED_TRACE(feature_enabled);
     base::test::ScopedFeatureList features;
-    if (ech_enabled) {
+    if (feature_enabled) {
       features.InitWithFeatures(
           /*enabled_features=*/{features::kUseDnsHttpsSvcb,
                                 features::kEncryptedClientHello},
@@ -469,22 +476,32 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
           /*disabled_features=*/{features::kEncryptedClientHello});
     }
 
-    // Create a new `URLRequestContext`, to ensure there are no cached sockets,
-    // etc., from the previous loop iteration.
-    ResetContext();
-    TestDelegate d;
-    std::unique_ptr<URLRequest> r = context()->CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
+    for (bool config_enabled : {true, false}) {
+      SCOPED_TRACE(config_enabled);
+      bool ech_enabled = feature_enabled && config_enabled;
 
-    d.RunUntilComplete();
+      // Create a new `URLRequestContext`, to ensure there are no cached
+      // sockets, etc., from the previous loop iteration.
+      ResetContext();
 
-    EXPECT_THAT(d.request_status(), IsOk());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_NE(0, d.bytes_received());
-    EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
+      SSLContextConfig config;
+      config.ech_enabled = config_enabled;
+      ssl_config_service_->UpdateSSLConfigAndNotify(config);
+
+      TestDelegate d;
+      std::unique_ptr<URLRequest> r = context()->CreateRequest(
+          url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+      r->Start();
+      EXPECT_TRUE(r->is_pending());
+
+      d.RunUntilComplete();
+
+      EXPECT_THAT(d.request_status(), IsOk());
+      EXPECT_EQ(1, d.response_started_count());
+      EXPECT_FALSE(d.received_data_before_response());
+      EXPECT_NE(0, d.bytes_received());
+      EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
+    }
   }
 }
 

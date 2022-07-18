@@ -23,7 +23,6 @@
 #include "chrome/common/net/safe_search_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
-#include "components/variations/variations_params_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/network_service_util.h"
@@ -54,12 +53,6 @@ void PolicyTest::SetUpInProcessBrowserTestFixture() {
 
 void PolicyTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
-}
-
-void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
-  variations::testing::VariationParamsManager::AppendVariationParams(
-      "ReportCertificateErrors", "ShowAndPossiblySend",
-      {{"sendingThreshold", "1.0"}}, command_line);
 }
 
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {

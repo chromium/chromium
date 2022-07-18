@@ -31678,6 +31678,39 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
         "User input" is defined by Operating System APIs, and includes things like moving the mouse or typing on the keyboard.''',
     },
+    {
+      'name': 'EncryptedClientHelloEnabled',
+      'owners': ['davidben@chromium.org', 'trusty-transport@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:105-', 'chrome_os:105-', 'android:105-'],
+      'features': {
+        'dynamic_refresh' : True,
+        'per_profile' : False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the TLS Encrypted ClientHello experiment',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the TLS Encrypted ClientHello experiment',
+        }
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 996,
+      'caption': '''Enable TLS Encrypted ClientHello''',
+      'tags': ['system-security'],
+      'desc': '''Encrypted ClientHello (ECH) is an extension to TLS to encrypt sensitive fields of the ClientHello and improve privacy.
+
+      If this policy is not configured, or is set to enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will follow the default rollout process for ECH. If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not enable ECH.
+
+      When the feature is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may or may not use ECH depending on server support, availability of the HTTPS DNS record, or rollout status.
+
+      ECH is an evolving protocol, so <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s implementation is subject to change. As such, this policy is a temporary measure to control the initial experimental implementation. It will be replaced with final controls as the protocol finalizes.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -32684,6 +32717,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 995,
+  'highest_id_currently_used': 996,
   'highest_atomic_group_id_currently_used': 43
 }

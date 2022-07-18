@@ -42,6 +42,10 @@ struct NET_EXPORT SSLContextConfig {
   // If false, disables post-quantum key agreement in TLS connections.
   bool cecpq2_enabled = true;
 
+  // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
+  // may be enabled or disabled, depending on feature flags.
+  bool ech_enabled = true;
+
   // ADDING MORE HERE? Don't forget to update |SSLContextConfigsAreEqual|.
 };
 

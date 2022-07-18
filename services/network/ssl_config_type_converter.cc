@@ -36,6 +36,7 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
   net_config.cecpq2_enabled = mojo_config->cecpq2_enabled;
+  net_config.ech_enabled = mojo_config->ech_enabled;
   return net_config;
 }
 
