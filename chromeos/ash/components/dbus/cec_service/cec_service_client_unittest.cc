@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 
 #include <memory>
 #include <string>
@@ -29,7 +29,7 @@ using ::testing::ContainerEq;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -197,4 +197,4 @@ TEST_F(CecServiceClientTest, QueryPowerStatusAllStatesCorrectlyHandled) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

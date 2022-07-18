@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cec_service/fake_cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeCecServiceClient::FakeCecServiceClient() = default;
 FakeCecServiceClient::~FakeCecServiceClient() = default;
@@ -37,4 +37,4 @@ void FakeCecServiceClient::SetDisplayPowerState(PowerState new_state) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

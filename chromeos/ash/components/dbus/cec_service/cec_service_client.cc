@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/dbus/cec_service/fake_cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -159,4 +159,4 @@ CecServiceClient::~CecServiceClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

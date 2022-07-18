@@ -742,11 +742,11 @@ source_set("browser_tests") {
     deps += [
       "//ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
+      "//chromeos/ash/components/dbus/cec_service",
       "//chromeos/ash/components/dbus/media_analytics",
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/dbus:test_support",
-      "//chromeos/dbus/cec_service",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",

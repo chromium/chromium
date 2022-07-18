@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
-namespace chromeos {
+namespace ash {
 
 // CecServiceClient is used to communicate with org.chromium.CecService.
 //
@@ -20,7 +20,7 @@ namespace chromeos {
 //
 // All methods should be called from the origin thread (UI thread)
 // which initializes the DBusThreadManager instance.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
+class COMPONENT_EXPORT(ASH_DBUS_CEC_SERVICE) CecServiceClient
     : public DBusClient {
  public:
   // Returns the global instance if initialized. May return null.
@@ -84,6 +84,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
   ~CecServiceClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_

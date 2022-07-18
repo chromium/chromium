@@ -7,8 +7,8 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("cec_service") {
-  output_name = "chromeos_cec_service"
-  defines = [ "IS_CHROMEOS_DBUS_CEC_SERVICE_IMPL" ]
+  output_name = "ash_cec_service"
+  defines = [ "IS_ASH_DBUS_CEC_SERVICE_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/common",

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
 
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
     : public CecServiceClient {
@@ -48,6 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
   std::vector<PowerState> tv_power_states_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_

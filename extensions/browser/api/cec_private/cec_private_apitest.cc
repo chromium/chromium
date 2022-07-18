@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cec_service/cec_service_client.h"
-#include "chromeos/dbus/cec_service/fake_cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
@@ -31,14 +31,14 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   void SetUpOnMainThread() override {
     // Unlike chrome's browser_tests, extensions_browsertests does not
     // automatically create D-Bus fakes for us.
-    chromeos::CecServiceClient::InitializeFake();
-    cec_ = static_cast<chromeos::FakeCecServiceClient*>(
-        chromeos::CecServiceClient::Get());
+    ash::CecServiceClient::InitializeFake();
+    cec_ =
+        static_cast<ash::FakeCecServiceClient*>(ash::CecServiceClient::Get());
   }
 
   void TearDownOnMainThread() override {
     cec_ = nullptr;
-    chromeos::CecServiceClient::Shutdown();
+    ash::CecServiceClient::Shutdown();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -48,7 +48,7 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   }
 
  protected:
-  chromeos::FakeCecServiceClient* cec_ = nullptr;
+  ash::FakeCecServiceClient* cec_ = nullptr;
 
  private:
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> session_type_;
@@ -59,8 +59,8 @@ using CecPrivateNonKioskApiTest = ShellApiTest;
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(CecPrivateKioskApiTest, TestAllApiFunctions) {
-  cec_->set_tv_power_states({chromeos::CecServiceClient::PowerState::kOn,
-                             chromeos::CecServiceClient::PowerState::kOn});
+  cec_->set_tv_power_states({ash::CecServiceClient::PowerState::kOn,
+                             ash::CecServiceClient::PowerState::kOn});
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener standby_call_count("standby_call_count",
                                                   ReplyBehavior::kWillReply);
