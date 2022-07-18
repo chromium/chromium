@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">گواهینامه راستی‌آزمایی توسط شبکه رد شد</translation>
 <translation id="255937426064304553">بین‌المللی آمریکایی</translation>
 <translation id="2563185590376525700">قورباغه</translation>
+<translation id="2570012981255377263">فایل‌های اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="2578394532502990878">تامیل (آوایی)</translation>
 <translation id="2579959351793446050">اوریه</translation>
 <translation id="2602810353103180630">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، سرپرستتان آن را مسدود کرده است، جزئیات</translation>
@@ -547,6 +548,7 @@
 <translation id="5625294776298156701">‏تامیل با صفحه کلید Tamil99</translation>
 <translation id="5633226425545095130">اگر این مورد را منتقل کنید با همه افرادی که می‌توانند پوشه هم‌رسانی‌شده «<ph name="DESTINATION_NAME" />» را ببینند هم‌رسانی خواهد شد.</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
+<translation id="5665074015635552640">ویدیوهای اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="5669691691057771421">پین جدید را وارد کنید</translation>
 <translation id="5678784840044122290">‏برنامه Linux در «ترمینال» دردسترس خواهد بود و ممکن است در «راه‌انداز» هم نمادی نشان داده شود.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ارتباط با بایگانی یا دیسک مجازی نمی‌تواند قطع شود<ph name="END_BOLD" />
@@ -691,6 +693,7 @@
     <ph name="FILE_COUNT" /> مورد پیدا شد</translation>
 <translation id="6935521024859866267">وارونه</translation>
 <translation id="6943836128787782965">‏HTTP با خطا مواجه شد</translation>
+<translation id="6945604978460872381">اسناد اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="6949408524333579394">صربی (نویسه‌گردانی)</translation>
 <translation id="6954309393500027528">سرپرستتان جای‌گذاری این فایل را مسدود کرده است</translation>
 <translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
@@ -738,6 +741,7 @@
 <translation id="7295662345261934369">هم‌رسانی با دیگران</translation>
 <translation id="7297443947353982503">‏نام کاربری/گذرواژه نادرست است یا اصالت‌سنجی EAP ناموفق بود</translation>
 <translation id="7309413087278791451">آلمانی (بلژیک)</translation>
+<translation id="7313374447885864533">فایل‌های صوتی اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7343393116438664539">ویتنامی (تلکس)</translation>
 <translation id="7357762654218998920">‏این نوع فایل پشتیبانی نمی‌شود. درباره باز کردن فایل‌ها در ChromeOS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
@@ -871,6 +875,7 @@
 <translation id="8342318071240498787">یک فایل یا یک پوشه با همین نام از قبل وجود دارد.</translation>
 <translation id="8372369524088641025">‏کلید WEP نادرست</translation>
 <translation id="8372852072747894550">یونانی</translation>
+<translation id="8384716930968677505">تصاویر اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="8386903983509584791">اسکن کامل شد</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> استخراج شد.</translation>
 <translation id="8395901698320285466">ابعاد</translation>

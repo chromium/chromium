@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">днес</translation>
 <translation id="2163152940313951844">Невалиден знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португалски с американската международна клавиатура (PC)</translation>
+<translation id="2193661397560634290">Използвали сте <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">опростен китайски</translation>
 <translation id="22085916256174561">Корейски</translation>
 <translation id="2208919847696382164">Инсталиране с Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Турски с клавиатура от тип F</translation>
 <translation id="2732839045120506979">Виетнамски (VNI)</translation>
 <translation id="2735623501230989521">Даване на Parallels Desktop на достъп до файловете в папката „<ph name="FOLDER_NAME" />“</translation>
+<translation id="2764206540577097904">Използвахте цялото си индивидуално хранилище в Google Workspace.</translation>
 <translation id="2771816809568414714">Сирене</translation>
 <translation id="2781645665747935084">Белгийска клавиатура</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Използвайте по-кратко име</translation>
 <translation id="2949781154072577687">Устройството „<ph name="DRIVE_NAME" />“ се форматира...</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2958458230122209142">Хранилището е почти пълно. Имате още <ph name="REMAINING_PERCENTAGE" />% от индивидуалното ви хранилище от <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Този файл е предназначен за компютри със софтуер за Macintosh и не е съвместим с устройството ви с Chrome OS. Моля, потърсете в уеб магазина на Chrome подходящо приложение със същата функционалност.</translation>
 <translation id="2984337792991268709">Днес, <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> елемента се възстановяват…</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">За файловете в тази папка автоматично се създават резервни копия онлайн.</translation>
 <translation id="6825883775269213504">руски</translation>
 <translation id="6847101934483209767">Премахнахте <ph name="ENTRY_NAME" /> от избраните.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> използва цялото си хранилище в Google Workspace.</translation>
 <translation id="6856459657722366306">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="6861394552169064235">Персийски</translation>
 <translation id="6862635236584086457">За всички файлове, запазени в тази папка, автоматично се създават резервни копия онлайн</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">Шведски</translation>
 <translation id="6990081529015358884">Нямате свободно място</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> избрани папки</translation>
+<translation id="7008426324576352165">Организацията ви има нужда от още място за съхранение, за да бъде завършено качването.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Инсталацията не бе успешна.</translation>
 <translation id="7031639531908619281">Турски</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">датски</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
+<translation id="8998871447376656508">Няма достатъчно свободно място в Google Диск за завършване на качването.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="9017798300203431059">Руска фонетична клавиатура</translation>
 <translation id="9034924485347205037">Файлове за Linux</translation>
 <translation id="9035012421917565900">Елементите не могат да бъдат върнати в/ъв „<ph name="DESTINATION_NAME" />“, така че няма да можете да отмените това действие.</translation>
 <translation id="9035689366572880647">Въведете текущия ПИН код</translation>
+<translation id="9037777873893411148">* Хранилището на организацията е пълно</translation>
 <translation id="9038620279323455325">Файлът „<ph name="FILE_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>

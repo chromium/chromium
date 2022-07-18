@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2163152940313951844">Karakter tidak valid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugis dengan keyboard International PC AS</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> digunakan</translation>
 <translation id="2198315389084035571">China Aksara Sederhana</translation>
 <translation id="22085916256174561">Korea</translation>
 <translation id="2208919847696382164">Instal dengan Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turki dengan Keyboard-F</translation>
 <translation id="2732839045120506979">VNI Vietnam</translation>
 <translation id="2735623501230989521">Beri Parallels Desktop izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Anda telah menggunakan seluruh penyimpanan Google Workspace individual.</translation>
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Belgia</translation>
 <translation id="2782104745158847185">Error saat menginstal aplikasi Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Gunakan nama yang lebih pendek</translation>
 <translation id="2949781154072577687">Memformat <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Ubur-ubur</translation>
+<translation id="2958458230122209142">Penyimpanan hampir habis. Tersisa <ph name="REMAINING_PERCENTAGE" />% dari <ph name="TOTAL_SPACE" /> penyimpanan individual Anda.</translation>
 <translation id="2977940621473452797">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. Telusuri di Chrome Web Store untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="2984337792991268709"><ph name="TODAY_DAYTIME" /> hari ini</translation>
 <translation id="2994320653639462337">Memulihkan <ph name="COUNT" /> item ...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Semua file yang disimpan dalam folder ini otomatis dicadangkan secara online.</translation>
 <translation id="6825883775269213504">Rusia</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> dihapus dari pilihan.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> telah menggunakan seluruh penyimpanan Google Workspace.</translation>
 <translation id="6856459657722366306">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="6861394552169064235">Farsi</translation>
 <translation id="6862635236584086457">Semua file yang disimpan dalam folder ini otomatis dicadangkan secara online</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">Swedia</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> folder dipilih</translation>
+<translation id="7008426324576352165">Organisasi Anda memerlukan penyimpanan ekstra untuk menyelesaikan upload.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Pemasangan gagal.</translation>
 <translation id="7031639531908619281">Turki</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">Denmark</translation>
 <translation id="8965697826696209160">Ruang tidak cukup.</translation>
 <translation id="8997962250644902079">Pinyin (Aksara Tradisional) China</translation>
+<translation id="8998871447376656508">Ruang penyimpanan di Google Drive tidak cukup untuk menyelesaikan upload.</translation>
 <translation id="9003940392834790328">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="9017798300203431059">Fonetik Rusia</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9035012421917565900">Item tidak dapat dipindahkan kembali ke '<ph name="DESTINATION_NAME" />', jadi tindakan ini tidak dapat diurungkan.</translation>
 <translation id="9035689366572880647">Masukkan PIN saat ini</translation>
+<translation id="9037777873893411148">*Penyimpanan organisasi penuh</translation>
 <translation id="9038620279323455325">File bernama "<ph name="FILE_NAME" />" sudah ada. Harap pilih nama lain.</translation>
 <translation id="9046895021617826162">Gagal menyambung</translation>
 <translation id="9065512565307033593">Jika gagal memverifikasi, akses jaringan Anda akan dinonaktifkan.</translation>

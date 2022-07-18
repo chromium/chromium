@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Bắt đầu nói</translation>
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4306392492252714209">Xóa khỏi bảng nhớ tạm.</translation>
+<translation id="4311195029067684288">Toàn màn hình</translation>
 <translation id="4491109536499578614">Hình ảnh</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4588090240171750605">Cuộn qua Phải</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">Gọi điện</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 giây}other{# giây}}</translation>
 <translation id="4971687151119236543">Bản nhạc trước của trình phát phương tiện</translation>
+<translation id="4971925105143343452">Một phần</translation>
 <translation id="5046499563572181734">Nhấn vào đây</translation>
 <translation id="5076340679995252485">&amp;Dán</translation>
+<translation id="5123162024343028706">Ghim ở trên cùng</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Không gửi được</translation>
 <translation id="528468243742722775">Kết thúc</translation>

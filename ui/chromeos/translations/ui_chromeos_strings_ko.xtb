@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2163152940313951844">잘못된 문자: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">포르투갈어(미국 국제 PC 키보드)</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> 사용 중</translation>
 <translation id="2198315389084035571">중국어(간체)</translation>
 <translation id="22085916256174561">한국어</translation>
 <translation id="2208919847696382164">Linux 앱 설치</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">터키어(F 키보드)</translation>
 <translation id="2732839045120506979">베트남어(VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
+<translation id="2764206540577097904">개인 Google Workspace 저장용량을 모두 사용했습니다.</translation>
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2781645665747935084">벨기에어</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">더 짧은 이름을 입력해 주세요.</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />을(를) 포맷 중...</translation>
 <translation id="2951236788251446349">해파리</translation>
+<translation id="2958458230122209142">저장용량 부족. 개인별 저장용량 <ph name="TOTAL_SPACE" /> 중 <ph name="REMAINING_PERCENTAGE" />% 남았습니다.</translation>
 <translation id="2977940621473452797">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 ChromeOS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색해 보세요.</translation>
 <translation id="2984337792991268709">오늘 <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" />개 항목 복원 중...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">이 폴더에 저장된 모든 파일은 온라인으로 자동 백업됩니다.</translation>
 <translation id="6825883775269213504">러시아어</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> 항목이 선택 해제되었습니다.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" />에서 Google Workspace 저장용량을 모두 사용했습니다.</translation>
 <translation id="6856459657722366306">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="6861394552169064235">페르시아어</translation>
 <translation id="6862635236584086457">이 폴더에 저장된 모든 파일은 온라인으로 자동 백업됨</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />개의 폴더가 선택됨</translation>
+<translation id="7008426324576352165">업로드를 완료하려면 조직에 추가 저장용량이 필요합니다.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />(<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">설치에 실패했습니다.</translation>
 <translation id="7031639531908619281">터키어</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">덴마크어</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
 <translation id="8997962250644902079">중국어(번체, 병음)</translation>
+<translation id="8998871447376656508">Google Drive에 여유 공간이 부족하여 업로드를 완료할 수 없습니다.</translation>
 <translation id="9003940392834790328">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
 <translation id="9017798300203431059">러시아어 표음</translation>
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9035012421917565900">항목을 다시 '<ph name="DESTINATION_NAME" />'(으)로 이동할 수 없으므로 이 작업을 실행취소할 수 없습니다.</translation>
 <translation id="9035689366572880647">현재 PIN 입력</translation>
+<translation id="9037777873893411148">*조직 저장용량이 가득 참</translation>
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="9046895021617826162">연결 실패</translation>
 <translation id="9065512565307033593">확인하지 못하면 네트워크 액세스가 사용 중지됩니다.</translation>

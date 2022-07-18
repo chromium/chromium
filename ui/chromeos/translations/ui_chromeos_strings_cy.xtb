@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2163152940313951844">Nod annilys: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portiwgaleg gyda bysellfwrdd PC Rhyngwladol UDA</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> wedi'i ddefnyddio</translation>
 <translation id="2198315389084035571">Tsieinëeg Syml</translation>
 <translation id="22085916256174561">Corëeg</translation>
 <translation id="2208919847696382164">Gosod gyda Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Twrceg gyda bysellfwrdd F</translation>
 <translation id="2732839045120506979">VNI Fietnameg</translation>
 <translation id="2735623501230989521">Rhoi caniatâd i Parallels Desktop gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Rydych wedi defnyddio'ch holl storfa Google Workspace unigol.</translation>
 <translation id="2771816809568414714">Caws</translation>
 <translation id="2781645665747935084">Belgaidd</translation>
 <translation id="2782104745158847185">Bu gwall wrth osod yr ap Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Defnyddiwch enw byrrach</translation>
 <translation id="2949781154072577687">Wrthi'n fformatio <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Sglefren fôr</translation>
+<translation id="2958458230122209142">Lle storio yn isel. Mae <ph name="REMAINING_PERCENTAGE" />% ar ôl o'ch <ph name="TOTAL_SPACE" /> o le storio unigol.</translation>
 <translation id="2977940621473452797">Mae'r ffeil hon wedi'i dylunio ar gyfer cyfrifiadur sy'n defnyddio meddalwedd Macintosh. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg ChromeOS. Chwiliwch yn Chrome Web Store am ap addas arall.</translation>
 <translation id="2984337792991268709">Heddiw <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Wrthi'n adfer <ph name="COUNT" /> eitem…</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">Gwneir copi wrth gefn o'r holl ffeiliau a gedwir yn y ffolder hon ar-lein yn awtomatig.</translation>
 <translation id="6825883775269213504">Rwsieg</translation>
 <translation id="6847101934483209767">Wedi tynnu <ph name="ENTRY_NAME" /> o'r dewisiad.</translation>
+<translation id="6848194403851638089">Mae <ph name="ORGANIZATION_NAME" /> wedi defnyddio ei holl le storio Google Workspace.</translation>
 <translation id="6856459657722366306">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="6861394552169064235">Perseg</translation>
 <translation id="6862635236584086457">Gwneir copi wrth gefn o'r holl ffeiliau a gedwir yn y ffolder hon ar-lein yn awtomatig</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">Swedeg</translation>
 <translation id="6990081529015358884">Rydych wedi rhedeg allan o le storio</translation>
 <translation id="6998711733709403587">Mae <ph name="SELCTED_FOLDERS_COUNT" /> ffolder wedi'u dewis</translation>
+<translation id="7008426324576352165">Mae angen mwy o le storio ar eich sefydliad i gwblhau'r uwchlwythiad.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Methwyd â gosod yr eitem.</translation>
 <translation id="7031639531908619281">Tyrceg</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">Daneg</translation>
 <translation id="8965697826696209160">Nid oes digon o le.</translation>
 <translation id="8997962250644902079">Pinyin Tseinëeg (Traddodiadol)</translation>
+<translation id="8998871447376656508">Nid oes digon o le ar gael yn eich Google Drive i gwblhau'r uwchlwythiad.</translation>
 <translation id="9003940392834790328">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Manylion</translation>
 <translation id="9017798300203431059">Rwseg ffonetig</translation>
 <translation id="9034924485347205037">Ffeiliau Linux</translation>
 <translation id="9035012421917565900">Ni ellid dychwelyd yr eitemau i '<ph name="DESTINATION_NAME" />', felly ni fyddwch yn gallu dadwneud y weithred hon.</translation>
 <translation id="9035689366572880647">Rhowch y PIN presennol</translation>
+<translation id="9037777873893411148">*Mae lle storio'r sefydliad yn llawn</translation>
 <translation id="9038620279323455325">Mae ffeil o'r enw "<ph name="FILE_NAME" />" eisoes yn bodoli. Dewiswch enw gwahanol.</translation>
 <translation id="9046895021617826162">Wedi methu cysylltu</translation>
 <translation id="9065512565307033593">Os byddwch yn methu â dilysu, bydd eich mynediad at y rhwydwaith yn cael ei ddiffodd.</translation>

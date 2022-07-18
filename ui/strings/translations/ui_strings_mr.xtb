@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">बोलणे सुरू करा</translation>
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4306392492252714209">क्लिपबोर्डवरून काढून टाका.</translation>
+<translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4491109536499578614">इमेज</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4588090240171750605">उजवे स्क्रोल करा</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">कॉल करा</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 सेकंद}other{# सेकंद}}</translation>
 <translation id="4971687151119236543">मीडिया मागील ट्रॅक</translation>
+<translation id="4971925105143343452">अंशिक</translation>
 <translation id="5046499563572181734">येथे टॅप करा</translation>
 <translation id="5076340679995252485">&amp;पेस्ट करा</translation>
+<translation id="5123162024343028706">वरती फ्लोट करा</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">पाठवता आले नाही</translation>
 <translation id="528468243742722775">बंद करा</translation>

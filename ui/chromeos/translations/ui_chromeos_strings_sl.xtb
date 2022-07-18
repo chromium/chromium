@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Danes</translation>
 <translation id="2163152940313951844">Neveljavni znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalščina z mednarodno angleško tipkovnico (ZDA – za računalnike s sistemom Windows)</translation>
+<translation id="2193661397560634290">Porabljeno: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">poenostavljena kitajščina</translation>
 <translation id="22085916256174561">korejščina</translation>
 <translation id="2208919847696382164">Namestitev z Linuxom</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">turščina s tipkovnico F</translation>
 <translation id="2732839045120506979">vietnamščina (tipkovnica VNI)</translation>
 <translation id="2735623501230989521">Programu Parallels Desktop dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
+<translation id="2764206540577097904">Porabili ste ves posamezen prostor za shranjevanje za Google Workspace.</translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
 <translation id="2782104745158847185">Napaka pri nameščanju aplikacije za Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Uporabite krajše ime</translation>
 <translation id="2949781154072577687">Formatiranje pogona <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Meduza</translation>
+<translation id="2958458230122209142">Primanjkuje prostora za shranjevanje, še <ph name="REMAINING_PERCENTAGE" /> % od <ph name="TOTAL_SPACE" /> v vašem posameznem prostoru za shranjevanje.</translation>
 <translation id="2977940621473452797">Ta datoteka je namenjena za računalnike s programsko opremo Macintosh in ni združljiva z vašo napravo, ki uporablja Chrome OS. V Spletni trgovini Chrome poiščite ustrezno nadomestno aplikacijo.</translation>
 <translation id="2984337792991268709">Danes <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Obnavljanje elementov (<ph name="COUNT" />) …</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Datoteke, shranjene v tej mapi, se samodejno varnostno kopirajo v splet.</translation>
 <translation id="6825883775269213504">ruščina</translation>
 <translation id="6847101934483209767">Vnos <ph name="ENTRY_NAME" /> je bil odstranjen iz izbora.</translation>
+<translation id="6848194403851638089">Organizacija <ph name="ORGANIZATION_NAME" /> je porabila ves prostor za shranjevanje v storitvi Google Workspace.</translation>
 <translation id="6856459657722366306">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6861394552169064235">perzijščina</translation>
 <translation id="6862635236584086457">Datoteke, shranjene v teh mapi, se samodejno varnostno kopirajo v splet</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">švedščina</translation>
 <translation id="6990081529015358884">Zmanjkalo vam je prostora</translation>
 <translation id="6998711733709403587">Izbranih toliko map: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">Vaša organizacija potrebuje več prostora za shranjevanje, da bo mogoče dokončati nalaganje.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Namestitev ni uspela.</translation>
 <translation id="7031639531908619281">turščina</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">danščina</translation>
 <translation id="8965697826696209160">Na voljo ni dovolj prostora.</translation>
 <translation id="8997962250644902079">kitajščina (tradicionalna), pinjin</translation>
+<translation id="8998871447376656508">V Googlu Drive ni dovolj prostora za dokončanje nalaganja.</translation>
 <translation id="9003940392834790328">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="9017798300203431059">ruščina (fonetična)</translation>
 <translation id="9034924485347205037">Datoteke za Linux</translation>
 <translation id="9035012421917565900">Elementov ni mogoče premakniti nazaj v »<ph name="DESTINATION_NAME" />«, zato tega dejanja ne bo mogoče razveljaviti.</translation>
 <translation id="9035689366572880647">Vnesite trenutno kodo PIN</translation>
+<translation id="9037777873893411148">* Prostor za shranjevanje v organizaciji je povsem zaseden</translation>
 <translation id="9038620279323455325">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="9065512565307033593">Če ne preverite, bo dostop do omrežja onemogočen.</translation>

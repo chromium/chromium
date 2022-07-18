@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Sākt runāt</translation>
 <translation id="4289540628985791613">Kopsavilkums</translation>
 <translation id="4306392492252714209">Noņemt no starpliktuves.</translation>
+<translation id="4311195029067684288">Pilns</translation>
 <translation id="4491109536499578614">Attēls</translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4588090240171750605">Ritināt pa labi</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">Zvanīt</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunde}zero{# sekundes}one{# sekunde}other{# sekundes}}</translation>
 <translation id="4971687151119236543">Multivide — iepriekšējā dziesma</translation>
+<translation id="4971925105143343452">Daļējs</translation>
 <translation id="5046499563572181734">Pieskarieties šeit</translation>
 <translation id="5076340679995252485">&amp;Ielīmēt</translation>
+<translation id="5123162024343028706">Piespraust augšdaļā</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Neizdevās nosūtīt</translation>
 <translation id="528468243742722775">Beigas</translation>

@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">بدء التحدث</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4306392492252714209">إزالة من الحافظة</translation>
+<translation id="4311195029067684288">كامل</translation>
 <translation id="4491109536499578614">صورة</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4588090240171750605">التمرير إلى اليسار</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">إجراء مكالمة</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ثانية واحدة}zero{# من الثواني}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
 <translation id="4971687151119236543">المقطع الصوتي السابق للوسائط</translation>
+<translation id="4971925105143343452">جزئي</translation>
 <translation id="5046499563572181734">انقر هنا</translation>
 <translation id="5076340679995252485">ل&amp;صق</translation>
+<translation id="5123162024343028706">Float on top</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
 <translation id="5278860589123563674">تعذّر الإرسال</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>

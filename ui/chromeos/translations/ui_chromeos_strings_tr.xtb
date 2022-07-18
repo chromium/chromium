@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2163152940313951844">Geçersiz karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ABD Uluslararası PC klavyesi ile Portekizce</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> miktar</translation>
 <translation id="2198315389084035571">Basitleştirilmiş Çince</translation>
 <translation id="22085916256174561">Korece</translation>
 <translation id="2208919847696382164">Linux ile yükle</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">F klavye ile Türkçe</translation>
 <translation id="2732839045120506979">Vietnamca VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
+<translation id="2764206540577097904">Google Workspace bireysel depolama alanınızın tamamını kullandınız.</translation>
 <translation id="2771816809568414714">Peynir</translation>
 <translation id="2781645665747935084">Belçika dili</translation>
 <translation id="2782104745158847185">Linux uygulaması yüklenirken hata oluştu</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Daha kısa bir ad kullanın</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> biçimlendiriliyor...</translation>
 <translation id="2951236788251446349">Denizanası</translation>
+<translation id="2958458230122209142"><ph name="TOTAL_SPACE" /> olan bireysel depolama alanınızda %<ph name="REMAINING_PERCENTAGE" /> oranından daha az depolama alanı kaldı.</translation>
 <translation id="2977940621473452797">Bu dosya Macintosh yazılımı kullanan bilgisayarlar için tasarlanmıştır. Bu, ChromeOS çalıştıran cihazınızla uyumlu değildir. Uygun başka bir uygulama için lütfen Chrome Web Mağazası'nı arayın.</translation>
 <translation id="2984337792991268709">Bugün <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> öğe geri yükleniyor...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Bu klasöre kaydedilen tüm dosyalar otomatik olarak web üzerinde yedeklenir.</translation>
 <translation id="6825883775269213504">Rusça</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> seçimden kaldırıldı.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" />, Google Workspace depolama alanının tamamını kullandı.</translation>
 <translation id="6856459657722366306">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>
 <translation id="6861394552169064235">Farsça</translation>
 <translation id="6862635236584086457">Bu klasöre kaydedilen tüm dosyalar otomatik bir şekilde çevrimiçi olarak yedeklenir</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">İsveççe</translation>
 <translation id="6990081529015358884">Boş yeriniz kalmadı</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> klasör seçildi</translation>
+<translation id="7008426324576352165">Kuruluşunuzun, yükleme işlemini tamamlamak için daha fazla depolama alanına ihtiyacı var.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Yükleme işlemi başarısız oldu.</translation>
 <translation id="7031639531908619281">Türkçe</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">Danca</translation>
 <translation id="8965697826696209160">Yeterli alan yok.</translation>
 <translation id="8997962250644902079">Çince (Geleneksel) Pinyin</translation>
+<translation id="8998871447376656508">Google Drive'ınızda yükleme işlemini tamamlayacak kadar yeterli boş alan yok.</translation>
 <translation id="9003940392834790328">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
 <translation id="9017798300203431059">Rusça fonetik</translation>
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9035012421917565900">Öğeler "<ph name="DESTINATION_NAME" />" hedefine geri taşınamaz. Bu nedenle bu işlemi geri alamazsınız.</translation>
 <translation id="9035689366572880647">Geçerli PIN'i gir</translation>
+<translation id="9037777873893411148">*Kuruluşun depolama alanı dolu</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı dosya zaten var. Lütfen farklı bir ad seçin.</translation>
 <translation id="9046895021617826162">Bağlantı başarısız oldu</translation>
 <translation id="9065512565307033593">Kimliğinizi doğrulayamazsanız ağ erişiminiz devre dışı bırakılacaktır.</translation>

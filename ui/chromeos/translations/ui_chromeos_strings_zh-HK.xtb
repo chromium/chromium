@@ -185,8 +185,10 @@
 <translation id="2544853746127077729">網絡已拒絕驗證憑證</translation>
 <translation id="255937426064304553">美國國際鍵盤</translation>
 <translation id="2563185590376525700">青蛙</translation>
+<translation id="2570012981255377263">您最近的檔案將會在這裡顯示</translation>
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
 <translation id="2579959351793446050">歐利亞文</translation>
+<translation id="2593644851255584939">管理員要求您停用 SIM 卡鎖定。</translation>
 <translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，管理員封鎖咗呢個網絡，詳情</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 影片</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
@@ -202,7 +204,7 @@
 <translation id="2724954091494693138">土耳其文 (F 鍵盤)</translation>
 <translation id="2732839045120506979">越南文 (VNI)</translation>
 <translation id="2735623501230989521">授權 Parallels Desktop 存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
-<translation id="2764206540577097904">你的個人 Google Workspace 儲存空間已用盡。</translation>
+<translation id="2764206540577097904">您的個人 Google Workspace 儲存空間已全數用盡。</translation>
 <translation id="2771816809568414714">芝士</translation>
 <translation id="2781645665747935084">比利時文</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
@@ -223,7 +225,7 @@
 <translation id="2943503720238418293">請使用較短的名稱</translation>
 <translation id="2949781154072577687">正在格式化「<ph name="DRIVE_NAME" />」…</translation>
 <translation id="2951236788251446349">水母</translation>
-<translation id="2958458230122209142">儲存空間即將用盡，你的 <ph name="TOTAL_SPACE" /> 個人儲存空間只剩 <ph name="REMAINING_PERCENTAGE" />% 可用。</translation>
+<translation id="2958458230122209142">儲存空間不足，您的 <ph name="TOTAL_SPACE" /> 個人儲存空間只剩 <ph name="REMAINING_PERCENTAGE" />% 可用。</translation>
 <translation id="2977940621473452797">此檔案是專為使用 Macintosh 軟件的電腦而設，與運行 Chrome OS 的裝置並不相容。請前往「Chrome 網上應用程式商店」尋找適合的替代應用程式。</translation>
 <translation id="2984337792991268709">今天 <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">正在還原 <ph name="COUNT" /> 個項目…</translation>
@@ -547,6 +549,7 @@
 <translation id="5625294776298156701">泰米爾文 (Tamil99 鍵盤)</translation>
 <translation id="5633226425545095130">此項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
 <translation id="5649768706273821470">收聽</translation>
+<translation id="5665074015635552640">您最近的影片將會在這裡顯示</translation>
 <translation id="5669691691057771421">輸入新的 PIN</translation>
 <translation id="5678784840044122290">此 Linux 應用程式將可在終端機上使用，其圖示可能在啟動器中顯示。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />無法中斷與封存或虛擬磁碟的連線<ph name="END_BOLD" />
@@ -672,7 +675,7 @@
 <translation id="6823166707458800069">所有儲存在此資料夾的檔案都會自動在網上備份。</translation>
 <translation id="6825883775269213504">俄羅斯文</translation>
 <translation id="6847101934483209767">喺選擇範圍入面移除 <ph name="ENTRY_NAME" />。</translation>
-<translation id="6848194403851638089">「<ph name="ORGANIZATION_NAME" />」的 Google Workspace 儲存空間已用盡。</translation>
+<translation id="6848194403851638089">「<ph name="ORGANIZATION_NAME" />」的 Google Workspace 儲存空間已全數用盡。</translation>
 <translation id="6856459657722366306">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>
 <translation id="6861394552169064235">波斯文</translation>
 <translation id="6862635236584086457">所有儲存在這個資料夾的檔案都會自動在網上備份</translation>
@@ -691,6 +694,7 @@
     已找到 <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">上下顛倒</translation>
 <translation id="6943836128787782965">HTTP 擷取失敗</translation>
+<translation id="6945604978460872381">您最近的文件會在這裡顯示</translation>
 <translation id="6949408524333579394">塞爾維亞文 (音譯)</translation>
 <translation id="6954309393500027528">管理員已禁止貼上此檔案</translation>
 <translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
@@ -704,7 +708,7 @@
 <translation id="6989942356279143254">瑞典文</translation>
 <translation id="6990081529015358884">沒有可用的空間</translation>
 <translation id="6998711733709403587">已選取 <ph name="SELCTED_FOLDERS_COUNT" /> 個資料夾</translation>
-<translation id="7008426324576352165">貴機構需要更多儲存空間才能完成上傳。</translation>
+<translation id="7008426324576352165">您的機構需要更多儲存空間才能完成上載。</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">安裝失敗。</translation>
 <translation id="7031639531908619281">土耳其文</translation>
@@ -738,6 +742,7 @@
 <translation id="7295662345261934369">與他人分享</translation>
 <translation id="7297443947353982503">使用者名稱/密碼錯誤或 EAP 驗證失敗</translation>
 <translation id="7309413087278791451">德文 (比利時)</translation>
+<translation id="7313374447885864533">您最近的音訊檔案會在這裡顯示</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7343393116438664539">越南文 (Telex)</translation>
 <translation id="7357762654218998920">不支援此檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
@@ -871,6 +876,7 @@
 <translation id="8342318071240498787">已存在名稱相同的檔案或目錄。</translation>
 <translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8372852072747894550">希臘文</translation>
+<translation id="8384716930968677505">您最近的圖片將會在這裡顯示</translation>
 <translation id="8386903983509584791">掃瞄完成</translation>
 <translation id="8387733224523483503">已解壓縮 <ph name="FILE_NAME" />。</translation>
 <translation id="8395901698320285466">尺寸</translation>
@@ -938,7 +944,7 @@
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8965697826696209160">空間不足。</translation>
 <translation id="8997962250644902079">繁體中文 (拼音)</translation>
-<translation id="8998871447376656508">你的 Google 雲端硬碟可用空間不足，無法完成上傳。</translation>
+<translation id="8998871447376656508">您的「Google 雲端硬碟」沒有足夠空間，無法完成上載。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
 <translation id="9017798300203431059">俄文 (拼音)</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>

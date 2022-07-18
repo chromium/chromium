@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2163152940313951844">Недійсний символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португальська, міжнародна розкладка США для ПК</translation>
+<translation id="2193661397560634290">Використано <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">китайська (спрощена)</translation>
 <translation id="22085916256174561">Корейська</translation>
 <translation id="2208919847696382164">Установити для Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Турецька, розкладка FGĞIOD</translation>
 <translation id="2732839045120506979">В'єтнамська, VNI</translation>
 <translation id="2735623501230989521">Надати додатку Parallels Desktop доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
+<translation id="2764206540577097904">Ваше індивідуальне сховище Google Workspace заповнено.</translation>
 <translation id="2771816809568414714">Сир</translation>
 <translation id="2781645665747935084">Бельгійська</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Введіть коротшу назву</translation>
 <translation id="2949781154072577687">Форматування диска "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2958458230122209142">В індивідуальному сховищі закінчується місце. Залишилося <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" /> пам’яті.</translation>
 <translation id="2977940621473452797">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. Знайдіть відповідний додаток у Веб-магазині Chrome.</translation>
 <translation id="2984337792991268709">Сьогодні <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Відновлення елементів (<ph name="COUNT" />)…</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Резервні копії всіх файлів, збережених у цій папці, автоматично створюються в мережі.</translation>
 <translation id="6825883775269213504">Російська</translation>
 <translation id="6847101934483209767">Видалено з вибраного: <ph name="ENTRY_NAME" />.</translation>
+<translation id="6848194403851638089">Сховище Google Workspace організації <ph name="ORGANIZATION_NAME" /> заповнено.</translation>
 <translation id="6856459657722366306">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="6861394552169064235">Перська</translation>
 <translation id="6862635236584086457">Для всіх файлів, збережених у цій папці, автоматично зберігаються резервні копії онлайн</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">Шведська</translation>
 <translation id="6990081529015358884">У вас недостатньо місця</translation>
 <translation id="6998711733709403587">Вибрано папок: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">Щоб завершити завантаження, вашій організації потрібно більше пам’яті.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />: <ph name="ROOT_SUMMARY" /></translation>
 <translation id="7014174261166285193">Помилка встановлення.</translation>
 <translation id="7031639531908619281">Турецька</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">Данська</translation>
 <translation id="8965697826696209160">Недостатньо місця.</translation>
 <translation id="8997962250644902079">Китайська (традиційна), піньїнь</translation>
+<translation id="8998871447376656508">Не вдалося завершити завантаження. На Google Диску недостатньо вільного місця.</translation>
 <translation id="9003940392834790328">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
 <translation id="9017798300203431059">Російська (фонетична)</translation>
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9035012421917565900">Елементи не можна перенести назад у розташування "<ph name="DESTINATION_NAME" />", тож ви не зможете відмінити цю дію.</translation>
 <translation id="9035689366572880647">Введіть поточний PIN-код</translation>
+<translation id="9037777873893411148">* Сховище організації заповнено</translation>
 <translation id="9038620279323455325">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Виберіть іншу назву.</translation>
 <translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="9065512565307033593">Якщо ви не пройдете цю перевірку, вам буде закрито доступ до мережі.</translation>

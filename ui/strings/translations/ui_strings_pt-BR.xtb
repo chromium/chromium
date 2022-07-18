@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Comece a falar</translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4306392492252714209">Remover da área de transferência.</translation>
+<translation id="4311195029067684288">Inteira</translation>
 <translation id="4491109536499578614">Imagem</translation>
 <translation id="4565377596337484307">Ocultar senha</translation>
 <translation id="4588090240171750605">Percorrer à direita</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">Ligar</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Um segundo}one{# segundos}other{# segundos}}</translation>
 <translation id="4971687151119236543">Faixa anterior da mídia</translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="5046499563572181734">Toque aqui</translation>
 <translation id="5076340679995252485">&amp;Colar</translation>
+<translation id="5123162024343028706">Exibir por cima</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Falha ao enviar</translation>
 <translation id="528468243742722775">Fim</translation>

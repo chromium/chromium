@@ -1597,7 +1597,6 @@
 <translation id="2471506181342525583">ଲୋକେସନ୍ ଆକ୍ସେସର ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="2473195200299095979">ଏହି ପୃଷ୍ଠା ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="2475982808118771221">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା</translation>
-<translation id="2476578072172137802">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ଅନଇନଷ୍ଟଲ୍ କରିବାକୁ Windows ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="2477065602824695373">ଆପଣ ଏକାଧିକ ସ୍ୱିଚ ସେଟ ଅପ କରିଥିବା ଯୋଗୁଁ, ସ୍ୱଚାଳିତ-ସ୍କାନକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" ପାଇଁ ମିଡିଆ-ଫାଇଲ୍‌ର ଅନୁମତି</translation>
@@ -3345,6 +3344,7 @@
 <translation id="4159681666905192102">ଏହା <ph name="CUSTODIAN_EMAIL" /> ଏବଂ <ph name="SECOND_CUSTODIAN_EMAIL" />.ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଥିବା ଶିଶୁଙ୍କ ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ଏକ ଆକାଉଣ୍ଟ ଅଟେ।</translation>
 <translation id="4163560723127662357">ଅଜଣା କୀବୋର୍ଡ</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ଏକ ବୈଧ ସଂସ୍ଥାର ନୁହଁନ୍ତି। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ। ଯଦି ଆପଣ ଜଣେ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଅଟନ୍ତି, ତେବେ ଆପଣ ଏଠାକୁ ଭିଜିଟ୍ କରି ଆପଣଙ୍କ ସଂସ୍ଥାକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4165986682804962316">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
 <translation id="4167393659000039775">କୌଣସି ଡାଟା ନଷ୍ଟ ପାଇଁ Google ଦାୟୀ ନୁହେଁ ଏବଂ <ph name="DEVICE_OS" /> ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ହୋଇନଥିବା ମଡେଲଗୁଡ଼ିକରେ କାମ କରିନପାରେ। g.co/flex/InstallGuideରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="4167686856635546851">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଭିଡିଓ ଗେମ୍ କିମ୍ବା ୱେବ୍ ଫର୍ମଗୁଡ଼ିକ ପରି, ଇଣ୍ଟରାକ୍ଟିଭ୍ ଫିଚରଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ JavaScript ବ୍ୟବହାର କରିଥାଏ</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ସହିତ ସମ୍ବନ୍ଧିତ କିଛି ସେଟିଂସ୍‌କୁ ଆପଣଙ୍କ ସହିତ ସେୟାର୍ କରାଯାଉଛି। ଯେତେବେଳେ ଏକାଧିକ ସାଇନ୍ ଇନ୍ ବ୍ୟବହାର କରାଯାଏ, ସେତେବେଳେ ହିଁ କେବଳ ଏହି ସେଟିଂସ୍ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ଉପରେ ପ୍ରଭାବ ପକାଇବ।</translation>

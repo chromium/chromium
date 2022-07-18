@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">آج</translation>
 <translation id="2163152940313951844">غلط حرف: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">‏امریکی بین الاقوامی PC کی بورڈ کے ساتھ پرتگالی</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> استعمال شدہ</translation>
 <translation id="2198315389084035571">آسان کردہ چینی</translation>
 <translation id="22085916256174561">کوریائی</translation>
 <translation id="2208919847696382164">‏Linux کے ساتھ انسٹال کریں</translation>
@@ -184,6 +185,7 @@
 <translation id="2544853746127077729">نیٹ ورک نے توثیق کا سرٹیفکیٹ مسترد کر دیا گیا</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2563185590376525700">مینڈک</translation>
+<translation id="2570012981255377263">آپ کی حالیہ فائلیں یہاں ظاہر ہوں گی</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
@@ -201,6 +203,7 @@
 <translation id="2724954091494693138">‏F کی بورڈ کے ساتھ ترکی</translation>
 <translation id="2732839045120506979">‏ویتنامی VNI</translation>
 <translation id="2735623501230989521">‏Parallels ڈیسک ٹاپ کو<ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کے لیے اجازت دیں</translation>
+<translation id="2764206540577097904">‏آپ نے اپنی تمام انفرادی Google Workspace اسٹوریج استعمال کر لی ہے۔</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بیلجین</translation>
 <translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
@@ -221,6 +224,7 @@
 <translation id="2943503720238418293">اس سے چھوٹا نام استعمال کریں</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> کو فارمیٹ کیا جا رہا ہے...</translation>
 <translation id="2951236788251446349">جیلی فش</translation>
+<translation id="2958458230122209142">اسٹوریج کم ہے، آپ کی <ph name="TOTAL_SPACE" /> انفرادی اسٹوریج میں سے <ph name="REMAINING_PERCENTAGE" />فیصد باقی ہے۔</translation>
 <translation id="2977940621473452797">‏یہ فائل Macintosh سافٹ ویئر استعمال کر رہے کمپیوٹر کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ مطابقت پذیر نہیں ہے جو ChromeOS چلاتا ہے۔ براہ کرم ایک مناسب متبادل ایپ کیلئے Chrome ویب اسٹور تلاش کریں۔</translation>
 <translation id="2984337792991268709">آج <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> آئٹمز بحال ہو رہے ہیں...</translation>
@@ -543,6 +547,7 @@
 <translation id="5625294776298156701">‏Tamil99 کی بورڈ کے ساتھ تمل</translation>
 <translation id="5633226425545095130">اس آئٹم کو منتقل کرنے سے یہ ہر اس شخص کے ساتھ اشتراک ہو جائے گا جو اشتراک کردہ فولڈر '<ph name="DESTINATION_NAME" />' کو دیکھ سکتا ہے۔</translation>
 <translation id="5649768706273821470">سنیں</translation>
+<translation id="5665074015635552640">آپ کی حالیہ ویڈیوز یہاں ظاہر ہوں گی</translation>
 <translation id="5669691691057771421">‏نیا PIN درج کریں</translation>
 <translation id="5678784840044122290">‏Linux ایپلیکیشن آپ کے 'ٹرمنل' کے اندر دستیاب ہوگی اور آپ کے لانچر میں بھی ایک آئیکن ظاہر ہو سکتا ہے۔</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />کسی آرکائیو یا ورچوئل ڈسک سے غیر منسلک نہیں ہو سکتا<ph name="END_BOLD" />
@@ -668,6 +673,7 @@
 <translation id="6823166707458800069">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خودکار طور پر آن لائن بیک اپ لیا جاتا ہے۔</translation>
 <translation id="6825883775269213504">روسی</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> کو انتخاب سے ہٹا دیا گیا۔</translation>
+<translation id="6848194403851638089">‏<ph name="ORGANIZATION_NAME" /> نے اپنی تمام Google Workspace اسٹوریج استعمال کر لی ہے۔</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، تفصیلات</translation>
 <translation id="6861394552169064235">فارسی</translation>
 <translation id="6862635236584086457">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خود بخود آن لائن بیک اپ لے لیا جاتا ہے۔</translation>
@@ -686,6 +692,7 @@
     <ph name="FILE_COUNT" /> ملیں</translation>
 <translation id="6935521024859866267">اوپری کی جانب سے نیچے</translation>
 <translation id="6943836128787782965">‏HTTP ناکام ہوگیا</translation>
+<translation id="6945604978460872381">آپ کی حالیہ دستاویزات یہاں ظاہر ہوں گی</translation>
 <translation id="6949408524333579394">سربیائی نقل حرفی</translation>
 <translation id="6954309393500027528">آپ کے منتظم کی جانب سے اس فائل کو پیسٹ کرنا مسدود کر دیا گیا ہے</translation>
 <translation id="6960565108681981554">فعال نہیں ہے۔ اپنے کیریئر سے رابطہ کریں۔</translation>
@@ -699,6 +706,7 @@
 <translation id="6989942356279143254">سویڈش</translation>
 <translation id="6990081529015358884">آپ کے پاس جگہ ختم ہو گئی ہے</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> فولڈرز منتخب کر لیے گئے</translation>
+<translation id="7008426324576352165">آپ کی تنظیم کو اپ لوڈ مکمل کرنے کے لیے مزید اسٹوریج کی ضرورت ہے۔</translation>
 <translation id="7012943028104619157">‎<ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">انسٹالیشن ناکام ہو گیا۔</translation>
 <translation id="7031639531908619281">ترکی</translation>
@@ -732,6 +740,7 @@
 <translation id="7295662345261934369">دوسروں کے ساتھ اشتراک کریں</translation>
 <translation id="7297443947353982503">‏صارف نام/پاس ورڈ غلط ہے یا EAP توثیق ناکام ہو گئی</translation>
 <translation id="7309413087278791451">جرمن (بیلجیئم)</translation>
+<translation id="7313374447885864533">آپ کی حالیہ آڈیو فائلز یہاں ظاہر ہوں گی</translation>
 <translation id="7339898014177206373">نئی ونڈو</translation>
 <translation id="7343393116438664539">‏ویتنامی Telex</translation>
 <translation id="7357762654218998920">‏فائل کی یہ قسم غیر تعاون یافتہ ہے۔ ChromeOS پر فائلز کھولنے کے بارے میں <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" />۔</translation>
@@ -865,6 +874,7 @@
 <translation id="8342318071240498787">اسی نام کی ایک فائل یا ڈائریکٹری پہلے سے موجود ہے۔</translation>
 <translation id="8372369524088641025">‏غلط WEP کلید</translation>
 <translation id="8372852072747894550">يونانی</translation>
+<translation id="8384716930968677505">آپ کی حالیہ تصاویر یہاں ظاہر ہوں گی</translation>
 <translation id="8386903983509584791">اسکین مکمل ہو گیا</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> کو ایکسٹریکٹ کیا گیا۔</translation>
 <translation id="8395901698320285466">ڈائمینشنز</translation>
@@ -932,11 +942,13 @@
 <translation id="8919081441417203123">ڈينش</translation>
 <translation id="8965697826696209160">اس میں کافی جگہ نہیں ہے۔</translation>
 <translation id="8997962250644902079">‏چینی (روایتی) Pinyin</translation>
+<translation id="8998871447376656508">‏اپ لوڈ مکمل کرنے کے لیے آپ کی Google Drive میں کافی خالی اسپیس نہیں ہے۔</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
 <translation id="9017798300203431059">روسی فونیٹک</translation>
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9035012421917565900">آئٹمز '<ph name="DESTINATION_NAME" />' میں واپس منتقل نہیں کیے جا سکتے، اسلئے آپ اس کارروائي کو کالعدم نہیں کر سکیں گے۔</translation>
 <translation id="9035689366572880647">‏موجودہ PIN درج کریں</translation>
+<translation id="9037777873893411148">*تنظیم کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ براہ کرم ایک مختلف نام منتخب کریں۔</translation>
 <translation id="9046895021617826162">منسلک کرنا ناکام ہوگیا</translation>
 <translation id="9065512565307033593">اگر آپ توثیق کرنے میں ناکام ہوتے ہیں تو آپ کے نیٹ ورک کی رسائی کو غیر فعال کر دیا جائے گا۔</translation>

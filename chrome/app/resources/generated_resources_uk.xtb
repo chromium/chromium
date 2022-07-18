@@ -1618,7 +1618,6 @@
 <translation id="2471506181342525583">Доступ до геоданих надано</translation>
 <translation id="2473195200299095979">Перекласти цю сторінку</translation>
 <translation id="2475982808118771221">Сталася помилка</translation>
-<translation id="2476578072172137802">Налаштування сайтів</translation>
 <translation id="2476974672882258506">Щоб видалити <ph name="PARALLELS_DESKTOP" />, завершіть роботу Windows.</translation>
 <translation id="2477065602824695373">Оскільки ви налаштували кілька перемикачів, автосканування вимкнено.</translation>
 <translation id="2478176599153288112">Дозволи медіа-файлу для розширення "<ph name="EXTENSION" />"</translation>
@@ -3228,6 +3227,7 @@
 <translation id="402211067068791756">Буде видалено <ph name="TOTAL_USAGE" /> даних, збережених показаними сайтами</translation>
 <translation id="4022426551683927403">&amp;Додати до словника</translation>
 <translation id="4025039777635956441">Вимкнути звук на вибраному сайті</translation>
+<translation id="4027958407426528157">Відкривати веб-сайти в додатках, установлених на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Додати методи введення</translation>
 <translation id="4029556917477724407">Повернутися назад зі сторінки "<ph name="PAGE_TITLE" />"</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
@@ -3367,6 +3367,7 @@
 <translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" /> і <ph name="SECOND_CUSTODIAN_EMAIL" /> керують цим обліковим записом для дітей.</translation>
 <translation id="4163560723127662357">Невідома клавіатура</translation>
 <translation id="4165942112764990069">Електронна адреса <ph name="USER_EMAIL" /> не належить дійсній організації. Зв’яжіться з адміністратором. Якщо ви адміністратор, можете налаштувати організацію на сторінці g.co/ChromeEnterpriseAccount</translation>
+<translation id="4165986682804962316">Налаштування сайтів</translation>
 <translation id="4167393659000039775">Компанія Google не несе відповідальності за втрату даних і не гарантує, що ОС <ph name="DEVICE_OS" /> працюватиме на несертифікованих моделях. Докладніше: g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Сайти використовують JavaScript для показу інтерактивних функцій, як-от відеоігри або веб-форми</translation>
 <translation id="4168015872538332605">Деякі налаштування, які встановив користувач <ph name="PRIMARY_EMAIL" />, доступні для вас. Ці налаштування впливають на ваш обліковий запис, лише коли використовується паралельний вхід.</translation>
@@ -6581,6 +6582,7 @@
 <translation id="7377481913241237033">Підключити за допомогою коду</translation>
 <translation id="7378611153938412599">Ненадійні паролі можна легко вгадати, тому переконайтеся, що ваші є безпечними. <ph name="BEGIN_LINK" />Перегляньте інші поради щодо безпеки<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Відкрити Веб-магазин Chrome</translation>
+<translation id="737938816678769289">Легко підключайтеся до пристроїв поруч і налаштовуйте для них швидку пару</translation>
 <translation id="7380459290951585794">Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено</translation>
 <translation id="7380622428988553498">Назва пристрою містить недійсні символи</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> оновлено</translation>

@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2163152940313951844">حرف غير صالح: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">البرتغالية باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
+<translation id="2193661397560634290">مساحة التخزين المستخدمة: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">الصينية المبسطة</translation>
 <translation id="22085916256174561">الكورية</translation>
 <translation id="2208919847696382164">‏تثبيت باستخدام نظام التشغيل Linux</translation>
@@ -193,6 +194,7 @@
 <translation id="2621713457727696555">مؤمّنة</translation>
 <translation id="2638942478653899953">‏تعذر الوصول إلى Google Drive. يُرجى <ph name="BEGIN_LINK" />الخروج<ph name="END_LINK" /> ثم تسجيل الدخول مرة أخرى.</translation>
 <translation id="2649120831653069427">أسماك رينبو فيش</translation>
+<translation id="2653059201992392941">يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="2663066752008346276">البورمية/ميانمار باستخدام لوحة مفاتيح ميانمار ميانسان</translation>
 <translation id="2664412712123763093">موقع الملف</translation>
 <translation id="2718540689505416944">‏تثبيت التطبيق باستخدام نظام التشغيل Linux</translation>
@@ -200,6 +202,7 @@
 <translation id="2724954091494693138">‏التركية باستخدام لوحة مفاتيح F</translation>
 <translation id="2732839045120506979">‏الفيتنامية باستخدام لوحة مفاتيح VNI</translation>
 <translation id="2735623501230989521">‏يمكنك منح نظام Parallels Desktop الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
+<translation id="2764206540577097904">‏لقد استهلكت كل مساحة التخزين الشخصية على Google Workspace.</translation>
 <translation id="2771816809568414714">جبن</translation>
 <translation id="2781645665747935084">البلجيكية</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
@@ -220,6 +223,7 @@
 <translation id="2943503720238418293">استخدم اسم أقصر</translation>
 <translation id="2949781154072577687">جارٍ ضبط <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">قنديل البحر</translation>
+<translation id="2958458230122209142">مساحة التخزين منخفضة. يتبقى %<ph name="REMAINING_PERCENTAGE" /> من إجمالي مساحة التخزين الشخصية التي تبلغ <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. يُرجى البحث في سوق Chrome الإلكتروني للحصول على تطبيق بديل مناسب.</translation>
 <translation id="2984337792991268709">اليوم <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">جارٍ استعادة <ph name="COUNT" /> ملف...</translation>
@@ -527,6 +531,7 @@
 <translation id="5489067830765222292">اللاتفية</translation>
 <translation id="5489965683297092283">تم إيقاف الفلتر <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
+<translation id="5500104704744051184">‏لن تتمكّن من استخدام هذه الشبكة إلى بعد إدخال رمز PUK.</translation>
 <translation id="5500122897333236901">الأيسلندية</translation>
 <translation id="5508696409934741614">نقاط</translation>
 <translation id="5522908512596376669">تم تغيير قائمة الملفات إلى عرض القائمة.</translation>
@@ -633,6 +638,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> من العناصر</translation>
 <translation id="642282551015776456">لا يمكن استخدام هذا الاسم كملف باسم مجلد</translation>
 <translation id="6423031066725912715">‏الفيتنامية باستخدام لوحة مفاتيح TCVN</translation>
+<translation id="6430271654280079150">يتبقى لديك محاولة واحدة.</translation>
 <translation id="6485131920355264772">تعذّر جلب معلومات المساحة</translation>
 <translation id="6495925982925244349">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="649877868557234318">جارٍ استخراج الملف <ph name="FILE_NAME" /> إلى المجلّد <ph name="FOLDER_NAME" /></translation>
@@ -667,6 +673,7 @@
 <translation id="6823166707458800069">يتم الاحتفاظ بنسخة احتياطية من جميع الملفات المحفوظة في هذا المجلد تلقائيًا على الإنترنت.</translation>
 <translation id="6825883775269213504">الروسية</translation>
 <translation id="6847101934483209767">تمت إزالة <ph name="ENTRY_NAME" /> من الاختيار.</translation>
+<translation id="6848194403851638089">‏لقد استهلكت المؤسسة <ph name="ORGANIZATION_NAME" /> كل مساحة التخزين المخصَّصة لها على Google Workspace.</translation>
 <translation id="6856459657722366306">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="6861394552169064235">الفارسية</translation>
 <translation id="6862635236584086457">جميع الملفات المحفوظة في هذا المجلد يتم الاحتفاظ بنسخة احتياطية منها تلقائيًا على الإنترنت</translation>
@@ -698,6 +705,7 @@
 <translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
 <translation id="6998711733709403587">تم اختيار <ph name="SELCTED_FOLDERS_COUNT" /> من المجلدات</translation>
+<translation id="7008426324576352165">تحتاج مؤسستك إلى مساحة تخزين إضافية لإكمال التحميل.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7031639531908619281">التركية</translation>
@@ -899,6 +907,7 @@
 <translation id="8579285237314169903">جارٍ مزامنة <ph name="NUMBER_OF_FILES" /> من البنود...</translation>
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
+<translation id="8608515571837163082">‏لقد أدخلت رقم تعريف شخصي غير صحيح عدّة مرات. أدخِل مفتاح إزالة الحظر (PUK) المكوّن من 8 أرقام والمتوفّر من خلال مشغّل شبكة الجوّال.</translation>
 <translation id="8609695766746872526">الآيسلندية</translation>
 <translation id="863903787380594467">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - منفذ</translation>
@@ -930,11 +939,13 @@
 <translation id="8919081441417203123">الدانماركية</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
 <translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
+<translation id="8998871447376656508">‏لا تتوفّر مساحة كافية في Google Drive لإكمال التحميل.</translation>
 <translation id="9003940392834790328">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="9017798300203431059">روسية صوتية</translation>
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
 <translation id="9035012421917565900">لا يمكن نقل العناصر مرة أخرى إلى '<ph name="DESTINATION_NAME" />'، لذلك لن تتمكن من التراجع عن هذا الإجراء.</translation>
 <translation id="9035689366572880647">إدخال رقم التعريف الشخصي الحالي</translation>
+<translation id="9037777873893411148">*مساحة التخزين المتوفّرة للمؤسسة ممتلئة</translation>
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>

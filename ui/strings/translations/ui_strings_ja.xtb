@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">読み上げを開始</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4306392492252714209">クリップボードから削除します。</translation>
+<translation id="4311195029067684288">100%</translation>
 <translation id="4491109536499578614">画像</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4588090240171750605">右にスクロール</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">電話をかける</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="4971687151119236543">メディアの前のトラック</translation>
+<translation id="4971925105143343452">一部</translation>
 <translation id="5046499563572181734">ここをタップしてください</translation>
 <translation id="5076340679995252485">貼り付け(&amp;P)</translation>
+<translation id="5123162024343028706">上部に表示</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">送信できませんでした</translation>
 <translation id="528468243742722775">終了</translation>

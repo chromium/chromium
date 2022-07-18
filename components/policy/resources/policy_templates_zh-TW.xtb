@@ -2525,6 +2525,18 @@
 <translation id="3660562134618097814">登入時移轉 SAML IdP Cookie</translation>
 <translation id="3665437376055221832">只在沒有任何符合自動選取政策的憑證時提示使用者。</translation>
 <translation id="3674010627788940405">不支援 CORS 非萬用字元要求標頭。</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) 常用來細分長時間的 JavaScript 工作。
+          如果將這項政策設為啟用，系統不會迅速調整間隔時間小於 4 毫秒的 setTimeouts 和 setIntervals。
+          這麼做可以提升短期執行效能，但如果網站濫用 API，系統最終仍會調整該網站的 setTimeouts。
+
+          如果將這項政策設為停用，系統將調整間隔時間小於 4 毫秒的 setTimeouts 和 setIntervals。
+          這麼做可能會改變網頁上的工作排序，導致僅依照某種特定排序方式執行工作的網站出現異常行為。
+          此外，這麼做也可能會影響將許多 setTimeout() 設為逾時 0 毫秒的網站，例如增加 CPU 負載。
+
+          對於未設定這項政策的使用者，<ph name="PRODUCT_NAME" /> 將在穩定版上逐步推出變更。
+
+          這是暫時性政策，預計會在 <ph name="PRODUCT_NAME" /> 107 中移除。如果許多企業需要使用，我們也許會延長這個期限。
+          </translation>
 <translation id="3685979383016152590">你可以透過這項政策指定要套用到大量印表機設定的存取權政策，藉此控管要為使用者提供 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 的哪些印表機。
 
       * <ph name="PRINTERS_BLOCKLIST" /> (值為 0) 會採用 <ph name="PRINTERS_BULK_BLOCKLIST" />，禁止使用者存取特定印表機
@@ -5574,6 +5586,13 @@
 <translation id="7101550508196914704">不在書籤列中顯示應用程式捷徑</translation>
 <translation id="7109384070286741861">停用 CECPQ2</translation>
 <translation id="7114169791477667553">停用預設搜尋引擎</translation>
+<translation id="7121046543122812054">這項政策已遭淘汰，建議改用「<ph name="BROWSER_SIGNIN_POLICY_NAME" />」。
+
+      允許使用者登入 <ph name="PRODUCT_NAME" />。
+
+      如果將這項政策設為啟用，使用者就能登入 <ph name="PRODUCT_NAME" />。
+      如果將這項政策設為停用，使用者就無法登入，使用 chrome.identity API 的應用程式和擴充功能也將無法運作。如要避免這種情況，請改用「<ph name="SYNC_DISABLED_POLICY_NAME" />」。
+      </translation>
 <translation id="7122626777103192518">如果將這項政策設為 True，就可以透過內建的 Android 分享系統，將 Android 應用程式中的文字/檔案分享到支援的網頁應用程式。
       本功能啟用時，系統會針對已安裝的網頁應用程式將中繼資料傳送給 Google，藉此產生並安裝這些應用程式與 Android 相容的版本。
       如果將這項政策設為 False，則可停用此功能。</translation>

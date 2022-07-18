@@ -1597,7 +1597,6 @@
 <translation id="2471506181342525583">स्थानसम्बन्धी जानकारी प्रयोग गर्न अनुमति दिइयो</translation>
 <translation id="2473195200299095979">यो पृष्ठलाई अनुवाद गर्नुहोस्</translation>
 <translation id="2475982808118771221">त्रुटि भयो</translation>
-<translation id="2476578072172137802">साइट सेटिङ</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइन्स्टल गर्न Windows बन्द गर्नुहोस्।</translation>
 <translation id="2477065602824695373">तपाईंले एकभन्दा बढी स्विच सेटअप गर्नुभएकाले अटो-स्क्यान गर्ने सुविधा अफ गरिएको छ।</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" को लागि मिडिया</translation>
@@ -3207,6 +3206,7 @@
 <translation id="402211067068791756">तपाईंले यसो गर्नुभयो भने देखाइएका साइटहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटिने छ</translation>
 <translation id="4022426551683927403">शब्दकोषमा &amp;थप्नुहोस्</translation>
 <translation id="4025039777635956441">चयन गरिएको साइट म्युट गर्नुहोस्</translation>
+<translation id="4027958407426528157">मेरो <ph name="DEVICE_TYPE" /> मा इन्स्टल गरिएका एपहरूमा वेबसाइटहरू खोलिऊन्</translation>
 <translation id="4028467762035011525">इनपुट विधिहरू थप्नुहोस्</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> नामक पेजबाट अघिल्लो पेजमा फर्कनुहोस्</translation>
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
@@ -3346,6 +3346,7 @@
 <translation id="4159681666905192102">यो बच्चाहरूको लागि खाता <ph name="CUSTODIAN_EMAIL" /> र <ph name="SECOND_CUSTODIAN_EMAIL" /> द्वारा व्यवस्थित गरिएको हो।</translation>
 <translation id="4163560723127662357">अज्ञात कुँजीपाटी</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> वैध सङ्गठनको इमेल ठेगाना होइन। आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्। तपाईं एड्मिन हुनुहुन्छ भने तपाईं निम्न लिंकमा गएर आफ्नो सङ्गठन सेटअप गर्न सक्नुहुन्छ: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4165986682804962316">साइट सेटिङहरू</translation>
 <translation id="4167393659000039775">कुनै पनि डेटा गुमेका खण्डमा Google जिम्मेवार हुने छैन र <ph name="DEVICE_OS" /> ले प्रमाणित नगरिएका मोडेलहरूमा काम नगर्न सक्छ। g.co/flex/InstallGuide मा गई थप जान्नुहोस्।</translation>
 <translation id="4167686856635546851">साइटहरूले भिडियो गेम वा वेब फारम जस्ता अन्तर्क्रियात्मक सुविधाहरू देखाउन सामान्यतया JavaScript प्रयोग गर्छन्</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> का केही सेटिङहरू तपाइँसँग साझा भइरहेको छ। यस सेटिङहरूले बहुविध साइन-इन प्रयोग गर्दै मात्रै तपाइँको खातालाई असर गर्छ।</translation>
@@ -6555,6 +6556,7 @@
 <translation id="7377481913241237033">कोड प्रयोग गरी कनेक्ट गर्नुहोस्</translation>
 <translation id="7378611153938412599">कमजोर पासवर्डहरू सजिलै अनुमान लगाउन सकिन्छ। त्यसैले भरपर्दा पासवर्डहरू राख्न नबिर्सनुहोला। <ph name="BEGIN_LINK" />सुरक्षासम्बन्धी थप सुझावहरू हेर्नुहोस्।<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome वेब स्टोर खोल्नुहोस्</translation>
+<translation id="737938816678769289">नजिकै रहेका फास्ट पेयर डिभाइसहरू सजिलै कनेक्ट तथा सेटअप गर्नुहोस्</translation>
 <translation id="7380459290951585794">तपाईंको फोन नजिकै छ, अनलक गरिएको छ र उक्त फोनको ब्लुटुथ तथा Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7380622428988553498">यन्त्रको नाममा अवैध वर्णहरू छन्</translation>
 <translation id="7380768571499464492">अद्यावधिक गरियो <ph name="PRINTER_NAME" /></translation>

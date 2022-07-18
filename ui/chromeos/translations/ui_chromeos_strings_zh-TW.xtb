@@ -185,8 +185,10 @@
 <translation id="2544853746127077729">網路已拒絕驗證憑證</translation>
 <translation id="255937426064304553">美國國際</translation>
 <translation id="2563185590376525700">青蛙</translation>
+<translation id="2570012981255377263">最近存取的檔案會顯示在這裡</translation>
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
 <translation id="2579959351793446050">歐利亞文</translation>
+<translation id="2593644851255584939">管理員要求你停用 SIM 卡鎖定功能。</translation>
 <translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，遭到管理員封鎖，詳細資料</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 影片</translation>
 <translation id="2617342710774726426">SIM 卡已鎖定</translation>
@@ -547,6 +549,7 @@
 <translation id="5625294776298156701">泰米爾文搭配 Tamil99 鍵盤</translation>
 <translation id="5633226425545095130">這個項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
 <translation id="5649768706273821470">聆聽</translation>
+<translation id="5665074015635552640">最近存取的影片會顯示在這裡</translation>
 <translation id="5669691691057771421">輸入新的 PIN 碼</translation>
 <translation id="5678784840044122290">這個 Linux 應用程式將出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />無法與封存檔或虛擬磁碟中斷連結<ph name="END_BOLD" />
@@ -691,6 +694,7 @@
     找到 <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">上下顛倒</translation>
 <translation id="6943836128787782965">HTTP 擷取失敗</translation>
+<translation id="6945604978460872381">最近存取的文件會顯示在這裡</translation>
 <translation id="6949408524333579394">塞爾維亞文 (音譯)</translation>
 <translation id="6954309393500027528">你的系統管理員禁止你貼上這個檔案</translation>
 <translation id="6960565108681981554">未啟用。請與你的電信業者聯絡。</translation>
@@ -738,6 +742,7 @@
 <translation id="7295662345261934369">與他人共用</translation>
 <translation id="7297443947353982503">使用者名稱/密碼錯誤或 EAP 驗證失敗</translation>
 <translation id="7309413087278791451">德文 (比利時)</translation>
+<translation id="7313374447885864533">最近存取的音訊檔案會顯示在這裡</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7343393116438664539">越南文 (Telex)</translation>
 <translation id="7357762654218998920">系統不支援這種檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
@@ -871,6 +876,7 @@
 <translation id="8342318071240498787">已存在名稱相同的檔案或目錄。</translation>
 <translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8372852072747894550">希臘文</translation>
+<translation id="8384716930968677505">最近存取的圖片會顯示在這裡</translation>
 <translation id="8386903983509584791">掃描完成</translation>
 <translation id="8387733224523483503">已擷取「<ph name="FILE_NAME" />」。</translation>
 <translation id="8395901698320285466">尺寸</translation>

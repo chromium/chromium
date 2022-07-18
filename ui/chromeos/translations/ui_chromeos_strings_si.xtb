@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">අද</translation>
 <translation id="2163152940313951844">අවලංගු අනුලකුණ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">එ.ජ. ජාත්‍යන්තර PC යතුරුපුවරුව සමඟ පෘතුගීසි</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> භාවිත කළා</translation>
 <translation id="2198315389084035571">සරල කළ චීන</translation>
 <translation id="22085916256174561">කොරියානු</translation>
 <translation id="2208919847696382164">Linux සමග ස්ථාපනය කරන්න</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">F-යතුරුපුවරුව සමග තුර්කි</translation>
 <translation id="2732839045120506979">වියට්නාම VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop හට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසර දෙන්න</translation>
+<translation id="2764206540577097904">ඔබ තනි පුද්ගල Google Workspace ආචයනය සම්පූර්ණයෙන් භාවිත කර ඇත.</translation>
 <translation id="2771816809568414714">චීස්</translation>
 <translation id="2781645665747935084">බෙල්ජියම</translation>
 <translation id="2782104745158847185">Linux යෙදුම් ස්ථාපනය කිරීමේ දෝෂයකි</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">කෙටි නමක් භාවිතා කරන්න</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> හැඩතල ගන්වමින්...</translation>
 <translation id="2951236788251446349">ජෙලිෆිෂ්</translation>
+<translation id="2958458230122209142">ආචයනය අඩුයි, ඔබේ <ph name="TOTAL_SPACE" /> ක තනි පුද්ගල ආචනයනයෙන් <ph name="REMAINING_PERCENTAGE" />% ක් ඉතුරුයි.</translation>
 <translation id="2977940621473452797">මෙම ගොනුව Macintosh මෘදුකාංගය භාවිත කරන පරිගණකයක් සඳහා සැලසුම් කර ඇත. මෙය ඔබගේ ChromeOS ධාවනය වන උපාංගය සමඟ නොගැළපේ. කරුණාකර ගැළපෙන ප්‍රතිස්ථාපන යෙදුමක් Chrome Web Store හි සොයන්න.</translation>
 <translation id="2984337792991268709">අද <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">අයිතම <ph name="COUNT" />ක් ප්‍රතිසාධනය කරමින්...</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">මෙම ෆෝල්ඩරයේ සියලු ගොනු ස්වයංක්‍රීයව සබැඳිව උපස්ථ කෙරේ.</translation>
 <translation id="6825883775269213504">රුසියානු</translation>
 <translation id="6847101934483209767">තේරීමෙන් <ph name="ENTRY_NAME" /> ඉවත් කළා.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> එහි සියලු Google Workspace ආචයනය භාවිත කර ඇත.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="6861394552169064235">පර්සියානු</translation>
 <translation id="6862635236584086457">මෙම ෆෝල්ඩරයේ සියළු ගොනු ස්වයංක්‍රියව මාර්ගගතව උපස්ථ වේ</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">ස්වීඩන</translation>
 <translation id="6990081529015358884">ඔබගේ ඉඩ අවසන්ව තිබේ</translation>
 <translation id="6998711733709403587">ෆෝල්ඩර <ph name="SELCTED_FOLDERS_COUNT" />ක් තෝරාගැනිණි</translation>
+<translation id="7008426324576352165">ඔබේ ආයතනය උඩුගත කිරීම සම්පූර්ණ කිරීමට තව ආචයනය අවශ්‍ය කරයි.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> <ph name="ROOT_SUMMARY" /></translation>
 <translation id="7014174261166285193">ස්ථාපනය අසමත් විය.</translation>
 <translation id="7031639531908619281">තුර්කි</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">ඩෙන්මාර්ක</translation>
 <translation id="8965697826696209160">ප්‍රමාණවත් මතකයක් නැත.</translation>
 <translation id="8997962250644902079">චීන (සාම්ප්‍රදායික) පින්යින්</translation>
+<translation id="8998871447376656508">උඩුගත කිරීම සම්පූර්ණ කිරීමට ඔබේ Google Drive තුළ ප්‍රමාණවත් නිදහස් ඉඩ නැත.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="9017798300203431059">රුසියානු ශබ්දානුකූල</translation>
 <translation id="9034924485347205037">Linux ගොනු</translation>
 <translation id="9035012421917565900">අයිතම නැවත '<ph name="DESTINATION_NAME" />' වෙත ගෙන යාමට නොහැකිය, එබැවින් ඔබට මෙම ක්‍රියාව පසුගමනය කළ නොහැකි වනු ඇත.</translation>
 <translation id="9035689366572880647">වත්මන් PIN ඇතුළු කරන්න</translation>
+<translation id="9037777873893411148">*සංවිධානයේ ආචයනය පිරී ඇත</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" නමැති ගොනුව දැනටමත් පවතියි . වෙනත් නමක් තෝරන්න.</translation>
 <translation id="9046895021617826162">සම්බන්ධය අසාර්ථකයි</translation>
 <translation id="9065512565307033593">ඔබ සත්‍යාපනය කිරීමට අපොහොසත් වුවහොත්, ඔබගේ ජාල ප්‍රවේශය අබල කරනු ඇත.</translation>

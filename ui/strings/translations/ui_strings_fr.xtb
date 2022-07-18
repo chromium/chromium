@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Commencer à parler</translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4306392492252714209">Supprimer du presse-papiers.</translation>
+<translation id="4311195029067684288">Plein écran</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4588090240171750605">Défilement vers la droite</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">Passer un appel</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 seconde}one{# seconde}other{# secondes}}</translation>
 <translation id="4971687151119236543">Contenu multimédia : titre précédent</translation>
+<translation id="4971925105143343452">Partielle</translation>
 <translation id="5046499563572181734">Appuyez ici</translation>
 <translation id="5076340679995252485">C&amp;oller</translation>
+<translation id="5123162024343028706">Placer au premier plan</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
 <translation id="5278860589123563674">Échec de l'envoi</translation>
 <translation id="528468243742722775">Fin</translation>

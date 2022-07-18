@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2163152940313951844">अमान्य वर्ण : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ पॉर्चुगीज़</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> का इस्तेमाल किया गया</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="22085916256174561">कोरियन</translation>
 <translation id="2208919847696382164">Linux ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">एफ़-कीबोर्ड के साथ टर्किश</translation>
 <translation id="2732839045120506979">वियतनामीज़ वीएनआई</translation>
 <translation id="2735623501230989521">Parallels Desktop को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलें ऐक्सेस करने की अनुमति दें</translation>
+<translation id="2764206540577097904">आपने Google Workspace के अपने निजी स्टोरेज का पूरा इस्तेमाल कर लिया है.</translation>
 <translation id="2771816809568414714">पनीर</translation>
 <translation id="2781645665747935084">बेल्जियाई</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">थोड़े छोटे नाम का इस्तेमाल करें</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट किया जा रहा है...</translation>
 <translation id="2951236788251446349">जेलीफ़िश</translation>
+<translation id="2958458230122209142">आपके <ph name="TOTAL_SPACE" /> निजी स्टोरेज में सिर्फ़ <ph name="REMAINING_PERCENTAGE" />% स्टोरेज बचा है.</translation>
 <translation id="2977940621473452797">यह फ़ाइल, Mac OS वाले कंप्यूटर के लिए बनाई गई है. यह ChromeOS वाले डिवाइस पर काम नहीं करती. कृपया, Chrome वेब स्टोर पर कोई ऐसा ऐप्लिकेशन खोजें जिसके साथ यह फ़ाइल काम करती हो.</translation>
 <translation id="2984337792991268709">आज <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> आइटम वापस लाए जा रहे हैं...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">इस फ़ोल्डर में सेव की गई सभी फ़ाइलों का ऑनलाइन बैक अप अपने-आप लिया जाता है.</translation>
 <translation id="6825883775269213504">रूसी</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> को चुनी गई चीज़ों से हटाया गया.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ने Google Workspace का अपना पूरा स्टोरेज इस्तेमाल कर लिया है.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="6861394552169064235">फ़ारसी</translation>
 <translation id="6862635236584086457">इस फ़ोल्डर में सहेजी गई सभी फ़ाइलों का अपने आप ऑनलाइन बैकअप लिया जाता है</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">अब आपके पास और स्‍थान शेष नहीं है</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फ़ोल्‍डर चयनित</translation>
+<translation id="7008426324576352165">अपलोड को पूरा करने के लिए, आपके संगठन को ज़्यादा स्टोरेज की ज़रूरत है.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">स्थापना विफल.</translation>
 <translation id="7031639531908619281">तुर्की</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">डैनिश</translation>
 <translation id="8965697826696209160">काफ़ी स्थान नहीं है.</translation>
 <translation id="8997962250644902079">चाइनीज़ (परंपरागत) पिनयिन</translation>
+<translation id="8998871447376656508">अपलोड को पूरा करने के लिए, आपके Google Drive में ज़रूरत के मुताबिक खाली जगह नहीं है.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>
 <translation id="9017798300203431059">रूसी फ़ोनेटिक</translation>
 <translation id="9034924485347205037">Linux की फ़ाइलें</translation>
 <translation id="9035012421917565900">ये आइटम '<ph name="DESTINATION_NAME" />' में वापस नहीं ले जाए जा सकते हैं, इसलिए आप इस कार्रवाई को पहले जैसा नहीं कर सकेंगे.</translation>
 <translation id="9035689366572880647">मौजूदा पिन डालें</translation>
+<translation id="9037777873893411148">*संगठन के डिवाइस का स्टोरेज भर गया है</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम की फ़ाइल पहले से मौजूद है. कृपया कोई दूसरा नाम चुनें.</translation>
 <translation id="9046895021617826162">कनेक्ट करना विफल</translation>
 <translation id="9065512565307033593">अगर आप पुष्टि नहीं कर पाते, तो आपके नेटवर्क का ऐक्सेस बंद कर दिया जाएगा.</translation>

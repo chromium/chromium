@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2163152940313951844">Caràcter no vàlid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguès amb teclat internacional dels EUA (PC)</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> en ús</translation>
 <translation id="2198315389084035571">Xinès simplificat</translation>
 <translation id="22085916256174561">Coreà</translation>
 <translation id="2208919847696382164">Instal·la per a Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turc amb teclat F</translation>
 <translation id="2732839045120506979">Vietnamita (VNI)</translation>
 <translation id="2735623501230989521">Dona permís a Parallels Desktop per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Has fet servir tot el teu emmagatzematge individual de Google Workspace.</translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">S'ha produït un error en instal·lar l'aplicació per a Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Utilitza un nom més curt</translation>
 <translation id="2949781154072577687">S'està formatant <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medusa</translation>
+<translation id="2958458230122209142">Hi ha poc emmagatzematge. Queda un <ph name="REMAINING_PERCENTAGE" />% de l'emmagatzematge individual (<ph name="TOTAL_SPACE" />).</translation>
 <translation id="2977940621473452797">Aquest fitxer està dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a Chrome Web Store.</translation>
 <translation id="2984337792991268709">Avui a les <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">S'estan restaurant <ph name="COUNT" /> elements...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Es crea automàticament una còpia de seguretat en línia de tots els fitxers desats en aquesta carpeta.</translation>
 <translation id="6825883775269213504">Rus</translation>
 <translation id="6847101934483209767">S'ha suprimit <ph name="ENTRY_NAME" /> de la selecció.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ha fet servir tot el seu emmagatzematge de Google Workspace.</translation>
 <translation id="6856459657722366306">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="6861394552169064235">Persa</translation>
 <translation id="6862635236584086457">Es crea automàticament una còpia de seguretat en línia de tots els fitxers desats en aquesta carpeta</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">Suec</translation>
 <translation id="6990081529015358884">Us heu quedat sense espai</translation>
 <translation id="6998711733709403587">S'han seleccionat <ph name="SELCTED_FOLDERS_COUNT" /> carpetes</translation>
+<translation id="7008426324576352165">La teva organització requereix més emmagatzematge per completar la pujada.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">La instal·lació ha fallat.</translation>
 <translation id="7031639531908619281">Turc</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">Danès</translation>
 <translation id="8965697826696209160">No hi ha prou espai.</translation>
 <translation id="8997962250644902079">Xinès tradicional (pinyin)</translation>
+<translation id="8998871447376656508">No hi ha prou espai lliure a Google Drive per completar la pujada.</translation>
 <translation id="9003940392834790328">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, detalls</translation>
 <translation id="9017798300203431059">Fonètic rus</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9035012421917565900">Com que els elements no es poden retornar a <ph name="DESTINATION_NAME" />, aquesta acció no es pot desfer.</translation>
 <translation id="9035689366572880647">Introdueix el PIN actual</translation>
+<translation id="9037777873893411148">* L'emmagatzematge de l'organització és ple</translation>
 <translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
 <translation id="9046895021617826162">S'ha produït un error en la connexió</translation>
 <translation id="9065512565307033593">Si no fas la verificació, l'accés a la xarxa es desactivarà.</translation>

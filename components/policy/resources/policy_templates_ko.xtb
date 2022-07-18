@@ -462,6 +462,14 @@
 
       참고: 이 정책은 행아웃 서비스 확장 프로그램과 같은 구성요소 확장 프로그램에도 적용됩니다.</translation>
 <translation id="148194404518916594">사용자가 터치하여 검색을 사용하도록 허용</translation>
+<translation id="1482155585027825793">외부 확장 프로그램 설치를 제어합니다.
+
+      정책을 사용으로 설정하면 외부 확장 프로그램이 설치되지 않습니다.
+
+      정책을 사용 안함으로 설정하거나 설정하지 않은 채로 두면 외부 확장 프로그램을 설치할 수 있습니다.
+
+      외부 확장 프로그램 및 설치 관련 문서는 다음 페이지에서 확인하세요. https://developer.chrome.com/apps/external_extensions
+      </translation>
 <translation id="1486021504508098388">백라이트 정보 보고</translation>
 <translation id="1487916040416013623">정책을 설정하면 통합 인증에 허용되어야 하는 서버가 지정됩니다. 통합 인증은 <ph name="PRODUCT_NAME" />이 허용 목록에 있는 서버 또는 프록시에서 인증 요청을 받은 경우에만 사용 설정됩니다.
 
@@ -1083,6 +1091,10 @@
 <translation id="2076158466157390917">로그인 중 자동 정리 제어</translation>
 <translation id="2077129598763517140">가능한 경우 하드웨어 가속 사용</translation>
 <translation id="2077273864382355561">배터리 전원으로 실행할 때 화면 꺼짐 지연</translation>
+<translation id="2081969239334697268">
+        정책을 사용 안함으로 설정하면 세션 중에 키오스크 Chrome 앱 업데이트(확장 프로그램 매니페스트의 업데이트 URL 사용)가 사용 중지되며 업데이트 메커니즘으로 CRX 프리패치만 사용됩니다.
+        정책을 사용으로 설정하거나 설정하지 않으면 세션 중에 키오스크 Chrome 앱이 업데이트됩니다.
+        </translation>
 <translation id="2082205219176343977">기기에 허용되는 최소 Chrome 버전을 설정합니다.</translation>
 <translation id="208566302163036794">사용 중지된 기능 차단</translation>
 <translation id="208623333578980446">전원 관리를 위해 화면 wake lock 허용</translation>

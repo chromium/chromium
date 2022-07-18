@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">總覽</translation>
 <translation id="4306392492252714209">從剪貼簿中移除。</translation>
+<translation id="4311195029067684288">完整</translation>
 <translation id="4491109536499578614">圖片</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4588090240171750605">向右捲動</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">撥打電話</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="4971687151119236543">上一首媒體曲目</translation>
+<translation id="4971925105143343452">局部</translation>
 <translation id="5046499563572181734">輕觸這裡</translation>
 <translation id="5076340679995252485">貼上(&amp;P)</translation>
+<translation id="5123162024343028706">懸停在上方</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">無法傳送</translation>
 <translation id="528468243742722775">結束</translation>

@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">יש להתחיל לדבר</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4306392492252714209">הסרה מהלוח.</translation>
+<translation id="4311195029067684288">מלא</translation>
 <translation id="4491109536499578614">תמונה</translation>
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4588090240171750605">גלילה ימינה</translation>
@@ -112,8 +113,10 @@
 <translation id="4888938634149558681">התקשרות</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}two{# שניות}many{# שניות}other{# שניות}}</translation>
 <translation id="4971687151119236543">טראק קודם במדיה</translation>
+<translation id="4971925105143343452">חלקי</translation>
 <translation id="5046499563572181734">יש להקיש כאן</translation>
 <translation id="5076340679995252485">&amp;הדבקה</translation>
+<translation id="5123162024343028706">פתיחה בחלון צף</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5278860589123563674">השליחה נכשלה</translation>
 <translation id="528468243742722775">סיום</translation>
