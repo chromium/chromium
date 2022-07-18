@@ -1587,7 +1587,8 @@ class LayerTreeHostTestNoDamageCausesNoInvalidate : public LayerTreeHostTest {
 
 // This behavior is specific to Android WebView, which only uses
 // multi-threaded compositor.
-MULTI_THREAD_TEST_F(LayerTreeHostTestNoDamageCausesNoInvalidate);
+// TODO(https://crbug.com/1345000): Flaky.
+// MULTI_THREAD_TEST_F(LayerTreeHostTestNoDamageCausesNoInvalidate);
 
 // When settings->enable_early_damage_check is true, verify that the early
 // damage check is turned off after |settings->damaged_frame_limit| frames
