@@ -5,6 +5,7 @@ include_rules = [
   "+components/commerce/core/proto/cart_db_content.pb.h",
   "+components/signin/public/identity_manager",
   "+components/prefs",
+  "+components/session_proto_db",
 ]
 
 specific_include_rules = {

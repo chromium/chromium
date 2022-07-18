@@ -6,9 +6,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/search/ntp_features.h"
+#include "components/session_proto_db/session_proto_db.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -33,7 +33,7 @@ cart_db::ChromeCartContentProto BuildProto(
   return proto;
 }
 using ShoppingCarts =
-    std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
+    std::vector<SessionProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
 
 const char kMockMerchantA[] = "foo.com";
 const char kMockMerchantCartURLA[] = "https://www.foo.com/cart";

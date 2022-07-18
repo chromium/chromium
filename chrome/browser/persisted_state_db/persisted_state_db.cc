@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/tab/jni_headers/LevelDBPersistedDataStorage_jni.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "content/public/browser/android/browser_context_handle.h"
@@ -31,7 +31,7 @@ void OnUpdateCallback(
 void OnLoadCallback(
     const base::android::JavaRef<jobject>& jcallback,
     bool success,
-    std::vector<ProfileProtoDB<
+    std::vector<SessionProtoDB<
         persisted_state_db::PersistedStateContentProto>::KeyAndValue> data) {
   if (!success)
     LOG(WARNING) << "There was an error loading from PersistedStateDB";
@@ -44,7 +44,7 @@ void OnLoadCallback(
 
 PersistedStateDB::PersistedStateDB(content::BrowserContext* browser_context)
     : proto_db_(
-          ProfileProtoDBFactory<
+          SessionProtoDBFactory<
               persisted_state_db::PersistedStateContentProto>::GetInstance()
               ->GetForProfile(browser_context)) {}
 

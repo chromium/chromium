@@ -20,7 +20,7 @@ class ChromeCartContentProto;
 }  // namespace cart_db
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 class CartDB {
  public:
@@ -63,7 +63,7 @@ class CartDB {
                              OperationCallback callback);
 
  private:
-  raw_ptr<ProfileProtoDB<cart_db::ChromeCartContentProto>> proto_db_;
+  raw_ptr<SessionProtoDB<cart_db::ChromeCartContentProto>> proto_db_;
   base::WeakPtrFactory<CartDB> weak_ptr_factory_{this};
 };
 

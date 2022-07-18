@@ -7,9 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("persisted_state_db") {
   sources = [
-    "profile_proto_db.h",
-    "profile_proto_db_factory.cc",
-    "profile_proto_db_factory.h",
+    "session_proto_db_factory.cc",
+    "session_proto_db_factory.h",
   ]
 
   if (is_android) {
@@ -24,6 +23,7 @@ source_set("persisted_state_db") {
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
+    "//components/session_proto_db:session_proto_db",
     "//content/public/browser:browser",
     "//third_party/leveldatabase",
   ]

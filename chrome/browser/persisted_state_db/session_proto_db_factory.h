@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_FACTORY_H_
-#define CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_FACTORY_H_
+#ifndef CHROME_BROWSER_PERSISTED_STATE_DB_SESSION_PROTO_DB_FACTORY_H_
+#define CHROME_BROWSER_PERSISTED_STATE_DB_SESSION_PROTO_DB_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -29,33 +29,33 @@ const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 const char kCouponDBFolder[] = "coupon_db";
 }  // namespace
 
-ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
-GetPersistedStateProfileProtoDBFactory();
+SessionProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
+GetPersistedStateSessionProtoDBFactory();
 
 #if !BUILDFLAG(IS_ANDROID)
-ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
-GetChromeCartProfileProtoDBFactory();
-ProfileProtoDBFactory<coupon_db::CouponContentProto>*
-GetCouponProfileProtoDBFactory();
+SessionProtoDBFactory<cart_db::ChromeCartContentProto>*
+GetChromeCartSessionProtoDBFactory();
+SessionProtoDBFactory<coupon_db::CouponContentProto>*
+GetCouponSessionProtoDBFactory();
 #else
-ProfileProtoDBFactory<
+SessionProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*
-GetCommerceSubscriptionProfileProtoDBFactory();
-ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
-GetMerchantSignalProfileProtoDBFactory();
+GetCommerceSubscriptionSessionProtoDBFactory();
+SessionProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
+GetMerchantSignalSessionProtoDBFactory();
 #endif
 
-// Factory to create a ProtoDB per profile and per proto. Incognito is
-// currently not supported and the factory will return nullptr for an incognito
-// profile.
+// Factory to create a ProtoDB per browsing session (BrowserContext) and per
+// proto. Incognito is currently not supported and the factory will return
+// nullptr for an incognito profile.
 template <typename T>
-class ProfileProtoDBFactory : public BrowserContextKeyedServiceFactory {
+class SessionProtoDBFactory : public BrowserContextKeyedServiceFactory {
  public:
-  // Acquire instance of ProfileProtoDBFactory.
-  static ProfileProtoDBFactory<T>* GetInstance();
+  // Acquire instance of SessionProtoDBFactory.
+  static SessionProtoDBFactory<T>* GetInstance();
 
-  // Acquire ProtoDB - there is one per profile.
-  static ProfileProtoDB<T>* GetForProfile(content::BrowserContext* context);
+  // Acquire ProtoDB - there is one per BrowserContext.
+  static SessionProtoDB<T>* GetForProfile(content::BrowserContext* context);
 
   // Call the parent Disassociate which is a protected method.
   void Disassociate(content::BrowserContext* context) {
@@ -63,10 +63,10 @@ class ProfileProtoDBFactory : public BrowserContextKeyedServiceFactory {
   }
 
  private:
-  friend class base::NoDestructor<ProfileProtoDBFactory<T>>;
+  friend class base::NoDestructor<SessionProtoDBFactory<T>>;
 
-  ProfileProtoDBFactory();
-  ~ProfileProtoDBFactory() override;
+  SessionProtoDBFactory();
+  ~SessionProtoDBFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
@@ -74,27 +74,27 @@ class ProfileProtoDBFactory : public BrowserContextKeyedServiceFactory {
 
 // static
 template <typename T>
-ProfileProtoDB<T>* ProfileProtoDBFactory<T>::GetForProfile(
+SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
     content::BrowserContext* context) {
   // Incognito is currently not supported
   if (context->IsOffTheRecord())
     return nullptr;
 
-  return static_cast<ProfileProtoDB<T>*>(
+  return static_cast<SessionProtoDB<T>*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 template <typename T>
-ProfileProtoDBFactory<T>::ProfileProtoDBFactory()
+SessionProtoDBFactory<T>::SessionProtoDBFactory()
     : BrowserContextKeyedServiceFactory(
-          "ProfileProtoDBFactory",
+          "SessionProtoDBFactory",
           BrowserContextDependencyManager::GetInstance()) {}
 
 template <typename T>
-ProfileProtoDBFactory<T>::~ProfileProtoDBFactory() = default;
+SessionProtoDBFactory<T>::~SessionProtoDBFactory() = default;
 
 template <typename T>
-KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
+KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(!context->IsOffTheRecord());
 
@@ -105,18 +105,18 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
   // leveldb_proto::ProtoDbType mapping as more protos are added.
   if (std::is_base_of<persisted_state_db::PersistedStateContentProto,
                       T>::value) {
-    return new ProfileProtoDB<T>(
+    return new SessionProtoDB<T>(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kPersistedStateDBFolder),
         leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE);
 #if !BUILDFLAG(IS_ANDROID)
   } else if (std::is_base_of<cart_db::ChromeCartContentProto, T>::value) {
-    return new ProfileProtoDB<T>(
+    return new SessionProtoDB<T>(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kChromeCartDBFolder),
         leveldb_proto::ProtoDbType::CART_DATABASE);
   } else if (std::is_base_of<coupon_db::CouponContentProto, T>::value) {
-    return new ProfileProtoDB<T>(
+    return new SessionProtoDB<T>(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kCouponDBFolder),
         leveldb_proto::ProtoDbType::COUPON_DATABASE);
@@ -124,13 +124,13 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
   } else if (std::is_base_of<
                  commerce_subscription_db::CommerceSubscriptionContentProto,
                  T>::value) {
-    return new ProfileProtoDB<T>(
+    return new SessionProtoDB<T>(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
   } else if (std::is_base_of<merchant_signal_db::MerchantSignalContentProto,
                              T>::value) {
-    return new ProfileProtoDB<T>(
+    return new SessionProtoDB<T>(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kMerchantTrustSignalDBFolder),
         leveldb_proto::ProtoDbType::MERCHANT_TRUST_SIGNAL_DATABASE);
@@ -145,4 +145,4 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
   }
 }
 
-#endif  // CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_FACTORY_H_
+#endif  // CHROME_BROWSER_PERSISTED_STATE_DB_SESSION_PROTO_DB_FACTORY_H_

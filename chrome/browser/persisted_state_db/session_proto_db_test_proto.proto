@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package profile_proto_db;
 
 // Proto used for testing purposes.
-message ProfileProtoDBTestProto {
+message SessionProtoDBTestProto {
   // A field
   optional string key = 1;
 

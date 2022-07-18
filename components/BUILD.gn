@@ -382,6 +382,7 @@ test("components_unittests") {
       "//components/policy/content:unit_tests",
       "//components/privacy_sandbox:unit_tests",
       "//components/query_tiles:unit_tests",
+      "//components/session_proto_db:unit_tests",
 
       # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
       # can't be run on iOS until they are updated.

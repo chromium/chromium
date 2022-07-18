@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_H_
-#define CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_H_
+#ifndef COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
+#define COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 
 #include <queue>
 #include <string>
@@ -31,24 +31,27 @@ const char kOrphanedDataCountHistogramName[] =
     "Tabs.PersistedTabData.Storage.LevelDB.OrphanedDataCount";
 }  // namespace
 
-class ProfileProtoDBTest;
+class SessionProtoDBTest;
 
 template <typename T>
-class ProfileProtoDBFactory;
+class SessionProtoDBFactory;
 
-// General purpose per profile, per proto key -> proto database where the
-// template is the proto which is being stored. A ProfileProtoDB should be
-// acquired using ProfileProtoDBFactory. ProfileProtoDB is a wrapper on top of
-// leveldb_proto which:
-// - Is specifically for databases which are per profile and per proto
-//   (leveldb_proto is a proto database which may or may not be per profile).
+// General purpose per session (BrowserContext/BrowserState), per proto key ->
+// proto database where the template is the proto which is being stored. A
+// SessionProtoDB should be acquired using SessionProtoDBFactory. SessionProtoDB
+// is a wrapper on top of leveldb_proto which:
+// - Is specifically for databases which are per session
+// (BrowserContext/BrowserState)
+//   and per proto (leveldb_proto is a proto database which may or may not be
+//   per BrowserContext/BrowserState).
 // - Provides a simplified interface for the use cases that surround
-//   ProfileProtoDB such as providing LoadContentWithPrefix instead of the
+//   SessionProtoDB such as providing LoadContentWithPrefix instead of the
 //   more generic API in
 //   leveldb_proto which requires a filter to be passed in.
-// - Is a KeyedService to support the per profile nature of the database.
+// - Is a KeyedService to support the per session (BrowserContext/BrowserState)
+//   nature of the database.
 template <typename T>
-class ProfileProtoDB : public KeyedService {
+class SessionProtoDB : public KeyedService {
  public:
   using KeyAndValue = std::pair<std::string, T>;
 
@@ -57,15 +60,15 @@ class ProfileProtoDB : public KeyedService {
 
   // Used for confirming an operation was completed successfully (e.g.
   // insert, delete). This will be invoked on a different SequenceRunner
-  // to ProfileProtoDB.
+  // to SessionProtoDB.
   using OperationCallback = base::OnceCallback<void(bool)>;
 
   // Represents an entry in the database.
   using ContentEntry = typename leveldb_proto::ProtoDatabase<T>::KeyEntryVector;
 
-  ProfileProtoDB(const ProfileProtoDB&) = delete;
-  ProfileProtoDB& operator=(const ProfileProtoDB&) = delete;
-  ~ProfileProtoDB() override;
+  SessionProtoDB(const SessionProtoDB&) = delete;
+  SessionProtoDB& operator=(const SessionProtoDB&) = delete;
+  ~SessionProtoDB() override;
 
   // Loads the entry for the key and passes it to the callback.
   void LoadOneEntry(const std::string& key, LoadCallback callback);
@@ -104,22 +107,22 @@ class ProfileProtoDB : public KeyedService {
   void DeleteAllContent(OperationCallback callback);
 
   // Destroy the cached instance of the database (databases are cached per
-  // profile).
+  // session).
   void Destroy() const;
 
  private:
-  friend class ::ProfileProtoDBTest;
+  friend class ::SessionProtoDBTest;
   template <typename U>
-  friend class ::ProfileProtoDBFactory;
+  friend class ::SessionProtoDBFactory;
 
   // Initializes the database.
-  ProfileProtoDB(content::BrowserContext* browser_context,
+  SessionProtoDB(content::BrowserContext* browser_context,
                  leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
                  const base::FilePath& database_dir,
                  leveldb_proto::ProtoDbType proto_db_type);
 
   // Used for testing.
-  ProfileProtoDB(
+  SessionProtoDB(
       std::unique_ptr<leveldb_proto::ProtoDatabase<T>> storage_database,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -155,8 +158,8 @@ class ProfileProtoDB : public KeyedService {
     return base::StartsWith(key, key_prefix, base::CompareCase::SENSITIVE);
   }
 
-  // Browser context associated with ProfileProtoDB (ProfileProtoDB are per
-  // profile).
+  // Browser context associated with SessionProtoDB (SessionProtoDB are per
+  // BrowserContext).
   raw_ptr<content::BrowserContext> browser_context_;
 
   // Status of the database initialization.
@@ -169,18 +172,18 @@ class ProfileProtoDB : public KeyedService {
   // |deferred_operations_| is flushed and all operations are executed.
   std::vector<base::OnceClosure> deferred_operations_;
 
-  base::WeakPtrFactory<ProfileProtoDB> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SessionProtoDB> weak_ptr_factory_{this};
 };
 
 template <typename T>
-ProfileProtoDB<T>::~ProfileProtoDB() = default;
+SessionProtoDB<T>::~SessionProtoDB() = default;
 
 template <typename T>
-void ProfileProtoDB<T>::LoadOneEntry(const std::string& key,
+void SessionProtoDB<T>::LoadOneEntry(const std::string& key,
                                      LoadCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::LoadOneEntry, weak_ptr_factory_.GetWeakPtr(), key,
+        &SessionProtoDB::LoadOneEntry, weak_ptr_factory_.GetWeakPtr(), key,
         std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(
@@ -189,16 +192,16 @@ void ProfileProtoDB<T>::LoadOneEntry(const std::string& key,
   } else {
     storage_database_->GetEntry(
         key,
-        base::BindOnce(&ProfileProtoDB::OnLoadOneEntry,
+        base::BindOnce(&SessionProtoDB::OnLoadOneEntry,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
 template <typename T>
-void ProfileProtoDB<T>::LoadAllEntries(LoadCallback callback) {
+void SessionProtoDB<T>::LoadAllEntries(LoadCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(
-        base::BindOnce(&ProfileProtoDB::LoadAllEntries,
+        base::BindOnce(&SessionProtoDB::LoadAllEntries,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(
@@ -206,17 +209,17 @@ void ProfileProtoDB<T>::LoadAllEntries(LoadCallback callback) {
         base::BindOnce(std::move(callback), false, std::vector<KeyAndValue>()));
   } else {
     storage_database_->LoadEntries(
-        base::BindOnce(&ProfileProtoDB::OnLoadContent,
+        base::BindOnce(&SessionProtoDB::OnLoadContent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
 template <typename T>
-void ProfileProtoDB<T>::LoadContentWithPrefix(const std::string& key_prefix,
+void SessionProtoDB<T>::LoadContentWithPrefix(const std::string& key_prefix,
                                               LoadCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::LoadContentWithPrefix, weak_ptr_factory_.GetWeakPtr(),
+        &SessionProtoDB::LoadContentWithPrefix, weak_ptr_factory_.GetWeakPtr(),
         key_prefix, std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(
@@ -227,19 +230,19 @@ void ProfileProtoDB<T>::LoadContentWithPrefix(const std::string& key_prefix,
         base::BindRepeating(&DatabasePrefixFilter, key_prefix),
         {.fill_cache = false},
         /* target_prefix */ "",
-        base::BindOnce(&ProfileProtoDB::OnLoadContent,
+        base::BindOnce(&SessionProtoDB::OnLoadContent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
 template <typename T>
-void ProfileProtoDB<T>::PerformMaintenance(
+void SessionProtoDB<T>::PerformMaintenance(
     const std::vector<std::string>& keys_to_keep,
     const std::string& key_substring_to_match,
     OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::PerformMaintenance, weak_ptr_factory_.GetWeakPtr(),
+        &SessionProtoDB::PerformMaintenance, weak_ptr_factory_.GetWeakPtr(),
         keys_to_keep, key_substring_to_match, std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -261,7 +264,7 @@ void ProfileProtoDB<T>::PerformMaintenance(
                      !base::Contains(keys_to_keep, key);
             },
             keys_to_keep, key_substring_to_match),
-        base::BindOnce(&ProfileProtoDB::OnPerformMaintenance,
+        base::BindOnce(&SessionProtoDB::OnPerformMaintenance,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
@@ -269,12 +272,12 @@ void ProfileProtoDB<T>::PerformMaintenance(
 // Inserts a value for a given key and passes the result (success/failure) to
 // OperationCallback.
 template <typename T>
-void ProfileProtoDB<T>::InsertContent(const std::string& key,
+void SessionProtoDB<T>::InsertContent(const std::string& key,
                                       const T& value,
                                       OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::InsertContent, weak_ptr_factory_.GetWeakPtr(), key,
+        &SessionProtoDB::InsertContent, weak_ptr_factory_.GetWeakPtr(), key,
         std::move(value), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -285,17 +288,17 @@ void ProfileProtoDB<T>::InsertContent(const std::string& key,
     storage_database_->UpdateEntries(
         std::move(contents_to_save),
         std::make_unique<std::vector<std::string>>(),
-        base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
+        base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
 template <typename T>
-void ProfileProtoDB<T>::DeleteOneEntry(const std::string& key,
+void SessionProtoDB<T>::DeleteOneEntry(const std::string& key,
                                        OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::DeleteOneEntry, weak_ptr_factory_.GetWeakPtr(), key,
+        &SessionProtoDB::DeleteOneEntry, weak_ptr_factory_.GetWeakPtr(), key,
         std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -305,7 +308,7 @@ void ProfileProtoDB<T>::DeleteOneEntry(const std::string& key,
     keys->push_back(key);
     storage_database_->UpdateEntries(
         std::make_unique<ContentEntry>(), std::move(keys),
-        base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
+        base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
@@ -313,11 +316,11 @@ void ProfileProtoDB<T>::DeleteOneEntry(const std::string& key,
 // Deletes content in the database, matching all keys which have a prefix
 // that matches the key.
 template <typename T>
-void ProfileProtoDB<T>::DeleteContentWithPrefix(const std::string& key_prefix,
+void SessionProtoDB<T>::DeleteContentWithPrefix(const std::string& key_prefix,
                                                 OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::DeleteContentWithPrefix,
+        &SessionProtoDB::DeleteContentWithPrefix,
         weak_ptr_factory_.GetWeakPtr(), key_prefix, std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -326,17 +329,17 @@ void ProfileProtoDB<T>::DeleteContentWithPrefix(const std::string& key_prefix,
     storage_database_->UpdateEntriesWithRemoveFilter(
         std::make_unique<ContentEntry>(),
         std::move(base::BindRepeating(&DatabasePrefixFilter, key_prefix)),
-        base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
+        base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
 // Delete all content in the database.
 template <typename T>
-void ProfileProtoDB<T>::DeleteAllContent(OperationCallback callback) {
+void SessionProtoDB<T>::DeleteAllContent(OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(
-        base::BindOnce(&ProfileProtoDB::DeleteAllContent,
+        base::BindOnce(&SessionProtoDB::DeleteAllContent,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
@@ -347,12 +350,12 @@ void ProfileProtoDB<T>::DeleteAllContent(OperationCallback callback) {
 }
 
 template <typename T>
-void ProfileProtoDB<T>::Destroy() const {
-  ProfileProtoDBFactory<T>::GetInstance()->Disassociate(browser_context_);
+void SessionProtoDB<T>::Destroy() const {
+  SessionProtoDBFactory<T>::GetInstance()->Disassociate(browser_context_);
 }
 
 template <typename T>
-ProfileProtoDB<T>::ProfileProtoDB(
+SessionProtoDB<T>::SessionProtoDB(
     content::BrowserContext* browser_context,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& database_dir,
@@ -366,26 +369,26 @@ ProfileProtoDB<T>::ProfileProtoDB(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}))) {
   static_assert(std::is_base_of<google::protobuf::MessageLite, T>::value,
                 "T must implement 'google::protobuf::MessageLite'");
-  storage_database_->Init(base::BindOnce(&ProfileProtoDB::OnDatabaseInitialized,
+  storage_database_->Init(base::BindOnce(&SessionProtoDB::OnDatabaseInitialized,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Used for tests.
 template <typename T>
-ProfileProtoDB<T>::ProfileProtoDB(
+SessionProtoDB<T>::SessionProtoDB(
     std::unique_ptr<leveldb_proto::ProtoDatabase<T>> storage_database,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : database_status_(absl::nullopt),
       storage_database_(std::move(storage_database)) {
   static_assert(std::is_base_of<google::protobuf::MessageLite, T>::value,
                 "T must implement 'google::protobuf::MessageLite'");
-  storage_database_->Init(base::BindOnce(&ProfileProtoDB::OnDatabaseInitialized,
+  storage_database_->Init(base::BindOnce(&SessionProtoDB::OnDatabaseInitialized,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Passes back database status following database initialization.
 template <typename T>
-void ProfileProtoDB<T>::OnDatabaseInitialized(
+void SessionProtoDB<T>::OnDatabaseInitialized(
     leveldb_proto::Enums::InitStatus status) {
   database_status_ =
       absl::make_optional<leveldb_proto::Enums::InitStatus>(status);
@@ -397,7 +400,7 @@ void ProfileProtoDB<T>::OnDatabaseInitialized(
 
 // Callback when one entry is loaded.
 template <typename T>
-void ProfileProtoDB<T>::OnLoadOneEntry(LoadCallback callback,
+void SessionProtoDB<T>::OnLoadOneEntry(LoadCallback callback,
                                        bool success,
                                        std::unique_ptr<T> entry) {
   std::vector<KeyAndValue> results;
@@ -409,7 +412,7 @@ void ProfileProtoDB<T>::OnLoadOneEntry(LoadCallback callback,
 
 // Callback when content is loaded.
 template <typename T>
-void ProfileProtoDB<T>::OnLoadContent(LoadCallback callback,
+void SessionProtoDB<T>::OnLoadContent(LoadCallback callback,
                                       bool success,
                                       std::unique_ptr<std::vector<T>> content) {
   std::vector<KeyAndValue> results;
@@ -424,7 +427,7 @@ void ProfileProtoDB<T>::OnLoadContent(LoadCallback callback,
 }
 
 template <typename T>
-void ProfileProtoDB<T>::OnPerformMaintenance(
+void SessionProtoDB<T>::OnPerformMaintenance(
     OperationCallback callback,
     bool success,
     std::unique_ptr<std::vector<T>> entries_to_delete) {
@@ -440,28 +443,28 @@ void ProfileProtoDB<T>::OnPerformMaintenance(
       std::make_unique<std::vector<std::pair<std::string, T>>>();
   storage_database_->UpdateEntries(
       std::move(save_no_entries), std::move(keys_to_delete),
-      base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
+      base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 // Callback when an operation (e.g. insert or delete) is called.
 template <typename T>
-void ProfileProtoDB<T>::OnOperationCommitted(OperationCallback callback,
+void SessionProtoDB<T>::OnOperationCommitted(OperationCallback callback,
                                              bool success) {
   std::move(callback).Run(success);
 }
 
 // Returns true if initialization status of database is not yet known.
 template <typename T>
-bool ProfileProtoDB<T>::InitStatusUnknown() const {
+bool SessionProtoDB<T>::InitStatusUnknown() const {
   return database_status_ == absl::nullopt;
 }
 
 // Returns true if the database failed to initialize.
 template <typename T>
-bool ProfileProtoDB<T>::FailedToInit() const {
+bool SessionProtoDB<T>::FailedToInit() const {
   return database_status_.has_value() &&
          database_status_.value() != leveldb_proto::Enums::InitStatus::kOK;
 }
 
-#endif  // CHROME_BROWSER_PERSISTED_STATE_DB_PROFILE_PROTO_DB_H_
+#endif  // COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_

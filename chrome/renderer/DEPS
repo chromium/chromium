@@ -108,6 +108,6 @@ specific_include_rules = {
   ],
   "commerce_hint_agent_browsertest\.cc" : [
     "+chrome/browser/cart",
-    "+chrome/browser/persisted_state_db/profile_proto_db.h",
+    "+chrome/browser/persisted_state_db/session_proto_db.h",
   ],
 }

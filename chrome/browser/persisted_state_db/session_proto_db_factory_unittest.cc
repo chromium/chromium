@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 
 #include <memory>
 
@@ -12,11 +12,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class ProfileProtoDBFactoryTest : public testing::Test {
+class SessionProtoDBFactoryTest : public testing::Test {
  public:
-  ProfileProtoDBFactoryTest() = default;
-  ProfileProtoDBFactoryTest(const ProfileProtoDBFactoryTest&) = delete;
-  ProfileProtoDBFactoryTest& operator=(const ProfileProtoDBFactoryTest&) =
+  SessionProtoDBFactoryTest() = default;
+  SessionProtoDBFactoryTest(const SessionProtoDBFactoryTest&) = delete;
+  SessionProtoDBFactoryTest& operator=(const SessionProtoDBFactoryTest&) =
       delete;
 
   void SetUp() override {
@@ -43,28 +43,28 @@ class ProfileProtoDBFactoryTest : public testing::Test {
   std::unique_ptr<TestingProfile> different_profile_;
 };
 
-TEST_F(ProfileProtoDBFactoryTest, TestIncognitoProfile) {
+TEST_F(SessionProtoDBFactoryTest, TestIncognitoProfile) {
   EXPECT_EQ(nullptr,
-            ProfileProtoDBFactory<
+            SessionProtoDBFactory<
                 persisted_state_db::PersistedStateContentProto>::GetInstance()
                 ->GetForProfile(profile()->GetPrimaryOTRProfile(
                     /*create_if_needed=*/true)));
 }
 
-TEST_F(ProfileProtoDBFactoryTest, TestSameProfile) {
-  EXPECT_EQ(ProfileProtoDBFactory<
+TEST_F(SessionProtoDBFactoryTest, TestSameProfile) {
+  EXPECT_EQ(SessionProtoDBFactory<
                 persisted_state_db::PersistedStateContentProto>::GetInstance()
                 ->GetForProfile(profile()),
-            ProfileProtoDBFactory<
+            SessionProtoDBFactory<
                 persisted_state_db::PersistedStateContentProto>::GetInstance()
                 ->GetForProfile(profile()));
 }
 
-TEST_F(ProfileProtoDBFactoryTest, TestDifferentProfile) {
-  EXPECT_NE(ProfileProtoDBFactory<
+TEST_F(SessionProtoDBFactoryTest, TestDifferentProfile) {
+  EXPECT_NE(SessionProtoDBFactory<
                 persisted_state_db::PersistedStateContentProto>::GetInstance()
                 ->GetForProfile(different_profile()),
-            ProfileProtoDBFactory<
+            SessionProtoDBFactory<
                 persisted_state_db::PersistedStateContentProto>::GetInstance()
                 ->GetForProfile(profile()));
 }

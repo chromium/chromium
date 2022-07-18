@@ -21,7 +21,7 @@ class CommerceSubscriptionContentProto;
 }  // namespace commerce_subscription_db
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 class CommerceSubscriptionDB {
  public:
@@ -63,7 +63,7 @@ class CommerceSubscriptionDB {
   void Destroy(JNIEnv* env);
 
  private:
-  raw_ptr<ProfileProtoDB<
+  raw_ptr<SessionProtoDB<
       commerce_subscription_db::CommerceSubscriptionContentProto>>
       proto_db_;
   base::WeakPtrFactory<CommerceSubscriptionDB> weak_ptr_factory_{this};

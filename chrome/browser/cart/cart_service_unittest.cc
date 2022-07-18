@@ -11,8 +11,7 @@
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
+#include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -111,7 +111,7 @@ const cart_db::ChromeCartContentProto kMockProtoC =
 const cart_db::ChromeCartContentProto kMockProtoCWithProduct =
     BuildProtoWithProducts(kMockMerchantC, kMockMerchantURLC, {kProductURL});
 using ShoppingCarts =
-    std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
+    std::vector<SessionProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
 using ProductInfos = std::vector<cart_db::ChromeCartProductProto>;
 const ShoppingCarts kExpectedA = {{kMockMerchantA, kMockProtoA}};
 const ShoppingCarts kExpectedB = {{kMockMerchantB, kMockProtoB}};

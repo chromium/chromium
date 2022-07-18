@@ -65,7 +65,7 @@
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_factory.h"
 #include "chrome/browser/permissions/permission_auditing_service_factory.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
@@ -449,7 +449,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   page_load_metrics::PageLoadMetricsMemoryTrackerFactory::GetInstance();
   PasswordStoreFactory::GetInstance();
   PermissionAuditingServiceFactory::GetInstance();
-  ProfileProtoDBFactory<
+  SessionProtoDBFactory<
       persisted_state_db::PersistedStateContentProto>::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   PinnedTabServiceFactory::GetInstance();
@@ -460,15 +460,15 @@ void ChromeBrowserMainExtraPartsProfiles::
   PrefMetricsService::Factory::GetInstance();
   PrefsTabHelper::GetServiceInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
-  ProfileProtoDBFactory<coupon_db::CouponContentProto>::GetInstance();
+  SessionProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
+  SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  ProfileProtoDBFactory<commerce_subscription_db::
+  SessionProtoDBFactory<commerce_subscription_db::
                             CommerceSubscriptionContentProto>::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  ProfileProtoDBFactory<
+  SessionProtoDBFactory<
       merchant_signal_db::MerchantSignalContentProto>::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)

@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
@@ -39,7 +39,7 @@ MerchantViewerDataManagerFactory::MerchantViewerDataManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "MerchantViewerDataManager",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileProtoDBFactory<
+  DependsOn(SessionProtoDBFactory<
             MerchantViewerDataManager::MerchantSignalProto>::GetInstance());
 }
 

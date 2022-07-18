@@ -815,7 +815,6 @@ if (is_android) {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/payments:browser_tests",
-      "//chrome/browser/persisted_state_db:persisted_state_db",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/prerender:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
@@ -839,6 +838,7 @@ if (is_android) {
       "//components/safe_browsing/core/common",
       "//components/security_interstitials/core:unsafe_resource",
       "//components/security_state/content/android",
+      "//components/session_proto_db:session_proto_db",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/subresource_filter/core/browser:test_support",
@@ -1409,6 +1409,7 @@ if (!is_android) {
       "//components/services/patch/public/cpp",
       "//components/services/patch/public/mojom",
       "//components/services/quarantine:test_support",
+      "//components/session_proto_db:session_proto_db",
       "//components/signin/core/browser",
       "//components/signin/public/base:signin_buildflags",
       "//components/signin/public/identity_manager",
@@ -5253,8 +5254,7 @@ test("unit_tests") {
     "../browser/permissions/permission_context_base_permissions_policy_unittest.cc",
     "../browser/permissions/prediction_based_permission_ui_selector_unittest.cc",
     "../browser/permissions/pref_notification_permission_ui_selector_unittest.cc",
-    "../browser/persisted_state_db/profile_proto_db_factory_unittest.cc",
-    "../browser/persisted_state_db/profile_proto_db_unittest.cc",
+    "../browser/persisted_state_db/session_proto_db_factory_unittest.cc",
     "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",
     "../browser/policy/boolean_disabling_policy_handler_unittest.cc",
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
@@ -5565,7 +5565,6 @@ test("unit_tests") {
   defines = []
 
   deps = [
-    ":profile_proto_db_test_proto",
     ":test_support",
     ":test_support_unit",
     "//base:base_stack_sampling_profiler_test_util",
@@ -5795,6 +5794,7 @@ test("unit_tests") {
     "//components/services/patch/content",
     "//components/services/storage/public/cpp:prefs",
     "//components/services/unzip/content",
+    "//components/session_proto_db:session_proto_db",
     "//components/site_engagement/content",
     "//components/site_engagement/core",
     "//components/site_isolation",
@@ -6925,6 +6925,7 @@ test("unit_tests") {
       "//components/services/app_service/public/cpp:publisher",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/cpp:unit_tests",
+      "//components/session_proto_db:session_proto_db",
       "//components/signin/public/base:signin_buildflags",
       "//components/soda:constants",
       "//components/sync:test_support",
@@ -10650,11 +10651,6 @@ if (!is_android) {
     sources = [ "//chrome/browser/vr/test/run_xr_browser_tests.py" ]
     outputs = [ "$root_out_dir/run_xr_browser_tests.py" ]
   }
-}
-
-proto_library("profile_proto_db_test_proto") {
-  sources =
-      [ "../browser/persisted_state_db/profile_proto_db_test_proto.proto" ]
 }
 
 # This target is defined for Lacros testing.

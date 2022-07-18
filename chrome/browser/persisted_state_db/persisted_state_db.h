@@ -19,7 +19,7 @@ class BrowserContext;
 }  // namespace content
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 // PersistedStateDB is leveldb backend store for NonCriticalPersistedTabData.
 // NonCriticalPersistedTabData is an extension of TabState where data for
@@ -63,7 +63,7 @@ class PersistedStateDB {
   void Destroy(JNIEnv* env);
 
  private:
-  raw_ptr<ProfileProtoDB<persisted_state_db::PersistedStateContentProto>>
+  raw_ptr<SessionProtoDB<persisted_state_db::PersistedStateContentProto>>
       proto_db_;
 
   base::WeakPtrFactory<PersistedStateDB> weak_ptr_factory_{this};

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/commerce/coupons/coupon_db.h"
 
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 
 CouponDB::CouponDB(content::BrowserContext* browser_context)
     : proto_db_(
-          ProfileProtoDBFactory<coupon_db::CouponContentProto>::GetInstance()
+          SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance()
               ->GetForProfile(browser_context)) {}
 
 CouponDB::~CouponDB() = default;

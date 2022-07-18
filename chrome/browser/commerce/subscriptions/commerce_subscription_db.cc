@@ -13,7 +13,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/commerce/subscriptions/android/jni_headers/CommerceSubscription_jni.h"
 #include "chrome/browser/commerce/subscriptions/android/jni_headers/CommerceSubscriptionsStorage_jni.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
@@ -22,7 +22,7 @@ namespace {
 using CommerceSubscriptionProto =
     commerce_subscription_db::CommerceSubscriptionContentProto;
 using CommerceSubscriptions =
-    std::vector<ProfileProtoDB<CommerceSubscriptionProto>::KeyAndValue>;
+    std::vector<SessionProtoDB<CommerceSubscriptionProto>::KeyAndValue>;
 using SubscriptionManagementTypeProto = commerce_subscription_db::
     CommerceSubscriptionContentProto_SubscriptionManagementType;
 using SubscriptionTypeProto =
@@ -122,7 +122,7 @@ void OnLoadCallbackMultipleEntry(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jlist =
       Java_CommerceSubscription_createSubscriptionList(env);
-  for (ProfileProtoDB<CommerceSubscriptionProto>::KeyAndValue& kv : data) {
+  for (SessionProtoDB<CommerceSubscriptionProto>::KeyAndValue& kv : data) {
     CommerceSubscriptionProto proto = std::move(kv.second);
     Java_CommerceSubscription_createSubscriptionAndAddToList(
         env, jlist,
@@ -153,7 +153,7 @@ void OnUpdateCallback(
 
 CommerceSubscriptionDB::CommerceSubscriptionDB(
     content::BrowserContext* browser_context)
-    : proto_db_(ProfileProtoDBFactory<CommerceSubscriptionProto>::GetInstance()
+    : proto_db_(SessionProtoDBFactory<CommerceSubscriptionProto>::GetInstance()
                     ->GetForProfile(browser_context)) {}
 CommerceSubscriptionDB::~CommerceSubscriptionDB() = default;
 

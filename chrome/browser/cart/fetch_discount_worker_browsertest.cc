@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/cart/cart_service.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/pref_names.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -18,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/session_proto_db/session_proto_db.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -66,7 +66,7 @@ cart_db::ChromeCartContentProto BuildCartProtoWithCoupon(
 }
 
 using ShoppingCarts =
-    std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
+    std::vector<SessionProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
 
 testing::Matcher<autofill::DisplayStrings> EqualsDisplayStrings(
     const autofill::DisplayStrings& display_strings) {

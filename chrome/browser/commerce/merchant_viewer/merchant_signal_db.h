@@ -21,7 +21,7 @@ class MerchantSignalContentProto;
 }  // namespace merchant_signal_db
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 class MerchantSignalDB {
  public:
@@ -56,7 +56,7 @@ class MerchantSignalDB {
                  const base::android::JavaParamRef<jobject>& jcallback);
 
  private:
-  raw_ptr<ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>>
+  raw_ptr<SessionProtoDB<merchant_signal_db::MerchantSignalContentProto>>
       proto_db_;
   base::WeakPtrFactory<MerchantSignalDB> weak_ptr_factory_{this};
 };
