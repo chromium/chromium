@@ -529,6 +529,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       tab_strip_->tab_container_->group_views()[header->group().value()]
           ->highlight()
           ->SetVisible(true);
+      // Make sure the bounds of the group views are up to date right now
+      // instead of waiting for subsequent drag events - if we are dragging a
+      // window by a group header, we won't get any more events. See
+      // https://crbug.com/1344774.
+      tab_strip_->tab_container_->UpdateTabGroupVisuals(
+          header->group().value());
     }
 
     tab_strip_->tab_container_->SetTabSlotVisibility();
