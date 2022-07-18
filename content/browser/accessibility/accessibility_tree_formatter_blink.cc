@@ -290,13 +290,13 @@ void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
   if (!ShouldDumpChildren(node))
     return;
 
-  base::Value children(base::Value::Type::LIST);
+  base::Value::List children;
   for (const auto* child_node : node.AllChildren()) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
     RecursiveBuildTree(*child_node, &child_dict);
     children.Append(std::move(child_dict));
   }
-  dict->SetKey(kChildrenDictAttr, std::move(children));
+  dict->SetKey(kChildrenDictAttr, base::Value(std::move(children)));
 }
 
 void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
@@ -304,13 +304,13 @@ void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
     base::Value* dict) const {
   AddProperties(node, static_cast<base::DictionaryValue*>(dict));
 
-  base::Value children(base::Value::Type::LIST);
+  base::Value::List children;
   for (ui::AXNode* child_node : node.children()) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
     RecursiveBuildTree(*child_node, &child_dict);
     children.Append(std::move(child_dict));
   }
-  dict->SetKey(kChildrenDictAttr, std::move(children));
+  dict->SetKey(kChildrenDictAttr, base::Value(std::move(children)));
 }
 
 void AccessibilityTreeFormatterBlink::AddProperties(
@@ -743,7 +743,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     const base::Value* value = dict.FindListPath(ui::ToString(attr));
     if (!value || !value->is_list())
       continue;
-    base::Value::ConstListView list = value->GetListDeprecated();
+    const base::Value::List& list = value->GetList();
     std::string attr_string(ui::ToString(attr));
     attr_string.push_back('=');
     for (size_t i = 0; i < list.size(); ++i) {
