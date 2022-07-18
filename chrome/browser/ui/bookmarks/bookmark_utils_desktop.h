@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
-#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -70,7 +69,7 @@ void OpenAllNow(content::PageNavigator* navigator,
 void OpenSavedTabGroup(
     Browser* browser,
     base::OnceCallback<content::PageNavigator*()> get_navigator,
-    const tab_groups::TabGroupId& group_id,
+    const base::GUID& saved_group_id,
     const size_t num_tabs);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If

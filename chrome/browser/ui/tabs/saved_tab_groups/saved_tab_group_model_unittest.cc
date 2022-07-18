@@ -17,6 +17,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace {
+
+base::GUID GenerateNextGUID() {
+  static uint64_t guid_increment;
+  if (!guid_increment) {
+    guid_increment = 0;
+  }
+
+  uint64_t kBytes[] = {0, guid_increment};
+  base::GUID guid =
+      base::GUID::ParseCaseInsensitive(base::RandomDataToGUIDString(kBytes));
+
+  guid_increment++;
+  return guid;
+}
+
+}  // namespace
+
 // Serves to test the functions in SavedTabGroupModelObserver.
 class SavedTabGroupModelObserverTest : public ::testing::Test,
                                        public SavedTabGroupModelObserver {
@@ -58,8 +76,6 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_new_index_ = -1;
   }
 
-  void SavedTabGroupClosed(int index) override { retrieved_index_ = index; }
-
   SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                           const std::u16string& title) {
     return SavedTabGroupTab(GURL(base_path_ + url), title,
@@ -67,7 +83,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
   }
 
   SavedTabGroup CreateTestSavedTabGroup() {
-    tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
+    base::GUID id_4 = GenerateNextGUID();
     const std::u16string title_4 = u"Test Test";
     const tab_groups::TabGroupColorId& color_4 =
         tab_groups::TabGroupColorId::kBlue;
@@ -76,7 +92,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     SavedTabGroupTab tab2 = CreateSavedTabGroupTab("2nd link", u"new tab");
     std::vector<SavedTabGroupTab> group_4_tabs = {tab1, tab2};
 
-    SavedTabGroup group_4(id_4, title_4, color_4, group_4_tabs);
+    SavedTabGroup group_4(title_4, color_4, group_4_tabs);
     return group_4;
   }
 
@@ -104,9 +120,9 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 class SavedTabGroupModelTest : public ::testing::Test {
  protected:
   SavedTabGroupModelTest()
-      : id_1_(tab_groups::TabGroupId::GenerateNew()),
-        id_2_(tab_groups::TabGroupId::GenerateNew()),
-        id_3_(tab_groups::TabGroupId::GenerateNew()) {}
+      : id_1_(GenerateNextGUID()),
+        id_2_(GenerateNextGUID()),
+        id_3_(GenerateNextGUID()) {}
 
   ~SavedTabGroupModelTest() override { RemoveTestData(); }
 
@@ -154,10 +170,10 @@ class SavedTabGroupModelTest : public ::testing::Test {
     if (!saved_tab_group_model_)
       return;
     // Copy ids so we do not remove elements while we are accessing the data.
-    std::vector<tab_groups::TabGroupId> saved_tab_group_ids;
+    std::vector<base::GUID> saved_tab_group_ids;
     for (const SavedTabGroup& saved_group :
          saved_tab_group_model_->saved_tab_groups()) {
-      saved_tab_group_ids.emplace_back(saved_group.group_id);
+      saved_tab_group_ids.emplace_back(saved_group.saved_guid());
     }
 
     for (const auto& id : saved_tab_group_ids) {
@@ -175,8 +191,8 @@ class SavedTabGroupModelTest : public ::testing::Test {
       const std::u16string& group_title,
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& group_tabs,
-      const tab_groups::TabGroupId& id) {
-    return SavedTabGroup(id, group_title, color, group_tabs);
+      const base::GUID& id) {
+    return SavedTabGroup(group_title, color, group_tabs, id);
   }
 
   void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
@@ -193,9 +209,9 @@ class SavedTabGroupModelTest : public ::testing::Test {
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   std::string base_path_ = "file:///c:/tmp/";
-  tab_groups::TabGroupId id_1_;
-  tab_groups::TabGroupId id_2_;
-  tab_groups::TabGroupId id_3_;
+  base::GUID id_1_;
+  base::GUID id_2_;
+  base::GUID id_3_;
 };
 
 // Tests that SavedTabGroupModel::Count holds 3 elements initially.
@@ -211,8 +227,7 @@ TEST_F(SavedTabGroupModelTest, InitialGroupsAreSaved) {
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_1_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_2_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_3_));
-  EXPECT_FALSE(
-      saved_tab_group_model_->Contains(tab_groups::TabGroupId::GenerateNew()));
+  EXPECT_FALSE(saved_tab_group_model_->Contains(GenerateNextGUID()));
 }
 
 // Tests that the SavedTabGroupModel::GetIndexOf preserves the order the
@@ -221,9 +236,6 @@ TEST_F(SavedTabGroupModelTest, InitialOrderAdded) {
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_1_), 0);
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), 2);
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_2_), 1);
-  EXPECT_EQ(
-      saved_tab_group_model_->GetIndexOf(tab_groups::TabGroupId::GenerateNew()),
-      -1);
 }
 
 // Tests that the SavedTabGroupModel::IsEmpty has elements and once all elements
@@ -253,7 +265,7 @@ TEST_F(SavedTabGroupModelTest, OnlyAddUniqueElements) {
 // Tests that SavedTabGroupModel::Add adds an extra element into the model and
 // keeps the data.
 TEST_F(SavedTabGroupModelTest, AddNewElement) {
-  tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
+  base::GUID id_4 = GenerateNextGUID();
   const std::u16string title_4 = u"Test Test";
   const tab_groups::TabGroupColorId& color_4 =
       tab_groups::TabGroupColorId::kBlue;
@@ -264,7 +276,7 @@ TEST_F(SavedTabGroupModelTest, AddNewElement) {
       CreateSavedTabGroupTab("2nd link", u"Second Tab 4th Group");
 
   std::vector<SavedTabGroupTab> group_4_tabs = {tab1, tab2};
-  SavedTabGroup group_4(id_4, title_4, color_4, group_4_tabs);
+  SavedTabGroup group_4(title_4, color_4, group_4_tabs, id_4);
   saved_tab_group_model_->Add(group_4);
 
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_4));
@@ -272,18 +284,18 @@ TEST_F(SavedTabGroupModelTest, AddNewElement) {
   EXPECT_EQ(saved_tab_group_model_->Count(), 4);
 
   const SavedTabGroup* saved_group = saved_tab_group_model_->Get(id_4);
-  EXPECT_EQ(saved_group->group_id, id_4);
-  EXPECT_EQ(saved_group->title, title_4);
-  EXPECT_EQ(saved_group->color, color_4);
-  CompareSavedTabGroupTabs(saved_group->saved_tabs, group_4_tabs);
+  EXPECT_EQ(saved_group->saved_guid(), id_4);
+  EXPECT_EQ(saved_group->title(), title_4);
+  EXPECT_EQ(saved_group->color(), color_4);
+  CompareSavedTabGroupTabs(saved_group->saved_tabs(), group_4_tabs);
 }
 
 // Tests that SavedTabGroupModel::Update updates the correct element if the
 // title or color are different.
 TEST_F(SavedTabGroupModelTest, UpdateElement) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
-  const std::u16string original_title = group->title;
-  const tab_groups::TabGroupColorId& original_color = group->color;
+  const std::u16string original_title = group->title();
+  const tab_groups::TabGroupColorId& original_color = group->color();
 
   // Should only update the element if title or color are different
   const std::u16string same_title = u"Group One";
@@ -291,9 +303,9 @@ TEST_F(SavedTabGroupModelTest, UpdateElement) {
       tab_groups::TabGroupColorId::kGrey;
   const tab_groups::TabGroupVisualData same_visual_data(same_title, same_color,
                                                         /*is_collapsed*/ false);
-  saved_tab_group_model_->Update(id_1_, &same_visual_data);
-  EXPECT_EQ(group->title, original_title);
-  EXPECT_EQ(group->color, original_color);
+  saved_tab_group_model_->UpdateVisualData(id_1_, &same_visual_data);
+  EXPECT_EQ(group->title(), original_title);
+  EXPECT_EQ(group->color(), original_color);
 
   // Updates both color and title
   const std::u16string new_title = u"New Title";
@@ -301,33 +313,33 @@ TEST_F(SavedTabGroupModelTest, UpdateElement) {
       tab_groups::TabGroupColorId::kCyan;
   const tab_groups::TabGroupVisualData new_visual_data(new_title, new_color,
                                                        /*is_collapsed*/ false);
-  saved_tab_group_model_->Update(id_1_, &new_visual_data);
-  EXPECT_EQ(group->title, new_title);
-  EXPECT_EQ(group->color, new_color);
+  saved_tab_group_model_->UpdateVisualData(id_1_, &new_visual_data);
+  EXPECT_EQ(group->title(), new_title);
+  EXPECT_EQ(group->color(), new_color);
 
   // Update only title
   const std::u16string random_title = u"Random Title";
   const tab_groups::TabGroupVisualData change_title_visual_data(
       random_title, original_color, /*is_collapsed*/ false);
-  saved_tab_group_model_->Update(id_1_, &change_title_visual_data);
-  EXPECT_EQ(group->title, random_title);
-  EXPECT_EQ(group->color, original_color);
+  saved_tab_group_model_->UpdateVisualData(id_1_, &change_title_visual_data);
+  EXPECT_EQ(group->title(), random_title);
+  EXPECT_EQ(group->color(), original_color);
 
   // Update only color
   const tab_groups::TabGroupColorId& random_color =
       tab_groups::TabGroupColorId::kGrey;
   const tab_groups::TabGroupVisualData change_color_visual_data(
       original_title, random_color, /*is_collapsed*/ false);
-  saved_tab_group_model_->Update(id_1_, &change_color_visual_data);
-  EXPECT_EQ(group->title, original_title);
-  EXPECT_EQ(group->color, random_color);
+  saved_tab_group_model_->UpdateVisualData(id_1_, &change_color_visual_data);
+  EXPECT_EQ(group->title(), original_title);
+  EXPECT_EQ(group->color(), random_color);
 }
 
 TEST_F(SavedTabGroupModelTest, MoveElement) {
   EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
-  saved_tab_group_model_->Move(id_2_, 2);
+  saved_tab_group_model_->Reorder(id_2_, 2);
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_2_));
-  saved_tab_group_model_->Move(id_2_, 0);
+  saved_tab_group_model_->Reorder(id_2_, 0);
   EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_2_));
 }
 
@@ -341,11 +353,11 @@ TEST_F(SavedTabGroupModelObserverTest, AddElement) {
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(group_4.group_id, received_group.group_id);
-  EXPECT_EQ(group_4.title, received_group.title);
-  EXPECT_EQ(group_4.color, received_group.color);
-  CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
+  EXPECT_EQ(group_4.tab_group_id(), received_group.tab_group_id());
+  EXPECT_EQ(group_4.title(), received_group.title());
+  EXPECT_EQ(group_4.color(), received_group.color());
+  CompareSavedTabGroupTabs(group_4.saved_tabs(), received_group.saved_tabs());
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
             retrieved_index_);
 }
 
@@ -354,21 +366,22 @@ TEST_F(SavedTabGroupModelObserverTest, AddElement) {
 TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
   SavedTabGroup group_4(CreateTestSavedTabGroup());
   saved_tab_group_model_->Add(group_4);
-  saved_tab_group_model_->Remove(group_4.group_id);
+  saved_tab_group_model_->Remove(group_4.saved_guid());
 
   const int index = retrieved_group_.size() - 1;
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(group_4.group_id, received_group.group_id);
-  EXPECT_EQ(group_4.title, received_group.title);
-  EXPECT_EQ(group_4.color, received_group.color);
-  CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
+  EXPECT_EQ(group_4.tab_group_id(), received_group.tab_group_id());
+  EXPECT_EQ(group_4.title(), received_group.title());
+  EXPECT_EQ(group_4.color(), received_group.color());
+  CompareSavedTabGroupTabs(group_4.saved_tabs(), received_group.saved_tabs());
 
   // The model will have already removed and sent the index our element was at
   // before it was removed from the model. As such, we should get -1 when
   // checking the model and 0 for the retrieved index.
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id), -1);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
+            -1);
   EXPECT_EQ(retrieved_index_, 0);
 }
 
@@ -384,50 +397,57 @@ TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
 
   const tab_groups::TabGroupVisualData new_visual_data(new_title, new_color,
                                                        /*is_collapsed*/ false);
-  saved_tab_group_model_->Update(group_4.group_id, &new_visual_data);
+  saved_tab_group_model_->UpdateVisualData(group_4.saved_guid(),
+                                           &new_visual_data);
 
   const int index = retrieved_group_.size() - 1;
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(group_4.group_id, received_group.group_id);
-  EXPECT_EQ(new_title, received_group.title);
-  EXPECT_EQ(new_color, received_group.color);
-  CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
+  EXPECT_EQ(group_4.tab_group_id(), received_group.tab_group_id());
+  EXPECT_EQ(new_title, received_group.title());
+  EXPECT_EQ(new_color, received_group.color());
+  CompareSavedTabGroupTabs(group_4.saved_tabs(), received_group.saved_tabs());
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
             retrieved_index_);
 }
 
-// Verify that SavedTabGroupModel::GroupClosed passes the correct index.
-TEST_F(SavedTabGroupModelObserverTest, GroupClosed) {
+// Verify that SavedTabGroupModel::OnGroupClosedInTabStrip passes the correct
+// index.
+TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
   SavedTabGroup group_4 = CreateTestSavedTabGroup();
+  tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  group_4.SetLocalGroupId(tab_group_id);
   saved_tab_group_model_->Add(group_4);
-  const int index = saved_tab_group_model_->GetIndexOf(group_4.group_id);
+  const int index = saved_tab_group_model_->GetIndexOf(group_4.saved_guid());
   ASSERT_GE(index, 0);
 
-  // Expect the group that was closed has the same index in our model.
-  saved_tab_group_model_->GroupClosed(group_4.group_id);
+  // Expect the saved group that calls update is the one that was removed from
+  // the tabstrip.
+  saved_tab_group_model_->OnGroupClosedInTabStrip(
+      group_4.tab_group_id().value());
   EXPECT_EQ(index, retrieved_index_);
 
-  // Expect the removal of group_4 does not return a valid index.
-  saved_tab_group_model_->Remove(group_4.group_id);
-  saved_tab_group_model_->GroupClosed(group_4.group_id);
-  EXPECT_NE(index, retrieved_index_);
-  EXPECT_EQ(-1, retrieved_index_);
+  // Expect the removal of group_4 from the tabstrip makes GetIndexOf not return
+  // a valid index when searched by tab group id, but does return the right
+  // index when searched by saved guid.
+  saved_tab_group_model_->OnGroupClosedInTabStrip(tab_group_id);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(tab_group_id), -1);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(group_4.saved_guid()), index);
 }
 
 // Tests that SavedTabGroupModelObserver::Moved passes the correct
 // element from the model.
 TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
-  SavedTabGroup stg_1(tab_groups::TabGroupId::GenerateNew(),
-                      std::u16string(u"stg_1"),
-                      tab_groups::TabGroupColorId::kGrey, {});
-  SavedTabGroup stg_2(tab_groups::TabGroupId::GenerateNew(),
-                      std::u16string(u"stg_2"),
-                      tab_groups::TabGroupColorId::kGrey, {});
-  SavedTabGroup stg_3(tab_groups::TabGroupId::GenerateNew(),
-                      std::u16string(u"stg_3"),
-                      tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroup stg_1(std::u16string(u"stg_1"),
+                      tab_groups::TabGroupColorId::kGrey, {},
+                      GenerateNextGUID());
+  SavedTabGroup stg_2(std::u16string(u"stg_2"),
+                      tab_groups::TabGroupColorId::kGrey, {},
+                      GenerateNextGUID());
+  SavedTabGroup stg_3(std::u16string(u"stg_3"),
+                      tab_groups::TabGroupColorId::kGrey, {},
+                      GenerateNextGUID());
 
   saved_tab_group_model_->Add(stg_1);
   saved_tab_group_model_->Add(stg_2);
@@ -435,13 +455,13 @@ TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
 
   ClearSignals();
 
-  saved_tab_group_model_->Move(stg_2.group_id, 2);
+  saved_tab_group_model_->Reorder(stg_2.saved_guid(), 2);
 
   const int index = retrieved_group_.size() - 1;
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(stg_2.group_id, received_group.group_id);
+  EXPECT_EQ(stg_2.saved_guid(), received_group.saved_guid());
   EXPECT_EQ(1, retrieved_old_index_);
   EXPECT_EQ(2, retrieved_new_index_);
 }

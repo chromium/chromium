@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -526,17 +528,15 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
 
   // Add 3 saved tab groups.
   keyed_service->model()->Add(SavedTabGroup(
-      tab_groups::TabGroupId::GenerateNew(), std::u16string(u"tab group 1"),
-      tab_groups::TabGroupColorId::kGrey, {}));
+      std::u16string(u"tab group 1"), tab_groups::TabGroupColorId::kGrey, {}));
 
-  tab_groups::TabGroupId button_2_id = tab_groups::TabGroupId::GenerateNew();
-  keyed_service->model()->Add(
-      SavedTabGroup(button_2_id, std::u16string(u"tab group 2"),
-                    tab_groups::TabGroupColorId::kGrey, {}));
+  base::GUID button_2_id = base::GUID::GenerateRandomV4();
+  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
+                                            tab_groups::TabGroupColorId::kGrey,
+                                            {}, button_2_id));
 
   keyed_service->model()->Add(SavedTabGroup(
-      tab_groups::TabGroupId::GenerateNew(), std::u16string(u"tab group 3"),
-      tab_groups::TabGroupColorId::kGrey, {}));
+      std::u16string(u"tab group 3"), tab_groups::TabGroupColorId::kGrey, {}));
 
   // Save the position of the 3rd button.
   ASSERT_EQ(3u, test_helper_->saved_tab_group_bar()->children().size());

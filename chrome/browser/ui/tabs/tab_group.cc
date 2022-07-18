@@ -149,8 +149,8 @@ void TabGroup::SaveGroup() {
 
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
-  SavedTabGroup saved_tab_group(id_, visual_data_->title(),
-                                visual_data_->color(), urls);
+  SavedTabGroup saved_tab_group(visual_data_->title(), visual_data_->color(),
+                                urls, absl::nullopt, id_);
   backend->model()->Add(saved_tab_group);
 }
 

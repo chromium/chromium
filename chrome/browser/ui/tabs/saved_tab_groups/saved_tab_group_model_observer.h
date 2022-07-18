@@ -16,21 +16,18 @@ class SavedTabGroupModelObserver {
       delete;
 
   // Called when a saved tab group is added to the backend.
-  virtual void SavedTabGroupAdded(const SavedTabGroup& group, int index) = 0;
+  virtual void SavedTabGroupAdded(const SavedTabGroup& group, int index) {}
 
   // Called when a saved tab group will be removed from the backend.
-  virtual void SavedTabGroupRemoved(int index) = 0;
+  virtual void SavedTabGroupRemoved(int index) {}
 
   // Called when the title, urls, or color change
-  virtual void SavedTabGroupUpdated(const SavedTabGroup& group, int index) = 0;
+  virtual void SavedTabGroupUpdated(const SavedTabGroup& group, int index) {}
 
   // Called when the order of saved tab groups in the bookmark bar are changed
   virtual void SavedTabGroupMoved(const SavedTabGroup& group,
                                   int old_index,
-                                  int new_index) = 0;
-
-  // Called when a saved tab group is removed from a tabstrip.
-  virtual void SavedTabGroupClosed(int index) = 0;
+                                  int new_index) {}
 
  protected:
   SavedTabGroupModelObserver() = default;

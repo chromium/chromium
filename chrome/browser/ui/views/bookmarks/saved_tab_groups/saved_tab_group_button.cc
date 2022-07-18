@@ -48,12 +48,11 @@ SavedTabGroupButton::SavedTabGroupButton(
     const SavedTabGroup& group,
     base::RepeatingCallback<content::PageNavigator*()> page_navigator,
     PressedCallback callback,
-    bool is_group_in_tabstrip,
     bool animations_enabled)
-    : MenuButton(std::move(callback), group.title),
-      tab_group_color_id_(group.color),
-      is_group_in_tabstrip_(is_group_in_tabstrip),
-      tabs_(group.saved_tabs),
+    : MenuButton(std::move(callback), group.title()),
+      tab_group_color_id_(group.color()),
+      is_group_in_tabstrip_(group.tab_group_id().has_value()),
+      tabs_(group.saved_tabs()),
       page_navigator_callback_(std::move(page_navigator)),
       context_menu_controller_(
           this,
@@ -61,8 +60,8 @@ SavedTabGroupButton::SavedTabGroupButton(
               &SavedTabGroupButton::CreateDialogModelForContextMenu,
               base::Unretained(this)),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
-  SetText(group.title);
-  SetAccessibleName(group.title);
+  SetText(group.title());
+  SetAccessibleName(group.title());
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
 
   // Since the theme provider is not currently available when instantiated the
@@ -185,14 +184,6 @@ void SavedTabGroupButton::OnThemeChanged() {
         text_color, background_color,
         color_utils::kMinimumReadableContrastRatio);
   }
-}
-
-void SavedTabGroupButton::RemoveButtonOutline() {
-  is_group_in_tabstrip_ = false;
-}
-
-bool SavedTabGroupButton::HasButtonOutline() const {
-  return is_group_in_tabstrip_;
 }
 
 std::unique_ptr<ui::DialogModel>

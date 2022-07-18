@@ -49,7 +49,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void SavedTabGroupMoved(const SavedTabGroup& group,
                           int old_index,
                           int new_index) override;
-  void SavedTabGroupClosed(int index) override;
 
   // Calculates what the visible width would be when a restriction on width is
   // placed on the bar.
@@ -68,8 +67,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void RemoveAllButtons();
 
   // the callback that the button calls when clicked by a user.
-  void OnTabGroupButtonPressed(const tab_groups::TabGroupId& group_id,
-                               const ui::Event& event);
+  void OnTabGroupButtonPressed(const base::GUID& id, const ui::Event& event);
 
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();

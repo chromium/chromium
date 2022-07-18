@@ -12,22 +12,18 @@
 
 namespace {
 
-SavedTabGroup kSavedTabGroup1(tab_groups::TabGroupId::GenerateNew(),
-                              std::u16string(u"test_title_1"),
+SavedTabGroup kSavedTabGroup1(std::u16string(u"test_title_1"),
                               tab_groups::TabGroupColorId::kGrey,
                               {});
 
-SavedTabGroup kSavedTabGroup2(tab_groups::TabGroupId::GenerateNew(),
-                              std::u16string(u"test_title_2"),
+SavedTabGroup kSavedTabGroup2(std::u16string(u"test_title_2"),
                               tab_groups::TabGroupColorId::kGrey,
                               {});
-SavedTabGroup kSavedTabGroup3(tab_groups::TabGroupId::GenerateNew(),
-                              std::u16string(u"test_title_3"),
+SavedTabGroup kSavedTabGroup3(std::u16string(u"test_title_3"),
                               tab_groups::TabGroupColorId::kGrey,
                               {});
 
-SavedTabGroup kSavedTabGroup4(tab_groups::TabGroupId::GenerateNew(),
-                              std::u16string(u"test_title_4"),
+SavedTabGroup kSavedTabGroup4(std::u16string(u"test_title_4"),
                               tab_groups::TabGroupColorId::kGrey,
                               {});
 
@@ -114,7 +110,7 @@ TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
   // Remove the group and expect no buttons.
-  saved_tab_group_model()->Remove(kSavedTabGroup1.group_id);
+  saved_tab_group_model()->Remove(kSavedTabGroup1.saved_guid());
   EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
 }
 
@@ -127,8 +123,8 @@ TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
 
   // Update the visual_data and expect the first button to be updated and the
   // second button to stay the same.
-  saved_tab_group_model()->Update(kSavedTabGroup1.group_id,
-                                  &saved_tab_group_visual_data);
+  saved_tab_group_model()->UpdateVisualData(kSavedTabGroup1.saved_guid(),
+                                            &saved_tab_group_visual_data);
 
   SavedTabGroupButton* new_button_1 = views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[0]);
@@ -147,7 +143,7 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
 
   // move the tab and expect the one that was moved to be in the expected
   // position.
-  saved_tab_group_model()->Move(kSavedTabGroup1.group_id, 1);
+  saved_tab_group_model()->Reorder(kSavedTabGroup1.saved_guid(), 1);
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
   EXPECT_EQ(button_1, saved_tab_group_bar()->children()[1]);
 }

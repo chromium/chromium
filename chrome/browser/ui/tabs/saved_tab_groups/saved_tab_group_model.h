@@ -17,7 +17,7 @@
 
 class Profile;
 class SavedTabGroupModelObserver;
-struct SavedTabGroup;
+class SavedTabGroup;
 
 // Serves to maintain the current state of all saved tab groups in the current
 // session.
@@ -29,43 +29,71 @@ class SavedTabGroupModel {
   SavedTabGroupModel& operator=(const SavedTabGroupModel& other) = delete;
   ~SavedTabGroupModel();
 
-  const std::vector<SavedTabGroup>& saved_tab_groups() {
+  // Accessor for the underlying storage vector.
+  const std::vector<SavedTabGroup>& saved_tab_groups() const {
     return saved_tab_groups_;
   }
+  Profile* profile() const { return profile_; }
 
-  bool Contains(const tab_groups::TabGroupId& tab_group_id) {
-    return GetIndexOf(tab_group_id) >= 0;
+  // Returns the index of the SavedTabGroup if it exists in the vector. Else
+  // returns -1.
+  int GetIndexOf(const tab_groups::TabGroupId local_group_id) const;
+  int GetIndexOf(const base::GUID& id) const;
+
+  // Get a pointer to the SavedTabGroup from an ID. Returns nullptr if not in
+  // vector.
+  const SavedTabGroup* Get(const tab_groups::TabGroupId local_group_id) const;
+  const SavedTabGroup* Get(const base::GUID& id) const;
+
+  // Methods for checking if a group is in the SavedTabGroupModel.
+  bool Contains(const tab_groups::TabGroupId& local_group_id) const {
+    return GetIndexOf(local_group_id) >= 0;
   }
+  bool Contains(const base::GUID& id) const { return GetIndexOf(id) >= 0; }
 
-  int GetIndexOf(const tab_groups::TabGroupId tab_group_id);
-  int Count() { return saved_tab_groups_.size(); }
-  bool IsEmpty() { return Count() <= 0; }
-  const SavedTabGroup* Get(const tab_groups::TabGroupId tab_group_id);
-  Profile* profile() { return profile_; }
+  // Helper for getting number of SavedTabGroups in the vector.
+  int Count() const { return saved_tab_groups_.size(); }
 
-  // Updates a single tab groups visual data (title, color).
-  void Update(const tab_groups::TabGroupId tab_group_id,
-              const tab_groups::TabGroupVisualData* visual_data);
+  // Helper for getting empty state of the SavedTabGroup vector.
+  bool IsEmpty() const { return Count() <= 0; }
 
   // Add / Remove a single tab group from the model.
-  void Remove(const tab_groups::TabGroupId tab_group_id);
-  void Add(const SavedTabGroup& saved_group);
-
-  // Notify Observers that a saved tab group was removed from the tabstrip.
-  void GroupClosed(tab_groups::TabGroupId tab_group_id);
+  void Add(SavedTabGroup saved_group);
+  void Remove(const tab_groups::TabGroupId local_group_id);
+  void Remove(const base::GUID& id);
+  void UpdateVisualData(const tab_groups::TabGroupId local_group_id,
+                        const tab_groups::TabGroupVisualData* visual_data);
+  void UpdateVisualData(const base::GUID& id,
+                        const tab_groups::TabGroupVisualData* visual_data);
 
   // Changes the index of a given tab group by id. The new index provided is the
   // expected index after the group is removed.
-  void Move(tab_groups::TabGroupId tab_group_id, int new_index);
+  void Reorder(const base::GUID& id, int new_index);
+
+  // Functions that should be called when a SavedTabGroup's corresponding
+  // TabGroup is closed or opened.
+  void OnGroupOpenedInTabStrip(const base::GUID& id,
+                               const tab_groups::TabGroupId& local_group_id);
+  void OnGroupClosedInTabStrip(const tab_groups::TabGroupId& local_group_id);
 
   // Add/Remove observers for this model.
   void AddObserver(SavedTabGroupModelObserver* observer);
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 
  private:
-  // The observers.
+  // Implementations of CRUD operations.
+  void RemoveImpl(int index);
+  void UpdateVisualDataImpl(int index,
+                            const tab_groups::TabGroupVisualData* visual_data);
+
+  // Obsevers of the model.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
+
+  // Storage of all saved tab groups in the order they are displayed.
   std::vector<SavedTabGroup> saved_tab_groups_;
+
+  // SavedTabGroupModels are created on a per profile basis with a keyed
+  // service. Returns the Profile that made the SavedTabGroupModel
   raw_ptr<Profile> profile_ = nullptr;
 };
 

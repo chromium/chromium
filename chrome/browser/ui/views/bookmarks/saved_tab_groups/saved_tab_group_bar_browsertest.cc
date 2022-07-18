@@ -26,86 +26,89 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
                        ValidGroupIsOpenedInTabstripOnce) {
   SavedTabGroupKeyedService* saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_NE(saved_tab_group_service, nullptr);
-
   SavedTabGroupModel* stg_model = saved_tab_group_service->model();
-  ASSERT_NE(stg_model, nullptr);
-
-  SavedTabGroupTab saved_tab_group_tab(GURL("chrome://newtab"), u"Title",
-                                       favicon::GetDefaultFavicon());
-  SavedTabGroup saved_tab_group(
-      tab_groups::TabGroupId::GenerateNew(), std::u16string(u"test_title_1"),
-      tab_groups::TabGroupColorId::kGrey, {saved_tab_group_tab});
-  stg_model->Add(saved_tab_group);
-  ASSERT_TRUE(stg_model->Contains(saved_tab_group.group_id));
-  ASSERT_EQ(stg_model->Count(), 1);
-
   TabStripModel* model = browser()->tab_strip_model();
-  int current_tabs = model->GetTabCount();
+  base::GUID guid = base::GUID::GenerateRandomV4();
 
-  chrome::OpenSavedTabGroup(
-      browser(), base::BindLambdaForTesting([=]() {
-        return static_cast<content::PageNavigator*>(browser());
-      }),
-      saved_tab_group.group_id, saved_tab_group.saved_tabs.size());
+  {  // Add the STG to the model and then open it from the current browser.
+    const int original_model_count = model->GetTabCount();
 
-  EXPECT_TRUE(model->group_model()->ContainsTabGroup(saved_tab_group.group_id));
-  EXPECT_EQ(current_tabs + int(saved_tab_group.saved_tabs.size()),
-            model->count());
+    stg_model->Add(SavedTabGroup(
+        std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
+        {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
+                          favicon::GetDefaultFavicon())},
+        guid));
+    chrome::OpenSavedTabGroup(
+        browser(), base::BindLambdaForTesting([=]() {
+          return static_cast<content::PageNavigator*>(browser());
+        }),
+        guid, 1);
 
-  current_tabs = model->count();
-  chrome::OpenSavedTabGroup(
-      browser(), base::BindLambdaForTesting([=]() {
-        return static_cast<content::PageNavigator*>(browser());
-      }),
-      saved_tab_group.group_id, saved_tab_group.saved_tabs.size());
+    const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
+    EXPECT_NE(saved_tab_group, nullptr);
+    EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
+    EXPECT_TRUE(model->group_model()->ContainsTabGroup(
+        saved_tab_group->tab_group_id().value()));
+    EXPECT_NE(model->GetTabCount(), original_model_count);
+  }
 
-  EXPECT_TRUE(model->group_model()->ContainsTabGroup(saved_tab_group.group_id));
-  EXPECT_EQ(current_tabs, model->count());
+  {  // The STG is already opened in the saved tab group
+    const int original_model_count = model->GetTabCount();
+
+    chrome::OpenSavedTabGroup(
+        browser(), base::BindLambdaForTesting([=]() {
+          return static_cast<content::PageNavigator*>(browser());
+        }),
+        guid, 1);
+    const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
+    EXPECT_NE(saved_tab_group, nullptr);
+    EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
+    EXPECT_TRUE(model->group_model()->ContainsTabGroup(
+        saved_tab_group->tab_group_id().value()));
+    EXPECT_EQ(model->count(), original_model_count);
+  }
 }
 
-// Verifies that attempting to open a deleted group will do nothing.
-IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest, AttemptToOpenDeletedGroup) {
+IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
+                       DeletedSavedTabGroupDoesNotOpen) {
   SavedTabGroupKeyedService* saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_NE(saved_tab_group_service, nullptr);
-
   SavedTabGroupModel* stg_model = saved_tab_group_service->model();
-  ASSERT_NE(stg_model, nullptr);
-
-  SavedTabGroupTab saved_tab_group_tab(GURL("chrome://newtab"), u"Title",
-                                       favicon::GetDefaultFavicon());
-  SavedTabGroup saved_tab_group(
-      tab_groups::TabGroupId::GenerateNew(), std::u16string(u"test_title_1"),
-      tab_groups::TabGroupColorId::kGrey, {saved_tab_group_tab});
-  stg_model->Add(saved_tab_group);
-  ASSERT_TRUE(stg_model->Contains(saved_tab_group.group_id));
-  ASSERT_EQ(stg_model->Count(), 1);
-
   TabStripModel* model = browser()->tab_strip_model();
-  int current_tabs = model->GetTabCount();
 
-  chrome::OpenSavedTabGroup(
-      browser(), base::BindLambdaForTesting([=]() {
-        return static_cast<content::PageNavigator*>(browser());
-      }),
-      saved_tab_group.group_id, saved_tab_group.saved_tabs.size());
+  base::GUID guid = base::GUID::GenerateRandomV4();
 
-  EXPECT_TRUE(model->group_model()->ContainsTabGroup(saved_tab_group.group_id));
-  EXPECT_EQ(current_tabs + int(saved_tab_group.saved_tabs.size()),
-            model->count());
+  {  // Add an STG, open a group for it in the tabstrip, and delete the STG.
+    stg_model->Add(SavedTabGroup(
+        std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
+        {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
+                          favicon::GetDefaultFavicon())},
+        guid));
+    chrome::OpenSavedTabGroup(
+        browser(), base::BindLambdaForTesting([=]() {
+          return static_cast<content::PageNavigator*>(browser());
+        }),
+        guid, 1);
 
-  stg_model->Remove(saved_tab_group.group_id);
-  model->CloseAllTabsInGroup(saved_tab_group.group_id);
-  current_tabs = model->count();
+    const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
 
-  chrome::OpenSavedTabGroup(
-      browser(), base::BindLambdaForTesting([=]() {
-        return static_cast<content::PageNavigator*>(browser());
-      }),
-      saved_tab_group.group_id, saved_tab_group.saved_tabs.size());
+    EXPECT_NE(saved_tab_group, nullptr);
+    EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
+    EXPECT_TRUE(model->group_model()->ContainsTabGroup(
+        saved_tab_group->tab_group_id().value()));
+    stg_model->Remove(saved_tab_group->saved_guid());
+  }
 
-  EXPECT_FALSE(
-      model->group_model()->ContainsTabGroup(saved_tab_group.group_id));
-  EXPECT_EQ(current_tabs, model->count());
+  {  // Attempt to reopen the STG, it should not open.
+    const int original_tab_count = model->count();
+    chrome::OpenSavedTabGroup(
+        browser(), base::BindLambdaForTesting([=]() {
+          return static_cast<content::PageNavigator*>(browser());
+        }),
+        guid, 1);
+
+    const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
+    EXPECT_EQ(saved_tab_group, nullptr);
+    EXPECT_EQ(model->count(), original_tab_count);
+  }
 }

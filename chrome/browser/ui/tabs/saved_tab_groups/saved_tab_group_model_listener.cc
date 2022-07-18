@@ -69,16 +69,6 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
   const TabGroup* group =
       tab_strip_model->group_model()->GetTabGroup(change.group);
   switch (change.type) {
-    // Called when a group is created the first tab is added.
-    case TabGroupChange::kCreated: {
-      NOTIMPLEMENTED();
-      return;
-    }
-    // Called when a tab groups editor menu is opened.
-    case TabGroupChange::kEditorOpened: {
-      NOTIMPLEMENTED();
-      return;
-    }
     // Called when the tabs in the group changes.
     case TabGroupChange::kContentsChanged: {
       // TODO(dljames): kContentsChanged will update the urls associated with
@@ -89,17 +79,22 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
     // Called when a groups title or color changes
     case TabGroupChange::kVisualsChanged: {
       const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
-      model_->Update(change.group, visual_data);
-      return;
-    }
-    // Called when a groups is moved by interacting with its header.
-    case TabGroupChange::kMoved: {
-      NOTIMPLEMENTED();
+      model_->UpdateVisualData(change.group, visual_data);
       return;
     }
     // Called when the last tab in the groups is removed.
     case TabGroupChange::kClosed: {
-      model_->GroupClosed(change.group);
+      model_->OnGroupClosedInTabStrip(change.group);
+      return;
+    }
+    // Created is ignored because we explicitly add the TabGroupId to the saved
+    // tab group outside of the observer flow. kEditorOpened does not affect the
+    // SavedTabGroup, and kMoved does not affect the order of the saved tab
+    // groups.
+    case TabGroupChange::kCreated:
+    case TabGroupChange::kEditorOpened:
+    case TabGroupChange::kMoved: {
+      NOTIMPLEMENTED();
       return;
     }
   }

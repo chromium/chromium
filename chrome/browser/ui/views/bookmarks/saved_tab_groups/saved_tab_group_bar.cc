@@ -93,10 +93,6 @@ void SavedTabGroupBar::SavedTabGroupMoved(const SavedTabGroup& group,
   PreferredSizeChanged();
 }
 
-// TODO dpenning: Support the state of the SavedTabGroup open in a tab strip
-// changing.
-void SavedTabGroupBar::SavedTabGroupClosed(int index) {}
-
 void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
                                          int index) {
   // Check that the index is valid for buttons
@@ -111,8 +107,8 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
           base::BindRepeating(&SavedTabGroupBar::page_navigator,
                               base::Unretained(this)),
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
-                              base::Unretained(this), group.group_id),
-          /*is_group_in_tabstrip*/ false, animations_enabled_),
+                              base::Unretained(this), group.saved_guid()),
+          animations_enabled_),
       index);
 }
 
@@ -128,20 +124,19 @@ void SavedTabGroupBar::RemoveAllButtons() {
     RemoveChildViewT(children().at(index));
 }
 
-void SavedTabGroupBar::OnTabGroupButtonPressed(
-    const tab_groups::TabGroupId& group_id,
-    const ui::Event& event) {
-  DCHECK(saved_tab_group_model_ && saved_tab_group_model_->Contains(group_id));
+void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
+                                               const ui::Event& event) {
+  DCHECK(saved_tab_group_model_ && saved_tab_group_model_->Contains(id));
 
-  const SavedTabGroup* group = saved_tab_group_model_->Get(group_id);
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id);
 
   // TODO: Handle click if group has already been opened (crbug.com/1238539)
   // left click on a saved tab group opens all links in new group
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
-    if (group->saved_tabs.empty())
+    if (group->saved_tabs().empty())
       return;
     chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(),
-                              group->group_id, group->saved_tabs.size());
+                              group->saved_guid(), group->saved_tabs().size());
   }
 }
 

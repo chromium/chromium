@@ -33,7 +33,6 @@ class SavedTabGroupButton : public views::MenuButton {
       const SavedTabGroup& group,
       base::RepeatingCallback<content::PageNavigator*()> page_navigator,
       PressedCallback callback,
-      bool is_group_in_tabstrip,
       bool animations_enabled = true);
 
   SavedTabGroupButton(const SavedTabGroupButton&) = delete;
