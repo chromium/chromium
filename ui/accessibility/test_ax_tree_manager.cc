@@ -116,4 +116,8 @@ AXNode* TestAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   return nullptr;
 }
 
+std::string TestAXTreeManager::ToString() const {
+  return "<TestAXTreeManager>";
+}
+
 }  // namespace ui

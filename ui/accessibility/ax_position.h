@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -396,16 +397,33 @@ class AXPosition {
     return str + " annotated_text=" + base::UTF16ToUTF8(annotated_text);
   }
 
+  // Helper for logging the position, the AXTreeManager and the anchor node.
+  std::string ToDebugString() const {
+    if (IsNullPosition()) {
+      return "* Position: null";
+    }
+    DCHECK(GetAnchor());
+    DCHECK(GetManager());
+    std::ostringstream str;
+    str << "* Position: " << ToString()
+        << "\n* Manager: " << GetManager()->ToString()
+        << "\n* Anchor node: " << *GetAnchor();
+    return str.str();
+  }
+
   AXPositionKind kind() const { return kind_; }
   AXTreeID tree_id() const { return tree_id_; }
   AXNodeID anchor_id() const { return anchor_id_; }
+
+  AXTreeManager* GetManager() const {
+    return AXTreeManagerMap::GetInstance().GetManager(tree_id());
+  }
 
   AXNode* GetAnchor() const {
     if (tree_id_ == AXTreeIDUnknown() || anchor_id_ == kInvalidAXNodeID)
       return nullptr;
 
-    const AXTreeManager* manager =
-        AXTreeManagerMap::GetInstance().GetManager(tree_id());
+    const AXTreeManager* manager = GetManager();
     if (manager)
       return manager->GetNodeFromTree(anchor_id());
 
@@ -2548,13 +2566,6 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance text_position = AsTextPosition();
-    // The following situation should not be possible but there are existing
-    // crashes in the field.
-    //
-    // TODO(nektar): Remove this workaround as soon as the source of the bug
-    // is identified.
-    if (text_position->text_offset_ > text_position->MaxTextOffset())
-      return CreateNullPosition();
 
     // In case the input affinity is upstream, reset it to downstream.
     //
@@ -2572,6 +2583,16 @@ class AXPosition {
     if (!text_position->IsIgnored() && !text_position->AtEndOfAnchor()) {
       std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
           text_position->GetGraphemeIterator();
+      // The following situation should not be possible but there are existing
+      // crashes in the field.
+      //
+      // TODO(nektar): Remove this workaround as soon as the source of the bug
+      // is identified.
+      if (text_position->text_offset_ < 0 ||
+          text_position->text_offset_ > text_position->MaxTextOffset()) {
+        SANITIZER_NOTREACHED() << "Offset range error:\n" << ToDebugString();
+        return CreateNullPosition();
+      }
       DCHECK_GE(text_position->text_offset_, 0);
       DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
       while (!text_position->AtStartOfAnchor() &&
@@ -2624,9 +2645,11 @@ class AXPosition {
       //
       // TODO(nektar): Remove this workaround as soon as the source of the bug
       // is identified.
-      if (text_position->text_offset_ > text_position->MaxTextOffset())
+      if (text_position->text_offset_ < 0 ||
+          text_position->text_offset_ > text_position->MaxTextOffset()) {
+        SANITIZER_NOTREACHED() << "Offset range error:\n" << ToDebugString();
         return CreateNullPosition();
-
+      }
       DCHECK_GE(text_position->text_offset_, 0);
       DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
       while (!text_position->AtEndOfAnchor() &&
