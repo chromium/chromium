@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
+
 #import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
