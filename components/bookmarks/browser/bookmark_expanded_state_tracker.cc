@@ -42,13 +42,11 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
   if (!pref_service_)
     return nodes;
 
-  const base::Value* value =
-      pref_service_->GetList(prefs::kBookmarkEditorExpandedNodes);
-  if (!value)
-    return nodes;
+  const base::Value::List& value =
+      pref_service_->GetValueList(prefs::kBookmarkEditorExpandedNodes);
 
   bool changed = false;
-  for (const auto& entry : value->GetListDeprecated()) {
+  for (const auto& entry : value) {
     int64_t node_id;
     const BookmarkNode* node;
     const std::string* value_str = entry.GetIfString();
@@ -106,14 +104,14 @@ void BookmarkExpandedStateTracker::UpdatePrefs(const Nodes& nodes) {
   if (!pref_service_)
     return;
 
-  std::vector<base::Value> values;
+  base::Value::List values;
   values.reserve(nodes.size());
   for (const auto* node : nodes) {
-    values.emplace_back(base::NumberToString(node->id()));
+    values.Append(base::NumberToString(node->id()));
   }
 
-  pref_service_->Set(prefs::kBookmarkEditorExpandedNodes,
-                     base::Value(std::move(values)));
+  pref_service_->SetList(prefs::kBookmarkEditorExpandedNodes,
+                         std::move(values));
 }
 
 }  // namespace bookmarks

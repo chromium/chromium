@@ -121,22 +121,20 @@ class BookmarkCodecTest : public testing::Test {
                                  base::Value** result_value) {
     ASSERT_TRUE(value->is_dict());
 
-    base::Value* roots = value->FindDictKey(BookmarkCodec::kRootsKey);
+    base::Value::Dict* roots =
+        value->GetDict().FindDict(BookmarkCodec::kRootsKey);
     ASSERT_TRUE(roots);
 
-    base::Value* bb_value =
-        roots->FindDictKey(BookmarkCodec::kBookmarkBarFolderNameKey);
-    ASSERT_TRUE(bb_value);
+    base::Value::Dict* bb_dict =
+        roots->FindDict(BookmarkCodec::kBookmarkBarFolderNameKey);
+    ASSERT_TRUE(bb_dict);
 
-    base::Value* bb_children_value =
-        bb_value->FindListKey(BookmarkCodec::kChildrenKey);
-    ASSERT_TRUE(bb_children_value);
+    base::Value::List* bb_children_list =
+        bb_dict->FindList(BookmarkCodec::kChildrenKey);
+    ASSERT_TRUE(bb_children_list);
+    ASSERT_LT(index, bb_children_list->size());
 
-    base::Value::ListView bb_children_l_value =
-        bb_children_value->GetListDeprecated();
-    ASSERT_LT(index, bb_children_l_value.size());
-
-    base::Value& child_value = bb_children_l_value[index];
+    base::Value& child_value = (*bb_children_list)[index];
     ASSERT_TRUE(child_value.is_dict());
 
     *result_value = &child_value;

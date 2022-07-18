@@ -168,10 +168,10 @@ base::Value BookmarkCodec::EncodeNode(const BookmarkNode* node) {
         base::NumberToString(node->date_folder_modified().ToInternalValue()));
     UpdateChecksumWithFolderNode(id, title);
 
-    base::Value child_values(base::Value::Type::LIST);
+    base::Value::List child_values;
     for (const auto& child : node->children())
       child_values.Append(EncodeNode(child.get()));
-    value.SetKey(kChildrenKey, std::move(child_values));
+    value.SetKey(kChildrenKey, base::Value(std::move(child_values)));
   }
   const BookmarkNode::MetaInfoMap* meta_info_map = node->GetMetaInfoMap();
   if (meta_info_map)
@@ -248,7 +248,7 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
 bool BookmarkCodec::DecodeChildren(const base::Value& child_value_list,
                                    BookmarkNode* parent) {
   DCHECK(child_value_list.is_list());
-  for (const base::Value& child_value : child_value_list.GetListDeprecated()) {
+  for (const base::Value& child_value : child_value_list.GetList()) {
     if (!child_value.is_dict())
       return false;
     DecodeNode(child_value, parent, nullptr);
