@@ -335,6 +335,15 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
       ),
       True,
     ),
+    BanRule(
+    ' systemImageNamed:',
+      (
+        '+[UIImage systemImageNamed:] should not be used to create symbols.',
+        'Instead use a wrapper defined in:',
+        'ios/chrome/browser/ui/icons/chrome_symbol.h'
+      ),
+      True,
+    ),
 )
 
 _BANNED_IOS_EGTEST_FUNCTIONS : Sequence[BanRule] = (
