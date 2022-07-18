@@ -170,6 +170,18 @@ bool VisitDatabase::InitVisitTable() {
                        "visits (visit_time)"))
     return false;
 
+  // Create an index over originator visit IDs so that Sync can efficiently
+  // re-map them into local IDs.
+  // Note: Some tests manually create older versions of the DB where the
+  // `originator_visit_id` column doesn't exist yet. In those cases, don't try
+  // creating an index (which would fail).
+  if (GetDB().DoesColumnExist("visits", "originator_visit_id")) {
+    if (!GetDB().Execute(
+            "CREATE INDEX IF NOT EXISTS visits_originator_id_index ON visits "
+            "(originator_visit_id)"))
+      return false;
+  }
+
   return true;
 }
 
@@ -363,6 +375,24 @@ bool VisitDatabase::GetLastRowForVisitByVisitTime(base::Time visit_time,
   if (visit_time != out_visit->visit_time)
     return false;
 
+  return true;
+}
+
+bool VisitDatabase::GetRowForForeignVisit(
+    const std::string& originator_cache_guid,
+    VisitID originator_visit_id,
+    VisitRow* out_visit) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT" HISTORY_VISIT_ROW_FIELDS
+      "FROM visits WHERE originator_cache_guid=? and originator_visit_id=?"));
+  statement.BindString(0, originator_cache_guid);
+  statement.BindInt64(1, originator_visit_id);
+
+  if (!statement.Step())
+    return false;
+
+  FillVisitRow(statement, out_visit);
   return true;
 }
 

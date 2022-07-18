@@ -1331,6 +1331,16 @@ bool HistoryBackend::AddVisits(const GURL& url,
   return false;
 }
 
+bool HistoryBackend::GetForeignVisit(const std::string& originator_cache_guid,
+                                     VisitID originator_visit_id,
+                                     VisitRow* visit_row) {
+  if (!db_)
+    return false;
+
+  return db_->GetRowForForeignVisit(originator_cache_guid, originator_visit_id,
+                                    visit_row);
+}
+
 VisitID HistoryBackend::AddSyncedVisit(const GURL& url,
                                        const std::u16string& title,
                                        bool hidden,
@@ -1353,7 +1363,7 @@ VisitID HistoryBackend::AddSyncedVisit(const GURL& url,
   return visit_id;
 }
 
-bool HistoryBackend::UpdateSyncedVisit(const VisitRow& visit) {
+VisitID HistoryBackend::UpdateSyncedVisit(const VisitRow& visit) {
   DCHECK_EQ(visit.visit_id, 0);
   DCHECK_EQ(visit.url_id, 0);
   DCHECK(!visit.visit_time.is_null());
@@ -1361,16 +1371,16 @@ bool HistoryBackend::UpdateSyncedVisit(const VisitRow& visit) {
   DCHECK(visit.transition & ui::PAGE_TRANSITION_CHAIN_END);
 
   if (!db_)
-    return false;
+    return 0;
 
   VisitRow original_row;
   if (!db_->GetLastRowForVisitByVisitTime(visit.visit_time, &original_row)) {
-    return false;
+    return 0;
   }
 
   if (original_row.originator_cache_guid != visit.originator_cache_guid) {
     // The existing visit came from a different device; something is wrong.
-    return false;
+    return 0;
   }
 
   VisitRow updated_row = visit;
@@ -1385,11 +1395,27 @@ bool HistoryBackend::UpdateSyncedVisit(const VisitRow& visit) {
   updated_row.opener_visit = original_row.opener_visit;
 
   if (!db_->UpdateVisitRow(updated_row))
-    return false;
+    return 0;
 
   NotifyVisitUpdated(updated_row);
   ScheduleCommit();
-  return true;
+  return updated_row.visit_id;
+}
+
+bool HistoryBackend::UpdateVisitReferrerOpenerIDs(VisitID visit_id,
+                                                  VisitID referrer_id,
+                                                  VisitID opener_id) {
+  if (!db_)
+    return false;
+
+  VisitRow row;
+  if (!db_->GetRowForVisit(visit_id, &row))
+    return false;
+
+  row.referring_visit = referrer_id;
+  row.opener_visit = opener_id;
+
+  return db_->UpdateVisitRow(row);
 }
 
 bool HistoryBackend::RemoveVisits(const VisitVector& visits) {

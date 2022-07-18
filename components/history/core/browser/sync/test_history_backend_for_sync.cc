@@ -134,6 +134,22 @@ VisitVector TestHistoryBackendForSync::GetRedirectChain(VisitRow visit) {
   return result;
 }
 
+bool TestHistoryBackendForSync::GetForeignVisit(
+    const std::string& originator_cache_guid,
+    VisitID originator_visit_id,
+    VisitRow* visit_row) {
+  ++get_foreign_visit_call_count_;
+
+  for (const VisitRow& candidate : visits_) {
+    if (candidate.originator_cache_guid == originator_cache_guid &&
+        candidate.originator_visit_id == originator_visit_id) {
+      *visit_row = candidate;
+      return true;
+    }
+  }
+  return false;
+}
+
 VisitID TestHistoryBackendForSync::AddSyncedVisit(const GURL& url,
                                                   const std::u16string& title,
                                                   bool hidden,
@@ -147,7 +163,7 @@ VisitID TestHistoryBackendForSync::AddSyncedVisit(const GURL& url,
   return visits_.back().visit_id;
 }
 
-bool TestHistoryBackendForSync::UpdateSyncedVisit(const VisitRow& visit) {
+VisitID TestHistoryBackendForSync::UpdateSyncedVisit(const VisitRow& visit) {
   for (VisitRow& existing_visit : visits_) {
     if (existing_visit.originator_cache_guid == visit.originator_cache_guid &&
         existing_visit.originator_visit_id == visit.originator_visit_id) {
@@ -157,6 +173,20 @@ bool TestHistoryBackendForSync::UpdateSyncedVisit(const VisitRow& visit) {
       new_visit.visit_id = existing_visit.visit_id;
       new_visit.url_id = existing_visit.url_id;
       existing_visit = new_visit;
+      return existing_visit.visit_id;
+    }
+  }
+  return 0;
+}
+
+bool TestHistoryBackendForSync::UpdateVisitReferrerOpenerIDs(
+    VisitID visit_id,
+    VisitID referrer_id,
+    VisitID opener_id) {
+  for (VisitRow& visit : visits_) {
+    if (visit.visit_id == visit_id) {
+      visit.referring_visit = referrer_id;
+      visit.opener_visit = opener_id;
       return true;
     }
   }

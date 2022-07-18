@@ -531,6 +531,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                  const std::vector<VisitInfo>& visits,
                  VisitSource visit_source);
 
+  // Searches for a visit with the given `originator_visit_id` coming from
+  // another device (identified by `originator_cache_guid`). If found, returns
+  // true and writes the visit into `visit_row`; otherwise returns false.
+  bool GetForeignVisit(const std::string& originator_cache_guid,
+                       VisitID originator_visit_id,
+                       VisitRow* visit_row) override;
+
   // Adds a visit coming from another device. The visit's ID must be 0 (unset),
   // and its originator_cache_guid must be populated.
   VisitID AddSyncedVisit(const GURL& url,
@@ -543,8 +550,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // have the visit duration populated), and the visit's ID must be 0 (unset),
   // because for incoming remote visits, the local visit ID isn't know. The
   // visit will be identified via its timestamp and originator_cache_guid
-  // instead.
-  bool UpdateSyncedVisit(const VisitRow& visit) override;
+  // instead. Returns the local VisitID of the updated visit, or 0 if no
+  // matching visit was found.
+  VisitID UpdateSyncedVisit(const VisitRow& visit) override;
+
+  // Updates the `referring_visit` and `opener_visit` fields for the visit with
+  // the given `visit_id`. Used by Sync to re-map originator IDs to local IDs.
+  bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
+                                    VisitID referrer_id,
+                                    VisitID opener_id) override;
 
   bool RemoveVisits(const VisitVector& visits);
 

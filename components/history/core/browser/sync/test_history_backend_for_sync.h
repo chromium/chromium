@@ -44,13 +44,23 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
                                  int max_visits,
                                  VisitVector* visits) override;
   VisitVector GetRedirectChain(VisitRow visit) override;
+  bool GetForeignVisit(const std::string& originator_cache_guid,
+                       VisitID originator_visit_id,
+                       VisitRow* visit_row) override;
   VisitID AddSyncedVisit(const GURL& url,
                          const std::u16string& title,
                          bool hidden,
                          const VisitRow& visit) override;
-  bool UpdateSyncedVisit(const VisitRow& visit) override;
+  VisitID UpdateSyncedVisit(const VisitRow& visit) override;
+  bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
+                                    VisitID referrer_id,
+                                    VisitID opener_id) override;
   void AddObserver(HistoryBackendObserver* observer) override;
   void RemoveObserver(HistoryBackendObserver* observer) override;
+
+  int get_foreign_visit_call_count() const {
+    return get_foreign_visit_call_count_;
+  }
 
  private:
   bool FindVisit(VisitID id, VisitRow* result);
@@ -63,6 +73,8 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   URLID next_url_id_ = 1;
   std::vector<VisitRow> visits_;
   VisitID next_visit_id_ = 1;
+
+  int get_foreign_visit_call_count_ = 0;
 
   base::ObserverList<HistoryBackendObserver, true>::Unchecked observers_;
 };

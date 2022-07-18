@@ -49,17 +49,24 @@ class VisitDatabase {
   // doesn't exist, it will not do anything.
   void DeleteVisit(const VisitRow& visit);
 
-  // Query a VisitInfo given a visit id, filling the given VisitRow.
+  // Query a VisitRow given a visit id, filling the given VisitRow.
   // Returns true on success.
   bool GetRowForVisit(VisitID visit_id, VisitRow* out_visit);
 
-  // Query a VisitInfo given a visit time, filling the given VisitRow. If there
+  // Query a VisitRow given a visit time, filling the given VisitRow. If there
   // are multiple visits with the given visit time (which happens in case of
   // redirects), returns the one with the largest ID, i.e. the most recently
   // added one, i.e. the end of the redirect chain.
   // Returns true on success.
   bool GetLastRowForVisitByVisitTime(base::Time visit_time,
                                      VisitRow* out_visit);
+
+  // Query a VisitRow given `originator_cache_guid` and `originator_visit_id`.
+  // If found, returns true and writes the visit into `visit_row`; otherwise
+  // returns false.
+  bool GetRowForForeignVisit(const std::string& originator_cache_guid,
+                             VisitID originator_visit_id,
+                             VisitRow* out_visit);
 
   // Updates an existing row. The new information is set on the row, using the
   // VisitID as the key. The visit must exist. Returns true on success.
