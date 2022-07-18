@@ -755,7 +755,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
           prioritized_tile.raster_source()->PerformSolidColorAnalysis(
               tile->enclosing_layer_rect(), &color);
       if (is_solid_color) {
-        tile->draw_info().set_solid_color(color.toSkColor());
+        tile->draw_info().set_solid_color(color);
         client_->NotifyTileStateChanged(tile);
         continue;
       }

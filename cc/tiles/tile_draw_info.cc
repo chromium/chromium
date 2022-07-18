@@ -19,7 +19,7 @@ TileDrawInfo::~TileDrawInfo() {
 void TileDrawInfo::AsValueInto(base::trace_event::TracedValue* state) const {
   state->SetBoolean("is_solid_color", mode_ == SOLID_COLOR_MODE);
   state->SetBoolean("is_transparent",
-                    mode_ == SOLID_COLOR_MODE && !SkColorGetA(solid_color_));
+                    mode_ == SOLID_COLOR_MODE && !solid_color_.isOpaque());
 }
 
 void TileDrawInfo::SetResource(ResourcePool::InUsePoolResource resource,

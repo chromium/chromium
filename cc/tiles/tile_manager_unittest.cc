@@ -1236,7 +1236,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
     // On the second iteration, mark everything as ready to draw (solid color).
     if (i == 1) {
       TileDrawInfo& draw_info = last_tile.tile()->draw_info();
-      draw_info.SetSolidColorForTesting(SK_ColorRED);
+      draw_info.SetSolidColorForTesting(SkColors::kRed);
     }
     queue->Pop();
     int eventually_bin_order_correct_count = 0;
@@ -1272,7 +1272,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
       // color).
       if (i == 1) {
         TileDrawInfo& draw_info = last_tile.tile()->draw_info();
-        draw_info.SetSolidColorForTesting(SK_ColorRED);
+        draw_info.SetSolidColorForTesting(SkColors::kRed);
       }
     }
 
@@ -1519,13 +1519,13 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
 
   PaintFlags solid_flags;
-  SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
+  SkColor4f solid_color{0.1f, 0.2f, 0.3f, 1.0f};
   solid_flags.setColor(solid_color);
   recording_source->add_draw_rect_with_flags(gfx::Rect(layer_bounds),
                                              solid_flags);
 
   // Create non solid tile as well, otherwise tilings wouldnt be created.
-  SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
+  SkColor4f non_solid_color{0.2f, 0.3f, 0.4f, 0.5f};
   PaintFlags non_solid_flags;
   non_solid_flags.setColor(non_solid_color);
 

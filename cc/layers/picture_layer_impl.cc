@@ -488,17 +488,13 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
           break;
         }
         case TileDrawInfo::SOLID_COLOR_MODE: {
-          float alpha =
-              (SkColorGetA(draw_info.solid_color()) * (1.0f / 255.0f)) *
-              shared_quad_state->opacity;
+          float alpha = draw_info.solid_color().fA * shared_quad_state->opacity;
           if (alpha >= std::numeric_limits<float>::epsilon()) {
             auto* quad =
                 render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-            // TODO(crbug.com/1308932): draw_info.solid_color to SkColor4f
             quad->SetNew(
                 shared_quad_state, offset_geometry_rect,
-                offset_visible_geometry_rect,
-                SkColor4f::FromColor(draw_info.solid_color()),
+                offset_visible_geometry_rect, draw_info.solid_color(),
                 !layer_tree_impl()->settings().enable_edge_anti_aliasing);
             ValidateQuadResources(quad);
           }

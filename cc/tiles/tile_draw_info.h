@@ -65,7 +65,7 @@ class CC_EXPORT TileDrawInfo {
     return resource_.format();
   }
 
-  SkColor solid_color() const {
+  SkColor4f solid_color() const {
     DCHECK(mode_ == SOLID_COLOR_MODE);
     return solid_color_;
   }
@@ -85,7 +85,7 @@ class CC_EXPORT TileDrawInfo {
     return resource_is_checker_imaged_;
   }
 
-  void SetSolidColorForTesting(SkColor color) { set_solid_color(color); }
+  void SetSolidColorForTesting(SkColor4f color) { set_solid_color(color); }
 
   void AsValueInto(base::trace_event::TracedValue* state) const;
 
@@ -102,7 +102,7 @@ class CC_EXPORT TileDrawInfo {
     is_resource_ready_to_draw_ = true;
   }
 
-  void set_solid_color(const SkColor& color) {
+  void set_solid_color(const SkColor4f& color) {
     DCHECK(!resource_);
     mode_ = SOLID_COLOR_MODE;
     solid_color_ = color;
@@ -111,7 +111,7 @@ class CC_EXPORT TileDrawInfo {
   void set_oom() { mode_ = OOM_MODE; }
 
   Mode mode_ = RESOURCE_MODE;
-  SkColor solid_color_ = SK_ColorWHITE;
+  SkColor4f solid_color_ = SkColors::kWhite;
   ResourcePool::InUsePoolResource resource_;
   bool is_premultiplied_ = false;
   bool is_resource_ready_to_draw_ = false;

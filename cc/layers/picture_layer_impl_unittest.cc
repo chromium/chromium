@@ -1722,7 +1722,7 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledSolidColorQuadsShifted) {
   ASSERT_GT(tiles.size(), 0u);
 
   for (auto* tile : tiles)
-    tile->draw_info().SetSolidColorForTesting(SK_ColorBLUE);
+    tile->draw_info().SetSolidColorForTesting(SkColors::kBlue);
 
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_HARDWARE, nullptr);
@@ -1917,7 +1917,7 @@ TEST_F(NoLowResPictureLayerImplTest,
       num_inside++;
       // Mark everything in viewport for tile priority as ready to draw.
       TileDrawInfo& draw_info = tile->draw_info();
-      draw_info.SetSolidColorForTesting(SK_ColorRED);
+      draw_info.SetSolidColorForTesting(SkColors::kRed);
     } else {
       num_outside++;
       EXPECT_FALSE(tile->required_for_activation());
@@ -3371,7 +3371,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
        ++tile_it) {
     Tile* tile = *tile_it;
     TileDrawInfo& draw_info = tile->draw_info();
-    draw_info.SetSolidColorForTesting(SK_ColorRED);
+    draw_info.SetSolidColorForTesting(SkColors::kRed);
   }
 
   queue = std::make_unique<TilingSetRasterQueueAll>(
@@ -4960,7 +4960,7 @@ void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
       for (auto it = tiles.begin(); it != tiles.end(); ++it, ++i) {
         if (i < 5) {
           TileDrawInfo& draw_info = (*it)->draw_info();
-          draw_info.SetSolidColorForTesting(0);
+          draw_info.SetSolidColorForTesting(SkColors::kTransparent);
         } else {
           resource_tiles.push_back(*it);
         }

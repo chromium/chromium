@@ -130,7 +130,7 @@ void FakePictureLayerImpl::SetAllTilesReadyInTiling(
 
 void FakePictureLayerImpl::SetTileReady(Tile* tile) {
   TileDrawInfo& draw_info = tile->draw_info();
-  draw_info.SetSolidColorForTesting(true);
+  draw_info.SetSolidColorForTesting(SkColors::kRed);
   DCHECK(draw_info.IsReadyToDraw());
 }
 
