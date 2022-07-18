@@ -204,7 +204,6 @@ android_resources("chrome_app_java_resources") {
   deps = [
     ":chrome_base_module_resources",
     ":ui_locale_string_resources",
-    "//chrome/android/webapk/libs/common:splash_resources",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/download/android:java_resources",
     "//chrome/browser/password_manager/android:java_resources",
@@ -288,18 +287,10 @@ android_library("chrome_java") {
     "//chrome/android/features/start_surface:public_java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
-    "//chrome/android/webapk/libs/client:client_java",
-    "//chrome/android/webapk/libs/common:common_java",
-    "//chrome/android/webapk/libs/common:splash_java",
-    "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
-    "//chrome/browser/android/browserservices/constants:java",
-    "//chrome/browser/android/browserservices/intents:java",
-    "//chrome/browser/android/browserservices/metrics:java",
     "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/messages:java",
-    "//chrome/browser/banners/android:java",
     "//chrome/browser/bluetooth/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/consent_auditor/android:java",
@@ -366,7 +357,6 @@ android_library("chrome_java") {
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
     "//chrome/browser/version:java",
-    "//chrome/browser/webapps/android:java",
     "//chrome/browser/webauthn/android:java",
     "//chrome/browser/xsurface:java",
     "//components/autofill/android:autofill_java",
@@ -694,7 +684,6 @@ group("jni_headers") {
     "//chrome/android/features/autofill_assistant:jni_headers_public",
     "//chrome/android/features/keyboard_accessory:jni_headers",
     "//chrome/android/features/start_surface:jni_headers",
-    "//chrome/browser/android/browserservices/metrics:jni_headers",
     "//chrome/browser/android/browserservices/verification:jni_headers",
     "//chrome/browser/contextmenu:jni_headers",
     "//chrome/browser/download/android:jni_headers",
@@ -747,7 +736,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
   sources = [
     "//chrome/browser/android/customtabs/detached_resource_request.h",
     "//chrome/browser/android/policy/policy_auditor.cc",
-    "//chrome/browser/android/webapk/webapk_installer.h",
     "//chrome/browser/notifications/notification_handler.h",
     "//chrome/browser/notifications/notification_platform_bridge_android.cc",
   ]
@@ -810,7 +798,6 @@ android_library("chrome_test_util_java") {
     "//build/android:build_java",
     "//cc:cc_java",
     "//chrome/android:chrome_java",
-    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//components/autofill/android:prefeditor_autofill_java",
@@ -925,11 +912,6 @@ process_version("version_xml") {
 android_resources("product_version_resources") {
   sources = [ version_resource_file ]
   deps = [ ":version_xml" ]
-}
-
-java_group("chrome_public_non_pak_assets") {
-  deps =
-      [ "//chrome/android/webapk/libs/runtime_library:runtime_library_assets" ]
 }
 
 java_group("chrome_public_v8_assets") {
@@ -1348,7 +1330,6 @@ _chrome_public_shared_deps = [
   ":chrome_public_apk_base_module_resources",
   ":chrome_public_apk_resources",
   ":chrome_public_base_module_java",
-  ":chrome_public_non_pak_assets",
   ":chrome_public_v8_assets",
   "//third_party/icu:icu_assets",
 ]
@@ -1553,7 +1534,6 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
     "java/src/org/chromium/chrome/browser/prerender/ChromePrerenderService.java",
     "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProvider.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstallCoordinatorService.java",
   ]
   deps = [
     ":chrome_base_module_resources",
@@ -2364,7 +2344,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/IntentHandler.java",
     "java/src/org/chromium/chrome/browser/NearOomMonitor.java",
     "java/src/org/chromium/chrome/browser/ServiceTabLauncher.java",
-    "java/src/org/chromium/chrome/browser/ShortcutHelper.java",
     "java/src/org/chromium/chrome/browser/WarmupManager.java",
     "java/src/org/chromium/chrome/browser/WebContentsFactory.java",
     "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
@@ -2387,10 +2366,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTask.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
-    "java/src/org/chromium/chrome/browser/browserservices/QualityEnforcer.java",
-    "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",
-    "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
-    "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",
@@ -2517,15 +2492,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
     "java/src/org/chromium/chrome/browser/usage_stats/NotificationSuspender.java",
     "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstallCoordinatorBridge.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstaller.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkPostShareTargetNavigator.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateDataFetcher.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateManager.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
   ]
 
   if (enable_supervised_users) {

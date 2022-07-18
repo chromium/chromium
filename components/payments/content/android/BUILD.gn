@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//components/payments/content/android/payments_java_resources.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("android") {
@@ -96,7 +95,7 @@ android_resources("minimal_java_resources") {
 }
 
 android_resources("java_resources") {
-  sources = payments_java_resources
+  sources = []
   deps = [
     ":minimal_java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",

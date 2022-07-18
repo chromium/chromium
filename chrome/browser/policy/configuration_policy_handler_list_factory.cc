@@ -138,7 +138,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_handler.h"
@@ -1358,9 +1357,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     base::Value::Type::LIST },
-  { key::kArcAppToWebAppSharingEnabled,
-    apps::webapk_prefs::kGeneratedWebApksEnabled,
-    base::Value::Type::BOOLEAN},
   { key::kEnhancedNetworkVoicesInSelectToSpeakAllowed,
     ash::prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed,
     base::Value::Type::BOOLEAN },

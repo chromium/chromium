@@ -93,12 +93,4 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
         return false;
     }
 
-    /**
-     * Checks if the associated tab is running an activity for installed webapp (TWA only for now),
-     * and whether the geolocation request should be delegated to the client app.
-     * @return true if this is TWA and should delegate geolocation request.
-     */
-    protected boolean isInstalledWebappDelegateGeolocation() {
-        return false;
-    }
 }

@@ -1,8 +1,0 @@
-# The WebAPK runs in a different APK than Chrome so cannot depend on anything
-# in Chrome including //base.
-include_rules = [
-  "-base",
-  "-chrome",
-  "-content",
-  "-testing",
-]

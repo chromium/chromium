@@ -233,12 +233,6 @@ class ChromeBrowsingDataRemoverDelegate
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
 
-#if BUILDFLAG(IS_ANDROID)
-  // WebappRegistry makes calls across the JNI. In unit tests, the Java side is
-  // not initialised, so the registry must be mocked out.
-  std::unique_ptr<WebappRegistry> webapp_registry_;
-#endif
-
   bool should_clear_password_account_storage_settings_ = false;
 
   std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;

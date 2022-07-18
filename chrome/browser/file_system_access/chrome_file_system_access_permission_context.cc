@@ -33,7 +33,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
-#include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -1456,7 +1455,7 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
 
 bool ChromeFileSystemAccessPermissionContext::OriginIsInstalledPWA(
     const url::Origin& origin) {
-  return DoesOriginContainAnyInstalledWebApp(profile_, origin.GetURL());
+  return false;
 }
 
 void ChromeFileSystemAccessPermissionContext::

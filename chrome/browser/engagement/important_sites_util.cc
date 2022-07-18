@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
@@ -32,7 +31,6 @@
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
-#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "url/gurl.h"
@@ -428,13 +426,7 @@ void ImportantSitesUtil::RegisterProfilePrefs(
 // static
 std::set<std::string> ImportantSitesUtil::GetInstalledRegisterableDomains(
     Profile* profile) {
-  std::set<GURL> installed_origins = GetOriginsWithInstalledWebApps(profile);
   std::set<std::string> registerable_domains;
-
-  for (auto& origin : installed_origins) {
-    registerable_domains.emplace(
-        ImportantSitesUtil::GetRegisterableDomainOrIP(origin));
-  }
   return registerable_domains;
 }
 

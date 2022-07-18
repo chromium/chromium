@@ -4449,12 +4449,7 @@ void WebContentsImpl::RecordAccessibilityEvents(
 
 device::mojom::GeolocationContext* WebContentsImpl::GetGeolocationContext() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::GetGeolocationContext");
-  if (delegate_) {
-    auto* installed_webapp_context =
-        delegate_->GetInstalledWebappGeolocationContext();
-    if (installed_webapp_context)
-      return installed_webapp_context;
-  }
+
 
   if (!geolocation_context_) {
     GetDeviceService().BindGeolocationContext(

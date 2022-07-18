@@ -402,6 +402,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             mTab.getWebContents().getNavigationController().cancelPendingReload();
             return;
         }
+        // TODO 确认是否重新提交表单
 
         ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
         ModalDialogProperties.Controller dialogController =

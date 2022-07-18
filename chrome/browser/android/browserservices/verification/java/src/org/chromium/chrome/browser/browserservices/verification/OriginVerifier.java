@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.verification;
 
-import static org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.recordVerificationResult;
-import static org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.recordVerificationTime;
+import static org.chromium.chrome.browser.browserservices.verification.OriginVerifierMetricsRecorder.recordVerificationResult;
+import static org.chromium.chrome.browser.browserservices.verification.OriginVerifierMetricsRecorder.recordVerificationTime;
 
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -28,7 +28,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.VerificationResult;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierMetricsRecorder.VerificationResult;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.digital_asset_links.RelationshipCheckResult;

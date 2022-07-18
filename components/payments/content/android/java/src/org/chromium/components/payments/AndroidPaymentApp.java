@@ -131,8 +131,8 @@ public class AndroidPaymentApp
                 return;
             }
             new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                    .setTitle(R.string.external_app_leave_incognito_warning_title)
-                    .setMessage(R.string.external_payment_app_leave_incognito_warning)
+                    .setTitle("Leave Incognito mode?")
+                    .setMessage("Leaving Incognito mode to pay via an external application. Continue?")
                     .setPositiveButton(
                             R.string.ok, (OnClickListener) (dialog, which) -> approveCallback.run())
                     .setNegativeButton(R.string.cancel,
@@ -163,7 +163,7 @@ public class AndroidPaymentApp
             mIntentCallback = intentCallback;
             try {
                 if (!window.showIntent(
-                            intent, /*callback=*/this, R.string.payments_android_app_error)) {
+                            intent, /*callback=*/this, null)) {
                     errorCallback.onResult(ErrorStrings.PAYMENT_APP_LAUNCH_FAIL);
                 }
             } catch (SecurityException e) {

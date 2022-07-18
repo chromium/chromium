@@ -1394,7 +1394,6 @@ if (!is_android) {
       "../browser/infobars/infobar_observer.cc",
       "../browser/infobars/infobar_observer.h",
       "../browser/infobars/infobars_browsertest.cc",
-      "../browser/installable/installable_manager_browsertest.cc",
       "../browser/interest_group/interest_group_permissions_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",
@@ -1887,7 +1886,6 @@ if (!is_android) {
       "../browser/usb/usb_browsertest.cc",
       "../browser/user_agent/user_agent_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
-      "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
       "../browser/window_placement/window_placement_browsertest.cc",
       "../browser/window_placement/window_placement_permission_context_browsertest.cc",
@@ -3038,7 +3036,6 @@ if (!is_android) {
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/metrics/app_platform_metrics_browsertest.cc",
         "../browser/apps/app_service/notifications_browsertest.cc",
-        "../browser/apps/app_service/webapk/webapk_policy_browsertest.cc",
         "../browser/apps/icon_standardizer_unittest.cc",
         "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
@@ -4093,7 +4090,6 @@ if (!is_android) {
         "../browser/ui/web_applications/web_app_uninstall_browsertest.cc",
         "../browser/ui/web_applications/web_app_url_handling_browsertest.cc",
         "../browser/ui/web_applications/web_app_window_controls_overlay_browsertest.cc",
-        "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       ]
 
       # Exclude tests which depend on native messaging.
@@ -4378,12 +4374,6 @@ if (!is_android) {
       data_deps = [
         ":telemetry_perf_tests_base",
         "//tools/perf/:perf${telemetry_target_suffix}",
-
-        # Add all the binaries since other Telemetry-based tests use split
-        # targets, but perf tests have had issues migrating. This is not done
-        # in //tools/perf:perf since non-performance tests use it such as
-        # telememtry_perf_unittests.
-        "//tools/perf/chrome_telemetry_build:all_chrome_android_targets_for_perf_testing",
       ]
     }
   }
@@ -4607,7 +4597,6 @@ test("unit_tests") {
     "../browser/browsing_data/browsing_data_lifetime_policy_handler_unittest.cc",
     "../browser/browsing_data/browsing_data_media_license_helper_unittest.cc",
     "../browser/browsing_data/browsing_data_quota_helper_unittest.cc",
-    "../browser/browsing_data/chrome_browsing_data_remover_delegate_unittest.cc",
     "../browser/browsing_data/cookies_tree_model_unittest.cc",
     "../browser/browsing_data/counters/bookmark_counter_unittest.cc",
     "../browser/browsing_data/counters/browsing_data_counter_utils_unittest.cc",
@@ -4971,7 +4960,6 @@ test("unit_tests") {
     "../renderer/chrome_render_frame_observer_unittest.cc",
     "../renderer/instant_restricted_id_cache_unittest.cc",
     "../renderer/media/flash_embed_rewrite_unittest.cc",
-    "../renderer/net/net_error_helper_core_unittest.cc",
     "../renderer/plugins/plugin_uma_unittest.cc",
     "../renderer/v8_unwinder_unittest.cc",
     "../test/base/menu_model_test.cc",
@@ -5724,7 +5712,6 @@ test("unit_tests") {
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
       "../browser/android/url_param_filter/cross_otr_observer_android_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
-      "../browser/android/webapk/webapk_installer_unittest.cc",
       "../browser/autofill/address_accessory_controller_impl_unittest.cc",
       "../browser/autofill/android/save_update_address_profile_message_controller_unittest.cc",
       "../browser/autofill/android/save_update_address_profile_prompt_controller_unittest.cc",
@@ -6475,8 +6462,6 @@ test("unit_tests") {
       "../browser/apps/app_service/intent_util_unittest.cc",
       "../browser/apps/app_service/metrics/app_platform_metrics_service_unittest.cc",
       "../browser/apps/app_service/publishers/arc_apps_unittest.cc",
-      "../browser/apps/app_service/webapk/webapk_install_task_unittest.cc",
-      "../browser/apps/app_service/webapk/webapk_manager_unittest.cc",
       "../browser/ash/attestation/attestation_policy_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
@@ -8518,7 +8503,6 @@ if (!is_android) {
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
-      "../browser/webapps/web_app_offline_browsertest.cc",
       "../browser/webauth_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",

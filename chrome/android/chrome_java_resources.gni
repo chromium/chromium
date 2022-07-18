@@ -530,8 +530,6 @@ chrome_java_resources = [
   "java/res/layout/sync_passphrase_types.xml",
   "java/res/layout/tab_switcher_action_menu_layout.xml",
   "java/res/layout/update_menu_item.xml",
-  "java/res/layout/webapk_icon_name_update_dialog.xml",
-  "java/res/layout/webapk_update_report_abuse_custom_view.xml",
   "java/res/menu/history_manager_menu.xml",
   "java/res/menu/prefeditor_editor_menu.xml",
   "java/res/menu/save_password_preferences_action_bar_menu.xml",

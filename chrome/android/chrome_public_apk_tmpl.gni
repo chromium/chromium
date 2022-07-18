@@ -411,7 +411,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       }
 
       deps = [
-        "//chrome/android:chrome_public_non_pak_assets",
         "//components/crash/android:handler_java",
       ]
       if (defined(invoker.deps)) {

@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
-import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -121,15 +120,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         if (url == null && tabId == Tab.INVALID_TAB_ID && !incognito
                 && intentHandler.handleWebSearchIntent(mIntent)) {
             return Action.FINISH_ACTIVITY;
-        }
-
-        // Check if a LIVE WebappActivity has to be brought back to the foreground.  We can't
-        // check for a dead WebappActivity because we don't have that information without a global
-        // TabManager.  If that ever lands, code to bring back any Tab could be consolidated
-        // here instead of being spread between ChromeTabbedActivity and ChromeLauncherActivity.
-        // https://crbug.com/443772, https://crbug.com/522918
-        if (WebappLauncherActivity.bringWebappToFront(tabId)) {
-            return Action.FINISH_ACTIVITY_REMOVE_TASK;
         }
 
         // Check if we should launch an Instant App to handle the intent.

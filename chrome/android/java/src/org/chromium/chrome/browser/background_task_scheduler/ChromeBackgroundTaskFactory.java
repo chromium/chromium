@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.background_task_scheduler;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
@@ -13,7 +12,6 @@ import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTa
 import org.chromium.chrome.browser.notifications.scheduler.NotificationSchedulerTask;
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
 import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchBackgroundTask;
-import org.chromium.chrome.browser.webapps.WebApkUpdateTask;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -59,8 +57,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             case TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID:
             case TaskIds.DOWNLOAD_LATER_JOB_ID:
                 return new DownloadBackgroundTask();
-            case TaskIds.WEBAPK_UPDATE_JOB_ID:
-                return new WebApkUpdateTask();
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
                 return new UpdateTask();
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:

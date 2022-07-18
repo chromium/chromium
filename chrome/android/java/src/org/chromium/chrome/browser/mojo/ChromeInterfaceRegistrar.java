@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.mojo;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.blink.mojom.Authenticator;
-import org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsFactoryFactory;
 import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.services.service_manager.InterfaceRegistry;
 
 /** Registers mojo interface implementations exposed to C++ code at the Chrome layer. */
@@ -27,8 +25,6 @@ class ChromeInterfaceRegistrar {
         public void registerInterfaces(
                 InterfaceRegistry registry, final RenderFrameHost renderFrameHost) {
             registry.addInterface(Authenticator.MANAGER, new AuthenticatorFactory(renderFrameHost));
-            registry.addInterface(
-                    DigitalGoodsFactory.MANAGER, new DigitalGoodsFactoryFactory(renderFrameHost));
         }
     }
 }

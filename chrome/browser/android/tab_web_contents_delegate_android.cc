@@ -28,8 +28,6 @@
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_tab_helper.h"
-#include "chrome/browser/installable/installed_webapp_bridge.h"
-#include "chrome/browser/installable/installed_webapp_geolocation_context.h"
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -456,18 +454,6 @@ TabWebContentsDelegateAndroid::ActivatePortalWebContents(
                         /* did_finish_load */ !is_loading);
 }
 
-device::mojom::GeolocationContext*
-TabWebContentsDelegateAndroid::GetInstalledWebappGeolocationContext() {
-  if (!IsInstalledWebappDelegateGeolocation())
-    return nullptr;
-
-  if (!installed_webapp_geolocation_context_) {
-    installed_webapp_geolocation_context_ =
-        std::make_unique<InstalledWebappGeolocationContext>();
-  }
-  return installed_webapp_geolocation_context_.get();
-}
-
 #if BUILDFLAG(ENABLE_PRINTING)
 void TabWebContentsDelegateAndroid::PrintCrossProcessSubframe(
     content::WebContents* web_contents,
@@ -592,21 +578,6 @@ bool TabWebContentsDelegateAndroid::IsCustomTab() const {
   if (obj.is_null())
     return false;
   return Java_TabWebContentsDelegateAndroidImpl_isCustomTab(env, obj);
-}
-
-bool TabWebContentsDelegateAndroid::IsInstalledWebappDelegateGeolocation()
-    const {
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kTrustedWebActivityLocationDelegation)) {
-    return false;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return false;
-  return Java_TabWebContentsDelegateAndroidImpl_isInstalledWebappDelegateGeolocation(
-      env, obj);
 }
 
 }  // namespace android

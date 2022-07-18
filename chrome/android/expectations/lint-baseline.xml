@@ -6295,17 +6295,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: VerificationResult.ONLINE_SUCCESS, VerificationResult.ONLINE_FAILURE, VerificationResult.OFFLINE_SUCCESS, VerificationResult.OFFLINE_FAILURE, VerificationResult.HTTPS_FAILURE, VerificationResult.REQUEST_FAILURE, VerificationResult.CACHED_SUCCESS"
-        errorLine1="                &quot;BrowserServices.VerificationResult&quot;, result, VerificationResult.NUM_ENTRIES);"
-        errorLine2="                                                                                 ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/OriginVerifierMetricsRecorder.java"
-            line="38"
-            column="82"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: PanelState.UNDEFINED, PanelState.CLOSED, PanelState.PEEKED, PanelState.EXPANDED, PanelState.MAXIMIZED"
         errorLine1="        for (@PanelState int state = PanelState.UNDEFINED; state &lt; PanelState.NUM_ENTRIES;"
         errorLine2="                                                                              ~~~~~~~~~~~">
@@ -7472,61 +7461,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SettingsNavigationSource.OTHER, SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG, SettingsNavigationSource.TWA_MANAGE_SPACE_ACTIVITY"
-        errorLine1="        extras.putInt(SettingsNavigationSource.EXTRA_KEY,"
-        errorLine2="                                               ~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/TrustedWebActivitySettingsLauncher.java"
-            line="108"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: SettingsNavigationSource.OTHER, SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG, SettingsNavigationSource.TWA_MANAGE_SPACE_ACTIVITY"
-        errorLine1="        args.putInt(SettingsNavigationSource.EXTRA_KEY, navigationSource);"
-        errorLine2="                                             ~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/TrustedWebActivitySettingsLauncher.java"
-            line="121"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: DelegatedNotificationSmallIconFallback.NO_FALLBACK, DelegatedNotificationSmallIconFallback.FALLBACK_ICON_NOT_PROVIDED, DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR, DelegatedNotificationSmallIconFallback.FALLBACK_FOR_STATUS_BAR_AND_CONTENT"
-        errorLine1="                DelegatedNotificationSmallIconFallback.NUM_ENTRIES);"
-        errorLine2="                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java"
-            line="160"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ShareRequestMethod.GET, ShareRequestMethod.POST"
-        errorLine1="                &quot;TrustedWebActivity.ShareTargetRequest&quot;, method, ShareRequestMethod.NUM_ENTRIES);"
-        errorLine2="                                                                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java"
-            line="182"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: PermissionChanged.NULL_TO_TRUE, PermissionChanged.NULL_TO_FALSE, PermissionChanged.TRUE_TO_FALSE, PermissionChanged.FALSE_TO_TRUE"
-        errorLine1="                        PermissionChanged.NUM_ENTRIES);"
-        errorLine2="                                          ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java"
-            line="221"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: AudioPermissionState.GRANTED, AudioPermissionState.DENIED_CAN_ASK_AGAIN, AudioPermissionState.DENIED_CANNOT_ASK_AGAIN"
         errorLine1="                AudioPermissionState.NUM_ENTRIES);"
         errorLine2="                                     ~~~~~~~~~~~">
@@ -7809,50 +7743,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/WarmupManager.java"
             line="383"
             column="73"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: UpdateRequestSent.WHILE_WEBAPK_CLOSED"
-        errorLine1="                HISTOGRAM_UPDATE_REQUEST_SENT, type, UpdateRequestSent.NUM_ENTRIES);"
-        errorLine2="                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="115"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: UpdateRequestQueued.ONCE, UpdateRequestQueued.TWICE, UpdateRequestQueued.THREE_TIMES"
-        errorLine1="                HISTOGRAM_UPDATE_REQUEST_QUEUED, times, UpdateRequestQueued.NUM_ENTRIES);"
-        errorLine2="                                                                            ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="125"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: GooglePlayInstallResult.SUCCESS, GooglePlayInstallResult.FAILED_NO_DELEGATE, GooglePlayInstallResult.FAILED_TO_CONNECT_TO_SERVICE, GooglePlayInstallResult.FAILED_CALLER_VERIFICATION_FAILURE, GooglePlayInstallResult.FAILED_POLICY_VIOLATION, GooglePlayInstallResult.FAILED_API_DISABLED, GooglePlayInstallResult.FAILED_REQUEST_FAILED, GooglePlayInstallResult.FAILED_DOWNLOAD_CANCELLED, GooglePlayInstallResult.FAILED_DOWNLOAD_ERROR, GooglePlayInstallResult.FAILED_INSTALL_ERROR, GooglePlayInstallResult.FAILED_INSTALL_TIMEOUT, GooglePlayInstallResult.REQUEST_FAILED_POLICY_DISABLED, GooglePlayInstallResult.REQUEST_FAILED_UNKNOWN_ACCOUNT, GooglePlayInstallResult.REQUEST_FAILED_NETWORK_ERROR, GooglePlayInstallResult.REQUSET_FAILED_RESOLVE_ERROR, GooglePlayInstallResult.REQUEST_FAILED_NOT_GOOGLE_SIGNED"
-        errorLine1="                GooglePlayInstallResult.NUM_ENTRIES);"
-        errorLine2="                                        ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="167"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: GooglePlayInstallResult.SUCCESS, GooglePlayInstallResult.FAILED_NO_DELEGATE, GooglePlayInstallResult.FAILED_TO_CONNECT_TO_SERVICE, GooglePlayInstallResult.FAILED_CALLER_VERIFICATION_FAILURE, GooglePlayInstallResult.FAILED_POLICY_VIOLATION, GooglePlayInstallResult.FAILED_API_DISABLED, GooglePlayInstallResult.FAILED_REQUEST_FAILED, GooglePlayInstallResult.FAILED_DOWNLOAD_CANCELLED, GooglePlayInstallResult.FAILED_DOWNLOAD_ERROR, GooglePlayInstallResult.FAILED_INSTALL_ERROR, GooglePlayInstallResult.FAILED_INSTALL_TIMEOUT, GooglePlayInstallResult.REQUEST_FAILED_POLICY_DISABLED, GooglePlayInstallResult.REQUEST_FAILED_UNKNOWN_ACCOUNT, GooglePlayInstallResult.REQUEST_FAILED_NETWORK_ERROR, GooglePlayInstallResult.REQUSET_FAILED_RESOLVE_ERROR, GooglePlayInstallResult.REQUEST_FAILED_NOT_GOOGLE_SIGNED"
-        errorLine1="                GooglePlayInstallResult.NUM_ENTRIES);"
-        errorLine2="                                        ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="184"
-            column="41"/>
     </issue>
 
     <issue

@@ -34,7 +34,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
@@ -1077,10 +1076,6 @@ public class IntentHandler {
      * intents with action NDEF_DISCOVERED (links beamed over NFC) are handled properly.
      */
     private @TabOpenType int getTabOpenType(Intent intent) {
-        if (IntentUtils.safeGetBooleanExtra(
-                    intent, WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false)) {
-            return TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB;
-        }
         if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return TabOpenType.OPEN_NEW_INCOGNITO_TAB;
         }

@@ -856,10 +856,6 @@ static_library("ui") {
       "webui/offline/offline_internals_ui_message_handler.h",
       "webui/video_tutorials/video_player_ui.cc",
       "webui/video_tutorials/video_player_ui.h",
-      "webui/webapks/webapks_handler.cc",
-      "webui/webapks/webapks_handler.h",
-      "webui/webapks/webapks_ui.cc",
-      "webui/webapks/webapks_ui.h",
     ]
 
     deps += [

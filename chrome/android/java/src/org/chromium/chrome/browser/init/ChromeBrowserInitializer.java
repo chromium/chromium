@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.crash.browser.ChildProcessCrashObserver;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -214,7 +213,6 @@ public class ChromeBrowserInitializer {
         // behind long-running accesses in next phase.
         // Don't do any large file access here!
         ChromeStrictMode.configureStrictMode();
-        ChromeWebApkHost.init();
 
         // Time this call takes in background from test devices:
         // - Pixel 2: ~10 ms

@@ -33,7 +33,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -592,10 +591,6 @@ void ArcApps::Initialize() {
   auto* instance_registry = &proxy()->InstanceRegistry();
   if (instance_registry) {
     instance_registry_observation_.Observe(instance_registry);
-  }
-
-  if (web_app::AreWebAppsEnabled(profile_)) {
-    web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile_);
   }
 
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kArc);

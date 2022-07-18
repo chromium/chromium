@@ -29,7 +29,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
@@ -57,7 +56,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
-import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -321,10 +319,6 @@ public class ProcessInitializationHandler {
                 () -> MediaViewerUtils.updateMediaLauncherActivityEnabled());
 
         deferredStartupHandler.addDeferredTask(
-                ChromeApplicationImpl.getComponent()
-                        .resolveTwaClearDataDialogRecorder()::makeDeferredRecordings);
-
-        deferredStartupHandler.addDeferredTask(
                 () -> IncognitoTabLauncher.updateComponentEnabledState());
 
         deferredStartupHandler.addDeferredTask(
@@ -375,15 +369,8 @@ public class ProcessInitializationHandler {
 
                     initCrashReporting();
 
-                    // Initialize the WebappRegistry if it's not already initialized. Must be in
-                    // async task due to shared preferences disk access on N.
-                    WebappRegistry.getInstance();
-
                     removeSnapshotDatabase();
 
-                    // Warm up all web app shared prefs. This must be run after the WebappRegistry
-                    // instance is initialized.
-                    WebappRegistry.warmUpSharedPrefs();
                     return null;
                 } finally {
                     TraceEvent.end("ChromeBrowserInitializer.onDeferredStartup.doInBackground");
@@ -392,8 +379,6 @@ public class ProcessInitializationHandler {
 
             @Override
             protected void onPostExecute(Void params) {
-                // Must be run on the UI thread after the WebappRegistry has been completely warmed.
-                WebappRegistry.getInstance().unregisterOldWebapps(System.currentTimeMillis());
 
                 RecordHistogram.recordLongTimesHistogram(
                         "UMA.Debug.EnableCrashUpload.DeferredStartUpAsyncTaskDuration",

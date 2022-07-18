@@ -143,7 +143,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/origin_verifier.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
-#include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
@@ -244,12 +243,7 @@ bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
 
 ChromeBrowsingDataRemoverDelegate::ChromeBrowsingDataRemoverDelegate(
     BrowserContext* browser_context)
-    : profile_(Profile::FromBrowserContext(browser_context))
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      webapp_registry_(std::make_unique<WebappRegistry>())
-#endif
-      ,
+    : profile_(Profile::FromBrowserContext(browser_context)),
       credential_store_(MakeCredentialStore()) {
   domain_reliability_clearer_ = base::BindRepeating(
       [](BrowserContext* browser_context,
@@ -506,9 +500,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         CreateTaskCompletionClosure(TracingDataType::kWebrtcLogs));
 
 #if BUILDFLAG(IS_ANDROID)
-    // Clear the history information (last launch time and origin URL) of any
-    // registered webapps.
-    webapp_registry_->ClearWebappHistoryForUrls(filter);
 
     // The OriginVerifier caches origins for Trusted Web Activities that have
     // been verified and stores them in Android Preferences.
@@ -1139,14 +1130,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
 //////////////////////////////////////////////////////////////////////////////
-// DATA_TYPE_WEB_APP_DATA
-#if BUILDFLAG(IS_ANDROID)
-  // Clear all data associated with registered webapps.
-  if (remove_mask & constants::DATA_TYPE_WEB_APP_DATA)
-    webapp_registry_->UnregisterWebappsForUrls(filter);
-#endif
-
-//////////////////////////////////////////////////////////////////////////////
 // Remove web app history.
 #if !BUILDFLAG(IS_ANDROID)
   if (remove_mask & constants::DATA_TYPE_HISTORY &&
@@ -1383,13 +1366,6 @@ void ChromeBrowsingDataRemoverDelegate::RecordUnfinishedSubTasks() {
         "History.ClearBrowsingData.Duration.SlowTasks180sChrome", task);
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ChromeBrowsingDataRemoverDelegate::OverrideWebappRegistryForTesting(
-    std::unique_ptr<WebappRegistry> webapp_registry) {
-  webapp_registry_ = std::move(webapp_registry);
-}
-#endif
 
 void ChromeBrowsingDataRemoverDelegate::
     OverrideDomainReliabilityClearerForTesting(

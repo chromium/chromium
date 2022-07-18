@@ -28,8 +28,5 @@ This is a list of all the places where we represent
  - [web_app::ParseOfflineManifest()](../preinstalled_web_app_utils.cc)\
    Custom JSON + PNG format for bundling WebAppInstallInfo data on disk for offline default web app installation.
 
- - [WebApkInfo](../../android/webapk/webapk_info.h)\
-   Web app installation data that was packaged in an APK.
-
  - [payments::WebAppInstallationInfo](../../../../components/payments/content/web_app_manifest.h)\
    Payments code doesn't live under /chrome/browser, they have their own parser and representation.

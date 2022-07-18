@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
-import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
@@ -110,11 +109,6 @@ public abstract class AppHooks {
      */
     public RevenueStats createRevenueStatsInstance() {
         return new RevenueStats();
-    }
-
-    /** Returns the singleton instance of GooglePlayWebApkInstallDelegate. */
-    public GooglePlayWebApkInstallDelegate getGooglePlayWebApkInstallDelegate() {
-        return null;
     }
 
     /**

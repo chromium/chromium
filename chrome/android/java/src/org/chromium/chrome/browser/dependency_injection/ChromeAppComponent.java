@@ -5,10 +5,6 @@
 package org.chromium.chrome.browser.dependency_injection;
 
 import org.chromium.chrome.browser.AppHooksModule;
-import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
@@ -25,9 +21,5 @@ public interface ChromeAppComponent {
     ChromeActivityComponent createChromeActivityComponent(ChromeActivityCommonsModule module);
 
     SharedPreferencesManager resolveSharedPreferencesManager();
-    ClearDataDialogResultRecorder resolveTwaClearDataDialogRecorder();
-    TrustedWebActivityPermissionManager resolveTwaPermissionManager();
-    PermissionUpdater resolveTwaPermissionUpdater();
-    TrustedWebActivityClient resolveTrustedWebActivityClient();
     ExternalAuthUtils resolveExternalAuthUtils();
 }

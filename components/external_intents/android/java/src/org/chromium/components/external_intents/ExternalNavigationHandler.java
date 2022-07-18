@@ -1129,8 +1129,8 @@ public class ExternalNavigationHandler {
             final ExternalNavigationParams params, final Intent intent, final GURL fallbackUrl,
             final boolean proxy) {
         return new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                .setTitle(R.string.external_app_leave_incognito_warning_title)
-                .setMessage(R.string.external_app_leave_incognito_warning)
+                .setTitle("Leave Incognito mode?")
+                .setMessage("This site is about to share information with an app outside of Incognito mode.")
                 .setPositiveButton(R.string.external_app_leave_incognito_leave,
                         new OnClickListener() {
                             @Override

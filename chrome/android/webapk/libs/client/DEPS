@@ -1,8 +1,0 @@
-include_rules = [
-  "+base/android/java/src/org/chromium/base/annotations",
-  "+base/test/android/junit/src/org/chromium/base/task/test",
-  "+base/android/java/src/org/chromium/base/Callback.java",
-  "+base/android/java/src/org/chromium/base/task",
-  "+base/test/android/javatests/src/org/chromium/base",
-  "+chrome/android/webapk/libs/common",
-]

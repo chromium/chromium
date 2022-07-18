@@ -6,22 +6,16 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import android.content.Context;
 
-import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
-import org.chromium.chrome.browser.webapps.WebappRegistry;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -65,33 +59,8 @@ public class ChromeAppModule {
     }
 
     @Provides
-    @Singleton
-    public TrustedWebActivityPermissionStore providesTwaPermissionStore() {
-        return WebappRegistry.getInstance().getTrustedWebActivityPermissionStore();
-    }
-
-    @Provides
     public SiteChannelsManager providesSiteChannelsManager() {
         return SiteChannelsManager.getInstance();
-    }
-
-    @Provides
-    public TrustedWebActivityUmaRecorder.DeferredTaskHandler provideTwaUmaRecorderTaskHandler() {
-        return new TrustedWebActivityUmaRecorder.DeferredTaskHandler() {
-            @Override
-            public void doWhenNativeLoaded(Runnable runnable) {
-                provideChromeBrowserInitializer().runNowOrAfterFullBrowserStarted(runnable);
-            }
-        };
-    }
-
-    @Provides
-    @Singleton
-    public TrustedWebActivityServiceConnectionPool providesTwaServiceConnectionManager(
-            @Named(APP_CONTEXT) Context context) {
-        // TrustedWebActivityServiceConnectionManager comes from AndroidX Browser
-        // so we can't make it injectable.
-        return TrustedWebActivityServiceConnectionPool.create(context);
     }
 
     @Provides

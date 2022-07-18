@@ -22,12 +22,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/shortcut_helper.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/installable/installed_webapp_bridge.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
@@ -164,22 +158,6 @@ void NotificationPermissionContext::DecidePermission(
             base::Seconds(delay_seconds));
     return;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::
-              kTrustedWebActivityNotificationPermissionDelegation) &&
-      ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
-          requesting_origin)) {
-    InstalledWebappBridge::DecidePermission(
-        ContentSettingsType::NOTIFICATIONS, requesting_origin,
-        base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
-                       weak_factory_ui_thread_.GetWeakPtr(), id,
-                       requesting_origin, embedding_origin, std::move(callback),
-                       /*persist=*/false));
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   permissions::PermissionContextBase::DecidePermission(
       web_contents, id, requesting_origin, embedding_origin, user_gesture,

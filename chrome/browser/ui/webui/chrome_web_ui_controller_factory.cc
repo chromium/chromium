@@ -123,7 +123,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
-#include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #else  // BUILDFLAG(IS_ANDROID)
@@ -1122,8 +1121,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
       return nullptr;
   }
-  if (url.host_piece() == chrome::kChromeUIWebApksHost)
-    return &NewWebUI<WebApksUI>;
 #else   // BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(content::kChromeDevToolsScheme)) {
     if (!DevToolsUIBindings::IsValidFrontendURL(url))

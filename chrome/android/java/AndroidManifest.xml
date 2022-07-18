@@ -465,49 +465,6 @@ by a child template that "extends" this file.
             {{ self.extra_web_rendering_activity_definitions() }}
         </activity>
 
-        <!--
-            Activities for webapps.
-            TODO(dfalcantara): Remove the aliases for the WebappActivities once we're pretty sure
-                               that users don't have any instances of the original Activity still
-                               running.
-        -->
-        <activity android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
-            android:theme="@style/Theme.BrowserUI.NoDisplay"
-            android:taskAffinity=""
-            android:excludeFromRecents="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="org.webapk.ACTION_START_WEBAPK" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <!-- Non-exported alias that only Chrome can launch to verify shortcut intent comes from
-             Chrome (ShortcutManager on O+ launches under the shortcut creator's uid). -->
-        <activity-alias android:name="org.chromium.chrome.browser.webapps.SecureWebAppLauncher"
-            android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.webapps.WebappManager.ACTION_START_SECURE_WEBAPP" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity-alias>
-        <activity-alias android:name="com.google.android.apps.chrome.webapps.WebappManager"
-            android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
-        </activity-alias>
-        <!-- Activities for WebAPKs. -->
-        <activity android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
-            android:theme="@style/Theme.BrowserUI.NoDisplay"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <activity android:name="org.chromium.components.media_router.caf.remoting.CafExpandedControllerActivity"
             android:theme="@style/Theme.Chromium.Activity"
             android:label="Chrome.CafExpandedControllerActivity"
@@ -534,41 +491,6 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:noHistory="true"
             android:excludeFromRecents="true">
-        </activity>
-
-        <!-- Components for Trusted Web Activities -->
-        <receiver android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <data android:scheme="package" />
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
-            </intent-filter>
-            {% if channel in ['default'] %}
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver.DEBUG" />
-            </intent-filter>
-            {% endif %}
-        </receiver>
-
-        <activity android:name="org.chromium.chrome.browser.browserservices.ClearDataDialogActivity"
-            android:theme="@style/Theme.Chromium.ClearDataDialogActivity"
-            android:exported="false"/>
-
-        <activity
-            android:name="org.chromium.chrome.browser.browserservices.ManageTrustedWebActivityDataActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen.Transparent"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <!-- Legacy filter. We no longer need data, but must accept intents that provide data. -->
-            <intent-filter>
-                <action android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="https"/>
-            </intent-filter>
         </activity>
 
         <!-- configChanges is set here to prevent the destruction of the
@@ -604,10 +526,6 @@ by a child template that "extends" this file.
             <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
                 android:resource="@xml/phone_as_a_security_key_accessory_filter" />
         </activity>
-
-        <receiver
-            android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
-            android:exported="false" />
 
         <!-- Download foreground service -->
         <service android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
@@ -677,15 +595,6 @@ by a child template that "extends" this file.
             tools:ignore="ExportedService">
             <intent-filter>
               <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.chromium.chrome.browser.webapps.WebApkInstallCoordinatorService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-              <action android:name="org.chromium.intent.action.INSTALL_WEB_APK" />
             </intent-filter>
         </service>
 

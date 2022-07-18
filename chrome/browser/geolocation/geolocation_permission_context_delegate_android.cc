@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -35,22 +34,6 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
     bool user_gesture,
     permissions::BrowserPermissionCallback* callback,
     permissions::GeolocationPermissionContext* context) {
-  if (web_contents->GetDelegate() &&
-      web_contents->GetDelegate()->GetInstalledWebappGeolocationContext()) {
-    content::RenderFrameHost* const render_frame_host =
-        content::RenderFrameHost::FromID(id.render_process_id(),
-                                         id.render_frame_id());
-    InstalledWebappBridge::PermissionCallback permission_callback =
-        base::BindOnce(
-            &permissions::GeolocationPermissionContext::NotifyPermissionSet,
-            context->GetWeakPtr(), id, requesting_origin,
-            permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-                render_frame_host->GetMainFrame()),
-            std::move(*callback), false /* persist */);
-    InstalledWebappBridge::DecidePermission(requesting_origin,
-                                            std::move(permission_callback));
-    return true;
-  }
   return GeolocationPermissionContextDelegate::DecidePermission(
       web_contents, id, requesting_origin, user_gesture, callback, context);
 }

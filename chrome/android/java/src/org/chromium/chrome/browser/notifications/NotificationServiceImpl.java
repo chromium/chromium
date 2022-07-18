@@ -19,7 +19,6 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -105,11 +104,6 @@ public class NotificationServiceImpl extends NotificationService.Impl {
      */
     static void dispatchIntentOnUIThread(Intent intent) {
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-
-        // Warm up the WebappRegistry, as we need to check if this notification should launch a
-        // standalone web app. This no-ops if the registry is already initialized and warmed.
-        WebappRegistry.getInstance();
-        WebappRegistry.warmUpSharedPrefs();
 
         // Now that the browser process is initialized, we pass forward the call to the
         // NotificationPlatformBridge which will take care of delivering the appropriate events.
