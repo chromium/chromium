@@ -66,7 +66,6 @@
 #include "content/child/runtime_features.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/main_frame_counter.h"
 #include "content/common/partition_alloc_support.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/pseudonymization_salt.h"
@@ -77,7 +76,6 @@
 #include "content/public/common/gpu_stream_constants.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/browser_exposed_renderer_interfaces.h"
@@ -1662,8 +1660,7 @@ void RenderThreadImpl::OnRendererBackgrounded() {
 void RenderThreadImpl::OnRendererForegrounded() {
   main_thread_scheduler_->SetRendererBackgrounded(false);
   discardable_memory_allocator_->OnForegrounded();
-  internal::PartitionAllocSupport::Get()->OnForegrounded(
-      MainFrameCounter::has_main_frame());
+  internal::PartitionAllocSupport::Get()->OnForegrounded();
   process_foregrounded_count_++;
 }
 

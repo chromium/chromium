@@ -47,8 +47,7 @@ class PartitionAllocSupport {
   void ReconfigureAfterFeatureListInit(const std::string& process_type);
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
-  // |has_main_frame| tells us if the renderer contains a main frame.
-  void OnForegrounded(bool has_main_frame);
+  void OnForegrounded();
   void OnBackgrounded();
 
   static PartitionAllocSupport* Get() {
