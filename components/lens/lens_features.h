@@ -40,6 +40,9 @@ extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1;
 // Enables alternate option 2 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
 
+// Enables alternate option 3 for the Region Search context menu item text.
+extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
+
 // Enables UKM logging for the Lens Region Search feature.
 extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
 
@@ -81,6 +84,10 @@ extern bool UseRegionSearchMenuItemAltText1();
 // Returns whether to use alternative option 2 for the Region Search context
 // menu item text.
 extern bool UseRegionSearchMenuItemAltText2();
+
+// Returns whether to use alternative option 3 for the Region Search context
+// menu item text.
+extern bool UseRegionSearchMenuItemAltText3();
 
 // Returns whether to use `Google` as the visual search provider for all
 // relevant Lens context menu strings.

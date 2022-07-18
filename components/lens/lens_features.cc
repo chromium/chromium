@@ -55,6 +55,9 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1{
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
     &kLensSearchOptimizations, "use-menu-item-alt-text-2", false};
 
+const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
+    &kLensSearchOptimizations, "use-menu-item-alt-text-3", false};
+
 // Default is set to true but it is only enabled if kLensSearchOptimizations is
 // enabled. This setup allows us to have fullscreen search as a toggleable
 // experience in chrome://flags
@@ -95,6 +98,12 @@ bool UseRegionSearchMenuItemAltText2() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
          kRegionSearchUseMenuItemAltText2.Get();
+}
+
+bool UseRegionSearchMenuItemAltText3() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
+         kRegionSearchUseMenuItemAltText3.Get();
 }
 
 bool UseGoogleAsVisualSearchProvider() {

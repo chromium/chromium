@@ -2193,6 +2193,8 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   } else if (lens::features::UseRegionSearchMenuItemAltText2()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
+  } else if (lens::features::UseRegionSearchMenuItemAltText3()) {
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3;
   } else if (lens::features::IsLensFullscreenSearchEnabled()) {
     // Default text for fullscreen search when enabled. This is the same string
     // as the third alternative text option.
