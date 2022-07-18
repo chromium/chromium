@@ -732,6 +732,10 @@ mislead the user. For instance, navigating to
 `http://trustedsite.com@evil.example.com` will show an address of
 `http://evil.example.com` after the page loads.
 
+Note: We often receive reports calling this an "open redirect". However, it has
+nothing to do with redirection; rather the format of URLs is complex and the
+userinfo may be misread as a host.
+
 <a name="TOC-Why-does-the-Password-Manager-ignore-autocomplete-off-for-password-fields-"></a>
 ### Why does the Password Manager ignore `autocomplete='off'` for password fields?
 
