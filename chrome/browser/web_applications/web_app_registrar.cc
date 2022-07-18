@@ -472,6 +472,27 @@ bool WebAppRegistrar::IsTabbedWindowModeEnabled(const AppId& app_id) const {
   return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kTabbed;
 }
 
+GURL WebAppRegistrar::GetAppNewTabUrl(const AppId& app_id) const {
+  if (IsTabbedWindowModeEnabled(app_id)) {
+    auto* web_app = GetAppById(app_id);
+    if (!web_app)
+      return GURL::EmptyGURL();
+
+    if (web_app->tab_strip() &&
+        absl::holds_alternative<blink::Manifest::NewTabButtonParams>(
+            web_app->tab_strip().value().new_tab_button)) {
+      absl::optional<GURL> url =
+          absl::get<blink::Manifest::NewTabButtonParams>(
+              web_app->tab_strip().value().new_tab_button)
+              .url;
+      if (url.has_value())
+        return url.value();
+    }
+  }
+  // Apps with new_tab_button.url set to 'auto' will use the start URL.
+  return GetAppStartUrl(app_id);
+}
+
 const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
   if (registry_profile_being_deleted_)
     return nullptr;

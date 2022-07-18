@@ -141,6 +141,9 @@ class AppBrowserController
   // Gets the start_url for the app.
   virtual GURL GetAppStartUrl() const = 0;
 
+  // Gets the new tab URL for tabbed apps.
+  virtual GURL GetAppNewTabUrl() const;
+
   // Determines whether the specified url is 'inside' the app |this| controls.
   virtual bool IsUrlInAppScope(const GURL& url) const = 0;
 

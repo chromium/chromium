@@ -354,6 +354,10 @@ std::string AppBrowserController::GetTitleForMediaControls() const {
   return system_app() ? base::UTF16ToUTF8(GetAppShortName()) : std::string();
 }
 
+GURL AppBrowserController::GetAppNewTabUrl() const {
+  return GetAppStartUrl();
+}
+
 void AppBrowserController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

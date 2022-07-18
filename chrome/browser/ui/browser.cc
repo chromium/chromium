@@ -673,7 +673,7 @@ bool Browser::HasFindBarController() const {
 
 GURL Browser::GetNewTabURL() const {
   if (app_controller_)
-    return app_controller_->GetAppStartUrl();
+    return app_controller_->GetAppNewTabUrl();
   return GURL(chrome::kChromeUINewTabURL);
 }
 

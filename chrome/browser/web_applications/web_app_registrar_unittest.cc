@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -30,13 +31,13 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 
 using web_app::test::CrosapiParam;
@@ -169,6 +170,15 @@ class WebAppRegistrarTest : public WebAppTest {
 
  private:
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+};
+
+class WebAppRegistrarTest_TabStrip : public WebAppRegistrarTest {
+ public:
+  WebAppRegistrarTest_TabStrip() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsTabStrip};
 };
 
 TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
@@ -1118,6 +1128,42 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   // Uninstalling the previously default installed app.
   UnregisterApp(app_id1);
   EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
+}
+
+TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppNewTabUrl) {
+  controller().Init();
+
+  auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
+  AppId app_id = web_app->app_id();
+  GURL new_tab_url = GURL("https://example.com/path/newtab");
+
+  blink::Manifest::NewTabButtonParams new_tab_button_params;
+  new_tab_button_params.url = new_tab_url;
+  TabStrip tab_strip;
+  tab_strip.new_tab_button = new_tab_button_params;
+
+  web_app->SetDisplayMode(DisplayMode::kTabbed);
+  web_app->SetTabStrip(tab_strip);
+  RegisterApp(std::move(web_app));
+
+  EXPECT_EQ(registrar().GetAppNewTabUrl(app_id), new_tab_url);
+}
+
+TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppAutoNewTabUrl) {
+  controller().Init();
+
+  auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
+  AppId app_id = web_app->app_id();
+
+  TabStrip tab_strip;
+  tab_strip.new_tab_button = TabStrip::Visibility::kAuto;
+
+  web_app->SetDisplayMode(DisplayMode::kTabbed);
+  web_app->SetTabStrip(tab_strip);
+  RegisterApp(std::move(web_app));
+
+  EXPECT_EQ(registrar().GetAppNewTabUrl(app_id),
+            registrar().GetAppStartUrl(app_id));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1,5 +1,5 @@
 {
-  "name": "Manifest with tabbed display override",
+  "name": "Manifest with tab strip customizations",
   "icons": [
     {
       "src": "launcher-icon-4x.png",
@@ -11,6 +11,8 @@
   "display": "standalone",
   "display_override": [ "tabbed" ],
   "tab_strip": {
-    "new_tab_button": "auto"
+    "new_tab_button": {
+      "url": "theme-color.html"
+    }
   }
 }

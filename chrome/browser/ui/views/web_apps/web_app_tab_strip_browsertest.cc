@@ -241,4 +241,35 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, AutoNewTabUrl) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  chrome::NewTab(app_browser);
+  EXPECT_EQ(
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      registrar().GetAppStartUrl(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_tab_strip_customizations."
+      "json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  chrome::NewTab(app_browser);
+  EXPECT_EQ(
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      embedded_test_server()->GetURL("/banners/theme-color.html"));
+}
+
 }  // namespace web_app

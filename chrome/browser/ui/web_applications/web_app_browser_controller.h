@@ -76,6 +76,7 @@ class WebAppBrowserController : public AppBrowserController,
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
+  GURL GetAppNewTabUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;
   bool CanUserUninstall() const override;

@@ -321,6 +321,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns whether the app should be opened in tabbed window mode.
   bool IsTabbedWindowModeEnabled(const AppId& app_id) const;
 
+  GURL GetAppNewTabUrl(const AppId& app_id) const;
+
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
 

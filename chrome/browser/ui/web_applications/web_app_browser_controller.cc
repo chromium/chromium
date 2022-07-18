@@ -286,6 +286,10 @@ GURL WebAppBrowserController::GetAppStartUrl() const {
   return registrar().GetAppStartUrl(app_id());
 }
 
+GURL WebAppBrowserController::GetAppNewTabUrl() const {
+  return registrar().GetAppNewTabUrl(app_id());
+}
+
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   if (system_app() && system_app()->IsUrlInSystemAppScope(url))
     return true;
