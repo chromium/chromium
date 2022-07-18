@@ -72,9 +72,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -87,7 +87,6 @@ import java.util.Map;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisabledTest(message = "Flaky test: https://crbug.com/1312662")
 public class FlagsFragmentTest {
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
@@ -121,6 +120,16 @@ public class FlagsFragmentTest {
                 WebViewPackageHelper.getContextPackageInfo(context));
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
+
+        // Espresso is normally configured to automatically wait for the main thread to go idle, but
+        // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
+        // hierarchy to inflate.
+        ViewUtils.waitForView(withId(R.id.navigation_flags_ui));
+        ViewUtils.waitForView(withId(R.id.navigation_home));
+        ViewUtils.waitForView(withId(R.id.flag_search_bar));
+        ViewUtils.waitForView(withId(R.id.flags_list));
+        ViewUtils.waitForView(withId(R.id.reset_flags_button));
+
         // Always close the soft keyboard when the activity is launched which is sometimes shown
         // because flags search TextView has input focus by default. The keyboard may cover up some
         // Views causing test flakiness/failures.
