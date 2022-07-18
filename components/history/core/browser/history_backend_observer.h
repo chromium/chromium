@@ -11,14 +11,22 @@ namespace history {
 
 class HistoryBackend;
 
+// Used by internal History components to observe `HistoryBackend` and process
+// those notifications on the backend task runner.
+//
+// Classes external to History that wish to observe History should instead use
+// `HistoryServiceObserver`, which operates on the main thread.
+//
+// These notifications are kept roughly in sync with `HistoryServiceObserver`,
+// but there's already not an exact 1-to-1 correspondence.
 class HistoryBackendObserver {
  public:
-  HistoryBackendObserver() {}
+  HistoryBackendObserver() = default;
 
   HistoryBackendObserver(const HistoryBackendObserver&) = delete;
   HistoryBackendObserver& operator=(const HistoryBackendObserver&) = delete;
 
-  virtual ~HistoryBackendObserver() {}
+  virtual ~HistoryBackendObserver() = default;
 
   // Called when user visits an URL.
   //
