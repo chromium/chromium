@@ -33,7 +33,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
 TEST_P(PriceFieldTest, ParsePrice) {
-  AddTextFormFieldData("name your price", "userPrice", PRICE);
+  AddTextFormFieldData("userPrice", "name your price", PRICE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
