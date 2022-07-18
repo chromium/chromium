@@ -794,12 +794,11 @@ public class ExternalNavigationHandler {
             return false;
         }
 
-        // TODO(https://crbug.com/1288578): Form submits are not allowed to launch apps for probably
-        // unintentional historical reasons. We should probably allow GET requests to launch apps,
-        // but not POST requests.
-        if (isFormSubmit && !incomingIntentRedirect && !isRedirectFromFormSubmit) {
-            if (DEBUG) Log.i(TAG, "Direct form submission, not a redirect");
-            return false;
+        if (!RedirectHandler.isRefactoringEnabled()) {
+            if (isFormSubmit && !incomingIntentRedirect && !isRedirectFromFormSubmit) {
+                if (DEBUG) Log.i(TAG, "Direct form submission, not a redirect");
+                return false;
+            }
         }
 
         // http://crbug/331571 : Do not override a navigation started from user typing.
@@ -968,6 +967,27 @@ public class ExternalNavigationHandler {
         if (params.getRedirectHandler() != null
                 && params.getRedirectHandler().navigationChainUsedBackOrForward()) {
             if (DEBUG) Log.i(TAG, "Navigation chain used back or forward.");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If a site is submitting a form, it most likely wants to submit that data to a server rather
+     * than launch an app.
+     */
+    private boolean isDirectFormSubmit(
+            ExternalNavigationParams params, boolean isExternalProtocol) {
+        // If a form is submitting to an external protocol, don't block it.
+        if (isExternalProtocol) return false;
+
+        // Redirects off of form submits need to be able to launch apps.
+        if (params.isRedirect()) return false;
+
+        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
+        boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
+        if (isFormSubmit) {
+            if (DEBUG) Log.i(TAG, "Direct form submission, not a redirect");
             return true;
         }
         return false;
@@ -1491,6 +1511,9 @@ public class ExternalNavigationHandler {
 
         if (RedirectHandler.isRefactoringEnabled()) {
             if (navigationChainUsedBackOrForward(params)) {
+                return OverrideUrlLoadingResult.forNoOverride();
+            }
+            if (isDirectFormSubmit(params, isExternalProtocol)) {
                 return OverrideUrlLoadingResult.forNoOverride();
             }
         }
