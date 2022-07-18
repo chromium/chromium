@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 #include "chrome/updater/update_service.h"
@@ -58,10 +59,9 @@ void ShouldBlockUpdateForMeteredNetwork(
       AllowBackgroundUpdatesOnMeteredNetwork()) {
     std::move(callback).Run(false);
   } else {
-    auto task_runner =
-        base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()});
-    task_runner.get()->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&IsConnectionedMetered), std::move(callback));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsConnectionedMetered),
+        std::move(callback));
   }
 }
 

@@ -24,6 +24,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -323,6 +325,20 @@ absl::optional<base::FilePath> WriteInstallerDataToTempFile(
   }
 
   return path;
+}
+
+void InitializeThreadPool(const char* name) {
+  base::ThreadPoolInstance::Create(name);
+
+  // Reuses the logic in base::ThreadPoolInstance::StartWithDefaultParams.
+  const size_t max_num_foreground_threads =
+      static_cast<size_t>(std::max(3, base::SysInfo::NumberOfProcessors() - 1));
+  base::ThreadPoolInstance::InitParams init_params(max_num_foreground_threads);
+#if BUILDFLAG(IS_WIN)
+  init_params.common_thread_pool_environment = base::ThreadPoolInstance::
+      InitParams::CommonThreadPoolEnvironment::COM_MTA;
+#endif
+  base::ThreadPoolInstance::Get()->Start(init_params);
 }
 
 }  // namespace updater

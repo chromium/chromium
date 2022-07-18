@@ -16,11 +16,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -220,7 +218,6 @@ class AppTestHelper : public App {
  private:
   ~AppTestHelper() override = default;
   void FirstTaskRun() override;
-  void InitializeThreadPool() override;
 };
 
 void AppTestHelper::FirstTaskRun() {
@@ -335,10 +332,6 @@ void AppTestHelper::FirstTaskRun() {
   Shutdown(kUnknownSwitch);
 }
 
-void AppTestHelper::InitializeThreadPool() {
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("test_helper");
-}
-
 scoped_refptr<App> MakeAppTestHelper() {
   return base::MakeRefCounted<AppTestHelper>();
 }
@@ -401,20 +394,11 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }
 
-class TestHelperCommandRunner : public ::testing::Test {
- private:
-  void TearDown() override {
-    // Avoids reporting the thread pool instance leak in gtest.
-    base::ThreadPoolInstance::Get()->JoinForTesting();
-    base::ThreadPoolInstance::Set(nullptr);
-  }
-};
-
 // Do not disable this test when encountering integration tests failures.
 // This is not a unit test. It just wraps the execution of an integration test
 // command, which is typical a step of an integration test.
-TEST_F(TestHelperCommandRunner, Run) {
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+TEST(TestHelperCommandRunner, Run) {
+  base::test::TaskEnvironment environment;
   EXPECT_EQ(MakeAppTestHelper()->Run(), 0);
 }
 

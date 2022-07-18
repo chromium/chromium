@@ -197,6 +197,9 @@ absl::optional<base::FilePath> WriteInstallerDataToTempFile(
     const base::FilePath& directory,
     const std::string& installer_data);
 
+// Creates and starts a thread pool for this process.
+void InitializeThreadPool(const char* name);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_H_

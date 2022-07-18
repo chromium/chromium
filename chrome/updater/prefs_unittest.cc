@@ -21,8 +21,7 @@
 namespace updater {
 
 TEST(PrefsTest, PrefsCommitPendingWrites) {
-  base::test::TaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
@@ -36,8 +35,7 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
 }
 
 TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
-  base::test::TaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment;
 
   std::unique_ptr<ScopedPrefsLock> lock =
       AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
@@ -59,8 +57,7 @@ TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
 }
 
 TEST(PrefsTest, AcquireGlobalPrefsLock_TryLockInThreadSuccess) {
-  base::test::TaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment;
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReplyWithResult(

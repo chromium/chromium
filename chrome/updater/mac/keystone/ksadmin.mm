@@ -15,6 +15,7 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -29,9 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
@@ -603,6 +602,9 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   std::map<std::string, std::string> command_line =
       ParseCommandLine(argc, argv);
   updater::InitLogging(Scope(command_line));
+  InitializeThreadPool("keystone");
+  const base::ScopedClosureRunner shutdown_thread_pool(
+      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
 }

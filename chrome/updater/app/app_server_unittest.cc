@@ -11,8 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
@@ -55,10 +54,6 @@ class AppServerTest : public AppServer {
   ~AppServerTest() override = default;
 
  private:
-  void InitializeThreadPool() override {
-    // Do nothing, the test has already created the thread pool.
-  }
-
   void Shutdown0() { Shutdown(0); }
 };
 
@@ -75,21 +70,10 @@ void ClearPrefs() {
 
 class AppServerTestCase : public testing::Test {
  public:
-  AppServerTestCase() : main_task_executor_(base::MessagePumpType::UI) {}
-  ~AppServerTestCase() override = default;
-
-  void SetUp() override {
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams("test");
-    ClearPrefs();
-  }
-
-  void TearDown() override {
-    base::ThreadPoolInstance::Get()->JoinForTesting();
-    base::ThreadPoolInstance::Set(nullptr);
-  }
+  void SetUp() override { ClearPrefs(); }
 
  private:
-  base::SingleThreadTaskExecutor main_task_executor_;
+  base::test::TaskEnvironment environment_;
 };
 
 }  // namespace

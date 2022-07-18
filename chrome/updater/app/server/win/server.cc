@@ -23,10 +23,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
@@ -222,18 +218,6 @@ void ComServerApp::Stop() {
                                 this_server->update_service_internal_ = nullptr;
                                 this_server->Shutdown(0);
                               }));
-}
-
-void ComServerApp::InitializeThreadPool() {
-  base::ThreadPoolInstance::Create(kThreadPoolName);
-
-  // Reuses the logic in base::ThreadPoolInstance::StartWithDefaultParams.
-  const size_t max_num_foreground_threads =
-      static_cast<size_t>(std::max(3, base::SysInfo::NumberOfProcessors() - 1));
-  base::ThreadPoolInstance::InitParams init_params(max_num_foreground_threads);
-  init_params.common_thread_pool_environment = base::ThreadPoolInstance::
-      InitParams::CommonThreadPoolEnvironment::COM_MTA;
-  base::ThreadPoolInstance::Get()->Start(init_params);
 }
 
 HRESULT ComServerApp::RegisterClassObjects() {

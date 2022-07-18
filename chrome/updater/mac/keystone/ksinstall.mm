@@ -15,6 +15,7 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,6 +24,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
@@ -110,10 +112,11 @@ scoped_refptr<App> MakeKSInstallApp(int argc, char* argv[]) {
 
 int KSInstallMain(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
-
   base::CommandLine::Init(argc, argv);
   updater::InitLogging(GetUpdaterScope());
-
+  InitializeThreadPool("keystone");
+  const base::ScopedClosureRunner shutdown_thread_pool(
+      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return MakeKSInstallApp(argc, argv)->Run();
 }

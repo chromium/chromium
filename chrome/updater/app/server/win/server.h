@@ -61,9 +61,6 @@ class ComServerApp : public AppServer {
  private:
   ~ComServerApp() override;
 
-  // Overrides for App.
-  void InitializeThreadPool() override;
-
   // Overrides for AppServer
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
   void ActiveDutyInternal(

@@ -8,8 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
-#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
@@ -40,8 +38,6 @@ class App : public base::RefCountedThreadSafe<App> {
  protected:
   friend class base::RefCountedThreadSafe<App>;
 
-  static constexpr base::StringPiece kThreadPoolName = "Updater";
-
   App();
   virtual ~App();
 
@@ -52,11 +48,6 @@ class App : public base::RefCountedThreadSafe<App> {
   UpdaterScope updater_scope() const;
 
  private:
-  // Allows initialization of the thread pool for specific environments, in
-  // cases where the thread pool must be started with different init parameters,
-  // such as MTA for Windows COM servers.
-  virtual void InitializeThreadPool();
-
   // Implementations of App can override this to perform work on the main
   // sequence while blocking is still allowed.
   virtual void Initialize() {}
@@ -74,7 +65,7 @@ class App : public base::RefCountedThreadSafe<App> {
   base::OnceCallback<void(int)> quit_;
 
   // Indicates the scope of the updater: per-system or per-user.
-  const UpdaterScope updater_scope_;
+  const UpdaterScope updater_scope_ = GetUpdaterScope();
 };
 
 }  // namespace updater
