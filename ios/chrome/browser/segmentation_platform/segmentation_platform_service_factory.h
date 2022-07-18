@@ -41,7 +41,6 @@ class SegmentationPlatformServiceFactory
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

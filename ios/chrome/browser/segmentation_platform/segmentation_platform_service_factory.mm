@@ -71,6 +71,10 @@ class IncognitoObserver : public OTRWebStateObserver::ObserverClient,
 
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     web::BrowserState* context) {
+  if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
+    return nullptr;
+  }
+
   DCHECK(!context->IsOffTheRecord());
 
   ChromeBrowserState* chrome_browser_state =
@@ -154,11 +158,6 @@ std::unique_ptr<KeyedService>
 SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildSegmentationPlatformService(context);
-}
-
-bool SegmentationPlatformServiceFactory::ServiceIsCreatedWithBrowserState()
-    const {
-  return base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature);
 }
 
 bool SegmentationPlatformServiceFactory::ServiceIsNULLWhileTesting() const {

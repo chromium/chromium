@@ -127,6 +127,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",

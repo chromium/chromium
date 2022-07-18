@@ -30,6 +30,7 @@
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -222,6 +223,8 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state)
         ->DoFinalInit();
   }
+  segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
+      browser_state);
 }
 
 void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
