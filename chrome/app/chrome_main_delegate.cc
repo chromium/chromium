@@ -173,10 +173,6 @@
 #include "base/environment.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#include "base/message_loop/message_pump_libevent.h"
-#endif
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -794,9 +790,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::internal::TimerBase::InitializeFeatures();
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  base::MessagePumpLibevent::InitializeFeatures();
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
   base::MessagePumpCFRunLoopBase::InitializeFeatures();
 #endif
