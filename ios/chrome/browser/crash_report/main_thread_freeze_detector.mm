@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 
 #include "base/debug/debugger.h"
+#import "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
@@ -55,6 +56,13 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   kAfterCrashpadDumpWithoutCrash = 2,
   kMaxValue = kAfterCrashpadDumpWithoutCrash,
 };
+
+// Only MetricKit reports currently use attachements.
+bool IsMetricKitReport(crash_reporter::Report report) {
+  return base::ComputeDirectorySize(crash_reporter::GetCrashpadDatabasePath()
+                                        .Append("attachments")
+                                        .Append(report.local_id)) > 0;
+}
 
 }  // namespace
 
@@ -326,12 +334,16 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     return;
 
   // Get the most recent crash capture_time. -GetReports is already sorted
-  // by newest first so just grab the first one.
+  // by newest first so just grab the first non-MetricKit report.
   time_t newest_crash = 0;
   std::vector<crash_reporter::Report> reports;
   crash_reporter::GetReports(&reports);
-  if (reports.size())
-    newest_crash = reports[0].capture_time;
+  for (size_t i = 0; i < reports.size(); i++) {
+    if (!IsMetricKitReport(reports[i])) {
+      newest_crash = reports[i].capture_time;
+      break;
+    }
+  }
 
   // Process any hang reports that have a modification time newer than the
   // newest crash.
