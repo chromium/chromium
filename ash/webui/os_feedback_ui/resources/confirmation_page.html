@@ -11,6 +11,13 @@
     margin: 12px 0 0 0;
   }
 
+  #buttonDone {
+    display: flex;
+    height: 32px;
+    padding: 6px 16px;
+    width: 63px;
+  }
+
   #help-resources {
     display: flex;
     flex-direction: column;
@@ -81,7 +88,7 @@
         on-click="handleBackButtonClicked_">
       <span>[[i18n('buttonNewReport')]]</span>
     </cr-button>
-    <cr-button id="buttonDone" class="cancel-button"
+    <cr-button id="buttonDone" class="action-button"
       on-click="handleDoneButtonClicked_">[[i18n('buttonDone')]]</cr-button>
   </div>
 </div>
