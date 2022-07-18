@@ -17,17 +17,13 @@ Table of contents:
 - [Contacts](#contacts)
 - [FAQ](#faq)
 
-Chromium uses source-based code coverage for clang-compiled languages such as
-C++. This [documentation] explains how to use Clang’s source-based coverage
-features in general.
 
-In this document, we first introduce the code coverage infrastructure that
+This document is divided into two parts. 
+- The first part introduces the code coverage infrastructure that
 continuously generates code coverage information for the whole codebase and for
 specific CLs in Gerrit. For the latter, refer to
 [code\_coverage\_in\_gerrit.md](code_coverage_in_gerrit.md).
-We then present a script that can be used to locally generate code coverage
-reports with one command, and finally we provide a description of the
-process of producing these reports.
+- The second part talks about how to generate code coverage locally for Clang-compiled languages like C++. Refer to [android code coverage instructions] for instructions for java code.
 
 ## Coverage Infrastructure
 
@@ -121,7 +117,8 @@ by CQ bot. Or see this
 [15-second video tutorial](https://www.youtube.com/watch?v=cxXlYcSgIPE).
 
 ## Local Coverage Script
-The [coverage script] automates the process described below and provides a
+This [documentation] explains how to use Clang’s source-based coverage
+features in general. The [coverage script] automates the process described below and provides a
 one-stop service to generate code coverage reports locally in just one command.
 
 This script is currently supported on Android, Linux, Mac, iOS and ChromeOS
@@ -356,3 +353,4 @@ Yes!
 [How do crashes affect code coverage?]: #how-do-crashes-affect-code-coverage
 [known issues]: https://bugs.chromium.org/p/chromium/issues/list?q=component:Infra%3ETest%3ECodeCoverage
 [tools link]: https://storage.googleapis.com/chromium-browser-clang-staging/
+[android code coverage instructions]: https://chromium.googlesource.com/chromium/src/+/HEAD/build/android/docs/coverage.md
