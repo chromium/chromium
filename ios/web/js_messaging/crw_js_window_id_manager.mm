@@ -77,10 +77,11 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
   NSString* script = [web::GetPageScript(@"window_id")
       stringByReplacingOccurrencesOfString:@"$(WINDOW_ID)"
                                 withString:_windowID];
-  // WKUserScript may not be injected yet. Make windowID script return boolean
-  // indicating whether the injection was successful.
+  // WKUserScript for message API may not be injected yet. Make windowID script
+  // return boolean indicating whether the injection was successful.
   NSString* scriptWithResult = [NSString
-      stringWithFormat:@"if (!window.__gCrWeb) {false; } else { %@; true; }",
+      stringWithFormat:@"if (!window.__gCrWeb || !window.__gCrWeb.message) "
+                       @"{false; } else { %@; true; }",
                        script];
 
   __weak CRWJSWindowIDManager* weakSelf = self;
