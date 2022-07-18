@@ -859,6 +859,7 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
               std::move(signed_certificate_timestamp_list))
           .setCertificateTransparencyCompliance(
               SerializeCTPolicyCompliance(ssl_info.ct_policy_compliance))
+          .setEncryptedClientHello(ssl_info.encrypted_client_hello)
           .build();
 
   if (ssl_info.key_exchange_group != 0) {
@@ -869,6 +870,10 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
   }
   if (mac)
     security_details->setMac(mac);
+  if (ssl_info.peer_signature_algorithm != 0) {
+    security_details->setServerSignatureAlgorithm(
+        ssl_info.peer_signature_algorithm);
+  }
 
   return security_details;
 }

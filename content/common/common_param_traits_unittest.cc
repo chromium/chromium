@@ -175,6 +175,7 @@ TEST(IPCMessageTest, SSLInfo) {
   const net::SHA256HashValue kCertPublicKeyHashValue = {{0x01, 0x02}};
   in.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
   in.pinning_failure_log = "foo";
+  in.encrypted_client_hello = true;
 
   scoped_refptr<net::ct::SignedCertificateTimestamp> sct(
       new net::ct::SignedCertificateTimestamp());
@@ -216,6 +217,7 @@ TEST(IPCMessageTest, SSLInfo) {
   ASSERT_EQ(in.handshake_type, out.handshake_type);
   ASSERT_EQ(in.public_key_hashes, out.public_key_hashes);
   ASSERT_EQ(in.pinning_failure_log, out.pinning_failure_log);
+  ASSERT_EQ(in.encrypted_client_hello, out.encrypted_client_hello);
 
   ASSERT_EQ(in.signed_certificate_timestamps.size(),
             out.signed_certificate_timestamps.size());

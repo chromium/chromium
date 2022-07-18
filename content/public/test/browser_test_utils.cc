@@ -1561,12 +1561,13 @@ base::Value EvalJsResult::ExtractList() const {
   return value.Clone();
 }
 
-void PrintTo(const EvalJsResult& bar, ::std::ostream* os) {
+std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar) {
   if (!bar.error.empty()) {
-    *os << bar.error;
+    os << bar.error;
   } else {
-    *os << bar.value;
+    os << bar.value;
   }
+  return os;
 }
 
 namespace {

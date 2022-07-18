@@ -60,11 +60,20 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "net/base/features.h"
+#include "net/dns/dns_test_util.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/util.h"
+#include "net/test/ssl_test_util.h"
+#include "net/test/test_doh_server.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/boringssl/src/include/openssl/nid.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
@@ -2984,5 +2993,331 @@ IN_PROC_BROWSER_TEST_F(FakeSystemTracingForbiddenDevToolsProtocolTest,
   EXPECT_FALSE(StartSystemTrace());
 }
 #endif  // BUILDFLAG(IS_POSIX)
+
+class NetworkResponseProtocolTest : public DevToolsProtocolTest {
+ protected:
+  base::Value::Dict FetchAndWaitForResponse(const GURL& url) {
+    WebContents* web_contents = shell()->web_contents();
+    std::string script = JsReplace("fetch($1).then(r => r.status)", url.spec());
+    EvalJsResult status = EvalJs(web_contents, script);
+    CHECK_EQ(200, status);
+
+    // Look for the requestId.
+    auto matches_url = [](const GURL& url, const base::Value::Dict& params) {
+      const std::string* got_url = params.FindStringByDottedPath("request.url");
+      return got_url && *got_url == url.spec();
+    };
+    base::Value::Dict request = WaitForMatchingNotification(
+        "Network.requestWillBeSent", base::BindRepeating(matches_url, url));
+    const std::string* request_id = request.FindString("requestId");
+    CHECK(request_id) << "Could not find request ID";
+
+    // Look for the response.
+    auto matches_id = [](const std::string& request_id,
+                         const base::Value::Dict& params) {
+      const std::string* id = params.FindString("requestId");
+      return id && *id == request_id;
+    };
+    return WaitForMatchingNotification(
+        "Network.responseReceived",
+        base::BindRepeating(matches_id, *request_id));
+  }
+};
+
+// Test that the SecurityDetails field of the resource response matches the
+// server.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
+  // Configure a specific TLS configuration to compare against.
+  net::SSLServerConfig server_config;
+  server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  server_config.cipher_suite_for_testing = 0xc02f;
+  server_config.curves_for_testing = {NID_X25519};
+  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PSS_RSAE_SHA384;
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
+                      server_config);
+  server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(server.Start());
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(),
+                                             server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable", base::Value::Dict(), false);
+
+  base::Value::Dict response =
+      FetchAndWaitForResponse(server.GetURL("/empty.html"));
+
+  const std::string* protocol =
+      response.FindStringByDottedPath("response.securityDetails.protocol");
+  ASSERT_TRUE(protocol);
+  EXPECT_EQ("TLS 1.2", *protocol);
+
+  const std::string* key_exchange =
+      response.FindStringByDottedPath("response.securityDetails.keyExchange");
+  ASSERT_TRUE(key_exchange);
+  EXPECT_EQ("ECDHE_RSA", *key_exchange);
+
+  const std::string* cipher =
+      response.FindStringByDottedPath("response.securityDetails.cipher");
+  ASSERT_TRUE(cipher);
+  EXPECT_EQ("AES_128_GCM", *cipher);
+
+  // AEAD ciphers should not report a MAC.
+  EXPECT_FALSE(response.FindStringByDottedPath("response.securityDetails.mac"));
+
+  const std::string* group = response.FindStringByDottedPath(
+      "response.securityDetails.keyExchangeGroup");
+  ASSERT_TRUE(group);
+  EXPECT_EQ("X25519", *group);
+
+  absl::optional<int> sigalg = response.FindIntByDottedPath(
+      "response.securityDetails.serverSignatureAlgorithm");
+  EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
+
+  absl::optional<bool> ech = response.FindBoolByDottedPath(
+      "response.securityDetails.encryptedClientHello");
+  EXPECT_EQ(false, ech);
+
+  const std::string* subject =
+      response.FindStringByDottedPath("response.securityDetails.subjectName");
+  ASSERT_TRUE(subject);
+  EXPECT_EQ(server.GetCertificate()->subject().common_name, *subject);
+
+  const std::string* issuer =
+      response.FindStringByDottedPath("response.securityDetails.issuer");
+  ASSERT_TRUE(issuer);
+  EXPECT_EQ(server.GetCertificate()->issuer().common_name, *issuer);
+
+  // The default certificate has a single SAN, 127.0.0.1.
+  const base::Value* sans =
+      response.FindByDottedPath("response.securityDetails.sanList");
+  ASSERT_TRUE(sans);
+  ASSERT_EQ(1u, sans->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[0]);
+
+  absl::optional<double> valid_from =
+      response.FindDoubleByDottedPath("response.securityDetails.validFrom");
+  EXPECT_EQ(server.GetCertificate()->valid_start().ToDoubleT(), valid_from);
+
+  absl::optional<double> valid_to =
+      response.FindDoubleByDottedPath("response.securityDetails.validTo");
+  EXPECT_EQ(server.GetCertificate()->valid_expiry().ToDoubleT(), valid_to);
+}
+
+// Test SecurityDetails, but with a TLS 1.3 cipher suite, which should not
+// report a key exchange component.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
+  // Configure a specific TLS configuration to compare against.
+  net::SSLServerConfig server_config;
+  server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  server_config.curves_for_testing = {NID_X25519};
+  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PSS_RSAE_SHA384;
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
+                      server_config);
+  server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(server.Start());
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(),
+                                             server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable", base::Value::Dict(), false);
+
+  base::Value::Dict response =
+      FetchAndWaitForResponse(server.GetURL("/empty.html"));
+
+  const std::string* protocol =
+      response.FindStringByDottedPath("response.securityDetails.protocol");
+  ASSERT_TRUE(protocol);
+  EXPECT_EQ("TLS 1.3", *protocol);
+
+  const std::string* key_exchange =
+      response.FindStringByDottedPath("response.securityDetails.keyExchange");
+  ASSERT_TRUE(key_exchange);
+  EXPECT_EQ("", *key_exchange);
+
+  const std::string* cipher =
+      response.FindStringByDottedPath("response.securityDetails.cipher");
+  ASSERT_TRUE(cipher);
+  // Depending on whether the host machine has AES hardware, the server may
+  // pick AES-GCM or ChaCha20-Poly1305.
+  EXPECT_TRUE(*cipher == "AES_128_GCM" || *cipher == "CHACHA20_POLY1305");
+
+  // AEAD ciphers should not report a MAC.
+  EXPECT_FALSE(response.FindStringByDottedPath("response.securityDetails.mac"));
+
+  const std::string* group = response.FindStringByDottedPath(
+      "response.securityDetails.keyExchangeGroup");
+  ASSERT_TRUE(group);
+  EXPECT_EQ("X25519", *group);
+
+  absl::optional<int> sigalg = response.FindIntByDottedPath(
+      "response.securityDetails.serverSignatureAlgorithm");
+  EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
+
+  absl::optional<bool> ech = response.FindBoolByDottedPath(
+      "response.securityDetails.encryptedClientHello");
+  EXPECT_EQ(false, ech);
+}
+
+// Test SecurityDetails, but with a legacy cipher suite, which should report a
+// separate MAC component and no group.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest,
+                       SecurityDetailsLegacyCipher) {
+  // Configure a specific TLS configuration to compare against.
+  net::SSLServerConfig server_config;
+  server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  // TLS_RSA_WITH_AES_128_CBC_SHA
+  server_config.cipher_suite_for_testing = 0x002f;
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
+                      server_config);
+  server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(server.Start());
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(),
+                                             server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable", base::Value::Dict(), false);
+
+  base::Value::Dict response =
+      FetchAndWaitForResponse(server.GetURL("/empty.html"));
+
+  const std::string* key_exchange =
+      response.FindStringByDottedPath("response.securityDetails.keyExchange");
+  ASSERT_TRUE(key_exchange);
+  EXPECT_EQ("RSA", *key_exchange);
+
+  const std::string* cipher =
+      response.FindStringByDottedPath("response.securityDetails.cipher");
+  ASSERT_TRUE(cipher);
+  EXPECT_EQ("AES_128_CBC", *cipher);
+
+  const std::string* mac =
+      response.FindStringByDottedPath("response.securityDetails.mac");
+  ASSERT_TRUE(mac);
+  EXPECT_EQ("HMAC-SHA1", *mac);
+
+  // RSA ciphers should not report a MAC.
+  EXPECT_FALSE(response.FindStringByDottedPath(
+      "response.securityDetails.keyExchangeGroup"));
+}
+
+// Test that complex certificate SAN lists are reported in SecurityDetails.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsSAN) {
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.dns_names = {"a.example", "b.example", "*.c.example"};
+  cert_config.ip_addresses = {net::IPAddress::IPv4Localhost(),
+                              net::IPAddress::IPv6Localhost(),
+                              net::IPAddress(1, 2, 3, 4)};
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(cert_config);
+  server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(server.Start());
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(),
+                                             server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable", base::Value::Dict(), false);
+
+  base::Value::Dict response =
+      FetchAndWaitForResponse(server.GetURL("/empty.html"));
+  const base::Value* sans =
+      response.FindByDottedPath("response.securityDetails.sanList");
+  ASSERT_TRUE(sans);
+  ASSERT_EQ(6u, sans->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("a.example"), sans->GetListDeprecated()[0]);
+  EXPECT_EQ(base::Value("b.example"), sans->GetListDeprecated()[1]);
+  EXPECT_EQ(base::Value("*.c.example"), sans->GetListDeprecated()[2]);
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[3]);
+  EXPECT_EQ(base::Value("::1"), sans->GetListDeprecated()[4]);
+  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetListDeprecated()[5]);
+}
+
+class NetworkResponseProtocolECHTest : public NetworkResponseProtocolTest {
+ public:
+  // a.test is covered by `CERT_TEST_NAMES`.
+  static constexpr char kHostname[] = "a.test";
+  static constexpr char kPublicName[] = "public-name.test";
+  static constexpr char kDohServerHostname[] = "doh.test";
+
+  NetworkResponseProtocolECHTest()
+      : ech_server_{net::EmbeddedTestServer::TYPE_HTTPS} {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{net::features::kEncryptedClientHello, {}},
+         {net::features::kUseDnsHttpsSvcb,
+          {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}}}},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    // Configure `ech_server_` to use ECH.
+    net::SSLServerConfig server_config;
+    std::vector<uint8_t> ech_config_list;
+    server_config.ech_keys = net::MakeTestEchKeys(
+        kPublicName, /*max_name_len=*/64, &ech_config_list);
+    ASSERT_TRUE(server_config.ech_keys);
+    ech_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ech_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES,
+                             server_config);
+
+    ASSERT_TRUE(ech_server_.Start());
+
+    // Start a DoH server, which ensures we use a resolver with HTTPS RR
+    // support. Configure it to serve records for `ech_server_`.
+    doh_server_.SetHostname(kDohServerHostname);
+    url::SchemeHostPort ech_host(GetURL("/"));
+    doh_server_.AddAddressRecord(ech_host.host(),
+                                 net::IPAddress::IPv4Localhost());
+    doh_server_.AddRecord(net::BuildTestHttpsServiceRecord(
+        net::dns_util::GetNameForHttpsQuery(ech_host),
+        /*priority=*/1, /*service_name=*/ech_host.host(),
+        {net::BuildTestHttpsServiceEchConfigParam(ech_config_list)}));
+    ASSERT_TRUE(doh_server_.Start());
+
+    // Add a single bootstrapping rule so we can resolve the DoH server.
+    host_resolver()->AddRule(kDohServerHostname, "127.0.0.1");
+
+    // Configure the network service to use the test DoH server.
+    absl::optional<net::DnsOverHttpsConfig> doh_config =
+        net::DnsOverHttpsConfig::FromString(doh_server_.GetTemplate());
+    ASSERT_TRUE(doh_config.has_value());
+    SetTestDohConfig(net::SecureDnsMode::kSecure,
+                     std::move(doh_config.value()));
+    SetReplaceSystemDnsConfig();
+  }
+
+  GURL GetURL(base::StringPiece path) {
+    return ech_server_.GetURL(kHostname, path);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::TestDohServer doh_server_;
+  net::EmbeddedTestServer ech_server_;
+};
+
+// Test SecurityDetails reports when Encrypted ClientHello was negotiated.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolECHTest, SecurityDetailsECH) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GetURL("/title1.html"),
+                                             1);
+
+  Attach();
+  SendCommand("Network.enable", base::Value::Dict(), false);
+
+  base::Value::Dict response = FetchAndWaitForResponse(GetURL("/empty.html"));
+  absl::optional<bool> ech = response.FindBoolByDottedPath(
+      "response.securityDetails.encryptedClientHello");
+  EXPECT_EQ(true, ech);
+}
 
 }  // namespace content

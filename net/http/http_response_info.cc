@@ -121,8 +121,12 @@ enum {
   // unusable due to the checksum not matching.
   RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE = 1 << 28,
 
-  // TODO(darin): Add other bits to indicate alternate request methods.
-  // For now, we don't support storing those.
+  // This bit is set if the response has `encrypted_client_hello` set.
+  RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO = 1 << 29,
+
+  // This enum only has a few bits (`1 << 31` is the limit). If allocating the
+  // last flag, instead allocate it as `RESPONSE_INFO_HAS_EXTRA_FLAGS` to
+  // signal another flags word.
 };
 
 HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
@@ -381,6 +385,9 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
     }
   }
 
+  ssl_info.encrypted_client_hello =
+      (flags & RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO) != 0;
+
   return true;
 }
 
@@ -426,6 +433,8 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
     flags |= RESPONSE_INFO_HAS_STALENESS;
   if (!dns_aliases.empty())
     flags |= RESPONSE_INFO_HAS_DNS_ALIASES;
+  if (ssl_info.encrypted_client_hello)
+    flags |= RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO;
 
   pickle->WriteInt(flags);
   pickle->WriteInt64(request_time.ToInternalValue());

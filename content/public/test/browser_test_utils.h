@@ -758,7 +758,7 @@ inline bool operator==(std::nullptr_t a, const EvalJsResult& b) {
 
 // Provides informative failure messages when the result of EvalJs() is
 // used in a failing ASSERT_EQ or EXPECT_EQ.
-void PrintTo(const EvalJsResult& bar, ::std::ostream* os);
+std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
 
 enum EvalJsOptions {
   EXECUTE_SCRIPT_DEFAULT_OPTIONS = 0,

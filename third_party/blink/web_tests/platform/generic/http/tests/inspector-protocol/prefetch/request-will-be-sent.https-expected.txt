@@ -85,12 +85,14 @@ Network.onResponseReceived{
             certificateId : 0
             certificateTransparencyCompliance : unknown
             cipher : AES_128_GCM
+            encryptedClientHello : false
             issuer : 
             keyExchange : 
             keyExchangeGroup : X25519
             protocol : TLS 1.3
             sanList : [
             ]
+            serverSignatureAlgorithm : 2052
             signedCertificateTimestampList : [
             ]
             subjectName : 
@@ -201,12 +203,14 @@ Network.onResponseReceived{
             certificateId : 0
             certificateTransparencyCompliance : unknown
             cipher : AES_128_GCM
+            encryptedClientHello : false
             issuer : 
             keyExchange : 
             keyExchangeGroup : X25519
             protocol : TLS 1.3
             sanList : [
             ]
+            serverSignatureAlgorithm : 2052
             signedCertificateTimestampList : [
             ]
             subjectName : 

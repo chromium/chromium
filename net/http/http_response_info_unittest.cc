@@ -196,6 +196,24 @@ TEST_F(HttpResponseInfoTest, PeerSignatureAlgorithm) {
   EXPECT_EQ(0x0804, restored_response_info.ssl_info.peer_signature_algorithm);
 }
 
+// Test that encrypted_client_hello is preserved.
+TEST_F(HttpResponseInfoTest, EncryptedClientHello) {
+  response_info_.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  {
+    net::HttpResponseInfo restored_response_info;
+    PickleAndRestore(response_info_, &restored_response_info);
+    EXPECT_FALSE(restored_response_info.ssl_info.encrypted_client_hello);
+  }
+
+  response_info_.ssl_info.encrypted_client_hello = true;
+  {
+    net::HttpResponseInfo restored_response_info;
+    PickleAndRestore(response_info_, &restored_response_info);
+    EXPECT_TRUE(restored_response_info.ssl_info.encrypted_client_hello);
+  }
+}
+
 // Tests that cache entries loaded over SSLv3 (no longer supported) are dropped.
 TEST_F(HttpResponseInfoTest, FailsInitFromPickleWithSSLV3) {
   // A valid certificate is needed for ssl_info.is_valid() to be true.
