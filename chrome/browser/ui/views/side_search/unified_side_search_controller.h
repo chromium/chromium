@@ -71,6 +71,9 @@ class UnifiedSideSearchController
   // Creates a ImageModel for the current DSE's favicon.
   ui::ImageModel GetSideSearchIcon();
 
+  // Creates a string representing the side search side panel's hosted content.
+  std::u16string GetSideSearchName() const;
+
   // Clears the side contents for the currently active tab in this browser
   // window and the view in the side search registry.
   void ClearSideContentsCache();

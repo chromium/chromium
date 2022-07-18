@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/gfx/image/image_skia.h"
@@ -115,6 +116,20 @@ ui::ImageModel UnifiedSideSearchController::GetSideSearchIcon() {
              : std::move(icon_image);
 }
 
+std::u16string UnifiedSideSearchController::GetSideSearchName() const {
+  auto* tab_contents_helper =
+      SideSearchTabContentsHelper::FromWebContents(web_contents());
+  if (!tab_contents_helper)
+    return std::u16string();
+
+  auto last_search_url = tab_contents_helper->last_search_url();
+  return last_search_url
+             ? url_formatter::
+                   FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                       last_search_url.value())
+             : std::u16string();
+}
+
 void UnifiedSideSearchController::OpenSidePanel() {
   auto* browser_view = GetBrowserView();
   if (browser_view) {
@@ -194,9 +209,9 @@ void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
   auto* current_entry =
       registry->GetEntryForId(SidePanelEntry::Id::kSideSearch);
   if (!current_entry && is_available) {
-    // TODO(yuhengh): Replace with default search engine name.
     auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kSideSearch, u"Side Search", GetSideSearchIcon(),
+        SidePanelEntry::Id::kSideSearch, GetSideSearchName(),
+        GetSideSearchIcon(),
         base::BindRepeating(&UnifiedSideSearchController::GetSideSearchView,
                             base::Unretained(this)));
     entry->AddObserver(this);
