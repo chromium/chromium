@@ -311,12 +311,18 @@ class SettingsBluetoothDevicesSubpageElement extends
   }
 
   /**
+   * Determines if we allow access to the Saved Devices page. Unlike the Fast
+   * Pair toggle, the device does not need to support Fast Pair because a device
+   * could be saved to the user's account from a different device but managed on
+   * this device. However Fast Pair must be enabled to confirm we have all Fast
+   * Pair (and Saved Device) related code working on the device.
    * @return {boolean}
    * @private
    */
   isFastPairSavedDevicesRowVisible_() {
-    return this.isFastPairSupportedByDevice_ &&
-        loadTimeData.getBoolean('enableSavedDevicesFlag');
+    return loadTimeData.getBoolean('enableFastPairFlag') &&
+        loadTimeData.getBoolean('enableSavedDevicesFlag') &&
+        !loadTimeData.getBoolean('isGuest');
   }
 
   /**

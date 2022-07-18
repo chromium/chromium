@@ -72,31 +72,6 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertTrue(!!bluetoothDevicesSubpage);
   });
 
-  test('Only show saved devices link row when flag is true', async function() {
-    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
-    await init();
-
-    bluetoothDevicesSubpage.remove();
-    // Set flag to True and check that the row is visible.
-    loadTimeData.overrideValues({'enableSavedDevicesFlag': true});
-    bluetoothDevicesSubpage =
-        document.createElement('os-settings-bluetooth-devices-subpage');
-    document.body.appendChild(bluetoothDevicesSubpage);
-    flush();
-    assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
-        '#savedDevicesRowLink')));
-
-    bluetoothDevicesSubpage.remove();
-    // Set flag to False and check that the row is not visible.
-    loadTimeData.overrideValues({'enableSavedDevicesFlag': false});
-    bluetoothDevicesSubpage =
-        document.createElement('os-settings-bluetooth-devices-subpage');
-    document.body.appendChild(bluetoothDevicesSubpage);
-    flush();
-    assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
-        '#savedDevicesRowLink')));
-  });
-
   test('Toggle button creation and a11y', async function() {
     bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
     await init();
@@ -331,5 +306,35 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Enable Fast Pair toggle should be focused for settingId=105.');
+  });
+
+  test('Show saved devices link row when flag is true', async function() {
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    loadTimeData.overrideValues({isGuest: false, enableSavedDevicesFlag: true});
+    await init();
+
+    assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
+        '#savedDevicesRowLink')));
+  });
+
+  test(
+      'Do not show saved devices link row when flag is false',
+      async function() {
+        bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+        loadTimeData.overrideValues(
+            {isGuest: false, enableSavedDevicesFlag: false});
+        await init();
+
+        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
+            '#savedDevicesRowLink')));
+      });
+
+  test('Do not show saved devices link row in guest mode', async function() {
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    loadTimeData.overrideValues({isGuest: true, enableSavedDevicesFlag: true});
+    await init();
+
+    assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
+        '#savedDevicesRowLink')));
   });
 });
