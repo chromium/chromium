@@ -169,7 +169,7 @@ RUNTIME_DIR_TEMPLATE = "/run/user/%s"
 g_desktop = None
 g_host_hash = hashlib.md5(socket.gethostname().encode()).hexdigest()
 
-def gen_xorg_config(sizes):
+def gen_xorg_config():
   return (
       # This causes X to load the default GLX module, even if a proprietary one
       # is installed in a different directory.
@@ -206,16 +206,6 @@ def gen_xorg_config(sizes):
       '\n'
       'Section "Monitor"\n'
       '  Identifier "Chrome Remote Desktop Monitor"\n'
-      # The horizontal sync rate was calculated from the vertical refresh rate
-      # and the modline template:
-      # (33000 (vert total) * 0.1 Hz = 3.3 kHz)
-      '  HorizSync   3.3\n' # kHz
-      # The vertical refresh rate was chosen both to be low enough to have an
-      # acceptable dot clock at high resolutions, and then bumped down a little
-      # more so that in the unlikely event that a low refresh rate would break
-      # something, it would break obviously.
-      '  VertRefresh 0.1\n' # Hz
-      '{modelines}'
       'EndSection\n'
       '\n'
       'Section "Screen"\n'
@@ -226,7 +216,6 @@ def gen_xorg_config(sizes):
       '  SubSection "Display"\n'
       '    Viewport 0 0\n'
       '    Depth 24\n'
-      '    Modes {modes}\n'
       '  EndSubSection\n'
       'EndSection\n'
       '\n'
@@ -235,21 +224,6 @@ def gen_xorg_config(sizes):
       '  Screen       "Chrome Remote Desktop Screen"\n'
       '  InputDevice  "Chrome Remote Desktop Input"\n'
       'EndSection\n'.format(
-          # This Modeline template allows resolutions up to the dummy driver's
-          # max supported resolution of 32767x32767 without additional
-          # calculation while meeting the driver's dot clock requirements. Note
-          # that VP8 (and thus the amount of video RAM chosen) only support a
-          # maximum resolution of 16384x16384.
-          # 32767x32767 should be possible if we switch fully to VP9 and
-          # increase the video RAM to 4GiB.
-          # The dot clock was calculated to match the VirtRefresh chosen above.
-          # (33000 * 33000 * 0.1 Hz = 108.9 MHz)
-          # Changes this line require matching changes to HorizSync and
-          # VertRefresh.
-          modelines="".join(
-              '  Modeline "{0}x{1}" 108.9 {0} 32998 32999 33000 '
-              '{1} 32998 32999 33000\n'.format(w, h) for w, h in sizes),
-          modes=" ".join('"{0}x{1}"'.format(w, h) for w, h in sizes),
           video_ram=XORG_DUMMY_VIDEO_RAM))
 
 
@@ -1102,12 +1076,11 @@ class XDesktop(Desktop):
     with tempfile.NamedTemporaryFile(
         prefix="chrome_remote_desktop_",
         suffix=".conf", delete=False) as config_file:
-      config_file.write(gen_xorg_config(self.sizes).encode())
+      config_file.write(gen_xorg_config().encode())
 
-    # We can't support exact resize with the current Xorg dummy driver.
-    self.server_supports_exact_resize = False
-    # But dummy does support RandR 1.0.
+    self.server_supports_exact_resize = True
     self.server_supports_randr = True
+    self.randr_add_sizes = True
     self.xorg_conf = config_file.name
 
     xorg_binary = "/usr/lib/xorg/Xorg";
@@ -1211,7 +1184,8 @@ class XDesktop(Desktop):
                 str(height), "0", "0", "0"]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
-        args = ["xrandr", "--addmode", "screen", label]
+        output_name = "DUMMY0" if USE_XORG_ENV_VAR in os.environ else "screen"
+        args = ["xrandr", "--addmode", output_name, label]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
 
