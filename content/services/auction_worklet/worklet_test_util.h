@@ -58,6 +58,15 @@ void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                               const std::string content,
                               uint32_t data_version);
 
+// Adds a bidder worklet JSON response, optionally with data version and format
+// version headers. Defaults to including a header indicating format version 2.
+void AddBidderJsonResponse(
+    network::TestURLLoaderFactory* url_loader_factory,
+    const GURL& url,
+    const std::string content,
+    absl::optional<uint32_t> data_version = absl::nullopt,
+    const absl::optional<std::string>& format_version_string = "2");
+
 // Adds a task to `v8_helper->v8_runner()` that blocks until the return value
 // is signaled. The returned event will be deleted afterwards.
 base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);

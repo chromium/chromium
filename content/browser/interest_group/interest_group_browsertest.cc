@@ -5859,9 +5859,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
                 {{{GURL("https://should-not-be-returned/"),
                    /*metadata=*/absl::nullopt}}}));
 
-  // This is the primary interest group that wins the auction because
-  // bidding_argument_validator.js bids 2, whereas bidding_logic.js bids 1, and
-  // decision_logic.js just returns the bid as the rank -- highest rank wins.
   GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
   url::Origin bidder_origin = url::Origin::Create(bidder_url);
@@ -5921,6 +5918,86 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
                           kSellerHost,
                           "/interest_group/trusted_scoring_signals.json"),
                       bidder_origin, second_bidder_origin))
+               .ExtractString()),
+      &observer);
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+}
+
+// Same as above test, but leaves out the extra bidder and uses the older
+// version 1 bidding signals format.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ValidateWorkletParametersWithBiddingSignalsV1) {
+  // Use different hostnames for each participant, since
+  // `trusted_bidding_signals` only checks the hostname of certain parameters.
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kSellerHost[] = "b.test";
+  constexpr char kTopFrameHost[] = "c.test";
+
+  // This is the primary interest group that wins the auction because
+  // bidding_argument_validator.js bids 2, whereas bidding_logic.js bids 1, and
+  // decision_logic.js just returns the bid as the rank -- highest rank wins.
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+
+  ASSERT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/bidder_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL(
+              kBidderHost, "/interest_group/bidding_argument_validator.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/
+          https_server_->GetURL(kBidderHost,
+                                "/not_found_daily_update_url.json"),
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL(
+              kBidderHost, "/interest_group/trusted_bidding_signals_v1.json"),
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             R"({"ad":"metadata","here":[1,2,3]})"}}},
+          /*ad_components=*/
+          {{{GURL("https://example.com/render-component"),
+             /*metadata=*/absl::nullopt}}})));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kTopFrameHost, "/echo")));
+  GURL seller_script_url = https_server_->GetURL(
+      kSellerHost, "/interest_group/decision_argument_validator.js");
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(EvalJs(shell(),
+                  JsReplace(
+                      R"(
+(async function() {
+  return await navigator.runAdAuction({
+    seller: $1,
+    decisionLogicUrl: $2,
+    trustedScoringSignalsUrl: $3,
+    interestGroupBuyers: [$4, $5],
+    auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
+    sellerSignals: {signals: 'from', the: ['seller']},
+    sellerTimeout: 200,
+    perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
+    perBuyerTimeouts: {$4: 110, $5: 120, '*': 150}
+  });
+})())",
+                      url::Origin::Create(seller_script_url), seller_script_url,
+                      https_server_->GetURL(
+                          kSellerHost,
+                          "/interest_group/trusted_scoring_signals.json"),
+                      bidder_origin,
+                      // Validation scripts expect https://d.test to also be
+                      // listed as a bidder.
+                      https_server_->GetOrigin("d.test")))
                .ExtractString()),
       &observer);
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());

@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -1687,21 +1688,23 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
 
   // 3) The trusted bidding signals are loaded.
   std::string keys;
-  std::string json;
+  base::Value::Dict keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    if (i != 0) {
+    if (i != 0)
       keys.append(",");
-      json.append(",");
-    }
     keys.append(base::NumberToString(i));
-    json.append(base::StringPrintf(R"("%zu":%zu)", i, i + 1));
+    keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
-  AddVersionedJsonResponse(
+  base::Value::Dict signals_dict;
+  signals_dict.Set("keys", std::move(keys_dict));
+  std::string signals_json;
+  base::JSONWriter::Write(signals_dict, &signals_json);
+  AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(base::StringPrintf(
           "https://signals.test/?hostname=top.window.test&keys=%s",
           keys.c_str())),
-      base::StringPrintf("{%s}", json.c_str()), 10u);
+      signals_json, /*data_version=*/10u);
 
   // The worklets can now generate bids.
   run_loop.Run();
@@ -1777,21 +1780,23 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
 
   // 2) The trusted bidding signals are loaded.
   std::string keys;
-  std::string json;
+  base::Value::Dict keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    if (i != 0) {
+    if (i != 0)
       keys.append(",");
-      json.append(",");
-    }
     keys.append(base::NumberToString(i));
-    json.append(base::StringPrintf(R"("%zu":%zu)", i, i + 1));
+    keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
-  AddVersionedJsonResponse(
+  base::Value::Dict signals_dict;
+  signals_dict.Set("keys", std::move(keys_dict));
+  std::string signals_json;
+  base::JSONWriter::Write(signals_dict, &signals_json);
+  AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(base::StringPrintf(
           "https://signals.test/?hostname=top.window.test&keys=%s",
           keys.c_str())),
-      base::StringPrintf("{%s}", json.c_str()), 42u);
+      signals_json, /*data_version=*/42u);
 
   // No callbacks should have been invoked, since the worklet script hasn't
   // loaded yet.
@@ -1881,21 +1886,23 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
 
   // 3) The trusted bidding signals are loaded.
   std::string keys;
-  std::string json;
+  base::Value::Dict keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    if (i != 0) {
+    if (i != 0)
       keys.append(",");
-      json.append(",");
-    }
     keys.append(base::NumberToString(i));
-    json.append(base::StringPrintf(R"("%zu":%zu)", i, i + 1));
+    keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
-  AddVersionedJsonResponse(
+  base::Value::Dict signals_dict;
+  signals_dict.Set("keys", std::move(keys_dict));
+  std::string signals_json;
+  base::JSONWriter::Write(signals_dict, &signals_json);
+  AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(base::StringPrintf(
           "https://signals.test/?hostname=top.window.test&keys=%s",
           keys.c_str())),
-      base::StringPrintf("{%s}", json.c_str()), 22u);
+      signals_json, /*data_version=*/22u);
 
   // The worklets can now generate bids.
   run_loop.Run();
@@ -1976,11 +1983,11 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
 
   // 3) The trusted bidding signals are loaded.
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    AddVersionedJsonResponse(
+    AddBidderJsonResponse(
         &url_loader_factory_,
         GURL(base::StringPrintf(
             "https://signals.test/?hostname=top.window.test&keys=%zu", i)),
-        base::StringPrintf(R"({"%zu":%zu})", i, i + 1), i);
+        base::StringPrintf(R"({"keys":{"%zu":%zu}})", i, i + 1), i);
   }
 
   // The worklets can now generate bids.
@@ -2534,8 +2541,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
 
   const char kJson[] = R"(
     {
-      "key1": 1,
-      "key2": [2]
+      "keys": {
+        "key1": 1,
+        "key2": [2]
+      }
     }
   )";
 
@@ -2594,7 +2603,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
 
   // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
   // should be made. The request succeeds.
-  AddJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
@@ -2606,10 +2615,10 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
   interest_group_trusted_bidding_signals_keys_.emplace();
   interest_group_trusted_bidding_signals_keys_->push_back("key1");
-  AddVersionedJsonResponse(
+  AddBidderJsonResponse(
       &url_loader_factory_,
       GURL("https://signals.test/?hostname=top.window.test&keys=key1"),
-      R"({"key1":1})", 7u);
+      R"({"keys":{"key1":1}})", /*data_version=*/7u);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:browserSignals.dataVersion, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(R"("ad")", 7, GURL("https://response.test/"),
@@ -2639,11 +2648,11 @@ TEST_F(BidderWorkletTest, GenerateBidExperimentGroupId) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
   interest_group_trusted_bidding_signals_keys_.emplace();
   interest_group_trusted_bidding_signals_keys_->push_back("key1");
-  AddJsonResponse(
+  AddBidderJsonResponse(
       &url_loader_factory_,
       GURL("https://signals.test/?hostname=top.window.test&keys=key1"
            "&experimentGroupId=48384"),
-      R"({"key1":1})");
+      R"({"keys":{"key1":1}})");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:123, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(

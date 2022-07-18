@@ -35,9 +35,11 @@ constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
 // Common JSON used for most bidding signals tests.
 const char kBaseBiddingJson[] = R"(
   {
-    "key1": 1,
-    "key2": [2],
-    "key3": "3"
+    "keys": {
+      "key1": 1,
+      "key2": [2],
+      "key3": "3"
+    }
   }
 )";
 
@@ -111,7 +113,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
       const GURL& url,
       const std::string& response,
       const std::vector<std::string>& trusted_bidding_signals_keys) {
-    AddJsonResponse(&url_loader_factory_, url, response);
+    AddBidderJsonResponse(&url_loader_factory_, url, response);
     return FetchBiddingSignals(trusted_bidding_signals_keys);
   }
 
@@ -376,7 +378,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
   scoped_refptr<TrustedSignals::Result> signals1 =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key1,key3"),
-          R"({"key1":1,"key3":3})", kKeys1);
+          R"({"keys":{"key1":1,"key3":3}})", kKeys1);
   ASSERT_TRUE(signals1);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key1":1,"key3":3})",
@@ -385,7 +387,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
   scoped_refptr<TrustedSignals::Result> signals2 =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key2,key3"),
-          R"({"key2":[2],"key3":[3]})", kKeys2);
+          R"({"keys":{"key2":[2],"key3":[3]}})", kKeys2);
   ASSERT_TRUE(signals1);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
@@ -496,8 +498,10 @@ TEST_F(TrustedSignalsRequestManagerTest,
   ASSERT_TRUE(url_loader_factory_.IsPending(kUrl2.spec()));
 
   // Note that these responses use different values for the shared key.
-  AddJsonResponse(&url_loader_factory_, kUrl1, R"({"key1":1,"key3":3})");
-  AddJsonResponse(&url_loader_factory_, kUrl2, R"({"key2":[2],"key3":[3]})");
+  AddBidderJsonResponse(&url_loader_factory_, kUrl1,
+                        R"({"keys":{"key1":1,"key3":3}})");
+  AddBidderJsonResponse(&url_loader_factory_, kUrl2,
+                        R"({"keys":{"key2":[2],"key3":[3]}})");
 
   run_loop1.Run();
   EXPECT_FALSE(error_msg1);
@@ -611,7 +615,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   const std::vector<std::string> kKeys1{"key1", "key3"};
   const std::vector<std::string> kKeys2{"key2", "key3"};
 
-  AddJsonResponse(
+  AddBidderJsonResponse(
       &url_loader_factory_,
       GURL("https://url.test/?hostname=publisher&keys=key1,key2,key3"),
       kBaseBiddingJson);
@@ -749,9 +753,9 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneRequest) {
 
   // The request for `key1` will be cancelled before the network request is
   // created.
-  AddJsonResponse(&url_loader_factory_,
-                  GURL("https://url.test/?hostname=publisher&keys=key2"),
-                  kBaseBiddingJson);
+  AddBidderJsonResponse(&url_loader_factory_,
+                        GURL("https://url.test/?hostname=publisher&keys=key2"),
+                        kBaseBiddingJson);
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
@@ -829,7 +833,7 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
 
   // Cancel `request1` and then serve the JSON.
   request1.reset();
-  AddJsonResponse(&url_loader_factory_, kSignalsUrl, kBaseBiddingJson);
+  AddBidderJsonResponse(&url_loader_factory_, kSignalsUrl, kBaseBiddingJson);
 
   //  `request2` should still complete.
   run_loop2.Run();
@@ -892,9 +896,10 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   task_environment_.FastForwardBy(kTinyTime);
   ASSERT_EQ(1, url_loader_factory_.NumPending());
 
-  AddJsonResponse(&url_loader_factory_,
-                  GURL("https://url.test/?hostname=publisher&keys=key1,key2"),
-                  kBaseBiddingJson);
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/?hostname=publisher&keys=key1,key2"),
+      kBaseBiddingJson);
 
   run_loop1.Run();
   EXPECT_FALSE(error_msg1);
@@ -918,9 +923,9 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   EXPECT_EQ(1, url_loader_factory_.NumPending());
 
   // Complete the request.
-  AddJsonResponse(&url_loader_factory_,
-                  GURL("https://url.test/?hostname=publisher&keys=key3"),
-                  kBaseBiddingJson);
+  AddBidderJsonResponse(&url_loader_factory_,
+                        GURL("https://url.test/?hostname=publisher&keys=key3"),
+                        kBaseBiddingJson);
   run_loop3.Run();
   EXPECT_FALSE(error_msg3);
   ASSERT_TRUE(signals3);
@@ -972,9 +977,9 @@ TEST_F(TrustedSignalsRequestManagerTest,
   task_environment_.FastForwardBy(kTinyTime);
   ASSERT_EQ(1, url_loader_factory_.NumPending());
 
-  AddJsonResponse(&url_loader_factory_,
-                  GURL("https://url.test/?hostname=publisher&keys=key2"),
-                  kBaseBiddingJson);
+  AddBidderJsonResponse(&url_loader_factory_,
+                        GURL("https://url.test/?hostname=publisher&keys=key2"),
+                        kBaseBiddingJson);
 
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
@@ -1022,9 +1027,9 @@ TEST_F(TrustedSignalsRequestManagerTest,
   task_environment_.FastForwardBy(kTinyTime);
   ASSERT_EQ(1, url_loader_factory_.NumPending());
 
-  AddJsonResponse(&url_loader_factory_,
-                  GURL("https://url.test/?hostname=publisher&keys=key2"),
-                  kBaseBiddingJson);
+  AddBidderJsonResponse(&url_loader_factory_,
+                        GURL("https://url.test/?hostname=publisher&keys=key2"),
+                        kBaseBiddingJson);
 
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
@@ -1042,10 +1047,11 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/934u, v8_helper_.get());
-  AddJsonResponse(&url_loader_factory_,
-                  GURL("https://url.test/"
-                       "?hostname=publisher&keys=key1&experimentGroupId=934"),
-                  kBaseBiddingJson);
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/"
+           "?hostname=publisher&keys=key1&experimentGroupId=934"),
+      kBaseBiddingJson);
 
   base::RunLoop run_loop;
   scoped_refptr<TrustedSignals::Result> signals;

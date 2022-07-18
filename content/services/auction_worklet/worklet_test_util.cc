@@ -90,6 +90,24 @@ void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
               headers);
 }
 
+void AddBidderJsonResponse(
+    network::TestURLLoaderFactory* url_loader_factory,
+    const GURL& url,
+    const std::string content,
+    absl::optional<uint32_t> data_version,
+    const absl::optional<std::string>& format_version_string) {
+  std::string headers = kAllowFledgeHeader;
+  if (data_version)
+    headers.append(base::StringPrintf("\nData-Version: %u", *data_version));
+  if (format_version_string) {
+    headers.append(
+        base::StringPrintf("\nX-Fledge-Bidding-Signals-Format-Version:  %s",
+                           format_version_string->c_str()));
+  }
+  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
+              headers);
+}
+
 base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper) {
   auto event = std::make_unique<base::WaitableEvent>();
   base::WaitableEvent* event_handle = event.get();

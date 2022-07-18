@@ -385,9 +385,33 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     // Handle bidding signals case.
     base::UmaHistogramCounts10M(
         "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedBidding", body->size());
-    result = base::MakeRefCounted<Result>(
-        ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
-        maybe_data_version);
+    int format_version = 1;
+    std::string format_version_string;
+    if (headers &&
+        headers->GetNormalizedHeader("X-fledge-bidding-signals-format-version",
+                                     &format_version_string)) {
+      if (!base::StringToInt(format_version_string, &format_version) ||
+          (format_version != 1 && format_version != 2)) {
+        std::string error = base::StringPrintf(
+            "Rejecting load of %s due to unrecognized Format-Version header: "
+            "%s",
+            signals_url.spec().c_str(), format_version_string.c_str());
+        PostCallbackToUserThread(std::move(user_thread_task_runner),
+                                 weak_instance, nullptr, std::move(error));
+        return;
+      }
+    }
+    if (format_version == 1) {
+      result = base::MakeRefCounted<Result>(
+          ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
+          maybe_data_version);
+    } else {
+      DCHECK_EQ(format_version, 2);
+      result = base::MakeRefCounted<Result>(
+          ParseChildKeyValueMap(v8_helper.get(), v8_object, "keys",
+                                *bidding_signals_keys),
+          maybe_data_version);
+    }
   } else {
     // Handle scoring signals case.
     base::UmaHistogramCounts10M(

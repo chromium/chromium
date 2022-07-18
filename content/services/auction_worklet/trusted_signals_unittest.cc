@@ -28,9 +28,9 @@
 namespace auction_worklet {
 namespace {
 
-// Common JSON used for most bidding signals tests. Key 4 is deliberately
-// skipped.
-const char kBaseBiddingJson[] = R"(
+// Json response using bidding format version 1. Keys and values should match
+// those in kBaseBiddingJson.
+const char kBiddingJsonV1[] = R"(
   {
     "key1": 1,
     "key2": [2],
@@ -39,6 +39,22 @@ const char kBaseBiddingJson[] = R"(
     "key 6": 6,
     "key=7": 7,
     "key,8": 8
+  }
+)";
+
+// Common JSON used for most bidding signals tests using the latest bidding
+// format version (version 2).
+const char kBaseBiddingJson[] = R"(
+  {
+    "keys": {
+      "key1": 1,
+      "key2": [2],
+      "key3": null,
+      "key5": "value5",
+      "key 6": 6,
+      "key=7": 7,
+      "key,8": 8
+    }
   }
 )";
 
@@ -71,14 +87,19 @@ class TrustedSignalsTest : public testing::Test {
   ~TrustedSignalsTest() override { task_environment_.RunUntilIdle(); }
 
   // Sets the HTTP response and then fetches bidding signals and waits for
-  // completion. Returns nullptr on failure.
+  // completion. Includes response header indicating later format version ("2")
+  // by default.
   scoped_refptr<TrustedSignals::Result> FetchBiddingSignalsWithResponse(
       const GURL& url,
       const std::string& response,
       std::set<std::string> trusted_bidding_signals_keys,
       const std::string& hostname,
-      absl::optional<uint16_t> experiment_group_id) {
-    AddJsonResponse(&url_loader_factory_, url, response);
+      absl::optional<uint16_t> experiment_group_id = absl::nullopt,
+      const absl::optional<std::string>& format_version_string = "2") {
+    AddBidderJsonResponse(&url_loader_factory_, url, response,
+                          /*data_version=*/absl::nullopt,
+                          format_version_string);
+
     return FetchBiddingSignals(std::move(trusted_bidding_signals_keys),
                                hostname, experiment_group_id);
   }
@@ -285,6 +306,35 @@ TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotJson) {
             error_msg_.value());
 }
 
+TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
+  EXPECT_FALSE(FetchBiddingSignalsWithResponse(
+      GURL("https://url.test/?hostname=publisher&keys=key1"), kBaseBiddingJson,
+      {"key1"}, kHostname, /*experiment_group_id=*/absl::nullopt,
+      /*format_version_string=*/"3"));
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/ due to unrecognized Format-Version "
+      "header: 3",
+      error_msg_.value());
+
+  EXPECT_FALSE(FetchBiddingSignalsWithResponse(
+      GURL("https://url.test/?hostname=publisher&keys=key1"), kBaseBiddingJson,
+      {"key1"}, kHostname, /*experiment_group_id=*/absl::nullopt,
+      /*format_version_string=*/"0"));
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/ due to unrecognized Format-Version "
+      "header: 0",
+      error_msg_.value());
+
+  EXPECT_FALSE(FetchBiddingSignalsWithResponse(
+      GURL("https://url.test/?hostname=publisher&keys=key1"), kBaseBiddingJson,
+      {"key1"}, kHostname, /*experiment_group_id=*/absl::nullopt,
+      /*format_version_string=*/"shiny"));
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/ due to unrecognized Format-Version "
+      "header: shiny",
+      error_msg_.value());
+}
+
 TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotObject) {
   EXPECT_FALSE(FetchBiddingSignalsWithResponse(
       GURL("https://url.test/?hostname=publisher&keys=key1"), "42", {"key1"},
@@ -306,6 +356,15 @@ TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotObject) {
             error_msg_.value());
 }
 
+TEST_F(TrustedSignalsTest, BiddingSignalsExpectedEntriesNotPresent) {
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/?hostname=publisher&keys=key1"),
+          R"({"foo":4,"bar":5})", {"key1"}, kHostname);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+}
+
 TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
@@ -323,6 +382,15 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
                 signals.get(), /*render_url=*/GURL("https://foo.test/"),
                 /*ad_component_render_urls=*/{"https://bar.test/"}));
   EXPECT_FALSE(error_msg_.has_value());
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntryNotObject) {
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/?hostname=publisher&keys=key1"),
+          R"({"keys":4.1})", {"key1"}, kHostname);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
@@ -666,6 +734,70 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExperimentId) {
                                   /*render_url=*/GURL("https://foo.test/"),
                                   /*ad_component_render_urls=*/{}));
   EXPECT_FALSE(error_msg_.has_value());
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/?hostname=publisher&keys=key1,key2,key3,key5"),
+          kBiddingJsonV1, {"key1", "key2", "key3", "key5"}, kHostname,
+          /*experiment_group_id=*/absl::nullopt,
+          /*format_version_string=*/absl::nullopt);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals.get(), {"key2"}));
+  EXPECT_EQ(R"({"key3":null})", ExtractBiddingSignals(signals.get(), {"key3"}));
+  EXPECT_EQ(R"({"key5":"value5"})",
+            ExtractBiddingSignals(signals.get(), {"key5"}));
+  EXPECT_EQ(
+      R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
+      ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
+  // Only version 2 officially has a version header, but allow an explicit
+  // version of "1" to mean the first version.
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/?hostname=publisher&keys=key1,key2,key3,key5"),
+          kBiddingJsonV1, {"key1", "key2", "key3", "key5"}, kHostname,
+          /*experiment_group_id=*/absl::nullopt,
+          /*format_version_string=*/"1");
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals.get(), {"key2"}));
+  EXPECT_EQ(R"({"key3":null})", ExtractBiddingSignals(signals.get(), {"key3"}));
+  EXPECT_EQ(R"({"key5":"value5"})",
+            ExtractBiddingSignals(signals.get(), {"key5"}));
+  EXPECT_EQ(
+      R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
+      ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
+}
+
+// A V2 header with a V1 body treats all values as null (since it can't find
+// keys).
+TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/?hostname=publisher&keys=key1"),
+          kBiddingJsonV1, {"key1"}, kHostname,
+          /*experiment_group_id=*/absl::nullopt,
+          /*format_version_string=*/"2");
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+}
+
+// A V1 header (i.e., no version header) with a V2 body treats all values as
+// null (since it can't find keys).
+TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/?hostname=publisher&keys=key1"),
+          kBaseBiddingJson, {"key1"}, kHostname,
+          /*experiment_group_id=*/absl::nullopt,
+          /*format_version_string=*/absl::nullopt);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
 }
 
 }  // namespace
