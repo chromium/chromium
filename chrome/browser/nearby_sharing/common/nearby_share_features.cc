@@ -30,7 +30,7 @@ const base::Feature kNearbySharingDeviceContacts{
 
 // Enables new one-page onboarding workflow for Nearby Share.
 const base::Feature kNearbySharingOnePageOnboarding{
-    "NearbySharingOnePageOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NearbySharingOnePageOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables receiving WiFi networks using Nearby Share.
 const base::Feature kNearbySharingReceiveWifiCredentials{

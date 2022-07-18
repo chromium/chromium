@@ -516,19 +516,11 @@ suite('NearbyShare', function() {
         .click();
     await flushAsync();
     assertTrue(doesElementExist('#receiveDialog'));
-    if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
-      assertEquals(
-          'active',
-          subpage.shadowRoot.querySelector('#receiveDialog')
-              .shadowRoot.querySelector('#onboarding-one')
-              .className);
-    } else {
-      assertEquals(
-          'active',
-          subpage.shadowRoot.querySelector('#receiveDialog')
-              .shadowRoot.querySelector('#onboarding')
-              .className);
-    }
+    assertEquals(
+        'active',
+        subpage.shadowRoot.querySelector('#receiveDialog')
+            .shadowRoot.querySelector('#onboarding-one')
+            .className);
   });
 
   test('feature toggle UI changes', function() {

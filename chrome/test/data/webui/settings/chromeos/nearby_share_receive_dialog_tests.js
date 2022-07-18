@@ -5,7 +5,7 @@
 import {setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertFalse} from '../../chai_assert.js';
 import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
 import {isChildVisible, waitAfterNextRender} from '../../test_util.js';
@@ -200,74 +200,11 @@ suite('NearbyShare', function() {
       dialog.remove();
     });
 
-    test('when disabled, onboarding is shown first', async function() {
-      dialog.showHighVisibilityPage();
-      await waitAfterNextRender(dialog);
-
-      if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
-        assertTrue(isVisible('nearby-onboarding-one-page'));
-        // Select visibility button and advance to the next page.
-        dialog.shadowRoot.querySelector('nearby-onboarding-one-page')
-            .shadowRoot.querySelector('#visibilityButton')
-            .click();
-      } else {
-        assertTrue(isVisible('nearby-onboarding-page'));
-        // Advance to the next page.
-        getButton('nearby-onboarding-page', '#actionButton').click();
-      }
-
-      await waitAfterNextRender(dialog);
-
-      assertTrue(isVisible('nearby-visibility-page'));
-      // Advance to the next page.
-      fakeContactManager.completeDownload();
-      selectAllContacts();
-      getButton('nearby-visibility-page', '#actionButton').click();
-
-      await waitAfterNextRender(dialog);
-
-      assertTrue(dialog.settings.enabled);
-      assertTrue(isVisible('nearby-share-high-visibility-page'));
-    });
-
-    test('when showing onboarding, close when complete.', async function() {
-      dialog.showOnboarding();
-      await waitAfterNextRender(dialog);
-
-      if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
-        assertTrue(isVisible('nearby-onboarding-one-page'));
-        // Select visibility button and advance to the next page.
-        dialog.shadowRoot.querySelector('nearby-onboarding-one-page')
-            .shadowRoot.querySelector('#visibilityButton')
-            .click();
-      } else {
-        assertTrue(isVisible('nearby-onboarding-page'));
-        // Advance to the next page.
-        getButton('nearby-onboarding-page', '#actionButton').click();
-      }
-
-      await waitAfterNextRender(dialog);
-
-      assertTrue(isVisible('nearby-visibility-page'));
-      // This should close the dialog.
-      fakeContactManager.completeDownload();
-      selectAllContacts();
-      getButton('nearby-visibility-page', '#actionButton').click();
-
-      assertTrue(dialog.closing_);
-
-      await waitAfterNextRender(dialog);
-
-      assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
-    });
-
     test('when disabled, one-page onboarding is shown first', async function() {
-      loadTimeData.overrideValues({
-        'isOnePageOnboardingEnabled': true,
-      });
       dialog.showHighVisibilityPage();
       await waitAfterNextRender(dialog);
 
+      assertFalse(isVisible('nearby-onboarding-page'));
       assertTrue(isVisible('nearby-onboarding-one-page'));
       // Finish onboarding
       getButton('nearby-onboarding-one-page', '#actionButton').click();
@@ -282,12 +219,10 @@ suite('NearbyShare', function() {
     });
 
     test('when showing onboarding, close when complete.', async function() {
-      loadTimeData.overrideValues({
-        'isOnePageOnboardingEnabled': true,
-      });
       dialog.showOnboarding();
       await waitAfterNextRender(dialog);
 
+      assertFalse(isVisible('nearby-onboarding-page'));
       assertTrue(isVisible('nearby-onboarding-one-page'));
       // Select visibility button and advance to the next page.
       dialog.shadowRoot.querySelector('nearby-onboarding-one-page')
