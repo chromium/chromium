@@ -81,7 +81,7 @@ void CreateDictionaryForest(
 
 }  // namespace
 
-std::vector<base::Value> SerializeHostDescriptions(
+base::Value::List SerializeHostDescriptions(
     std::vector<HostDescriptionNode> hosts,
     base::StringPiece child_key) {
   // |representations| must outlive |children| and |roots|, which contain
@@ -92,10 +92,10 @@ std::vector<base::Value> SerializeHostDescriptions(
 
   CreateDictionaryForest(std::move(hosts), &children, &roots, &representations);
 
-  std::vector<base::Value> result;
+  base::Value::List result;
   result.reserve(roots.size());
   for (auto* root : roots) {
-    result.push_back(Serialize(child_key, root, children));
+    result.Append(Serialize(child_key, root, children));
   }
   return result;
 }

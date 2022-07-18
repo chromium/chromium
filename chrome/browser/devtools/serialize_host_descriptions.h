@@ -22,7 +22,7 @@ struct HostDescriptionNode {
 // producing a list of representations. The representation contains a list of
 // dictionaries for each root in host, and has dictionaries of children
 // injected into a list keyed |child_key| in the parent's dictionary.
-std::vector<base::Value> SerializeHostDescriptions(
+base::Value::List SerializeHostDescriptions(
     std::vector<HostDescriptionNode> hosts,
     base::StringPiece child_key);
 
