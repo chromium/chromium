@@ -1682,44 +1682,11 @@ Your Google account may have other forms of browsing history like searches and a
         </message>
 
       <!-- Download later -->
-      <message name="IDS_DOWNLOAD_LATER_DIALOG_TITLE" desc="Title of the download later dialog that let the user to choose the time to download.">
-        Download later instead?
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_DIALOG_SUBTITLE" desc="Subtitle of the download later dialog that let the user to choose the time to download.">
-        You'll see a notification when this file is ready
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_DOWNLOAD_NOW_TEXT" desc="The text for the radio button to trigger the download now in download later dialog.">
-        Now
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_EDIT_LOCATION" desc="The text in the download later dialog that can be clicked to edit download location.">
-        Your file will be saved to <ph name="BEGIN_BOLD">&lt;b&gt;</ph><ph name="DIRECTORY">%1$s<ex>Downloads</ex></ph><ph name="END_BOLD">&lt;/b&gt;</ph>. <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Edit<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
-      </message>
       <message name="IDS_DOWNLOAD_DATE_TIME_PICKER_NEXT_TEXT" desc="The text for the positive button of the download date time picker dialog.">
         Next
       </message>
-      <message name="IDS_DOWNLOAD_LATER_ON_WIFI_TEXT" desc="The text for the radio button to trigger the download on WIFI in download later dialog.">
-        On Wi-Fi
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_PICK_TIME_TEXT" desc="The text for the radio button to select the download time in download later dialog.">
-        Pick date &amp; time
-      </message>
       <message name="IDS_DOWNLOAD_LATER_PROMPT_ENABLED_TITLE" desc="A setting text to ask whether to show a dialog about when to download.">
         Ask when to save files
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_SLOW_NETWORK_SUBTITLE" desc="A subtitle in the download later dialog to inform the user about slow network connection.">
-        Your <ph name="CONNECTION_TYPE">%1$s<ex>2G</ex></ph> connection might slow down your download
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_2G_CONNECTION" desc="2G connection type.">
-        2G
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_BLUETOOTH_CONNECTION" desc="Bluetooth connection type.">
-        Bluetooth
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_LARGE_FILE_SUBTITLE" desc="A subtitle in the download later dialog to inform the user about large download file size.">
-        This file is large (<ph name="FILE_SIZE">%1$s<ex>300MB</ex></ph>)
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text of positive button on the download later dialog.">
-        Done
       </message>
 
       <!-- Downloads location -->
