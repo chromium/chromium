@@ -242,7 +242,7 @@ absl::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
   return absl::nullopt;
 }
 
-absl::optional<bool> ConnectorsManager::GetBypassJustificationRequired(
+bool ConnectorsManager::GetBypassJustificationRequired(
     AnalysisConnector connector,
     const std::string& tag) {
   if (IsConnectorEnabled(connector)) {
@@ -256,7 +256,7 @@ absl::optional<bool> ConnectorsManager::GetBypassJustificationRequired(
           .GetBypassJustificationRequired(tag);
     }
   }
-  return absl::nullopt;
+  return false;
 }
 
 std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(

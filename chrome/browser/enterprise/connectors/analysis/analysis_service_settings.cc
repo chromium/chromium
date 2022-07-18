@@ -204,7 +204,7 @@ absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
   return element->second.custom_message.learn_more_url;
 }
 
-absl::optional<bool> AnalysisServiceSettings::GetBypassJustificationRequired(
+bool AnalysisServiceSettings::GetBypassJustificationRequired(
     const std::string& tag) {
   return tags_.find(tag) != tags_.end() && tags_.at(tag).requires_justification;
 }

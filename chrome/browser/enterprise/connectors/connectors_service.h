@@ -54,15 +54,22 @@ class ConnectorsService : public KeyedService {
   bool IsConnectorEnabled(FileSystemConnector connector) const;
 
   bool DelayUntilVerdict(AnalysisConnector connector);
+
+  // Gets custom message if set by the admin.
   absl::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
                                                   const std::string& tag);
+
+  // Gets custom learn more URL if provided by the admin.
   absl::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
                                        const std::string& tag);
-  absl::optional<bool> GetBypassJustificationRequired(
-      AnalysisConnector connector,
-      const std::string& tag);
-  bool HasCustomInfoToDisplay(AnalysisConnector connector,
-                              const std::string& tag);
+
+  // Returns true if the admin enabled Bypass Justification.
+  bool GetBypassJustificationRequired(AnalysisConnector connector,
+                                      const std::string& tag);
+
+  // Returns true if the admin has opted into custom message, learn more URL or
+  // letting the user provide bypass justifications in an input dialog.
+  bool HasExtraUiToDisplay(AnalysisConnector connector, const std::string& tag);
 
   std::vector<std::string> GetAnalysisServiceProviderNames(
       AnalysisConnector connector);
