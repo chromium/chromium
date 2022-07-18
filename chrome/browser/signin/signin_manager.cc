@@ -189,6 +189,8 @@ void SigninManager::Shutdown() {
   identity_manager_ = nullptr;
 }
 
+// Lacros does not use cookies to compute the unconsented primary account.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void SigninManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // This is needed for the case where the user chooses to start syncing
@@ -210,6 +212,7 @@ void SigninManager::OnPrimaryAccountChanged(
       FROM_HERE, base::BindOnce(&SigninManager::UpdateUnconsentedPrimaryAccount,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void SigninManager::OnEndBatchOfRefreshTokenStateChanges() {
   UpdateUnconsentedPrimaryAccount();

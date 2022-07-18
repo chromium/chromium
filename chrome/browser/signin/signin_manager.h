@@ -86,8 +86,10 @@ class SigninManager : public KeyedService,
   void Shutdown() override;
 
   // signin::IdentityManager::Observer implementation.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnEndBatchOfRefreshTokenStateChanges() override;
   void OnRefreshTokensLoaded() override;
   void OnAccountsInCookieUpdated(
