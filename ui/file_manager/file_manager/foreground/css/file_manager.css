@@ -1358,7 +1358,7 @@ body.check-select #read-only-indicator {
 .list-view #empty-folder > .image {
   /* The list view has a .table-header at the top, the margin-top should also
   cover that, hence the desired margin plus the .table-header height. */
-  margin-top: calc(64px + 48px);
+  margin-top: calc(64px + 57px);
 }
 
 #empty-folder > .label {
@@ -1444,16 +1444,7 @@ body.files-ng .banner-close {
      fully visible. */
   box-sizing: border-box;
   overflow-y: auto;
-  padding-bottom: 16px;
-  padding-inline-end: 2px;
-  padding-inline-start: 11px;
-  padding-top: 12px;
   width: 100%;
-}
-
-body.files-ng .thumbnail-grid {
-  padding-inline-end: 20px;
-  padding-inline-start: 16px;
 }
 
 body.files-ng grid .grid-title {
@@ -1961,7 +1952,8 @@ li[renaming=''] .badge {
   color: var(--cros-text-color-secondary);
   flex: none;
   font-family: 'Roboto Medium';
-  height: 48px;
+  /* The desired height plus the border bottom. */
+  height: calc(56px + 1px);
   line-height: 20px;
 }
 
@@ -2241,7 +2233,8 @@ body.files-ng #list-container .table-header-cell:first-child {
 }
 
 body.files-ng .table-header-cell {
-  padding-bottom: 16px;
+  padding-bottom: 12px;
+  padding-top: 12px;
 }
 
 html:not(.pointer-active) body.files-ng .table-header-cell,
@@ -2285,7 +2278,6 @@ body.files-ng .table-label-container {
   align-items: center;
   display: flex;
   height: 32px;
-  padding-top: 8px;
 }
 
 /* Text in the column header */
@@ -2328,7 +2320,7 @@ body.files-ng .table-row-cell > * {
 body.files-ng .table-header-splitter  {
   background: none;
   height: 32px;
-  margin-top: 8px;
+  margin-top: 12px;
   width: auto;
 }
 
