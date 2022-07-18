@@ -28,7 +28,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/app_types.h"
-#include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
+#include "chrome/browser/ui/ash/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #endif

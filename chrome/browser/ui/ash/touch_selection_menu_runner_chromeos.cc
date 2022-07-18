@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
+#include "chrome/browser/ui/ash/touch_selection_menu_runner_chromeos.h"
 
 #include <utility>
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/views/touch_selection_menu_chromeos.h"
+#include "chrome/browser/ui/ash/touch_selection_menu_chromeos.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window.h"
 #include "ui/base/layout.h"
 #include "ui/display/display.h"
@@ -60,6 +63,15 @@ bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
       base::UTF16ToUTF8(client->GetSelectedText());
   if (converted_text.empty())
     return false;
+
+  // Some options like 'Cut' and 'Copy' can be accessed even during login
+  // screen, however ARC shouldn't be able to starts apps during that state.
+  const ash::SessionControllerImpl* controller =
+      ash::Shell::Get()->session_controller();
+  if (controller->IsScreenLocked() ||
+      controller->GetSessionState() != session_manager::SessionState::ACTIVE) {
+    return false;
+  }
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
