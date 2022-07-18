@@ -2012,18 +2012,17 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
 
   MarkIfStale();
 
+  // Global `this` protecter.
+  // callbacks initiated by this function sometimes reduce refcnt to 0
+  // to make this instance freed.
+  scoped_refptr<ServiceWorkerVersion> protect_this(this);
+
   // Stopping the worker hasn't finished within a certain period.
   if (GetTickDuration(stop_time_) > kStopWorkerTimeout) {
     DCHECK_EQ(EmbeddedWorkerStatus::STOPPING, running_status());
     ReportError(blink::ServiceWorkerStatusCode::kErrorTimeout,
                 "DETACH_STALLED_IN_STOPPING");
 
-    // Detach the worker. Remove |this| as a listener first; otherwise
-    // OnStoppedInternal might try to restart before the new worker
-    // is created. Also, protect |this|, since swapping out the
-    // EmbeddedWorkerInstance could destroy our ServiceWorkerHost which could in
-    // turn destroy |this|.
-    scoped_refptr<ServiceWorkerVersion> protect_this(this);
     embedded_worker_->RemoveObserver(this);
     embedded_worker_->Detach();
     embedded_worker_ = std::make_unique<EmbeddedWorkerInstance>(this);
@@ -2050,7 +2049,6 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
     DCHECK(running_status() == EmbeddedWorkerStatus::STARTING ||
            running_status() == EmbeddedWorkerStatus::STOPPING)
         << static_cast<int>(running_status());
-    scoped_refptr<ServiceWorkerVersion> protect(this);
     FinishStartWorker(blink::ServiceWorkerStatusCode::kErrorTimeout);
     if (running_status() == EmbeddedWorkerStatus::STARTING)
       embedded_worker_->Stop();
@@ -2059,17 +2057,22 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
 
   // Requests have not finished before their expiration.
   bool stop_for_timeout = false;
-  auto timeout_iter = request_timeouts_.begin();
-  while (timeout_iter != request_timeouts_.end()) {
+  std::set<InflightRequestTimeoutInfo> request_timeouts;
+  request_timeouts.swap(request_timeouts_);
+  auto timeout_iter = request_timeouts.begin();
+  while (timeout_iter != request_timeouts.end()) {
     const InflightRequestTimeoutInfo& info = *timeout_iter;
-    if (!RequestExpired(info.expiration))
+    if (!RequestExpired(info.expiration)) {
       break;
+    }
     if (MaybeTimeoutRequest(info)) {
       stop_for_timeout =
           stop_for_timeout || info.timeout_behavior == KILL_ON_TIMEOUT;
     }
-    timeout_iter = request_timeouts_.erase(timeout_iter);
+    timeout_iter = request_timeouts.erase(timeout_iter);
   }
+  DCHECK(request_timeouts_.empty());
+  request_timeouts_.swap(request_timeouts);
   if (stop_for_timeout && running_status() != EmbeddedWorkerStatus::STOPPING)
     embedded_worker_->Stop();
 
