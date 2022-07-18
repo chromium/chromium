@@ -205,11 +205,6 @@ vars = {
   # By default, download the fuchsia images from the fuchsia GCS bucket.
   'fuchsia_images_bucket': 'fuchsia',
 
-  # Download the fuchsia sdk in GCS using this path as a prefix. The prefix
-  # should follow the format |gs://{bucket}/development/{sdk_hash}/sdk|
-  'fuchsia_sdk_gcs_tarball_prefix': Str(''),
-  'fuchsia_sdk_from_gcs': '"{fuchsia_sdk_gcs_tarball_prefix}" != ""',
-
   # Default to the empty board. Desktop Chrome OS builds don't need cros SDK
   # dependencies. Other Chrome OS builds should always define this explicitly.
   'cros_boards': Str(''),
@@ -1316,7 +1311,7 @@ deps = {
               'version': Var('fuchsia_version'),
           },
       ],
-      'condition': 'checkout_fuchsia and not fuchsia_sdk_from_gcs',
+      'condition': 'checkout_fuchsia',
       'dep_type': 'cipd',
   },
 
@@ -4513,11 +4508,10 @@ hooks = [
   {
     'name': 'Download Fuchsia SDK from GCS',
     'pattern': '.',
-    'condition': 'checkout_fuchsia and fuchsia_sdk_from_gcs',
+    'condition': 'checkout_fuchsia',
     'action': [
       'python3',
       'src/build/fuchsia/override_sdk.py',
-      '--gcs-tarball-prefix={fuchsia_sdk_gcs_tarball_prefix}',
     ],
   },
 

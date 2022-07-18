@@ -8,6 +8,7 @@
 
 import argparse
 import logging
+import os
 import platform
 import sys
 
@@ -39,11 +40,6 @@ def main():
                       '-v',
                       action='store_true',
                       help='Enable debug-level logging.')
-  parser.add_argument(
-      '--gcs-tarball-prefix',
-      type=str,
-      help='The Google Cloud Storage tarball prefix which sets the '
-      'bucket and the hash information for the SDK download.')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -55,10 +51,19 @@ def main():
     logging.warning('Fuchsia SDK is not supported on this platform.')
     return 0
 
+  sdk_override = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
+
+  # Exit if there is no override file.
+  if not os.path.isfile(sdk_override):
+    return 0
+
+  with open(sdk_override, 'r') as f:
+    gcs_tarball_prefix = f.read()
+
   # Always re-download the SDK.
   logging.info('Downloading GN SDK...')
   MakeCleanDirectory(SDK_ROOT)
-  DownloadAndUnpackFromCloudStorage(_GetTarballPath(args.gcs_tarball_prefix),
+  DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),
                                     SDK_ROOT)
   return 0
 
