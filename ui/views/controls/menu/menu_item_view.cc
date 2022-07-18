@@ -12,6 +12,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
@@ -164,8 +165,10 @@ void MenuItemView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   // Whether the selection is painted may change based on the number of
   // children.
-  if (details.parent == this)
+  if (details.parent == this &&
+      update_selection_based_state_in_view_herarchy_changed_) {
     UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
+  }
 }
 
 std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
@@ -552,13 +555,22 @@ void MenuItemView::SetIcon(const ui::ImageModel& icon) {
 }
 
 void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
-  if (icon_view_) {
-    RemoveChildViewT(icon_view_.get());
-    icon_view_ = nullptr;
+  {
+    // See comment in `update_selection_based_state_in_view_herarchy_changed_`
+    // as to why setting the field and explicitly calling
+    // UpdateSelectionBasedStateIfChanged() is necessary.
+    base::AutoReset setter(
+        &update_selection_based_state_in_view_herarchy_changed_, false);
+    if (icon_view_) {
+      RemoveChildViewT(icon_view_.get());
+      icon_view_ = nullptr;
+    }
+
+    if (icon_view)
+      icon_view_ = AddChildView(std::move(icon_view));
   }
 
-  if (icon_view)
-    icon_view_ = AddChildView(std::move(icon_view));
+  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
 
   InvalidateLayout();
   SchedulePaint();
@@ -1426,6 +1438,11 @@ gfx::Insets MenuItemView::GetContainerMargins() const {
 }
 
 int MenuItemView::NonIconChildViewsCount() const {
+  // WARNING: if adding a new field that is checked here you may need to
+  // set `update_selection_based_state_in_view_herarchy_changed_` to false
+  // when setting the field and explicitly call
+  // UpdateSelectionBasedStateIfChanged(). See comment in header
+  // for details.
   return static_cast<int>(children().size()) - (icon_view_ ? 1 : 0) -
          (radio_check_image_view_ ? 1 : 0) -
          (submenu_arrow_image_view_ ? 1 : 0) - (vertical_separator_ ? 1 : 0);

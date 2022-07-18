@@ -541,6 +541,24 @@ TEST_F(MenuItemViewPaintUnitTest,
   EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
 }
 
+TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
+  MenuItemView* child_menu_item =
+      menu_item_view()->AppendMenuItem(1, u"menu item");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
+  child_menu_item->SetSelected(true);
+  EXPECT_TRUE(child_menu_item->IsSelected());
+  EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
+
+  child_menu_item->SetIconView(std::make_unique<ImageView>());
+  EXPECT_TRUE(child_menu_item->IsSelected());
+  EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
+}
+
 // Sets up a custom MenuDelegate that expects functions aren't called. See
 // DontAskForFontsWhenAddingSubmenu.
 class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {

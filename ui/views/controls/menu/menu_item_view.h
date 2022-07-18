@@ -663,6 +663,19 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
+
+  // If true, ViewHierarchyChanged() will call
+  // UpdateSelectionBasedStateIfChanged().
+  // UpdateSelectionBasedStateIfChanged() calls to NonIconChildViewsCount().
+  // NonIconChildViewsCount() accesses fields of type View as part of the
+  // implementation. A common pattern for assigning a field is:
+  // icon_view_ = AddChildView(icon_view);
+  // The problem is ViewHierarchyChanged() is called during AddChildView() and
+  // before `icon_view_` is set. This means NonIconChildViewsCount() may return
+  // the wrong thing. In this case
+  // `update_selection_based_state_in_view_herarchy_changed_` is set to false
+  // and SetIconView() explicitly calls UpdateSelectionBasedStateIfChanged().
+  bool update_selection_based_state_in_view_herarchy_changed_ = true;
 };
 
 }  // namespace views
