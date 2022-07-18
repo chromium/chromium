@@ -5,8 +5,7 @@
 // https://github.com/wicg/trusted-types
 
 [
-    Exposed=(Window, Worker),
-    RuntimeEnabled=TrustedDOMTypes
+    Exposed=(Window, Worker)
 ] interface TrustedTypePolicyFactory : EventTarget {
     [RaisesException] TrustedTypePolicy createPolicy(DOMString policyName, optional TrustedTypePolicyOptions policyOptions);
     // All the policy object names that have been created

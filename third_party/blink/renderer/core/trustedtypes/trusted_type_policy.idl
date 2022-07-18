@@ -7,8 +7,7 @@
 typedef (TrustedHTML or TrustedScript or TrustedScriptURL) TrustedType;
 
 [
-    Exposed=(Window, Worker),
-    RuntimeEnabled=TrustedDOMTypes
+    Exposed=(Window, Worker)
 ] interface TrustedTypePolicy {
     readonly attribute DOMString name;
     [CallWith=ScriptState, RaisesException] TrustedHTML createHTML(DOMString input, any... args);

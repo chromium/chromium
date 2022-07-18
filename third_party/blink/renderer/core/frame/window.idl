@@ -204,7 +204,7 @@
     readonly attribute boolean isSecureContext;
 
     // TrustedTypes API: http://github.com/wicg/trusted-types
-    [RuntimeEnabled=TrustedDOMTypes, CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
+    [CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
 
     // Anonymous iframe:
     // https://wicg.github.io/anonymous-iframe/#spec-window-attribute

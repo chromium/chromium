@@ -67,8 +67,7 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
   // ContentSecurityPolicy::ReportViolation via the call to
   // AllowTrustedTypeAssignmentFailure below.
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
-  if (RuntimeEnabledFeatures::TrustedDOMTypesEnabled(GetExecutionContext()) &&
-      GetExecutionContext()->GetContentSecurityPolicy()) {
+  if (GetExecutionContext()->GetContentSecurityPolicy()) {
     ContentSecurityPolicy::AllowTrustedTypePolicyDetails violation_details =
         ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
     bool disallowed = !GetExecutionContext()

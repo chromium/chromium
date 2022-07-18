@@ -662,8 +662,7 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::RequireTrustedTypes() const {
-  return require_safe_types_ &&
-         RuntimeEnabledFeatures::TrustedDOMTypesEnabled(this);
+  return require_safe_types_;
 }
 
 }  // namespace blink

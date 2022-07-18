@@ -414,9 +414,7 @@ String TrustedTypesCheckForScript(const String& script,
 String TrustedTypesCheckForScriptURL(const String& script_url,
                                      const ExecutionContext* execution_context,
                                      ExceptionState& exception_state) {
-  bool require_trusted_type =
-      RequireTrustedTypesCheck(execution_context) &&
-      RuntimeEnabledFeatures::TrustedDOMTypesEnabled(execution_context);
+  bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
   if (!require_trusted_type) {
     return script_url;
   }

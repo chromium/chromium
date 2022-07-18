@@ -7,8 +7,7 @@
 typedef [StringContext=TrustedScriptURL] USVString ScriptURLString;
 
 [
-    Exposed=(Window, Worker),
-    RuntimeEnabled=TrustedDOMTypes
+    Exposed=(Window, Worker)
 ] interface TrustedScriptURL {
     stringifier;
     USVString toJSON();

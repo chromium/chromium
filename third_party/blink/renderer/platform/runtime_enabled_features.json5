@@ -2369,10 +2369,6 @@
       name: "TranslateService"
     },
     {
-      name: "TrustedDOMTypes",
-      status: "stable",
-    },
-    {
       name: "TrustedTypeBeforePolicyCreationEvent",
       status: "experimental",
     },

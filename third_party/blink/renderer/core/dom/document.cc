@@ -4196,14 +4196,12 @@ void Document::writeln(v8::Isolate* isolate,
 void Document::write(v8::Isolate* isolate,
                      TrustedHTML* text,
                      ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::TrustedDOMTypesEnabled(GetExecutionContext()));
   write(text->toString(), EnteredDOMWindow(isolate), exception_state);
 }
 
 void Document::writeln(v8::Isolate* isolate,
                        TrustedHTML* text,
                        ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::TrustedDOMTypesEnabled(GetExecutionContext()));
   writeln(text->toString(), EnteredDOMWindow(isolate), exception_state);
 }
 
