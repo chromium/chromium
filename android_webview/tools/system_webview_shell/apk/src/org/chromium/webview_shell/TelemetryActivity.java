@@ -61,6 +61,8 @@ public class TelemetryActivity extends Activity {
 
         CookieManager.setAcceptFileSchemeCookies(true);
         WebSettings settings = webView.getSettings();
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);

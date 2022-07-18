@@ -739,6 +739,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         settings.setAllowContentAccess(true);
 
         // Default layout behavior for chrome on android.
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
