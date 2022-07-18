@@ -368,6 +368,8 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
       return mode == blink::mojom::DisplayMode::kMinimalUi;
     case CSSValueID::kBrowser:
       return mode == blink::mojom::DisplayMode::kBrowser;
+    case CSSValueID::kWindowControlsOverlay:
+      return mode == blink::mojom::DisplayMode::kWindowControlsOverlay;
     default:
       NOTREACHED();
       return false;

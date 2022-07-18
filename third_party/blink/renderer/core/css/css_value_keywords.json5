@@ -1040,6 +1040,7 @@
     "standalone",
     "minimal-ui",
     "browser",
+    "window-controls-overlay",
 
     // position
     "sticky",

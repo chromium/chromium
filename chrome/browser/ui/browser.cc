@@ -1962,6 +1962,12 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   if (is_type_app() || is_type_devtools() || is_type_app_popup()) {
     if (app_controller_ && app_controller_->HasMinimalUiButtons())
       return blink::mojom::DisplayMode::kMinimalUi;
+
+    // TODO(crbug.com/1333978): Sync with the value of
+    // browser_view()->IsWindowControlsOverlayEnabled().
+    if (app_controller_ && app_controller_->AppUsesWindowControlsOverlay())
+      return blink::mojom::DisplayMode::kWindowControlsOverlay;
+
     return blink::mojom::DisplayMode::kStandalone;
   }
 
