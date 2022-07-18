@@ -108,7 +108,9 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
   ~WebGPUSwapBufferProviderForTests() override { *alive_ = false; }
 
   WGPUTexture GetNewTexture(const gfx::Size& size) {
-    client_->texture = WebGPUSwapBufferProvider::GetNewTexture(size);
+    // The alpha type is an optimization hint so just pass in opaque here.
+    client_->texture =
+        WebGPUSwapBufferProvider::GetNewTexture(size, kOpaque_SkAlphaType);
     return client_->texture;
   }
 

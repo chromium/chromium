@@ -639,12 +639,13 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // We need to have internal usages of CopySrc for copies and
-  // RenderAttachment for clears.
+  // We need to have internal usages of CopySrc for copies,
+  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
   WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
   internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage =
-      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment;
+  internalDesc.internalUsage = WGPUTextureUsage_CopySrc |
+                               WGPUTextureUsage_RenderAttachment |
+                               WGPUTextureUsage_TextureBinding;
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 

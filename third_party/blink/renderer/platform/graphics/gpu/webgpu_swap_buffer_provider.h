@@ -47,7 +47,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   void DiscardCurrentSwapBuffer();
-  WGPUTexture GetNewTexture(const gfx::Size& size);
+  WGPUTexture GetNewTexture(const gfx::Size& size, SkAlphaType alpha_type);
 
   struct WebGPUMailboxTextureAndSize {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
@@ -98,7 +98,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
       gpu::SharedImageInterface* sii,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-      const gfx::Size& size);
+      const gfx::Size& size,
+      SkAlphaType alpha_type);
 
   void RecycleSwapBuffer(std::unique_ptr<SwapBuffer> swap_buffer);
 

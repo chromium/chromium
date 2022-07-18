@@ -139,7 +139,8 @@ std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer>
 WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
     gpu::SharedImageInterface* sii,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-    const gfx::Size& size) {
+    const gfx::Size& size,
+    SkAlphaType alpha_mode) {
   // Recycled SwapBuffers must be the same size.
   if (!unused_swap_buffers_.IsEmpty() &&
       unused_swap_buffers_.back()->size != size) {
@@ -149,7 +150,7 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
   if (unused_swap_buffers_.IsEmpty()) {
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         Format(), size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType,
+        alpha_mode,
         gpu::SHARED_IMAGE_USAGE_WEBGPU |
             gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
             gpu::SHARED_IMAGE_USAGE_DISPLAY,
@@ -179,7 +180,8 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
   unused_swap_buffers_.push_back(std::move(swap_buffer));
 }
 
-WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
+WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size,
+                                                    SkAlphaType alpha_mode) {
   DCHECK(!current_swap_buffer_);
   auto context_provider = GetContextProviderWeakPtr();
   if (!context_provider) {
@@ -192,7 +194,7 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
   // Create a new swap buffer.
   current_swap_buffer_ = NewOrRecycledSwapBuffer(
       context_provider->ContextProvider()->SharedImageInterface(),
-      context_provider, size);
+      context_provider, size, alpha_mode);
 
   // Ensure the shared image is allocated and not in use service-side before
   // working with it

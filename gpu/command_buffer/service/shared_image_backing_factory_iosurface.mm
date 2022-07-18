@@ -123,12 +123,14 @@ class SharedImageRepresentationDawnIOSurface
 
     // We need to have internal usages of CopySrc for copies. If texture is not
     // for video frame import, which has bi-planar format, we also need
-    // RenderAttachment usage for clears.
+    // RenderAttachment usage for clears, and TextureBinding for
+    // copyTextureForBrowser.
     WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
     internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
     internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
     if (this->usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE)
-      internalDesc.internalUsage |= WGPUTextureUsage_RenderAttachment;
+      internalDesc.internalUsage |=
+          WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding;
 
     texture_descriptor.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
