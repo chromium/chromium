@@ -93,16 +93,16 @@ std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
   return quota_util->GetStorageKeysForTypeOnFileTaskRunner(type);
 }
 
-blink::mojom::QuotaStatusCode DeleteStorageKeyOnFileTaskRunner(
+blink::mojom::QuotaStatusCode DeleteBucketOnFileTaskRunner(
     FileSystemContext* context,
-    const blink::StorageKey& storage_key,
+    const BucketLocator& bucket_locator,
     FileSystemType type) {
   FileSystemBackend* provider = context->GetFileSystemBackend(type);
   if (!provider || !provider->GetQuotaUtil())
     return blink::mojom::QuotaStatusCode::kErrorNotSupported;
   base::File::Error result =
-      provider->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
-          context, context->quota_manager_proxy().get(), storage_key, type);
+      provider->GetQuotaUtil()->DeleteBucketDataOnFileTaskRunner(
+          context, context->quota_manager_proxy().get(), bucket_locator, type);
   if (result == base::File::FILE_OK)
     return blink::mojom::QuotaStatusCode::kOk;
   return blink::mojom::QuotaStatusCode::kErrorInvalidModification;
@@ -192,14 +192,6 @@ void FileSystemQuotaClient::DeleteBucketData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  // Skip non-default buckets until Storage Buckets are supported for
-  // FileSystem.
-  // TODO(crbug.com/1218100): Integrate with StorageBuckets.
-  if (!bucket.is_default) {
-    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
-    return;
-  }
-
   base::span<const FileSystemType> fs_types =
       QuotaStorageTypeToFileSystemTypes(bucket.type);
 
@@ -218,9 +210,9 @@ void FileSystemQuotaClient::DeleteBucketData(
   for (const auto fs_type : fs_types) {
     file_task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&DeleteStorageKeyOnFileTaskRunner,
-                       base::RetainedRef(file_system_context_.get()),
-                       bucket.storage_key, fs_type),
+        base::BindOnce(&DeleteBucketOnFileTaskRunner,
+                       base::RetainedRef(file_system_context_.get()), bucket,
+                       fs_type),
         barrier);
   }
 }

@@ -234,11 +234,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
       bool create,
       base::File::Error* error_code);
 
-  // Deletes the topmost directory specific to this StorageKey and type.  This
-  // will delete its directory database. Deletes the topmost origin
+  // Deletes the topmost directory specific to this StorageKey and type. This
+  // will delete its directory database. Deletes the topmost StorageKey
   // directory if `type_string` is empty.
   bool DeleteDirectoryForStorageKeyAndType(const blink::StorageKey& storage_key,
                                            const std::string& type_string);
+
+  // Deletes the topmost directory specific to this BucketLocator and type. This
+  // will delete its directory database. Deletes the topmost bucket
+  // directory if `type_string` is empty.
+  bool DeleteDirectoryForBucketAndType(const BucketLocator& bucket_locator,
+                                       const std::string& type_string);
 
   // This method and all methods of its returned class must be called only on
   // the FILE thread.  The caller is responsible for deleting the returned
@@ -271,6 +277,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // management and the default_buckets_ cache needs to be updated to reflect
   // that change in state.
   void DeleteDefaultBucketForStorageKey(const blink::StorageKey& storage_key);
+
+  // This function removes the key-value pair(s) from default_buckets_ with the
+  // value `bucket_locator`. Called when a default bucket is deleted from Quota
+  // management and the default_buckets_ cache needs to be updated to reflect
+  // that change in state.
+  void DeleteDefaultBucket(const BucketLocator& bucket_locator);
 
   bool is_incognito() { return is_incognito_; }
 

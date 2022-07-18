@@ -1013,6 +1013,56 @@ bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
                                           true /* recursive */);
 }
 
+bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
+    const BucketLocator& bucket_locator,
+    const std::string& type_string) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (bucket_locator.is_default &&
+      bucket_locator.storage_key.IsFirstPartyContext())
+    return DeleteDirectoryForStorageKeyAndType(bucket_locator.storage_key,
+                                               type_string);
+
+  DestroyDirectoryDatabaseForBucket(bucket_locator, type_string);
+
+  // Get the base path for the bucket without the type string appended.
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          bucket_locator, QuotaClientType::kFileSystem);
+  base::File::Error error = GetDirectoryHelper(path, /*create=*/false);
+  if (error != base::File::FILE_OK || path.empty())
+    return true;
+
+  if (!type_string.empty()) {
+    // Delete the filesystem type directory.
+    const base::FileErrorOr<base::FilePath> path_with_type =
+        GetDirectoryForBucketAndType(bucket_locator, type_string, false);
+    if (path_with_type.is_error())
+      return false;
+    if (!path_with_type->empty() &&
+        !delegate_->DeleteFileOrDirectory(path_with_type.value(),
+                                          true /* recursive */)) {
+      return false;
+    }
+
+    // At this point we are sure we had successfully deleted the bucket/type
+    // directory. Now we need to see if we have other sub-type-directories under
+    // the higher-level `path` directory. If so, we need to return early to
+    // avoid deleting the higher-level `path` directory.
+    for (const std::string& type : known_type_strings_) {
+      if (type == type_string)
+        continue;
+      if (delegate_->DirectoryExists(path.AppendASCII(type))) {
+        // Other type's directory exists; return to avoid deleting the higher
+        // level directory.
+        return true;
+      }
+    }
+  }
+
+  // Delete the higher-level directory.
+  return delegate_->DeleteFileOrDirectory(path, true /* recursive */);
+}
+
 std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator>
 ObfuscatedFileUtil::CreateStorageKeyEnumerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1471,6 +1521,24 @@ void ObfuscatedFileUtil::DeleteDefaultBucketForStorageKey(
   if (default_bucket_iter == default_buckets_.end())
     return;
   BucketLocator default_bucket = default_buckets_[storage_key];
+  // Ensure that all directories with that StorageKey and bucket have been
+  // erased.
+  DCHECK(directories_.find(DatabaseKey(storage_key, default_bucket,
+                                       kTemporary)) == directories_.end());
+  default_buckets_.erase(default_bucket_iter);
+}
+
+void ObfuscatedFileUtil::DeleteDefaultBucket(
+    const BucketLocator& bucket_locator) {
+  blink::StorageKey storage_key = bucket_locator.storage_key;
+  auto default_bucket_iter = default_buckets_.find(storage_key);
+  // If we are not already caching the bucket for that StorageKey, it does not
+  // need to be deleted.
+  if (default_bucket_iter == default_buckets_.end())
+    return;
+  BucketLocator default_bucket = default_buckets_[storage_key];
+  // Ensure that `default_bucket` matches `bucket_locator`
+  DCHECK(default_bucket == bucket_locator);
   // Ensure that all directories with that StorageKey and bucket have been
   // erased.
   DCHECK(directories_.find(DatabaseKey(storage_key, default_bucket,

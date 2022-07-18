@@ -388,6 +388,40 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
   return base::File::FILE_ERROR_FAILED;
 }
 
+base::File::Error
+SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
+    FileSystemContext* file_system_context,
+    QuotaManagerProxy* proxy,
+    const BucketLocator& bucket_locator,
+    FileSystemType type) {
+  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+  int64_t usage = (proxy) ? GetBucketUsageOnFileTaskRunner(file_system_context,
+                                                           bucket_locator, type)
+                          : 0;
+  usage_cache()->CloseCacheFiles();
+  bool result = obfuscated_file_util()->DeleteDirectoryForBucketAndType(
+      bucket_locator, GetTypeString(type));
+  if (result && proxy && usage) {
+    proxy->NotifyBucketModified(QuotaClientType::kFileSystem, bucket_locator.id,
+                                -usage, base::Time::Now(),
+                                base::SequencedTaskRunnerHandle::Get(),
+                                base::DoNothing());
+  }
+
+  // If obfuscated_file_util() was caching this default bucket, it should be
+  // deleted as well. If it was not cached, result is a no-op. NOTE: We only
+  // want to cache and delete kTemporary buckets. Otherwise, we may accidentally
+  // delete the wrong databases.
+  if (type == FileSystemType::kFileSystemTypeTemporary &&
+      bucket_locator.is_default) {
+    obfuscated_file_util()->DeleteDefaultBucket(bucket_locator);
+  }
+
+  if (result)
+    return base::File::FILE_OK;
+  return base::File::FILE_ERROR_FAILED;
+}
+
 void SandboxFileSystemBackendDelegate::PerformStorageCleanupOnFileTaskRunner(
     FileSystemContext* context,
     QuotaManagerProxy* proxy,
