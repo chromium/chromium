@@ -7,7 +7,7 @@
 // device_info.h's size can impact build time. Try not to raise this limit
 // unless absolutely necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 529500
+#pragma clang max_tokens_here 610000
 
 #include <utility>
 
