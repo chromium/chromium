@@ -64,6 +64,12 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
+const base::Feature kCommerceAllowLocalImages{
+    "CommerceAllowLocalImages", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCommerceAllowServerImages{
+    "CommerceAllowServerImages", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kCommerceCoupons{"CommerceCoupons",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

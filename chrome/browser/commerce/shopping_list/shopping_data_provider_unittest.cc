@@ -4,8 +4,10 @@
 
 #include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +26,11 @@ const uint64_t kOfferId = 12345;
 const uint64_t kClusterId = 67890;
 
 TEST(ShoppingDataProviderTest, TestDataMergeWithLeadImage) {
+  base::test::ScopedFeatureList test_features;
+  test_features.InitWithFeatures({commerce::kCommerceAllowLocalImages,
+                                  commerce::kCommerceAllowServerImages},
+                                 {});
+
   power_bookmarks::PowerBookmarkMeta meta;
   meta.mutable_lead_image()->set_url(kLeadImageUrl);
 
@@ -38,6 +45,11 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithLeadImage) {
 }
 
 TEST(ShoppingDataProviderTest, TestDataMergeWithNoLeadImage) {
+  base::test::ScopedFeatureList test_features;
+  test_features.InitWithFeatures({commerce::kCommerceAllowLocalImages,
+                                  commerce::kCommerceAllowServerImages},
+                                 {});
+
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;

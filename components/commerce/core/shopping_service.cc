@@ -249,8 +249,10 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
       if (buyable_product.has_title())
         info->title = buyable_product.title();
 
-      if (buyable_product.has_image_url())
+      if (buyable_product.has_image_url() &&
+          base::FeatureList::IsEnabled(kCommerceAllowServerImages)) {
         info->image_url = GURL(buyable_product.image_url());
+      }
 
       if (buyable_product.has_offer_id())
         info->offer_id = buyable_product.offer_id();

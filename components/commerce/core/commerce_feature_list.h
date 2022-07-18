@@ -65,6 +65,8 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
          nullptr}};
 
+extern const base::Feature kCommerceAllowLocalImages;
+extern const base::Feature kCommerceAllowServerImages;
 extern const base::Feature kCommerceCoupons;
 extern const base::Feature kCommerceMerchantViewer;
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;

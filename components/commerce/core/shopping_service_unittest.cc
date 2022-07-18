@@ -106,7 +106,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
 // Test that the product info cache only keeps track of live tabs.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
   base::test::ScopedFeatureList test_features;
-  test_features.InitAndEnableFeature(commerce::kShoppingList);
+  test_features.InitAndEnableFeature(kShoppingList);
 
   std::string url = "http://example.com/foo";
   MockWebWrapper web1(GURL(url), false);
@@ -154,7 +154,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
   base::test::ScopedFeatureList test_features;
-  test_features.InitAndEnableFeature(commerce::kShoppingList);
+  test_features.InitWithFeatures({kShoppingList, kCommerceAllowServerImages},
+                                 {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
 
