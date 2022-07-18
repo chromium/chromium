@@ -5,21 +5,28 @@
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
 
+#include "base/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace syncer {
+// Exposed only for testing.
+constexpr base::TimeDelta kLongDegradedRecoverabilityRefreshPeriod =
+    base::Days(7);
+constexpr base::TimeDelta kShortDegradedRecoverabilityRefreshPeriod =
+    base::Hours(1);
 
 // Schedules refresh of degraded recoverability state based on the current
 // state, heuristics and last refresh time.
 class DegradedRecoverabilityScheduler {
  public:
-  DegradedRecoverabilityScheduler();
+  explicit DegradedRecoverabilityScheduler(
+      base::RepeatingClosure refresh_callback);
   DegradedRecoverabilityScheduler(const DegradedRecoverabilityScheduler&) =
       delete;
   DegradedRecoverabilityScheduler& operator=(
       const DegradedRecoverabilityScheduler&) = delete;
-  ~DegradedRecoverabilityScheduler() = default;
+  ~DegradedRecoverabilityScheduler();
 
   void StartLongIntervalRefreshing();
   void StartShortIntervalRefreshing();
@@ -36,6 +43,7 @@ class DegradedRecoverabilityScheduler {
   // The last time Refresh has executed, it's initially null until the first
   // Refresh() execution.
   base::TimeTicks last_refreshed_time_;
+  base::RepeatingClosure refresh_callback_;
 };
 
 }  // namespace syncer

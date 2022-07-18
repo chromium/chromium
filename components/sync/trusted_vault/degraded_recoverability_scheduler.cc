@@ -4,14 +4,13 @@
 
 #include "components/sync/trusted_vault/degraded_recoverability_scheduler.h"
 
+#include <utility>
+#include "base/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace {
-constexpr base::TimeDelta kLongRefreshPeriod = base::Days(7);
-constexpr base::TimeDelta kShortRefreshPeriod = base::Hours(1);
-
 base::TimeDelta ComputeTimeUntilNextRefresh(
     const base::TimeDelta& refresh_period,
     const base::TimeTicks& last_refreshed_time) {
@@ -20,6 +19,9 @@ base::TimeDelta ComputeTimeUntilNextRefresh(
   }
   const base::TimeDelta elapsed_time =
       base::TimeTicks::Now() - last_refreshed_time;
+  if (elapsed_time > refresh_period) {
+    return base::TimeDelta();
+  }
   return refresh_period - elapsed_time;
 }
 
@@ -27,21 +29,25 @@ base::TimeDelta ComputeTimeUntilNextRefresh(
 
 namespace syncer {
 
-DegradedRecoverabilityScheduler::DegradedRecoverabilityScheduler()
-    : current_refresh_period_(kLongRefreshPeriod) {
+DegradedRecoverabilityScheduler::DegradedRecoverabilityScheduler(
+    base::RepeatingClosure refresh_callback)
+    : current_refresh_period_(kLongDegradedRecoverabilityRefreshPeriod),
+      refresh_callback_(std::move(refresh_callback)) {
   // TODO(crbug.com/1247990): read `last_refreshed_time_`, convert it to
   // TimeTicks, and schedule next refresh.
   NOTIMPLEMENTED();
   Start();
 }
 
+DegradedRecoverabilityScheduler::~DegradedRecoverabilityScheduler() = default;
+
 void DegradedRecoverabilityScheduler::StartLongIntervalRefreshing() {
-  current_refresh_period_ = kLongRefreshPeriod;
+  current_refresh_period_ = kLongDegradedRecoverabilityRefreshPeriod;
   Start();
 }
 
 void DegradedRecoverabilityScheduler::StartShortIntervalRefreshing() {
-  current_refresh_period_ = kShortRefreshPeriod;
+  current_refresh_period_ = kShortDegradedRecoverabilityRefreshPeriod;
   Start();
 }
 
@@ -67,6 +73,7 @@ void DegradedRecoverabilityScheduler::Refresh() {
   // next Refresh() after the current one is completed.
   NOTIMPLEMENTED();
   last_refreshed_time_ = base::TimeTicks::Now();
+  refresh_callback_.Run();
   next_refresh_timer_.Start(FROM_HERE, current_refresh_period_, this,
                             &DegradedRecoverabilityScheduler::Refresh);
 }
