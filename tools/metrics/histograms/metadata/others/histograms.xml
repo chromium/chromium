@@ -14043,7 +14043,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserImage.Changed2" enum="ChromeOSUserImageId2"
-    expires_after="2022-03-30">
+    expires_after="2023-07-14">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -14051,7 +14051,10 @@ should be kept until we use this API.  -->
     statistic is recorded each time the user changes their device image to a
     different one in Settings.
 
-    This metric supersedes UserImage.Changed due to a change in enum values.
+    This metric expired in March 2022 and was revived in M105. Data between
+    these times is incomplete.
+
+    This metric supersedes `UserImage.Changed` due to a change in enum values.
   </summary>
 </histogram>
 
