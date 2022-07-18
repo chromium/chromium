@@ -16,6 +16,9 @@ namespace content {
 NavigationController::LoadURLParams::LoadURLParams(const GURL& url)
     : url(url), is_renderer_initiated(false) {}
 
+NavigationController::LoadURLParams::LoadURLParams(
+    NavigationController::LoadURLParams&&) = default;
+
 NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
     : url(input.url),
       initiator_frame_token(input.initiator_frame_token),
@@ -75,5 +78,9 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
 
 NavigationController::LoadURLParams::~LoadURLParams() {
 }
+
+NavigationController::LoadURLParams&
+NavigationController::LoadURLParams::operator=(
+    NavigationController::LoadURLParams&&) = default;
 
 }  // namespace content
