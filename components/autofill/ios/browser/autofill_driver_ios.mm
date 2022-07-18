@@ -67,6 +67,11 @@ bool AutofillDriverIOS::IsIncognito() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 
+// Return true as iOS has no MPArch.
+bool AutofillDriverIOS::IsInActiveFrame() const {
+  return true;
+}
+
 bool AutofillDriverIOS::IsInAnyMainFrame() const {
   web::WebFrame* web_frame = web::GetWebFrameWithId(web_state_, web_frame_id_);
   return web_frame ? web_frame->IsMainFrame() : true;

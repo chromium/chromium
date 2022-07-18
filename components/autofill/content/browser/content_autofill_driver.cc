@@ -79,6 +79,10 @@ bool ContentAutofillDriver::IsIncognito() const {
       ->IsOffTheRecord();
 }
 
+bool ContentAutofillDriver::IsInActiveFrame() const {
+  return render_frame_host_->IsActive();
+}
+
 bool ContentAutofillDriver::IsInAnyMainFrame() const {
   return render_frame_host_->GetMainFrame() == render_frame_host_;
 }

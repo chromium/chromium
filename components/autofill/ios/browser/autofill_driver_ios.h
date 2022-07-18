@@ -41,6 +41,7 @@ class AutofillDriverIOS : public AutofillDriver {
 
   // AutofillDriver:
   bool IsIncognito() const override;
+  bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;

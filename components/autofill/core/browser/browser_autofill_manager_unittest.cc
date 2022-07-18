@@ -9086,11 +9086,25 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
   ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
 }
 
-TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillPageLanguageDetection);
+// Test language detection on frames depending on whether the frame is active or
+// not.
+class BrowserAutofillManagerTestPageLanguageDetection
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserAutofillManagerTestPageLanguageDetection() {
+    is_in_active_frame_ = GetParam();
+    scoped_features_.InitAndEnableFeature(
+        features::kAutofillPageLanguageDetection);
+  }
 
+  bool is_in_active_frame_;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   FormData form;
   test::CreateTestAddressFormData(&form);
 
@@ -9102,16 +9116,25 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
   ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
 
   translate::LanguageDetectionDetails language_detection_details;
-  language_detection_details.adopted_language = "zh";
+  language_detection_details.adopted_language = "hu";
+  autofill_driver_->SetIsInActiveFrame(is_in_active_frame_);
   browser_autofill_manager_->OnLanguageDetermined(language_detection_details);
 
-  autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
+  autofill_client_.GetLanguageState()->SetCurrentLanguage("hu");
 
   parsed_form =
       browser_autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
-  ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
+  // Language detection is used only for active frames.
+  auto expected_language_code =
+      is_in_active_frame_ ? LanguageCode("hu") : LanguageCode();
+
+  ASSERT_EQ(expected_language_code, parsed_form->current_page_language());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserAutofillManagerTestPageLanguageDetection,
+                         testing::Bool());
 
 // BrowserAutofillManagerTest with different browser profile types.
 class BrowserAutofillManagerProfileMetricsTest

@@ -31,6 +31,10 @@ bool TestAutofillDriver::IsIncognito() const {
   return is_incognito_;
 }
 
+bool TestAutofillDriver::IsInActiveFrame() const {
+  return is_in_active_frame_;
+}
+
 bool TestAutofillDriver::IsInAnyMainFrame() const {
   return is_in_any_main_frame_;
 }
@@ -120,6 +124,10 @@ void TestAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
 
 void TestAutofillDriver::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;
+}
+
+void TestAutofillDriver::SetIsInActiveFrame(bool is_in_active_frame) {
+  is_in_active_frame_ = is_in_active_frame;
 }
 
 void TestAutofillDriver::SetIsInAnyMainFrame(bool is_in_any_main_frame) {

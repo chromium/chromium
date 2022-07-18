@@ -44,6 +44,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
 
   // AutofillDriver implementation overrides.
   bool IsIncognito() const override;
+  bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;
@@ -88,6 +89,7 @@ class TestAutofillDriver : public ContentAutofillDriver {
   // functionality.
 
   void SetIsIncognito(bool is_incognito);
+  void SetIsInActiveFrame(bool is_in_active_frame);
   void SetIsInAnyMainFrame(bool is_in_any_main_frame);
   void SetIsolationInfo(const net::IsolationInfo& isolation_info);
 
@@ -106,7 +108,8 @@ class TestAutofillDriver : public ContentAutofillDriver {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   bool is_incognito_ = false;
-  bool is_in_any_main_frame_ = false;
+  bool is_in_active_frame_ = true;
+  bool is_in_any_main_frame_ = true;
   net::IsolationInfo isolation_info_;
   base::RepeatingCallback<
       bool(const url::Origin&, FieldGlobalId, ServerFieldType)>

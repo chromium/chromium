@@ -18,6 +18,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -130,6 +131,10 @@ AutofillManager::~AutofillManager() {
 void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
+    return;
+  }
+  if (details.adopted_language == translate::kUnknownLanguageCode ||
+      !driver_->IsInActiveFrame()) {
     return;
   }
   for (auto& [form_id, form_structure] : form_structures_) {
