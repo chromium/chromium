@@ -681,28 +681,39 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     WindowSizer::GetBrowserWindowBoundsAndShowState(
         gfx::Rect(), nullptr, &window_bounds, &ignored_show_state);
 
-    // Update the window bounds if the bounds from the create parameters
-    // intersect the displays.
-    bool set_window_bounds = false;
+    // Update the window bounds based on the create parameters.
+    bool set_window_position = false;
+    bool set_window_size = false;
     if (create_data->left) {
       window_bounds.set_x(*create_data->left);
-      set_window_bounds = true;
+      set_window_position = true;
     }
     if (create_data->top) {
       window_bounds.set_y(*create_data->top);
-      set_window_bounds = true;
+      set_window_position = true;
     }
     if (create_data->width) {
       window_bounds.set_width(*create_data->width);
-      set_window_bounds = true;
+      set_window_size = true;
     }
     if (create_data->height) {
       window_bounds.set_height(*create_data->height);
-      set_window_bounds = true;
+      set_window_size = true;
     }
 
-    if (set_window_bounds && !WindowBoundsIntersectDisplays(window_bounds))
+    // If the extension specified the window size but no position, adjust the
+    // window to fit in the display.
+    if (!set_window_position && set_window_size) {
+      const display::Display& display =
+          display::Screen::GetScreen()->GetDisplayMatching(window_bounds);
+      window_bounds.AdjustToFit(display.bounds());
+    }
+
+    // Immediately fail if the window bounds don't intersect the displays.
+    if ((set_window_position || set_window_size) &&
+        !WindowBoundsIntersectDisplays(window_bounds)) {
       return RespondNow(Error(tabs_constants::kInvalidWindowBoundsError));
+    }
 
     if (create_data->focused)
       focused = *create_data->focused;

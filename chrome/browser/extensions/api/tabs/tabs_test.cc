@@ -996,6 +996,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
                            window_width, window_height),
         browser(), api_test_utils::NONE));
   }
+
+  {
+    // Window bounds that specify size and not position should be adjusted
+    // to the screen in case the window is not visible.
+    // For this, update the current window bounds so the new window position
+    // needs to be adjusted to fit.
+    gfx::Rect current_window_bounds = browser()->window()->GetBounds();
+    current_window_bounds.set_x(current_window_bounds.x() +
+                                current_window_bounds.width() - window_offset);
+    current_window_bounds.set_y(current_window_bounds.y() +
+                                current_window_bounds.height() - window_offset);
+    browser()->window()->SetBounds(current_window_bounds);
+
+    static const char kArgsCreateFunctionOnlySize[] =
+        "[{\"width\": %d, \"height\": %d }]";
+    auto function = base::MakeRefCounted<WindowsCreateFunction>();
+    function->set_extension(ExtensionBuilder("Test").Build().get());
+    EXPECT_TRUE(
+        utils::RunFunction(function.get(),
+                           base::StringPrintf(kArgsCreateFunctionOnlySize,
+                                              window_width, window_height),
+                           browser(), api_test_utils::NONE));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, CreatePopupWindowFromWebUI) {
