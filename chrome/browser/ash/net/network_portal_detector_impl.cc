@@ -139,7 +139,7 @@ bool NetworkPortalDetectorImpl::IsEnabled() {
   return enabled_;
 }
 
-void NetworkPortalDetectorImpl::Enable(bool start_detection) {
+void NetworkPortalDetectorImpl::Enable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (enabled_)
     return;
@@ -148,7 +148,7 @@ void NetworkPortalDetectorImpl::Enable(bool start_detection) {
   enabled_ = true;
 
   const NetworkState* network = DefaultNetwork();
-  if (!start_detection || !network)
+  if (!network)
     return;
   NET_LOG(EVENT) << "Starting detection attempt:"
                  << " id=" << NetworkId(network);

@@ -13,8 +13,7 @@
 namespace ash {
 
 NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl()
-    : strategy_id_(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN) {
-}
+    : strategy_id_(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN) {}
 
 NetworkPortalDetectorTestImpl::~NetworkPortalDetectorTestImpl() {
   for (auto& observer : observers_)
@@ -102,8 +101,7 @@ bool NetworkPortalDetectorTestImpl::IsEnabled() {
   return true;
 }
 
-void NetworkPortalDetectorTestImpl::Enable(bool start_detection) {
-}
+void NetworkPortalDetectorTestImpl::Enable() {}
 
 void NetworkPortalDetectorTestImpl::StartPortalDetection() {
   if (portal_detection_in_progress_)

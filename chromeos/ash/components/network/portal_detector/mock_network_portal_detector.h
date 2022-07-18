@@ -29,7 +29,7 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
   MOCK_METHOD0(GetCaptivePortalStatus,
                chromeos::NetworkPortalDetector::CaptivePortalStatus());
   MOCK_METHOD0(IsEnabled, bool());
-  MOCK_METHOD1(Enable, void(bool start_detection));
+  MOCK_METHOD0(Enable, void());
   MOCK_METHOD0(StartPortalDetection, void());
   MOCK_METHOD1(SetStrategy,
                void(chromeos::PortalDetectorStrategy::StrategyId id));

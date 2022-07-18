@@ -108,7 +108,7 @@ class NetworkPortalDetectorImplBrowserTest
         new NetworkPortalDetectorImpl(test_loader_factory());
     // Takes ownership of |network_portal_detector_|:
     network_portal_detector::InitializeForTesting(network_portal_detector_);
-    network_portal_detector_->Enable(false /* start_detection */);
+    network_portal_detector_->enabled_ = true;
     set_detector(network_portal_detector_->captive_portal_detector_.get());
     PortalDetectorStrategy::set_delay_till_next_attempt_for_testing(
         base::TimeDelta());

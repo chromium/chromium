@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   void RemoveObserver(Observer* observer) override;
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
-  void Enable(bool start_detection) override;
+  void Enable() override;
   void StartPortalDetection() override;
   void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
 };

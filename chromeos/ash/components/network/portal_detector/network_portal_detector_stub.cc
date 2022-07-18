@@ -29,7 +29,7 @@ bool NetworkPortalDetectorStub::IsEnabled() {
   return false;
 }
 
-void NetworkPortalDetectorStub::Enable(bool start_detection) {}
+void NetworkPortalDetectorStub::Enable() {}
 
 void NetworkPortalDetectorStub::StartPortalDetection() {}
 

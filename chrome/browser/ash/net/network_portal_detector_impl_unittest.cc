@@ -112,7 +112,7 @@ class NetworkPortalDetectorImplTest
 
     network_portal_detector_ =
         std::make_unique<NetworkPortalDetectorImpl>(test_loader_factory());
-    network_portal_detector_->Enable(false);
+    network_portal_detector_->enabled_ = true;
 
     network_portal_detector()->AddObserver(&observer_);
 

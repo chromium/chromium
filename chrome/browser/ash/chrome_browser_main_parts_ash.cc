@@ -1142,7 +1142,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
       // Enable portal detector if EULA was previously accepted or if
       // this is an unofficial build.
       if (!is_official_build || StartupUtils::IsEulaAccepted())
-        network_portal_detector::GetInstance()->Enable(true);
+        network_portal_detector::GetInstance()->Enable();
     }
 
     // Initialize an observer to update NetworkHandler's pref based services.
