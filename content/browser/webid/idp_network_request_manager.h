@@ -184,28 +184,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                    DownloadCallback download_callback,
                    size_t max_download_size);
 
-  void OnManifestParsed(absl::optional<int> idp_brand_icon_ideal_size,
-                        absl::optional<int> idp_brand_icon_minimum_size,
-                        FetchManifestCallback callback,
-                        FetchStatus fetch_status,
-                        data_decoder::DataDecoder::ValueOrError result);
-  void OnClientMetadataParsed(FetchClientMetadataCallback callback,
-                              FetchStatus fetch_status,
-                              data_decoder::DataDecoder::ValueOrError result);
-  void OnAccountsRequestParsed(std::string client_id,
-                               AccountsRequestCallback callback,
-                               FetchStatus fetch_status,
-                               data_decoder::DataDecoder::ValueOrError result);
-  void OnTokenRequestParsed(TokenRequestCallback callback,
-                            FetchStatus fetch_status,
-                            data_decoder::DataDecoder::ValueOrError result);
-  void OnRevokeResponse(RevokeCallback callback,
-                        std::unique_ptr<std::string> response_body,
-                        int response_code);
-  void OnLogoutCompleted(LogoutCallback callback,
-                         std::unique_ptr<std::string> response_body,
-                         int response_code);
-
   std::unique_ptr<network::SimpleURLLoader> CreateUncredentialedUrlLoader(
       const GURL& url,
       bool send_referrer,
@@ -223,8 +201,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   network::mojom::ClientSecurityStatePtr client_security_state_;
-
-  base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };
 
 }  // namespace content

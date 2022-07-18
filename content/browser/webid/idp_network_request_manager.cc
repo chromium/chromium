@@ -36,6 +36,11 @@ namespace content {
 namespace {
 using LoginState = IdentityRequestAccount::LoginState;
 
+using AccountList = IdpNetworkRequestManager::AccountList;
+using ClientMetadata = IdpNetworkRequestManager::ClientMetadata;
+using Endpoints = IdpNetworkRequestManager::Endpoints;
+using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
 
@@ -213,7 +218,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
 // Parses accounts from given Value. Returns true if parse is successful and
 // adds parsed accounts to the |account_list|.
 bool ParseAccounts(const base::Value* accounts,
-                   IdpNetworkRequestManager::AccountList& account_list,
+                   AccountList& account_list,
                    const std::string& client_id) {
   DCHECK(account_list.empty());
   if (!accounts->is_list())
@@ -301,7 +306,6 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
   }
 }
 
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 FetchStatus GetResponseError(std::string* response_body, int response_code) {
   if (response_code == net::HTTP_NOT_FOUND)
     return FetchStatus::kHttpNotFoundError;
@@ -398,6 +402,128 @@ void OnManifestListParsed(
   }
 
   std::move(callback).Run(FetchStatus::kSuccess, urls);
+}
+
+void OnManifestParsed(absl::optional<int> idp_brand_icon_ideal_size,
+                      absl::optional<int> idp_brand_icon_minimum_size,
+                      IdpNetworkRequestManager::FetchManifestCallback callback,
+                      FetchStatus fetch_status,
+                      data_decoder::DataDecoder::ValueOrError result) {
+  if (fetch_status != FetchStatus::kSuccess) {
+    std::move(callback).Run(fetch_status, Endpoints(),
+                            IdentityProviderMetadata());
+    return;
+  }
+
+  auto& response = *result;
+  auto ExtractEndpoint = [&](const char* key) {
+    const base::Value* endpoint = response.FindKey(key);
+    if (!endpoint || !endpoint->is_string()) {
+      return std::string();
+    }
+    return endpoint->GetString();
+  };
+
+  Endpoints endpoints;
+  endpoints.token = ExtractEndpoint(kTokenEndpointKey);
+  endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
+  endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
+  endpoints.revocation = ExtractEndpoint(kRevocationEndpoint);
+
+  const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
+  IdentityProviderMetadata idp_metadata;
+  if (idp_metadata_value) {
+    ParseIdentityProviderMetadata(*idp_metadata_value,
+                                  idp_brand_icon_ideal_size,
+                                  idp_brand_icon_minimum_size, idp_metadata);
+  }
+
+  std::move(callback).Run(FetchStatus::kSuccess, endpoints,
+                          std::move(idp_metadata));
+}
+
+void OnClientMetadataParsed(
+    IdpNetworkRequestManager::FetchClientMetadataCallback callback,
+    FetchStatus fetch_status,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (fetch_status != FetchStatus::kSuccess) {
+    std::move(callback).Run(fetch_status, ClientMetadata());
+    return;
+  }
+
+  auto& response = *result;
+  auto ExtractUrl = [&](const char* key) {
+    const base::Value* endpoint = response.FindKey(key);
+    if (!endpoint || !endpoint->is_string()) {
+      return std::string();
+    }
+    return endpoint->GetString();
+  };
+
+  IdpNetworkRequestManager::ClientMetadata data;
+  data.privacy_policy_url = ExtractUrl(kPrivacyPolicyKey);
+  data.terms_of_service_url = ExtractUrl(kTermsOfServiceKey);
+
+  std::move(callback).Run(FetchStatus::kSuccess, data);
+}
+
+void OnAccountsRequestParsed(
+    std::string client_id,
+    IdpNetworkRequestManager::AccountsRequestCallback callback,
+    FetchStatus fetch_status,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (fetch_status != FetchStatus::kSuccess) {
+    std::move(callback).Run(fetch_status, AccountList());
+    return;
+  }
+
+  AccountList account_list;
+  auto& response = *result;
+  const base::Value* accounts = response.FindKey(kAccountsKey);
+  bool accounts_present =
+      accounts && ParseAccounts(accounts, account_list, client_id);
+
+  if (!accounts_present) {
+    std::move(callback).Run(FetchStatus::kInvalidResponseError, AccountList());
+    return;
+  }
+
+  std::move(callback).Run(FetchStatus::kSuccess, std::move(account_list));
+}
+
+void OnTokenRequestParsed(
+    IdpNetworkRequestManager::TokenRequestCallback callback,
+    FetchStatus fetch_status,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (fetch_status != FetchStatus::kSuccess) {
+    std::move(callback).Run(fetch_status, std::string());
+    return;
+  }
+
+  auto& response = *result;
+  const base::Value* token = response.FindKey(kTokenKey);
+  bool token_present = token && token->is_string();
+
+  if (!token_present) {
+    std::move(callback).Run(FetchStatus::kInvalidResponseError, std::string());
+    return;
+  }
+  std::move(callback).Run(FetchStatus::kSuccess, token->GetString());
+}
+
+void OnRevokeResponse(IdpNetworkRequestManager::RevokeCallback callback,
+                      std::unique_ptr<std::string> response_body,
+                      int response_code) {
+  IdpNetworkRequestManager::RevokeResponse status =
+      response_body ? IdpNetworkRequestManager::RevokeResponse::kSuccess
+                    : IdpNetworkRequestManager::RevokeResponse::kError;
+  std::move(callback).Run(status);
+}
+
+void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
+                       std::unique_ptr<std::string> response_body,
+                       int response_code) {
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -504,8 +630,7 @@ void IdpNetworkRequestManager::FetchManifest(
       CreateUncredentialedUrlLoader(target_url, /* send_referrer= */ false);
   DownloadJsonAndParse(
       std::move(url_loader),
-      base::BindOnce(&IdpNetworkRequestManager::OnManifestParsed,
-                     weak_ptr_factory_.GetWeakPtr(), idp_brand_icon_ideal_size,
+      base::BindOnce(&OnManifestParsed, idp_brand_icon_ideal_size,
                      idp_brand_icon_minimum_size, std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
@@ -518,9 +643,7 @@ void IdpNetworkRequestManager::SendAccountsRequest(
       CreateCredentialedUrlLoader(accounts_url, /* send_referrer= */ false);
   DownloadJsonAndParse(
       std::move(url_loader),
-      base::BindOnce(&IdpNetworkRequestManager::OnAccountsRequestParsed,
-                     weak_ptr_factory_.GetWeakPtr(), client_id,
-                     std::move(callback)),
+      base::BindOnce(&OnAccountsRequestParsed, client_id, std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 
@@ -538,8 +661,7 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
                                   /* send_referrer= */ true, request);
   DownloadJsonAndParse(
       std::move(url_loader),
-      base::BindOnce(&IdpNetworkRequestManager::OnTokenRequestParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      base::BindOnce(&OnTokenRequestParsed, std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 
@@ -587,11 +709,9 @@ void IdpNetworkRequestManager::SendRevokeRequest(const GURL& revoke_url,
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       CreateCredentialedUrlLoader(revoke_url, /* send_referrer= */ true,
                                   revoke_request_body);
-  DownloadUrl(
-      std::move(url_loader),
-      base::BindOnce(&IdpNetworkRequestManager::OnRevokeResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      maxResponseSizeInKiB * 1024);
+  DownloadUrl(std::move(url_loader),
+              base::BindOnce(&OnRevokeResponse, std::move(callback)),
+              maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
@@ -609,11 +729,9 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
-  DownloadUrl(
-      std::move(url_loader),
-      base::BindOnce(&IdpNetworkRequestManager::OnLogoutCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      maxResponseSizeInKiB * 1024);
+  DownloadUrl(std::move(url_loader),
+              base::BindOnce(&OnLogoutCompleted, std::move(callback)),
+              maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::DownloadJsonAndParse(
@@ -637,105 +755,6 @@ void IdpNetworkRequestManager::DownloadUrl(
       max_download_size);
 }
 
-void IdpNetworkRequestManager::OnManifestParsed(
-    absl::optional<int> idp_brand_icon_ideal_size,
-    absl::optional<int> idp_brand_icon_minimum_size,
-    FetchManifestCallback callback,
-    FetchStatus fetch_status,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
-    std::move(callback).Run(fetch_status, Endpoints(),
-                            IdentityProviderMetadata());
-    return;
-  }
-
-  auto& response = *result;
-  auto ExtractEndpoint = [&](const char* key) {
-    const base::Value* endpoint = response.FindKey(key);
-    if (!endpoint || !endpoint->is_string()) {
-      return std::string();
-    }
-    return endpoint->GetString();
-  };
-
-  Endpoints endpoints;
-  endpoints.token = ExtractEndpoint(kTokenEndpointKey);
-  endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
-  endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
-  endpoints.revocation = ExtractEndpoint(kRevocationEndpoint);
-
-  const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
-  IdentityProviderMetadata idp_metadata;
-  if (idp_metadata_value) {
-    ParseIdentityProviderMetadata(*idp_metadata_value,
-                                  idp_brand_icon_ideal_size,
-                                  idp_brand_icon_minimum_size, idp_metadata);
-  }
-
-  std::move(callback).Run(FetchStatus::kSuccess, endpoints,
-                          std::move(idp_metadata));
-}
-
-void IdpNetworkRequestManager::OnAccountsRequestParsed(
-    std::string client_id,
-    AccountsRequestCallback callback,
-    FetchStatus fetch_status,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
-    std::move(callback).Run(fetch_status, AccountList());
-    return;
-  }
-
-  AccountList account_list;
-  auto& response = *result;
-  const base::Value* accounts = response.FindKey(kAccountsKey);
-  bool accounts_present =
-      accounts && ParseAccounts(accounts, account_list, client_id);
-
-  if (!accounts_present) {
-    std::move(callback).Run(FetchStatus::kInvalidResponseError, AccountList());
-    return;
-  }
-
-  std::move(callback).Run(FetchStatus::kSuccess, std::move(account_list));
-}
-
-void IdpNetworkRequestManager::OnTokenRequestParsed(
-    TokenRequestCallback callback,
-    FetchStatus fetch_status,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
-    std::move(callback).Run(fetch_status, std::string());
-    return;
-  }
-
-  auto& response = *result;
-  const base::Value* token = response.FindKey(kTokenKey);
-  bool token_present = token && token->is_string();
-
-  if (!token_present) {
-    std::move(callback).Run(FetchStatus::kInvalidResponseError, std::string());
-    return;
-  }
-  std::move(callback).Run(FetchStatus::kSuccess, token->GetString());
-}
-
-void IdpNetworkRequestManager::OnRevokeResponse(
-    RevokeCallback callback,
-    std::unique_ptr<std::string> response_body,
-    int response_code) {
-  RevokeResponse status =
-      response_body ? RevokeResponse::kSuccess : RevokeResponse::kError;
-  std::move(callback).Run(status);
-}
-
-void IdpNetworkRequestManager::OnLogoutCompleted(
-    LogoutCallback callback,
-    std::unique_ptr<std::string> response_body,
-    int response_code) {
-  std::move(callback).Run();
-}
-
 void IdpNetworkRequestManager::FetchClientMetadata(
     const GURL& endpoint,
     const std::string& client_id,
@@ -748,34 +767,8 @@ void IdpNetworkRequestManager::FetchClientMetadata(
 
   DownloadJsonAndParse(
       std::move(url_loader),
-      base::BindOnce(&IdpNetworkRequestManager::OnClientMetadataParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      base::BindOnce(&OnClientMetadataParsed, std::move(callback)),
       maxResponseSizeInKiB * 1024);
-}
-
-void IdpNetworkRequestManager::OnClientMetadataParsed(
-    FetchClientMetadataCallback callback,
-    FetchStatus fetch_status,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
-    std::move(callback).Run(fetch_status, ClientMetadata());
-    return;
-  }
-
-  auto& response = *result;
-  auto ExtractUrl = [&](const char* key) {
-    const base::Value* endpoint = response.FindKey(key);
-    if (!endpoint || !endpoint->is_string()) {
-      return std::string();
-    }
-    return endpoint->GetString();
-  };
-
-  ClientMetadata data;
-  data.privacy_policy_url = ExtractUrl(kPrivacyPolicyKey);
-  data.terms_of_service_url = ExtractUrl(kTermsOfServiceKey);
-
-  std::move(callback).Run(FetchStatus::kSuccess, data);
 }
 
 std::unique_ptr<network::SimpleURLLoader>
