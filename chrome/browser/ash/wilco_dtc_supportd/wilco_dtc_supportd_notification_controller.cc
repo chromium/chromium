@@ -162,7 +162,7 @@ std::string
 WilcoDtcSupportdNotificationController::ShowLowPowerChargerNotification()
     const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdLowPower,
-                      NotificationCatalogName::kLowPowerCharger,
+                      NotificationCatalogName::kWilcoLowPowerCharger,
                       IDS_WILCO_LOW_POWER_CHARGER_TITLE,
                       IDS_WILCO_LOW_POWER_CHARGER_MESSAGE,
                       message_center::SYSTEM_PRIORITY, kNotificationBatteryIcon,

@@ -28,6 +28,7 @@ void ShowAutoUpdateNotification(
   std::u16string title, text;
   std::string notification_id;
   bool pinned = false;
+  auto catalog_name = NotificationCatalogName::kNone;
 
   switch (notification_type) {
     case TpmAutoUpdateUserNotification::kNone:
@@ -39,6 +40,7 @@ void ShowAutoUpdateNotification(
       text = l10n_util::GetStringUTF16(
           IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_MESSAGE);
       notification_id = kTPMPlannedAutoUpdateNotificationId;
+      catalog_name = NotificationCatalogName::kTPMAutoUpdatePlanned;
       break;
     case TpmAutoUpdateUserNotification::kOnNextReboot:
       title = l10n_util::GetStringUTF16(
@@ -47,6 +49,7 @@ void ShowAutoUpdateNotification(
           IDS_TPM_AUTO_UPDATE_REBOOT_NOTIFICATION_MESSAGE);
       notification_id = kTPMAutoUpdateOnRebootNotificationId;
       pinned = true;
+      catalog_name = NotificationCatalogName::kTPMAutoUpdateOnReboot;
       break;
   }
 
@@ -56,7 +59,7 @@ void ShowAutoUpdateNotification(
           text, std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
-              NotificationCatalogName::kTPMAutoUpdate),
+              catalog_name),
           message_center::RichNotificationData(),
           new message_center::NotificationDelegate(),
           vector_icons::kBusinessIcon,

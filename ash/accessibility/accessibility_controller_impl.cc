@@ -330,17 +330,21 @@ void ShowAccessibilityNotification(
 
   std::u16string text;
   std::u16string title;
+  std::u16string display_source;
+  auto catalog_name = NotificationCatalogName::kNone;
   bool pinned = true;
   message_center::SystemNotificationWarningLevel warning =
       message_center::SystemNotificationWarningLevel::NORMAL;
-  std::u16string display_source;
+
   if (type == A11yNotificationType::kBrailleDisplayConnected) {
     text = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED);
+    catalog_name = NotificationCatalogName::kBrailleDisplayConnected;
   } else if (type == A11yNotificationType::kSwitchAccessEnabled) {
     title = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED_TITLE);
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
+    catalog_name = NotificationCatalogName::kSwitchAccessEnabled;
   } else if (type == A11yNotificationType::kSpeechRecognitionFilesDownloaded) {
     display_source =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
@@ -350,6 +354,7 @@ void ShowAccessibilityNotification(
     text = l10n_util::GetStringUTF16(
         IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_SUCCEEDED_DESC);
     pinned = false;
+    catalog_name = NotificationCatalogName::kSpeechRecognitionFilesDownloaded;
   } else if (type == A11yNotificationType::kSpeechRecognitionFilesFailed) {
     display_source =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION);
@@ -361,6 +366,7 @@ void ShowAccessibilityNotification(
     // Use CRITICAL_WARNING to force the notification color to red.
     warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
     pinned = false;
+    catalog_name = NotificationCatalogName::kSpeechRecognitionFilesFailed;
   } else {
     bool is_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
 
@@ -371,6 +377,9 @@ void ShowAccessibilityNotification(
     text = l10n_util::GetStringUTF16(
         is_tablet ? IDS_ASH_STATUS_TRAY_SPOKEN_FEEDBACK_ENABLED_TABLET
                   : IDS_ASH_STATUS_TRAY_SPOKEN_FEEDBACK_ENABLED);
+    catalog_name = type == A11yNotificationType::kSpokenFeedbackBrailleEnabled
+                       ? NotificationCatalogName::kSpokenFeedbackBrailleEnabled
+                       : NotificationCatalogName::kSpokenFeedbackEnabled;
   }
   message_center::RichNotificationData options;
   options.should_make_spoken_feedback_for_popup_updates = false;
@@ -380,7 +389,7 @@ void ShowAccessibilityNotification(
           text, display_source, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierAccessibility, NotificationCatalogName::kAccessibility),
+              kNotifierAccessibility, catalog_name),
           options, nullptr, GetNotificationIcon(type), warning);
   notification->set_pinned(pinned);
   message_center->AddNotification(std::move(notification));

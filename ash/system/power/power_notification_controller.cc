@@ -155,7 +155,8 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
         std::u16string(), GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower,
-            NotificationCatalogName::kPowerNotifier),
+            on_battery ? NotificationCatalogName::kLowPowerCharger
+                       : NotificationCatalogName::kLowPowerAdapter),
         message_center::RichNotificationData(),
         new UsbNotificationDelegate(this), kNotificationLowPowerChargerIcon,
         message_center::SystemNotificationWarningLevel::WARNING);
