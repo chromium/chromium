@@ -436,20 +436,18 @@ std::unique_ptr<Volume> Volume::CreateForMTP(const base::FilePath& mount_path,
   return volume;
 }
 
-// static: |mount_path| is the fusebox daemon AttachStorage API 'subdir'.
+// static
 std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
     const base::FilePath& mount_path,
     const std::string& label,
     bool read_only) {
-  const base::FilePath mount_point(util::kFuseBoxMediaPath);
-
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->file_system_type_ = util::kFuseBox;
   volume->device_type_ = chromeos::DEVICE_TYPE_MOBILE;
-  volume->source_path_ = mount_point.Append(mount_path);
+  volume->source_path_ = mount_path;
   volume->source_ = SOURCE_DEVICE;
-  volume->mount_path_ = mount_point.Append(mount_path);
+  volume->mount_path_ = mount_path;
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->is_parent_ = true;
   volume->is_read_only_ = read_only;
@@ -1577,7 +1575,8 @@ void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& subdir,
     return;
 
   // Create a Volume for the fusebox MTP storage device.
-  const base::FilePath mount_path = base::FilePath(subdir);
+  const base::FilePath mount_path =
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
   std::unique_ptr<Volume> volume =
       Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
 
