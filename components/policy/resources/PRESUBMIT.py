@@ -73,10 +73,20 @@ def _CheckPolicyTemplatesSyntax(input_api, output_api):
       'BYPASS_POLICY_COMPATIBILITY_CHECK' in input_api.change.tags
 
     checker = syntax_check_policy_template_json.PolicyTemplateChecker()
-    checker_result = checker.Run(args, filepath, original_file_contents,
+    errors, warnings = checker.Run(args, filepath, original_file_contents,
                                  current_version, skip_compatibility_check)
-    if checker_result > 0:
-      return [output_api.PresubmitError('Syntax error(s) in file:', [filepath])]
+
+    # PRESUBMIT won't print warning if there is any error. Append warnings to
+    # error for policy_templates.json so that they can always be printed
+    # together.
+    if errors:
+      return [output_api.PresubmitError('Syntax error(s) in file:',
+                                        [filepath],
+                                        "\n".join(errors+warnings))]
+    elif warnings:
+      return [output_api.PresubmitPromptWarning('Syntax warning(s) in file:',
+                                                [filepath],
+                                                "\n".join(warnings))]
   finally:
     sys.path = old_sys_path
   return []

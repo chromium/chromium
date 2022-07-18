@@ -320,8 +320,6 @@ class PolicyTypeProvider():
 class PolicyTemplateChecker(object):
 
   def __init__(self):
-    self.error_count = 0
-    self.warning_count = 0
     self.num_policies = 0
     self.num_groups = 0
     self.num_policies_in_groups = 0
@@ -330,23 +328,33 @@ class PolicyTemplateChecker(object):
     self.schema_validator = SchemaValidator()
     self.has_schema_error = False
     self.policy_type_provider = PolicyTypeProvider()
+    self.errors = []
+    self.warnings = []
 
   def _Warning(self, message):
-    self.warning_count += 1
-    print(message)
+    self.warnings.append(f'Warning: {message}')
 
   def _Error(self,
              message,
              parent_element=None,
              identifier=None,
              offending_snippet=None):
-    self.error_count += 1
-    error = ''
+    error_prompt = ''
     if identifier is not None and parent_element is not None:
-      error += 'In %s %s: ' % (parent_element, identifier)
-    print(error + 'Error: ' + message)
+      error_prompt += f'In {parent_element} {identifier}: '
+
+    formatted_error_message = f'Error: {error_prompt}{message}'
     if offending_snippet is not None:
-      print('  Offending:', json.dumps(offending_snippet, indent=2))
+      json_str = json.dumps(offending_snippet, indent=2)
+      formatted_error_message += f'\n  Offending: {json_str}'
+    self.errors.append(formatted_error_message)
+
+  def _LineError(self, message, line_number):
+    self._Error(f'In line {line_number}: {message}')
+
+  def _LineWarning(self, message, line_number):
+    self._Warning(f'In line {line_number}: Automatically fixing formatting: '
+                  f'{message}')
 
   def _CheckContains(self,
                      container,
@@ -448,6 +456,32 @@ class PolicyTemplateChecker(object):
                    "policy id in use, which is currently %s (vs %s).") %
                   (highest_id_in_policies, highest_id))
 
+  def _ValidateSchema(self, schema, schema_name, policy_name):
+    ''' Helper fuction to call `schema_validator.ValidateSchema`. Appends error
+        to `self.errors` if necessary.
+    '''
+    schema_errors = self.schema_validator.ValidateSchema(schema)
+    if schema_errors:
+      schema_error_message = "\n  ".join(schema_errors)
+      self._Error(
+          f'{schema_name.capitalize()} is invalid for policy {policy_name}\n'
+          f'  {schema_error_message}')
+      self.has_schema_error = True
+
+  def _ValidateValue(self, schema, example, enforce_use_entire_schema,
+                     schema_name, policy_name):
+    '''Helper function to call `schema_validator.ValidateValue()` Appends error
+       to `self.errors` if needed.
+    '''
+    value_errors = self.schema_validator.ValidateValue(
+        schema, example, enforce_use_entire_schema)
+    if value_errors:
+      value_error_message = "\n  ".join(value_errors)
+      self._Error(f'Example for policy {policy_name} does not '
+                  f'comply to the policy\'s {schema_name} or does not use all '
+                  f'properties at least once.\n'
+                  f'  {value_error_message}')
+
   def _CheckPolicySchema(self, policy, policy_type):
     '''Checks that the 'schema' field matches the 'type' field.'''
     self.has_schema_error = False
@@ -475,16 +509,11 @@ class PolicyTemplateChecker(object):
            'for policy %s.') %
           (policy_type, policy_type_legacy, policy.get('name')))
 
-    if not self.schema_validator.ValidateSchema(schema):
-      self._Error('Schema is invalid for policy %s' % policy.get('name'))
-      self.has_schema_error = True
+    self._ValidateSchema(schema, 'schema', policy.get('name'))
 
     if 'validation_schema' in policy:
-      validation_schema = policy.get('validation_schema')
-      if not self.schema_validator.ValidateSchema(validation_schema):
-        self._Error(
-            'Validation schema is invalid for policy %s' % policy.get('name'))
-        self.has_schema_error = True
+      self._ValidateSchema(policy.get('validation_schema'), 'validation schema',
+                           policy.get('name'))
 
     # Checks that boolean policies are not negated (which makes them harder to
     # reason about).
@@ -710,7 +739,6 @@ class PolicyTemplateChecker(object):
           True: {'true', 'enable'},
           False: {'false', 'disable'},
       }
-
       if policy['name'] not in LEGACY_NO_ENABLE_DISABLE_DESC:
         for value in required_values:
           names = value_to_names[value]
@@ -1176,12 +1204,11 @@ class PolicyTemplateChecker(object):
       example = policy.get('example_value')
       enforce_use_entire_schema = policy.get(
           'name') not in OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST
+
       if not self.has_schema_error:
-        if not self.schema_validator.ValidateValue(schema, example,
-                                                   enforce_use_entire_schema):
-          self._Error(('Example for policy %s does not comply to the policy\'s '
-                       'schema or does not use all properties at least once.') %
-                      policy.get('name'))
+        self._ValidateValue(schema, example, enforce_use_entire_schema,
+                            'schema', policy.get('name'))
+
         if 'validation_schema' in policy and 'description_schema' in policy:
           self._Error(('validation_schema and description_schema both defined '
                        'for policy %s.') % policy.get('name'))
@@ -1195,10 +1222,8 @@ class PolicyTemplateChecker(object):
             real_example = [json.loads(entry) for entry in example]
           else:
             self._Error('Unsupported type for legacy embedded json policy.')
-          if not self.schema_validator.ValidateValue(
-              secondary_schema, real_example, enforce_use_entire_schema=True):
-            self._Error(('Example for policy %s does not comply to the ' +
-                         'policy\'s validation_schema') % policy.get('name'))
+          self._ValidateValue(secondary_schema, real_example, True,
+                              'validation_schema', policy.get('name'))
 
       self._CheckDefault(policy, current_version)
 
@@ -1759,14 +1784,6 @@ class PolicyTemplateChecker(object):
       return match.group(1)
     return ''
 
-  def _LineError(self, message, line_number):
-    self.error_count += 1
-    print('In line %d: Error: %s' % (line_number, message))
-
-  def _LineWarning(self, message, line_number):
-    self._Warning('In line %d: Warning: Automatically fixing formatting: %s' %
-                  (line_number, message))
-
   def _CheckFormat(self, filename):
     if self.options.fix:
       fixed_lines = []
@@ -2017,13 +2034,13 @@ class PolicyTemplateChecker(object):
     # if the new policy definitions are compatible with the original policy
     # definitions (if the original file contents have not raised any syntax
     # errors).
-    self.non_compatibility_error_count = self.error_count
-    if (not self.non_compatibility_error_count
-        and original_file_contents is not None and not skip_compability_check):
+    self.non_compatibility_error_count = 0
+    if (not self.errors and original_file_contents is not None
+        and not skip_compability_check):
       self._CheckPolicyDefinitionsChangeCompatibility(
           policy_definitions, original_file_contents, current_version)
 
-    if self.non_compatibility_error_count != self.error_count:
+    if self.non_compatibility_error_count > 0:
       print(
           '\nThere were compatibility validation errors in the change. You may '
           'bypass this validation by adding "BYPASS_POLICY_COMPATIBILITY_CHECK='
@@ -2036,7 +2053,7 @@ class PolicyTemplateChecker(object):
 
     # Fourth part: summary and exit.
     print('Finished checking %s. %d errors, %d warnings.' %
-          (filename, self.error_count, self.warning_count))
+          (filename, len(self.errors), len(self.warnings)))
     if self.options.stats:
       if self.num_groups > 0:
         print('%d policies, %d of those in %d groups (containing on '
@@ -2045,9 +2062,7 @@ class PolicyTemplateChecker(object):
                (1.0 * self.num_policies_in_groups / self.num_groups)))
       else:
         print(self.num_policies, 'policies, 0 policy groups.')
-    if self.error_count > 0:
-      return 1
-    return 0
+    return (self.errors, self.warnings)
 
   def Run(self,
           argv,

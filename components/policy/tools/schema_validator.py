@@ -76,7 +76,7 @@ class SchemaValidator(object):
     self.schemas_by_id = {}
     self.invalid_ref_ids = set()
     self.found_ref_ids = set()
-    self.num_errors = 0
+    self.errors = []
     self.enforce_use_entire_schema = False
     self.expected_properties = {}
     self.expected_pattern_properties = {}
@@ -94,10 +94,10 @@ class SchemaValidator(object):
     Args:
       schema (dict): The JSON schema.
     Returns:
-      bool: Whether the schema is valid or not.
+      A list contains all schema errors.
     """
     self.found_ref_ids.clear()
-    self.num_errors = 0
+    self.errors = []
 
     self._ValidateSchemaInternal(schema)
 
@@ -108,7 +108,7 @@ class SchemaValidator(object):
       else:
         self._Error("Unknown $ref '%s'." % unknown_ref_id)
 
-    return self.num_errors == 0
+    return self.errors
 
   def _ValidateSchemaInternal(self, schema):
     """Check if |schema| is a valid schema.
@@ -126,7 +126,7 @@ class SchemaValidator(object):
     Args:
       schema (dict): The JSON schema.
     """
-    num_errors_before = self.num_errors
+    num_errors_before = len(self.errors)
     # Check that schema is of type dict.
     if not isinstance(schema, dict):
       self._Error("Schema must be a dict.")
@@ -188,7 +188,7 @@ class SchemaValidator(object):
       ref_id = schema['id']
       if ref_id in self.schemas_by_id:
         self._Error("ID '%s' is not unique." % ref_id)
-      if self.num_errors == num_errors_before:
+      if len(self.errors) == num_errors_before:
         self.schemas_by_id[ref_id] = schema
       else:
         self.invalid_ref_ids.add(ref_id)
@@ -336,7 +336,7 @@ class SchemaValidator(object):
       enforce_use_entire_schema (bool): Whether each property hsa to be used at
         least once.
     Returns:
-      bool: Whether the value is valid or not.
+      A list contains all value errors.
     """
     self.enforce_use_entire_schema = enforce_use_entire_schema
     self.expected_properties = {}
@@ -345,7 +345,7 @@ class SchemaValidator(object):
     self.used_properties = {}
     self.used_pattern_properties = {}
     self.used_additional_properties = {}
-    self.num_errors = 0
+    self.errors = []
 
     self._ValidateValueInternal(schema, value)
 
@@ -369,7 +369,7 @@ class SchemaValidator(object):
       if self.expected_additional_properties != self.used_additional_properties:
         self._Error("Unused additional properties.")
 
-    return self.num_errors == 0
+    return self.errors
 
   def _ValidateValueInternal(self, schema, value):
     """Validates that |value| complies to |schema|.
@@ -534,8 +534,7 @@ class SchemaValidator(object):
   def _Error(self, message):
     """Captures an error.
 
-    Logs the error |message| and increases the error count |num_errors| by one.
+    Stores error |messages|.
     Args:
       message (str): The error message."""
-    self.num_errors += 1
-    print(message)
+    self.errors.append(message)
