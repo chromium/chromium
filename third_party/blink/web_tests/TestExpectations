@@ -31,8 +31,6 @@ crbug.com/1343290 http/tests/devtools/elements/elements-tab-stops.js [ Failure P
 
 # Temporarily disabled for DevTools.
 crbug.com/1304217 http/tests/devtools/text-source-map.js [ Skip ]
-crbug.com/1304217 http/tests/devtools/runtime/runtime-getProperties.js [ Skip ] # Bug 1325812
-crbug.com/1304217 http/tests/devtools/runtime/runtime-localStorage-getProperties.js [ Skip ] # Bug 1325812
 
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]

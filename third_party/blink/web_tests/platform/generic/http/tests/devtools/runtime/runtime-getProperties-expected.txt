@@ -24,6 +24,7 @@ Running: testGetterAndSetter
     syntheticSetter : undefined
     value : undefined
     wasThrown : false
+    webIdl : undefined
     writable : false
 }
 
@@ -44,6 +45,7 @@ Running: testGetterOnly
     syntheticSetter : undefined
     value : undefined
     wasThrown : false
+    webIdl : undefined
     writable : false
 }
 

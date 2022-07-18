@@ -15,6 +15,7 @@ Tests RemoteObject.getProperties on localStorage object. 66215
         type : "string"
     }
     wasThrown : false
+    webIdl : undefined
     writable : true
 }
 
