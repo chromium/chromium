@@ -64,9 +64,15 @@ void RecordEntryStatus(EntryStatus result) {
                                 result);
 }
 
-std::string GenerateCacheKeyForResourceRequest(
+absl::optional<std::string> GenerateCacheKeyForResourceRequest(
     const ResourceRequest& resource_request,
     const net::NetworkIsolationKey& network_isolation_key) {
+  // See the comment in HttpCache::Transaction::ShouldPassThrough().
+  if (net::HttpCache::IsSplitCacheEnabled() &&
+      network_isolation_key.IsTransient()) {
+    return absl::nullopt;
+  }
+
   const bool is_subframe_document_resource =
       resource_request.destination == mojom::RequestDestination::kIframe;
   return net::HttpCache::GenerateCacheKey(
@@ -75,9 +81,14 @@ std::string GenerateCacheKeyForResourceRequest(
       /*use_single_keyed_cache=*/false, /*single_key_checksum=*/"");
 }
 
-std::string GenerateCacheKeyForURLRequest(
+absl::optional<std::string> GenerateCacheKeyForURLRequest(
     const net::URLRequest& url_request,
     mojom::RequestDestination request_destination) {
+  if (net::HttpCache::IsSplitCacheEnabled() &&
+      url_request.isolation_info().network_isolation_key().IsTransient()) {
+    return absl::nullopt;
+  }
+
   bool is_subframe_document_resource =
       request_destination == mojom::RequestDestination::kIframe;
   return net::HttpCache::GenerateCacheKey(
@@ -242,12 +253,6 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
   if (url_request->method() != net::HttpRequestHeaders::kGetMethod)
     return nullptr;
 
-  // See the comment in HttpCache::Transaction::ShouldPassThrough().
-  if (net::HttpCache::IsSplitCacheEnabled() &&
-      url_request->isolation_info().network_isolation_key().IsTransient()) {
-    return nullptr;
-  }
-
   if (!response->headers || response->headers->response_code() != net::HTTP_OK)
     return nullptr;
 
@@ -265,12 +270,14 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
   if (validation_type != net::VALIDATION_NONE)
     return nullptr;
 
-  std::string cache_key =
+  absl::optional<std::string> cache_key =
       GenerateCacheKeyForURLRequest(*url_request, request_destination);
+  if (!cache_key.has_value())
+    return nullptr;
 
   return std::make_unique<NetworkServiceMemoryCacheWriter>(
       weak_ptr_factory_.GetWeakPtr(), GetNextTraceId(), max_per_entry_bytes_,
-      std::move(cache_key), url_request, request_destination, response);
+      std::move(*cache_key), url_request, request_destination, response);
 }
 
 void NetworkServiceMemoryCache::StoreResponse(
@@ -335,10 +342,6 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   // TODO(https://crbug.com/1339708): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
-  if (net::HttpCache::IsSplitCacheEnabled() &&
-      network_isolation_key.IsTransient()) {
-    return absl::nullopt;
-  }
 
   const GURL& url = resource_request.url;
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
@@ -353,10 +356,12 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     return absl::nullopt;
   }
 
-  std::string cache_key = GenerateCacheKeyForResourceRequest(
+  absl::optional<std::string> cache_key = GenerateCacheKeyForResourceRequest(
       resource_request, network_isolation_key);
+  if (!cache_key.has_value())
+    return absl::nullopt;
 
-  auto it = entries_.Peek(cache_key);
+  auto it = entries_.Peek(*cache_key);
   if (it == entries_.end()) {
     RecordEntryStatus(EntryStatus::kNotInCache);
     return absl::nullopt;
@@ -395,7 +400,7 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   }
 
   RecordEntryStatus(EntryStatus::kUsed);
-  return std::move(cache_key);
+  return std::move(*cache_key);
 }
 
 void NetworkServiceMemoryCache::CreateLoaderAndStart(
@@ -445,9 +450,12 @@ void NetworkServiceMemoryCache::OnRedirect(
   if (url_request->method() != net::HttpRequestHeaders::kGetMethod)
     return;
 
-  std::string cache_key =
+  absl::optional<std::string> cache_key =
       GenerateCacheKeyForURLRequest(*url_request, request_destination);
-  auto it = entries_.Peek(cache_key);
+  if (!cache_key.has_value())
+    return;
+
+  auto it = entries_.Peek(*cache_key);
   if (it != entries_.end())
     EraseEntry(it);
 }
