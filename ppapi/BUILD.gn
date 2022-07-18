@@ -13,7 +13,7 @@ if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
 
-assert(enable_plugins)
+assert(enable_ppapi)
 
 # Test files shared between several targets below.
 #

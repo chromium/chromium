@@ -4,7 +4,7 @@
 
 import("//ppapi/buildflags/buildflags.gni")
 
-assert(enable_plugins)
+assert(enable_ppapi)
 
 config("gles2_config") {
   include_dirs = [ "//ppapi/lib/gl/include" ]

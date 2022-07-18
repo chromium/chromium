@@ -5,7 +5,7 @@
 import("//build/config/nacl/config.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
-assert(enable_plugins)
+assert(enable_ppapi)
 
 config("proxy_implementation") {
   defines = [ "PPAPI_PROXY_IMPLEMENTATION" ]

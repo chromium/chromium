@@ -8,7 +8,7 @@ if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
 
-assert(enable_plugins)
+assert(enable_ppapi)
 
 # Declares a PPAPI example target of the correct type for the current platform
 # and with the right linker flags.

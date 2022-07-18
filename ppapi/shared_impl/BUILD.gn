@@ -5,7 +5,7 @@
 import("//build/config/nacl/config.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
-assert(enable_plugins)
+assert(enable_ppapi)
 
 # //ppapi/shared_impl and //ppapi/thunk go into the same library.
 config("export_shared_impl_and_thunk") {

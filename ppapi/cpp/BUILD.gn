@@ -8,7 +8,7 @@ if (is_nacl) {
   import("//build/config/nacl/config.gni")
 }
 
-assert(enable_plugins)
+assert(enable_ppapi)
 
 if (is_nacl && is_nacl_glibc) {
   cpp_target_type = "shared_library"
