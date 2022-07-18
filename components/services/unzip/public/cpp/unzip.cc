@@ -23,7 +23,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/services/filesystem/directory_impl.h"
-#include "components/services/filesystem/lock_table.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -180,7 +179,7 @@ void PrepareUnzipParams(
     mojo::PendingRemote<unzip::mojom::UnzipFilter>& filter_remote,
     mojo::PendingRemote<unzip::mojom::UnzipListener>& listener_remote) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<filesystem::DirectoryImpl>(output_dir, nullptr, nullptr),
+      std::make_unique<filesystem::DirectoryImpl>(output_dir, nullptr),
       directory_remote.InitWithNewPipeAndPassReceiver());
 
   unzip_params->unzipper().set_disconnect_handler(

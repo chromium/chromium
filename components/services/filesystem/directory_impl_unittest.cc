@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "components/services/filesystem/directory_test_helper.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
-#include "components/services/filesystem/public/mojom/file.mojom.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,11 +51,13 @@ TEST_F(DirectoryImplTest, Read) {
       {"my_file3", mojom::kFlagAppend | mojom::kFlagCreate}};
   for (size_t i = 0; i < std::size(files_to_create); i++) {
     error = base::File::Error::FILE_ERROR_FAILED;
-    bool handled =
-        directory->OpenFile(files_to_create[i].name, mojo::NullReceiver(),
-                            files_to_create[i].open_flags, &error);
+    base::File tmp_base_file;
+    bool handled = directory->OpenFileHandle(files_to_create[i].name,
+                                             files_to_create[i].open_flags,
+                                             &error, &tmp_base_file);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
+    tmp_base_file.Close();
   }
   // Make a directory.
   error = base::File::Error::FILE_ERROR_FAILED;
@@ -92,7 +93,7 @@ TEST_F(DirectoryImplTest, Read) {
   }
 }
 
-// TODO(vtl): Properly test OpenFile() and OpenDirectory() (including flags).
+// TODO(vtl): Properly test OpenDirectory() (including flags).
 
 TEST_F(DirectoryImplTest, BasicRenameDelete) {
   mojo::Remote<mojom::Directory> directory = CreateTempDir();
@@ -100,18 +101,20 @@ TEST_F(DirectoryImplTest, BasicRenameDelete) {
 
   // Create my_file.
   error = base::File::Error::FILE_ERROR_FAILED;
-  bool handled =
-      directory->OpenFile("my_file", mojo::NullReceiver(),
-                          mojom::kFlagWrite | mojom::kFlagCreate, &error);
+  base::File tmp_base_file;
+  bool handled = directory->OpenFileHandle(
+      "my_file", mojom::kFlagWrite | mojom::kFlagCreate, &error,
+      &tmp_base_file);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
 
   // Opening my_file should succeed.
   error = base::File::Error::FILE_ERROR_FAILED;
-  handled = directory->OpenFile("my_file", mojo::NullReceiver(),
-                                mojom::kFlagRead | mojom::kFlagOpen, &error);
+  handled = directory->OpenFileHandle(
+      "my_file", mojom::kFlagRead | mojom::kFlagOpen, &error, &tmp_base_file);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
+  tmp_base_file.Close();
 
   // Rename my_file to my_new_file.
   handled = directory->Rename("my_file", "my_new_file", &error);
@@ -119,31 +122,36 @@ TEST_F(DirectoryImplTest, BasicRenameDelete) {
   EXPECT_EQ(base::File::Error::FILE_OK, error);
 
   // Opening my_file should fail.
-
   error = base::File::Error::FILE_ERROR_FAILED;
-  handled = directory->OpenFile("my_file", mojo::NullReceiver(),
-                                mojom::kFlagRead | mojom::kFlagOpen, &error);
+  handled = directory->OpenFileHandle(
+      "my_file", mojom::kFlagRead | mojom::kFlagOpen, &error, &tmp_base_file);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND, error);
+  tmp_base_file.Close();
 
   // Opening my_new_file should succeed.
   error = base::File::Error::FILE_ERROR_FAILED;
-  handled = directory->OpenFile("my_new_file", mojo::NullReceiver(),
-                                mojom::kFlagRead | mojom::kFlagOpen, &error);
+  handled = directory->OpenFileHandle("my_new_file",
+                                      mojom::kFlagRead | mojom::kFlagOpen,
+                                      &error, &tmp_base_file);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
+  tmp_base_file.Close();
 
   // Delete my_new_file (no flags).
   handled = directory->Delete("my_new_file", 0, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
+  tmp_base_file.Close();
 
   // Opening my_new_file should fail.
   error = base::File::Error::FILE_ERROR_FAILED;
-  handled = directory->OpenFile("my_new_file", mojo::NullReceiver(),
-                                mojom::kFlagRead | mojom::kFlagOpen, &error);
+  handled = directory->OpenFileHandle("my_new_file",
+                                      mojom::kFlagRead | mojom::kFlagOpen,
+                                      &error, &tmp_base_file);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND, error);
+  tmp_base_file.Close();
 }
 
 TEST_F(DirectoryImplTest, CantOpenDirectoriesAsFiles) {
@@ -163,11 +171,11 @@ TEST_F(DirectoryImplTest, CantOpenDirectoriesAsFiles) {
 
   {
     // Attempt to open that directory as a file. This must fail!
-    mojo::Remote<mojom::File> file;
+    base::File tmp_file_handle;
     error = base::File::Error::FILE_ERROR_FAILED;
-    bool handled =
-        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
-                            mojom::kFlagRead | mojom::kFlagOpen, &error);
+    bool handled = directory->OpenFileHandle(
+        "my_file", mojom::kFlagRead | mojom::kFlagOpen, &error,
+        &tmp_file_handle);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_A_FILE, error);
   }

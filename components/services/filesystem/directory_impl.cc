@@ -14,19 +14,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
-#include "components/services/filesystem/file_impl.h"
-#include "components/services/filesystem/lock_table.h"
 #include "components/services/filesystem/util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace filesystem {
 
 DirectoryImpl::DirectoryImpl(base::FilePath directory_path,
-                             scoped_refptr<SharedTempDir> temp_dir,
-                             scoped_refptr<LockTable> lock_table)
-    : directory_path_(directory_path),
-      temp_dir_(std::move(temp_dir)),
-      lock_table_(std::move(lock_table)) {}
+                             scoped_refptr<SharedTempDir> temp_dir)
+    : directory_path_(directory_path), temp_dir_(std::move(temp_dir)) {}
 
 DirectoryImpl::~DirectoryImpl() {}
 
@@ -54,41 +49,6 @@ void DirectoryImpl::Read(ReadCallback callback) {
 // TODO(erg): Consider adding an implementation of Stat()/Touch() to the
 // directory, too. Right now, the base::File abstractions do not really deal
 // with directories properly, so these are broken for now.
-
-// TODO(vtl): Move the implementation to a thread pool.
-void DirectoryImpl::OpenFile(const std::string& raw_path,
-                             mojo::PendingReceiver<mojom::File> receiver,
-                             uint32_t open_flags,
-                             OpenFileCallback callback) {
-  base::FilePath path;
-  base::File::Error error = ValidatePath(raw_path, directory_path_, &path);
-  if (error != base::File::Error::FILE_OK) {
-    std::move(callback).Run(error);
-    return;
-  }
-
-  if (base::DirectoryExists(path)) {
-    // We must not return directories as files. In the file abstraction, we can
-    // fetch raw file descriptors over mojo pipes, and passing a file
-    // descriptor to a directory is a sandbox escape on Windows.
-    std::move(callback).Run(base::File::Error::FILE_ERROR_NOT_A_FILE);
-    return;
-  }
-
-  base::File base_file(path, open_flags);
-  if (!base_file.IsValid()) {
-    std::move(callback).Run(GetError(base_file));
-    return;
-  }
-
-  if (receiver) {
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<FileImpl>(path, std::move(base_file), temp_dir_,
-                                   lock_table_),
-        std::move(receiver));
-  }
-  std::move(callback).Run(base::File::Error::FILE_OK);
-}
 
 void DirectoryImpl::OpenFileHandle(const std::string& raw_path,
                                    uint32_t open_flags,
@@ -147,8 +107,7 @@ void DirectoryImpl::OpenDirectory(
 
   if (receiver) {
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<DirectoryImpl>(path, temp_dir_, lock_table_),
-        std::move(receiver));
+        std::make_unique<DirectoryImpl>(path, temp_dir_), std::move(receiver));
   }
 
   std::move(callback).Run(base::File::Error::FILE_OK);
@@ -302,7 +261,7 @@ void DirectoryImpl::StatFile(const std::string& raw_path,
 
 void DirectoryImpl::Clone(mojo::PendingReceiver<mojom::Directory> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<DirectoryImpl>(directory_path_, temp_dir_, lock_table_),
+      std::make_unique<DirectoryImpl>(directory_path_, temp_dir_),
       std::move(receiver));
 }
 

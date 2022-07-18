@@ -16,15 +16,12 @@
 
 namespace filesystem {
 
-class LockTable;
-
 class DirectoryImpl : public mojom::Directory {
  public:
   // Set |temp_dir| only if there's a temporary directory that should be deleted
   // when this object is destroyed.
   DirectoryImpl(base::FilePath directory_path,
-                scoped_refptr<SharedTempDir> temp_dir,
-                scoped_refptr<LockTable> lock_table);
+                scoped_refptr<SharedTempDir> temp_dir);
 
   DirectoryImpl(const DirectoryImpl&) = delete;
   DirectoryImpl& operator=(const DirectoryImpl&) = delete;
@@ -33,10 +30,6 @@ class DirectoryImpl : public mojom::Directory {
 
   // |Directory| implementation:
   void Read(ReadCallback callback) override;
-  void OpenFile(const std::string& path,
-                mojo::PendingReceiver<mojom::File> receiver,
-                uint32_t open_flags,
-                OpenFileCallback callback) override;
   void OpenFileHandle(const std::string& path,
                       uint32_t open_flags,
                       OpenFileHandleCallback callback) override;
@@ -73,7 +66,6 @@ class DirectoryImpl : public mojom::Directory {
 
   base::FilePath directory_path_;
   scoped_refptr<SharedTempDir> temp_dir_;
-  scoped_refptr<LockTable> lock_table_;
 };
 
 }  // namespace filesystem

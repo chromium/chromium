@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/services/filesystem/directory_impl.h"
-#include "components/services/filesystem/lock_table.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -135,8 +134,7 @@ void ZipFileCreator::BindDirectory(
              RunnerPtr runner) {
             mojo::MakeSelfOwnedReceiver(
                 std::make_unique<filesystem::DirectoryImpl>(
-                    std::move(src_dir), /*temp_dir=*/nullptr,
-                    /*lock_table=*/nullptr),
+                    std::move(src_dir), /*temp_dir=*/nullptr),
                 std::move(receiver), std::move(runner));
           },
           src_dir_, std::move(receiver), runner));

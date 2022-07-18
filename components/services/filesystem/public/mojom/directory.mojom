@@ -4,7 +4,6 @@
 
 module filesystem.mojom;
 
-import "components/services/filesystem/public/mojom/file.mojom";
 import "components/services/filesystem/public/mojom/types.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_error.mojom";
@@ -37,13 +36,6 @@ interface Directory {
              array<DirectoryEntry>? directory_contents);
 
   // Operations *in* "this" |Directory|:
-
-  // Opens the file specified by |path| with the given |open_flags|. |file| is
-  // optional, mainly for consistency with |OpenDirectory()| (but may be useful,
-  // together with |kOpenFlagCreate|, for "touching" a file).
-  [Sync]
-  OpenFile(string path, pending_receiver<File>? file, uint32 open_flags)
-      => (mojo_base.mojom.FileError error);
 
   // Opens the file specified by |path| with the given |open_flags|. Returns a
   // native file descriptor wrapped in a MojoHandle.
