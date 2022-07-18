@@ -41,8 +41,11 @@ constexpr char kBluetoothDeviceIdPrefix[] = "battery_bluetooth-";
 
 // Currently we expect at most one peripheral charger to exist, and
 // it will always be the stylus charger.
-constexpr char kStylusChargerFilename[] = "/PCHG0";
-constexpr char kStylusChargerID[] = "PCHG0";
+// TODO(b/215381232): Temporarily support both PCHG name and peripheral name
+// till upstream kernel driver is merged.
+constexpr LazyRE2 kPeripheralChargerRegex = {
+    R"(/(?:peripheral|PCHG)(?:[0-9]+)$)"};
+constexpr char kStylusChargerID[] = "peripheral0";
 
 // TODO(b/187298772,b/187299765): if we have docked stylus chargers that have
 // significantly different parameters, we will need to provide a way to
@@ -116,7 +119,7 @@ bool IsEligibleForBatteryReport(
 
 // Checks if device is the internal charger for an external stylus.
 bool IsPeripheralCharger(const std::string& path) {
-  return base::EndsWith(path, kStylusChargerFilename);
+  return RE2::PartialMatch(path, *kPeripheralChargerRegex);
 }
 
 std::string GetMapKeyForBluetoothAddress(const std::string& bluetooth_address) {

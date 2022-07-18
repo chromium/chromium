@@ -1030,6 +1030,35 @@ TEST_F(PeripheralBatteryListenerTest, Charger) {
       /*serial_number=*/"", kBatteryEventUpdate);
 }
 
+// TODO(b/215381232): Temporarily support both 'PCHG' name and 'peripheral' name
+// till upstream kernel driver is merged. Remove test case when upstream kernel
+// driver is merged.
+TEST_F(PeripheralBatteryListenerTest, Charger_PCHG) {
+  testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      scoped_listener_obs{&listener_observer_mock};
+  scoped_listener_obs.Observe(battery_listener_.get());
+
+  testing::InSequence sequence;
+
+  EXPECT_CALL(listener_observer_mock,
+              OnAddingBattery(AFIELD(&BI::key, Eq(kTestChargerId))));
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(
+          AllOf(AFIELD(&BI::key, Eq(kTestChargerId)),
+                AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
+                AFIELD(&BI::level, Eq(50)),
+                AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kCharging)))));
+
+  battery_listener_->PeripheralBatteryStatusReceived(
+      kTestPCHGChargerPath, kTestChargerName, 50,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING,
+      /*serial_number=*/"", kBatteryEventUpdate);
+}
+
 TEST_F(PeripheralBatteryListenerTest, ChargerError) {
   testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
   base::ScopedObservation<PeripheralBatteryListener,

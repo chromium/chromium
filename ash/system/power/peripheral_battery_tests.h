@@ -26,12 +26,18 @@ inline constexpr char kTestBatteryNotificationId[] =
     "battery_notification-battery_bluetooth-aa:bb:cc:dd:ee:ff";
 
 // Charging device
-inline constexpr char kTestChargerPath[] = "/sys/class/power_supply/PCHG0";
+inline constexpr char kTestChargerPath[] =
+    "/sys/class/power_supply/peripheral0";
 inline constexpr char kTestChargerName[] = "";
-inline constexpr char kTestChargerId[] = "PCHG0";
-inline constexpr char kTestOtherChargerPath[] = "/sys/class/power_supply/PCHG1";
+inline constexpr char kTestChargerId[] = "peripheral0";
+inline constexpr char kTestOtherChargerPath[] =
+    "/sys/class/power_supply/peripheral1";
 inline constexpr char kTestOtherChargerName[] = "";
-inline constexpr char kTestOtherChargerId[] = "PCHG1";
+inline constexpr char kTestOtherChargerId[] = "peripheral1";
+// TODO(b/215381232): Temporarily support both 'PCHG' name and 'peripheral' name
+// till upstream kernel driver is merged. Remove variable when upstream kernel
+// driver is merged.
+inline constexpr char kTestPCHGChargerPath[] = "/sys/class/power_supply/PCHG0";
 
 // Bluetooth devices.
 inline constexpr char kBluetoothDeviceAddress1[] = "aa:bb:cc:dd:ee:ff";
