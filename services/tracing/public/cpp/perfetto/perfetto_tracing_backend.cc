@@ -76,6 +76,8 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     producer_->OnDisconnect();
   }
 
+  void Disconnect() override { LOG(DFATAL) << "Not implemented yet"; }
+
   // perfetto::ProducerEndpoint implementation:
   void RegisterDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {

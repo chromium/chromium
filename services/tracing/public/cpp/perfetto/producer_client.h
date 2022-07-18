@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
       perfetto::TracingService::ProducerEndpoint*,
       base::tracing::PerfettoTaskRunner*);
 
+  void Disconnect() override;
+
   // PerfettoProducer implementation.
   void BindStartupTargetBuffer(
       uint16_t target_buffer_reservation_id,

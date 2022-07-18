@@ -88,6 +88,10 @@ void ProducerClient::BindInProcessSharedMemoryArbiter(
   arbiter->BindToProducerEndpoint(producer_endpoint, task_runner);
 }
 
+void ProducerClient::Disconnect() {
+  LOG(DFATAL) << "Not implemented yet";
+}
+
 void ProducerClient::BindStartupTargetBuffer(
     uint16_t target_buffer_reservation_id,
     perfetto::BufferID startup_target_buffer) {
