@@ -149,14 +149,10 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   builder.SetAvailableSize(size);
   NGConstraintSpace constraint_space = builder.ToConstraintSpace();
 
-  NGInlineChildLayoutContext context;
   NGBoxFragmentBuilder container_builder(
       block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
-  NGFragmentItemsBuilder items_builder(inline_node,
-                                       container_builder.GetWritingDirection());
-  container_builder.SetItemsBuilder(&items_builder);
-  context.SetItemsBuilder(&items_builder);
+  NGInlineChildLayoutContext context(inline_node, &container_builder);
   const NGLayoutResult* layout_result =
       inline_node.Layout(constraint_space, nullptr, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();

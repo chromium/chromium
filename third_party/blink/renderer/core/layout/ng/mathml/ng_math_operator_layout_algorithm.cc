@@ -44,11 +44,8 @@ const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
-  NGInlineChildLayoutContext context;
-  NGFragmentItemsBuilder items_builder(
-      To<NGInlineNode>(child), container_builder_.GetWritingDirection());
-  container_builder_.SetItemsBuilder(&items_builder);
-  context.SetItemsBuilder(&items_builder);
+  NGInlineChildLayoutContext context(To<NGInlineNode>(child),
+                                     &container_builder_);
   const NGLayoutResult* child_layout_result = To<NGInlineNode>(child).Layout(
       ConstraintSpace(), /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &context);
