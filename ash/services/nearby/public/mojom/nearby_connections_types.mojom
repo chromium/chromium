@@ -272,6 +272,7 @@ enum Medium {
   kWifiDirect = 8,
   kWebRtc = 9,
   kBleL2Cap = 10,
+  kUsb = 11,
 };
 
 // Log severity levels. This is passed as a member of

@@ -31,6 +31,7 @@ void LogReadResult(connections::mojom::Medium medium, bool success) {
     case connections::mojom::Medium::kWifiDirect:
     case connections::mojom::Medium::kWebRtc:
     case connections::mojom::Medium::kBleL2Cap:
+    case connections::mojom::Medium::kUsb:
       break;
   }
 }

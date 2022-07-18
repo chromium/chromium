@@ -124,6 +124,8 @@ mojom::Medium MediumToMojom(Medium medium) {
       return mojom::Medium::kWebRtc;
     case Medium::BLE_L2CAP:
       return mojom::Medium::kBleL2Cap;
+    case Medium::USB:
+      return mojom::Medium::kUsb;
   }
 }
 
