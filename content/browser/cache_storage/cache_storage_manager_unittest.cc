@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -60,6 +61,7 @@
 #include "storage/common/quota/padding_key.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -76,6 +78,12 @@ namespace cache_storage_manager_unittest {
 enum class TestStorage {
   kDisk,
   kMemory,
+};
+
+enum class StorageKeyAndBucketTestCase {
+  kFirstPartyDefault,
+  kFirstPartyDefaultPartitionEnabled,
+  kThirdPartyDefault,
 };
 
 using blink::mojom::StorageType;
@@ -735,6 +743,24 @@ class CacheStorageManagerTest : public testing::Test {
     return usage;
   }
 
+  const std::vector<blink::StorageKey> GetStorageKeys(
+      storage::mojom::CacheStorageOwner owner =
+          storage::mojom::CacheStorageOwner::kCacheAPI) {
+    base::test::TestFuture<const std::vector<::blink::StorageKey>&> future;
+    cache_manager_->GetStorageKeys(owner, future.GetCallback());
+    return future.Get();
+  }
+
+  blink::mojom::QuotaStatusCode DeleteStorageKeyData(
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner =
+          storage::mojom::CacheStorageOwner::kCacheAPI) {
+    base::test::TestFuture<::blink::mojom::QuotaStatusCode> future;
+    cache_manager_->DeleteStorageKeyData(storage_key, owner,
+                                         future.GetCallback());
+    return future.Get();
+  }
+
   int64_t GetSizeThenCloseAllCaches(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
     CacheStorageHandle cache_storage = CacheStorageForKey(storage_key);
@@ -779,6 +805,17 @@ class CacheStorageManagerTest : public testing::Test {
     run_loop->Quit();
   }
 
+  storage::BucketLocator GetOrCreateBucket(const blink::StorageKey& storage_key,
+                                           const std::string& name) {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+    quota_manager_proxy_->UpdateOrCreateBucket(
+        storage::BucketInitParams(storage_key, name),
+        base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
+    auto bucket = future.Take();
+    EXPECT_TRUE(bucket.ok());
+    return bucket->ToBucketLocator();
+  }
+
  protected:
   // Temporary directory must be allocated first so as to be destroyed last.
   base::ScopedTempDir temp_dir_;
@@ -798,8 +835,8 @@ class CacheStorageManagerTest : public testing::Test {
   blink::mojom::FetchAPIResponsePtr callback_cache_handle_response_;
   std::vector<std::string> cache_names_;
 
-  const blink::StorageKey storage_key1_;
-  const blink::StorageKey storage_key2_;
+  blink::StorageKey storage_key1_;
+  blink::StorageKey storage_key2_;
 
   int64_t callback_usage_;
 };
@@ -814,6 +851,52 @@ class CacheStorageManagerTestP
       public testing::WithParamInterface<TestStorage> {
  public:
   bool MemoryOnly() override { return GetParam() == TestStorage::kMemory; }
+};
+
+class CacheStorageManagerStorageKeyAndBucketTestP
+    : public CacheStorageManagerTest,
+      public testing::WithParamInterface<StorageKeyAndBucketTestCase> {
+ public:
+  void SetUp() override {
+    CacheStorageManagerTest::SetUp();
+
+    test_case_ = GetParam();
+
+    if (ThirdPartyStoragePartitioningEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+    }
+
+    switch (test_case_) {
+      case (StorageKeyAndBucketTestCase::kFirstPartyDefault):
+      case (StorageKeyAndBucketTestCase::kFirstPartyDefaultPartitionEnabled):
+        // For these cases, the storage keys are already initialized correctly.
+        break;
+      case (StorageKeyAndBucketTestCase::kThirdPartyDefault):
+        // Recreate storage keys.
+        storage_key1_ =
+            blink::StorageKey(url::Origin::Create(GURL("http://example1.com")),
+
+                              url::Origin::Create(GURL("http://example3.com")));
+        storage_key2_ =
+            blink::StorageKey(url::Origin::Create(GURL("http://example2.com")),
+
+                              url::Origin::Create(GURL("http://example3.com")));
+        break;
+    }
+  }
+  bool ThirdPartyStoragePartitioningEnabled() {
+    return test_case_ == StorageKeyAndBucketTestCase::
+                             kFirstPartyDefaultPartitionEnabled ||
+           test_case_ == StorageKeyAndBucketTestCase::kThirdPartyDefault;
+  }
+
+ private:
+  StorageKeyAndBucketTestCase test_case_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CacheStorageManagerTest, TestsRunOnIOThread) {
@@ -1131,7 +1214,7 @@ TEST_F(CacheStorageManagerTest, EmptyKey) {
   EXPECT_EQ(0u, Keys(storage_key1_));
 }
 
-TEST_F(CacheStorageManagerTest, DataPersists) {
+TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, DataPersists) {
   EXPECT_TRUE(Open(storage_key1_, "foo"));
   EXPECT_TRUE(Open(storage_key1_, "bar"));
   EXPECT_TRUE(Open(storage_key1_, "baz"));
@@ -1411,7 +1494,8 @@ TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
   EXPECT_EQ(0, Size(storage_key1_));
 }
 
-TEST_F(CacheStorageManagerTest, CacheSizeCorrectAfterReopen) {
+TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
+       CacheSizeCorrectAfterReopen) {
   const GURL kFooURL("http://example.com/foo");
   const std::string kCacheName = "foo";
 
@@ -1421,7 +1505,27 @@ TEST_F(CacheStorageManagerTest, CacheSizeCorrectAfterReopen) {
   auto size_before_close = Size(storage_key1_);
   EXPECT_GT(size_before_close, 0);
 
+  // Double-check that the CacheStorage files have been written to the
+  // directory we expect.
+  base::FilePath calculated_path = CacheStorageManager::ConstructStorageKeyPath(
+      cache_manager_->profile_path(), storage_key1_,
+      storage::mojom::CacheStorageOwner::kCacheAPI);
+
+  base::FilePath expected_path;
+  // Default buckets and first-party contexts should use the legacy path
+  // format. We'll hardcode the origin hash corresponding to
+  // `storage_key1_.origin()`.
+  expected_path = temp_dir_.GetPath()
+                      .AppendASCII("Service Worker")
+                      .AppendASCII(CacheStorage::kCacheStorage)
+                      .AppendASCII("0430f1a484a0ea6d8de562488c5fbeec0111d16f");
+
+  EXPECT_EQ(expected_path, calculated_path);
+
   DestroyStorageManager();
+
+  EXPECT_TRUE(base::PathExists(calculated_path));
+
   CreateStorageManager();
 
   EXPECT_TRUE(Open(storage_key1_, kCacheName));
@@ -1572,7 +1676,7 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeyUsage) {
   EXPECT_EQ(2 * foo_size, GetStorageKeyUsage(storage_key1_));
 }
 
-TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsage) {
+TEST_F(CacheStorageManagerMemoryOnlyTest, GetAllStorageKeysUsage) {
   EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
   // Put one entry in a cache on origin 1.
   EXPECT_TRUE(Open(storage_key1_, "foo"));
@@ -1590,26 +1694,56 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsage) {
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, usage.size());
 
-  int storage_key1_index =
-      blink::StorageKey(usage[0]->origin) == storage_key1_ ? 0 : 1;
-  int storage_key2_index =
-      blink::StorageKey(usage[1]->origin) == storage_key2_ ? 1 : 0;
+  int storage_key1_index = usage[0]->origin == storage_key1_.origin() ? 0 : 1;
+  int storage_key2_index = usage[1]->origin == storage_key2_.origin() ? 1 : 0;
   EXPECT_NE(storage_key1_index, storage_key2_index);
 
   int64_t storage_key1_size = usage[storage_key1_index]->total_size_bytes;
   int64_t storage_key2_size = usage[storage_key2_index]->total_size_bytes;
   EXPECT_EQ(2 * storage_key1_size, storage_key2_size);
 
-  if (MemoryOnly()) {
-    EXPECT_TRUE(usage[storage_key1_index]->last_modified.is_null());
-    EXPECT_TRUE(usage[storage_key2_index]->last_modified.is_null());
-  } else {
-    EXPECT_FALSE(usage[storage_key1_index]->last_modified.is_null());
-    EXPECT_FALSE(usage[storage_key2_index]->last_modified.is_null());
-  }
+  EXPECT_TRUE(usage[storage_key1_index]->last_modified.is_null());
+  EXPECT_TRUE(usage[storage_key2_index]->last_modified.is_null());
 }
 
-TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithPadding) {
+TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetAllStorageKeysUsage) {
+  EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
+  // Put one entry in a cache on origin 1.
+  EXPECT_TRUE(Open(storage_key1_, "foo"));
+  EXPECT_TRUE(
+      CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+
+  // Put two entries (of identical size) in a cache on origin 2.
+  EXPECT_TRUE(Open(storage_key2_, "foo"));
+  EXPECT_TRUE(
+      CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+  EXPECT_TRUE(
+      CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
+
+  // TODO(awillia): GetAllStorageKeysUsage() won't work for third-party storage
+  // keys until a later CL, so skip for now.
+  if (storage_key1_.IsThirdPartyContext()) {
+    return;
+  }
+
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
+      GetAllStorageKeysUsage();
+  ASSERT_EQ(2ULL, usage.size());
+
+  int storage_key1_index = usage[0]->origin == storage_key1_.origin() ? 0 : 1;
+  int storage_key2_index = usage[1]->origin == storage_key2_.origin() ? 1 : 0;
+  EXPECT_NE(storage_key1_index, storage_key2_index);
+
+  int64_t storage_key1_size = usage[storage_key1_index]->total_size_bytes;
+  int64_t storage_key2_size = usage[storage_key2_index]->total_size_bytes;
+  EXPECT_EQ(2 * storage_key1_size, storage_key2_size);
+
+  EXPECT_FALSE(usage[storage_key1_index]->last_modified.is_null());
+  EXPECT_FALSE(usage[storage_key2_index]->last_modified.is_null());
+}
+
+TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
+       GetAllStorageKeysUsageWithPadding) {
   EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
 
   EXPECT_TRUE(Open(storage_key1_, "foo"));
@@ -1619,6 +1753,12 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithPadding) {
       storage_dir.AppendASCII(CacheStorage::kIndexFileName);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+
+  // TODO(awillia): GetAllStorageKeysUsage() won't work for third-party storage
+  // keys until a later CL, so skip for now.
+  if (storage_key1_.IsThirdPartyContext()) {
+    return;
+  }
 
   auto usage = GetAllStorageKeysUsage();
   ASSERT_EQ(1ULL, usage.size());
@@ -2347,6 +2487,75 @@ TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
   EXPECT_EQ(206, callback_cache_handle_response_->status_code);
 }
 
+TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kThirdPartyStoragePartitioning);
+
+  const auto partitioned_storage_key1 =
+      blink::StorageKey(url::Origin::Create(GURL("http://example1.com")),
+
+                        url::Origin::Create(GURL("http://example3.com")));
+
+  GURL test_url = GURL("http://example.com/foo");
+
+  EXPECT_TRUE(Open(storage_key1_, "foo"));
+  EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
+
+  EXPECT_TRUE(Open(storage_key2_, "foo"));
+  EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
+
+  EXPECT_TRUE(Open(partitioned_storage_key1, "baz"));
+  EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
+
+  // TODO(awillia): This will only be two in the `!MemoryOnly()` case since
+  // `GetStorageKeys()` builds the list from disk and right now first-party
+  // and third-party storage keys share a directory. This will be fixed by
+  // the buckets integration.
+  if (MemoryOnly()) {
+    EXPECT_EQ(3ULL, GetStorageKeys().size());
+  } else {
+    EXPECT_EQ(2ULL, GetStorageKeys().size());
+  }
+
+  EXPECT_EQ(DeleteStorageKeyData(storage_key1_),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  auto storage_keys = GetStorageKeys();
+  if (MemoryOnly()) {
+    EXPECT_EQ(2ULL, storage_keys.size());
+    EXPECT_NE(storage_keys[0], storage_key1_);
+    EXPECT_NE(storage_keys[1], storage_key1_);
+  } else {
+    EXPECT_EQ(1ULL, storage_keys.size());
+    EXPECT_NE(storage_keys[0], storage_key1_);
+  }
+
+  EXPECT_EQ(DeleteStorageKeyData(partitioned_storage_key1),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  storage_keys = GetStorageKeys();
+  EXPECT_EQ(1ULL, storage_keys.size());
+  EXPECT_EQ(storage_keys[0], storage_key2_);
+
+  EXPECT_EQ(DeleteStorageKeyData(storage_key2_),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
+
+  if (!MemoryOnly()) {
+    auto* legacy_manager =
+        static_cast<CacheStorageManager*>(cache_manager_.get());
+    for (const auto& storage_key :
+         {storage_key1_, storage_key2_, partitioned_storage_key1}) {
+      base::FilePath path = CacheStorageManager::ConstructStorageKeyPath(
+          legacy_manager->profile_path(), storage_key,
+          storage::mojom::CacheStorageOwner::kCacheAPI);
+      EXPECT_FALSE(base::PathExists(path));
+    }
+  }
+}
+
 class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
  public:
   CacheStorageQuotaClientTest(const CacheStorageQuotaClientTest&) = delete;
@@ -2399,17 +2608,6 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     base::test::TestFuture<blink::mojom::QuotaStatusCode> future;
     quota_client_->DeleteBucketData(bucket, future.GetCallback());
     return future.Get() == blink::mojom::QuotaStatusCode::kOk;
-  }
-
-  storage::BucketLocator GetOrCreateBucket(const blink::StorageKey& storage_key,
-                                           const std::string& name) {
-    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_proxy_->UpdateOrCreateBucket(
-        storage::BucketInitParams(storage_key, name),
-        base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
-    auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
-    return bucket->ToBucketLocator();
   }
 
   std::unique_ptr<CacheStorageQuotaClient> quota_client_;
@@ -2522,6 +2720,10 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
               base::RepeatingCallback<void(const proto::CacheStorageIndex&,
                                            const proto::CacheStorageIndex&,
                                            int64_t)> test_logic) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages =
+        GetAllStorageKeysUsage();
+    ASSERT_TRUE(usages.empty());
+
     // Create an empty directory for the cache_storage files.
     auto* legacy_manager =
         static_cast<CacheStorageManager*>(cache_manager_.get());
@@ -2554,15 +2756,38 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     proto::CacheStorageIndex original_index;
     EXPECT_TRUE(original_index.ParseFromString(protobuf));
 
-    // Re-create the manager and ask it for the size of the test origin.
-    // This should trigger the migration of the padding values on disk.
+    // Re-create the manager and ask it for the size of all CacheStorage
+    // instances. This tests two things:
+    //  - For index files without bucket information, CacheStorageManager will
+    //    lookup or create corresponding buckets and then,
+    //  - Open each Cache Storage instance to recompute its size, triggering a
+    //    migration of its index file on disk.
     CreateStorageManager();
-    int64_t total_usage = GetStorageKeyUsage(storage_key1_);
 
-    // Flush the index and destroy the manager so we can inspect the index
-    // again.
-    FlushCacheStorageIndex(storage_key1_);
+    int64_t total_usage = -1;
+    usages = GetAllStorageKeysUsage();
+    for (auto& usage : usages) {
+      if (usage->origin == storage_key1_.origin()) {
+        total_usage = usage->total_size_bytes;
+        break;
+      }
+    }
+
+    // Double-check that total_usage is comparable with what's returned by
+    // `GetStorageKeyUsage()`. Note that in my testing the value returned by
+    // `GetStorageKeyUsage()` here is larger than total_usage by 256, possibly
+    // because the migration increases the calculated size depending on how
+    // and/or when the calculation is done.
+    EXPECT_LE(total_usage, GetStorageKeyUsage(storage_key1_));
+
+    // Destroy the manager and then ensure that all tasks have completed before
+    // continuing. We can't rely on `FlushCacheStorageIndex()` here because it
+    // only ensures that we've kicked off the task to initiate a write via the
+    // `SimpleCacheLoader`, but it doesn't ensure that that task (and subsequent
+    // ones) have completed.
     DestroyStorageManager();
+    disk_cache::FlushCacheThreadForTesting();
+    content::RunAllTasksUntilIdle();
 
     // Read the newly modified index off of disk.
     std::string protobuf2;
@@ -2595,8 +2820,8 @@ TEST_F(CacheStorageIndexMigrationTest, PaddingMigration) {
 
                // Verify the padding has changed with the migration.  Note, the
                // non-padded size may or may not have changed depending on if
-               // additional fields are stored in each entry or the index in
-               // the new disk schema.
+               // additional fields are stored in each entry or the index in the
+               // new disk schema.
                EXPECT_NE(original_padding, upgraded_padding);
                EXPECT_EQ(total_usage, (upgraded_size + upgraded_padding));
              }));
@@ -2622,6 +2847,14 @@ INSTANTIATE_TEST_SUITE_P(CacheStorageManagerTests,
                          CacheStorageManagerTestP,
                          ::testing::Values(TestStorage::kMemory,
                                            TestStorage::kDisk));
+
+INSTANTIATE_TEST_SUITE_P(
+    CacheStorageManagerStorageKeyAndBucketTests,
+    CacheStorageManagerStorageKeyAndBucketTestP,
+    ::testing::Values(
+        StorageKeyAndBucketTestCase::kFirstPartyDefault,
+        StorageKeyAndBucketTestCase::kFirstPartyDefaultPartitionEnabled,
+        StorageKeyAndBucketTestCase::kThirdPartyDefault));
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageQuotaClientTests,
                          CacheStorageQuotaClientTestP,
