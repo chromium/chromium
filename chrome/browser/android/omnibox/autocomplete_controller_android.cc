@@ -51,9 +51,11 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
+#include "components/omnibox/browser/zero_suggest_prefetcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -114,41 +116,6 @@ void RecordClipboardMetrics(AutocompleteMatchType::Type match_type) {
   }
 }
 
-/**
- * A prefetcher class responsible for triggering zero suggest prefetch.
- * The prefetch occurs as a side-effect of calling OnOmniboxFocused() on
- * the AutocompleteController object.
- */
-class ZeroSuggestPrefetcher {
- public:
-  explicit ZeroSuggestPrefetcher(Profile* profile);
-
- private:
-  void SelfDestruct();
-
-  std::unique_ptr<AutocompleteController> controller_;
-  base::OneShotTimer expire_timer_;
-};
-
-ZeroSuggestPrefetcher::ZeroSuggestPrefetcher(Profile* profile)
-    : controller_(new AutocompleteController(
-          std::make_unique<ChromeAutocompleteProviderClient>(profile),
-          AutocompleteProvider::TYPE_ZERO_SUGGEST)) {
-  AutocompleteInput input(std::u16string(), metrics::OmniboxEventProto::NTP,
-                          ChromeAutocompleteSchemeClassifier(profile));
-  input.set_current_url(GURL(chrome::kChromeUINewTabURL));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
-  controller_->Start(input);
-  // Delete ourselves after 10s. This is enough time to cache results or
-  // give up if the results haven't been received.
-  expire_timer_.Start(FROM_HERE, base::Milliseconds(10000), this,
-                      &ZeroSuggestPrefetcher::SelfDestruct);
-}
-
-void ZeroSuggestPrefetcher::SelfDestruct() {
-  delete this;
-}
-
 }  // namespace
 
 AutocompleteControllerAndroid::AutocompleteControllerAndroid(
@@ -204,16 +171,20 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
 }
 
 void AutocompleteControllerAndroid::StartPrefetch(JNIEnv* env) {
-  AutocompleteInput autocomplete_input(
+  AutocompleteInput ntp_prefetch_input(
       u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
       ChromeAutocompleteSchemeClassifier(profile_));
-  autocomplete_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  ntp_prefetch_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
-  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
-    autocomplete_controller_->StartPrefetch(autocomplete_input);
+  if (OmniboxFieldTrial::UseSharedInstanceForZeroSuggestPrefetching()) {
+    autocomplete_controller_->StartPrefetch(ntp_prefetch_input);
   } else {
     // ZeroSuggestPrefetcher deletes itself after it's done prefetching.
-    new ZeroSuggestPrefetcher(profile_);
+    new ZeroSuggestPrefetcher(
+        std::make_unique<ChromeAutocompleteProviderClient>(profile_),
+        ntp_prefetch_input,
+        /*use_prefetch_path=*/
+        base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching));
   }
 }
 

@@ -233,6 +233,8 @@ static_library("browser") {
     "verbatim_match.h",
     "voice_suggest_provider.cc",
     "voice_suggest_provider.h",
+    "zero_suggest_prefetcher.cc",
+    "zero_suggest_prefetcher.h",
     "zero_suggest_provider.cc",
     "zero_suggest_provider.h",
     "zero_suggest_verbatim_match_provider.cc",

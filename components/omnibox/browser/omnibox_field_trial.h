@@ -521,6 +521,13 @@ bool IsShortcutExpandingEnabled();
 // Determines the relevance score for the local history zero-prefix suggestions.
 extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
 
+// Whether the same AutocompleteController instance used by the omnibox should
+// be used to prefetch zero-prefix suggestions. For this to be true,
+// omnibox::kZeroSuggestPrefetching must also be true.
+// This is only checked on Android which uses ZeroSuggestPrefetcher by default,
+// which spins off a new throw-away AutocompleteController instance.
+bool UseSharedInstanceForZeroSuggestPrefetching();
+
 // Whether duplicative visits should be ignored for local history zero-suggest.
 // A duplicative visit is a visit to the same search term in an interval smaller
 // than kAutocompleteDuplicateVisitIntervalThreshold.

@@ -141,7 +141,7 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
 extern const base::Feature kLocalHistorySuggestRevamp{
     "LocalHistorySuggestRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables prefetching of the zero prefix suggestions for signed-in users.
+// Enables prefetching of the zero prefix suggestions for eligible users on NTP.
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
                                             enabled_by_default_desktop_only};
 
