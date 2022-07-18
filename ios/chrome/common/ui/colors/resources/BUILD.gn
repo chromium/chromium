@@ -15,6 +15,7 @@ group("resources") {
     ":darker_scrim_background_color",
     ":disabled_tint_color",
     ":favicon_background_color",
+    ":green_500_color",
     ":green_50_color",
     ":green_700_color",
     ":green_color",
@@ -34,6 +35,7 @@ group("resources") {
     ":mdc_secondary_ink_color",
     ":placeholder_image_tint_color",
     ":primary_background_color",
+    ":red_500_color",
     ":red_color",
     ":scrim_background_color",
     ":secondary_background_color",
@@ -95,6 +97,10 @@ colorset("green_50_color") {
   sources = [ "green_50_color.colorset/Contents.json" ]
 }
 
+colorset("green_500_color") {
+  sources = [ "green_500_color.colorset/Contents.json" ]
+}
+
 colorset("green_700_color") {
   sources = [ "green_700_color.colorset/Contents.json" ]
 }
@@ -141,6 +147,10 @@ colorset("grey_900_color") {
 
 colorset("red_color") {
   sources = [ "red_color.colorset/Contents.json" ]
+}
+
+colorset("red_500_color") {
+  sources = [ "red_500_color.colorset/Contents.json" ]
 }
 
 colorset("mdc_ink_color") {

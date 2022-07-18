@@ -12,6 +12,14 @@
 
 NSInteger kSettingsRootSymbolImagePointSize = 18;
 
+// Custom symbol names.
+NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";
+
+// Default symbol names.
+NSString* const kSyncErrorSymbol =
+    @"exclamationmark.arrow.triangle.2.circlepath";
+NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
+
 namespace {
 
 // The default configuration with the given `pointSize` for the Settings root

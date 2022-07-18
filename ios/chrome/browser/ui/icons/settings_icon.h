@@ -7,6 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+// Custom symbol names.
+extern NSString* const kSyncDisabledSymbol;
+
+// Default symbol names.
+extern NSString* const kSyncErrorSymbol;
+extern NSString* const kSyncEnabledSymbol;
+
 // The size of the symbol image displayed in the Settings root screen.
 extern NSInteger kSettingsRootSymbolImagePointSize;
 

@@ -60,6 +60,9 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/custom_symbol.h"
+#import "ios/chrome/browser/ui/icons/settings_icon.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
@@ -1552,13 +1555,26 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   switch (GetSyncStateFromBrowserState(_browserState)) {
     case kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-      googleSyncItem.iconImageName = kSyncOffImageName;
+      if (UseSymbols()) {
+        googleSyncItem.symbolView = ElevatedTableViewSymbolWithBackground(
+            DefaultSettingsRootSymbol(kSyncErrorSymbol), UIColor.redColor);
+
+      } else {
+        googleSyncItem.iconImageName = kSyncOffImageName;
+      }
       break;
     }
     case kSyncOff:
     case kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = nil;
       googleSyncItem.iconImageName = kSyncOffImageName;
+      if (UseSymbols()) {
+        googleSyncItem.symbolView = ElevatedTableViewSymbolWithBackground(
+            CustomSettingsRootSymbol(kSyncDisabledSymbol),
+            [UIColor colorNamed:kGrey500Color]);
+      } else {
+        googleSyncItem.iconImageName = kSyncOffImageName;
+      }
       break;
     }
     case kSyncEnabledWithError: {
@@ -1566,8 +1582,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           SyncSetupServiceFactory::GetForBrowserState(_browserState);
       googleSyncItem.detailText =
           GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
-      googleSyncItem.iconImageName = kSyncErrorImageName;
-
+      if (UseSymbols()) {
+        googleSyncItem.symbolView = ElevatedTableViewSymbolWithBackground(
+            DefaultSettingsRootSymbol(kSyncErrorSymbol),
+            [UIColor colorNamed:kRed500Color]);
+      } else {
+        googleSyncItem.iconImageName = kSyncErrorImageName;
+      }
       // Return a vertical layout of title / subtitle in the case of a sync
       // error.
       googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
@@ -1575,7 +1596,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case kSyncEnabled: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
-      googleSyncItem.iconImageName = kSyncOnImageName;
+
+      if (UseSymbols()) {
+        googleSyncItem.symbolView = ElevatedTableViewSymbolWithBackground(
+            DefaultSettingsRootSymbol(kSyncEnabledSymbol),
+            [UIColor colorNamed:kGreen500Color]);
+      } else {
+        googleSyncItem.iconImageName = kSyncOnImageName;
+      }
       break;
     }
     case kSyncDisabledByAdministrator:

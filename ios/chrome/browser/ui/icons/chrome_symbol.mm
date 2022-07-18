@@ -53,8 +53,6 @@ NSString* const kTranslateSymbol = @"translate";
 NSString* const kCameraSymbol = @"camera";
 NSString* const kCameraFillSymbol = @"camera_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
-NSString* const kArrowTriangleSlashCirclePathSymbol =
-    @"arrow_triangle_slash_circlepath";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 
 // Default symbol names.
