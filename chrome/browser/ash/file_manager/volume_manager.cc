@@ -1289,53 +1289,6 @@ void VolumeManager::OnProvidedFileSystemMount(
   }
 
   DoMountEvent(mount_error, std::move(volume));
-
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_.get())
-    return;
-
-  // Get the FileSystemURL of the FSP storage device.
-  const std::string fsid =
-      file_system_info.mount_path().BaseName().AsUTF8Unsafe();
-  auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  auto fsp_file_system_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(util::GetFilesAppOrigin()), fsid, {});
-  const std::string url = fsp_file_system_url.ToGURL().spec();
-  DCHECK(fsp_file_system_url.is_valid());
-
-  // Attach the FSP storage device to the fusebox daemon.
-  const std::string subdir = "fsp:" + fsid;
-  fusebox_mounter_->AttachStorage(
-      subdir, url, !file_system_info.writable(),
-      base::BindOnce(&VolumeManager::OnFuseboxAttachStorageProvidedFileSystem,
-                     weak_ptr_factory_.GetWeakPtr(), subdir, fsid,
-                     file_system_info, volume_context));
-}
-
-void VolumeManager::OnFuseboxAttachStorageProvidedFileSystem(
-    const std::string& subdir,
-    const std::string& fsid,
-    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    MountContext volume_context,
-    int error) {
-  LOG_IF(ERROR, error) << "failed attaching fsp " << fsid;
-  if (error)
-    return;
-
-  // Create a Volume for the fusebox FSP storage device.
-  const base::FilePath mount_path = base::FilePath(subdir);
-  std::unique_ptr<Volume> volume = Volume::CreateForFuseBoxProvidedFileSystem(
-      mount_path, file_system_info, volume_context);
-
-  // Register the fusebox FSP storage device with chrome::storage.
-  auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  bool result = mount_points->RegisterFileSystem(
-      /*prefixed*/ util::kFuseBox + fsid, storage::kFileSystemTypeFuseBox,
-      storage::FileSystemMountOption(), volume->mount_path());
-  DCHECK(result);
-
-  // Mount the fusebox FSP storage device in files app.
-  DoMountEvent(chromeos::MOUNT_ERROR_NONE, std::move(volume));
 }
 
 void VolumeManager::OnProvidedFileSystemUnmount(
@@ -1349,26 +1302,6 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   std::unique_ptr<Volume> volume = Volume::CreateForProvidedFileSystem(
       file_system_info, MOUNT_CONTEXT_UNKNOWN);
   DoUnmountEvent(mount_error, *volume);
-
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_.get())
-    return;
-
-  // Unmount the fusebox FSP storage device in files app.
-  const std::string fsid =
-      file_system_info.mount_path().BaseName().AsUTF8Unsafe();
-  const std::string subdir = "fsp:" + fsid;
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxProvidedFileSystem(
-          base::FilePath(subdir), file_system_info, MOUNT_CONTEXT_UNKNOWN);
-  DoUnmountEvent(mount_error, *fusebox_volume);
-
-  // Remove the fusebox FSP storage device from chrome::storage.
-  auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RevokeFileSystem(util::kFuseBox + fsid);
-
-  // Detach the fusebox FSP storage device from the fusebox daemon.
-  fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
 }
 
 void VolumeManager::OnExternalStorageDisabledChangedUnmountCallback(

@@ -512,12 +512,6 @@ class VolumeManager : public KeyedService,
                                  const std::string& label,
                                  bool read_only,
                                  int error);
-  void OnFuseboxAttachStorageProvidedFileSystem(
-      const std::string& subdir,
-      const std::string& fsid,
-      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      MountContext volume_context,
-      int error);
 
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
 
