@@ -155,12 +155,6 @@ void ResourceLoadObserverForFrame::WillSendRequest(
                                                 request.Priority());
   }
 
-  if (!redirect_response.IsNull() &&
-      !redirect_response.HttpHeaderField(http_names::kExpectCT).IsEmpty()) {
-    Deprecation::CountDeprecation(frame->DomWindow(),
-                                  mojom::blink::WebFeature::kExpectCTHeader);
-  }
-
   frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
       request, redirect_response, resource);
 
@@ -267,11 +261,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
   }
 
   RecordAddressSpaceFeature(frame, response);
-
-  if (!response.HttpHeaderField(http_names::kExpectCT).IsEmpty()) {
-    Deprecation::CountDeprecation(frame->DomWindow(),
-                                  mojom::blink::WebFeature::kExpectCTHeader);
-  }
 
   std::unique_ptr<AlternateSignedExchangeResourceInfo> alternate_resource_info;
 

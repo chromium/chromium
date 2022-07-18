@@ -51,7 +51,6 @@ enum class DeprecationIssueType {
   kDeprecationExample,
   kDocumentDomainSettingWithoutOriginAgentClusterHeader,
   kEventPath,
-  kExpectCTHeader,
   kGeolocationInsecureOrigin,
   kGeolocationInsecureOriginDeprecatedNotRemoved,
   kGetUserMediaInsecureOrigin,
