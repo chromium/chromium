@@ -6,6 +6,9 @@
 
 #include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 
-void CreateUnifiedSideSearchController(content::WebContents* web_contents) {
+void CreateUnifiedSideSearchController(SideSearchTabContentsHelper* creator,
+                                       content::WebContents* web_contents) {
   UnifiedSideSearchController::CreateForWebContents(web_contents);
+  creator->SetDelegate(
+      UnifiedSideSearchController::FromWebContents(web_contents)->GetWeakPtr());
 }

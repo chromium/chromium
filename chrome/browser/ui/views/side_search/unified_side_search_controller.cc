@@ -23,10 +23,6 @@
 UnifiedSideSearchController::UnifiedSideSearchController(
     content::WebContents* web_contents)
     : content::WebContentsUserData<UnifiedSideSearchController>(*web_contents) {
-  auto* helper = SideSearchTabContentsHelper::FromWebContents(web_contents);
-  if (helper)
-    helper->SetDelegate(weak_factory_.GetWeakPtr());
-
   Observe(web_contents);
 
   // Update the state of the side panel to catch cases where we switch to a tab
@@ -80,6 +76,11 @@ void UnifiedSideSearchController::OnEntryShown(SidePanelEntry* entry) {
 
 void UnifiedSideSearchController::OnEntryHidden(SidePanelEntry* entry) {
   UpdateSidePanel();
+}
+
+base::WeakPtr<UnifiedSideSearchController>
+UnifiedSideSearchController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 std::unique_ptr<views::View> UnifiedSideSearchController::GetSideSearchView() {

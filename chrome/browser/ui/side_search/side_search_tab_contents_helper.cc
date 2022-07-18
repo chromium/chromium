@@ -202,7 +202,7 @@ SideSearchTabContentsHelper::SideSearchTabContentsHelper(
       content::WebContentsUserData<SideSearchTabContentsHelper>(*web_contents) {
   config_observation_.Observe(GetConfig());
   if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    CreateUnifiedSideSearchController(web_contents);
+    CreateUnifiedSideSearchController(this, web_contents);
   }
 }
 

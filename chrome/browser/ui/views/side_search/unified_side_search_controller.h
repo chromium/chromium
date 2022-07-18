@@ -58,6 +58,8 @@ class UnifiedSideSearchController
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
+  base::WeakPtr<UnifiedSideSearchController> GetWeakPtr();
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:

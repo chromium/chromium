@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_search/side_search_browsertest.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -36,6 +37,260 @@ class SideSearchV2Test : public SideSearchBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       SidePanelButtonShowsCorrectlySingleTab) {
+  // If no previous matched search page has been navigated to the button should
+  // not be visible.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+
+  // The side panel button should never be visible on a matched search page.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+
+  // The side panel button should be visible if on a non-matched page and the
+  // current tab has previously encountered a matched search page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       SidePanelButtonShowsCorrectlyMultipleTabs) {
+  // The side panel button should never be visible on non-matching pages.
+  AppendTab(browser(), GetNonMatchingUrl());
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+
+  // Navigate to a matched search page and then to a non-matched search page.
+  // This should show the side panel button in the toolbar.
+  AppendTab(browser(), GetMatchingSearchUrl());
+  ActivateTabAt(browser(), 2);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+
+  // Switch back to the matched search page, the side panel button should no
+  // longer be visible.
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+
+  // When switching back to the tab on the non-matched page with a previously
+  // visited matched search page, the button should be visible.
+  ActivateTabAt(browser(), 2);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelTogglesCorrectlySingleTab) {
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // The side panel button should be visible if on a non-matched page and the
+  // current tab has previously encountered a matched search page.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Toggle the side panel.
+  NotifyButtonClick(browser());
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  // Toggling the close button should close the side panel.
+  NotifyCloseButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, CloseButtonClosesSidePanel) {
+  // The close button should be visible in the toggled state.
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  NotifyCloseButtonClick(browser());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SideSearchNotAvailableInOTR) {
+  Browser* browser2 = CreateIncognitoBrowser();
+  EXPECT_TRUE(browser2->profile()->IsOffTheRecord());
+  NavigateActiveTab(browser2, GetMatchingSearchUrl());
+  NavigateActiveTab(browser2, GetNonMatchingUrl());
+
+  EXPECT_EQ(nullptr, GetSidePanelButtonFor(browser2));
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       SidePanelButtonIsNotShownWhenSRPIsUnavailable) {
+  // Set the side panel SRP be unavailable.
+  SetIsSidePanelSRPAvailableAt(browser(), 0, false);
+
+  // If no previous matched search page has been navigated to the button should
+  // not be visible.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // The side panel button should never be visible on the matched search page.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // The side panel button should not be visible if the side panel SRP is not
+  // available.
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SideSearchV2Test,
+    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  NavigateToMatchingAndNonMatchingSearchPage(browser2);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
+                                                    TabStripModel::ADD_ACTIVE);
+
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       SidePanelTogglesCorrectlyMultipleTabs) {
+  // Navigate to a matching search URL followed by a non-matching URL in two
+  // independent browser tabs such that both have the side panel ready. The
+  // side panel should respect the state-per-tab flag.
+
+  // Tab 1.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Tab 2.
+  AppendTab(browser(), GetMatchingSearchUrl());
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
+  // not be visible for Tab 1.
+  NotifyButtonClick(browser());
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Show the side panel on Tab 1 and switch to Tab 2. The side panel should be
+  // still be visible for Tab 2, respecting its per-tab state.
+  NotifyButtonClick(browser());
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 1);
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
+  // still be visible for Tab 1, respecting its per-tab state.
+  NotifyCloseButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  NotifyCloseButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       SidePanelTogglesClosedCorrectlyDuringNavigation) {
+  // Navigate to a matching SRP and then a non-matched page. The side panel will
+  // be available and open.
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+  auto* side_panel = GetSidePanelFor(browser());
+
+  // Navigating to a matching SRP URL should automatically hide the side panel
+  // as it should not be available.
+  EXPECT_TRUE(side_panel->GetVisible());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  EXPECT_FALSE(side_panel->GetVisible());
+
+  // When navigating again to a non-matching page the side panel will become
+  // available again but should not automatically reopen.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  EXPECT_FALSE(side_panel->GetVisible());
+}
+
+// TODO(yuhengh): Currently if a side search side panel WebContents crashes
+// with the unified side panel in a background tab, switching to the tab will
+// re-open the side panel and reload the side panel WebContents. Determine if
+// this is expected behavior and update this test.
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       DISABLED_SidePanelCrashesCloseSidePanel) {
+  // Open two tabs with the side panel open.
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+  AppendTab(browser(), GetNonMatchingUrl());
+  ActivateTabAt(browser(), 1);
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+
+  auto* side_panel = GetSidePanelFor(browser());
+
+  // Side panel should be open with the side contents present.
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 1));
+
+  // Simulate a crash in the hosted side panel contents.
+  auto* rph_second_tab = GetSidePanelContentsFor(browser(), 1)
+                             ->GetPrimaryMainFrame()
+                             ->GetProcess();
+  content::RenderProcessHostWatcher crash_observer_second_tab(
+      rph_second_tab,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph_second_tab->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer_second_tab.Wait();
+
+  // Side panel should be closed and the WebContents cleared.
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 1));
+
+  // Simulate a crash in the side panel contents of the first tab which is not
+  // currently active.
+  auto* rph_first_tab = GetSidePanelContentsFor(browser(), 0)
+                            ->GetPrimaryMainFrame()
+                            ->GetProcess();
+  content::RenderProcessHostWatcher crash_observer_first_tab(
+      rph_first_tab, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph_first_tab->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer_first_tab.Wait();
+
+  // Switch to the first tab, the side panel should still be closed.
+  ActivateTabAt(browser(), 0);
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
+
+  // Reopening the side panel should restore the side panel and its contents.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+}
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
   auto* browser_view = BrowserViewFor(browser());

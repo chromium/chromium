@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_UNIFIED_SIDE_SEARCH_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_UNIFIED_SIDE_SEARCH_HELPER_H_
 
+class SideSearchTabContentsHelper;
+
 namespace content {
 class WebContents;
 }  // namespace content
 
-void CreateUnifiedSideSearchController(content::WebContents* web_contents);
+void CreateUnifiedSideSearchController(SideSearchTabContentsHelper* creator,
+                                       content::WebContents* web_contents);
 
 #endif  // CHROME_BROWSER_UI_SIDE_SEARCH_UNIFIED_SIDE_SEARCH_HELPER_H_
