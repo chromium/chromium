@@ -664,7 +664,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
 
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    FakeUserDataAuthClient::Get()->set_user_data_dir(user_data_dir);
+    FakeUserDataAuthClient::Get()->SetUserDataDir(std::move(user_data_dir));
 
     // If we're not running on a device, i.e. either in a test or in ash Chrome
     // on linux, fake dbus calls that would result in a shutdown of Chrome by

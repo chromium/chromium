@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -89,6 +90,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void SetPinLocked(const cryptohome::AccountIdentifier& account_id,
                       const std::string& label,
                       bool locked);
+
+    // Marks a user as existing and creates the user's home directory. No auth
+    // factors are added.
+    void AddExistingUser(cryptohome::AccountIdentifier account_id);
 
    private:
     friend class FakeUserDataAuthClient;
@@ -304,11 +309,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Calls LowDiskSpace() on Observer instances.
   void NotifyLowDiskSpace(uint64_t disk_free_bytes);
 
-  void AddExistingUser(const cryptohome::AccountIdentifier& account_id);
-
-  void set_user_data_dir(base::FilePath path) { user_data_dir_ = path; }
-
-  void CreateUserProfileDir(const cryptohome::AccountIdentifier& account_id);
+  // Reads synchronously from disk, so must only be called in a scope that
+  // allows blocking IO.
+  void SetUserDataDir(base::FilePath path);
 
  private:
   struct UserCryptohomeState;
@@ -323,11 +326,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void OnDircryptoMigrationProgressUpdated();
 
   // Returns a path to home directory for account.
-  base::FilePath GetUserProfileDir(
+  absl::optional<base::FilePath> GetUserProfileDir(
       const cryptohome::AccountIdentifier& account_id) const;
-
-  // Check whether user with given id exists
-  bool UserExists(const cryptohome::AccountIdentifier& account_id) const;
 
   // The method takes serialized auth session id and returns an authenticated
   // auth session associated with the id. If the session is missing or not
@@ -349,7 +349,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   bool last_unlock_webauthn_secret_;
 
   // The collection of users we know about.
-  std::map<cryptohome::AccountIdentifier, UserCryptohomeState> users_;
+  base::flat_map<cryptohome::AccountIdentifier, UserCryptohomeState> users_;
 
   // Timer for triggering the dircrypto migration progress signal.
   base::RepeatingTimer dircrypto_migration_progress_timer_;
@@ -390,7 +390,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Other stuff/miscellaneous:
 
   // Base directory of user directories.
-  base::FilePath user_data_dir_;
+  absl::optional<base::FilePath> user_data_dir_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
