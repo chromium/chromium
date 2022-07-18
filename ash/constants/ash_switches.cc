@@ -725,9 +725,6 @@ const char kOobeLargeScreenSpecialScaling[] =
 // Specifies directory for screenshots taken with OOBE UI Debugger.
 const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 
-// Shows Blazey screens.
-const char kOobeShowBlazeyScreen[] = "oobe-show-blazey";
-
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
