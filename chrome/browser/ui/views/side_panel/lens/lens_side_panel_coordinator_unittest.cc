@@ -40,7 +40,8 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
     base::test::ScopedFeatureList features;
     features.InitWithFeaturesAndParameters(
         {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"}}},
+          {{lens::features::kEnableSidePanelForLens.name, "true"},
+           {lens::features::kEnableLensSidePanelFooter.name, "true"}}},
          {features::kUnifiedSidePanel, {{}}}},
         {});
     TestWithBrowserView::SetUp();

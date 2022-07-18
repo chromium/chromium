@@ -52,6 +52,9 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 // Enables the side panel for Lens features on Chrome where supported.
 extern const base::FeatureParam<bool> kEnableSidePanelForLens;
 
+// Enables footer for the unified side panel
+extern const base::FeatureParam<bool> kEnableLensSidePanelFooter;
+
 // Enables Lens fullscreen search on Desktop platforms.
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 
@@ -60,6 +63,9 @@ extern bool GetEnableUKMLoggingForRegionSearch();
 
 // Returns whether to enable UKM logging for LensStandalone feature.
 extern bool GetEnableUKMLoggingForImageSearch();
+
+// Returns whether to enable footer for lens in the unified side panel
+extern bool GetEnableLensSidePanelFooter();
 
 // Returns the max pixel width/height for the image to be sent to Lens via
 // region search. The images are sent at 1x as PNGs.

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -100,7 +101,10 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
   separator_ = AddChildView(std::make_unique<views::Separator>());
-  CreateAndInstallFooter();
+
+  if (lens::features::GetEnableLensSidePanelFooter())
+    CreateAndInstallFooter();
+
   SetContentVisible(false);
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);

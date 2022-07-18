@@ -34,6 +34,9 @@ const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch{
 const base::FeatureParam<bool> kEnableSidePanelForLens{
     &kLensStandalone, "enable-side-panel", true};
 
+const base::FeatureParam<bool> kEnableLensSidePanelFooter{
+    &kLensStandalone, "enable-lens-side-panel-footer", true};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
 
@@ -70,6 +73,10 @@ bool GetEnableUKMLoggingForRegionSearch() {
 
 bool GetEnableUKMLoggingForImageSearch() {
   return kEnableUKMLoggingForImageSearch.Get();
+}
+
+bool GetEnableLensSidePanelFooter() {
+  return kEnableLensSidePanelFooter.Get();
 }
 
 int GetMaxPixelsForRegionSearch() {
