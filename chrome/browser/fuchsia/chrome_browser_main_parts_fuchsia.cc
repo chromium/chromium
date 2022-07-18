@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "content/public/common/content_switches.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -668,9 +669,13 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
     }
   }
 
-  zx_status_t status =
-      base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
-  ZX_CHECK(status == ZX_OK, status);
+  // We should only call ServerFromStartupInfo() when the browser is running as
+  // a stand-alone component.
+  if (!is_integration_test()) {
+    zx_status_t status =
+        base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+    ZX_CHECK(status == ZX_OK, status);
+  }
 
   // Publish the fuchsia.process.lifecycle.Lifecycle service to allow graceful
   // teardown. If this is an integration test then graceful shutdown is not
