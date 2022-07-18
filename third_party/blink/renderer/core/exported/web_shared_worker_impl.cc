@@ -327,7 +327,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
     case mojom::blink::ScriptType::kModule:
       GetWorkerThread()->FetchAndRunModuleScript(
           script_request_url, std::move(worker_main_script_load_params),
-          outside_settings_object->CopyData(),
+          std::move(policy_container), outside_settings_object->CopyData(),
           nullptr /* outside_resource_timing_notifier */, credentials_mode);
       break;
   }

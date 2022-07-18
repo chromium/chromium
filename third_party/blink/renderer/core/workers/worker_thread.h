@@ -141,6 +141,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
+      std::unique_ptr<WebPolicyContainer> policy_container,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object_data,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
@@ -357,6 +358,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
+      std::unique_ptr<WebPolicyContainer> policy_container,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,

@@ -235,6 +235,7 @@ void WorkerThread::FetchAndRunModuleScript(
     const KURL& script_url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
+    std::unique_ptr<WebPolicyContainer> policy_container,
     std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
         outside_settings_object_data,
     WorkerResourceTimingNotifier* outside_resource_timing_notifier,
@@ -247,7 +248,7 @@ void WorkerThread::FetchAndRunModuleScript(
           &WorkerThread::FetchAndRunModuleScriptOnWorkerThread,
           CrossThreadUnretained(this), script_url,
           std::move(worker_main_script_load_params),
-          std::move(outside_settings_object_data),
+          std::move(policy_container), std::move(outside_settings_object_data),
           WrapCrossThreadPersistent(outside_resource_timing_notifier),
           credentials_mode, reject_coep_unsafe_none.value()));
 }
@@ -704,6 +705,7 @@ void WorkerThread::FetchAndRunModuleScriptOnWorkerThread(
     const KURL& script_url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
+    std::unique_ptr<WebPolicyContainer> policy_container,
     std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
         outside_settings_object,
     WorkerResourceTimingNotifier* outside_resource_timing_notifier,
@@ -719,6 +721,8 @@ void WorkerThread::FetchAndRunModuleScriptOnWorkerThread(
   To<WorkerGlobalScope>(GlobalScope())
       ->FetchAndRunModuleScript(
           script_url, std::move(worker_main_script_load_params),
+          PolicyContainer::CreateFromWebPolicyContainer(
+              std::move(policy_container)),
           *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
               std::move(outside_settings_object)),
           *outside_resource_timing_notifier, credentials_mode,

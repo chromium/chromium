@@ -116,10 +116,11 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     auto* resource_timing_notifier =
         WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
             *GetExecutionContext());
+    // TODO(crbug.com/1177199): pass a proper policy container
     GetWorkerThread()->FetchAndRunModuleScript(
         script_url, std::move(worker_main_script_load_params),
-        outside_settings_object.CopyData(), resource_timing_notifier,
-        *credentials_mode, reject_coep_unsafe_none);
+        /*policy_container=*/nullptr, outside_settings_object.CopyData(),
+        resource_timing_notifier, *credentials_mode, reject_coep_unsafe_none);
   } else {
     NOTREACHED();
   }

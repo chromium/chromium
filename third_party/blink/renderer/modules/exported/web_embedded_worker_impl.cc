@@ -270,9 +270,11 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
     // > script url, job’s client, "serviceworker", "omit", and the
     // > to-be-created environment settings object for this service worker.
     case mojom::blink::ScriptType::kModule:
+      // TODO(crbug.com/1177199): pass a proper policy container
       worker_thread_->FetchAndRunModuleScript(
           worker_start_data->script_url,
           std::move(worker_start_data->main_script_load_params),
+          nullptr /* policy_container */,
           std::move(fetch_client_setting_object_data),
           nullptr /* outside_resource_timing_notifier */,
           network::mojom::CredentialsMode::kOmit);
