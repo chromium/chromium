@@ -55,6 +55,7 @@ group("resources") {
     ":toolbar_button_color",
     ":toolbar_shadow_color",
     ":updated_tertiary_background_color",
+    ":yellow_500_color",
   ]
 }
 
@@ -156,6 +157,10 @@ colorset("red_500_color") {
 
 colorset("purple_600_color") {
   sources = [ "purple_600_color.colorset/Contents.json" ]
+}
+
+colorset("yellow_500_color") {
+  sources = [ "yellow_500_color.colorset/Contents.json" ]
 }
 
 colorset("mdc_ink_color") {
