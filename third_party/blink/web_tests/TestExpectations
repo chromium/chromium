@@ -471,6 +471,7 @@ crbug.com/1002049 external/wpt/css/mediaqueries/aspect-ratio-006.html [ Failure 
 crbug.com/962417 external/wpt/css/mediaqueries/mq-negative-range-001.html [ Failure ]
 crbug.com/1343368 external/wpt/css/mediaqueries/viewport-script-dynamic.html [ Failure ]
 crbug.com/1343366 external/wpt/css/mediaqueries/mq-invalid-media-type-layer-001.html [ Failure ]
+crbug.com/1345247 external/wpt/css/mediaqueries/prefers-color-scheme-svg-image.html [ Failure ]
 
 crbug.com/815111 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
 
@@ -862,6 +863,9 @@ crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-003p.html [ Fa
 crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004i.html [ Failure ]
 crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004p.html [ Failure ]
 
+# Minor color differences but it fails on all browsers. Probably a test issue.
+crbug.com/1345248 external/wpt/css/css-images/gradient/gradient-eval-001.tentative.html [ Failure ]
+
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 crbug.com/935057 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
@@ -994,6 +998,7 @@ crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1123886 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-021.https.html [ Skip ]
 crbug.com/1299442 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-022.https.html [ Failure Pass ]
 crbug.com/1286944 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure Pass ]
+crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure ]
 crbug.com/1123886 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-002.https.html [ Skip ]
 crbug.com/1341471 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-003.https.html [ Failure Pass ]
 crbug.com/1123886 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-005.https.html [ Skip ]
@@ -1031,6 +1036,10 @@ crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1250666 crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure Pass Timeout ]
 crbug.com/1250666 crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Failure Pass Timeout ]
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
+crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-roundRect.https.html [ Failure ]
+crbug.com/1299442 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-composite.https.html [ Failure ]
+crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-tiled-001.https.html [ Failure ]
+crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-010.https.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
 
@@ -1106,6 +1115,10 @@ crbug.com/1322062 external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.
 crbug.com/1261306 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
+crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-038.html [ Failure ]
+crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-039.html [ Failure ]
+crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]
+crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-043.html [ Failure ]
 
 crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]
 crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-002.html [ Failure ]
@@ -3395,9 +3408,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== Test expectations added to unblock wpt-importer ======
-crbug.com/626703 [ Mac11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https_1-2.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https_3-4.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https_7-8.html [ Failure ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
@@ -3412,20 +3422,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-010.https.html [ Failure ]
-crbug.com/626703 external/wpt/css/mediaqueries/prefers-color-scheme-svg-image.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-images/gradient/gradient-eval-001.tentative.html [ Failure ]
-crbug.com/626703 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-composite.https.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-tiled-001.https.html [ Failure ]
-crbug.com/626703 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Failure ]
-crbug.com/626703 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-038.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-039.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-043.html [ Failure ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-roundRect.https.html [ Failure ]
 crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=xhr [ Pass Timeout ]
 crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=xhr&eligible=trigger [ Pass Timeout ]
 crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=fetch&eligible=trigger [ Pass Timeout ]
@@ -3433,9 +3430,6 @@ crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporti
 crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=img&eligible [ Pass Timeout ]
 crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=script [ Pass Timeout ]
 crbug.com/626703 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=script&eligible [ Pass Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure ]
-crbug.com/626703 external/wpt/shadow-dom/shadow-style-invalidation-vw-units.html [ Failure ]
-crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/shadow-dom/shadow-style-invalidation-vw-units.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=fetch&eligible=event-source [ Timeout ]
@@ -3732,8 +3726,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/dom/xslt/transformToFragment.tentative.w
 crbug.com/626703 [ Mac12 ] external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/editing/other/editing-around-select-element.tentative.html?insertText [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/editing/other/editing-around-select-element.tentative.html?insertText [ Failure Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/shadow-dom/accesskey.tentative.html [ Failure Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/shadow-dom/accesskey.tentative.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webvtt/api/VTTCue/constructor.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webvtt/api/VTTCue/constructor.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/websockets/stream/tentative/backpressure-send.any.html?wpt_flags=h2 [ Failure Timeout ]
@@ -5051,6 +5043,7 @@ crbug.com/1028684 http/tests/inspector-protocol/animation/animation-release.js [
 # Sheriff 2019-11-29
 crbug.com/1019079 fast/canvas/OffscreenCanvas-placeholder-createImageBitmap.html [ Failure Pass ]
 crbug.com/1027434 external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html [ Failure Pass Timeout ]
+crbug.com/1027434 [ Mac11 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
 
 # Sheriff 2019-12-02
 crbug.com/1029528 [ Linux ] http/tests/devtools/network/oopif-content.js [ Failure Pass ]
@@ -5333,6 +5326,10 @@ crbug.com/1222729 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN
 crbug.com/678633 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken.html [ Failure ]
 crbug.com/1317071 [ Mac ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-no-port.sub.https.html [ Failure Timeout ]
 crbug.com/1323989 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-cross-document-traversal.html [ Pass Timeout ]
+crbug.com/1330586 [ Mac11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https_1-2.html [ Failure ]
+crbug.com/1330586 [ Mac11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https_3-4.html [ Failure ]
+crbug.com/1330586 [ Mac11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https_7-8.html [ Failure ]
+
 
 # Sheriff 2020-03-06
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
@@ -6230,9 +6227,7 @@ crbug.com/1249176 [ Mac11-arm64 ] webaudio/AudioBufferSource/audiobuffersource-d
 crbug.com/1249176 [ Mac11-arm64 ] webaudio/AudioBufferSource/audiobuffersource-playbackrate-modulation.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] webaudio/Oscillator/no-dezippering.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/offsetparent-old-behavior/external/wpt/shadow-dom/accesskey.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/interfaces/TextTrackCue/endTime.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/shadow-dom/accesskey.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webvtt/api/VTTCue/constructor.html [ Failure ]
