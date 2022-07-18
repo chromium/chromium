@@ -546,8 +546,16 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 // Tests behavior for recognizing stateful client-side redirect that happens
 // between stateful server-side redirects.
+// TODO(https://crbug.com/1345215): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DetectStatefulRedirect_ServerClient \
+  DISABLED_DetectStatefulRedirect_ServerClient
+#else
+#define MAYBE_DetectStatefulRedirect_ServerClient \
+  DetectStatefulRedirect_ServerClient
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       DetectStatefulRedirect_ServerClient) {
+                       MAYBE_DetectStatefulRedirect_ServerClient) {
   GURL initial1_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL redirect1_url = embedded_test_server()->GetURL(
       "a.test", "/cross-site-with-cookie/b.test/title1.html");
