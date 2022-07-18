@@ -517,8 +517,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
     address.fullNames = ['Name'];
     address.companyName = 'Organization';
     address.addressLines = 'Street address';
-    address.addressLevel2 = 'City';
     address.addressLevel1 = 'State';
+    address.addressLevel2 = 'City';
     address.postalCode = 'ZIP code';
     address.countryCode = 'US';
     address.phoneNumbers = ['Phone'];
@@ -596,11 +596,14 @@ suite('AutofillSectionAddressLocaleTests', function() {
     const address = createEmptyAddressEntry();
     const company_enabled = loadTimeData.getBoolean('EnableCompanyName');
     const honorific_enabled = loadTimeData.getBoolean('showHonorific');
+    const extended_address_format_enabled =
+        loadTimeData.getBoolean('EnableExtendedAddressFormat');
 
     address.honorific = 'Lord';
     address.fullNames = ['Name'];
     address.companyName = 'Organization';
     address.addressLines = 'Street address';
+    address.addressLevel1 = 'County';
     address.addressLevel2 = 'Post town';
     address.postalCode = 'Postal code';
     address.countryCode = 'GB';
@@ -610,7 +613,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
       assertEquals(
-          6 + (company_enabled ? 1 : 0) + (honorific_enabled ? 1 : 0),
+          6 + (company_enabled ? 1 : 0) + (honorific_enabled ? 1 : 0) +
+              (extended_address_format_enabled ? 1 : 0),
           rows.length);
 
       let index = 0;
@@ -668,6 +672,15 @@ suite('AutofillSectionAddressLocaleTests', function() {
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(address.postalCode, cols[0]!.value);
+      index++;
+      // County
+      if (extended_address_format_enabled) {
+        row = rows[index]!;
+        cols = row.querySelectorAll<SettingsTextareaElement|CrInputElement>(
+            '.address-column');
+        assertEquals(1, cols.length);
+        assertEquals(address.addressLevel1, cols[0]!.value);
+      }
       index++;
       // Phone, Email
       row = rows[index]!;
