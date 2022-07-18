@@ -118,13 +118,9 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   const String& permissions_policy_header =
-      RuntimeEnabledFeatures::PermissionsPolicyHeaderEnabled()
-          ? response.HttpHeaderField(http_names::kPermissionsPolicy)
-          : g_empty_string;
+      response.HttpHeaderField(http_names::kPermissionsPolicy);
   const String& report_only_permissions_policy_header =
-      RuntimeEnabledFeatures::PermissionsPolicyHeaderEnabled()
-          ? response.HttpHeaderField(http_names::kPermissionsPolicyReportOnly)
-          : g_empty_string;
+      response.HttpHeaderField(http_names::kPermissionsPolicyReportOnly);
   if (!permissions_policy_header.IsEmpty())
     UseCounter::Count(execution_context_, WebFeature::kPermissionsPolicyHeader);
 
