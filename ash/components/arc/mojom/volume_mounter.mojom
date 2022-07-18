@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module arc.mojom;
 
@@ -44,7 +44,7 @@ struct MountPointInfo {
   [MinVersion=2] bool visible;
 };
 
-// Next Method ID: 3
+// Next Method ID: 4
 interface VolumeMounterHost {
   // Requests all recorded MountPointInfos to be sent through a series of
   // VolumeMounterInstance::OnMountEvent call.
@@ -63,6 +63,11 @@ interface VolumeMounterHost {
   // called at all. Also, when Android's volume daemon (vold) is reset, all
   // volumes are remounted and this method is called again for each of them.
   [MinVersion=3] ReportMountFailureCount@2(uint16 count);
+
+  // Sets up external storage mount points for MyFiles and removable media by
+  // setting their owner to be Android's MediaProvider.
+  [MinVersion=4] SetUpExternalStorageMountPoints@3(uint32 media_provider_uid)
+      => (bool success);
 };
 
 // Notifies Android about Mounting events.

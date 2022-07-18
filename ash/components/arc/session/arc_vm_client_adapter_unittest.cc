@@ -762,6 +762,19 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmPostLoginServicesJobFail) {
   StopArcInstance();
 }
 
+// Tests that StartMiniArc() still succeeds even when Upstart fails to stop
+// arcvm-media-sharing-services.
+TEST_F(ArcVmClientAdapterTest,
+       StartMiniArc_StopArcVmMediaSharingServicesJobFail) {
+  // Inject failure to FakeUpstartClient.
+  InjectUpstartStopJobFailure(kArcVmMediaSharingServicesJobName);
+
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  StopArcInstance();
+}
+
 // Tests that StartMiniArc() fails when Upstart fails to start the job.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmPerBoardFeaturesJobFail) {
   // Inject failure to FakeUpstartClient.

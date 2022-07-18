@@ -712,6 +712,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         // exist.
         JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
         JobDesc{
+            kArcVmMediaSharingServicesJobName, UpstartOperation::JOB_STOP, {}},
+        JobDesc{
             kArcVmPostVmStartServicesJobName, UpstartOperation::JOB_STOP, {}},
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
         JobDesc{kArcVmPreLoginServicesJobName,

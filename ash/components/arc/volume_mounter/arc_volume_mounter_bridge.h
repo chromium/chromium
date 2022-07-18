@@ -12,6 +12,7 @@
 #include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -77,9 +78,15 @@ class ArcVolumeMounterBridge
       chromeos::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
 
+  // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
+  void OnConnectionClosed() override;
+
   // mojom::VolumeMounterHost overrides:
   void RequestAllMountPoints() override;
   void ReportMountFailureCount(uint16_t count) override;
+  void SetUpExternalStorageMountPoints(
+      uint32_t media_provider_uid,
+      SetUpExternalStorageMountPointsCallback callback) override;
 
   // Initialize ArcVolumeMounterBridge with delegate.
   void Initialize(Delegate* delegate);
@@ -101,12 +108,24 @@ class ArcVolumeMounterBridge
   bool IsVisibleToAndroidApps(const std::string& uuid) const;
   void OnVisibleStoragesChanged();
 
-  Delegate* delegate_;
+  bool IsReadyToSendMountingEvents();
+
+  void OnSetUpExternalStorageMountPoints(
+      SetUpExternalStorageMountPointsCallback callback,
+      bool result,
+      absl::optional<std::string> error_name,
+      absl::optional<std::string> error_message);
+
+  Delegate* delegate_ = nullptr;
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   PrefService* const pref_service_;
   PrefChangeRegistrar change_registerar_;
+
+  bool arcvm_external_storage_mount_points_are_ready_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ArcVolumeMounterBridge> weak_ptr_factory_{this};
 };

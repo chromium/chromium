@@ -46,6 +46,11 @@ enum class ArcBinaryTranslationType {
 // 3328 is chosen because it's a rounded number (i.e. 3328 % 256 == 0).
 constexpr size_t k32bitVmRamMaxMib = 3328;
 
+// Name of upstart job to start ARCVM services for sharing media directories
+// like MyFiles.
+constexpr char kArcVmMediaSharingServicesJobName[] =
+    "arcvm_2dmedia_2dsharing_2dservices";
+
 // For better unit-testing.
 class ArcVmClientAdapterDelegate {
  public:

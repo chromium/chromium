@@ -133,6 +133,7 @@ static_library("arc") {
     "//chromeos/ash/components/dbus/resourced",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/spaced:spaced",
+    "//chromeos/ash/components/dbus/upstart:upstart",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/components/disks:prefs",
