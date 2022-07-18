@@ -81,13 +81,15 @@ void StartSuggestService::FetchSuggestions(
         semantics {
           sender: "Chrome Search Suggest Service"
           description:
-            "Fetch query suggestions to be shown in NTP"
+            "Fetch query suggestions to be shown in NTP."
           trigger:
             "Displaying on the new tab page, if Google is the "
             "configured search provider."
+          data: "None"
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {
+          cookies_allowed: NO
           setting:
             "Users can control this feature by selecting a non-Google default "
             "search engine in Chrome settings under 'Search Engine'"
