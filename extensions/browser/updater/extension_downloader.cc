@@ -367,6 +367,10 @@ void ExtensionDownloader::SetBackoffPolicyForTesting(
   manifests_queue_.set_backoff_policy(backoff_policy);
 }
 
+bool ExtensionDownloader::HasActiveManifestRequestForTesting() {
+  return manifests_queue_.active_request();
+}
+
 ManifestFetchData* ExtensionDownloader::GetActiveManifestFetchForTesting() {
   return manifests_queue_.active_request();
 }
@@ -581,22 +585,25 @@ void ExtensionDownloader::CreateManifestLoader() {
         net::SiteForCookies::FromUrl(active_request->full_url());
   }
 
-  DCHECK(!manifest_loader_);
-  manifest_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation);
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       traffic_annotation);
   // Update checks can be interrupted if a network change is detected; this is
   // common for the retail mode AppPack on ChromeOS. Retrying once should be
   // enough to recover in those cases; let the fetcher retry up to 3 times
   // just in case. http://crosbug.com/130602
-  manifest_loader_->SetRetryOptions(
+  loader->SetRetryOptions(
       3, network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
 
   network::mojom::URLLoaderFactory* url_loader_factory_to_use =
       GetURLLoaderFactoryToUse(active_request->full_url());
-  manifest_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  // Loader will be owned by the callback, so we need a temporary reference to
+  // avoid use after move.
+  network::SimpleURLLoader* loader_reference = loader.get();
+  loader_reference->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_to_use,
       base::BindOnce(&ExtensionDownloader::OnManifestLoadComplete,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(loader)));
 }
 
 void ExtensionDownloader::RetryManifestFetchRequest(
@@ -727,14 +734,8 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
 }
 
 void ExtensionDownloader::OnManifestLoadComplete(
+    std::unique_ptr<network::SimpleURLLoader> loader,
     std::unique_ptr<std::string> response_body) {
-  // Remove the current loader and active request from the queue. This allows us
-  // to handle any next steps for the request (such as retrying it)
-  // asynchronously without blocking the next load in the queue. If the current
-  // request needs to be retried, it can be scheduled as another entry in the
-  // queue.
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      std::move(manifest_loader_);
   const GURL url = loader->GetFinalURL();
   DCHECK(loader);
 

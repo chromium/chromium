@@ -651,7 +651,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
   size_t ManifestFetchersCount(ExtensionDownloader* downloader) {
     return downloader->manifests_queue_.size() +
-           (downloader->manifest_loader_.get() ? 1 : 0);
+           (downloader->HasActiveManifestRequestForTesting() ? 1 : 0);
   }
 
   std::set<std::string> GetRunningInstallIds(const ExtensionUpdater& updater) {
@@ -819,8 +819,8 @@ class ExtensionUpdaterTest : public testing::Test {
           loop.Quit();
         }));
 
-    helper.downloader().StartAllPending(NULL);
-    EXPECT_TRUE(helper.downloader().manifest_loader_);
+    helper.downloader().StartAllPending(nullptr);
+    EXPECT_TRUE(helper.downloader().HasActiveManifestRequestForTesting());
 
     loop.Run();
 
@@ -1304,7 +1304,7 @@ class ExtensionUpdaterTest : public testing::Test {
       EXPECT_TRUE(observer.Updated("4444"));
       fetch4_url = GURL();
     }
-    if (helper.downloader().manifest_loader_)
+    if (helper.downloader().HasActiveManifestRequestForTesting())
       ADD_FAILURE() << "Unexpected load";
   }
 
@@ -2222,7 +2222,7 @@ class ExtensionUpdaterTest : public testing::Test {
     // Make the updater do manifest fetching, and note the urls it tries to
     // fetch.
     std::vector<GURL> fetched_urls;
-    ASSERT_TRUE(updater.downloader_->manifest_loader_);
+    ASSERT_TRUE(updater.downloader_->HasActiveManifestRequestForTesting());
     const ManifestFetchData& fetch =
         *updater.downloader_->manifests_queue_.active_request();
     fetched_urls.push_back(fetch.full_url());
