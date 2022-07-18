@@ -50,12 +50,11 @@ bool WaylandPopup::CreateShellPopup() {
   params.bounds = bounds_dip;
   params.menu_type =
       delegate()->GetMenuType().value_or(MenuType::kRootContextMenu);
-  params.anchor = delegate()->GetOwnedWindowAnchorAndRectInPx();
+  params.anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP();
   if (params.anchor.has_value()) {
-    // TODO(crbug.com/1306688): Change anchor_rect to DIP.
     params.anchor->anchor_rect =
         delegate()->ConvertRectToDIP(wl::TranslateBoundsToParentCoordinates(
-            params.anchor->anchor_rect, parent_window()->GetBoundsInPixels()));
+            params.anchor->anchor_rect, parent_window()->GetBoundsInDIP()));
     // If size is empty, set 1x1.
     if (params.anchor->anchor_rect.size().IsEmpty())
       params.anchor->anchor_rect.set_size({1, 1});

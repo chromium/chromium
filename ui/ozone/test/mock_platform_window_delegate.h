@@ -40,7 +40,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(GetMinimumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMaximumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMenuType, absl::optional<MenuType>());
-  MOCK_METHOD0(GetOwnedWindowAnchorAndRectInPx,
+  MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                absl::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
 };

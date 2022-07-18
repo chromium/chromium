@@ -894,17 +894,12 @@ absl::optional<ui::MenuType> DesktopWindowTreeHostPlatform::GetMenuType() {
 }
 
 absl::optional<ui::OwnedWindowAnchor>
-DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInPx() {
-  auto* anchor =
+DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInDIP() {
+  const auto* anchor =
       GetContentWindow()->GetProperty(aura::client::kOwnedWindowAnchor);
   if (!anchor)
     return absl::nullopt;
-  // Make a copy of the structure. Otherwise, conversion will result in
-  // overriding the stored property's value.
-  ui::OwnedWindowAnchor window_anchor = *anchor;
-  // Anchor rect must be translated from DIP to px.
-  window_anchor.anchor_rect = ToPixelRect(window_anchor.anchor_rect);
-  return window_anchor;
+  return *anchor;
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToPixels(
