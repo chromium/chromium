@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
-class Clock;
 class TickClock;
 }  // namespace base
 
@@ -314,9 +314,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   void Trace(Visitor*) const override;
 
-  // The caller owns the |clock|.
-  void SetClocksForTesting(const base::Clock* clock,
-                           const base::TickClock* tick_clock);
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
   void ResetTimeOriginForTesting(base::TimeTicks time_origin);
 
  private:
@@ -392,7 +390,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   Member<PerformanceEventTiming> first_input_timing_;
 
   base::TimeTicks time_origin_;
-  base::TimeDelta unix_at_zero_monotonic_;
   const base::TickClock* tick_clock_;
   bool cross_origin_isolated_capability_;
 

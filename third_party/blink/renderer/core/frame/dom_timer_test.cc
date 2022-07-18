@@ -54,7 +54,7 @@ class DOMTimerTest : public RenderingTest {
     auto* mock_clock = test_task_runner->GetMockClock();
     auto* mock_tick_clock = test_task_runner->GetMockTickClock();
     auto now_ticks = test_task_runner->NowTicks();
-    window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
+    window_performance->SetTickClockForTesting(mock_tick_clock);
     window_performance->ResetTimeOriginForTesting(now_ticks);
     GetDocument().GetSettings()->SetScriptEnabled(true);
     auto* loader = GetDocument().Loader();
