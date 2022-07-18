@@ -122,9 +122,10 @@ void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
     case VolumeType::VOLUME_TYPE_SMB:
     case VolumeType::VOLUME_TYPE_SYSTEM_INTERNAL:
     case VolumeType::VOLUME_TYPE_GUEST_OS:
-    case VolumeType::NUM_VOLUME_TYPE:
       std::move(is_file_arc_writable_callback).Run(false);
       return;
+    case VolumeType::NUM_VOLUME_TYPE:
+      NOTREACHED();
   }
 }
 
