@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -209,5 +210,16 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         if (mPrivacySandboxController != null) {
             mPrivacySandboxController.dismissSnackbar();
         }
+    }
+
+    @Override
+    public boolean canLaunchClearBrowsingDataDialog() {
+        return true;
+    }
+
+    @Override
+    public void launchClearBrowsingDataDialog(Activity currentActivity) {
+        new SettingsLauncherImpl().launchSettingsActivity(
+                currentActivity, ClearBrowsingDataTabsFragment.class);
     }
 }

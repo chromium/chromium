@@ -126,6 +126,17 @@ public interface SiteSettingsDelegate {
     void dismissPrivacySandboxSnackbar();
 
     /**
+     * Returns whether the current implementation of the delegate is able to launch the Clear
+     * Browsing Data dialog in Settings.
+     */
+    boolean canLaunchClearBrowsingDataDialog();
+
+    /**
+     * Launches the Clear Browsing Data dialog in Settings, if that is possible.
+     */
+    void launchClearBrowsingDataDialog(Activity currentActivity);
+
+    /**
      * Called when the view this delegate is assigned to gets destroyed.
      */
     void onDestroyView();

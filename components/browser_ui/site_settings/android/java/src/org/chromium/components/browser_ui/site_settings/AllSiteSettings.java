@@ -9,7 +9,10 @@ import static org.chromium.components.browser_ui.settings.SearchUtils.handleSear
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.format.Formatter;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +31,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -58,6 +62,8 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
      * {@link UrlUtilities#getDomainAndRegistry}.
      */
     public static final String EXTRA_SELECTED_DOMAINS = "selected_domains";
+
+    public static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data_link";
 
     // The clear button displayed in the Storage view.
     private Button mClearButton;
@@ -216,7 +222,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences);
+        addPreferencesFromXml();
 
         String title = getArguments().getString(EXTRA_TITLE);
         if (title != null) getActivity().setTitle(title);
@@ -304,7 +310,30 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         // This will remove the combo box at the top and all the sites listed below it.
         getPreferenceScreen().removeAll();
         // And this will add the filter preference back (combo box).
-        SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences);
+        addPreferencesFromXml();
+    }
+
+    private void addPreferencesFromXml() {
+        if (SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
+            ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
+            if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
+                getPreferenceScreen().removePreference(clearBrowsingDataLink);
+                return;
+            }
+            SpannableString spannableString = new SpannableString(
+                    getResources().getString(R.string.clear_browsing_data_link));
+            spannableString.setSpan(new ForegroundColorSpan(getContext().getColor(
+                                            R.color.default_text_color_link_baseline)),
+                    0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            clearBrowsingDataLink.setSummary(spannableString);
+            clearBrowsingDataLink.setOnPreferenceClickListener(pref -> {
+                getSiteSettingsDelegate().launchClearBrowsingDataDialog(getActivity());
+                return true;
+            });
+        } else {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences);
+        }
     }
 
     private boolean addWebsites(Collection<Website> sites) {

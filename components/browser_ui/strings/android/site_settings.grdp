@@ -152,6 +152,9 @@
   <message name="IDS_WEBSITE_SETTINGS_EMBEDDED_ON" desc="String used to indicate the embedder origin of a site">
     Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
   </message>
+  <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the clear browsing data dialog.">
+    Clear browsing data…
+  </message>
 
   <!-- Site settings: Possible permission values for a single site -->
 

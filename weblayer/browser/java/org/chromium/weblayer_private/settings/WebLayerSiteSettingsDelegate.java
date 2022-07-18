@@ -139,5 +139,13 @@ public class WebLayerSiteSettingsDelegate
     public void dismissPrivacySandboxSnackbar() {}
 
     @Override
+    public boolean canLaunchClearBrowsingDataDialog() {
+        return false;
+    }
+
+    @Override
+    public void launchClearBrowsingDataDialog(Activity currentActivity) {}
+
+    @Override
     public void onDestroyView() {}
 }

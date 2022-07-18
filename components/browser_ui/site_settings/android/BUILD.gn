@@ -172,6 +172,7 @@ android_resources("java_resources") {
     "java/res/menu/website_preferences_menu.xml",
     "java/res/values/ids.xml",
     "java/res/xml/all_site_preferences.xml",
+    "java/res/xml/all_site_preferences_v2.xml",
     "java/res/xml/single_website_preferences.xml",
     "java/res/xml/site_settings_preferences.xml",
     "java/res/xml/website_preferences.xml",
