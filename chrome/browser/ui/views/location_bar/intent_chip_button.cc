@@ -48,10 +48,10 @@ void IntentChipButton::Update() {
   SetVisible(is_visible);
 
   if (is_visible) {
-    bool collapsed = GetChipCollapsed();
-    ResetAnimation(!collapsed);
-    SetTheme(collapsed ? OmniboxChipTheme::kIconStyle
-                       : OmniboxChipTheme::kLowVisibility);
+    bool expanded = GetChipExpanded();
+    ResetAnimation(expanded);
+    SetTheme(expanded ? OmniboxChipTheme::kLowVisibility
+                      : OmniboxChipTheme::kIconStyle);
     UpdateIconAndColors();
   }
   if (browser_->window()) {
@@ -92,9 +92,9 @@ bool IntentChipButton::GetShowChip() const {
   return tab_helper && tab_helper->should_show_icon();
 }
 
-bool IntentChipButton::GetChipCollapsed() const {
+bool IntentChipButton::GetChipExpanded() const {
   auto* tab_helper = GetTabHelper();
-  return tab_helper && tab_helper->should_show_collapsed_chip();
+  return tab_helper && tab_helper->ShouldShowExpandedChip();
 }
 
 ui::ImageModel IntentChipButton::GetAppIcon() const {

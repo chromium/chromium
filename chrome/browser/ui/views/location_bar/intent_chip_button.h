@@ -30,7 +30,7 @@ class IntentChipButton : public OmniboxChipButton {
 
  private:
   bool GetShowChip() const;
-  bool GetChipCollapsed() const;
+  bool GetChipExpanded() const;
   ui::ImageModel GetAppIcon() const;
   void HandlePressed();
 

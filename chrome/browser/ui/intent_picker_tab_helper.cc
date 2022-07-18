@@ -95,7 +95,7 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
 
   if (apps::features::LinkCapturingUiUpdateEnabled()) {
     tab_helper->app_icon_ = ui::ImageModel();
-    tab_helper->should_show_collapsed_chip_ = false;
+    tab_helper->show_expanded_chip_from_usage_ = false;
     tab_helper->last_shown_app_id_ = std::string();
     tab_helper->last_shown_origin_ = url::Origin();
   }
@@ -209,11 +209,11 @@ void IntentPickerTabHelper::LoadAppIcon(
                                    std::move(callback), index));
 }
 
-void IntentPickerTabHelper::UpdateCollapsedState(bool should_show_icon) {
+void IntentPickerTabHelper::UpdateExpandedState(bool should_show_icon) {
   GURL url = web_contents()->GetLastCommittedURL();
 
   if (!should_show_icon || url.is_empty()) {
-    should_show_collapsed_chip_ = false;
+    show_expanded_chip_from_usage_ = false;
     last_shown_origin_ = url::Origin();
     return;
   }
@@ -229,8 +229,8 @@ void IntentPickerTabHelper::UpdateCollapsedState(bool should_show_icon) {
     auto chip_state =
         IntentPickerAutoDisplayPrefs ::GetChipStateAndIncrementCounter(profile,
                                                                        url);
-    should_show_collapsed_chip_ =
-        chip_state == IntentPickerAutoDisplayPrefs::ChipState::kCollapsed;
+    show_expanded_chip_from_usage_ =
+        chip_state == IntentPickerAutoDisplayPrefs::ChipState::kExpanded;
   }
 }
 
@@ -251,7 +251,7 @@ void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
 
 void IntentPickerTabHelper::ShowIconForLinkIntent(bool should_show_icon) {
   if (apps::features::LinkCapturingUiUpdateEnabled()) {
-    UpdateCollapsedState(should_show_icon);
+    UpdateExpandedState(should_show_icon);
   }
 
   ShowOrHideIconInternal(should_show_icon);

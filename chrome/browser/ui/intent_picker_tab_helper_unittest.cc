@@ -62,6 +62,17 @@ TEST_F(IntentPickerTabHelperTest, ShowIconForApps) {
   ASSERT_TRUE(helper()->should_show_icon());
 }
 
+TEST_F(IntentPickerTabHelperTest, ShowIconForApps_ExpandedChip) {
+  base::test::ScopedFeatureList feature_list(
+      apps::features::kLinkCapturingUiUpdate);
+  const GURL kTestUrl = GURL("https://www.google.com");
+
+  NavigateAndCommit(kTestUrl);
+  helper()->ShowIconForApps(CreateTestAppList());
+
+  ASSERT_TRUE(helper()->ShouldShowExpandedChip());
+}
+
 TEST_F(IntentPickerTabHelperTest, ShowIconForApps_CollapsedChip) {
   base::test::ScopedFeatureList feature_list(
       apps::features::kLinkCapturingUiUpdate);
@@ -78,31 +89,24 @@ TEST_F(IntentPickerTabHelperTest, ShowIconForApps_CollapsedChip) {
   helper()->ShowIconForApps(CreateTestAppList());
 
   ASSERT_TRUE(helper()->should_show_icon());
-  ASSERT_TRUE(helper()->should_show_collapsed_chip());
+  ASSERT_FALSE(helper()->ShouldShowExpandedChip());
 }
 
-TEST_F(IntentPickerTabHelperTest, ShowIntentIcon_ResetsCollapsedState) {
+TEST_F(IntentPickerTabHelperTest, ShowIntentIcon_ResetsExpandedState) {
   base::test::ScopedFeatureList feature_list(
       apps::features::kLinkCapturingUiUpdate);
   const GURL kTestUrl = GURL("https://www.google.com");
-
-  // Simulate having seen the chip for this URL several times before, so that it
-  // appears collapsed.
-  for (int i = 0; i < 3; i++) {
-    IntentPickerAutoDisplayPrefs::GetChipStateAndIncrementCounter(profile(),
-                                                                  kTestUrl);
-  }
 
   NavigateAndCommit(kTestUrl);
   helper()->ShowIconForApps(CreateTestAppList());
 
   EXPECT_TRUE(helper()->should_show_icon());
-  EXPECT_TRUE(helper()->should_show_collapsed_chip());
+  EXPECT_TRUE(helper()->ShouldShowExpandedChip());
 
   // Explicitly showing the icon should reset any app-based customizations.
   IntentPickerTabHelper::ShowOrHideIcon(web_contents(),
                                         /*should_show_icon=*/true);
-  ASSERT_FALSE(helper()->should_show_collapsed_chip());
+  ASSERT_FALSE(helper()->ShouldShowExpandedChip());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

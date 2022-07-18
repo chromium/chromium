@@ -46,9 +46,9 @@ class IntentPickerTabHelper
 
   bool should_show_icon() const { return should_show_icon_; }
 
-  bool should_show_collapsed_chip() const {
-    return should_show_collapsed_chip_;
-  }
+  // Returns true if the icon should be shown using an expanded chip-style
+  // button.
+  bool ShouldShowExpandedChip() const { return show_expanded_chip_from_usage_; }
 
   const ui::ImageModel& app_icon() const { return app_icon_; }
 
@@ -79,7 +79,7 @@ class IntentPickerTabHelper
                    IntentPickerIconLoaderCallback callback,
                    size_t index);
 
-  void UpdateCollapsedState(bool should_show_icon);
+  void UpdateExpandedState(bool should_show_icon);
   void OnAppIconLoadedForChip(const std::string& app_id,
                               apps::IconValuePtr icon);
   // Shows or hides the intent icon, with customizations specific to link intent
@@ -100,7 +100,9 @@ class IntentPickerTabHelper
 
   bool should_show_icon_ = false;
   url::Origin last_shown_origin_;
-  bool should_show_collapsed_chip_ = false;
+  // True if the icon should be shown as in an expanded chip style due to usage
+  // on this origin.
+  bool show_expanded_chip_from_usage_ = false;
 
   std::string last_shown_app_id_;
   ui::ImageModel app_icon_;
