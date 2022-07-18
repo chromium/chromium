@@ -233,9 +233,11 @@ void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context) {
 }  // namespace file_system_api
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-ChromeFileSystemDelegate::ChromeFileSystemDelegate() {}
+/******** ChromeFileSystemDelegate ********/
 
-ChromeFileSystemDelegate::~ChromeFileSystemDelegate() {}
+ChromeFileSystemDelegate::ChromeFileSystemDelegate() = default;
+
+ChromeFileSystemDelegate::~ChromeFileSystemDelegate() = default;
 
 base::FilePath ChromeFileSystemDelegate::GetDefaultDirectory() {
   base::FilePath documents_dir;
@@ -391,8 +393,9 @@ void ChromeFileSystemDelegate::RequestFileSystem(
                      std::move(success_callback), std::move(error_callback),
                      extension.origin(), volume, writable);
 
-  consent_provider.RequestConsent(extension, requester->render_frame_host(),
-                                  volume, writable, std::move(callback));
+  consent_provider.RequestConsent(requester->render_frame_host(), extension,
+                                  volume->volume_id(), volume->volume_label(),
+                                  writable, std::move(callback));
 }
 
 void ChromeFileSystemDelegate::GetVolumeList(

@@ -8,23 +8,20 @@
 #include <utility>
 
 #include "ash/constants/notifier_catalogs.h"
-#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "chrome/grit/generated_resources.h"
-#include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-using file_manager::Volume;
 using message_center::Notification;
 
 namespace extensions {
@@ -44,14 +41,14 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
   AppNotificationLauncher& operator=(const AppNotificationLauncher&) = delete;
 
   void InitAndShow(Profile* profile,
-                   const Extension& extension,
+                   const extensions::ExtensionId& extension_id,
                    std::unique_ptr<message_center::Notification> notification) {
     profile_ = profile;
     pending_notification_ = std::move(notification);
 
     icon_loader_ =
         std::make_unique<ChromeAppIconLoader>(profile, kIconSize, this);
-    icon_loader_->FetchImage(extension.id());
+    icon_loader_->FetchImage(extension_id);
 
     // |this| may be destroyed!
   }
@@ -78,23 +75,19 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
 
 void ShowNotificationForAutoGrantedRequestFileSystem(
     Profile* profile,
-    const Extension& extension,
-    const base::WeakPtr<Volume>& volume,
+    const extensions::ExtensionId& extension_id,
+    const std::string& extension_name,
+    const std::string& volume_id,
+    const std::string& volume_label,
     bool writable) {
   DCHECK(profile);
 
-  // If the volume is gone, then do not show the notification.
-  if (!volume.get())
-    return;
-
-  const std::string notification_id =
-      extension.id() + "-" + volume->volume_id();
+  const std::string notification_id = extension_id + "-" + volume_id;
   message_center::RichNotificationData data;
 
   // TODO(mtomasz): Share this code with RequestFileSystemDialogView.
   const std::u16string display_name =
-      base::UTF8ToUTF16(!volume->volume_label().empty() ? volume->volume_label()
-                                                        : volume->volume_id());
+      base::UTF8ToUTF16(volume_label.empty() ? volume_id : volume_label);
   const std::u16string message = l10n_util::GetStringFUTF16(
       writable
           ? IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_NOTIFICATION_WRITABLE_MESSAGE
@@ -103,7 +96,7 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
 
   std::unique_ptr<message_center::Notification> notification(new Notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      base::UTF8ToUTF16(extension.name()), message,
+      base::UTF8ToUTF16(extension_name), message,
       ui::ImageModel(),  // Updated asynchronously later.
       std::u16string(),  // display_source
       GURL(),
@@ -114,7 +107,7 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
 
   // AppNotificationLauncher will delete itself.
   (new AppNotificationLauncher())
-      ->InitAndShow(profile, extension, std::move(notification));
+      ->InitAndShow(profile, extension_id, std::move(notification));
 }
 
 }  // namespace extensions

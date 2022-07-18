@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
-#include "build/build_config.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/ui_base_types.h"
 
 class Profile;
@@ -15,10 +16,6 @@ class Profile;
 namespace content {
 class RenderFrameHost;
 }  // content
-
-namespace file_manager {
-class Volume;
-}  // namespace file_manager
 
 namespace extensions {
 class Extension;
@@ -44,17 +41,20 @@ class ConsentProvider {
   class DelegateInterface {
    public:
     // Shows a dialog for granting permissions.
-    virtual void ShowDialog(const Extension& extension,
-                            content::RenderFrameHost* host,
-                            const base::WeakPtr<file_manager::Volume>& volume,
+    virtual void ShowDialog(content::RenderFrameHost* host,
+                            const extensions::ExtensionId& extension_id,
+                            const std::string& extension_name,
+                            const std::string& volume_id,
+                            const std::string& volume_label,
                             bool writable,
                             ShowDialogCallback callback) = 0;
 
     // Shows a notification about permissions automatically granted access.
-    virtual void ShowNotification(
-        const Extension& extension,
-        const base::WeakPtr<file_manager::Volume>& volume,
-        bool writable) = 0;
+    virtual void ShowNotification(const extensions::ExtensionId& extension_id,
+                                  const std::string& extension_name,
+                                  const std::string& volume_id,
+                                  const std::string& volume_label,
+                                  bool writable) = 0;
 
     // Checks if the extension was launched in auto-launch kiosk mode.
     virtual bool IsAutoLaunched(const Extension& extension) = 0;
@@ -70,12 +70,13 @@ class ConsentProvider {
 
   ~ConsentProvider();
 
-  // Requests consent for granting |writable| permissions to the |volume|
-  // volume by the |extension|. Must be called only if the extension is
-  // grantable, which can be checked with IsGrantable().
-  void RequestConsent(const Extension& extension,
-                      content::RenderFrameHost* host,
-                      const base::WeakPtr<file_manager::Volume>& volume,
+  // Requests consent for granting |writable| permissions to a volume with
+  // |volume_id| and |volume_label| by |extension|, which is assumed to be
+  // grantable (i.e., passes IsGrantable()).
+  void RequestConsent(content::RenderFrameHost* host,
+                      const Extension& extension,
+                      const std::string& volume_id,
+                      const std::string& volume_label,
                       bool writable,
                       ConsentCallback callback);
 
@@ -105,14 +106,18 @@ class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
   static void SetAutoDialogButtonForTest(ui::DialogButton button);
 
   // ConsentProvider::DelegateInterface overrides:
-  void ShowDialog(
-      const Extension& extension,
-      content::RenderFrameHost* host,
-      const base::WeakPtr<file_manager::Volume>& volume,
-      bool writable,
-      file_system_api::ConsentProvider::ShowDialogCallback callback) override;
-  void ShowNotification(const Extension& extension,
-                        const base::WeakPtr<file_manager::Volume>& volume,
+  void ShowDialog(content::RenderFrameHost* host,
+                  const extensions::ExtensionId& extension_id,
+                  const std::string& extension_name,
+                  const std::string& volume_id,
+                  const std::string& volume_label,
+                  bool writable,
+                  ConsentProvider::ShowDialogCallback callback) override;
+
+  void ShowNotification(const extensions::ExtensionId& extension_id,
+                        const std::string& extension_name,
+                        const std::string& volume_id,
+                        const std::string& volume_label,
                         bool writable) override;
   bool IsAutoLaunched(const Extension& extension) override;
   bool IsAllowlistedComponent(const Extension& extension) override;

@@ -10,9 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
@@ -26,7 +24,6 @@
 
 using extensions::file_system_api::ConsentProvider;
 using extensions::mojom::ManifestLocation;
-using file_manager::Volume;
 
 namespace extensions {
 namespace {
@@ -65,17 +62,21 @@ class TestingConsentProviderDelegate
 
  private:
   // ConsentProvider::DelegateInterface overrides:
-  void ShowDialog(const extensions::Extension& extension,
-                  content::RenderFrameHost* host,
-                  const base::WeakPtr<Volume>& volume,
+  void ShowDialog(content::RenderFrameHost* host,
+                  const extensions::ExtensionId& extension_id,
+                  const std::string& extension_name,
+                  const std::string& volume_id,
+                  const std::string& volume_label,
                   bool writable,
                   ConsentProvider::ShowDialogCallback callback) override {
     ++show_dialog_counter_;
     std::move(callback).Run(dialog_button_);
   }
 
-  void ShowNotification(const extensions::Extension& extension,
-                        const base::WeakPtr<Volume>& volume,
+  void ShowNotification(const extensions::ExtensionId& extension_id,
+                        const std::string& extension_name,
+                        const std::string& volume_id,
+                        const std::string& volume_label,
                         bool writable) override {
     ++show_notification_counter_;
   }
@@ -125,7 +126,6 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   }
 
  protected:
-  base::WeakPtr<Volume> volume_;
   std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
   ash::FakeChromeUserManager* user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
@@ -157,8 +157,9 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
     EXPECT_TRUE(provider.IsGrantable(*allowlisted_component_extension));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*allowlisted_component_extension.get(), nullptr,
-                            volume_, true /* writable */,
+    provider.RequestConsent(nullptr, *allowlisted_component_extension.get(),
+                            "Volume ID 1", "Volume Label 1",
+                            true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
 
@@ -198,9 +199,9 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     EXPECT_TRUE(provider.IsGrantable(*auto_launch_kiosk_app));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*auto_launch_kiosk_app.get(), nullptr, volume_,
-                            true /* writable */,
-                            base::BindOnce(&OnConsentReceived, &result));
+    provider.RequestConsent(
+        nullptr, *auto_launch_kiosk_app.get(), "Volume ID 2", "Volume Label 2",
+        true /* writable */, base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(0, delegate.show_dialog_counter());
@@ -226,7 +227,8 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*manual_launch_kiosk_app.get(), nullptr, volume_,
+    provider.RequestConsent(nullptr, *manual_launch_kiosk_app.get(),
+                            "Volume ID 3", "Volume Label 3",
                             true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
@@ -245,7 +247,8 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
     EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*manual_launch_kiosk_app.get(), nullptr, volume_,
+    provider.RequestConsent(nullptr, *manual_launch_kiosk_app.get(),
+                            "Volume ID 4", "Volume Label 4",
                             true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
