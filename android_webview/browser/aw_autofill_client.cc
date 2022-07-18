@@ -301,7 +301,7 @@ void AwAutofillClient::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
 
-void AwAutofillClient::OnPromoCodeSuggestionsFooterSelected(const GURL& url) {
+void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTIMPLEMENTED();
 }
 

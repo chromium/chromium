@@ -2139,6 +2139,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Offer.Suggestion.{OfferType}"
+    enum="OffersSuggestionsEvent" expires_after="2023-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    This metric is recorded every time an event related to an individual offer
+    suggestion in the offers suggestions popup gets triggered. The offers
+    suggestions popup gets displayed when a form's field that can be autofilled
+    with an offer is selected.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
+<histogram name="Autofill.Offer.SuggestionsPopupShown"
+    enum="OffersSuggestionsPopupEvent" expires_after="2023-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    This metric records two enums, one for every time the offers suggestions
+    popup is shown, and another for that same event, but only one per unique
+    field. The offers suggestions popup is shown when a form's field that can be
+    autofilled with an offer is selected.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Offer.SyncedOfferDataBeingValid" units="offers"
     expires_after="2022-12-04">
   <owner>siyua@chromium.org</owner>

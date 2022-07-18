@@ -321,7 +321,7 @@ void AutofillClientImpl::ExecuteCommand(int id) {
   NOTREACHED();
 }
 
-void AutofillClientImpl::OnPromoCodeSuggestionsFooterSelected(const GURL& url) {
+void AutofillClientImpl::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTREACHED();
 }
 

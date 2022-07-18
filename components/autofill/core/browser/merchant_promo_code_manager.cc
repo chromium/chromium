@@ -7,8 +7,10 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 
 namespace autofill {
 
@@ -35,6 +37,7 @@ void MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
       SendPromoCodeSuggestions(
           promo_code_offers,
           QueryHandler(query_id, autoselect_first_suggestion, prefix, handler));
+      uma_recorder_.OnOffersSuggestionsShown(name, promo_code_offers);
       return;
     }
   }
@@ -55,7 +58,7 @@ void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
     int frontend_id) {
-  // TODO(crbug.com/1190334): Add promo code suggestion accepted metrics here.
+  uma_recorder_.OnOfferSuggestionSelected(frontend_id);
 }
 
 void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
@@ -66,6 +69,78 @@ void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
 
 base::WeakPtr<MerchantPromoCodeManager> MerchantPromoCodeManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
+    const std::u16string& name,
+    std::vector<const AutofillOfferData*>& offers) {
+  // Log metrics related to the showing of overall offers suggestions popup.
+  autofill_metrics::LogOffersSuggestionsPopupShown(
+      /*first_time_being_logged=*/most_recent_suggestions_shown_field_name_ !=
+      name);
+
+  // Log metrics related to the showing of individual offers in the offers
+  // suggestions popup.
+  for (const AutofillOfferData* offer : offers) {
+    // We log every time an individual offer suggestion is shown, regardless if
+    // the user is repeatedly clicking the same field.
+    autofill_metrics::LogIndividualOfferSuggestionEvent(
+        autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShown,
+        offer->GetOfferType());
+
+    // We log that this individual offer suggestion was shown once for this
+    // field while autofilling if it is the first time being logged.
+    if (most_recent_suggestions_shown_field_name_ != name) {
+      autofill_metrics::LogIndividualOfferSuggestionEvent(
+          autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShownOnce,
+          offer->GetOfferType());
+    }
+  }
+
+  most_recent_suggestions_shown_field_name_ = name;
+}
+
+void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
+    int frontend_id) {
+  if (frontend_id == PopupItemId::POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+    // We log every time an individual offer suggestion is selected, regardless
+    // if the user is repeatedly autofilling the same field.
+    autofill_metrics::LogIndividualOfferSuggestionEvent(
+        autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionSelected,
+        AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
+
+    // We log that this individual offer suggestion was selected once for this
+    // field while autofilling if it is the first time being logged.
+    if (most_recent_suggestion_selected_field_name_ !=
+        most_recent_suggestions_shown_field_name_) {
+      autofill_metrics::LogIndividualOfferSuggestionEvent(
+          autofill_metrics::OffersSuggestionsEvent::
+              kOfferSuggestionSelectedOnce,
+          AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
+    }
+  } else if (frontend_id == PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS) {
+    // We log every time the see offer details suggestion in the footer is
+    // selected, regardless if the user is repeatedly autofilling the same
+    // field.
+    autofill_metrics::LogIndividualOfferSuggestionEvent(
+        autofill_metrics::OffersSuggestionsEvent::
+            kOfferSuggestionSeeOfferDetailsSelected,
+        AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
+
+    // We log that this individual see offer details suggestion in the footer
+    // was selected once for this field while autofilling if it is the first
+    // time being logged.
+    if (most_recent_suggestion_selected_field_name_ !=
+        most_recent_suggestions_shown_field_name_) {
+      autofill_metrics::LogIndividualOfferSuggestionEvent(
+          autofill_metrics::OffersSuggestionsEvent::
+              kOfferSuggestionSeeOfferDetailsSelectedOnce,
+          AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
+    }
+  }
+
+  most_recent_suggestion_selected_field_name_ =
+      most_recent_suggestions_shown_field_name_;
 }
 
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(

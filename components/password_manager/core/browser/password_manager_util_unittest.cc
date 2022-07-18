@@ -256,7 +256,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (base::OnceCallback<void(const std::string&)>),
               (override));
   MOCK_METHOD(void,
-              OnPromoCodeSuggestionsFooterSelected,
+              OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
               (override));
 };

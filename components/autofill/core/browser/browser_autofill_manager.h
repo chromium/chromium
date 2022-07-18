@@ -300,6 +300,13 @@ class BrowserAutofillManager : public AutofillManager,
   //   2. there is no form and WebOTP is not used
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override;
 
+  // Handles the logic for when the user selects to see promo code offer
+  // details. It opens a new tab and navigates to the offer details page, and
+  // then logs that the promo code suggestions footer was selected.
+  void OnSeePromoCodeOfferDetailsSelected(const GURL& offer_details_url,
+                                          const std::u16string& value,
+                                          int frontend_id);
+
 #if defined(UNIT_TEST)
   void SetExternalDelegateForTest(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {

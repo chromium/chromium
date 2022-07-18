@@ -313,8 +313,7 @@ bool TestAutofillClient::AreServerCardsSupported() const {
 
 void TestAutofillClient::ExecuteCommand(int id) {}
 
-void TestAutofillClient::OnPromoCodeSuggestionsFooterSelected(const GURL& url) {
-}
+void TestAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {}
 
 void TestAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {

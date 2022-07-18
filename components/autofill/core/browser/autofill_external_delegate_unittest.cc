@@ -94,7 +94,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
   MOCK_METHOD(void, ExecuteCommand, (int), (override));
   MOCK_METHOD(void,
-              OnPromoCodeSuggestionsFooterSelected,
+              OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
               (override));
 
@@ -664,7 +664,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateMerchantPromoCodeSuggestionsFooter) {
   const GURL gurl{"https://example.com/"};
   absl::variant<std::string, GURL> payload(absl::in_place_type<GURL>, gurl);
-  EXPECT_CALL(autofill_client_, OnPromoCodeSuggestionsFooterSelected(gurl));
+  EXPECT_CALL(autofill_client_, OpenPromoCodeOfferDetailsURL(gurl));
   external_delegate_->DidAcceptSuggestion(
       u"baz foo", POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS, payload, 0);
 }

@@ -2879,4 +2879,12 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
       static_cast<PhoneCollectionMetricState>(phone_collection_metric_state_));
 }
 
+void BrowserAutofillManager::OnSeePromoCodeOfferDetailsSelected(
+    const GURL& offer_details_url,
+    const std::u16string& value,
+    int frontend_id) {
+  client()->OpenPromoCodeOfferDetailsURL(offer_details_url);
+  OnSingleFieldSuggestionSelected(value, frontend_id);
+}
+
 }  // namespace autofill
