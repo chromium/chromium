@@ -519,22 +519,30 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     return interest_groups;
   }
 
-  int GetJoinCount(const url::Origin& owner, const std::string& name) {
-    for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
+  // Returns the specified interest group, if it exists.
+  absl::optional<StorageInterestGroup> GetInterestGroup(
+      const url::Origin& owner,
+      const std::string& name) {
+    for (auto& interest_group : GetInterestGroupsForOwner(owner)) {
       if (interest_group.interest_group.name == name) {
-        return interest_group.bidding_browser_signals->join_count;
+        return std::move(interest_group);
       }
     }
-    return 0;
+    return absl::nullopt;
+  }
+
+  int GetJoinCount(const url::Origin& owner, const std::string& name) {
+    auto interest_group = GetInterestGroup(owner, name);
+    if (!interest_group)
+      return 0;
+    return interest_group->bidding_browser_signals->join_count;
   }
 
   double GetPriority(const url::Origin& owner, const std::string& name) {
-    for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-      if (interest_group.interest_group.name == name) {
-        return interest_group.interest_group.priority;
-      }
-    }
-    return 0;
+    auto interest_group = GetInterestGroup(owner, name);
+    if (!interest_group)
+      return 0;
+    return interest_group->interest_group.priority;
   }
 
   absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
@@ -859,6 +867,42 @@ TEST_F(AdAuctionServiceImplTest, LeaveInterestGroupOriginNotHttps) {
   NavigateAndCommit(kHttpUrl);
   LeaveInterestGroupAndExpectPipeClosed(kOriginA, kInterestGroupName);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+}
+
+TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
+  const base::TimeDelta kMaxExpiry = base::Days(30);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+
+  // Join an interest group with an expiry that's exactly the maximum allowed.
+  // The expiry should be stored without modification.
+  interest_group.expiry = base::Time::Now() + kMaxExpiry;
+  JoinInterestGroupAndFlush(interest_group);
+  auto storage_interest_group = GetInterestGroup(kOriginA, kInterestGroupName);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ(1, storage_interest_group->bidding_browser_signals->join_count);
+  EXPECT_EQ(interest_group.expiry,
+            storage_interest_group->interest_group.expiry);
+
+  // Rejoin the interest group with a short expiry. The expiry should also be
+  // stored without modification.
+  interest_group.expiry = base::Time::Now() + base::Days(1);
+  JoinInterestGroupAndFlush(interest_group);
+  storage_interest_group = GetInterestGroup(kOriginA, kInterestGroupName);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ(2, storage_interest_group->bidding_browser_signals->join_count);
+  EXPECT_EQ(interest_group.expiry,
+            storage_interest_group->interest_group.expiry);
+
+  // Rejoin the interest group with an expiry that exceeds the maximum allowed.
+  // The expiry should be set to kMaxExpiry days from now.
+  interest_group.expiry = base::Time::Now() + base::Days(300);
+  JoinInterestGroupAndFlush(interest_group);
+  storage_interest_group = GetInterestGroup(kOriginA, kInterestGroupName);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ(3, storage_interest_group->bidding_browser_signals->join_count);
+  base::Time actual_expiry = storage_interest_group->interest_group.expiry;
+  EXPECT_EQ(base::Time::Now() + kMaxExpiry, actual_expiry);
+  EXPECT_NE(interest_group.expiry, actual_expiry);
 }
 
 // These tests validate the `dailyUpdateUrl` and

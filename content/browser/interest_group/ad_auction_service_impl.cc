@@ -105,7 +105,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
     updated_group.expiry = max_expiry;
 
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
-      std::move(group), main_frame_url_, origin(),
+      std::move(updated_group), main_frame_url_, origin(),
       GetFrame()->GetNetworkIsolationKey(), report_result_only,
       *GetFrameURLLoaderFactory(), std::move(callback));
 }
