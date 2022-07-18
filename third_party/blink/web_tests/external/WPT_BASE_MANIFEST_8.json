@@ -86661,6 +86661,84 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-094.html": [
+      "1cb04aefea01cd63e2ac0edb2b809380f97978c5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-095.html": [
+      "3811791d09667b0e75538860be2589b9b35f7524",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-096.html": [
+      "f5382d6d3d035970db69549914671637caa5d6c9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-097.html": [
+      "faac60705b50b5338fb43e5933ac1adae0ac1527",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-098.html": [
+      "390e86995d3740718fda1058810a5ab9c6588d0a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-099.html": [
+      "8c75b2bf5db9bba1b8c02ecee644dc7a954c93ba",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-000.html": [
       "72b10f5cdd3092a042f1f90bff04e9428d61608e",
       [
@@ -227195,6 +227273,19 @@
        ],
        {}
       ]
+     ],
+     "will-change-blur-filter-under-clip.html": [
+      "68e622c36ad18a611188d68a26400f4620ddb9cc",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "mediaqueries": {
@@ -235178,6 +235269,19 @@
        ]
       },
       "the-fieldset-and-legend-elements": {
+       "absolute-fixed-in-legend.html": [
+        "56d296977c1d93165ea2173bdf4303fa5cd9110e",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/absolute-fixed-in-legend-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "empty-scrollable.html": [
         "c968ed3f13666aef025b65a63c59d4f36a350ded",
         [
@@ -312746,6 +312850,10 @@
        ],
        "META.yml": [
         "f5b533c377160c77541187a301647e174069bd6d",
+        []
+       ],
+       "absolute-fixed-in-legend-ref.html": [
+        "f82faee114d258346bbd7456c5d36284c22622f3",
         []
        ],
        "empty-scrollable-ref.html": [
@@ -465284,14 +465392,14 @@
      }
     },
     "dom": {
-     "aria-attribute-reflection.tentative.html": [
+     "aria-attribute-reflection.html": [
       "afcee82eda17358177b890784eb30d4ce5de173d",
       [
        null,
        {}
       ]
      ],
-     "aria-element-reflection.tentative.html": [
+     "aria-element-reflection.html": [
       "742c01557dc8316bfc5758c8c88c20fe7bfe6fc0",
       [
        null,
@@ -477515,7 +477623,7 @@
        ]
       ],
       "popup-focus.tentative.html": [
-       "0ab90bbf55457a96242ed00086b605ae1e5749cc",
+       "76cc33261eaf8798814bbc672f9651221604c45b",
        [
         null,
         {
@@ -477525,7 +477633,7 @@
        ]
       ],
       "popup-invoking-attribute.tentative.html": [
-       "6b356c1563b77e6bf158ee1a5d327c9bfd5049db",
+       "dbc3a1f4355619433dbcf5e82a5a1c05aa1e6489",
        [
         null,
         {
@@ -477542,7 +477650,7 @@
        ]
       ],
       "popup-light-dismiss.tentative.html": [
-       "99a48d7230e33a2dd39b5e70851e09f7cf21e449",
+       "2e94eedf1aa2821209765b56521e868828d2d24d",
        [
         null,
         {
@@ -477589,7 +477697,7 @@
        ]
       ],
       "popup-stacking.tentative.html": [
-       "e9e987ea2ff2fc94d54027129bef35cd7531bd52",
+       "abe3f61996ba9ffe32bf04c0414d37f843756701",
        [
         null,
         {}
