@@ -1111,6 +1111,11 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
               element_bounds_in_top_frame_space, ui_data.text_direction,
               /*show_password_suggestions=*/
               ui_data.is_generation_element_password_type)) {
+    // (see crbug.com/1338105)
+    if (popup_controller_) {
+      popup_controller_->GeneratedPasswordRejected();
+    }
+
     return;
   }
 

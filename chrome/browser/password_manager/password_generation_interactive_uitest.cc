@@ -21,7 +21,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -240,6 +242,53 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
   EXPECT_FALSE(EditingPopupShowing());
   EXPECT_FALSE(GenerationPopupShowing());
+}
+
+// Verify that password generation popup is hidden when popup
+// with generation and password suggestions is visible.
+IN_PROC_BROWSER_TEST_F(
+    PasswordGenerationInteractiveTest,
+    HidesGenerationPopupWhenShowingPasswordSuggestionsWithGeneration) {
+  // Save the credentials since the autofill popup with generation and
+  // password suggestion would not appear without stored passwords.
+  password_manager::PasswordStoreInterface* password_store =
+      PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                          ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"random123";
+  password_store->AddLogin(signin_form);
+  WaitForPasswordStore();
+  NavigateToFile("/password/signup_form_new_password.html");
+
+  FocusPasswordField();
+  // The user generates a password from the context menu.
+  password_manager_util::UserTriggeredManualGenerationFromContextMenu(
+      ChromePasswordManagerClient::FromWebContents(WebContents()),
+      autofill::ChromeAutofillClient::FromWebContents(WebContents()));
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
+  EXPECT_TRUE(GenerationPopupShowing());
+
+  password_manager::ContentPasswordManagerDriverFactory* driver_factory =
+      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+          WebContents());
+  ObservingAutofillClient::CreateForWebContents(WebContents());
+  ObservingAutofillClient* observing_autofill_client =
+      ObservingAutofillClient::FromWebContents(WebContents());
+  password_manager::ContentPasswordManagerDriver* driver =
+      driver_factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
+  driver->GetPasswordAutofillManager()->set_autofill_client(
+      observing_autofill_client);
+
+  // Click on the password field to display the autofill popup.
+  content::SimulateMouseClickOrTapElementWithId(WebContents(),
+                                                "password_field");
+  // Make sure the autofill popup would be shown.
+  observing_autofill_client->WaitForAutofillPopup();
+  // Make sure the generation popup is dismissed.
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,

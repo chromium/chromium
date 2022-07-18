@@ -26,11 +26,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -46,7 +45,6 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -213,45 +211,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleTestAuthRequest(
   }
   return http_response;
 }
-
-class ObservingAutofillClient
-    : public autofill::TestAutofillClient,
-      public content::WebContentsUserData<ObservingAutofillClient> {
- public:
-  ObservingAutofillClient(const ObservingAutofillClient&) = delete;
-  ObservingAutofillClient& operator=(const ObservingAutofillClient&) = delete;
-
-  // Wait until the autofill popup is shown.
-  void WaitForAutofillPopup() {
-    base::RunLoop run_loop;
-    run_loop_ = &run_loop;
-    run_loop.Run();
-    DCHECK(!run_loop_);
-  }
-
-  bool popup_shown() const { return popup_shown_; }
-
-  void ShowAutofillPopup(
-      const autofill::AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override {
-    if (run_loop_)
-      run_loop_->Quit();
-    run_loop_ = nullptr;
-    popup_shown_ = true;
-  }
-
- private:
-  explicit ObservingAutofillClient(content::WebContents* web_contents)
-      : content::WebContentsUserData<ObservingAutofillClient>(*web_contents) {}
-  friend class content::WebContentsUserData<ObservingAutofillClient>;
-
-  raw_ptr<base::RunLoop> run_loop_ = nullptr;
-  bool popup_shown_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ObservingAutofillClient);
 
 void TestPromptNotShown(const char* failure_message,
                         content::WebContents* web_contents) {

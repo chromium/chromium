@@ -51,3 +51,20 @@ void TestGenerationPopupObserver::MaybeQuitRunLoop() {
     run_loop_ = nullptr;
   }
 }
+
+void ObservingAutofillClient::WaitForAutofillPopup() {
+  base::RunLoop run_loop;
+  run_loop_ = &run_loop;
+  run_loop.Run();
+  DCHECK(!run_loop_);
+}
+
+void ObservingAutofillClient::ShowAutofillPopup(
+    const autofill::AutofillClient::PopupOpenArgs& open_args,
+    base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
+  if (run_loop_)
+    run_loop_->Quit();
+  run_loop_ = nullptr;
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ObservingAutofillClient);
