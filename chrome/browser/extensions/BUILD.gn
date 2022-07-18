@@ -1037,6 +1037,7 @@ static_library("extensions") {
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/missive:missive",
+      "//chromeos/dbus/power",
       "//remoting/host/it2me:chrome_os_host",
     ]
   } else {
@@ -1166,7 +1167,6 @@ static_library("extensions") {
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
       "//chromeos/dbus/cryptohome",
-      "//chromeos/dbus/power",
       "//chromeos/dbus/util",
       "//chromeos/language/language_packs",
       "//chromeos/language/public/mojom",

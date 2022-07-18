@@ -534,6 +534,10 @@ test("capture_unittests") {
     deps += [ "//media/base/win:media_foundation_util" ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/dbus/power" ]
+  }
+
   # TODO(https://crbug.com/1043007): use is_linux.
   if (is_chromeos_ash) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
@@ -550,7 +554,6 @@ test("capture_unittests") {
     ]
     deps += [
       "//build/config/linux/libdrm",
-      "//chromeos/dbus/power",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//media/capture/video/chromeos/public",
       "//mojo/core/embedder",

@@ -46,7 +46,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
 
   ~PowerMonitorDeviceSource() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, Chrome receives power-related events from powerd, the system
   // power daemon, via D-Bus signals received on the UI thread. base can't
   // directly depend on that code, so this class instead exposes static methods
@@ -152,7 +152,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
       speed_limit_observer_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   PowerThermalObserver::DeviceThermalState current_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;
 #endif

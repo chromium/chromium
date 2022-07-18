@@ -219,7 +219,10 @@ source_set("app_shell_lib") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/dbus/constants" ]
+    deps += [
+      "//chromeos/dbus/constants",
+      "//chromeos/dbus/power",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -235,7 +238,6 @@ source_set("app_shell_lib") {
       "//chromeos/ash/components/dbus/hermes",
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
-      "//chromeos/dbus/power",
       "//chromeos/login/login_state",
       "//chromeos/network",
       "//ui/chromeos",
@@ -356,6 +358,10 @@ test("app_shell_unittests") {
     ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/dbus/power" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "browser/shell_audio_controller_chromeos_unittest.cc",
@@ -365,7 +371,6 @@ test("app_shell_unittests") {
       "//ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/dbus:test_support",
-      "//chromeos/dbus/power",
     ]
   }
 

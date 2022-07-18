@@ -8,6 +8,7 @@
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
@@ -30,6 +31,8 @@ void LacrosInitializeDBus() {
   InitializeDBusClient<PermissionBrokerClient>(bus);
 
   InitializeDBusClient<MissiveClient>(bus);
+
+  InitializeDBusClient<chromeos::PowerManagerClient>(bus);
 
   InitializeDBusClient<TpmManagerClient>(bus);
 

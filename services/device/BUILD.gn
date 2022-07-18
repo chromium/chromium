@@ -218,7 +218,7 @@ source_set("tests") {
         [ "generic_sensor/platform_sensor_and_provider_unittest_linux.cc" ]
   }
 
-  if ((is_linux || is_chromeos_lacros) && use_dbus) {
+  if (is_linux && use_dbus) {
     sources += [ "battery/battery_status_manager_linux_unittest.cc" ]
     deps += [ "//dbus:test_support" ]
 

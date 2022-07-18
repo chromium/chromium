@@ -31,14 +31,14 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       configs += [ "//build/config/linux/dbus" ]
       deps += [
         "//chromeos/dbus/power",
         "//chromeos/dbus/power:power_manager_proto",
       ]
       sources += [ "battery_status_manager_chromeos.cc" ]
-    } else if ((is_linux || is_chromeos_lacros) && use_dbus) {
+    } else if (is_linux && use_dbus) {
       configs += [ "//build/config/linux/dbus" ]
       deps += [ "//dbus" ]
       sources += [

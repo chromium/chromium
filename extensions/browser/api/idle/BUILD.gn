@@ -29,7 +29,7 @@ source_set("idle") {
     "//ui/base/idle",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/dbus/power" ]
   }
 

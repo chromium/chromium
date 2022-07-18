@@ -3111,6 +3111,7 @@ if (!is_android) {
         deps += [
           "//chromeos/constants",
           "//chromeos/dbus/constants",
+          "//chromeos/dbus/power",
         ]
       }
 
@@ -4171,7 +4172,6 @@ if (!is_android) {
         "//chromeos/dbus/cryptohome:cryptohome_proto",
         "//chromeos/dbus/dlp",
         "//chromeos/dbus/missive:test_support",
-        "//chromeos/dbus/power",
         "//chromeos/login/login_state:test_support",
         "//chromeos/process_proxy",
         "//chromeos/services/machine_learning/public/cpp:stub",
@@ -6979,6 +6979,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chromeos/components/disks:prefs",
+      "//chromeos/dbus/power",
       "//components/arc/common",
       "//components/arc/common:arc_intent_helper_constants",
       "//components/arc/common:arc_test_support",
@@ -7323,7 +7324,6 @@ test("unit_tests") {
       "//chromeos/dbus/cros_disks",
       "//chromeos/dbus/debug_daemon",
       "//chromeos/dbus/permission_broker",
-      "//chromeos/dbus/power",
       "//chromeos/dbus/shill",
       "//chromeos/dbus/u2f",
       "//chromeos/ime:gencode",

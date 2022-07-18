@@ -3183,7 +3183,6 @@ static_library("ui") {
       "//chromeos/dbus",
       "//chromeos/dbus/cryptohome",
       "//chromeos/dbus/cryptohome:cryptohome_proto",
-      "//chromeos/dbus/power",
       "//chromeos/dbus/tpm_manager",
       "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/util",
@@ -3316,6 +3315,7 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chromeos/components/security_token_pin",
+      "//chromeos/dbus/power",
       "//chromeos/strings",
       "//components/account_manager_core:account_manager_core",
       "//ui/chromeos/styles:cros_styles_views",

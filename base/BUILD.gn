@@ -1768,9 +1768,9 @@ mixed_component("base") {
       "logging_chromeos.cc",
       "system/sys_info_chromeos.cc",
     ]
-    if (is_chromeos_ash) {
-      sources += [ "power_monitor/power_monitor_device_source_chromeos.cc" ]
-    }
+
+    sources += [ "power_monitor/power_monitor_device_source_chromeos.cc" ]
+
     if (current_cpu == "x64") {
       sources += [
         "profiler/frame_pointer_unwinder.cc",
@@ -2328,8 +2328,7 @@ mixed_component("base") {
     ]
   }
 
-  if ((is_posix && !is_apple && !is_android && !is_chromeos_ash) ||
-      is_fuchsia) {
+  if ((is_posix && !is_apple && !is_android && !is_chromeos) || is_fuchsia) {
     sources += [ "power_monitor/power_monitor_device_source_stub.cc" ]
   }
 
