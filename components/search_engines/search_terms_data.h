@@ -55,13 +55,13 @@ class SearchTermsData {
   // The suggest client parameter ("client") passed with Google suggest
   // requests.  See GetSuggestRequestIdentifier() for more details.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestClient() const;
+  virtual std::string GetSuggestClient(bool non_searchbox_ntp) const;
 
   // The suggest request identifier parameter ("gs_ri") passed with Google
   // suggest requests.   Along with suggestclient (See GetSuggestClient()),
   // this parameter controls what suggestion results are returned.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestRequestIdentifier() const;
+  virtual std::string GetSuggestRequestIdentifier(bool non_searchbox_ntp) const;
 
   // Returns the value to use for replacements of type
   // GOOGLE_IMAGE_SEARCH_SOURCE.

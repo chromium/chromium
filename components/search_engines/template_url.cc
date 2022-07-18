@@ -1264,14 +1264,19 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       case GOOGLE_SUGGEST_CLIENT:
-        HandleReplacement(std::string(), search_terms_data.GetSuggestClient(),
-                          replacement, &url);
+        HandleReplacement(
+            std::string(),
+            search_terms_data.GetSuggestClient(
+                search_terms_args.request_source == NON_SEARCHBOX_NTP),
+            replacement, &url);
         break;
 
       case GOOGLE_SUGGEST_REQUEST_ID:
-        HandleReplacement(std::string(),
-                          search_terms_data.GetSuggestRequestIdentifier(),
-                          replacement, &url);
+        HandleReplacement(
+            std::string(),
+            search_terms_data.GetSuggestRequestIdentifier(
+                search_terms_args.request_source == NON_SEARCHBOX_NTP),
+            replacement, &url);
         break;
 
       case GOOGLE_UNESCAPED_SEARCH_TERMS: {

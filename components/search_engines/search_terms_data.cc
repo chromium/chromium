@@ -150,11 +150,12 @@ std::string SearchTermsData::GetSearchClient() const {
   return std::string();
 }
 
-std::string SearchTermsData::GetSuggestClient() const {
+std::string SearchTermsData::GetSuggestClient(bool non_searchbox_ntp) const {
   return std::string();
 }
 
-std::string SearchTermsData::GetSuggestRequestIdentifier() const {
+std::string SearchTermsData::GetSuggestRequestIdentifier(
+    bool non_searchbox_ntp) const {
   return std::string();
 }
 

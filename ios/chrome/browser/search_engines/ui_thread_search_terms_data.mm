@@ -75,13 +75,22 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
   return std::string();
 }
 
-std::string UIThreadSearchTermsData::GetSuggestClient() const {
+std::string UIThreadSearchTermsData::GetSuggestClient(
+    bool non_searchbox_ntp) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return "chrome";
+  if (non_searchbox_ntp) {
+    return "chrome-ios-ntp";
+  } else {
+    return "chrome";
+  }
 }
 
-std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier() const {
+std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
+    bool non_searchbox_ntp) const {
   DCHECK(thread_checker_.CalledOnValidThread());
+  if (non_searchbox_ntp) {
+    return std::string();
+  }
   return "chrome-ext-ansg";
 }
 

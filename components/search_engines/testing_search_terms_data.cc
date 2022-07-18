@@ -27,7 +27,8 @@ std::string TestingSearchTermsData::GetSearchClient() const {
   return search_client_;
 }
 
-std::string TestingSearchTermsData::GetSuggestClient() const {
+std::string TestingSearchTermsData::GetSuggestClient(
+    bool non_searchbox_ntp) const {
   return suggest_client_;
 }
 

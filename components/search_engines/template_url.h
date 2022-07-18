@@ -74,6 +74,7 @@ class TemplateURLRef {
   enum RequestSource {
     SEARCHBOX,          // Omnibox or the NTP realbox. The default.
     CROS_APP_LIST,      // Chrome OS app list search box.
+    NON_SEARCHBOX_NTP,  // Suggestions for the NTP surface.
   };
 
   // This struct encapsulates arguments passed to

@@ -80,7 +80,8 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 }
 #endif
 
-std::string UIThreadSearchTermsData::GetSuggestClient() const {
+std::string UIThreadSearchTermsData::GetSuggestClient(
+    bool non_searchbox_ntp) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
 #if BUILDFLAG(IS_ANDROID)
@@ -92,7 +93,8 @@ std::string UIThreadSearchTermsData::GetSuggestClient() const {
 #endif
 }
 
-std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier() const {
+std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
+    bool non_searchbox_ntp) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
 #if BUILDFLAG(IS_ANDROID)
