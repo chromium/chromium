@@ -5,6 +5,7 @@
 #include "ui/wm/core/capture_controller.h"
 
 #include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -68,10 +69,15 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
     // committing |capture_window_|.
     aura::WindowTracker tracker;
     tracker.Add(new_capture_window);
+    // This could happen to |old_capture_window| too.
+    if (old_capture_window)
+      tracker.Add(old_capture_window);
     aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(
         new_capture_window);
     if (!tracker.Contains(new_capture_window))
       new_capture_window = nullptr;
+    if (old_capture_window && !tracker.Contains(old_capture_window))
+      old_capture_window = nullptr;
   }
 
   capture_window_ = new_capture_window;
@@ -81,8 +87,20 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
                           ? nullptr
                           : delegates_[capture_root_window];
 
-  for (const auto& it : delegates)
-    it.second->UpdateCapture(old_capture_window, new_capture_window);
+  {
+    // With more than one delegate (e.g. multiple displays), an earlier
+    // UpdateCapture() call could cancel an existing capture and destroy
+    // |old_capture_window|, causing a later UpdateCapture() call to access
+    // a dangling pointer, so detect and handle it.
+    absl::optional<aura::WindowTracker> tracker;
+    if (old_capture_window)
+      tracker.emplace({old_capture_window});
+    for (const auto& it : delegates) {
+      it.second->UpdateCapture(old_capture_window, new_capture_window);
+      if (old_capture_window && !tracker->Contains(old_capture_window))
+        old_capture_window = nullptr;
+    }
+  }
 
   if (capture_delegate_ != old_capture_delegate) {
     if (old_capture_delegate)
