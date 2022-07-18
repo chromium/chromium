@@ -278,6 +278,33 @@ AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
 
 void AppServiceProxyBase::Launch(const std::string& app_id,
                                  int32_t event_flags,
+                                 apps::LaunchSource launch_source,
+                                 apps::WindowInfoPtr window_info) {
+  app_registry_cache_.ForOneApp(
+      app_id, [this, event_flags, launch_source,
+               &window_info](const apps::AppUpdate& update) {
+        auto* publisher = GetPublisher(update.AppType());
+        if (!publisher) {
+          return;
+        }
+
+        if (MaybeShowLaunchPreventionDialog(update)) {
+          return;
+        }
+
+        RecordAppLaunch(update.AppId(), launch_source);
+        RecordAppPlatformMetrics(profile_, update, launch_source,
+                                 apps::LaunchContainer::kLaunchContainerNone);
+
+        publisher->Launch(update.AppId(), event_flags, launch_source,
+                          std::move(window_info));
+
+        PerformPostLaunchTasks(launch_source);
+      });
+}
+
+void AppServiceProxyBase::Launch(const std::string& app_id,
+                                 int32_t event_flags,
                                  apps::mojom::LaunchSource mojom_launch_source,
                                  apps::mojom::WindowInfoPtr window_info) {
   if (app_service_.is_connected()) {

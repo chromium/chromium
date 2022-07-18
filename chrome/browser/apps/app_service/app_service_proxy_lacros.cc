@@ -117,8 +117,8 @@ AppServiceProxyLacros::LoadIconFromIconKey(AppType app_type,
 
 void AppServiceProxyLacros::Launch(const std::string& app_id,
                                    int32_t event_flags,
-                                   apps::mojom::LaunchSource launch_source,
-                                   apps::mojom::WindowInfoPtr window_info) {
+                                   apps::LaunchSource launch_source,
+                                   apps::WindowInfoPtr window_info) {
   if (!remote_crosapi_app_service_proxy_) {
     return;
   }
@@ -133,10 +133,18 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
   }
 
   remote_crosapi_app_service_proxy_->Launch(
-      CreateCrosapiLaunchParamsWithEventFlags(
-          this, app_id, event_flags,
-          ConvertMojomLaunchSourceToLaunchSource(launch_source),
-          display::kInvalidDisplayId));
+      CreateCrosapiLaunchParamsWithEventFlags(this, app_id, event_flags,
+                                              launch_source,
+                                              display::kInvalidDisplayId));
+}
+
+void AppServiceProxyLacros::Launch(const std::string& app_id,
+                                   int32_t event_flags,
+                                   apps::mojom::LaunchSource launch_source,
+                                   apps::mojom::WindowInfoPtr window_info) {
+  Launch(app_id, event_flags,
+         ConvertMojomLaunchSourceToLaunchSource(launch_source),
+         ConvertMojomWindowInfoToWindowInfo(window_info));
 }
 
 void AppServiceProxyLacros::LaunchAppWithFiles(

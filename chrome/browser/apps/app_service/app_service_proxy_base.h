@@ -142,6 +142,12 @@ class AppServiceProxyBase : public KeyedService,
   // app_id.
   void Launch(const std::string& app_id,
               int32_t event_flags,
+              apps::LaunchSource launch_source,
+              apps::WindowInfoPtr window_info = nullptr);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
+  void Launch(const std::string& app_id,
+              int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info = nullptr);
 
