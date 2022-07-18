@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "components/services/screen_ai/proto/test_proto_loader.h"
@@ -29,9 +30,14 @@ namespace {
 // Set to 'true' to get debug protos.
 #define WRITE_DEBUG_PROTO false
 
-constexpr int kMaxChildInTemplate = 3;
+// Test definitions for ProtoConvertorViewHierarchyTest.
+constexpr int kProtoConversionTestCasesCount = 5;
+const char* kProtoConversionSampleInputFileNameFormat = "sample%i_ax_tree.json";
+const char* kProtoConversionSampleExpectedFileNameFormat =
+    "sample%i_expected_proto.pbtxt";
 
-// A dummy tree node definition.
+// A dummy tree node definition for PreOrderTreeGeneration.
+constexpr int kMaxChildInTemplate = 3;
 struct NodeTemplate {
   ui::AXNodeID node_id;
   int child_count;
@@ -56,7 +62,7 @@ ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(int root_id,
 
 int GetAxNodeID(const ::screenai::UiElement& ui_element) {
   for (const auto& attribute : ui_element.attributes()) {
-    if (attribute.name() == "/axnode/node_id")
+    if (attribute.name() == "axnode_id")
       return attribute.int_value();
   }
   return static_cast<int>(ui::kInvalidAXNodeID);
@@ -70,7 +76,7 @@ base::FilePath GetTestFilePath(const base::StringPiece file_name) {
 }
 
 void WriteDebugProto(const std::string& serialized_proto,
-                     const char* file_name) {
+                     const std::string& file_name) {
   if (!WRITE_DEBUG_PROTO)
     return;
 
@@ -147,43 +153,6 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
                                screenai::ViewHierarchy& expected) {
   EXPECT_EQ(generated.ui_elements_size(), expected.ui_elements_size());
 
-  // These attributes are included in Screen2x for research purposes and are not
-  // used in production. Chrome does not add them.
-  const std::set<std::string> kUnsupportedAttributes = {
-      "/axnode/backend_dom_id",
-      "/axnode/child_ids",
-      "/axnode/description",
-      "/axnode/frameId",
-      "/axnode/ignored",
-      "/axnode/ignoredReasons",
-      "/axnode/name",
-      "/axnode/parentId",
-      "/axnode/properties",
-      "/axnode/role",
-      "/extras/styles/background-image",
-      "/extras/styles/background-size",
-      "/extras/styles/clip",
-      "/extras/styles/color",
-      "/extras/styles/direction",
-      "/extras/styles/font-size",
-      "/extras/styles/font-style",
-      "/extras/styles/font-weight",
-      "/extras/styles/list-style-type",
-      "/extras/styles/margin-bottom",
-      "/extras/styles/margin-left",
-      "/extras/styles/margin-right",
-      "/extras/styles/margin-top",
-      "/extras/styles/opacity",
-      "/extras/styles/padding-bottom",
-      "/extras/styles/padding-left",
-      "/extras/styles/padding-right",
-      "/extras/styles/padding-top",
-      "/extras/styles/position",
-      "/extras/styles/text-align",
-      "/extras/styles/text-decoration",
-      "/extras/styles/z-index",
-  };
-
   // Bounding boxes can have a one pixel difference threshold as there might be
   // different approaches in rounding floats to integers.
   // To compare |bounding_box_pixels| values which represent bounding boxes in
@@ -230,6 +199,7 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
     for (int j = 0; j < expected_uie.attributes_size(); j++)
       attribute_indices_map[expected_uie.attributes(j).name()] = j;
 
+    int expected_attributes_count = expected_uie.attributes_size();
     for (int j = 0; j < generated_uie.attributes_size(); j++) {
       const ::screenai::UiElementAttribute& generated_attrib =
           generated_uie.attributes(j);
@@ -251,14 +221,11 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
       // sometimes not passed.
       if (generated_attrib.name() != "/extras/styles/visibility")
         EXPECT_TRUE(attribute_found_in_expected) << generated_attrib.name();
+      else
+        expected_attributes_count++;
     }
 
-    for (const auto& item : attribute_indices_map) {
-      bool attribute_needed_and_not_generated =
-          (item.second != -1 &&
-           !base::Contains(kUnsupportedAttributes, item.first));
-      EXPECT_FALSE(attribute_needed_and_not_generated) << item.first;
-    }
+    EXPECT_EQ(expected_attributes_count, generated_uie.attributes_size());
   }
 }
 
@@ -447,12 +414,30 @@ TEST_F(ProtoConvertorTest, PreOrderTreeGeneration) {
   }
 }
 
-TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
-  // TODO(https://crbug.com/1278249): Add more test cases.
-  const base::FilePath kInputJsonPath =
-      GetTestFilePath("sample_01_ax_tree.json");
-  const base::FilePath kExpectedProtoPath =
-      GetTestFilePath("sample_01_expected_proto.pbtxt");
+class ProtoConvertorViewHierarchyTest : public ::testing::TestWithParam<int> {
+ public:
+  ProtoConvertorViewHierarchyTest() = default;
+  ~ProtoConvertorViewHierarchyTest() = default;
+
+ protected:
+  const base::FilePath GetInputFilePath() {
+    return GetTestFilePath(base::StringPrintf(
+        kProtoConversionSampleInputFileNameFormat, GetParam()));
+  }
+
+  const base::FilePath GetExpectedFilePath() {
+    return GetTestFilePath(base::StringPrintf(
+        kProtoConversionSampleExpectedFileNameFormat, GetParam()));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(TestCases,
+                         ProtoConvertorViewHierarchyTest,
+                         testing::Range(0, kProtoConversionTestCasesCount));
+
+TEST_P(ProtoConvertorViewHierarchyTest, EndToEndTest) {
+  const base::FilePath kInputJsonPath = GetInputFilePath();
+  const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
 
   // Load JSON file.
   std::string file_content;
@@ -462,7 +447,9 @@ TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   ASSERT_TRUE(json.has_value());
 
   // Convert JSON file to AX tree update.
-  ui::AXTreeUpdate tree_update = ui::AXTreeUpdateFromJSON(json.value());
+  ui::AXTreeUpdate tree_update = ui::AXTreeUpdateFromJSON(
+      json.value(),
+      &screen_ai::GetScreen2xToChromeRoleConversionMapForTesting());
   ASSERT_GT(tree_update.nodes.size(), 0u);
 
   // Convert AX Tree to Screen2x proto.
@@ -472,7 +459,9 @@ TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   ASSERT_TRUE(generated_view_hierarchy.ParseFromString(serialized_proto))
       << "Failed to parse created proto.";
 
-  WriteDebugProto(serialized_proto, "proto_convertor_output.pbtxt");
+  WriteDebugProto(
+      serialized_proto,
+      base::StringPrintf("proto_convertor_sample_%i_output.pbtxt", GetParam()));
 
   // Load expected Proto.
   screenai::ViewHierarchy expected_view_hierarchy;
@@ -482,16 +471,6 @@ TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   // Compare protos.
   ASSERT_NO_FATAL_FAILURE(ExpectViewHierarchyProtos(generated_view_hierarchy,
                                                     expected_view_hierarchy));
-}
-
-TEST_F(ProtoConvertorTest, Screen2xRoleConversionTest) {
-  for (int i = static_cast<int>(ax::mojom::Role::kMinValue);
-       i <= static_cast<int>(ax::mojom::Role::kMaxValue); i++) {
-    auto chrome_role = static_cast<ax::mojom::Role>(i);
-    const std::string screen2x_role =
-        screen_ai::GetScreen2xRoleFromChromeRoleForTesting(chrome_role);
-    EXPECT_EQ(chrome_role, ui::RoleFromStringForTesting(screen2x_role));
-  }
 }
 
 }  // namespace screen_ai

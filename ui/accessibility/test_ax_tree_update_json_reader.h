@@ -12,11 +12,16 @@ namespace ui {
 
 // This function assumes that the JSON input is properly formatted and any
 // error in parsing can result in a runtime error.
-// The JSON format is based on the output of the following code and should
-// stay in sync with that:
-// http://google3/knowledge/cerebra/sense/im2query/screenai/screen2x/crawl/web/crawler.ts
-AXTreeUpdate AXTreeUpdateFromJSON(const base::Value& json);
-
-ax::mojom::Role RoleFromStringForTesting(std::string role);
+// The JSON format is based on the output of
+// |InspectorAccessibilityAgent::WalkAXNodesToDepth| and should stay in sync
+// with that.
+// NOTE: This parser is not complete and only processes the required tags for
+// the existing tests.
+// |role_conversions| is a map of role strings in the JSON file to Chrome roles.
+// TODO(https://crbug.com/1278249): Drop |role_conversions| once Chrome roles
+// are added to the JSON file.
+AXTreeUpdate AXTreeUpdateFromJSON(
+    const base::Value& json,
+    const std::map<std::string, ax::mojom::Role>* role_conversions);
 }  // namespace ui
 #endif  // UI_ACCESSIBILITY_TEST_AX_TREE_UPDATE_JSON_READER_H_

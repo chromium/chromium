@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_SCREEN_AI_PROTO_PROTO_CONVERTOR_H_
 #define COMPONENTS_SERVICES_SCREEN_AI_PROTO_PROTO_CONVERTOR_H_
 
+#include <map>
 #include <string>
 
 #include "ui/accessibility/ax_tree_update.h"
@@ -26,7 +27,9 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
 // Screen2X.
 std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot);
 
-std::string GetScreen2xRoleFromChromeRoleForTesting(ax::mojom::Role role);
+// Returns a map of Screen2x role strings to Chrome roles.
+const std::map<std::string, ax::mojom::Role>&
+GetScreen2xToChromeRoleConversionMapForTesting();
 
 }  // namespace screen_ai
 
