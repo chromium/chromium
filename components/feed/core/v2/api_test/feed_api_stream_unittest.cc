@@ -3385,11 +3385,37 @@ TEST_F(FeedApiTest, FeedCloseRefresh_FeedViewed) {
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 
-  // Only the first view should cause the schedule to be set.
+  // Only a surface's first view should cause the schedule to be set.
   refresh_scheduler_.Clear();
   stream_->ReportFeedViewed(kForYouStream, surface.GetSurfaceId());
   // Zero means the scheudle wasn't updated.
   EXPECT_EQ(base::Seconds(0),
+            refresh_scheduler_
+                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
+
+  task_environment_.AdvanceClock(base::Minutes(6));
+
+  // Opening another surface should cause a refresh to be scheduled.
+  refresh_scheduler_.Clear();
+  TestForYouSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+  stream_->ReportFeedViewed(kForYouStream, surface2.GetSurfaceId());
+  // The schedule should have been updated.
+  EXPECT_EQ(base::Minutes(30),
+            refresh_scheduler_
+                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
+
+  task_environment_.AdvanceClock(base::Minutes(6));
+
+  // Leaving the surface and returning should schedule a refresh.
+  refresh_scheduler_.Clear();
+  surface.Detach();
+  WaitForIdleTaskQueue();
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  stream_->ReportFeedViewed(kForYouStream, surface.GetSurfaceId());
+  // The schedule should have been updated.
+  EXPECT_EQ(base::Minutes(30),
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
