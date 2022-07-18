@@ -9332,6 +9332,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Log the user out as soon as their account becomes unauthenticated',
+        },
+        {
+          'value': False,
+          'caption': 'Allow the user to remain logged in after their account becomes unauthenticated',
+        },
+      ],
       'example_value': False,
       'id': 679,
       'caption': '''Force logout the user when their account becomes unauthenticated''',
@@ -9465,6 +9475,16 @@
         'per_profile': True,
         'dynamic_refresh': True
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show app recommendations in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> launcher',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show app recommendations in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> launcher',
+        },
+      ],
       'example_value': True,
       'id': 563,
       'caption': '''Enable App Recommendations in Zero State of Search Box''',
@@ -9491,6 +9511,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always offer translation',
+        },
+        {
+          'value': False,
+          'caption': 'Never offer translation',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 80,
       'caption': '''Enable Translate''',
@@ -9509,6 +9544,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow outdated <ph name="FLASH_PLUGIN_NAME">Flash</ph> to be used as normal <ph name="FLASH_PLUGIN_NAME">Flash</ph>',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow outdated <ph name="FLASH_PLUGIN_NAME">Flash</ph>',
+        },
+        {
+          'value': None,
+          'caption': 'Ask user for permission to run outdated <ph name="FLASH_PLUGIN_NAME">Flash</ph>',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 81,
       'caption': '''Allow running plugins that are outdated''',
@@ -9528,6 +9578,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always run plugins that are not outdated',
+        },
+        {
+          'value': False,
+          'caption': 'Ask user for permission to run plugins that require authorization',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 86,
@@ -9548,6 +9608,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Run all <ph name="FLASH_PLUGIN_NAME">Flash</ph> content',
+        },
+        {
+          'value': False,
+          'caption': 'Allow certain <ph name="FLASH_PLUGIN_NAME">Flash</ph> content to be blocked',
+        },
+      ],
       'example_value': True,
       'id': 391,
       'caption': '''Extend Flash content setting to all content (deprecated)''',
@@ -9571,6 +9641,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable bookmark bar',
+        },
+        {
+          'value': False,
+          'caption': 'Disable bookmark bar',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 82,
       'caption': '''Enable Bookmark Bar''',
