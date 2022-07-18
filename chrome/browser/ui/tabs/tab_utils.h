@@ -19,16 +19,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// TODO(elainechien): Move this to the tab_enums.h file and include tab_enums.h
-// where TabMutedReason is used.
-enum class TabMutedReason {
-  NONE,                    // The tab has never been muted or unmuted.
-  EXTENSION,               // Mute state changed via extension API.
-  AUDIO_INDICATOR,         // Mute toggled via tab-strip audio icon.
-  CONTENT_SETTING,         // The sound content setting was set to BLOCK.
-  CONTENT_SETTING_CHROME,  // Mute toggled on chrome:// URL.
-};
-
 struct LastMuteMetadata
     : public content::WebContentsUserData<LastMuteMetadata> {
   TabMutedReason reason = TabMutedReason::NONE;

@@ -793,6 +793,7 @@ static_library("extensions") {
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//components/cbor:cbor",
     "//components/safe_browsing/content/browser",

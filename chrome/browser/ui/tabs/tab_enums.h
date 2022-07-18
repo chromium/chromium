@@ -29,4 +29,13 @@ enum class TabWebFeedFollowState {
   kNotFollowed,  // The web feed is not followed.
 };
 
+// The Service, UI, or Setting which muted the tab.
+enum class TabMutedReason {
+  NONE,                    // The tab has never been muted or unmuted.
+  EXTENSION,               // Mute state changed via extension API.
+  AUDIO_INDICATOR,         // Mute toggled via tab-strip audio icon.
+  CONTENT_SETTING,         // The sound content setting was set to BLOCK.
+  CONTENT_SETTING_CHROME,  // Mute toggled on chrome:// URL.
+};
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_
