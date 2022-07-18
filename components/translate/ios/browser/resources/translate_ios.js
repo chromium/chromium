@@ -46,7 +46,7 @@ __gCrWeb.translate['installCallbacks'] = function() {
       'command': 'translate.status',
       'errorCode': cr.googleTranslate.errorCode,
       'pageSourceLanguage': cr.googleTranslate.sourceLang,
-      'translationTime': cr.googleTranslate.translationTime
+      'translationTime': cr.googleTranslate.translationTime,
     });
   };
 

@@ -301,7 +301,7 @@ function setUpMarker() {
           type: 'element',
           value: 'div',
           attributes: {'class': 'marker', 'contenteditable': 'true'},
-          children: [{type: 'text', value: `#${markerCounter} `}]
+          children: [{type: 'text', value: `#${markerCounter} `}],
         },
         /*ignoreRecordLogs=*/ true);
     if (scrollAfterInsert) {

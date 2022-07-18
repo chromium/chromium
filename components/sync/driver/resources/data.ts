@@ -120,7 +120,10 @@ function makeDownloadName() {
   const friendlyDate =
       [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('-');
   const name = [
-    'sync-data-dump', friendlyDate, Date.now(), navigator.platform
+    'sync-data-dump',
+    friendlyDate,
+    Date.now(),
+    navigator.platform,
   ].join('-');
   return [name, 'csv'].join('.');
 }

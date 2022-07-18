@@ -219,7 +219,7 @@ function setInputElementAngularValue_(value, input) {
     function(parse) {
       const setter = parse(angularModel);
       setter.assign(angularScope, value);
-    }
+    },
   ]);
 }
 
@@ -327,7 +327,7 @@ function setInputElementValue_(value, input) {
         // property.
         return value + '';
       },
-      configurable: true
+      configurable: true,
     };
     if (oldPropertyDescriptor.set) {
       newProperty.set = function(e) {

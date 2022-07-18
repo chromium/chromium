@@ -378,7 +378,7 @@ __gCrWeb.suggestion['hasPreviousElement'] = function(formName, fieldName) {
 __gCrWeb.suggestion['hasPreviousNextElements'] = function(formName, fieldName) {
   return [
     __gCrWeb.suggestion.hasPreviousElement(formName, fieldName),
-    __gCrWeb.suggestion.hasNextElement(formName, fieldName)
+    __gCrWeb.suggestion.hasNextElement(formName, fieldName),
   ].toString();
 };
 

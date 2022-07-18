@@ -119,7 +119,7 @@ export class Page {
                 name,
                 link: [
                   policyNames.chrome.policyNames,
-                  policyNames.precedence?.policyNames
+                  policyNames.precedence?.policyNames,
                 ].includes(knownPolicyNames) &&
                         knownPolicyNamesSet.has(name) ?
                     `https://chromeenterprise.google/policies/?policy=${name}` :

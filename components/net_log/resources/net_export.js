@@ -284,8 +284,10 @@ class NetExportView {
 
   showStateDiv_(divId) {
     const kAllDivIds = [
-      kIdStateDivUninitialized, kIdStateDivInitial, kIdStateDivLogging,
-      kIdStateDivStopped
+      kIdStateDivUninitialized,
+      kIdStateDivInitial,
+      kIdStateDivLogging,
+      kIdStateDivStopped,
     ];
 
     for (const curDivId of kAllDivIds) {

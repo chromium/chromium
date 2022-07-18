@@ -32,14 +32,14 @@ window.errorPageController = {
   updateEasterEggHighScore: function(highScore) {
     __gCrWeb.message.invokeOnHost({
       'command': 'errorPageController.updateEasterEggHighScore',
-      'highScore': highScore.toString()
+      'highScore': highScore.toString(),
     });
   },
 
   resetEasterEggHighScore: function() {
     __gCrWeb.message.invokeOnHost(
         {'command': 'errorPageController.resetEasterEggHighScore'});
-  }
+  },
 };
 
 // Create a __gCrWeb binding of initializeEasterEggHighScore so it can be

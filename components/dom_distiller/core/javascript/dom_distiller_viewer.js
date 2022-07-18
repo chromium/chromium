@@ -311,7 +311,7 @@ class Pincher {
     const clientMid = this.touchClientMid_(e);
     return {
       x: clientMid.x - e.touches[0].clientX + e.touches[0].pageX,
-      y: clientMid.y - e.touches[0].clientY + e.touches[0].pageY
+      y: clientMid.y - e.touches[0].clientY + e.touches[0].pageY,
     };
   }
 
@@ -414,7 +414,7 @@ class Pincher {
       scale: this.scale,
       clampedScale: this.clampedScale,
       shiftX: this.shiftX,
-      shiftY: this.shiftY
+      shiftY: this.shiftY,
     };
   }
 

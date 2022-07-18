@@ -45,7 +45,7 @@ class Log extends EventTarget {
       event: this.protocolEventName_,
       date: new Date(),
       details: details,
-      textDetails: ''
+      textDetails: '',
     };
     entry.textDetails = JSON.stringify(entry.details, null, 2);
     this.entries.push(entry);

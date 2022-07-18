@@ -40,7 +40,7 @@ function updateCrashList({
   crashes,
   version,
   os,
-  isGoogleAccount
+  isGoogleAccount,
 }) {
   $('crashesCount').textContent = loadTimeData.getStringF(
       'crashCountFormat', crashes.length.toLocaleString());
@@ -154,8 +154,8 @@ function updateCrashList({
 function fileBug(crashId, os, version) {
   const commentLines = [
     'IMPORTANT: Your crash has already been automatically reported ' +
-    'to our crash system. Please file this bug only if you can provide ' +
-    'more information about it.',
+        'to our crash system. Please file this bug only if you can provide ' +
+        'more information about it.',
     '',
     '',
     'Chrome Version: ' + version,
@@ -166,11 +166,13 @@ function fileBug(crashId, os, version) {
     'Can you reproduce this crash?',
     '',
     'What steps will reproduce this crash? (If it\'s not ' +
-    'reproducible, what were you doing just before the crash?)',
-    '1.', '2.', '3.',
+        'reproducible, what were you doing just before the crash?)',
+    '1.',
+    '2.',
+    '3.',
     '',
     '****DO NOT CHANGE BELOW THIS LINE****',
-    'Crash ID: crash/' + crashId
+    'Crash ID: crash/' + crashId,
   ];
   const params = {
     template: 'Crash Report',

@@ -70,7 +70,7 @@ __gCrWeb.languageDetection['nonTextNodeNames'] = {
   'NOSCRIPT': 1,
   'STYLE': 1,
   'EMBED': 1,
-  'OBJECT': 1
+  'OBJECT': 1,
 };
 
 /**
@@ -146,7 +146,7 @@ __gCrWeb.languageDetection['detectLanguage'] = function() {
     'hasNoTranslate': false,
     'captureTextTime': captureTextTime,
     'htmlLang': document.documentElement.lang,
-    'httpContentLanguage': httpContentLanguage
+    'httpContentLanguage': httpContentLanguage,
   };
 
   if (__gCrWeb.languageDetection.hasNoTranslate()) {

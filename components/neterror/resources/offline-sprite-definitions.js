@@ -47,7 +47,7 @@ Runner.spriteDefinitionByType = {
       TREX: {x: 848, y: 2},
       STAR: {x: 645, y: 2},
       COLLECTABLE: {x: 2, y: 2},
-      ALT_GAME_END: {x: 121, y: 2}
+      ALT_GAME_END: {x: 121, y: 2},
     },
     HDPI: {
       BACKGROUND_EL: {x: 166, y: 2},
@@ -64,7 +64,7 @@ Runner.spriteDefinitionByType = {
       TREX: {x: 1678, y: 2},
       STAR: {x: 1276, y: 2},
       COLLECTABLE: {x: 4, y: 4},
-      ALT_GAME_END: {x: 242, y: 4}
+      ALT_GAME_END: {x: 242, y: 4},
     },
     MAX_GAP_COEFFICIENT: 1.5,
     MAX_OBSTACLE_LENGTH: 3,
@@ -78,10 +78,13 @@ Runner.spriteDefinitionByType = {
       JUMPING: {x: 0, w: 44, h: 47, xOffset: 0},
       CRASHED: {x: 220, w: 44, h: 47, xOffset: 0},
       COLLISION_BOXES: [
-        new CollisionBox(22, 0, 17, 16), new CollisionBox(1, 18, 30, 9),
-        new CollisionBox(10, 35, 14, 8), new CollisionBox(1, 24, 29, 5),
-        new CollisionBox(5, 30, 21, 4), new CollisionBox(9, 34, 15, 4)
-      ]
+        new CollisionBox(22, 0, 17, 16),
+        new CollisionBox(1, 18, 30, 9),
+        new CollisionBox(10, 35, 14, 8),
+        new CollisionBox(1, 24, 29, 5),
+        new CollisionBox(5, 30, 21, 4),
+        new CollisionBox(9, 34, 15, 4),
+      ],
     },
     /** @type {Array<ObstacleType>} */
     OBSTACLES: [
@@ -94,9 +97,10 @@ Runner.spriteDefinitionByType = {
         minGap: 120,
         minSpeed: 0,
         collisionBoxes: [
-          new CollisionBox(0, 7, 5, 27), new CollisionBox(4, 0, 6, 34),
-          new CollisionBox(10, 4, 7, 14)
-        ]
+          new CollisionBox(0, 7, 5, 27),
+          new CollisionBox(4, 0, 6, 34),
+          new CollisionBox(10, 4, 7, 14),
+        ],
       },
       {
         type: 'CACTUS_LARGE',
@@ -107,9 +111,10 @@ Runner.spriteDefinitionByType = {
         minGap: 120,
         minSpeed: 0,
         collisionBoxes: [
-          new CollisionBox(0, 12, 7, 38), new CollisionBox(8, 0, 7, 49),
-          new CollisionBox(13, 10, 10, 38)
-        ]
+          new CollisionBox(0, 12, 7, 38),
+          new CollisionBox(8, 0, 7, 49),
+          new CollisionBox(13, 10, 10, 38),
+        ],
       },
       {
         type: 'PTERODACTYL',
@@ -121,14 +126,16 @@ Runner.spriteDefinitionByType = {
         minSpeed: 8.5,
         minGap: 150,
         collisionBoxes: [
-          new CollisionBox(15, 15, 16, 5), new CollisionBox(18, 21, 24, 6),
-          new CollisionBox(2, 14, 4, 3), new CollisionBox(6, 10, 4, 7),
-          new CollisionBox(10, 8, 6, 9)
+          new CollisionBox(15, 15, 16, 5),
+          new CollisionBox(18, 21, 24, 6),
+          new CollisionBox(2, 14, 4, 3),
+          new CollisionBox(6, 10, 4, 7),
+          new CollisionBox(10, 8, 6, 9),
         ],
         numFrames: 2,
         frameRate: 1000 / 6,
-        speedOffset: .8
-      }
+        speedOffset: .8,
+      },
     ],
     BACKGROUND_EL: {
       'CLOUD': {
@@ -140,8 +147,8 @@ Runner.spriteDefinitionByType = {
         OFFSET: 4,
         WIDTH: 46,
         X_POS: 1,
-        Y_POS: 120
-      }
+        Y_POS: 120,
+      },
     },
     BACKGROUND_EL_CONFIG: {
       MAX_BG_ELS: 1,
@@ -149,10 +156,10 @@ Runner.spriteDefinitionByType = {
       MIN_GAP: 100,
       POS: 0,
       SPEED: 0.5,
-      Y_POS: 125
+      Y_POS: 125,
     },
     LINES: [
       {SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127},
-    ]
-  }
+    ],
+  },
 };

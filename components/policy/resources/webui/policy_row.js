@@ -146,8 +146,12 @@ export class PolicyRowElement extends CustomElement {
           this.policy.ignored ? loadTimeData.getString('ignored') : '';
       let notice =
           [
-            errorsNotice, deprecationNotice, futureNotice, warningsNotice,
-            ignoredNotice, conflictsNotice
+            errorsNotice,
+            deprecationNotice,
+            futureNotice,
+            warningsNotice,
+            ignoredNotice,
+            conflictsNotice,
           ].filter(x => !!x)
               .join(', ') ||
           loadTimeData.getString('ok');
