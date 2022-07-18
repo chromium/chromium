@@ -47,6 +47,21 @@
       text-overflow: ellipsis;
     }
 
+    .image-preview {
+      display: block;
+      height: auto;
+      margin: auto;
+      max-height: 600px;
+      width: 580px;
+    }
+
+    cr-dialog::part(dialog) {
+      --cr-dialog-body-padding-horizontal: 0px;
+      --cr-dialog-title-slot-padding-start: 0px;
+      --cr-icon-button-margin-end: 20px;
+      width: 590px;
+    }
+
     h2 {
       color: var(--cros-text-color-secondary);
       font-family: var(--feedback-google-sans-font-family);

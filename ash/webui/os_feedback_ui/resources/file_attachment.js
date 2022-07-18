@@ -6,6 +6,7 @@ import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
@@ -130,6 +131,17 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
 
     const imageUrl = URL.createObjectURL(blob);
     return imageUrl;
+  }
+
+  /** @protected */
+  handleSelectedImageClick_() {
+    this.$.selectedImageDialog.showModal();
+    this.$.closeDialogButton.focus();
+  }
+
+  /** @protected */
+  handleSelectedImageDialogCloseClick_() {
+    this.$.selectedImageDialog.close();
   }
 
   /**

@@ -1,4 +1,4 @@
-<style>
+<style include="os-feedback-shared">
   /* Special attribute to hide elements. */
   [hidden] {
     display: none !important;
@@ -31,6 +31,11 @@
     flex-direction: row;
   }
 
+  #replaceFileContainer > button {
+    cursor: pointer;
+    margin: 0 0 0 auto;
+  }
+
   #selectFileDialog {
     height: 0;
     opacity: 0;
@@ -40,7 +45,6 @@
   #selectedFileImage {
     display: block;
     height: auto;
-    margin: 0 0 0 auto;
     transition: all 250ms ease;
     width: 68px;
   }
@@ -63,6 +67,12 @@
     margin-inline-end: 10px;
     margin-inline-start: 12px;
   }
+
+  dialog {
+    bottom: auto;
+    top: auto;
+  }
+
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <button id="addFileLabel" class="file-input"
@@ -82,10 +92,25 @@
       [[i18n('replaceFileLabel')]]
     </button>
   </div>
-  <img id="selectedFileImage" src="[[selectedImageUrl_]]" hidden="[[!selectedImageUrl_]]">
+  <button id="selectedImageButton" on-click="handleSelectedImageClick_">
+    <img id="selectedFileImage" src="[[selectedImageUrl_]]" hidden="[[!selectedImageUrl_]]">
+  </button>
 </div>
 <cr-toast id="fileTooBigErrorMessage" duration="5000">
   <iron-icon id="toastInfoIcon" class="error-outline" icon="cr:error-outline">
   </iron-icon>
   <span id="errorMessage">[[i18n('fileTooBigErrorMessage')]]</span>
 </cr-toast>
+<!-- TODO(longbowei): Locolize strings in cr-dialog -->
+<cr-dialog id="selectedImageDialog">
+  <div id="modalDialogTitle" slot="title">
+    <cr-icon-button id="closeDialogButton" class="icon-arrow-back"
+        on-click="handleSelectedImageDialogCloseClick_"
+        title="Image">
+    </cr-icon-button>
+    <span>Image</span>
+  </div>
+  <div slot="body">
+    <img src="[[selectedImageUrl_]]" class="image-preview">
+  </div>
+</cr-dialog>
