@@ -25,8 +25,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/flags/android/cached_feature_flags.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "chrome/browser/installable/installed_webapp_geolocation_context.h"
@@ -615,11 +613,6 @@ bool TabWebContentsDelegateAndroid::IsCustomTab() const {
 
 bool TabWebContentsDelegateAndroid::IsInstalledWebappDelegateGeolocation()
     const {
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kTrustedWebActivityLocationDelegation)) {
-    return false;
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null())

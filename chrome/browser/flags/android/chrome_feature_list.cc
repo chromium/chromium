@@ -300,7 +300,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarMicIphAndroid,
     &kToolbarPhoneOptimizations,
     &kToolbarScrollAblationAndroid,
-    &kTrustedWebActivityLocationDelegation,
     &kTrustedWebActivityNotificationPermissionDelegation,
     &kTrustedWebActivityPostMessage,
     &kTrustedWebActivityQualityEnforcement,
@@ -851,9 +850,6 @@ const base::Feature kToolbarPhoneOptimizations{
 
 const base::Feature kToolbarScrollAblationAndroid{
     "ToolbarScrollAblationAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kTrustedWebActivityLocationDelegation{
-    "TrustedWebActivityLocationDelegation", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrustedWebActivityNotificationPermissionDelegation{
     "TrustedWebActivityNotificationPermissionDelegation",

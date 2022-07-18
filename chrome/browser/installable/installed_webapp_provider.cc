@@ -8,9 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -54,8 +52,7 @@ bool IsSupportedContentType(ContentSettingsType content_type) {
     case ContentSettingsType::NOTIFICATIONS:
       return true;
     case ContentSettingsType::GEOLOCATION:
-      return base::FeatureList::IsEnabled(
-          chrome::android::kTrustedWebActivityLocationDelegation);
+      return true;
     default:
       return false;
   }
