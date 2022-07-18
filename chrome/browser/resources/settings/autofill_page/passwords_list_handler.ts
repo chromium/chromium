@@ -19,6 +19,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -211,13 +212,15 @@ export class PasswordsListHandlerElement extends
         !params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE)) {
       return;
     }
-
     this.displayRemovalNotification_(
         params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) === 'true',
         params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE) === 'true');
     params.delete(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT);
     params.delete(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE);
     Router.getInstance().updateRouteParams(params);
+    // TODO(https://crbug.com/1298027): find a way to announce the removal toast
+    // before the first item in the page
+    getAnnouncerInstance().announce(this.removalNotification_);
   }
 
   override disconnectedCallback() {
