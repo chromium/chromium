@@ -41,6 +41,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -490,8 +491,7 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::Value::List& args) {
   // We can always show the release notes since the Help app caches it, or can
   // show an appropriate error state (e.g. No internet connection).
   base::RecordAction(base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
-  chrome::LaunchReleaseNotes(profile_,
-                             apps::mojom::LaunchSource::kFromOtherApp);
+  chrome::LaunchReleaseNotes(profile_, apps::LaunchSource::kFromOtherApp);
 }
 
 void AboutHandler::HandleOpenOsHelpPage(const base::Value::List& args) {

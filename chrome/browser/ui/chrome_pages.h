@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
@@ -126,7 +126,7 @@ void ShowHelpForProfile(Profile* profile, HelpSource source);
 void ShowChromeTips(Browser* browser);
 void ShowChromeWhatsNew(Browser* browser);
 #endif
-void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source);
+void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source);
 void ShowBetaForum(Browser* browser);
 void ShowPolicy(Browser* browser);
 void ShowSlow(Browser* browser);

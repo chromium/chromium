@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/notification_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,8 +51,8 @@ void ReleaseNotesNotification::HandleClickShowNotification() {
   SystemNotificationHelper::GetInstance()->Close(kShowNotificationID);
   base::RecordAction(
       base::UserMetricsAction("ReleaseNotes.LaunchedNotification"));
-  chrome::LaunchReleaseNotes(
-      profile_, apps::mojom::LaunchSource::kFromReleaseNotesNotification);
+  chrome::LaunchReleaseNotes(profile_,
+                             apps::LaunchSource::kFromReleaseNotesNotification);
 }
 
 void ReleaseNotesNotification::ShowReleaseNotesNotification() {

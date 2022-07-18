@@ -47,6 +47,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -263,8 +264,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  chrome::LaunchReleaseNotes(profile(),
-                             apps::mojom::LaunchSource::kFromOtherApp);
+  chrome::LaunchReleaseNotes(profile(), apps::LaunchSource::kFromOtherApp);
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   // If no navigation happens, then this test will time out due to the wait.
   navigation_observer.Wait();
@@ -289,8 +289,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesMetrics) {
   WaitForTestSystemAppInstall();
 
   base::UserActionTester user_action_tester;
-  chrome::LaunchReleaseNotes(profile(),
-                             apps::mojom::LaunchSource::kFromOtherApp);
+  chrome::LaunchReleaseNotes(profile(), apps::LaunchSource::kFromOtherApp);
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));

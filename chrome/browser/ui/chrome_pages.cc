@@ -41,7 +41,6 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -104,8 +103,7 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void LaunchReleaseNotesImpl(Profile* profile,
-                            apps::mojom::LaunchSource source) {
+void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   ash::SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/updates");
@@ -121,17 +119,17 @@ void LaunchReleaseNotesImpl(Profile* profile,
 void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   base::RecordAction(UserMetricsAction("ShowHelpTab"));
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto app_launch_source = apps::mojom::LaunchSource::kUnknown;
+  auto app_launch_source = apps::LaunchSource::kUnknown;
   switch (source) {
     case HELP_SOURCE_KEYBOARD:
-      app_launch_source = apps::mojom::LaunchSource::kFromKeyboard;
+      app_launch_source = apps::LaunchSource::kFromKeyboard;
       break;
     case HELP_SOURCE_MENU:
-      app_launch_source = apps::mojom::LaunchSource::kFromMenu;
+      app_launch_source = apps::LaunchSource::kFromMenu;
       break;
     case HELP_SOURCE_WEBUI:
     case HELP_SOURCE_WEBUI_CHROME_OS:
-      app_launch_source = apps::mojom::LaunchSource::kFromOtherApp;
+      app_launch_source = apps::LaunchSource::kFromOtherApp;
       break;
     default:
       NOTREACHED() << "Unhandled help source" << source;
@@ -326,7 +324,7 @@ void ShowChromeWhatsNew(Browser* browser) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source) {
+void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   LaunchReleaseNotesImpl(profile, source);
 #endif
