@@ -13,7 +13,6 @@
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "third_party/zlib/google/compression_utils.h"

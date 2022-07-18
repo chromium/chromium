@@ -23,7 +23,6 @@
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

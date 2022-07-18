@@ -1451,7 +1451,6 @@ if (!is_android) {
       "//components/user_education/test",
       "//components/user_manager",
       "//components/variations/service",
-      "//components/variations/service:constants",
       "//components/version_info",
       "//components/webapps/browser",
       "//components/webrtc",

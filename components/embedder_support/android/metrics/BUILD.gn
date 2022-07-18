@@ -72,7 +72,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/prefs:test_support",
-    "//components/variations/service:constants",
     "//content/test:test_support",
     "//testing/gtest",
   ]

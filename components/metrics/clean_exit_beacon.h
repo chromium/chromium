@@ -20,6 +20,10 @@ class PrefService;
 
 namespace metrics {
 
+// The name of the beacon file, which is relative to the user data directory
+// and used to store the CleanExitBeacon value and the variations crash streak.
+extern const base::FilePath::CharType kCleanExitBeaconFilename[];
+
 // Captures all possible beacon value permutations for two distinct beacons.
 // Exposed for testing.
 //

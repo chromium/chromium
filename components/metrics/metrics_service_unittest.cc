@@ -43,7 +43,6 @@
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/active_field_trials.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -327,7 +326,7 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
   // Write a beacon file indicating that Chrome exited cleanly. Note that the
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
-      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path().Append(kCleanExitBeaconFilename);
   ASSERT_LT(0,
             base::WriteFile(beacon_file_path,
                             CleanExitBeacon::CreateBeaconFileContentsForTesting(
@@ -383,7 +382,7 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
   // Write a beacon file indicating that Chrome exited cleanly. Note that the
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
-      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path().Append(kCleanExitBeaconFilename);
   ASSERT_LT(0,
             base::WriteFile(beacon_file_path,
                             CleanExitBeacon::CreateBeaconFileContentsForTesting(
@@ -463,7 +462,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   // Write a beacon file indicating that Chrome exited uncleanly. Note that the
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
-      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path().Append(kCleanExitBeaconFilename);
   ASSERT_LT(0,
             base::WriteFile(beacon_file_path,
                             CleanExitBeacon::CreateBeaconFileContentsForTesting(

@@ -197,7 +197,6 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/prefs:prefs",
-    "//components/variations/service:constants",
     "//third_party/zlib/google:compression_utils",
   ]
 }

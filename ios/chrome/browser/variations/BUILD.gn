@@ -100,7 +100,6 @@ source_set("eg2_tests") {
     "//components/prefs:prefs",
     "//components/variations:test_support",
     "//components/variations:variations",
-    "//components/variations/service:constants",
     "//components/variations/service:service",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

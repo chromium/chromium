@@ -24,7 +24,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/variations/pref_names.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -212,7 +211,7 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   if (params.beacon_file_exists) {
     const base::FilePath temp_beacon_file_path =
-        user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
+        user_data_dir_path.Append(kCleanExitBeaconFilename);
     ASSERT_LT(0, base::WriteFile(temp_beacon_file_path,
                                  params.beacon_file_contents.data()));
   }
@@ -229,7 +228,7 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
 TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
-      user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
   const int num_crashes = 2;
   ASSERT_LT(0, base::WriteFile(
                    temp_beacon_file_path,
@@ -252,7 +251,7 @@ TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
 TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
-      user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
   const int last_session_num_crashes = 2;
   ASSERT_LT(0,
             base::WriteFile(temp_beacon_file_path,
@@ -274,7 +273,7 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
 TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenNotExitingCleanly) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath beacon_file_path =
-      user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
   ASSERT_FALSE(base::PathExists(beacon_file_path));
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
@@ -317,7 +316,7 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenNotExitingCleanly) {
 TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenExitingCleanly) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath beacon_file_path =
-      user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
   ASSERT_FALSE(base::PathExists(beacon_file_path));
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
@@ -422,7 +421,7 @@ TEST_P(BeaconFileAndPlatformBeaconConsistencyTest, BeaconConsistency) {
   // is considered missing.
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
-      user_data_dir_path.Append(variations::kCleanExitBeaconFilename);
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
   ASSERT_FALSE(base::PathExists(temp_beacon_file_path));
   // Clear the platform-specific beacon. Unless set below, this beacon is also
   // considered missing.

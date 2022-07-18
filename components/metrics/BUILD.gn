@@ -130,7 +130,6 @@ static_library("metrics") {
     "//components/prefs",
     "//components/variations",
     "//components/variations/field_trial_config",
-    "//components/variations/service:constants",
     "//components/version_info:version_info",
     "//crypto",
     "//extensions/buildflags",
@@ -494,7 +493,6 @@ source_set("unit_tests") {
     "//components/sync/driver:test_support",
     "//components/variations",
     "//components/variations:test_support",
-    "//components/variations/service:constants",
 
     # TODO(crbug.com/1241702): Clean up version_info when the Variations Safe
     # Mode experiment is over.

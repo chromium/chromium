@@ -34,7 +34,6 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_field_trial_creator.h"
-#include "components/variations/service/variations_safe_mode_constants.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
