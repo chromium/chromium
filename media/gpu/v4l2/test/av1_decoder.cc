@@ -230,6 +230,16 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration* v4l2_lr,
     }
   }
 
+  const bool use_loop_restoration =
+      std::find_if(std::begin(lr.type),
+                   std::begin(lr.type) + libgav1::kMaxPlanes,
+                   [](const auto type) {
+                     return type != libgav1::kLoopRestorationTypeNone;
+                   }) != (lr.type + libgav1::kMaxPlanes);
+
+  if (!use_loop_restoration)
+    return;
+
   DCHECK_GE(lr.unit_size_log2[0], lr.unit_size_log2[1]);
   DCHECK_LE(lr.unit_size_log2[0] - lr.unit_size_log2[1], 1);
   v4l2_lr->lr_unit_shift = lr.unit_size_log2[0] - 6;
