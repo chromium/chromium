@@ -19,16 +19,15 @@
       "move_distance": 20,
       "location": [
         {
-          "type": "dependent_position",
+          "type": "position",
           "anchor": [
             0,
-            1
+            0
           ],
           "anchor_to_target": [
             0.4991762768,
-            -0.1453703704
-          ],
-          "y_on_x": 0.5181518152
+            0.8546296296
+          ]
         }
       ]
     }
