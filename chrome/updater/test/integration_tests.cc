@@ -358,8 +358,9 @@ TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
   Uninstall();
 }
 
+// TODO(https://crbug.com/1344846): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
-TEST_F(IntegrationTest, OverinstallBroken) {
+TEST_F(IntegrationTest, DISABLED_OverinstallBroken) {
 #else
 TEST_F(IntegrationTest, DISABLED_OverinstallBroken) {
 #endif
