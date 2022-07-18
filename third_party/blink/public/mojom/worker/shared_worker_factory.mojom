@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -82,6 +83,8 @@ interface SharedWorkerFactory {
       // Used to make fetches from the worker go through the controller service
       // worker. This is null when there're no controller service worker.
       ControllerServiceWorkerInfo? controller_info,
+
+      PolicyContainer policy_container,
 
       pending_remote<SharedWorkerHost> host,
       pending_receiver<SharedWorker> shared_worker,

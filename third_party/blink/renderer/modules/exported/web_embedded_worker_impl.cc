@@ -255,10 +255,12 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
     // > "classic": Fetch a classic worker script given job's serialized script
     // > url, job's client, "serviceworker", and the to-be-created environment
     // > settings object for this service worker.
+    // TODO(crbug.com/1177199): pass a proper policy container
     case mojom::blink::ScriptType::kClassic:
       worker_thread_->FetchAndRunClassicScript(
           worker_start_data->script_url,
           std::move(worker_start_data->main_script_load_params),
+          nullptr /* policy_container */,
           std::move(fetch_client_setting_object_data),
           nullptr /* outside_resource_timing_notifier */,
           v8_inspector::V8StackTraceId());

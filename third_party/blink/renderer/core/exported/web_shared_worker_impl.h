@@ -117,6 +117,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       bool pause_worker_context_on_start,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
+      std::unique_ptr<blink::WebPolicyContainer> policy_container,
       scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
       ukm::SourceId ukm_source_id);
 

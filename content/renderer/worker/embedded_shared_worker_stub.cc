@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "content/public/common/network_service_util.h"
 #include "content/renderer/content_security_policy_util.h"
+#include "content/renderer/policy_container_util.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
@@ -53,6 +54,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         pending_subresource_loader_factory_bundle,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+    blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::SharedWorkerHost> host,
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -128,6 +130,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       devtools_worker_token, std::move(content_settings),
       std::move(browser_interface_broker), pause_on_start,
       std::move(worker_main_script_load_params),
+      ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this,
       ukm_source_id);
 

@@ -44,6 +44,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+    blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::SharedWorkerHost> host,
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -58,8 +59,9 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
       std::move(service_worker_container_info),
       std::move(main_script_load_params),
       std::move(subresource_loader_factories), std::move(controller_info),
-      std::move(host), std::move(receiver), std::move(browser_interface_broker),
-      ukm_source_id, RenderThreadImpl::current()->cors_exempt_header_list());
+      std::move(policy_container), std::move(host), std::move(receiver),
+      std::move(browser_interface_broker), ukm_source_id,
+      RenderThreadImpl::current()->cors_exempt_header_list());
 }
 
 }  // namespace content

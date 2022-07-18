@@ -90,6 +90,7 @@ class SharedWorkerHostTest : public testing::Test {
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+        base::MakeRefCounted<PolicyContainerHost>(),
         network::mojom::ClientSecurityState::New());
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
@@ -384,6 +385,7 @@ TEST_F(SharedWorkerHostTest,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>(),
       network::mojom::ClientSecurityState::New());
 
   // Start the worker.
@@ -446,6 +448,7 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>(),
       std::move(client_security_state));
 
   // Start the worker.

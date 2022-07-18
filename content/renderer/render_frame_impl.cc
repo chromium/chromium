@@ -94,6 +94,7 @@
 #include "content/renderer/navigation_client.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/pepper/pepper_audio_controller.h"
+#include "content/renderer/policy_container_util.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
@@ -1055,23 +1056,6 @@ void FillMiscNavigationParams(
           destination, std::move(data));
     }
   }
-}
-
-std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
-    blink::mojom::PolicyContainerPtr in) {
-  if (!in)
-    return nullptr;
-
-  return std::make_unique<blink::WebPolicyContainer>(
-      blink::WebPolicyContainerPolicies{
-          in->policies->cross_origin_embedder_policy,
-          in->policies->referrer_policy,
-          ToWebContentSecurityPolicies(
-              std::move(in->policies->content_security_policies)),
-          in->policies->is_anonymous,
-          in->policies->sandbox_flags,
-      },
-      std::move(in->remote));
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {

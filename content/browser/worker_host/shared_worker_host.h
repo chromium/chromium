@@ -17,6 +17,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -76,6 +77,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       scoped_refptr<SiteInstanceImpl> site_instance,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
+      scoped_refptr<PolicyContainerHost> creator_policy_container_host,
       network::mojom::ClientSecurityStatePtr creator_client_security_state);
 
   SharedWorkerHost(const SharedWorkerHost&) = delete;
@@ -316,6 +318,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   const ukm::SourceId ukm_source_id_;
 
   const base::UnguessableToken reporting_source_;
+
+  scoped_refptr<PolicyContainerHost> creator_policy_container_host_;
 
   // The client security state of the creator execution context.
   // Never nullptr. Copied at construction time.
