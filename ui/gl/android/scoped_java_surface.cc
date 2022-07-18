@@ -4,6 +4,8 @@
 
 #include "ui/gl/android/scoped_java_surface.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "ui/gl/android/surface_texture.h"
 #include "ui/gl/surface_jni_headers/Surface_jni.h"
@@ -52,8 +54,7 @@ void ScopedJavaSurface::ReleaseSurfaceIfNeeded() {
 
 void ScopedJavaSurface::MoveFrom(ScopedJavaSurface& other) {
   ReleaseSurfaceIfNeeded();
-  JNIEnv* env = base::android::AttachCurrentThread();
-  j_surface_.Reset(env, other.j_surface_.Release());
+  j_surface_ = std::move(other.j_surface_);
   auto_release_ = other.auto_release_;
   is_protected_ = other.is_protected_;
 }
