@@ -9125,6 +9125,7 @@ if (!is_android) {
       "../browser/ui/search/instant_test_base.cc",
       "../browser/ui/search/instant_test_base.h",
       "../browser/ui/search/third_party_ntp_uitest.cc",
+      "../browser/ui/side_search/side_search_tab_contents_helper_interactive_uitest.cc",
       "../browser/ui/signin_view_controller_interactive_uitest.cc",
       "../browser/ui/startup/invalid_user_data_dir_interactive_uitest.cc",
       "../browser/ui/startup/startup_browser_creator_interactive_uitest.cc",
