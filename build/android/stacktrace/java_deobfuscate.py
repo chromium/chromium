@@ -14,15 +14,11 @@ import sys
 DIR_SOURCE_ROOT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '../../../'))
 
-
 def main():
   classpath = [
       os.path.join(DIR_SOURCE_ROOT, 'build', 'android', 'stacktrace',
-                   'java_deobfuscate.jar'),
-      os.path.join(DIR_SOURCE_ROOT, 'third_party', 'proguard', 'lib',
-                   'proguard603.jar'),
-      os.path.join(DIR_SOURCE_ROOT, 'third_party', 'proguard', 'lib',
-                   'retrace603.jar'),
+                   'java_deobfuscate_java.jar'),
+      os.path.join(DIR_SOURCE_ROOT, 'third_party', 'r8', 'lib', 'r8.jar')
   ]
   java_path = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current',
                            'bin', 'java')
@@ -32,6 +28,7 @@ def main():
       'org.chromium.build.FlushingReTrace'
   ]
   cmd.extend(sys.argv[1:])
+
   os.execvp(cmd[0], cmd)
 
 

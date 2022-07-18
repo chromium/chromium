@@ -9,10 +9,7 @@ java_library("java_deobfuscate_java") {
 
   # Avoid using java_prebuilt() to ensure all uses go through the checked-in
   # wrapper script.
-  input_jars_paths = [
-    "//third_party/proguard/lib/proguard603.jar",
-    "//third_party/proguard/lib/retrace603.jar",
-  ]
+  input_jars_paths = [ "//third_party/r8/lib/r8.jar" ]
 }
 
 # Use the checked-in copy of the wrapper script & .jar rather than the built
@@ -20,9 +17,8 @@ java_library("java_deobfuscate_java") {
 group("java_deobfuscate") {
   data = [
     "java_deobfuscate.py",
-    "java_deobfuscate.jar",
-    "//third_party/proguard/lib/proguard603.jar",
-    "//third_party/proguard/lib/retrace603.jar",
+    "java_deobfuscate_java.jar",
+    "//third_party/r8/lib/r8.jar",
   ]
   deps = [ "//third_party/jdk:java_data" ]
 }

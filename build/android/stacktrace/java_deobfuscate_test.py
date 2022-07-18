@@ -52,6 +52,7 @@ TEST_DATA = [
     'Caused by: FOO: Error message',
     '\tat FOO.bar(PG:1)',
     '\t at\t FOO.bar\t (\t PG:\t 1\t )',
+    '0xfff \t( \tPG:\t 1 \t)\tFOO.bar',
     ('Unable to start activity ComponentInfo{garbage.in/here.test}:'
      ' java.lang.NullPointerException: Attempt to invoke interface method'
      ' \'void FOO.bar(int,android.os.Bundle)\' on a null object reference'),
@@ -83,6 +84,7 @@ EXPECTED_OUTPUT = [
     '\tat this.was.Deobfuscated.someMethod(Deobfuscated.java:65)',
     ('\t at\t this.was.Deobfuscated.someMethod\t '
      '(\t Deobfuscated.java:\t 65\t )'),
+    '0xfff \t( \tDeobfuscated.java:\t 65 \t)\tthis.was.Deobfuscated.someMethod',
     ('Unable to start activity ComponentInfo{garbage.in/here.test}:'
      ' java.lang.NullPointerException: Attempt to invoke interface method'
      ' \'void this.was.Deobfuscated.someMethod(int,android.os.Bundle)\' on a'
@@ -106,7 +108,7 @@ class JavaDeobfuscateTest(unittest.TestCase):
 
   def setUp(self):
     self._map_file = tempfile.NamedTemporaryFile()
-    self._map_file.write(TEST_MAP)
+    self._map_file.write(TEST_MAP.encode('utf-8'))
     self._map_file.flush()
 
   def tearDown(self):
@@ -124,8 +126,8 @@ class JavaDeobfuscateTest(unittest.TestCase):
 
     cmd = [_JAVA_DEOBFUSCATE_PATH, self._map_file.name]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    proc_output, _ = proc.communicate(''.join(input_lines))
-    actual_output_lines = proc_output.splitlines(True)
+    proc_output, _ = proc.communicate(''.join(input_lines).encode())
+    actual_output_lines = proc_output.decode().splitlines(True)
     for actual, expected in zip(actual_output_lines, expected_output_lines):
       self.assertTrue(
           actual == expected or actual.replace('bar', 'someMethod') == expected,

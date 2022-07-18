@@ -4,15 +4,19 @@
 
 package org.chromium.build;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import com.android.tools.r8.retrace.ProguardMapProducer;
+import com.android.tools.r8.retrace.ProguardMappingSupplier;
+import com.android.tools.r8.retrace.Retrace;
+import com.android.tools.r8.retrace.RetraceCommand;
+import com.android.tools.r8.retrace.StackTraceSupplier;
 
-import proguard.retrace.ReTrace;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A wrapper around ReTrace that:
@@ -40,6 +44,9 @@ public class FlushingReTrace {
             // Normal stack trace lines look like:
             // \tat org.chromium.chrome.browser.tab.Tab.handleJavaCrash(Tab.java:682)
             + "(?:.*?(?::|\\bat)\\s+%c\\.%m\\s*\\(\\s*%s(?:\\s*:\\s*%l\\s*)?\\))|"
+            // Stack trace from crbug.com/1300215 looks like:
+            // 0xffffffff (chromium-TrichromeChromeGoogle.aab-canary-490400033: 70) ii2.p
+            + "(?:.*?\\(\\s*%s(?:\\s*:\\s*%l\\s*)?\\)\\s*%c\\.%m)|"
             // E.g.: Caused by: java.lang.NullPointerException: Attempt to read from field 'int bLA'
             // on a null object reference
             + "(?:.*java\\.lang\\.NullPointerException.*[\"']%t\\s*%c\\.(?:%f|%m\\(%a\\))[\"'].*)|"
@@ -93,24 +100,47 @@ public class FlushingReTrace {
             usage();
         }
 
-        File mappingFile = new File(args[0]);
         try {
-            LineNumberReader reader = new LineNumberReader(
-                    new BufferedReader(new InputStreamReader(System.in, "UTF-8")));
+            // This whole command was given to us by the R8 team in b/234758957.
+            RetraceCommand retraceCommand =
+                    RetraceCommand.builder()
+                            .setMappingSupplier(
+                                    ProguardMappingSupplier.builder()
+                                            .setProguardMapProducer(new ProguardMapProducer() {
+                                                @Override
+                                                public InputStream get() throws IOException {
+                                                    return new FileInputStream(args[0]);
+                                                }
+                                            })
+                                            .build())
+                            .setRetracedStackTraceConsumer(
+                                    retraced -> retraced.forEach(System.out::println))
+                            .setRegularExpression(LINE_PARSE_REGEX)
+                            .setStackTrace(new StackTraceSupplier() {
+                                final BufferedReader mReader = new BufferedReader(
+                                        new InputStreamReader(System.in, "UTF-8"));
 
-            // Enabling autoFlush is the main difference from ReTrace.main().
-            boolean autoFlush = true;
-            PrintWriter writer =
-                    new PrintWriter(new OutputStreamWriter(System.out, "UTF-8"), autoFlush);
-
-            boolean verbose = false;
-            new ReTrace(LINE_PARSE_REGEX, verbose, mappingFile).retrace(reader, writer);
+                                @Override
+                                public List<String> get() {
+                                    try {
+                                        String line = mReader.readLine();
+                                        if (line == null) {
+                                            return null;
+                                        }
+                                        return Collections.singletonList(line);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        return null;
+                                    }
+                                }
+                            })
+                            .build();
+            Retrace.run(retraceCommand);
         } catch (IOException ex) {
             // Print a verbose stack trace.
             ex.printStackTrace();
             System.exit(1);
         }
-
         System.exit(0);
     }
 }
