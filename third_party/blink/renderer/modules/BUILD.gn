@@ -663,6 +663,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/storage:unit_tests",
     "//third_party/blink/renderer/modules/webcodecs:unit_tests",
+    "//third_party/blink/renderer/modules/webgpu:unit_tests",
     "//third_party/blink/renderer/modules/webtransport:unit_tests",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",

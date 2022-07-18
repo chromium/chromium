@@ -288,4 +288,9 @@ void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll(
   contents_.clear();
 }
 
+void GPU::SetDawnControlClientHolderForTesting(
+    scoped_refptr<DawnControlClientHolder> dawn_control_client) {
+  dawn_control_client_ = std::move(dawn_control_client);
+}
+
 }  // namespace blink
