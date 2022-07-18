@@ -48,9 +48,9 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
-#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -66,6 +66,7 @@ class LayoutCustomScrollbarPart;
 struct PaintInvalidatorContext;
 class PaintLayer;
 class ScrollingCoordinator;
+struct StickyPositionScrollingConstraints;
 class SubtreeLayoutScope;
 
 struct CORE_EXPORT PaintLayerScrollableAreaRareData final
@@ -79,7 +80,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 
   void Trace(Visitor* visitor) const;
 
-  StickyConstraintsMap sticky_constraints_map_;
+  HeapLinkedHashSet<Member<PaintLayer>> sticky_layers_;
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
@@ -515,11 +516,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
     had_vertical_scrollbar_before_relayout_ = val;
   }
 
-  const StickyConstraintsMap& GetStickyConstraintsMap() {
-    return EnsureRareData().sticky_constraints_map_;
-  }
-  StickyPositionScrollingConstraints* GetStickyConstraints(PaintLayer*);
   void AddStickyConstraints(PaintLayer*, StickyPositionScrollingConstraints*);
+  bool HasStickyLayer(PaintLayer* layer) const {
+    return rare_data_ && rare_data_->sticky_layers_.Contains(layer);
+  }
 
   void InvalidateAllStickyConstraints();
   void InvalidateStickyConstraintsFor(PaintLayer*);

@@ -293,9 +293,8 @@ void PaintLayer::UpdateLayerPositionRecursive(
     DCHECK(enclosing_scroller == previous_enclosing_scroller ||
            !previous_enclosing_scroller ||
            !previous_enclosing_scroller->GetScrollableArea() ||
-           !previous_enclosing_scroller->GetScrollableArea()
-                ->GetStickyConstraintsMap()
-                .Contains(this));
+           !previous_enclosing_scroller->GetScrollableArea()->HasStickyLayer(
+               this));
     GetLayoutObject().UpdateStickyPositionConstraints();
 
     // Sticky position constraints and ancestor overflow scroller affect

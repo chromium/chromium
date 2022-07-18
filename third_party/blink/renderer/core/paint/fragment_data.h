@@ -19,6 +19,7 @@
 namespace blink {
 
 class PaintLayer;
+struct StickyPositionScrollingConstraints;
 
 // Represents the data for a particular fragment of a LayoutObject.
 // See README.md.
@@ -56,6 +57,15 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   // depending on the return value of LayoutBoxModelObject::LayerTypeRequired().
   PaintLayer* Layer() const { return rare_data_ ? rare_data_->layer : nullptr; }
   void SetLayer(PaintLayer*);
+
+  StickyPositionScrollingConstraints* StickyConstraints() const {
+    return rare_data_ ? rare_data_->sticky_constraints : nullptr;
+  }
+  void SetStickyConstraints(StickyPositionScrollingConstraints* constraints) {
+    if (!rare_data_ && !constraints)
+      return;
+    EnsureRareData().sticky_constraints = constraints;
+  }
 
   // A fragment ID unique within the LayoutObject. In NG block fragmentation,
   // this is the fragmentainer index. In legacy block fragmentation, it's the
@@ -212,6 +222,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     // The following data fields are not fragment specific. Placed here just to
     // avoid separate data structure for them.
     Member<PaintLayer> layer;
+    Member<StickyPositionScrollingConstraints> sticky_constraints;
     UniqueObjectId unique_id;
 
     // Fragment specific data.

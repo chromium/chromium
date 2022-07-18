@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -122,7 +123,7 @@ static const int kDefaultMinimumHeightForResizing = 15;
 PaintLayerScrollableAreaRareData::PaintLayerScrollableAreaRareData() = default;
 
 void PaintLayerScrollableAreaRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(sticky_constraints_map_);
+  visitor->Trace(sticky_layers_);
 }
 
 const int kResizerControlExpandRatioForTouch = 2;
@@ -2060,49 +2061,46 @@ void PaintLayerScrollableArea::UpdateResizerStyle(
   }
 }
 
-StickyPositionScrollingConstraints*
-PaintLayerScrollableArea::GetStickyConstraints(PaintLayer* layer) {
-  auto it = EnsureRareData().sticky_constraints_map_.find(layer);
-  if (it == EnsureRareData().sticky_constraints_map_.end())
-    return nullptr;
-  return it->value;
-}
-
 void PaintLayerScrollableArea::AddStickyConstraints(
     PaintLayer* layer,
     StickyPositionScrollingConstraints* constraints) {
   UseCounter::Count(GetLayoutBox()->GetDocument(), WebFeature::kPositionSticky);
-  EnsureRareData().sticky_constraints_map_.Set(layer, constraints);
+  EnsureRareData().sticky_layers_.insert(layer);
+  layer->GetLayoutObject().SetStickyConstraints(constraints);
 }
 
 void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
   if (PaintLayerScrollableAreaRareData* d = RareData()) {
-    for (PaintLayer* sticky_layer : d->sticky_constraints_map_.Keys()) {
-      if (sticky_layer->GetLayoutObject().StyleRef().GetPosition() ==
-          EPosition::kSticky) {
-        sticky_layer->SetNeedsCompositingInputsUpdate();
-        sticky_layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
-      }
+    for (PaintLayer* sticky_layer : d->sticky_layers_) {
+      sticky_layer->SetNeedsCompositingInputsUpdate();
+      sticky_layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
+      sticky_layer->GetLayoutObject().SetStickyConstraints(nullptr);
     }
-    d->sticky_constraints_map_.clear();
+    d->sticky_layers_.clear();
   }
 }
 
 void PaintLayerScrollableArea::InvalidateStickyConstraintsFor(
     PaintLayer* layer) {
   if (PaintLayerScrollableAreaRareData* d = RareData()) {
-    d->sticky_constraints_map_.erase(layer);
-    if (layer->GetLayoutObject().StyleRef().HasStickyConstrainedPosition()) {
+    auto it = d->sticky_layers_.find(layer);
+    if (it != d->sticky_layers_.end()) {
       layer->SetNeedsCompositingInputsUpdate();
       layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
+      layer->GetLayoutObject().SetStickyConstraints(nullptr);
+      d->sticky_layers_.erase(it);
     }
   }
 }
 
 void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
   if (PaintLayerScrollableAreaRareData* d = RareData()) {
-    for (PaintLayer* sticky_layer : d->sticky_constraints_map_.Keys())
-      sticky_layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
+    for (PaintLayer* sticky_layer : d->sticky_layers_) {
+      auto& object = sticky_layer->GetLayoutObject();
+      object.SetNeedsPaintPropertyUpdate();
+      DCHECK(object.StickyConstraints());
+      object.StickyConstraints()->ComputeStickyOffset(ScrollPosition());
+    }
   }
 }
 

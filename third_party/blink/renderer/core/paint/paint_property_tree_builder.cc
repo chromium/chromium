@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -709,11 +710,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
               .NearestScrollTranslationNode()
               .ScrollNode() == context_.current.scroll;
       if (nearest_scroller_is_clip && translates_with_nearest_scroller) {
-        const StickyPositionScrollingConstraints* layout_constraint =
-            layer->AncestorScrollContainerLayer()
-                ->GetScrollableArea()
-                ->GetStickyConstraintsMap()
-                .at(layer);
+        const auto* layout_constraint = box_model.StickyConstraints();
         auto constraint = std::make_unique<CompositorStickyConstraint>();
         constraint->is_anchored_left = layout_constraint->is_anchored_left;
         constraint->is_anchored_right = layout_constraint->is_anchored_right;
@@ -725,7 +722,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         constraint->top_offset = layout_constraint->top_offset.ToFloat();
         constraint->bottom_offset = layout_constraint->bottom_offset.ToFloat();
         constraint->constraint_box_rect =
-            gfx::RectF(box_model.ComputeStickyConstrainingRect());
+            gfx::RectF(layout_constraint->constraining_rect);
         constraint->scroll_container_relative_sticky_box_rect = gfx::RectF(
             layout_constraint->scroll_container_relative_sticky_box_rect);
         constraint->scroll_container_relative_containing_block_rect =

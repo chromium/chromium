@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
@@ -15,13 +16,16 @@ FragmentData::RareData::RareData() : unique_id(NewUniqueObjectId()) {}
 FragmentData::RareData::~RareData() = default;
 
 void FragmentData::RareData::SetLayer(PaintLayer* new_layer) {
-  if (layer && layer != new_layer)
+  if (layer && layer != new_layer) {
     layer->Destroy();
+    sticky_constraints = nullptr;
+  }
   layer = new_layer;
 }
 
 void FragmentData::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(layer);
+  visitor->Trace(sticky_constraints);
   visitor->Trace(next_fragment_);
 }
 
