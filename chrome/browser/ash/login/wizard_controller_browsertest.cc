@@ -613,10 +613,9 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     mock_enable_debugging_screen_view_ =
         std::make_unique<MockEnableDebuggingScreenView>();
-    ExpectSetDelegate(mock_enable_debugging_screen_view_.get());
     mock_enable_debugging_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockEnableDebuggingScreen>(
-            mock_enable_debugging_screen_view_.get(),
+            mock_enable_debugging_screen_view_.get()->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnEnableDebuggingScreenExit,
                                 base::Unretained(wizard_controller))));
 

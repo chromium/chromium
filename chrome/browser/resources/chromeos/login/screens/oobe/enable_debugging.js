@@ -144,7 +144,7 @@ class EnableDebugging extends EnableDebuggingBase {
   }
 
   onEnableButtonClicked_() {
-    chrome.send('enableDebuggingOnSetup', [this.password_]);
+    this.userActed(['setup', this.password_]);
     this.password_ = '';
     this.passwordRepeat_ = '';
   }

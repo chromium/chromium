@@ -6,21 +6,20 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 class PrefRegistrySimple;
-
-namespace ash {
-class EnableDebuggingScreen;
-}
 
 namespace chromeos {
 
 // Interface between enable debugging screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
-class EnableDebuggingScreenView {
+class EnableDebuggingScreenView
+    : public base::SupportsWeakPtr<EnableDebuggingScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"debugging"};
+  inline constexpr static StaticOobeScreenId kScreenId{"debugging",
+                                                       "EnableDebuggingScreen"};
 
   enum UIState {
     UI_STATE_ERROR = -1,
@@ -30,11 +29,9 @@ class EnableDebuggingScreenView {
     UI_STATE_DONE = 4,
   };
 
-  virtual ~EnableDebuggingScreenView() {}
+  virtual ~EnableDebuggingScreenView() = default;
 
   virtual void Show() = 0;
-  virtual void Hide() = 0;
-  virtual void SetDelegate(ash::EnableDebuggingScreen* screen) = 0;
   virtual void UpdateUIState(UIState state) = 0;
 };
 
@@ -54,29 +51,14 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
 
   // EnableDebuggingScreenView implementation:
   void Show() override;
-  void Hide() override;
-  void SetDelegate(ash::EnableDebuggingScreen* screen) override;
   void UpdateUIState(UIState state) override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
 
   // Registers Local State preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
- private:
-  // JS messages handlers.
-  void HandleOnSetup(const std::string& password);
-
-  ash::EnableDebuggingScreen* screen_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

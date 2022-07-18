@@ -19,36 +19,14 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId EnableDebuggingScreenView::kScreenId;
-
 EnableDebuggingScreenHandler::EnableDebuggingScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.EnableDebuggingScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-EnableDebuggingScreenHandler::~EnableDebuggingScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+EnableDebuggingScreenHandler::~EnableDebuggingScreenHandler() = default;
 
 void EnableDebuggingScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   DVLOG(1) << "Showing enable debugging screen.";
   ShowInWebUI();
-}
-
-void EnableDebuggingScreenHandler::Hide() {}
-
-void EnableDebuggingScreenHandler::SetDelegate(EnableDebuggingScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
 }
 
 void EnableDebuggingScreenHandler::DeclareLocalizedValues(
@@ -93,29 +71,8 @@ void EnableDebuggingScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDebuggingFeaturesRequested, false);
 }
 
-void EnableDebuggingScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !screen_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void EnableDebuggingScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("enableDebuggingOnSetup",
-              &EnableDebuggingScreenHandler::HandleOnSetup);
-}
-
-void EnableDebuggingScreenHandler::HandleOnSetup(
-    const std::string& password) {
-  screen_->HandleSetup(password);
-}
-
 void EnableDebuggingScreenHandler::UpdateUIState(UIState state) {
-  CallJS("login.EnableDebuggingScreen.updateState", static_cast<int>(state));
+  CallExternalAPI("updateState", static_cast<int>(state));
 }
 
 }  // namespace chromeos
