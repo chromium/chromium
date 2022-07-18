@@ -2060,7 +2060,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // navigation.
 
 // Injecting input with scaling works as expected on Chromeos.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1344579): Enable tests with a scale factor on lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr std::initializer_list<double> ui_scaling_factors = {1.0, 1.25, 2.0};
 #else
 // Injecting input with non-1x scaling doesn't work correctly with x11 ozone or
