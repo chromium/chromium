@@ -180,7 +180,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
 
-    crostini::kCrostiniTerminalSystemAppId,
+    crostini::kTerminalSystemAppId,
     web_app::kMediaAppId,
     ash::kChromeUITrustedProjectorSwaAppId,
 

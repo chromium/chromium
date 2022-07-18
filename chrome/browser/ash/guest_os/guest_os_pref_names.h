@@ -45,6 +45,10 @@ extern const char kContainerOsVersionKey[];
 extern const char kContainerOsPrettyNameKey[];
 extern const char kContainerColorKey[];
 
+// Terminal
+// Dictionary of terminal UI settings such as font style, colors, etc.
+extern const char kGuestOsTerminalSettings[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs

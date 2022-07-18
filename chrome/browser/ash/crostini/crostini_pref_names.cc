@@ -22,8 +22,6 @@ const char kCrostiniEnabled[] = "crostini.enabled";
 // List of USB devices with their system guid, a name/description and their
 // enabled state for use with Crostini.
 const char kCrostiniSharedUsbDevices[] = "crostini.shared_usb_devices";
-// Dictionary of terminal UI settings such as font style, colors, etc.
-const char kCrostiniTerminalSettings[] = "crostini.terminal_settings";
 // Boolean preferences indicating whether Crostini is allowed to use mic.
 const char kCrostiniMicAllowed[] = "crostini.mic_allowed";
 
@@ -112,9 +110,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterFilePathPref(kCrostiniAnsiblePlaybookFilePath,
                                  base::FilePath());
   registry->RegisterBooleanPref(kCrostiniDefaultContainerConfigured, false);
-  registry->RegisterDictionaryPref(
-      kCrostiniTerminalSettings, base::DictionaryValue(),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterIntegerPref(
       kCrostiniArcAdbSideloadingUserPref,

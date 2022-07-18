@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,7 +71,8 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
     "/vsh/profiles/p2/terminal-profile": "green"
   })");
   ASSERT_TRUE(pref.has_value());
-  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings, std::move(*pref));
+  profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
+                          std::move(*pref));
   shortcut = ShortcutIdFromContainerId(&profile, id);
   EXPECT_EQ(shortcut, R"({"container_name":"test-container",)"
                       R"("settings_profile":"green",)"
@@ -94,7 +96,8 @@ TEST_F(CrostiniTerminalTest, GetSSHConnections) {
     "/nassh/profiles/p2/description": "d2"
   })");
   ASSERT_TRUE(pref.has_value());
-  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings, std::move(*pref));
+  profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
+                          std::move(*pref));
 
   expected = {{"p1", "d1"}, {"p2", "d2"}};
   EXPECT_EQ(GetSSHConnections(&profile), expected);
@@ -109,7 +112,8 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
     "/hterm/profiles/red/background-color": "#FF0000"
   })");
   ASSERT_TRUE(pref.has_value());
-  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings, std::move(*pref));
+  profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
+                          std::move(*pref));
 
   // Use settings_profile param.
   EXPECT_EQ(GetTerminalSettingBackgroundColor(
@@ -134,7 +138,7 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
       "#101010");
 
   // Use default color.
-  profile.GetPrefs()->Set(prefs::kCrostiniTerminalSettings,
+  profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
                           base::Value(base::Value::Type::DICT));
   EXPECT_EQ(
       GetTerminalSettingBackgroundColor(

@@ -19,7 +19,6 @@ namespace prefs {
 
 extern const char kCrostiniEnabled[];
 extern const char kCrostiniSharedUsbDevices[];
-extern const char kCrostiniTerminalSettings[];
 extern const char kCrostiniMicAllowed[];
 
 extern const char kUserCrostiniAllowedByPolicy[];

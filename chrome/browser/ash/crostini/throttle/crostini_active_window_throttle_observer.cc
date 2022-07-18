@@ -37,7 +37,7 @@ bool CrostiniActiveWindowThrottleObserver::ProcessWindowActivation(
   // Return true if the ID is the terminal app's. Note that the terminal app is
   // a Chrome app although it provides a Crostini shell.
   const std::string* app_id = gained_active->GetProperty(ash::kAppIDKey);
-  return app_id && *app_id == crostini::kCrostiniTerminalSystemAppId;
+  return app_id && *app_id == crostini::kTerminalSystemAppId;
 }
 
 }  // namespace crostini

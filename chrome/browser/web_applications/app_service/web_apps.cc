@@ -419,7 +419,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
         &menu_items);
   }
 
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+  if (app_id == crostini::kTerminalSystemAppId) {
     crostini::AddTerminalMenuItems(profile_, &menu_items);
   }
 
@@ -439,7 +439,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
                          &menu_items);
   }
 
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+  if (app_id == crostini::kTerminalSystemAppId) {
     crostini::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
                                        std::move(menu_items),
                                        std::move(callback));
@@ -533,7 +533,7 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
                                         int command_id,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+  if (app_id == crostini::kTerminalSystemAppId) {
     if (crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
                                                      display_id)) {
       return;

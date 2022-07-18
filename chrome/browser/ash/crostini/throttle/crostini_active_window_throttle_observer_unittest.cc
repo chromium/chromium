@@ -55,8 +55,8 @@ TEST_F(CrostiniActiveWindowThrottleObserverTest, TestOnWindowActivated) {
                              static_cast<int>(ash::AppType::BROWSER));
   terminal_window->SetProperty(aura::client::kAppType,
                                static_cast<int>(ash::AppType::CHROME_APP));
-  terminal_window->SetProperty<std::string>(
-      ash::kAppIDKey, crostini::kCrostiniTerminalSystemAppId);
+  terminal_window->SetProperty<std::string>(ash::kAppIDKey,
+                                            crostini::kTerminalSystemAppId);
   chrome_app_window->SetProperty(aura::client::kAppType,
                                  static_cast<int>(ash::AppType::CHROME_APP));
   chrome_app_window->SetProperty<std::string>(ash::kAppIDKey,

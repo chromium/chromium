@@ -169,7 +169,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::SHUTDOWN_GUEST_OS:
-      if (item().id.app_id == crostini::kCrostiniTerminalSystemAppId) {
+      if (item().id.app_id == crostini::kTerminalSystemAppId) {
         crostini::CrostiniManager::GetForProfile(controller()->profile())
             ->StopVm(crostini::kCrostiniDefaultVmName, base::DoNothing());
       } else if (item().id.app_id == plugin_vm::kPluginVmShelfAppId) {
@@ -207,7 +207,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     }
 
     case ash::SETTINGS:
-      if (item().id.app_id == crostini::kCrostiniTerminalSystemAppId) {
+      if (item().id.app_id == crostini::kTerminalSystemAppId) {
         crostini::LaunchTerminalSettings(controller()->profile(), display_id());
         ash::full_restore::FullRestoreService::MaybeCloseNotification(
             controller()->profile());

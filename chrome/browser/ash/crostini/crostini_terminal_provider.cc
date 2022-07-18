@@ -30,7 +30,7 @@ bool CrostiniTerminalProvider::RecoveryRequired(int64_t display_id) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   if (crostini_manager->IsUncleanStartup()) {
     ShowCrostiniRecoveryView(profile_, crostini::CrostiniUISurface::kAppList,
-                             kCrostiniTerminalSystemAppId, display_id, {},
+                             kTerminalSystemAppId, display_id, {},
                              base::DoNothing());
     return true;
   }

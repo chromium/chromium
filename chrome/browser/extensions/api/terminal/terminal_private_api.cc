@@ -100,7 +100,7 @@ const char kCwdTerminalIdPrefix[] = "terminal_id:";
 static const base::NoDestructor<std::vector<std::string>> kPrefsReadAllowList{{
     ash::prefs::kAccessibilitySpokenFeedbackEnabled,
     crostini::prefs::kCrostiniEnabled,
-    crostini::prefs::kCrostiniTerminalSettings,
+    guest_os::prefs::kGuestOsTerminalSettings,
     crostini::prefs::kTerminalSshAllowedByPolicy,
     guest_os::prefs::kGuestOsContainers,
 }};
@@ -717,7 +717,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
       LOG(WARNING) << "Ignoring non-allowed GetPrefs path=" << path;
       continue;
     }
-    if (path == crostini::prefs::kCrostiniTerminalSettings) {
+    if (path == guest_os::prefs::kGuestOsTerminalSettings) {
       crostini::RecordTerminalSettingsChangesUMAs(
           Profile::FromBrowserContext(browser_context()));
     }
@@ -737,7 +737,7 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
 
   static const base::NoDestructor<
       base::flat_map<std::string, base::Value::Type>>
-      kAllowList{{{crostini::prefs::kCrostiniTerminalSettings,
+      kAllowList{{{guest_os::prefs::kGuestOsTerminalSettings,
                    base::Value::Type::DICTIONARY}}};
 
   for (base::DictionaryValue::Iterator it(params->prefs.additional_properties);

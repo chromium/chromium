@@ -293,7 +293,8 @@ void CrostiniPackageNotification::Click(
 
   if (app_count_ == 0) {
     LaunchTerminal(profile_,
-                   display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                   display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+                   DefaultContainerId());
   } else if (app_count_ == 1) {
     DCHECK(!app_id_.empty());
     LaunchCrostiniApp(profile_, app_id_,

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace guest_os {
@@ -49,11 +50,17 @@ const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
 // SkColor used to assign badges to apps associated with this container.
 const char kContainerColorKey[] = "badge_color";
 
+// Terminal
+const char kGuestOsTerminalSettings[] = "crostini.terminal_settings";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGuestOSPathsSharedToVms);
   registry->RegisterDictionaryPref(kGuestOsMimeTypes);
   registry->RegisterDictionaryPref(kGuestOsRegistry);
   registry->RegisterListPref(kGuestOsContainers);
+  registry->RegisterDictionaryPref(
+      kGuestOsTerminalSettings, base::DictionaryValue(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 }  // namespace prefs

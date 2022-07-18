@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -91,7 +92,8 @@ void CrostiniRecoveryView::OnStopVm(crostini::CrostiniResult result) {
 bool CrostiniRecoveryView::Cancel() {
   if (callback_) {
     std::move(callback_).Run(false, "cancelled for recovery");
-    crostini::LaunchTerminal(profile_, display_id_);
+    crostini::LaunchTerminal(profile_, display_id_,
+                             crostini::DefaultContainerId());
   }
   return true;
 }

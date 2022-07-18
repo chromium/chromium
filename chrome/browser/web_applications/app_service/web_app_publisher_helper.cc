@@ -616,7 +616,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
     app->intent_filters.push_back(apps_util::CreateLockScreenFilter());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {
+  if (web_app->app_id() == crostini::kTerminalSystemAppId) {
     app->intent_filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
         apps_util::CreateFileFilter(
             {apps_util::kIntentActionView},
@@ -882,7 +882,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+  if (app_id == crostini::kTerminalSystemAppId) {
     int64_t display_id =
         window_info ? window_info->display_id : display::kInvalidDisplayId;
     crostini::LaunchTerminalWithIntent(
@@ -934,7 +934,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal SWA has custom launch code and manages its own restore data.
-  if (params.app_id == crostini::kCrostiniTerminalSystemAppId) {
+  if (params.app_id == crostini::kTerminalSystemAppId) {
     crostini::LaunchTerminalHome(profile_, params.display_id);
     return nullptr;
   }
