@@ -16,6 +16,7 @@ enum SearchResultIcon {
   kBluetooth,
   kCellular,
   kChrome,
+  kChromeVox,
   kClock,
   kDeveloperTags,
   kDisplay,

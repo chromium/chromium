@@ -99,7 +99,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kTextToSpeechPagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kChromeVox,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChromeVox},
