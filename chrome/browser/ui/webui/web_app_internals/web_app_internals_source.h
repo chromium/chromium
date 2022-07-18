@@ -17,6 +17,10 @@ class Profile;
 // associated profile.
 class WebAppInternalsSource : public content::URLDataSource {
  public:
+  static void BuildWebAppInternalsJson(
+      Profile* profile,
+      base::OnceCallback<void(base::Value root)> callback);
+
   explicit WebAppInternalsSource(Profile* profile);
   WebAppInternalsSource(const WebAppInternalsSource&) = delete;
   WebAppInternalsSource& operator=(const WebAppInternalsSource&) = delete;
