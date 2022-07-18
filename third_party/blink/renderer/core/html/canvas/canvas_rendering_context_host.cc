@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -35,14 +36,18 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA(const gfx::Size& size) {
     return;
   did_record_canvas_size_to_uma_ = true;
 
-  if (host_type_ == kCanvasHost) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.SqrtNumberOfPixels",
-                                std::sqrt(size.Area64()), 1, 5000, 100);
-  } else if (host_type_ == kOffscreenCanvasHost) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.OffscreenCanvas.SqrtNumberOfPixels",
-                                std::sqrt(size.Area64()), 1, 5000, 100);
-  } else {
-    NOTREACHED();
+  switch (host_type_) {
+    case HostType::kNone:
+      NOTREACHED();
+      break;
+    case HostType::kCanvasHost:
+      UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.SqrtNumberOfPixels",
+                                  std::sqrt(size.Area64()), 1, 5000, 100);
+      break;
+    case HostType::kOffscreenCanvasHost:
+      UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.OffscreenCanvas.SqrtNumberOfPixels",
+                                  std::sqrt(size.Area64()), 1, 5000, 100);
+      break;
   }
 }
 
@@ -391,7 +396,7 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
 }
 
 bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
-  return host_type_ == kOffscreenCanvasHost;
+  return host_type_ == HostType::kOffscreenCanvasHost;
 }
 
 IdentifiableToken CanvasRenderingContextHost::IdentifiabilityInputDigest(
