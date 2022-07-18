@@ -147,14 +147,9 @@ void RunReadCallbackTypical(
                             reinterpret_cast<uint8_t*>(buffer->data()), length);
   }
 
-  // Clean-up / destroy I/O things on the I/O thread.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](std::unique_ptr<storage::FileStreamReader>,
-                        scoped_refptr<net::IOBuffer>) {
-                       // No-op other than smart pointers calling destructors.
-                     },
-                     std::move(fs_reader), std::move(buffer)));
+  auto task_runner = content::GetIOThreadTaskRunner({});
+  task_runner->DeleteSoon(FROM_HERE, fs_reader.release());
+  task_runner->ReleaseSoon(FROM_HERE, std::move(buffer));
 }
 
 void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
