@@ -677,7 +677,7 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
   EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&module_ids));
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{ntp_features::kModules,
+      {{ntp_features::kNtpModulesOrder,
         {{ntp_features::kNtpModulesOrderParam, "bar,baz"}}},
        {ntp_features::kNtpModulesDragAndDrop, {}}},
       {});

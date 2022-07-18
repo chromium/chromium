@@ -5562,10 +5562,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
 
-    {"ntp-modules", flag_descriptions::kNtpModulesName,
-     flag_descriptions::kNtpModulesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kModules)},
-
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpDriveModule,

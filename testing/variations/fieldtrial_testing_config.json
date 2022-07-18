@@ -3133,7 +3133,7 @@
                     "enable_features": [
                         "NtpChromeCartModule",
                         "NtpDriveModule",
-                        "NtpModules",
+                        "NtpModulesLoadTimeoutMilliseconds",
                         "NtpPhotosModule",
                         "NtpRecipeTasksModule"
                     ],
@@ -3156,8 +3156,8 @@
                     "enable_features": [
                         "NtpChromeCartModule",
                         "NtpDriveModule",
-                        "NtpModules",
                         "NtpModulesFirstRunExperience",
+                        "NtpModulesLoadTimeoutMilliseconds",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [
@@ -3178,7 +3178,7 @@
                     "enable_features": [
                         "NtpChromeCartModule",
                         "NtpDriveModule",
-                        "NtpModules",
+                        "NtpModulesLoadTimeoutMilliseconds",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [
@@ -3200,8 +3200,8 @@
                     "enable_features": [
                         "NtpChromeCartModule",
                         "NtpDriveModule",
-                        "NtpModules",
                         "NtpModulesFirstRunExperience",
+                        "NtpModulesLoadTimeoutMilliseconds",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [
@@ -3222,8 +3222,8 @@
                     "enable_features": [
                         "NtpChromeCartModule",
                         "NtpDriveModule",
-                        "NtpModules",
                         "NtpModulesFirstRunExperience",
+                        "NtpModulesLoadTimeoutMilliseconds",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [

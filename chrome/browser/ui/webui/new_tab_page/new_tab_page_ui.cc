@@ -89,6 +89,15 @@ namespace {
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
 constexpr char kSignedOutNtpModulesSwitch[] = "signed-out-ntp-modules";
 
+const std::pair<const char*, const base::Feature&> kModuleFeatures[] = {
+#if !defined(OFFICIAL_BUILD)
+    {"dummyModulesEnabled", ntp_features::kNtpDummyModules},
+#endif
+    {"recipeTasksModuleEnabled", ntp_features::kNtpRecipeTasksModule},
+    {"chromeCartModuleEnabled", ntp_features::kNtpChromeCartModule},
+    {"photosModuleEnabled", ntp_features::kNtpPhotosModule},
+};
+
 void AddRawStringOrDefault(content::WebUIDataSource* source,
                            const char key[],
                            const std::string str,
@@ -416,20 +425,11 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                                IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT);
   }
 
-#if !defined(OFFICIAL_BUILD)
-  source->AddBoolean(
-      "dummyModulesEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpDummyModules));
-#endif
-  source->AddBoolean(
-      "recipeTasksModuleEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule));
-  source->AddBoolean(
-      "chromeCartModuleEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
-  source->AddBoolean(
-      "photosModuleEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule));
+  for (const auto& nameFeature : kModuleFeatures) {
+    source->AddBoolean(nameFeature.first,
+                       base::FeatureList::IsEnabled(nameFeature.second));
+  }
+
   source->AddString("photosModuleCustomArtWork",
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
@@ -816,17 +816,22 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 void NewTabPageUI::OnLoad() {
   base::Value::Dict update;
   update.Set("navigationStartTime", navigation_start_time_.ToJsTime());
+  bool driveModuleEnabled = NewTabPageUI::IsDriveModuleEnabled(profile_);
+  bool anyModuleEnabled = driveModuleEnabled;
+  for (const auto& nameFeature : kModuleFeatures) {
+    anyModuleEnabled |= base::FeatureList::IsEnabled(nameFeature.second);
+  }
   // Only enable modules if account credentials are available as most modules
   // won't have data to render otherwise. We can override this behavior with the
   // "--signed-out-ntp-modules" command line switch, e.g. to allow modules in
   // perf tests, which do not support sign-in.
   update.Set("modulesEnabled",
-             base::FeatureList::IsEnabled(ntp_features::kModules) &&
+             anyModuleEnabled &&
+                 !base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad) &&
                  (base::CommandLine::ForCurrentProcess()->HasSwitch(
                       kSignedOutNtpModulesSwitch) ||
                   HasCredentials(profile_)));
-  update.Set("driveModuleEnabled",
-             NewTabPageUI::IsDriveModuleEnabled(profile_));
+  update.Set("driveModuleEnabled", driveModuleEnabled);
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

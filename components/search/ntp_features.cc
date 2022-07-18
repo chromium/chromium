@@ -72,12 +72,17 @@ const base::Feature kNtpShortcuts{"NtpShortcuts",
 const base::Feature kNtpMiddleSlotPromo{"NtpMiddleSlotPromo",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, modules will be shown.
-const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
+// Dummy feature to set param "NtpModulesLoadTimeoutMillisecondsParam".
+const base::Feature kNtpModulesLoadTimeoutMilliseconds{
+    "NtpModulesLoadTimeoutMilliseconds", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, modules will be loaded even if kModules is disabled. This is
-// useful to determine if a user would have seen modules in order to
-// counterfactually log or trigger.
+// Dummy feature to set param "NtpModulesOrderParam".
+const base::Feature kNtpModulesOrder{"NtpModulesOrder",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, modules will be loaded but not shown. This is useful to determine
+// if a user would have seen modules in order to counterfactually log or
+// trigger.
 const base::Feature kNtpModulesLoad{"NtpModulesLoad",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -180,7 +185,8 @@ const char kRealboxMatchSearchboxThemeParam[] =
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
-      kModules, kNtpModulesLoadTimeoutMillisecondsParam);
+      kNtpModulesLoadTimeoutMilliseconds,
+      kNtpModulesLoadTimeoutMillisecondsParam);
   // If the field trial param is not found or cannot be parsed to an unsigned
   // integer, return the default value.
   unsigned int param_value_as_int = 0;
@@ -191,10 +197,10 @@ base::TimeDelta GetModulesLoadTimeout() {
 }
 
 std::vector<std::string> GetModulesOrder() {
-  return base::SplitString(
-      base::GetFieldTrialParamValueByFeature(kModules, kNtpModulesOrderParam),
-      ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  return base::SplitString(base::GetFieldTrialParamValueByFeature(
+                               kNtpModulesOrder, kNtpModulesOrderParam),
+                           ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace ntp_features
