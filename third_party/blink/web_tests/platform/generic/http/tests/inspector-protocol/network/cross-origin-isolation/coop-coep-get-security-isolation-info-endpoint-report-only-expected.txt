@@ -1,0 +1,14 @@
+Tests that isolation status is reported correctly
+COEP status
+{
+    reportOnlyReportingEndpoint : endpoint-1
+    reportOnlyValue : RequireCorp
+    value : None
+}
+COOP status
+{
+    reportOnlyReportingEndpoint : endpoint-2
+    reportOnlyValue : SameOriginAllowPopups
+    value : UnsafeNone
+}
+
