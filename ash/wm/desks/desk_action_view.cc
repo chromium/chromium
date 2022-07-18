@@ -17,7 +17,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kButtonMargin = 2;
+constexpr int kButtonMargin = 4;
 constexpr int kButtonSpacing = 4;
 constexpr int kCornerRadius = 20;
 
@@ -36,10 +36,9 @@ DeskActionView::DeskActionView(
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetInsideBorderInsets(gfx::Insets(kButtonMargin));
   SetBetweenChildSpacing(kButtonSpacing);
-  SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
-      kCornerRadius));
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
 
   close_all_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION));
@@ -48,6 +47,9 @@ DeskActionView::DeskActionView(
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
+  layer()->SetMasksToBounds(true);
 }
 
 void DeskActionView::UpdateCombineDesksTooltip(
@@ -64,6 +66,18 @@ void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
   // `close_all_button_`. Otherwise, the desk action view will appear lopsided
   // when the `combine_desks_button_` isn't visible.
   SetBetweenChildSpacing(visible ? kButtonSpacing : 0);
+
+  // We also want to make sure that the background is only showing when
+  // `combine_desks_button_` is visible. Otherwise, it should have no inside
+  // border insets so that it is only behind the `close_desk_button_`.
+  SetInsideBorderInsets(gfx::Insets(visible ? kButtonMargin : 0));
+}
+
+void DeskActionView::OnThemeChanged() {
+  views::BoxLayoutView::OnThemeChanged();
+  background()->SetNativeControlColor(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 BEGIN_METADATA(DeskActionView, views::BoxLayoutView)

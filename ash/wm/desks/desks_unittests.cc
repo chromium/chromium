@@ -7746,6 +7746,23 @@ TEST_F(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
 
   const std::u16string tooltip_prefix = u"Combine with ";
   auto* event_generator = GetEventGenerator();
+
+  // Because the `DeskActionView` covers the centerpoint of the
+  // `DeskPreviewView`, we need a new function to click and drag from a part of
+  // the `DeskPreviewView` that isn't covered by the `DeskActionView`. We would
+  // not be able to simply modify `StartDragDeskPreview` because it takes a const
+  // `DeskMiniView`, which doesn't have access to its `DeskActionView`.
+  auto start_drag_on_desk_preview_for_mini_view = [event_generator](
+                                                      DeskMiniView* mini_view) {
+    gfx::Point clickable_desk_preview_point =
+        mini_view->GetPreviewBoundsInScreen().top_center();
+    clickable_desk_preview_point.set_y(
+        mini_view->desk_action_view()->GetBoundsInScreen().bottom() + 1);
+    event_generator->set_current_screen_location(clickable_desk_preview_point);
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(0, 50);
+  };
+
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.scope_trace);
 
@@ -7765,7 +7782,7 @@ TEST_F(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
         break;
       case UpdateSource::kMoveActiveDesk:
         ASSERT_TRUE(controller->desks()[0]->is_active());
-        StartDragDeskPreview(mini_view_1, event_generator);
+        start_drag_on_desk_preview_for_mini_view(mini_view_1);
         ASSERT_TRUE(desks_bar_view->IsDraggingDesk());
         event_generator->MoveMouseTo(
             mini_view_2->GetPreviewBoundsInScreen().CenterPoint());
@@ -7773,7 +7790,7 @@ TEST_F(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
         break;
       case UpdateSource::kMoveNonActiveDesk:
         ASSERT_FALSE(controller->desks()[0]->is_active());
-        StartDragDeskPreview(mini_view_2, event_generator);
+        start_drag_on_desk_preview_for_mini_view(mini_view_2);
         EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
         event_generator->MoveMouseTo(
             mini_view_1->GetPreviewBoundsInScreen().CenterPoint());

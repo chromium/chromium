@@ -37,6 +37,9 @@ class DeskActionView : public views::BoxLayoutView {
   void SetCombineDesksButtonVisibility(bool visible);
 
  private:
+  // views::BoxLayoutView:
+  void OnThemeChanged() override;
+
   CloseButton* combine_desks_button_;
   CloseButton* close_all_button_;
 };
