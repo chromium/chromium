@@ -379,6 +379,27 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges;
 
+// Number of reported bits for the Reid Block hashes.
+//
+// Parameter name: "ReidBlocksBits"
+// Parameter type: Comma separated list of number of bits represented as
+// integers.
+//
+// If this parameter is specified then it must specify the number of bits that
+// should be reported for each block that is defined using the `ReidBlocks`
+// parameter. The number of bits should be a number between 1 and 32.
+//
+// * All bits must be non-zero positive integers.
+//
+// * There must be exactly as many Reid numbers of bits as there are Reid
+// blocks. If not, disable the Reid estimator feature.
+//
+// E.g.:
+//   * "2,3": Assigns number of bits that should be reported from two Reid
+//   Blocks sent in the `ReidBlocks` parameter.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyReidSurfaceBlocksBits;
+
 }  // namespace features
 
 #endif  // CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_FEATURES_H_

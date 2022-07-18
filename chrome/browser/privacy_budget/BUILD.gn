@@ -87,6 +87,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/ukm:test_support",
     "//testing/gtest",
+    "//third_party/blink/common/privacy_budget:test_support",
+    "//third_party/blink/public/common/privacy_budget:test_support",
   ]
 }
 

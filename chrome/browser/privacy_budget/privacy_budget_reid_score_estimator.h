@@ -25,10 +25,6 @@ class PrivacyBudgetReidScoreEstimator {
 
   ~PrivacyBudgetReidScoreEstimator();
 
-  // Using this getter for unit testing to examine its values.
-  const base::flat_map<blink::IdentifiableSurface, SurfacesAndOptionalValues>&
-  GetSurfacesAndValuesForTesting();
-
   // Searches the storage for the surface.
   // If found, it updates its value to the token sent.
   void ProcessForReidScore(blink::IdentifiableSurface surface,
@@ -39,9 +35,13 @@ class PrivacyBudgetReidScoreEstimator {
   base::flat_map<blink::IdentifiableSurface, SurfacesAndOptionalValues>
       surfaces_and_values_;
 
-  // Keeps track of the set of divisors to calculate the Pi or the salt value
-  // for estimating Reid score for every surface block.
+  // Keeps track of the set of max of salt ranges to calculate the Reid hash for
+  // every surface block.
   std::vector<uint64_t> reid_blocks_salts_ranges_;
+
+  // Keeps track of the number of bits that should be reported for every Reid
+  // surface block.
+  std::vector<int> reid_blocks_bits_;
 
   // Keeps track of the number of reported surfaces in every Reid surface block.
   // The Reid surface map at index i is full when the count_flag_ at i is equal
@@ -50,7 +50,8 @@ class PrivacyBudgetReidScoreEstimator {
 
   // Compute the hash for estimating the REID score.
   uint64_t ComputeHashForReidScore(const SurfacesAndOptionalValues& surface_map,
-                                   uint64_t max_num_salt);
+                                   uint64_t max_num_salt,
+                                   int reid_bits);
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_

@@ -126,6 +126,10 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
         {features::kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.reid_salts_ranges)});
   }
+  if (!parameters.reid_bits.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyReidSurfaceBlocksBits.name,
+                EncodeIdentifiabilityFieldTrialParam(parameters.reid_bits)});
+  }
   if (!parameters.per_surface_cost.empty()) {
     ftp.insert(
         {features::kIdentifiabilityStudyPerHashCost.name,

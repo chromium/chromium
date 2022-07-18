@@ -39,6 +39,7 @@ PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
   // Step 1: Get the list of blocks of surfaces from state settings.
   IdentifiableSurfaceBlocks reid_blocks = state_settings.reid_blocks();
   reid_blocks_salts_ranges_ = state_settings.reid_blocks_salts_ranges();
+  reid_blocks_bits_ = state_settings.reid_blocks_bits();
 
   // Step 2: Get the type of the Reid surface.
   constexpr auto kReidScoreType =
@@ -72,11 +73,6 @@ PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
 
 PrivacyBudgetReidScoreEstimator::~PrivacyBudgetReidScoreEstimator() = default;
 
-const base::flat_map<blink::IdentifiableSurface, SurfacesAndOptionalValues>&
-PrivacyBudgetReidScoreEstimator::GetSurfacesAndValuesForTesting() {
-  return surfaces_and_values_;
-}
-
 void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
     blink::IdentifiableSurface surface,
     blink::IdentifiableToken token) {
@@ -96,7 +92,8 @@ void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
         if (count_flag_[i] == surface_map->size()) {
           // Compute the Reid hash for the needed Reid block.
           uint64_t reid_hash = ComputeHashForReidScore(
-              *surface_map, reid_blocks_salts_ranges_.at(i));
+              *surface_map, reid_blocks_salts_ranges_.at(i),
+              reid_blocks_bits_.at(i));
           // Report to UKM in a separate task in order to avoid re-entrancy.
           base::SequencedTaskRunnerHandle::Get()->PostTask(
               FROM_HERE, base::BindOnce(&ReportHashForReidScore, map_itr.first,
@@ -110,7 +107,8 @@ void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
 
 uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
     const SurfacesAndOptionalValues& surface_map,
-    uint64_t max_num_salt) {
+    uint64_t max_num_salt,
+    int reid_bits) {
   std::vector<uint64_t> tokens;
   uint64_t salt = base::RandGenerator(max_num_salt);
 
@@ -122,6 +120,9 @@ uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
   // Use the hash function embedded in IdentifiableToken.
   uint64_t reid_hash = blink::IdentifiabilityDigestOfBytes(
       base::as_bytes(base::make_span(tokens)));
-  // Return salt in left 32 bits and Reid 1-bit hash in right 32 bits.
-  return ((salt << 32) | (reid_hash % 2));
+  // Create mask based on reid_bits required.
+  uint64_t mask = (1 << reid_bits) - 1;
+  uint64_t needed_bits = reid_hash & mask;
+  // Return salt in the left 32 bits and Reid b-bits hash in the right 32 bits.
+  return ((salt << 32) | needed_bits);
 }

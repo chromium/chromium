@@ -27,7 +27,8 @@ class IdentifiabilityStudyGroupSettings {
       const std::string& blocks_weights,
       const std::string& allowed_random_types,
       const std::string& reid_blocks,
-      const std::string& reid_blocks_salts_ranges);
+      const std::string& reid_blocks_salts_ranges,
+      const std::string& reid_blocks_bits);
 
   IdentifiabilityStudyGroupSettings(const IdentifiabilityStudyGroupSettings&) =
       delete;
@@ -54,6 +55,7 @@ class IdentifiabilityStudyGroupSettings {
   const IdentifiableSurfaceBlocks& reid_blocks() const;
   const std::vector<double>& blocks_weights() const;
   const std::vector<uint64_t>& reid_blocks_salts_ranges() const;
+  const std::vector<int>& reid_blocks_bits() const;
   const std::vector<blink::IdentifiableSurface::Type>& allowed_random_types()
       const;
 
@@ -69,7 +71,8 @@ class IdentifiabilityStudyGroupSettings {
       std::vector<double> blocks_weights,
       std::vector<blink::IdentifiableSurface::Type> allowed_random_types,
       IdentifiableSurfaceBlocks reid_blocks,
-      std::vector<uint64_t> reid_blocks_salts_ranges);
+      std::vector<uint64_t> reid_blocks_salts_ranges,
+      std::vector<int> reid_blocks_bits);
 
   bool Validate();
   bool ValidateAssignedBlockSampling();
@@ -90,6 +93,8 @@ class IdentifiabilityStudyGroupSettings {
   const IdentifiableSurfaceBlocks reid_blocks_;
 
   const std::vector<uint64_t> reid_blocks_salts_ranges_;
+
+  const std::vector<int> reid_blocks_bits_;
 
   // Surface types to sample from when random surface sampling is enabled. If
   // this vector is empty all surface types are allowed to be sampled.

@@ -93,6 +93,10 @@ std::string EncodeIdentifiabilityType(const uint64_t& value) {
   return base::NumberToString(value);
 }
 
+std::string EncodeIdentifiabilityType(const int& value) {
+  return base::NumberToString(value);
+}
+
 std::string EncodeIdentifiabilityType(
     const std::vector<blink::IdentifiableSurface>& value) {
   std::vector<std::string> parts;

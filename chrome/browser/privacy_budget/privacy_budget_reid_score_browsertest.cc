@@ -41,6 +41,7 @@ class EnableReidEstimation {
              blink::mojom::WebFeature::kNavigatorLanguage)}};
 
     parameters.reid_salts_ranges = {1};
+    parameters.reid_bits = {1};
 
     scoped_config_.Apply(parameters);
   }

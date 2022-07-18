@@ -59,5 +59,8 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string>
     kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges = {
         &kIdentifiabilityStudy, "ReidBlocksSaltsRanges", ""};
+const base::FeatureParam<std::string>
+    kIdentifiabilityStudyReidSurfaceBlocksBits = {&kIdentifiabilityStudy,
+                                                  "ReidBlocksBits", ""};
 
 }  // namespace features
