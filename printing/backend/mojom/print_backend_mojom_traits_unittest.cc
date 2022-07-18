@@ -4,6 +4,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "build/build_config.h"
@@ -57,6 +58,24 @@ const AdvancedCapability kAdvancedCapability2(
 const AdvancedCapabilities kAdvancedCapabilities{kAdvancedCapability1,
                                                  kAdvancedCapability2};
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+const PageOutputQualityAttribute kPageOutputQualityAttribute1(
+    /*display_name=*/"Normal",
+    /*name=*/"ns000:Normal");
+const PageOutputQualityAttribute kPageOutputQualityAttribute2(
+    /*display_name=*/"Draft",
+    /*name=*/"ns000:Draft");
+const PageOutputQualityAttribute kPageOutputQualityAttribute3(
+    /*display_name=*/"Advance",
+    /*name=*/"ns000:Advance");
+const PageOutputQualityAttributes kPageOutputQualityAttributes{
+    kPageOutputQualityAttribute1, kPageOutputQualityAttribute2,
+    kPageOutputQualityAttribute3};
+const PageOutputQuality kPageOutputQuality(kPageOutputQualityAttributes,
+                                           /*default_quality=*/absl::nullopt);
+constexpr char kDefaultQuality[] = "ns000:Draft";
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr bool kCollateCapable = true;
 constexpr bool kCollateDefault = true;
@@ -353,5 +372,110 @@ TEST(
 
   EXPECT_EQ(kDuplicatePapers, output.papers);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePageOutputQualityAttribute) {
+  PageOutputQualityAttribute input = kPageOutputQualityAttribute1;
+  PageOutputQualityAttribute output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PageOutputQualityAttribute>(
+          input, output));
+  EXPECT_EQ(kPageOutputQualityAttribute1.display_name, output.display_name);
+  EXPECT_EQ(kPageOutputQualityAttribute1.name, output.name);
+}
+
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePageOutputQuality) {
+  PageOutputQuality input = kPageOutputQuality;
+  PageOutputQuality output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PageOutputQuality>(
+      input, output));
+  EXPECT_EQ(kPageOutputQuality.qualities, output.qualities);
+  EXPECT_EQ(kPageOutputQuality.default_quality, output.default_quality);
+}
+
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  input.page_output_quality = kPageOutputQuality;
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  ASSERT_TRUE(output.page_output_quality);
+  EXPECT_EQ(kPageOutputQuality.qualities,
+            output.page_output_quality->qualities);
+  EXPECT_EQ(kPageOutputQuality.default_quality,
+            output.page_output_quality->default_quality);
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowableEmptyArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  const PageOutputQualityAttributes kEmptyQualities;
+  PageOutputQuality quality(kEmptyQualities, /*default_quality=*/absl::nullopt);
+  input.page_output_quality = std::move(quality);
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  ASSERT_TRUE(output.page_output_quality);
+  EXPECT_EQ(kEmptyQualities, output.page_output_quality->qualities);
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsDefaultQualityInArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  input.page_output_quality = kPageOutputQuality;
+  input.page_output_quality->default_quality = kDefaultQuality;
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  ASSERT_TRUE(output.page_output_quality);
+  EXPECT_EQ(kPageOutputQuality.qualities,
+            output.page_output_quality->qualities);
+  EXPECT_EQ(kDefaultQuality, output.page_output_quality->default_quality);
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsMissingDefaultQualityInArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+
+  // Default quality is non-null, but there is no quality with same name as
+  // default quality, which is not allowed.
+  input.page_output_quality = kPageOutputQuality;
+  input.page_output_quality->default_quality = "ns000:MissingDefault";
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::PrinterSemanticCapsAndDefaults>(input, output));
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsNoDuplicatesInArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+
+  // `kPageOutputQualityAttributePrime` has same display_name and name with
+  // `kPageOutputQualityAttribute1`, which is not allowed.
+  const PageOutputQualityAttribute kPageOutputQualityAttributePrime(
+      /*display_name=*/"Normal",
+      /*name=*/"ns000:Normal");
+  PageOutputQuality page_output_quality(
+      {kPageOutputQualityAttribute1, kPageOutputQualityAttributePrime,
+       kPageOutputQualityAttribute2},
+      /*default_quality=*/absl::nullopt);
+  input.page_output_quality = std::move(page_output_quality);
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::PrinterSemanticCapsAndDefaults>(input, output));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

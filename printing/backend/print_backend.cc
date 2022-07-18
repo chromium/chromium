@@ -112,6 +112,12 @@ bool PageOutputQualityAttribute::operator==(
   return display_name == other.display_name && name == other.name;
 }
 
+bool PageOutputQualityAttribute::operator<(
+    const ::printing::PageOutputQualityAttribute& other) const {
+  return std::tie(name, display_name) <
+         std::tie(other.name, other.display_name);
+}
+
 PageOutputQuality::PageOutputQuality() = default;
 
 PageOutputQuality::PageOutputQuality(

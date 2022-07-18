@@ -62,6 +62,24 @@ struct AdvancedCapability {
   array<AdvancedCapabilityValue> values;
 };
 
+// Attributes of a Page Output Quality of XPS printer for Windows printing.
+// Corresponds to `printing::PageOutpuQualityAttribute` in
+// printing/backend/print_backend.h.
+[Stable, EnableIf=is_win]
+struct PageOutputQualityAttribute {
+  string display_name;
+  string name;
+};
+
+// Page Output Quality from XPS printer for Windows printing. Corresponds to
+// `printing::PageOutputQuality` in printing/backend/print_backend.h.
+[Stable, EnableIf=is_win]
+struct PageOutputQuality {
+  array<PageOutputQualityAttribute> qualities;  // No duplicates.
+  string? default_quality;  // Default selection of `qualities`.
+                            // Null if no default.
+};
+
 // The semantic capabilities and defaults used for a printer.
 // Corresponds to `printing::PrinterSemanticCapsAndDefaults` in
 // printing/backend/print_backend.h.
@@ -86,4 +104,9 @@ struct PrinterSemanticCapsAndDefaults {
   bool pin_supported = false;
   [EnableIf=is_chromeos]
   array<AdvancedCapability> advanced_capabilities;
+
+  // Null if feature flag `kReadPrinterCapabilitiesWithXps` is disabled.
+  // Null if printer doesn't have this capability.
+  [EnableIf=is_win, MinVersion=1]
+  PageOutputQuality? page_output_quality;
 };

@@ -116,6 +116,8 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQualityAttribute {
 
   bool operator==(const PageOutputQualityAttribute& other) const;
 
+  bool operator<(const PageOutputQualityAttribute& other) const;
+
   // Localized name of the page output quality attribute.
   std::string display_name;
 
