@@ -219,6 +219,15 @@ export class SearchPageElement extends SearchPageElementBase {
    * @return {!HTMLElement}
    * @private
    */
+  getDescriptionTextElement_() {
+    return /** @type {!HTMLElement} */ (
+        this.shadowRoot.querySelector('#descriptionText'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   * @private
+   */
   getErrorElement_() {
     return /** @type {!HTMLElement} */ (
         this.shadowRoot.querySelector('#descriptionEmptyError'));
@@ -235,6 +244,9 @@ export class SearchPageElement extends SearchPageElementBase {
     const errorElement = this.getErrorElement_();
     errorElement.hidden = false;
     errorElement.setAttribute('aria-hidden', false);
+
+    const descriptionTextElement = this.getDescriptionTextElement_();
+    descriptionTextElement.classList.add('has-error');
   }
 
   /**
@@ -244,6 +256,9 @@ export class SearchPageElement extends SearchPageElementBase {
     const errorElement = this.getErrorElement_();
     errorElement.hidden = true;
     errorElement.setAttribute('aria-hidden', true);
+
+    const descriptionTextElement = this.getDescriptionTextElement_();
+    descriptionTextElement.classList.remove('has-error');
   }
 
   /**
