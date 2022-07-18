@@ -143,7 +143,7 @@ extern const base::Feature kLocalHistorySuggestRevamp{
 
 // Enables prefetching of the zero prefix suggestions for signed-in users.
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            enabled_by_default_desktop_only};
 
 // Features to provide non personalized head search suggestion from a compact
 // on device model. More specifically, feature name with suffix Incognito /
