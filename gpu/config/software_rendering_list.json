@@ -763,14 +763,14 @@
     {
       "id": 111,
       "description": "Apple Software Renderer used under VMWare experiences synchronization issues with GPU Raster",
-      "cr_bugs": [607829],
+      "cr_bugs": [607829, 1342540],
       "os": {
         "type": "macosx"
       },
       "vendor_id": "0x15ad",
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "all"
       ]
     },
     {
@@ -1680,14 +1680,14 @@
     {
       "id": 177,
       "description": "Apple Software Renderer used under VMWare experiences synchronization issues with GPU Raster",
-      "cr_bugs": [607829],
+      "cr_bugs": [607829, 1342540],
       "os": {
         "type": "macosx"
       },
       "gl_renderer": ".*Apple Software Renderer.*",
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "all"
       ]
     }
   ]
