@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/lazy_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,7 +19,11 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "cc/test/fake_impl_task_runner_provider.h"
+#include "cc/test/fake_layer_tree_host_impl.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
+#include "cc/trees/layer_tree_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -80,9 +85,53 @@ std::unique_ptr<WebInputEvent> CreateGestureScrollPinch(
   return gesture;
 }
 
+class FakeCompositorDelegateForInput : public cc::CompositorDelegateForInput {
+ public:
+  FakeCompositorDelegateForInput()
+      : host_impl_(&task_runner_provider_, &task_graph_runner_) {}
+  void BindToInputHandler(
+      std::unique_ptr<cc::InputDelegateForCompositor> delegate) override {}
+  cc::ScrollTree& GetScrollTree() const override { return scroll_tree_; }
+  bool HasAnimatedScrollbars() const override { return false; }
+  void SetNeedsCommit() override {}
+  void SetNeedsFullViewportRedraw() override {}
+  void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override {}
+  void DidUpdateScrollAnimationCurve() override {}
+  void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) override {}
+  void DidStartPinchZoom() override {}
+  void DidUpdatePinchZoom() override {}
+  void DidEndPinchZoom() override {}
+  void DidStartScroll() override {}
+  void DidEndScroll() override {}
+  void DidMouseLeave() override {}
+  bool IsInHighLatencyMode() const override { return false; }
+  void WillScrollContent(cc::ElementId element_id) override {}
+  void DidScrollContent(cc::ElementId element_id, bool animated) override {}
+  float DeviceScaleFactor() const override { return 0; }
+  float PageScaleFactor() const override { return 0; }
+  gfx::Size VisualDeviceViewportSize() const override { return gfx::Size(); }
+  const cc::LayerTreeSettings& GetSettings() const override {
+    return settings_;
+  }
+  cc::LayerTreeHostImpl& GetImplDeprecated() override { return host_impl_; }
+  const cc::LayerTreeHostImpl& GetImplDeprecated() const override {
+    return host_impl_;
+  }
+
+ private:
+  mutable cc::ScrollTree scroll_tree_;
+  cc::LayerTreeSettings settings_;
+  cc::FakeImplTaskRunnerProvider task_runner_provider_;
+  cc::TestTaskGraphRunner task_graph_runner_;
+  cc::FakeLayerTreeHostImpl host_impl_;
+};
+
+base::LazyInstance<FakeCompositorDelegateForInput>::Leaky
+    g_fake_compositor_delegate = LAZY_INSTANCE_INITIALIZER;
+
 class MockInputHandler : public cc::InputHandler {
  public:
-  MockInputHandler() = default;
+  MockInputHandler() : cc::InputHandler(g_fake_compositor_delegate.Get()) {}
   MockInputHandler(const MockInputHandler&) = delete;
   MockInputHandler& operator=(const MockInputHandler&) = delete;
 
@@ -396,6 +445,7 @@ class InputHandlerProxyTest
   void GestureScrollIgnored();
   void FlingAndSnap();
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   testing::StrictMock<MockInputHandler> mock_input_handler_;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler_;
@@ -562,6 +612,7 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   testing::StrictMock<MockInputHandler> mock_input_handler_;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client_;
   TestInputHandlerProxy input_handler_proxy_;
@@ -570,7 +621,6 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
 
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
   base::WeakPtrFactory<InputHandlerProxyEventQueueTest> weak_ptr_factory_{this};
 };
 
@@ -2047,6 +2097,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockInputHandler> mock_input_handler_;
   NiceMock<MockInputHandlerProxyClient> mock_client_;
 
@@ -2438,6 +2489,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestFailed) {
 }
 
 TEST(SynchronousInputHandlerProxyTest, StartupShutdown) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   testing::StrictMock<MockInputHandler> mock_input_handler;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
@@ -2464,6 +2516,7 @@ TEST(SynchronousInputHandlerProxyTest, StartupShutdown) {
 }
 
 TEST(SynchronousInputHandlerProxyTest, UpdateRootLayerState) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   testing::NiceMock<MockInputHandler> mock_input_handler;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
@@ -2487,6 +2540,7 @@ TEST(SynchronousInputHandlerProxyTest, UpdateRootLayerState) {
 }
 
 TEST(SynchronousInputHandlerProxyTest, SetOffset) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   testing::NiceMock<MockInputHandler> mock_input_handler;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
@@ -4030,6 +4084,7 @@ class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
 
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockInputHandler> mock_input_handler_;
   testing::NiceMock<MockInputHandlerProxyClient> mock_client_;
   TestInputHandlerProxy input_handler_proxy_;

@@ -29,10 +29,9 @@ class ScrollTree;
 enum class ScrollbarOrientation;
 
 // This is the interface that LayerTreeHostImpl and the "graphics" side of the
-// compositor uses to talk to the compositor ThreadedInputHandler. This
-// interface is two-way; it's used used both to communicate state changes from
-// the LayerTree to the input handler and also to query and update state in the
-// input handler.
+// compositor uses to talk to the compositor InputHandler. This interface is
+// two-way; it's used used both to communicate state changes from the LayerTree
+// to the input handler and also to query and update state in the input handler.
 class InputDelegateForCompositor {
  public:
   virtual ~InputDelegateForCompositor() = default;

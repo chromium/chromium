@@ -802,7 +802,7 @@ TEST_F(TreeSynchronizerTest, RoundedScrollDeltasOnCommit) {
 
   // Since this test simulates a scroll it needs an input handler.
   // TODO(bokan): Required because scroll commit is part of InputHandler - that
-  // shouldn't be. See comment in ThreadedInputHandler::ProcessCommitDeltas.
+  // shouldn't be. See comment in InputHandler::ProcessCommitDeltas.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl));
 
   scoped_refptr<Layer> scroll_layer = SetupScrollLayer();
@@ -828,7 +828,7 @@ TEST_F(TreeSynchronizerTest, PreserveFractionalScrollDeltasOnCommit) {
 
   // Since this test simulates a scroll it needs an input handler.
   // TODO(bokan): Required because scroll commit is part of InputHandler - that
-  // shouldn't be. See comment in ThreadedInputHandler::ProcessCommitDeltas.
+  // shouldn't be. See comment in InputHandler::ProcessCommitDeltas.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl));
 
   scoped_refptr<Layer> scroll_layer = SetupScrollLayer();
