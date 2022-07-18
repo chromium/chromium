@@ -338,6 +338,8 @@ source_set("test_support") {
   sources = [
     "fake_browser_manager.cc",
     "fake_browser_manager.h",
+    "input_method_test_interface_ash.cc",
+    "input_method_test_interface_ash.h",
     "test_controller_ash.cc",
     "test_controller_ash.h",
     "test_crosapi_dependency_registry.cc",

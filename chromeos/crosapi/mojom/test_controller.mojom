@@ -114,10 +114,24 @@ interface ShillClientTestInterface {
 };
 
 // This interface is implemented by Ash-Chrome.
+// It enables tests in Lacros-Chrome to send commands as an input method.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
+interface InputMethodTestInterface {
+  // Calls the callback when the input method has focused on some input field.
+  WaitForFocus@0() => ();
+
+  // Calls ui::InputMethodAsh::CommitText with
+  // InsertTextCursorBehavior::kMoveCursorAfterText.
+  CommitText@1(string text) => ();
+};
+
+// This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 17
-// Next method id: 27
+// Next version: 18
+// Next method id: 28
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -268,4 +282,10 @@ interface TestController {
   // Returns the sanitized (aka "hashed") username of the active user.
   [MinVersion=16]
   GetSanitizedActiveUsername@26() => (string sanitized_active_username);
+
+  // Binds a |test_input_method| that Lacros-Chrome can use to receive commands
+  // from a test input method in Ash-Chrome.
+  [MinVersion=17]
+  BindInputMethodTestInterface@27(
+      pending_receiver<InputMethodTestInterface> test_input_method) => ();
 };

@@ -22,6 +22,7 @@
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
@@ -546,6 +547,15 @@ void TestControllerAsh::GetSanitizedActiveUsername(
             std::move(callback).Run(result->sanitized_username());
           },
           std::move(callback)));
+}
+
+void TestControllerAsh::BindInputMethodTestInterface(
+    mojo::PendingReceiver<crosapi::mojom::InputMethodTestInterface> receiver,
+    BindInputMethodTestInterfaceCallback callback) {
+  mojo::MakeSelfOwnedReceiver<crosapi::mojom::InputMethodTestInterface>(
+      std::make_unique<crosapi::InputMethodTestInterfaceAsh>(),
+      std::move(receiver));
+  std::move(callback).Run();
 }
 
 // This class waits for overview mode to either enter or exit and fires a

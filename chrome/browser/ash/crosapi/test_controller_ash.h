@@ -91,6 +91,9 @@ class TestControllerAsh : public mojom::TestController,
 
   void GetSanitizedActiveUsername(
       GetSanitizedActiveUsernameCallback callback) override;
+  void BindInputMethodTestInterface(
+      mojo::PendingReceiver<crosapi::mojom::InputMethodTestInterface> receiver,
+      BindInputMethodTestInterfaceCallback callback) override;
 
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
