@@ -30,7 +30,13 @@ android_library("java") {
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraScanDialog.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraScanModel.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraScanView.java",
-    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/utils/AssistantQrCodePermissionUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionCallback.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionModel.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionType.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionView.java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -39,7 +45,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/autofill_assistant_qr_code_camera_scan_dialog.xml",
-    "java/res/layout/autofill_assistant_qr_code_camera_scan_permission_layout.xml",
+    "java/res/layout/autofill_assistant_qr_code_permission_layout.xml",
     "java/res/values-v17/dimens.xml",
   ]
   deps = [
