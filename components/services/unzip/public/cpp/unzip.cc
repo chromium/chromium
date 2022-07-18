@@ -70,8 +70,8 @@ class UnzipParams : public base::RefCounted<UnzipParams>,
     return &listener_receiver_;
   }
 
-  // Set when the task runner completes cancellation work.
-  base::AtomicFlag cancel_is_done;
+  // Set by the task runner when it resets the UnzipParams object.
+  base::AtomicFlag clean_up_is_done;
 
  private:
   friend class base::RefCounted<UnzipParams>;
@@ -422,6 +422,7 @@ void ZipFileUnpacker::Unpack(mojo::PendingRemote<mojom::Unzipper> unzipper,
 
 void ReleaseParams(scoped_refptr<UnzipParams>& unzip_params) {
   if (unzip_params) {
+    unzip_params->clean_up_is_done.Set();
     unzip_params.reset();
   }
 }
@@ -429,7 +430,6 @@ void ReleaseParams(scoped_refptr<UnzipParams>& unzip_params) {
 void EndUnpack(scoped_refptr<UnzipParams>& unzip_params) {
   if (unzip_params) {
     unzip_params->InvokeCallback(false);
-    unzip_params->cancel_is_done.Set();
     ReleaseParams(unzip_params);
   }
 }
@@ -438,9 +438,9 @@ void ZipFileUnpacker::Stop() {
   runner_->PostTask(FROM_HERE, base::BindOnce(&EndUnpack, std::ref(params_)));
 }
 
-bool ZipFileUnpacker::CancelDone() {
+bool ZipFileUnpacker::CleanUpDone() {
   if (params_) {
-    return params_->cancel_is_done.IsSet();
+    return params_->clean_up_is_done.IsSet();
   }
   return true;
 }

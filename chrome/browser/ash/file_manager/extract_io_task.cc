@@ -84,6 +84,11 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   auto unpacker = unpackers_[directory];
   if (unpacker) {
     unpacker->CleanUp();
+    // Wait fore the task runner to clean up the UnpackParams object.
+    while (!unpacker->CleanUpDone()) {
+      // Yield until the cancellation tasks are done.
+      base::PlatformThread::Sleep(base::Microseconds(1));
+    }
   }
   DCHECK_GT(extractCount_, 0);
   if (--extractCount_ == 0) {
@@ -283,8 +288,8 @@ void ExtractIOTask::Cancel() {
   for (auto unpacker : unpackers_) {
     if (unpacker.second) {
       unpacker.second->Stop();
-      while (!unpacker.second->CancelDone()) {
-        // Yield until the cancellation tasks are done.
+      while (!unpacker.second->CleanUpDone()) {
+        // Yield until the UnpackParams objects have been released.
         base::PlatformThread::Sleep(base::Microseconds(1));
       }
     }

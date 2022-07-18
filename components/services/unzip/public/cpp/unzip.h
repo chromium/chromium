@@ -70,7 +70,7 @@ class ZipFileUnpacker : public base::RefCountedThreadSafe<ZipFileUnpacker> {
 
   void Stop();
 
-  bool CancelDone();
+  bool CleanUpDone();
 
   void CleanUp();
 
