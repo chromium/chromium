@@ -421,13 +421,6 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   child->Destroy();
 }
 
-void LayoutBlock::UpdateAfterLayout() {
-  NOT_DESTROYED();
-  InvalidateStickyConstraints();
-
-  LayoutBox::UpdateAfterLayout();
-}
-
 void LayoutBlock::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(!GetScrollableArea() || GetScrollableArea()->GetScrollAnchor());

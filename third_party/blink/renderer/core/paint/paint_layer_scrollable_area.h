@@ -66,7 +66,6 @@ class LayoutCustomScrollbarPart;
 struct PaintInvalidatorContext;
 class PaintLayer;
 class ScrollingCoordinator;
-struct StickyPositionScrollingConstraints;
 class SubtreeLayoutScope;
 
 struct CORE_EXPORT PaintLayerScrollableAreaRareData final
@@ -516,14 +515,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
     had_vertical_scrollbar_before_relayout_ = val;
   }
 
-  void AddStickyConstraints(PaintLayer*, StickyPositionScrollingConstraints*);
+  void AddStickyLayer(PaintLayer*);
   bool HasStickyLayer(PaintLayer* layer) const {
     return rare_data_ && rare_data_->sticky_layers_.Contains(layer);
   }
-
   void InvalidateAllStickyConstraints();
-  void InvalidateStickyConstraintsFor(PaintLayer*);
   void InvalidatePaintForStickyDescendants();
+
   uint32_t GetNonCompositedMainThreadScrollingReasons() {
     return non_composited_main_thread_scrolling_reasons_;
   }

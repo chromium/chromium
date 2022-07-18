@@ -170,35 +170,36 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
     <div class='overflow-hidden'>
       <div id='overflow-hidden-no-scrolling' class='sticky'></div>
     </div>
+    <div style="position: fixed">
+      <div id='under-fixed' class='sticky'></div>
+    </div>
+    < div style='height: 2000px;"></div>
   )HTML");
 
-  auto& sticky_scrolling =
-      *To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky-scrolling"));
   EXPECT_REASONS(
       CompositingReason::kStickyPosition,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *sticky_scrolling.Layer()));
+          *GetPaintLayerByElementId("sticky-scrolling")));
 
-  auto& sticky_no_scrolling = *To<LayoutBoxModelObject>(
-      GetLayoutObjectByElementId("sticky-no-scrolling"));
   EXPECT_REASONS(
       CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *sticky_no_scrolling.Layer()));
+          *GetPaintLayerByElementId("sticky-no-scrolling")));
 
-  auto& overflow_hidden_scrolling = *To<LayoutBoxModelObject>(
-      GetLayoutObjectByElementId("overflow-hidden-scrolling"));
   EXPECT_REASONS(
       CompositingReason::kStickyPosition,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *overflow_hidden_scrolling.Layer()));
+          *GetPaintLayerByElementId("overflow-hidden-scrolling")));
 
-  auto& overflow_hidden_no_scrolling = *To<LayoutBoxModelObject>(
-      GetLayoutObjectByElementId("overflow-hidden-no-scrolling"));
   EXPECT_REASONS(
       CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
-          *overflow_hidden_no_scrolling.Layer()));
+          *GetPaintLayerByElementId("overflow-hidden-no-scrolling")));
+
+  EXPECT_REASONS(
+      CompositingReason::kNone,
+      CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
+          *GetPaintLayerByElementId("under-fixed")));
 }
 
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(

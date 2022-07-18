@@ -117,10 +117,11 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #if DCHECK_IS_ON()
   bool is_destroyed;
 #endif
-  Member<void*> members1[5];
-  LayoutUnit layout_units[4];
-  gfx::Size size;
-  Member<void*> members2[5];
+  Member<void*> members1[6];
+  PhysicalOffset offset;
+  LayoutSize size;
+  LayoutUnit layout_units[2];
+  Member<void*> members2[3];
 };
 
 ASSERT_SIZE(PaintLayer, SameSizeAsPaintLayer);
@@ -210,8 +211,7 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       first_(nullptr),
       last_(nullptr),
       static_inline_position_(0),
-      static_block_position_(0),
-      ancestor_scroll_container_layer_(nullptr) {
+      static_block_position_(0) {
   is_self_painting_layer_ = ShouldBeSelfPaintingLayer();
 
   UpdateScrollableArea();
@@ -265,38 +265,42 @@ bool PaintLayer::PaintsWithFilters() const {
   return true;
 }
 
+const PaintLayer* PaintLayer::ContainingScrollContainerLayer(
+    bool* is_fixed_to_view) const {
+  bool is_fixed = GetLayoutObject().IsFixedPositioned();
+  for (const PaintLayer* container = ContainingLayer(); container;
+       container = container->ContainingLayer()) {
+    if (container->GetLayoutObject().IsScrollContainer()) {
+      if (is_fixed_to_view)
+        *is_fixed_to_view = is_fixed && container->IsRootLayer();
+      DCHECK(container->GetScrollableArea());
+      return container;
+    }
+    is_fixed = container->GetLayoutObject().IsFixedPositioned();
+  }
+  DCHECK(IsRootLayer());
+  if (is_fixed_to_view)
+    *is_fixed_to_view = true;
+  return nullptr;
+}
+
 void PaintLayer::UpdateLayerPositionsAfterLayout() {
+  DCHECK(IsRootLayer());
+
   TRACE_EVENT0("blink,benchmark",
                "PaintLayer::updateLayerPositionsAfterLayout");
   RUNTIME_CALL_TIMER_SCOPE(
       V8PerIsolateData::MainThreadIsolate(),
       RuntimeCallStats::CounterId::kUpdateLayerPositionsAfterLayout);
 
-  const LayoutBlock* enclosing_scrollport_box =
-      GetLayoutObject().EnclosingScrollportBox();
-  UpdateLayerPositionRecursive(
-      enclosing_scrollport_box ? enclosing_scrollport_box->Layer() : nullptr);
+  UpdateLayerPositionRecursive();
   UpdatePaginationRecursive(EnclosingPaginationLayer());
 }
 
-void PaintLayer::UpdateLayerPositionRecursive(
-    const PaintLayer* enclosing_scroller) {
+void PaintLayer::UpdateLayerPositionRecursive() {
   UpdateLayerPosition();
 
-  const PaintLayer* previous_enclosing_scroller =
-      AncestorScrollContainerLayer();
-  UpdateAncestorScrollContainerLayer(enclosing_scroller);
-  if (enclosing_scroller &&
-      GetLayoutObject().StyleRef().HasStickyConstrainedPosition() &&
-      GetLayoutObject().NeedsPaintPropertyUpdate()) {
-    // Old ancestor scroller should no longer have these constraints.
-    DCHECK(enclosing_scroller == previous_enclosing_scroller ||
-           !previous_enclosing_scroller ||
-           !previous_enclosing_scroller->GetScrollableArea() ||
-           !previous_enclosing_scroller->GetScrollableArea()->HasStickyLayer(
-               this));
-    GetLayoutObject().UpdateStickyPositionConstraints();
-
+  if (GetLayoutObject().UpdateStickyPositionConstraints()) {
     // Sticky position constraints and ancestor overflow scroller affect
     // the sticky layer position, so we need to update it again here.
     UpdateLayerPosition();
@@ -309,16 +313,8 @@ void PaintLayer::UpdateLayerPositionRecursive(
   if (GetLayoutObject().ChildLayoutBlockedByDisplayLock())
     return;
 
-  if (GetLayoutObject().IsScrollContainer())
-    enclosing_scroller = this;
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
-    child->UpdateLayerPositionRecursive(enclosing_scroller);
-}
-
-bool PaintLayer::SticksToScroller() const {
-  if (!GetLayoutObject().StyleRef().HasStickyConstrainedPosition())
-    return false;
-  return AncestorScrollContainerLayer()->GetScrollableArea();
+    child->UpdateLayerPositionRecursive();
 }
 
 void PaintLayer::UpdateTransformationMatrix() {
@@ -820,10 +816,6 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
 
   child->parent_ = this;
 
-  // The ancestor scroll container layer is calculated during compositing inputs
-  // update and should not be set yet.
-  CHECK(!child->AncestorScrollContainerLayer());
-
   if (child->GetLayoutObject().IsStacked() || child->FirstChild()) {
     // Dirty the z-order list in which we are contained. The
     // ancestorStackingContextNode() can be null in the case where we're
@@ -879,13 +871,6 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   old_child->SetPreviousSibling(nullptr);
   old_child->SetNextSibling(nullptr);
   old_child->parent_ = nullptr;
-
-  // Remove any ancestor scroll container layers which descended into the
-  // removed child.
-  if (old_child->AncestorScrollContainerLayer()) {
-    old_child->RemoveAncestorScrollContainerLayer(
-        old_child->AncestorScrollContainerLayer());
-  }
 
   if (old_child->has_visible_content_ ||
       old_child->has_visible_self_painting_descendant_)
@@ -2526,31 +2511,6 @@ PaintLayerResourceInfo& PaintLayer::EnsureResourceInfo() {
   return *rare_data.resource_info;
 }
 
-void PaintLayer::RemoveAncestorScrollContainerLayer(
-    const PaintLayer* removed_layer) {
-  // If the current scroll container layer does not match the removed layer
-  // the ancestor overflow layer has changed so we can stop searching.
-  if (AncestorScrollContainerLayer() &&
-      AncestorScrollContainerLayer() != removed_layer) {
-    return;
-  }
-
-  if (AncestorScrollContainerLayer()) {
-    if (PaintLayerScrollableArea* ancestor_scrollable_area =
-            AncestorScrollContainerLayer()->GetScrollableArea()) {
-      // TODO(pdr): We will need to invalidate the scroll paint property subtree
-      // for this so main thread scroll reasons are recomputed.
-      ancestor_scrollable_area->InvalidateStickyConstraintsFor(this);
-    }
-  }
-  UpdateAncestorScrollContainerLayer(nullptr);
-  PaintLayer* current = first_;
-  while (current) {
-    current->RemoveAncestorScrollContainerLayer(removed_layer);
-    current = current->NextSibling();
-  }
-}
-
 gfx::RectF PaintLayer::MapRectForFilter(const gfx::RectF& rect) const {
   if (!HasFilterThatMovesPixels())
     return rect;
@@ -2697,7 +2657,6 @@ void PaintLayer::Trace(Visitor* visitor) const {
   visitor->Trace(next_);
   visitor->Trace(first_);
   visitor->Trace(last_);
-  visitor->Trace(ancestor_scroll_container_layer_);
   visitor->Trace(scrollable_area_);
   visitor->Trace(stacking_node_);
   visitor->Trace(rare_data_);

@@ -457,7 +457,7 @@ static bool NeedsStickyTranslation(const LayoutObject& object) {
   if (!object.IsBoxModelObject())
     return false;
 
-  return object.StyleRef().HasStickyConstrainedPosition();
+  return To<LayoutBoxModelObject>(object).StickyConstraints();
 }
 
 static bool NeedsPaintOffsetTranslation(
@@ -679,38 +679,21 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
-      auto* layer = box_model.Layer();
-      const auto* scroller_properties = layer->AncestorScrollContainerLayer()
-                                            ->GetLayoutObject()
-                                            .FirstFragment()
-                                            .PaintProperties();
+      const auto* layout_constraint = box_model.StickyConstraints();
+      DCHECK(layout_constraint);
+      const auto* scroll_container_properties =
+          layout_constraint->containing_scroll_container_layer
+              ->GetLayoutObject()
+              .FirstFragment()
+              .PaintProperties();
       // A scroll node is only created if an object can be scrolled manually,
       // while sticky position attaches to anything that clips overflow.
       // No need to (actually can't) setup composited sticky constraint if
       // the clipping ancestor we attach to doesn't have a scroll node.
-      // TODO(crbug.com/881555): If the clipping ancestor does have a scroll
-      // node, this really should be a DCHECK the current scrolll node
-      // matches it. i.e.
-      // if (scroller_properties && scroller_properties->Scroll()) {
-      //   DCHECK_EQ(scroller_properties->Scroll(), context_.current.scroll);
-      // However there is a bug that AncestorScrollContainerLayer() may be
-      // computed incorrectly with clip escaping involved.
-      bool nearest_scroller_is_clip =
-          scroller_properties &&
-          scroller_properties->Scroll() == context_.current.scroll;
-
-      // Additionally, we also want to make sure that the nearest scroller
-      // actually translates this node. If it doesn't (e.g. a position fixed
-      // node in a scrolling document), there's no point in adding a constraint
-      // since scrolling won't affect it. Indeed, if we do add it, the
-      // compositor assumes scrolling does affect it and produces incorrect
-      // results.
-      bool translates_with_nearest_scroller =
-          context_.current.transform->Unalias()
-              .NearestScrollTranslationNode()
-              .ScrollNode() == context_.current.scroll;
-      if (nearest_scroller_is_clip && translates_with_nearest_scroller) {
-        const auto* layout_constraint = box_model.StickyConstraints();
+      bool scroll_container_scrolls =
+          scroll_container_properties &&
+          scroll_container_properties->Scroll() == context_.current.scroll;
+      if (scroll_container_scrolls) {
         auto constraint = std::make_unique<CompositorStickyConstraint>();
         constraint->is_anchored_left = layout_constraint->is_anchored_left;
         constraint->is_anchored_right = layout_constraint->is_anchored_right;
@@ -728,14 +711,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         constraint->scroll_container_relative_containing_block_rect =
             gfx::RectF(layout_constraint
                            ->scroll_container_relative_containing_block_rect);
-        if (PaintLayer* sticky_box_shifting_ancestor =
+        if (const PaintLayer* sticky_box_shifting_ancestor =
                 layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
           constraint->nearest_element_shifting_sticky_box =
               CompositorElementIdFromUniqueObjectId(
                   sticky_box_shifting_ancestor->GetLayoutObject().UniqueId(),
                   CompositorElementIdNamespace::kStickyTranslation);
         }
-        if (PaintLayer* containing_block_shifting_ancestor =
+        if (const PaintLayer* containing_block_shifting_ancestor =
                 layout_constraint
                     ->nearest_sticky_layer_shifting_containing_block) {
           constraint->nearest_element_shifting_containing_block =

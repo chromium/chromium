@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -427,9 +428,12 @@ CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
   // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure sticky
   // position elements are composited under overflow: hidden, which can still
   // have smooth scroll animations.
-  if (layer.SticksToScroller() &&
-      layer.AncestorScrollContainerLayer()->GetScrollableArea()->HasOverflow())
-    reasons |= CompositingReason::kStickyPosition;
+  if (const auto* constraints = layer.GetLayoutObject().StickyConstraints()) {
+    if (!constraints->is_fixed_to_view &&
+        constraints->containing_scroll_container_layer->GetScrollableArea()
+            ->HasOverflow())
+      reasons |= CompositingReason::kStickyPosition;
+  }
 
   return reasons;
 }

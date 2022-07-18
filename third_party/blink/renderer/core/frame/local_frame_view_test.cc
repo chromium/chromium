@@ -152,30 +152,6 @@ TEST_F(LocalFrameViewTest, NoOverflowInIncrementVisuallyNonEmptyPixelCount) {
   EXPECT_TRUE(GetDocument().View()->IsVisuallyNonEmpty());
 }
 
-// This test addresses http://crbug.com/696173, in which a call to
-// LocalFrameView::UpdateLayersAndCompositingAfterScrollIfNeeded during layout
-// caused a crash as the code was incorrectly assuming that the ancestor
-// overflow layer would always be valid.
-TEST_F(LocalFrameViewTest,
-       ViewportConstrainedObjectsHandledCorrectlyDuringLayout) {
-  SetBodyInnerHTML(R"HTML(
-    <style>.container { height: 200%; }
-    #sticky { position: sticky; top: 0; height: 50px; }</style>
-    <div class='container'><div id='sticky'></div></div>
-  )HTML");
-
-  auto* sticky = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky"));
-
-  // Deliberately invalidate the ancestor overflow layer. This approximates
-  // http://crbug.com/696173, in which the ancestor overflow layer can be null
-  // during layout.
-  sticky->Layer()->UpdateAncestorScrollContainerLayer(nullptr);
-
-  // This call should not crash.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
-}
-
 TEST_F(LocalFrameViewTest, UpdateLifecyclePhasesForPrintingDetachedFrame) {
   SetBodyInnerHTML("<iframe style='display: none'></iframe>");
   SetChildFrameHTML("A");

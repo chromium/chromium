@@ -943,6 +943,8 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {
+  InvalidateAllStickyConstraints();
+
   bool is_horizontal_scrollbar_frozen;
   bool is_vertical_scrollbar_frozen;
   if (in_overflow_relayout_ && !allow_second_overflow_relayout_) {
@@ -2061,39 +2063,28 @@ void PaintLayerScrollableArea::UpdateResizerStyle(
   }
 }
 
-void PaintLayerScrollableArea::AddStickyConstraints(
-    PaintLayer* layer,
-    StickyPositionScrollingConstraints* constraints) {
+void PaintLayerScrollableArea::AddStickyLayer(PaintLayer* layer) {
   UseCounter::Count(GetLayoutBox()->GetDocument(), WebFeature::kPositionSticky);
   EnsureRareData().sticky_layers_.insert(layer);
-  layer->GetLayoutObject().SetStickyConstraints(constraints);
 }
 
 void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
-  if (PaintLayerScrollableAreaRareData* d = RareData()) {
-    for (PaintLayer* sticky_layer : d->sticky_layers_) {
-      sticky_layer->SetNeedsCompositingInputsUpdate();
-      sticky_layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
-      sticky_layer->GetLayoutObject().SetStickyConstraints(nullptr);
-    }
-    d->sticky_layers_.clear();
-  }
-}
-
-void PaintLayerScrollableArea::InvalidateStickyConstraintsFor(
-    PaintLayer* layer) {
-  if (PaintLayerScrollableAreaRareData* d = RareData()) {
-    auto it = d->sticky_layers_.find(layer);
-    if (it != d->sticky_layers_.end()) {
-      layer->SetNeedsCompositingInputsUpdate();
-      layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
-      layer->GetLayoutObject().SetStickyConstraints(nullptr);
-      d->sticky_layers_.erase(it);
-    }
-  }
+  // Don't clear StickyConstraints for each LayoutObject of each layer in
+  // sticky_layers_ because sticky_layers_ may contain stale pointers.
+  // LayoutBoxModelObject::UpdateStickyPositionConstraints() will check both
+  // HasStickyLayer() of its containing scrollable area and its
+  // StickyConstraints() to see if its sticky constraints need update.
+  if (rare_data_)
+    rare_data_->sticky_layers_.clear();
 }
 
 void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
+  // If this is called during layout, sticky_layers_ may contain stale pointers.
+  // Return because we'll InvalidateAllStickyConstraints(), and we'll
+  // SetNeedsPaintPropertyUpdate() when updating sticky constraints.
+  if (GetLayoutBox()->NeedsLayout())
+    return;
+
   if (PaintLayerScrollableAreaRareData* d = RareData()) {
     for (PaintLayer* sticky_layer : d->sticky_layers_) {
       auto& object = sticky_layer->GetLayoutObject();

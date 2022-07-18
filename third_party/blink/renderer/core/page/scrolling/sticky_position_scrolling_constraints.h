@@ -127,8 +127,14 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
   //
   // See the implementation of |ComputeStickyOffset| for documentation on how
   // these ancestors are used to correct the offset calculation.
-  Member<PaintLayer> nearest_sticky_layer_shifting_sticky_box = nullptr;
-  Member<PaintLayer> nearest_sticky_layer_shifting_containing_block = nullptr;
+  Member<const PaintLayer> nearest_sticky_layer_shifting_sticky_box = nullptr;
+  Member<const PaintLayer> nearest_sticky_layer_shifting_containing_block =
+      nullptr;
+
+  // These fields cache the result of
+  // PaintLayer::ContainingScrollContainerLayer().
+  Member<const PaintLayer> containing_scroll_container_layer = nullptr;
+  bool is_fixed_to_view = false;
 
  private:
   // For performance we cache our accumulated sticky offset to allow descendant

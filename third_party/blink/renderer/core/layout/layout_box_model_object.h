@@ -143,10 +143,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                                                 : offset.TransposedSize();
   }
 
-  // Populates StickyPositionConstraints, setting the sticky box rect,
-  // containing block rect and updating the constraint offsets according to the
-  // available space.
-  void UpdateStickyPositionConstraints() const;
+  // If needed, populates StickyPositionConstraints, setting the sticky box
+  // rect, containing block rect and updating the constraint offsets according
+  // to the available space, and returns true. Otherwise returns false.
+  bool UpdateStickyPositionConstraints();
+
   PhysicalOffset StickyPositionOffset() const;
   virtual LayoutBlock* StickyContainer() const;
 
@@ -634,8 +635,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-
-  void InvalidateStickyConstraints();
 
  public:
   // These functions are only used internally to manipulate the layout tree

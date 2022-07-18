@@ -1847,7 +1847,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
 
   UpdateDocumentAnnotatedRegions();
 
-  GetLayoutView()->EnclosingLayer()->UpdateLayerPositionsAfterLayout();
+  GetLayoutView()->Layer()->UpdateLayerPositionsAfterLayout();
   frame_->Selection().DidLayout();
 
   FontFaceSetDocument::DidLayout(*document);

@@ -45,7 +45,10 @@ void StickyPositionScrollingConstraints::ComputeStickyOffset(
   PhysicalRect box_rect = sticky_box_rect;
 
   PhysicalRect content_box_rect = constraining_rect;
-  content_box_rect.Move(PhysicalOffset::FromPointFFloor(scroll_position));
+  // If the sticky object is fixed to view, it doesn't scroll, so ignore
+  // scroll_position.
+  if (!is_fixed_to_view)
+    content_box_rect.Move(PhysicalOffset::FromPointFFloor(scroll_position));
 
   if (is_anchored_right) {
     LayoutUnit right_limit = content_box_rect.Right() - right_offset;
@@ -120,6 +123,7 @@ void StickyPositionScrollingConstraints::ComputeStickyOffset(
 void StickyPositionScrollingConstraints::Trace(Visitor* visitor) const {
   visitor->Trace(nearest_sticky_layer_shifting_sticky_box);
   visitor->Trace(nearest_sticky_layer_shifting_containing_block);
+  visitor->Trace(containing_scroll_container_layer);
 }
 
 PhysicalOffset StickyPositionScrollingConstraints::AncestorStickyBoxOffset()
