@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -20,6 +21,10 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "third_party/libevent/event.h"
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+#include "base/message_loop/message_pump_epoll.h"
+#endif
 
 // Lifecycle of struct event
 // Libevent uses two main data structures:
@@ -34,14 +39,23 @@
 
 namespace base {
 
+namespace {
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+bool g_use_epoll = false;
+
+const Feature kMessagePumpEpoll{"MessagePumpEpoll",
+                                FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+}  // namespace
+
 MessagePumpLibevent::FdWatchController::FdWatchController(
     const Location& from_here)
     : FdWatchControllerInterface(from_here) {}
 
 MessagePumpLibevent::FdWatchController::~FdWatchController() {
-  if (event_) {
-    CHECK(StopWatchingFileDescriptor());
-  }
+  CHECK(StopWatchingFileDescriptor());
   if (was_destroyed_) {
     DCHECK(!*was_destroyed_);
     *was_destroyed_ = true;
@@ -49,15 +63,25 @@ MessagePumpLibevent::FdWatchController::~FdWatchController() {
 }
 
 bool MessagePumpLibevent::FdWatchController::StopWatchingFileDescriptor() {
-  std::unique_ptr<event> e = ReleaseEvent();
-  if (!e)
-    return true;
-
-  // event_del() is a no-op if the event isn't active.
-  int rv = event_del(e.get());
-  pump_ = nullptr;
   watcher_ = nullptr;
-  return (rv == 0);
+
+  std::unique_ptr<event> e = ReleaseEvent();
+  if (e) {
+    // event_del() is a no-op if the event isn't active.
+    int rv = event_del(e.get());
+    libevent_pump_ = nullptr;
+    return (rv == 0);
+  }
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  if (epoll_interest_ && epoll_pump_) {
+    epoll_pump_->UnregisterInterest(epoll_interest_);
+    epoll_interest_.reset();
+    epoll_pump_.reset();
+  }
+#endif
+
+  return true;
 }
 
 void MessagePumpLibevent::FdWatchController::Init(std::unique_ptr<event> e) {
@@ -88,7 +112,39 @@ void MessagePumpLibevent::FdWatchController::OnFileCanWriteWithoutBlocking(
   watcher_->OnFileCanWriteWithoutBlocking(fd);
 }
 
+const scoped_refptr<MessagePumpLibevent::EpollInterest>&
+MessagePumpLibevent::FdWatchController::AssignEpollInterest(
+    const EpollInterestParams& params) {
+  epoll_interest_ = MakeRefCounted<EpollInterest>(this, params);
+  return epoll_interest_;
+}
+
+void MessagePumpLibevent::FdWatchController::OnFdReadable() {
+  if (!watcher_) {
+    // When a watcher is watching both read and write and both are possible, the
+    // pump will call OnFdWritable() first, followed by OnFdReadable(). But
+    // OnFdWritable() may stop or destroy the watch. If the watch is destroyed,
+    // the pump will not call OnFdReadable() at all, but if it's merely stopped,
+    // OnFdReadable() will be called while `watcher_` is  null. In this case we
+    // don't actually want to call the client.
+    return;
+  }
+  watcher_->OnFileCanReadWithoutBlocking(epoll_interest_->params().fd);
+}
+
+void MessagePumpLibevent::FdWatchController::OnFdWritable() {
+  DCHECK(watcher_);
+  watcher_->OnFileCanWriteWithoutBlocking(epoll_interest_->params().fd);
+}
+
 MessagePumpLibevent::MessagePumpLibevent() : event_base_(event_base_new()) {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  if (g_use_epoll) {
+    epoll_pump_ = std::make_unique<MessagePumpEpoll>();
+    return;
+  }
+#endif
+
   if (!Init())
     NOTREACHED();
   DCHECK_NE(wakeup_pipe_in_, -1);
@@ -96,20 +152,46 @@ MessagePumpLibevent::MessagePumpLibevent() : event_base_(event_base_new()) {
   DCHECK(wakeup_event_);
 }
 
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+MessagePumpLibevent::MessagePumpLibevent(decltype(kUseEpoll))
+    : epoll_pump_(std::make_unique<MessagePumpEpoll>()),
+      event_base_(event_base_new()) {
+  epoll_pump_ = std::make_unique<MessagePumpEpoll>();
+}
+#endif
+
 MessagePumpLibevent::~MessagePumpLibevent() {
-  DCHECK(wakeup_event_);
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  const bool using_libevent = !epoll_pump_;
+#else
+  const bool using_libevent = true;
+#endif
+
   DCHECK(event_base_);
-  event_del(wakeup_event_);
-  delete wakeup_event_;
-  if (wakeup_pipe_in_ >= 0) {
-    if (IGNORE_EINTR(close(wakeup_pipe_in_)) < 0)
-      DPLOG(ERROR) << "close";
-  }
-  if (wakeup_pipe_out_ >= 0) {
-    if (IGNORE_EINTR(close(wakeup_pipe_out_)) < 0)
-      DPLOG(ERROR) << "close";
+  if (using_libevent) {
+    DCHECK(wakeup_event_);
+    event_del(wakeup_event_);
+    delete wakeup_event_;
+    if (wakeup_pipe_in_ >= 0) {
+      if (IGNORE_EINTR(close(wakeup_pipe_in_)) < 0)
+        DPLOG(ERROR) << "close";
+    }
+    if (wakeup_pipe_out_ >= 0) {
+      if (IGNORE_EINTR(close(wakeup_pipe_out_)) < 0)
+        DPLOG(ERROR) << "close";
+    }
   }
   event_base_free(event_base_);
+}
+
+// Must be called early in process startup, but after FeatureList
+// initialization. This allows MessagePumpLibevent to query and cache the
+// enabled state of any relevant features.
+// static
+void MessagePumpLibevent::InitializeFeatures() {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  g_use_epoll = FeatureList::IsEnabled(kMessagePumpEpoll);
+#endif
 }
 
 bool MessagePumpLibevent::WatchFileDescriptor(int fd,
@@ -117,6 +199,13 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
                                               int mode,
                                               FdWatchController* controller,
                                               FdWatcher* delegate) {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  if (epoll_pump_) {
+    return epoll_pump_->WatchFileDescriptor(fd, persistent, mode, controller,
+                                            delegate);
+  }
+#endif
+
   TRACE_EVENT("base", "MessagePumpLibevent::WatchFileDescriptor", "fd", fd,
               "persistent", persistent, "watch_read", mode & WATCH_READ,
               "watch_write", mode & WATCH_WRITE);
@@ -175,7 +264,7 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
 
   controller->Init(std::move(evt));
   controller->set_watcher(delegate);
-  controller->set_pump(this);
+  controller->set_libevent_pump(this);
   return true;
 }
 
@@ -186,6 +275,13 @@ static void timer_callback(int fd, short events, void* context) {
 
 // Reentrant!
 void MessagePumpLibevent::Run(Delegate* delegate) {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  if (epoll_pump_) {
+    epoll_pump_->Run(delegate);
+    return;
+  }
+#endif
+
   RunState run_state(delegate);
   AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
 
@@ -272,6 +368,13 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 }
 
 void MessagePumpLibevent::Quit() {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  if (epoll_pump_) {
+    epoll_pump_->Quit();
+    return;
+  }
+#endif
+
   DCHECK(run_state_) << "Quit was called outside of Run!";
   // Tell both libevent and Run that they should break out of their loops.
   run_state_->should_quit = true;
@@ -279,6 +382,13 @@ void MessagePumpLibevent::Quit() {
 }
 
 void MessagePumpLibevent::ScheduleWork() {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  if (epoll_pump_) {
+    epoll_pump_->ScheduleWork();
+    return;
+  }
+#endif
+
   // Tell libevent (in a threadsafe way) that it should break out of its loop.
   char buf = 0;
   long nwrite = HANDLE_EINTR(write(wakeup_pipe_in_, &buf, 1));
@@ -287,10 +397,11 @@ void MessagePumpLibevent::ScheduleWork() {
 
 void MessagePumpLibevent::ScheduleDelayedWork(
     const Delegate::NextWorkInfo& next_work_info) {
-  // We know that we can't be blocked on Run()'s |timer_event| right now since
-  // this method can only be called on the same thread as Run(). Hence we have
-  // nothing to do here, this thread will sleep in Run() with the correct
-  // timeout when it's out of immediate tasks.
+  // When using libevent we know that we can't be blocked on Run()'s
+  // `timer_event` right now since this method can only be called on the same
+  // thread as Run(). When using epoll, the pump clearly must be in between
+  // waits if we're here. In either case, any scheduled work will be seen prior
+  // to the next libevent loop or epoll wait, so there's nothing to do here.
 }
 
 bool MessagePumpLibevent::Init() {
@@ -319,7 +430,7 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
   FdWatchController* controller = static_cast<FdWatchController*>(context);
   DCHECK(controller);
 
-  MessagePumpLibevent* pump = controller->pump();
+  MessagePumpLibevent* pump = controller->libevent_pump();
   pump->processed_io_events_ = true;
 
   // Make the MessagePumpDelegate aware of this other form of "DoWork". Skip if
@@ -370,5 +481,12 @@ void MessagePumpLibevent::OnWakeup(int socket, short flags, void* context) {
   // Tell libevent to break out of inner loop.
   event_base_loopbreak(that->event_base_);
 }
+
+MessagePumpLibevent::EpollInterest::EpollInterest(
+    FdWatchController* controller,
+    const EpollInterestParams& params)
+    : controller_(controller), params_(params) {}
+
+MessagePumpLibevent::EpollInterest::~EpollInterest() = default;
 
 }  // namespace base
