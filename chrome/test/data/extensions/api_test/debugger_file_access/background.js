@@ -90,10 +90,13 @@ async function runNotAllowedTest(method, params, expectAllowed) {
             responded = true;
             if (expectFileAccess) {
               chrome.test.assertNoLastError();
-              chrome.tabs.remove(tabId);
             } else {
-              chrome.test.assertLastError('Detached while handling command.');
+              chrome.test.assertLastError(JSON.stringify({
+                code: -32000,
+                message: 'Navigating to local URL is not allowed'
+              }));
             }
+            chrome.tabs.remove(tabId);
           }
 
           function onDetach(from, reason) {
