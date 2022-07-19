@@ -9579,7 +9579,6 @@ if (!is_android) {
         "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
         "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
         "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
-        "../browser/virtual_display_mac_util_interactive_uitest.mm",
       ]
 
       sources -= [
