@@ -40,7 +40,9 @@ class ScopedProfileKeepAlive {
   static void RemoveKeepAliveOnUIThread(const Profile* profile,
                                         ProfileKeepAliveOrigin origin);
 
-  const raw_ptr<const Profile> profile_;
+  // TODO(crbug.com/1298696): unit_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  const raw_ptr<const Profile, DegradeToNoOpWhenMTE> profile_;
   const ProfileKeepAliveOrigin origin_;
 };
 
