@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -58,11 +59,11 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 34;
+const int AttributionStorageSql::kCurrentVersionNumber = 35;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 34;
+const int AttributionStorageSql::kCompatibleVersionNumber = 35;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -373,6 +374,49 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DestinationLimitResult {
+  kAllowedByPendingAllowedByUnexpired = 0,
+  kAllowedByPendingDroppedByUnexpired = 1,
+  kDroppedByPendingAllowedByUnexpired = 2,
+  kDroppedByPendingDroppedByUnexpired = 3,
+  kError = 4,
+
+  kMaxValue = kError,
+};
+
+DestinationLimitResult GetDestinationLimitResult(
+    RateLimitResult pending_sources_limit,
+    RateLimitResult unexpired_sources_limit) {
+  switch (pending_sources_limit) {
+    case RateLimitResult::kAllowed: {
+      switch (unexpired_sources_limit) {
+        case RateLimitResult::kAllowed:
+          return DestinationLimitResult::kAllowedByPendingAllowedByUnexpired;
+        case RateLimitResult::kNotAllowed:
+          return DestinationLimitResult::kAllowedByPendingDroppedByUnexpired;
+        case RateLimitResult::kError:
+          return DestinationLimitResult::kError;
+      }
+    }
+    case RateLimitResult::kNotAllowed: {
+      switch (unexpired_sources_limit) {
+        case RateLimitResult::kAllowed:
+          // Unexpired sources limit is stricter than pending sources limit.
+          NOTREACHED();
+          return DestinationLimitResult::kDroppedByPendingAllowedByUnexpired;
+        case RateLimitResult::kNotAllowed:
+          return DestinationLimitResult::kDroppedByPendingDroppedByUnexpired;
+        case RateLimitResult::kError:
+          return DestinationLimitResult::kError;
+      }
+    }
+    case RateLimitResult::kError:
+      return DestinationLimitResult::kError;
+  }
+}
+
 }  // namespace
 
 // static
@@ -504,9 +548,26 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
         StorableSource::Result::kInsufficientSourceCapacity);
   }
 
-  if (!HasCapacityForUniqueDestinationLimitForPendingSource(source)) {
-    return StoreSourceResult(
-        StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+  RateLimitResult unexpired_sources_destination_limit =
+      rate_limit_table_.SourceAllowedForDestinationLimit(db_.get(), source);
+  RateLimitResult pending_sources_destination_limit =
+      HasCapacityForUniqueDestinationLimitForPendingSource(source);
+
+  // For now we only record metrics on this limit to measure how it performs
+  // compared to the pending sources limit.
+  base::UmaHistogramEnumeration(
+      "Conversions.UniqueDestinationLimitForUnexpiredSourcesResult",
+      GetDestinationLimitResult(pending_sources_destination_limit,
+                                unexpired_sources_destination_limit));
+
+  switch (pending_sources_destination_limit) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      return StoreSourceResult(
+          StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+    case RateLimitResult::kError:
+      return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(db_.get(),
@@ -2286,9 +2347,9 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   db_init_status_ = DbStatus::kClosed;
 }
 
-bool AttributionStorageSql::
-    HasCapacityForUniqueDestinationLimitForPendingSource(
-        const StorableSource& source) {
+RateLimitResult
+AttributionStorageSql::HasCapacityForUniqueDestinationLimitForPendingSource(
+    const StorableSource& source) {
   const int max = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
   // TODO(apaseltiner): We could just make
   // `GetMaxDestinationsPerSourceSiteReportingOrigin()` return `size_t`, but it
@@ -2319,15 +2380,16 @@ bool AttributionStorageSql::
 
     // The destination isn't new, so it doesn't change the count.
     if (destination == serialized_conversion_destination)
-      return true;
+      return RateLimitResult::kAllowed;
 
     destinations.insert(std::move(destination));
 
     if (destinations.size() == static_cast<size_t>(max))
-      return false;
+      return RateLimitResult::kNotAllowed;
   }
 
-  return statement.Succeeded();
+  return statement.Succeeded() ? RateLimitResult::kAllowed
+                               : RateLimitResult::kError;
 }
 
 bool AttributionStorageSql::DeleteSources(

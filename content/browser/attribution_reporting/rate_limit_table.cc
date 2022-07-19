@@ -49,6 +49,9 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // |reporting_origin| is the reporting origin of the impression/conversion.
   // |time| is the time of either the source registration or the attribution
   // trigger, depending on |scope|.
+  // |expiry_time| is only meaningful when |scope| is
+  // `RateLimitTable::Scope::kSource` and contains the source's expiry time,
+  // otherwise it is set to `base::Time()`.
   static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE IF NOT EXISTS rate_limits"
       "(id INTEGER PRIMARY KEY NOT NULL,"
@@ -59,25 +62,26 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "destination_site TEXT NOT NULL,"
       "destination_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
-      "time INTEGER NOT NULL)";
+      "time INTEGER NOT NULL,"
+      "expiry_time INTEGER NOT NULL)";
   if (!db->Execute(kRateLimitTableSql))
     return false;
 
   static_assert(static_cast<int>(Scope::kAttribution) == 1,
                 "update `scope=1` clause below");
 
-  // Optimizes calls to |AttributionAllowedForAttributionLimit()|.
-  static constexpr char kRateLimitAttributionIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_attribution_idx ON rate_limits"
-      "(destination_site,source_site,reporting_origin,time)"
-      "WHERE scope=1";
-  if (!db->Execute(kRateLimitAttributionIndexSql))
+  // Optimizes calls to `SourceAllowedForDestinationLimit()`.
+  static constexpr char kRateLimitSourceSiteReportingOriginIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_source_site_reporting_origin_idx "
+      "ON rate_limits(scope,source_site,reporting_origin)";
+  if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql))
     return false;
 
-  // Optimizes calls to |AllowedForReportingOriginLimit()|.
+  // Optimizes calls to `AllowedForReportingOriginLimit()` and
+  // `AttributionAllowedForAttributionLimit()`.
   static constexpr char kRateLimitReportingOriginIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_reporting_origin_idx "
-      "ON rate_limits(scope,destination_site,source_site,time)";
+      "ON rate_limits(scope,destination_site,source_site)";
   if (!db->Execute(kRateLimitReportingOriginIndexSql))
     return false;
 
@@ -128,11 +132,21 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
     last_cleared_ = now;
   }
 
+  base::Time expiry_time;
+  switch (scope) {
+    case Scope::kSource:
+      expiry_time = common_info.expiry_time();
+      break;
+    case Scope::kAttribution:
+      expiry_time = base::Time();
+      break;
+  }
+
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
       "(scope,source_id,source_site,source_origin,"
-      "destination_site,destination_origin,reporting_origin,time)"
-      "VALUES(?,?,?,?,?,?,?,?)";
+      "destination_site,destination_origin,reporting_origin,time,expiry_time)"
+      "VALUES(?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, static_cast<int>(scope));
@@ -143,6 +157,8 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindString(5, SerializeOrigin(common_info.conversion_origin()));
   statement.BindString(6, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(7, time);
+  statement.BindTime(8, expiry_time);
+
   return statement.Run();
 }
 
@@ -164,16 +180,16 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
   static constexpr char kAttributionAllowedSql[] =
       "SELECT COUNT(*)FROM rate_limits "
-      DCHECK_SQL_INDEXED_BY("rate_limit_attribution_idx")
+      DCHECK_SQL_INDEXED_BY("rate_limit_reporting_origin_idx")
       "WHERE scope=1 "
-      "AND source_site=? "
       "AND destination_site=? "
+      "AND source_site=? "
       "AND reporting_origin=? "
       "AND time>?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
-  statement.BindString(0, common_info.ImpressionSite().Serialize());
-  statement.BindString(1, common_info.ConversionDestination().Serialize());
+  statement.BindString(0, common_info.ConversionDestination().Serialize());
+  statement.BindString(1, common_info.ImpressionSite().Serialize());
   statement.BindString(2, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(3, min_timestamp);
 
@@ -193,6 +209,59 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginLimit(
   return AllowedForReportingOriginLimit(db, Scope::kSource,
                                         source.common_info(),
                                         source.common_info().impression_time());
+}
+
+RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
+    sql::Database* db,
+    const StorableSource& source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static_assert(static_cast<int>(Scope::kSource) == 0,
+                "update `scope=0` clause below");
+
+  // Check the number of unique destinations covered by all source registrations
+  // whose [source_time, expiry_time] intersect with the current source_time.
+  static constexpr char kSourceAllowedSql[] =
+      "SELECT destination_site FROM rate_limits "
+      DCHECK_SQL_INDEXED_BY("rate_limit_source_site_reporting_origin_idx")
+      "WHERE scope=0 "
+      "AND source_site=? "
+      "AND reporting_origin=? "
+      "AND expiry_time>?";
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kSourceAllowedSql));
+
+  const CommonSourceInfo& common_info = source.common_info();
+  statement.BindString(0, common_info.ImpressionSite().Serialize());
+  statement.BindString(1, SerializeOrigin(common_info.reporting_origin()));
+  statement.BindTime(2, common_info.impression_time());
+
+  const std::string serialized_destination_site =
+      common_info.ConversionDestination().Serialize();
+
+  const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
+  DCHECK_GT(limit, 0);
+
+  base::flat_set<std::string> destination_sites;
+  while (statement.Step()) {
+    std::string destination_site = statement.ColumnString(0);
+
+    // The destination site isn't new, so it doesn't change the count.
+    //
+    // TODO(linnan): Consider adding an early exit query which first checks for
+    // the existence of `destination_site` for (source_site, reporting_origin),
+    // to avoid querying all of the rows in the case of multiple sources.
+    if (destination_site == serialized_destination_site)
+      return RateLimitResult::kAllowed;
+
+    destination_sites.insert(std::move(destination_site));
+
+    if (destination_sites.size() == static_cast<size_t>(limit))
+      return RateLimitResult::kNotAllowed;
+  }
+
+  return statement.Succeeded() ? RateLimitResult::kAllowed
+                               : RateLimitResult::kError;
 }
 
 RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
@@ -339,17 +408,25 @@ bool RateLimitTable::ClearDataForOriginsInRange(
 }
 
 bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
-  base::Time timestamp =
-      base::Time::Now() - delegate_->GetRateLimits().time_window;
+  base::Time now = base::Time::Now();
+  base::Time timestamp = now - delegate_->GetRateLimits().time_window;
 
+  static_assert(static_cast<int>(Scope::kAttribution) == 1,
+                "update `scope=1` clause below");
+
+  // Attribution rate limit entries can be deleted as long as their time falls
+  // outside the rate limit window. For source entries, if the expiry time has
+  // not passed, keep entries around to ensure
+  // `SourceAllowedForDestinationLimit()` is computed properly.
   static constexpr char kDeleteExpiredRateLimits[] =
       // clang-format off
       "DELETE FROM rate_limits "
       DCHECK_SQL_INDEXED_BY("rate_limit_time_idx")
-      "WHERE time<=?";  // clang-format on
+      "WHERE time<=? AND(scope=1 OR expiry_time<=?)";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
   statement.BindTime(0, timestamp);
+  statement.BindTime(1, now);
   return statement.Run();
 }
 

@@ -198,7 +198,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<std::vector<uint64_t>> ReadDedupKeys(
       StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool HasCapacityForUniqueDestinationLimitForPendingSource(
+  [[nodiscard]] RateLimitResult
+  HasCapacityForUniqueDestinationLimitForPendingSource(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] absl::optional<AttributionReport::EventLevelData::Id>

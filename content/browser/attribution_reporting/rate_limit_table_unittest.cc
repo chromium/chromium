@@ -61,18 +61,21 @@ struct RateLimitRow {
                std::string impression_origin,
                std::string conversion_origin,
                std::string reporting_origin,
-               base::Time time)
+               base::Time time,
+               base::TimeDelta source_expiry = base::Milliseconds(30))
       : scope(scope),
         impression_origin(std::move(impression_origin)),
         conversion_origin(std::move(conversion_origin)),
         reporting_origin(std::move(reporting_origin)),
-        time(time) {}
+        time(time),
+        source_expiry(source_expiry) {}
 
   RateLimitScope scope;
   std::string impression_origin;
   std::string conversion_origin;
   std::string reporting_origin;
   base::Time time;
+  base::TimeDelta source_expiry;
 
   SourceBuilder NewSourceBuilder() const {
     // Ensure that operations involving attributions use the trigger time, not
@@ -83,6 +86,7 @@ struct RateLimitRow {
     builder.SetImpressionOrigin(url::Origin::Create(GURL(impression_origin)));
     builder.SetConversionOrigin(url::Origin::Create(GURL(conversion_origin)));
     builder.SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)));
+    builder.SetExpiry(source_expiry);
 
     return builder;
   }
@@ -164,6 +168,13 @@ class RateLimitTableTest : public testing::Test {
       const RateLimitRow& row) {
     CHECK_EQ(row.scope, RateLimitScope::kSource);
     return table_.SourceAllowedForReportingOriginLimit(
+        &db_, row.NewSourceBuilder().Build());
+  }
+
+  [[nodiscard]] RateLimitResult SourceAllowedForDestinationLimit(
+      const RateLimitRow& row) {
+    CHECK_EQ(row.scope, RateLimitScope::kSource);
+    return table_.SourceAllowedForDestinationLimit(
         &db_, row.NewSourceBuilder().Build());
   }
 
@@ -666,6 +677,60 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
           Pair(_, Field(&RateLimitRow::impression_origin, "https://s3.test"))));
 }
 
+TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
+  delegate_.set_rate_limits({
+      .time_window = base::Minutes(2),
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = INT_MAX,
+  });
+
+  delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
+
+  ASSERT_TRUE(table_.AddRateLimitForSource(
+      &db_,
+      SourceBuilder()
+          .SetImpressionOrigin(url::Origin::Create(GURL("https://s1.test")))
+          .BuildStored()));
+
+  ASSERT_TRUE(table_.AddRateLimitForSource(
+      &db_,
+      SourceBuilder()
+          .SetImpressionOrigin(url::Origin::Create(GURL("https://s2.test")))
+          .SetExpiry(base::Minutes(5))
+          .BuildStored()));
+
+  task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
+
+  ASSERT_TRUE(table_.AddRateLimitForSource(
+      &db_,
+      SourceBuilder()
+          .SetImpressionOrigin(url::Origin::Create(GURL("https://s3.test")))
+          .BuildStored()));
+
+  // No row has expired at this point.
+  ASSERT_THAT(GetRateLimitRows(), SizeIs(3));
+
+  // Advance to the next expiry period.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  ASSERT_TRUE(table_.AddRateLimitForSource(
+      &db_,
+      SourceBuilder()
+          .SetImpressionOrigin(url::Origin::Create(GURL("https://s4.test")))
+          .BuildStored()));
+
+  // The first row should be expired at this point. The second row is not
+  // expired since the source is not expired yet.
+  ASSERT_THAT(
+      GetRateLimitRows(),
+      ElementsAre(
+          Pair(_, Field(&RateLimitRow::impression_origin, "https://s2.test")),
+          Pair(_, Field(&RateLimitRow::impression_origin, "https://s3.test")),
+          Pair(_, Field(&RateLimitRow::impression_origin, "https://s4.test"))));
+}
+
 TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
   for (int64_t id = 4; id <= 6; id++) {
     ASSERT_TRUE(table_.AddRateLimitForSource(
@@ -689,6 +754,55 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
 
   ASSERT_THAT(GetRateLimitRows(),
               ElementsAre(Pair(1, _), Pair(3, _), Pair(5, _)));
+}
+
+TEST_F(RateLimitTableTest, SourceAllowedForDestinationLimit) {
+  delegate_.set_max_destinations_per_source_site_reporting_origin(2);
+
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta expiry = base::Milliseconds(30);
+
+  const struct {
+    RateLimitRow row;
+    RateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      {RateLimitRow::Source("https://a.s1.test", "https://a.d1.test",
+                            "https://a.r1.test", now, expiry),
+       RateLimitResult::kAllowed},
+      {RateLimitRow::Source("https://a.s1.test", "https://a.d2.test",
+                            "https://a.r1.test", now, expiry),
+       RateLimitResult::kAllowed},
+      {RateLimitRow::Source("https://a.s1.test", "https://a.d2.test",
+                            "https://a.r1.test", now, expiry),
+       RateLimitResult::kAllowed},
+      {RateLimitRow::Source("https://a.s1.test", "https://a.d3.test",
+                            "https://a.r1.test", now),
+       RateLimitResult::kNotAllowed},
+      {RateLimitRow::Source("https://a.s2.test", "https://a.d2.test",
+                            "https://a.r1.test", now),
+       RateLimitResult::kAllowed},
+      {RateLimitRow::Source("https://a.s1.test", "https://a.d2.test",
+                            "https://a.r2.test", now),
+       RateLimitResult::kAllowed},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationLimit(rate_limit.row))
+        << rate_limit.row;
+
+    if (rate_limit.expected == RateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.row)) << rate_limit.row;
+    }
+  }
+
+  task_environment_.FastForwardBy(expiry);
+
+  // This is allowed because the original sources have expired.
+  const auto row =
+      RateLimitRow::Source("https://a.s1.test", "https://a.d3.test",
+                           "https://a.r1.test", base::Time::Now());
+  EXPECT_EQ(RateLimitResult::kAllowed, SourceAllowedForDestinationLimit(row));
 }
 
 }  // namespace content

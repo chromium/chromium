@@ -21,6 +21,8 @@ class SchemefulSite;
 
 namespace content {
 
+constexpr base::TimeDelta kDefaultAttributionSourceExpiry = base::Days(30);
+
 // Contains common attributes of `StorableSource` and `StoredSource`.
 class CONTENT_EXPORT CommonSourceInfo {
  public:

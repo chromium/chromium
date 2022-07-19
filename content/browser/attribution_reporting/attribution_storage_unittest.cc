@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -37,6 +38,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/storage_partition.h"
@@ -1110,6 +1112,66 @@ TEST_F(AttributionStorageTest,
   // This should succeed because the reporting origin is different.
   store_source("https://s1.test", "https://b.r.test", "https://d5.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(6));
+}
+
+TEST_F(AttributionStorageTest, DestinationLimitResultMetric) {
+  base::HistogramTester histograms;
+
+  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_delete_expired_sources_frequency(base::Milliseconds(10));
+
+  const base::TimeDelta expiry = base::Milliseconds(5);
+
+  const auto store_source = [&](const char* impression_origin,
+                                const char* reporting_origin,
+                                const char* destination_origin) {
+    return storage()
+        ->StoreSource(
+            SourceBuilder()
+                .SetImpressionOrigin(
+                    url::Origin::Create(GURL(impression_origin)))
+                .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
+                .SetConversionOrigin(
+                    url::Origin::Create(GURL(destination_origin)))
+                .SetExpiry(expiry)
+                .Build())
+        .status;
+  };
+
+  // Allowed by pending, allowed by unexpired.
+  store_source("https://s.test", "https://a.r.test", "https://d1.test");
+
+  // Dropped by pending, dropped by expired.
+  store_source("https://s.test", "https://a.r.test", "https://d2.test");
+
+  EXPECT_EQ(
+      AttributionTrigger::EventLevelResult::kSuccess,
+      MaybeCreateAndStoreEventLevelReport(
+          TriggerBuilder()
+              .SetReportingOrigin(url::Origin::Create(GURL("https://a.r.test")))
+              .SetDestinationOrigin(
+                  url::Origin::Create(GURL("https://d1.test")))
+              .Build()));
+
+  // Allowed by pending, dropped by unexpired (but still stored).
+  store_source("https://s.test", "https://a.r.test", "https://d2.test");
+
+  task_environment_.FastForwardBy(expiry);
+
+  // Allowed by pending, allowed by unexpired.
+  store_source("https://s.test", "https://a.r.test", "https://d3.test");
+
+  static constexpr char kMetric[] =
+      "Conversions.UniqueDestinationLimitForUnexpiredSourcesResult";
+
+  // kAllowedByPendingAllowedByUnexpired = 0
+  histograms.ExpectBucketCount(kMetric, 0, 2);
+
+  // kAllowedByPendingDroppedByUnexpired = 1
+  histograms.ExpectBucketCount(kMetric, 1, 1);
+
+  // kDroppedByPendingDroppedByUnexpired = 3
+  histograms.ExpectBucketCount(kMetric, 3, 1);
 }
 
 TEST_F(AttributionStorageTest,

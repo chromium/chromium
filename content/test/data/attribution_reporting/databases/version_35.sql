@@ -6,7 +6,7 @@ CREATE TABLE sources(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source
 
 CREATE TABLE event_level_reports(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_data INTEGER NOT NULL,trigger_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER);
 
-CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,source_origin TEXT NOT NULL,destination_site TEXT NOT NULL,destination_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,time INTEGER NOT NULL);
+CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,source_origin TEXT NOT NULL,destination_site TEXT NOT NULL,destination_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,time INTEGER NOT NULL,expiry_time INTEGER NOT NULL);
 
 CREATE TABLE dedup_keys(source_id INTEGER NOT NULL,dedup_key INTEGER NOT NULL,PRIMARY KEY(source_id,dedup_key))WITHOUT ROWID;
 
@@ -17,8 +17,8 @@ CREATE TABLE aggregatable_contributions(contribution_id INTEGER PRIMARY KEY AUTO
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','34');
-INSERT INTO meta VALUES('last_compatible_version','34');
+INSERT INTO meta VALUES('version','35');
+INSERT INTO meta VALUES('last_compatible_version','35');
 
 CREATE INDEX sources_by_active_destination_site_reporting_origin ON sources(event_level_active,aggregatable_active,destination_site,reporting_origin);
 
@@ -32,9 +32,9 @@ CREATE INDEX event_level_reports_by_report_time ON event_level_reports(report_ti
 
 CREATE INDEX event_level_reports_by_source_id ON event_level_reports(source_id);
 
-CREATE INDEX rate_limit_attribution_idx ON rate_limits(destination_site,source_site,reporting_origin,time)WHERE scope=1;
+CREATE INDEX rate_limit_source_site_reporting_origin_idx ON rate_limits(scope,source_site,reporting_origin);
 
-CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,destination_site,source_site,time);
+CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,destination_site,source_site);
 
 CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
@@ -47,12 +47,5 @@ CREATE INDEX aggregate_trigger_time_idx ON aggregatable_report_metadata(trigger_
 CREATE INDEX aggregate_report_time_idx ON aggregatable_report_metadata(report_time);
 
 CREATE INDEX contribution_aggregation_id_idx ON aggregatable_contributions(aggregation_id);
-
-INSERT INTO sources VALUES(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19);
-
-INSERT INTO rate_limits VALUES
-(1,0,1,4,5,6,7,8,9),
-(2,0,3,4,5,6,7,8,9),
-(3,1,1,4,5,6,7,8,9);
 
 COMMIT;

@@ -18,10 +18,10 @@ base::Time CommonSourceInfo::GetExpiryTime(
     base::Time impression_time,
     AttributionSourceType source_type) {
   constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
-  constexpr base::TimeDelta kDefaultImpressionExpiry = base::Days(30);
 
   // Default to the maximum expiry time.
-  base::TimeDelta expiry = declared_expiry.value_or(kDefaultImpressionExpiry);
+  base::TimeDelta expiry =
+      declared_expiry.value_or(kDefaultAttributionSourceExpiry);
 
   // Expiry time for event sources must be a whole number of days.
   if (source_type == AttributionSourceType::kEvent)
@@ -29,8 +29,8 @@ base::Time CommonSourceInfo::GetExpiryTime(
 
   // If the impression specified its own expiry, clamp it to the minimum and
   // maximum.
-  return impression_time +
-         base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
+  return impression_time + base::clamp(expiry, kMinImpressionExpiry,
+                                       kDefaultAttributionSourceExpiry);
 }
 
 CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,

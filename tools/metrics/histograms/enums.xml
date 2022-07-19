@@ -18980,6 +18980,14 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Invalid data"/>
 </enum>
 
+<enum name="ConversionDestinationLimitResult">
+  <int value="0" label="Allowed by pending, allowed by unexpired"/>
+  <int value="1" label="Allowed by pending, dropped by unexpired"/>
+  <int value="2" label="Dropped by pending, allowed by unexpired"/>
+  <int value="3" label="Dropped by pending, dropped by unexpired"/>
+  <int value="4" label="Error"/>
+</enum>
+
 <enum name="ConversionNavigationDataHostStatus">
   <int value="0" label="Registered"/>
   <int value="1" label="Not found"/>

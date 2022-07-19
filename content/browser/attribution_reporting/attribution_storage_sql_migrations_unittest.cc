@@ -236,4 +236,58 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion33ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion34ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(34), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(db.DoesColumnExist("rate_limits", "expiry_time"));
+
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM rate_limits"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(9, s.ColumnInt64(8));  // time
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(9, s.ColumnInt64(8));  // time
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(9, s.ColumnInt64(8));  // time
+    ASSERT_FALSE(s.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM rate_limits"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(7, s.ColumnInt64(9));  // expiry_time with matching source
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(9 + base::Days(30).InMicroseconds(),
+              s.ColumnInt64(9));  // expiry_time without matching source
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(0, s.ColumnInt64(9));  // expiry_time for attribution
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

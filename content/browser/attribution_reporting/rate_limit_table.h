@@ -70,6 +70,10 @@ class CONTENT_EXPORT RateLimitTable {
       sql::Database* db,
       const StorableSource& source);
 
+  [[nodiscard]] RateLimitResult SourceAllowedForDestinationLimit(
+      sql::Database* db,
+      const StorableSource& source);
+
   [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
       sql::Database* db,
       const AttributionInfo& attribution_info);
