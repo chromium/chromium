@@ -119,7 +119,11 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     scoped_refptr<ThemeInitializerSupplier> custom_theme;
     // Only dereferenced when populating the ColorMixer. After that, used to
     // compare addresses during lookup.
-    raw_ptr<InitializerSupplier> app_controller = nullptr;  // unowned
+    //
+    // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
+    // enabled. Triage.
+    raw_ptr<InitializerSupplier, DegradeToNoOpWhenMTE> app_controller =
+        nullptr;  // unowned
 
     bool operator<(const Key& other) const {
       auto* lhs_app_controller = app_controller.get();
