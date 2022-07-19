@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tasks.tab_management;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
@@ -14,6 +13,6 @@ public class CouponUtilities {
      * @return Whether commerce coupons feature flag is enabled.
      */
     public static boolean isCouponsOnTabsEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.COMMERCE_COUPONS);
+        return ChromeFeatureList.sCommerceCoupons.isEnabled();
     }
 }

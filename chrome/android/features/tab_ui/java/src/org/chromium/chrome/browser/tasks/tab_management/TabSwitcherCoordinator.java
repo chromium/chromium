@@ -25,7 +25,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -342,7 +341,7 @@ public class TabSwitcherCoordinator
                 }
             }
 
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+            if (ChromeFeatureList.sInstantStart.isEnabled()
                     || TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.getValue()
                             && mode != TabListCoordinator.TabListMode.CAROUSEL) {
                 mTabAttributeCache = new TabAttributeCache(mTabModelSelector);
@@ -393,7 +392,7 @@ public class TabSwitcherCoordinator
 
             // Selector editor required for tab groups and close tab suggestions.
             if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
-                    || CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)) {
+                    || ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
                 setUpTabSelectionEditorCoordinator(mActivity, mTabContentManager);
             }
             if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
@@ -409,7 +408,7 @@ public class TabSwitcherCoordinator
                     : null;
 
             if (mMode == TabListCoordinator.TabListMode.GRID) {
-                if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)) {
+                if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
                     mTabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
                             mActivity, mTabModelSelector, mLifecycleDispatcher);
                     TabSuggestionMessageService tabSuggestionMessageService =
@@ -737,7 +736,7 @@ public class TabSwitcherCoordinator
     }
 
     private boolean shouldRegisterMessageItemType() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)
+        return ChromeFeatureList.sCloseTabSuggestions.isEnabled()
                 || (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mRootView.getContext())
                         && !TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode));
     }

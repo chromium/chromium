@@ -14,7 +14,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
@@ -142,8 +141,7 @@ public class StartSurfaceConfiguration {
      * org.chromium.chrome.browser.tasks.ReturnToChromeUtil#isStartSurfaceEnabled} instead.
      */
     public static boolean isStartSurfaceFlagEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)
-                && !SysUtils.isLowEndDevice();
+        return ChromeFeatureList.sStartSurfaceAndroid.isEnabled() && !SysUtils.isLowEndDevice();
     }
 
     /**

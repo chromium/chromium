@@ -62,7 +62,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -158,7 +157,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
@@ -422,7 +421,7 @@ public class InstantStartTabSwitcherTest {
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testShowTabSwitcherWhenHomepageDisabled() throws IOException {
         // clang-format on
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
         testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl();
     }
@@ -432,7 +431,7 @@ public class InstantStartTabSwitcherTest {
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testShowTabSwitcherWhenHomepageDisabled_NoInstant() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
         testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl();
     }

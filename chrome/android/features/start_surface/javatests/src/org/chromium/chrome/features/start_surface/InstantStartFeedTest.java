@@ -40,7 +40,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -92,7 +91,7 @@ public class InstantStartFeedTest {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Feed placeholder should be shown from cold start with Instant Start on.

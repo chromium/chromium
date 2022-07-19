@@ -22,7 +22,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -206,7 +205,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mSelectedTabDidNotChangedAfterShown = true;
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+        if (ChromeFeatureList.sInstantStart.isEnabled()
                 && !mTabModelSelector.isTabStateInitialized()) {
             mAddNormalTabModelObserverPending = true;
 

@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -46,7 +45,7 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
         mTabListFaviconProvider = new TabListFaviconProvider(activity, false);
         mMediator = new SingleTabSwitcherMediator(
                 activity, propertyModel, tabModelSelector, mTabListFaviconProvider);
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) {
+        if (ChromeFeatureList.sInstantStart.isEnabled()) {
             new TabAttributeCache(tabModelSelector);
         }
 

@@ -21,7 +21,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -68,7 +67,7 @@ public class InstantStartNewTabFromLauncherTest {
     @MediumTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testNewTabFromLauncherWithHomepageDisabled() throws IOException {
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         testNewTabFromLauncherWithHomepageDisabledImpl();
     }
 
@@ -77,7 +76,7 @@ public class InstantStartNewTabFromLauncherTest {
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testNewTabFromLauncherWithHomepageDisabled_NoInstant() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         testNewTabFromLauncherWithHomepageDisabledImpl();
     }
 
@@ -93,7 +92,7 @@ public class InstantStartNewTabFromLauncherTest {
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testNewIncognitoTabFromLauncher_NoInstant() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         testNewIncognitoTabFromLauncherImpl();
     }
 

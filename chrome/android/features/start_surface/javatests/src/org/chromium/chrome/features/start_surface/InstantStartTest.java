@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -192,7 +191,7 @@ public class InstantStartTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
@@ -218,7 +217,7 @@ public class InstantStartTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
@@ -254,7 +253,7 @@ public class InstantStartTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertTrue(cta.isTablet());
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
 
         CriteriaHelper.pollUiThread(
                 () -> { Criteria.checkThat(cta.getLayoutManager(), notNullValue()); });
@@ -329,7 +328,7 @@ public class InstantStartTest {
 
         Assert.assertTrue(
                 TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(cta));
@@ -358,7 +357,7 @@ public class InstantStartTest {
 
         Assert.assertFalse(
                 TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(cta));
@@ -486,7 +485,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add({START_PARAMS})
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
         // clang-format on
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(-1, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -506,7 +505,7 @@ public class InstantStartTest {
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn_NoInstant()
           throws IOException {
         // clang-format on
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(-1, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(

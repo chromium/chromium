@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -298,7 +297,7 @@ public class PseudoTab {
     private static @Nullable List<Tab> getRelatedTabList(
             @NonNull TabModelSelector tabModelSelector, int tabId) {
         if (!tabModelSelector.isTabStateInitialized()) {
-            assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START);
+            assert ChromeFeatureList.sInstantStart.isEnabled();
             return null;
         }
         TabModelFilterProvider provider = tabModelSelector.getTabModelFilterProvider();
@@ -332,8 +331,8 @@ public class PseudoTab {
     }
 
     private static void readAllPseudoTabsFromStateFile(Context context) {
-        assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                || CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
+        assert ChromeFeatureList.sInstantStart.isEnabled()
+                || ChromeFeatureList.sPaintPreviewShowOnStartup.isEnabled();
         if (sReadStateFile) return;
         sReadStateFile = true;
 

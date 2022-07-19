@@ -50,7 +50,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
@@ -841,8 +840,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                     ReturnToChromeUtil.getFeedArticlesVisibility();
         }
 
-        return mIsStartSurfaceEnabled
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+        return mIsStartSurfaceEnabled && ChromeFeatureList.sInstantStart.isEnabled()
                 && ReturnToChromeUtil.getFeedArticlesVisibility() && !mHadWarmStart
                 && !mHasFeedPlaceholderShown;
     }

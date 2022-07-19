@@ -13,7 +13,6 @@ import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -151,7 +150,7 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabletGridTabSwitcherEnabled(Context context) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
+                && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled();
     }
 
     /**
@@ -160,7 +159,7 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabStripImprovementsEnabled(Context context) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+                && ChromeFeatureList.sTabStripImprovements.isEnabled();
     }
 
     /**
@@ -169,7 +168,7 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabletTabGroupsEnabled(Context context) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
+                && ChromeFeatureList.sTabGroupsForTablets.isEnabled();
     }
 
     public static boolean isTabletTabManagementImprovementsEnabled(Context context) {
@@ -212,11 +211,11 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupsAndroidEnabled(Context context) {
         // Disable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
+            return ChromeFeatureList.sTabGroupsForTablets.isEnabled();
         }
 
         return !DeviceClassManager.enableAccessibilityLayout(context)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)
+                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
                 && isTabManagementModuleSupported();
     }
 
@@ -226,7 +225,7 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabGroupsAndroidContinuationEnabled(Context context) {
         return isTabGroupsAndroidEnabled(context)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID);
+                && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled();
     }
 
     /**
@@ -234,7 +233,7 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isConditionalTabStripEnabled() {
         // TODO(crbug.com/1222946): Deprecate this feature.
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID)
+        return ChromeFeatureList.sConditionalTabStripAndroid.isEnabled()
                 && isTabManagementModuleSupported()
                 && !ConditionalTabStripUtils.getOptOutIndicator();
     }
@@ -252,7 +251,7 @@ public class TabUiFeatureUtilities {
     public static boolean isTabToGtsAnimationEnabled() {
         Log.d(TAG, "GTS.MinSdkVersion = " + ZOOMING_MIN_SDK.getValue());
         Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+        return ChromeFeatureList.sTabToGTSAnimation.isEnabled()
                 && Build.VERSION.SDK_INT >= ZOOMING_MIN_SDK.getValue()
                 && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue();
     }
@@ -262,7 +261,7 @@ public class TabUiFeatureUtilities {
      */
     public static boolean supportInstantStart(boolean isTablet, Context context) {
         return !DeviceClassManager.enableAccessibilityLayout(context)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet
+                && ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
                 && !SysUtils.isLowEndDevice();
     }
 
