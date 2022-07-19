@@ -216,6 +216,279 @@ INSTANTIATE_TEST_SUITE_P(
          {ColorMode::kLight, ColorProvider::ControlsLayerType::kBorderColor3,
           SkColorSetARGB(0x0F, 0x0, 0x0, 0x0)}}));
 
+class AshColorProviderContentTest
+    : public AshColorProviderBase<ColorProvider::ContentLayerType> {};
+
+TEST_P(AshColorProviderContentTest, Colors) {
+  const auto& test_case = GetParam();
+  bool dark = test_case.color_mode == ColorMode::kDark;
+  DarkLightModeController::Get()->SetDarkModeEnabledForTest(dark);
+  SkColor actual_color = color_provider_->GetContentLayerColor(test_case.type);
+  EXPECT_EQ(test_case.expected_color, actual_color)
+      << "Colors do not match. Expected " << test_case
+      << " Actual: " << ColorToString(actual_color);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AshColorProviderTests,
+    AshColorProviderContentTest,
+    testing::ValuesIn<ColorsTestCase<ColorProvider::ContentLayerType>>(
+        {// Light colors
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kScrollBarColor,
+          SkColorSetRGB(0x5F, 0x63, 0x68)},
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kSeparatorColor,
+          SkColorSetARGB(0x24, 0x0, 0x0, 0x0)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kTextColorPrimary,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kTextColorSecondary,
+          SkColorSetRGB(0x5F, 0x63, 0x68)},
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kTextColorAlert,
+          SkColorSetRGB(0xD9, 0x30, 0x25)},
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kTextColorWarning,
+          SkColorSetRGB(0xE3, 0x74, 0x0)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kTextColorPositive,
+          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kTextColorURL,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kIconColorPrimary,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kIconColorSecondary,
+          SkColorSetRGB(0x9A, 0xA0, 0xA6)},
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kIconColorAlert,
+          SkColorSetRGB(0xD9, 0x30, 0x25)},
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kIconColorWarning,
+          SkColorSetRGB(0xE3, 0x74, 0x0)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kIconColorPositive,
+          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kIconColorProminent,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kIconColorSecondaryBackground,
+          SkColorSetRGB(0x3C, 0x40, 0x43)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kButtonLabelColor,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kButtonLabelColorPrimary,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kButtonLabelColorBlue,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kButtonIconColor,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kButtonIconColorPrimary,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kAppStateIndicatorColor,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kAppStateIndicatorColorInactive,
+          SkColorSetARGB(0x61, 0x20, 0x21, 0x24)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kShelfHandleColor,
+          SkColorSetARGB(0x24, 0x0, 0x0, 0x0)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSliderColorActive,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSliderColorInactive,
+          SkColorSetRGB(0x5F, 0x63, 0x68)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kRadioColorActive,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kRadioColorInactive,
+          SkColorSetRGB(0x5F, 0x63, 0x68)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSwitchKnobColorActive,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSwitchKnobColorInactive,
+          SkColorSetRGB(0xFF, 0xFF, 0xFF)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSwitchTrackColorActive,
+          SkColorSetARGB(0x4D, 0x1A, 0x73, 0xE8)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSwitchTrackColorInactive,
+          SkColorSetARGB(0x4D, 0x5F, 0x63, 0x68)},
+
+         {ColorMode::kLight, ColorProvider::ContentLayerType::kCurrentDeskColor,
+          SkColorSetRGB(0x0, 0x0, 0x0)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kBatteryBadgeColor,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSwitchAccessInnerStrokeColor,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kSwitchAccessOuterStrokeColor,
+          SkColorSetRGB(0x17, 0x4E, 0xA6)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kProgressBarColorForeground,
+          SkColorSetRGB(0x1A, 0x73, 0xE8)},
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kProgressBarColorBackground,
+          SkColorSetARGB(0x4C, 0x1A, 0x73, 0xE8)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kHighlightColorHover,
+          SkColorSetARGB(0x14, 0x0, 0x0, 0x0)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kBatterySystemInfoBackgroundColor,
+          SkColorSetRGB(0x1E, 0x8E, 0x3E)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kBatterySystemInfoIconColor,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kLight,
+          ColorProvider::ContentLayerType::kCaptureRegionColor,
+          SkColorSetARGB(0x4C, 0x1A, 0x73, 0xE8)},
+
+         // Dark colors
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kScrollBarColor,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kSeparatorColor,
+          SkColorSetARGB(0x24, 0xFF, 0xFF, 0xFF)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorPrimary,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kTextColorSecondary,
+          SkColorSetRGB(0xBD, 0xC1, 0xC6)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorAlert,
+          SkColorSetRGB(0xF2, 0x8B, 0x82)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorWarning,
+          SkColorSetRGB(0xFD, 0xD6, 0x63)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorPositive,
+          SkColorSetRGB(0x81, 0xC9, 0x95)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorURL,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorPrimary,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kIconColorSecondary,
+          SkColorSetRGB(0x9A, 0xA0, 0xA6)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorAlert,
+          SkColorSetRGB(0xF2, 0x8B, 0x82)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorWarning,
+          SkColorSetRGB(0xFD, 0xD6, 0x63)},
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorPositive,
+          SkColorSetRGB(0x81, 0xC9, 0x95)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kIconColorProminent,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kIconColorSecondaryBackground,
+          SkColorSetRGB(0xF1, 0xF3, 0xF4)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kButtonLabelColor,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kButtonLabelColorPrimary,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kButtonLabelColorBlue,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kButtonIconColor,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kButtonIconColorPrimary,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kAppStateIndicatorColor,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kAppStateIndicatorColorInactive,
+          SkColorSetARGB(0x61, 0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kShelfHandleColor,
+          SkColorSetARGB(0x24, 0xFF, 0xFF, 0xFF)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kSliderColorActive,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSliderColorInactive,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kRadioColorActive,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kRadioColorInactive,
+          SkColorSetRGB(0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSwitchKnobColorActive,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSwitchKnobColorInactive,
+          SkColorSetRGB(0xBD, 0xC1, 0xC6)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSwitchTrackColorActive,
+          SkColorSetARGB(0x4D, 0x8A, 0xB4, 0xF8)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSwitchTrackColorInactive,
+          SkColorSetARGB(0x4D, 0xE8, 0xEA, 0xED)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kCurrentDeskColor,
+          SkColorSetRGB(0xFF, 0xFF, 0xFF)},
+
+         {ColorMode::kDark, ColorProvider::ContentLayerType::kBatteryBadgeColor,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSwitchAccessInnerStrokeColor,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kSwitchAccessOuterStrokeColor,
+          SkColorSetRGB(0x17, 0x4E, 0xA6)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kProgressBarColorForeground,
+          SkColorSetRGB(0x8A, 0xB4, 0xF8)},
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kProgressBarColorBackground,
+          SkColorSetARGB(0x4C, 0x8A, 0xB4, 0xF8)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kHighlightColorHover,
+          SkColorSetARGB(0xD, 0xFF, 0xFF, 0xFF)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kBatterySystemInfoBackgroundColor,
+          SkColorSetRGB(0x81, 0xC9, 0x95)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kBatterySystemInfoIconColor,
+          SkColorSetRGB(0x20, 0x21, 0x24)},
+
+         {ColorMode::kDark,
+          ColorProvider::ContentLayerType::kCaptureRegionColor,
+          SkColorSetARGB(0x4C, 0x8A, 0xB4, 0xF8)}}));
+
 }  // namespace
 
 }  // namespace ash
