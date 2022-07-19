@@ -17,6 +17,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
@@ -76,7 +77,13 @@ void BookmarkProvider::Start(const AutocompleteInput& input,
   if (input.focus_type() != OmniboxFocusType::DEFAULT || input.text().empty())
     return;
 
-  DoAutocomplete(input);
+  // Remove the keyword from input if we're in keyword mode for a starter pack
+  // engine.
+  const AutocompleteInput adjusted_input =
+      KeywordProvider::AdjustInputForStarterPackEngines(
+          input, client_->GetTemplateURLService());
+
+  DoAutocomplete(adjusted_input);
 }
 
 BookmarkProvider::~BookmarkProvider() {}

@@ -28,6 +28,9 @@
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -79,6 +82,8 @@ struct BookmarksTestInfo {
     {"", "http://emptytitle.com/"},
     // For testing short bookmarks.
     {"testing short bookmarks", "https://zzz.com"},
+    // For testing bookmarks search in keyword mode.
+    {"@bookmarks", "chrome://bookmarks"},
 };
 
 // Structures and functions supporting the BookmarkProviderTest.Positions
@@ -204,6 +209,9 @@ void BookmarkProviderTest::SetUp() {
       .WillRepeatedly(testing::Return(model_.get()));
   EXPECT_CALL(*provider_client_, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(classifier_));
+
+  provider_client_->set_template_url_service(
+      std::make_unique<TemplateURLService>(nullptr, 0));
 
   provider_ = new BookmarkProvider(provider_client_.get());
   const BookmarkNode* other_node = model_->other_node();
@@ -748,4 +756,60 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
     TestNumMatchesAndTriggeredFeature("carefully", 1);
     TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
   }
+}
+
+// Make sure that user input is trimmed correctly for starter pack keyword mode.
+// In this mode, suggestions should be provided for only the user input after
+// the keyword, i.e. "@bookmarks domain" should only match "domain".
+TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    provider_client_->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+  // Test result for user text "domain", we should get back a result for domain.
+  AutocompleteInput input(u"domain", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+
+  ACMatches matches = provider_->matches();
+  ASSERT_GT(matches.size(), 0u);
+  EXPECT_EQ(u"domain", matches[0].description);
+
+  // Test result for "@bookmarks" and "@bookmarks domain" while NOT in keyword
+  // mode, we should get a result for the @bookmarks bookmark and not for the
+  // domain bookmark since we're searching for the whole input text including
+  // "@bookmarks".
+  AutocompleteInput input2(u"@bookmarks", metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  provider_->Start(input2, false);
+
+  matches = provider_->matches();
+  ASSERT_GT(matches.size(), 0u);
+  EXPECT_EQ(u"@bookmarks", matches[0].description);
+
+  AutocompleteInput input3(u"@bookmarks domain",
+                           metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  provider_->Start(input3, false);
+
+  matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 0u);
+
+  // Turn on keyword mode, test result again, we should only get back the result
+  // for the domain bookmark since we're searching only for the user text after
+  // the keyword.
+  input3.set_prefer_keyword(true);
+  input3.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  provider_->Start(input3, false);
+
+  matches = provider_->matches();
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(u"domain", matches[0].description);
 }

@@ -938,9 +938,9 @@ TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
   ASSERT_GT(matches.size(), 0u);
   EXPECT_EQ(GURL("http://www.google.com/"), matches[0].destination_url);
 
-  // Test result for "@history google" while NOT in keyword mode,
-  // we should not get a result for google since the we're
-  // searching for the whole input text including "@history".
+  // Test result for "@history google" while NOT in keyword mode, we should not
+  // get a result for google since we're searching for the whole input text
+  // including "@history".
   AutocompleteInput input2(u"@history google",
                            metrics::OmniboxEventProto::OTHER,
                            TestSchemeClassifier());
