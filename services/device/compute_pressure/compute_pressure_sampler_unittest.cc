@@ -92,9 +92,8 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted) {
   sampler_->EnsureStarted();
   WaitForUpdate();
 
-  EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.42, .cpu_speed = 0.84})));
+  EXPECT_GE(samples_.size(), 1u);
+  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.42}));
 }
 
 namespace {
@@ -153,11 +152,11 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
 
   std::vector<ComputePressureSample> samples = {
       // Value right after construction.
-      {.cpu_utilization = 0.1, .cpu_speed = 0.2},
+      ComputePressureSample{0.1},
       // Value after first Update(), should be discarded.
-      {.cpu_utilization = 0.2, .cpu_speed = 0.4},
+      ComputePressureSample{0.2},
       // Value after second Update(), should be reported.
-      {.cpu_utilization = 0.4, .cpu_speed = 0.6},
+      ComputePressureSample{0.4},
   };
 
   base::RunLoop run_loop;
@@ -169,11 +168,10 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
   sampler_->EnsureStarted();
   run_loop.Run();
 
-  EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
-  EXPECT_THAT(samples_, testing::Not(testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.2, .cpu_speed = 0.4}))));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.4, .cpu_speed = 0.6})));
+  EXPECT_GE(samples_.size(), 1u);
+  EXPECT_THAT(samples_,
+              testing::Not(testing::Contains(ComputePressureSample{0.2})));
+  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.4}));
 }
 
 // TODO(crbug.com/1271419): Flaky.
@@ -192,13 +190,12 @@ TEST_F(ComputePressureSamplerTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample({.cpu_utilization = 0.25, .cpu_speed = 0.5});
+  cpu_probe().SetLastSample(ComputePressureSample{0.25});
 
   sampler_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.25, .cpu_speed = 0.5})));
+  EXPECT_GE(samples_.size(), 1u);
+  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
 }
 
 TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
@@ -209,15 +206,14 @@ TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample({.cpu_utilization = 0.25, .cpu_speed = 0.5});
+  cpu_probe().SetLastSample(ComputePressureSample{0.25});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
   sampler_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.25, .cpu_speed = 0.5})));
+  EXPECT_GE(samples_.size(), 1u);
+  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
 }
 
 TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Immediate) {
@@ -227,13 +223,12 @@ TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Immediate) {
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample({.cpu_utilization = 0.25, .cpu_speed = 0.5});
+  cpu_probe().SetLastSample(ComputePressureSample{0.25});
 
   sampler_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.25, .cpu_speed = 0.5})));
+  EXPECT_GE(samples_.size(), 1u);
+  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
 }
 
 TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Delayed) {
@@ -243,15 +238,14 @@ TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Delayed) {
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample({.cpu_utilization = 0.25, .cpu_speed = 0.5});
+  cpu_probe().SetLastSample(ComputePressureSample{0.25});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
   sampler_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.25, .cpu_speed = 0.5})));
+  EXPECT_GE(samples_.size(), 1u);
+  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
 }
 
 }  // namespace device

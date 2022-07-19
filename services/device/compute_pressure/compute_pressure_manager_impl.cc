@@ -82,8 +82,7 @@ void ComputePressureManagerImpl::AddClient(
 void ComputePressureManagerImpl::UpdateClients(ComputePressureSample sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const mojom::ComputePressureState state{sample.cpu_utilization,
-                                          sample.cpu_speed};
+  const mojom::ComputePressureState state{sample.cpu_utilization};
   const base::Time timestamp = base::Time::Now();
   for (auto& client : clients_)
     client->ComputePressureStateChanged(state.Clone(), timestamp);

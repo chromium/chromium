@@ -139,8 +139,6 @@ source_set("tests") {
     "compute_pressure/compute_pressure_sampler_unittest.cc",
     "compute_pressure/compute_pressure_test_support.cc",
     "compute_pressure/compute_pressure_test_support.h",
-    "compute_pressure/cpu_core_speed_info_unittest.cc",
-    "compute_pressure/cpuid_base_frequency_parser_unittest.cc",
     "generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer_unittest.cc",
     "generic_sensor/fake_platform_sensor_and_provider.cc",
     "generic_sensor/fake_platform_sensor_and_provider.h",
@@ -313,7 +311,6 @@ source_set("tests") {
     sources += [
       "compute_pressure/cpu_probe_linux_unittest.cc",
       "compute_pressure/procfs_stat_cpu_parser_unittest.cc",
-      "compute_pressure/sysfs_cpufreq_core_parser_unittest.cc",
     ]
   }
 

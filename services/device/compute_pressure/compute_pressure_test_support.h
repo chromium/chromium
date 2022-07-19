@@ -21,17 +21,11 @@ bool operator==(const ComputePressureSample& lhs,
 
 std::ostream& operator<<(std::ostream& os, const ComputePressureSample& sample);
 
-// googletest integration with CpuCoreSpeedInfo.
-struct CpuCoreSpeedInfo;
-std::ostream& operator<<(std::ostream& os, const CpuCoreSpeedInfo& info);
-
 // Test double for CpuProbe that always returns a predetermined value.
 class FakeCpuProbe : public CpuProbe {
  public:
   // Value returned by LastSample() if SetLastSample() is not called.
-  static constexpr ComputePressureSample kInitialSample = {
-      .cpu_utilization = 0.42,
-      .cpu_speed = 0.84};
+  static constexpr ComputePressureSample kInitialSample{0.42};
 
   FakeCpuProbe();
   ~FakeCpuProbe() override;

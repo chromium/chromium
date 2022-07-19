@@ -7,8 +7,7 @@
     Exposed=Window,
     SecureContext
 ] dictionary ComputePressureRecord {
-   // TODO(crbug.com/1308316): Remove cpuSpeed and cpuUtilization.
-   // when switching to new API.
-   double cpuSpeed;
+   // TODO(crbug.com/1308316): Remove cpuUtilization when switching
+   // to new API.
    double cpuUtilization;
 };

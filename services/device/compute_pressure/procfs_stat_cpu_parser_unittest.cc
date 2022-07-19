@@ -66,7 +66,7 @@ TEST_F(ProcfsStatCpuParserTest, MissingFile) {
   ProcfsStatCpuParser parser(fake_stat_path_);
 
   EXPECT_FALSE(parser.Update());
-  EXPECT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(0u)));
+  EXPECT_EQ(parser_->core_times().size(), 0u);
 }
 
 TEST_F(ProcfsStatCpuParserTest, EmptyFile) {
@@ -74,7 +74,7 @@ TEST_F(ProcfsStatCpuParserTest, EmptyFile) {
   EXPECT_EQ(0, stat_file_.GetLength()) << "Incorrect empty file";
   EXPECT_TRUE(parser_->Update());
 
-  EXPECT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(0u)));
+  EXPECT_EQ(parser_->core_times().size(), 0u);
 }
 
 TEST_F(ProcfsStatCpuParserTest, SingleCore_SingleDigit) {
@@ -84,7 +84,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_SingleDigit) {
   ASSERT_TRUE(WriteFakeStat("cpu0 1 2 3 4 5 6 7 8 9 1"));
   EXPECT_TRUE(parser_->Update());
 
-  ASSERT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(1u)));
+  ASSERT_EQ(parser_->core_times().size(), 1u);
   EXPECT_EQ(parser_->core_times()[0].user(), 1u);
   EXPECT_EQ(parser_->core_times()[0].nice(), 2u);
   EXPECT_EQ(parser_->core_times()[0].system(), 3u);
@@ -107,7 +107,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_MultipleDigits) {
       "cpu0 12 3456 789 102345 67890 12345678 9012345 678901234 5 1234567890"));
   EXPECT_TRUE(parser_->Update());
 
-  ASSERT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(1u)));
+  ASSERT_EQ(parser_->core_times().size(), 1u);
   EXPECT_EQ(parser_->core_times()[0].user(), 12u);
   EXPECT_EQ(parser_->core_times()[0].nice(), 3456u);
   EXPECT_EQ(parser_->core_times()[0].system(), 789u);
@@ -124,7 +124,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_TooManyNumbers) {
   ASSERT_TRUE(WriteFakeStat("cpu0 10 11 12 13 14 15 16 17 18 19 20 21 22 23"));
   EXPECT_TRUE(parser_->Update());
 
-  ASSERT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(1u)));
+  ASSERT_EQ(parser_->core_times().size(), 1u);
   EXPECT_EQ(parser_->core_times()[0].user(), 10u);
   EXPECT_EQ(parser_->core_times()[0].nice(), 11u);
   EXPECT_EQ(parser_->core_times()[0].system(), 12u);
@@ -157,7 +157,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_TooFewNumbers) {
     ASSERT_TRUE(WriteFakeStat(test_case));
     EXPECT_TRUE(parser.Update());
 
-    ASSERT_THAT(parser.core_times(), testing::SizeIs(testing::Eq(1u)));
+    ASSERT_EQ(parser.core_times().size(), 1u);
     EXPECT_EQ(parser.core_times()[0].user(), 0u);
     EXPECT_EQ(parser.core_times()[0].nice(), 0u);
     EXPECT_EQ(parser.core_times()[0].system(), 0u);
@@ -175,7 +175,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_NoNumbers) {
   ASSERT_TRUE(WriteFakeStat("cpu0"));
   EXPECT_TRUE(parser_->Update());
 
-  EXPECT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(0u)));
+  EXPECT_EQ(parser_->core_times().size(), 0u);
 }
 
 TEST_F(ProcfsStatCpuParserTest, IncorrectCoreSpecifier) {
@@ -202,7 +202,7 @@ TEST_F(ProcfsStatCpuParserTest, IncorrectCoreSpecifier) {
     ASSERT_TRUE(WriteFakeStat(test_case));
     EXPECT_TRUE(parser.Update());
 
-    EXPECT_THAT(parser.core_times(), testing::SizeIs(testing::Eq(0u)));
+    EXPECT_EQ(parser.core_times().size(), 0u);
   }
 }
 
@@ -229,7 +229,7 @@ TEST_F(ProcfsStatCpuParserTest, InvalidFirstNumber) {
     ASSERT_TRUE(WriteFakeStat(test_case));
     EXPECT_TRUE(parser.Update());
 
-    ASSERT_THAT(parser.core_times(), testing::SizeIs(testing::Eq(1u)));
+    ASSERT_EQ(parser.core_times().size(), 1u);
     EXPECT_EQ(parser.core_times()[0].user(), 0u);
     EXPECT_EQ(parser.core_times()[0].nice(), 0u);
     EXPECT_EQ(parser.core_times()[0].system(), 0u);
@@ -272,7 +272,7 @@ TEST_F(ProcfsStatCpuParserTest, InvalidNumberSkipped) {
     ASSERT_TRUE(WriteFakeStat(test_case.line));
     EXPECT_TRUE(parser.Update());
 
-    ASSERT_THAT(parser.core_times(), testing::SizeIs(testing::Eq(1u)));
+    ASSERT_EQ(parser.core_times().size(), 1u);
 
     EXPECT_EQ(parser.core_times()[0].user(),
               (test_case.invalid_index <= 0) ? 0u : 1u);
@@ -322,7 +322,7 @@ TEST_F(ProcfsStatCpuParserTest, SingleCore_IgnoresCounterDecrease) {
     ProcfsStatCpuParser parser(fake_stat_path_);
     ASSERT_TRUE(WriteFakeStat("cpu0 105 115 125 135 145 155 165 175 185 195"));
     EXPECT_TRUE(parser.Update());
-    ASSERT_THAT(parser.core_times(), testing::SizeIs(testing::Eq(1u)));
+    ASSERT_EQ(parser.core_times().size(), 1u);
 
     ASSERT_TRUE(WriteFakeStat(test_case.line));
     EXPECT_TRUE(parser.Update());
@@ -354,7 +354,7 @@ TEST_F(ProcfsStatCpuParserTest, MissingCores) {
   ASSERT_TRUE(WriteFakeStat("cpu5 1 2 3 4 5 6 7 8 9 1"));
   EXPECT_TRUE(parser_->Update());
 
-  ASSERT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(6u)));
+  ASSERT_EQ(parser_->core_times().size(), 6u);
 
   EXPECT_EQ(parser_->core_times()[5].user(), 1u);
   EXPECT_EQ(parser_->core_times()[5].nice(), 2u);
@@ -400,7 +400,7 @@ softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
   EXPECT_TRUE(parser_->Update());
 
-  ASSERT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(6u)));
+  ASSERT_EQ(parser_->core_times().size(), 6u);
 
   for (int i = 0; i < 6; ++i) {
     EXPECT_EQ(parser_->core_times()[i].user(),

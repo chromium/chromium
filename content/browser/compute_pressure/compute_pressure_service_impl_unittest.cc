@@ -4,6 +4,8 @@
 
 #include "content/browser/compute_pressure/compute_pressure_service_impl.h"
 
+#include <vector>
+
 #include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -22,6 +24,9 @@
 #include "url/gurl.h"
 
 namespace content {
+
+using blink::mojom::ComputePressureQuantization;
+using device::mojom::ComputePressureState;
 
 namespace {
 
@@ -44,7 +49,7 @@ class ComputePressureServiceImplSync {
       const ComputePressureServiceImplSync&) = delete;
 
   blink::mojom::ComputePressureStatus AddObserver(
-      const blink::mojom::ComputePressureQuantization& quantization,
+      const ComputePressureQuantization& quantization,
       mojo::PendingRemote<blink::mojom::ComputePressureObserver> observer) {
     base::test::TestFuture<blink::mojom::ComputePressureStatus> future;
     service_.AddObserver(std::move(observer), quantization.Clone(),
@@ -83,7 +88,7 @@ class FakeComputePressureObserver
     }
   }
 
-  std::vector<device::mojom::ComputePressureState>& updates() {
+  std::vector<ComputePressureState>& updates() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return updates_;
   }
@@ -122,7 +127,7 @@ class FakeComputePressureObserver
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::vector<device::mojom::ComputePressureState> updates_
+  std::vector<ComputePressureState> updates_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to implement WaitForUpdate().
@@ -175,9 +180,7 @@ class ComputePressureServiceImplTest : public RenderViewHostImplTestHarness {
   const GURL kTestUrl{"https://example.com/compute_pressure.html"};
   const GURL kInsecureUrl{"http://example.com/compute_pressure.html"};
   // Quantization scheme used in most tests.
-  const blink::mojom::ComputePressureQuantization kQuantization = {
-      {0.2, 0.5, 0.8},
-      {0.5}};
+  const ComputePressureQuantization kQuantization{{0.2, 0.5, 0.8}};
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -194,12 +197,11 @@ TEST_F(ComputePressureServiceImplTest, OneObserver) {
             blink::mojom::ComputePressureStatus::kOk);
 
   const base::Time time = base::Time::Now() + kRateLimit;
-  const device::mojom::ComputePressureState state{0.42, 0.84};
+  const ComputePressureState state{0.42};
   pressure_manager_overrider_->UpdateClients(state, time);
   observer.WaitForUpdate();
   ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0],
-            device::mojom::ComputePressureState(0.35, 0.75));
+  EXPECT_EQ(observer.updates()[0], ComputePressureState{0.35});
 }
 
 TEST_F(ComputePressureServiceImplTest, OneObserver_UpdateRateLimiting) {
@@ -209,21 +211,20 @@ TEST_F(ComputePressureServiceImplTest, OneObserver_UpdateRateLimiting) {
             blink::mojom::ComputePressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
-  const device::mojom::ComputePressureState state1{0.42, 0.84};
+  const ComputePressureState state1{0.42};
   pressure_manager_overrider_->UpdateClients(state1, time + kRateLimit);
   observer.WaitForUpdate();
   observer.updates().clear();
 
   // The first update should be blocked due to rate-limiting.
-  const device::mojom::ComputePressureState state2{1.0, 1.0};
+  const ComputePressureState state2{1.0};
   pressure_manager_overrider_->UpdateClients(state2, time + kRateLimit * 1.5);
-  const device::mojom::ComputePressureState state3{0.0, 0.0};
+  const ComputePressureState state3{0.0};
   pressure_manager_overrider_->UpdateClients(state3, time + kRateLimit * 2);
   observer.WaitForUpdate();
 
   ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0],
-            device::mojom::ComputePressureState(0.1, 0.25));
+  EXPECT_EQ(observer.updates()[0], ComputePressureState{0.1});
 }
 
 TEST_F(ComputePressureServiceImplTest, OneObserver_NoCallbackInvoked) {
@@ -233,22 +234,20 @@ TEST_F(ComputePressureServiceImplTest, OneObserver_NoCallbackInvoked) {
             blink::mojom::ComputePressureStatus::kOk);
 
   const base::Time time = base::Time::Now() + kRateLimit;
-  const device::mojom::ComputePressureState state1{0.42, 0.84};
+  const ComputePressureState state1{0.42};
   pressure_manager_overrider_->UpdateClients(state1, time);
   observer.WaitForUpdate();
   ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0],
-            device::mojom::ComputePressureState(0.35, 0.75));
+  EXPECT_EQ(observer.updates()[0], ComputePressureState{0.35});
 
   // The first update should be discarded due to same bucket
-  const device::mojom::ComputePressureState state2{0.37, 0.70};
+  const ComputePressureState state2{0.37};
   pressure_manager_overrider_->UpdateClients(state2, time + kRateLimit);
-  const device::mojom::ComputePressureState state3{0.42, 0.42};
+  const ComputePressureState state3{0.52};
   pressure_manager_overrider_->UpdateClients(state3, time + kRateLimit * 2);
   observer.WaitForUpdate();
   ASSERT_EQ(observer.updates().size(), 2u);
-  EXPECT_EQ(observer.updates()[1],
-            device::mojom::ComputePressureState(0.35, 0.25));
+  EXPECT_EQ(observer.updates()[1], ComputePressureState{0.65});
 }
 
 TEST_F(ComputePressureServiceImplTest, OneObserver_AddRateLimiting) {
@@ -265,17 +264,16 @@ TEST_F(ComputePressureServiceImplTest, OneObserver_AddRateLimiting) {
       << "test timings assume that AddObserver completes in at most 500ms";
 
   // The first update should be blocked due to rate-limiting.
-  const device::mojom::ComputePressureState state1{0.42, 0.84};
+  const ComputePressureState state1{0.42};
   const base::Time time1 = before_add + base::Milliseconds(700);
   pressure_manager_overrider_->UpdateClients(state1, time1);
-  const device::mojom::ComputePressureState state2{0.0, 0.0};
+  const ComputePressureState state2{0.0};
   const base::Time time2 = before_add + base::Milliseconds(1600);
   pressure_manager_overrider_->UpdateClients(state2, time2);
   observer.WaitForUpdate();
 
   ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0],
-            device::mojom::ComputePressureState(0.1, 0.25));
+  EXPECT_EQ(observer.updates()[0], ComputePressureState{0.1});
 }
 
 TEST_F(ComputePressureServiceImplTest, ThreeObservers) {
@@ -293,62 +291,57 @@ TEST_F(ComputePressureServiceImplTest, ThreeObservers) {
             blink::mojom::ComputePressureStatus::kOk);
 
   const base::Time time = base::Time::Now() + kRateLimit;
-  const device::mojom::ComputePressureState state{0.42, 0.84};
+  const ComputePressureState state{0.42};
   pressure_manager_overrider_->UpdateClients(state, time);
   FakeComputePressureObserver::WaitForUpdates(
       {&observer1, &observer2, &observer3});
 
   ASSERT_EQ(observer1.updates().size(), 1u);
-  EXPECT_THAT(
-      observer1.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.35, 0.75)));
+  EXPECT_THAT(observer1.updates(),
+              testing::Contains(ComputePressureState{0.35}));
   ASSERT_EQ(observer2.updates().size(), 1u);
-  EXPECT_THAT(
-      observer2.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.35, 0.75)));
+  EXPECT_THAT(observer2.updates(),
+              testing::Contains(ComputePressureState{0.35}));
   ASSERT_EQ(observer3.updates().size(), 1u);
-  EXPECT_THAT(
-      observer3.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.35, 0.75)));
+  EXPECT_THAT(observer3.updates(),
+              testing::Contains(ComputePressureState{0.35}));
 }
 
 TEST_F(ComputePressureServiceImplTest, AddObserver_NewQuantization) {
-  // 0.42, 0.84 would quantize as 0.4, 0.6
-  blink::mojom::ComputePressureQuantization quantization1 = {{0.8}, {0.2}};
+  // 0.42 would quantize as 0.4
+  ComputePressureQuantization quantization1{{0.8}};
   FakeComputePressureObserver observer1;
   ASSERT_EQ(pressure_service_impl_sync_->AddObserver(
                 quantization1, observer1.BindNewPipeAndPassRemote()),
             blink::mojom::ComputePressureStatus::kOk);
 
-  // 0.42, 0.84 would quantize as 0.6, 0.4
-  blink::mojom::ComputePressureQuantization quantization2 = {{0.2}, {0.8}};
+  // 0.42 would quantize as 0.6
+  ComputePressureQuantization quantization2{{0.2}};
   FakeComputePressureObserver observer2;
   ASSERT_EQ(pressure_service_impl_sync_->AddObserver(
                 quantization2, observer2.BindNewPipeAndPassRemote()),
             blink::mojom::ComputePressureStatus::kOk);
 
-  // 0.42, 0.84 will quantize as 0.25, 0.75
-  blink::mojom::ComputePressureQuantization quantization3 = {{0.5}, {0.5}};
+  // 0.42 will quantize as 0.25
+  ComputePressureQuantization quantization3{{0.5}};
   FakeComputePressureObserver observer3;
   ASSERT_EQ(pressure_service_impl_sync_->AddObserver(
                 quantization3, observer3.BindNewPipeAndPassRemote()),
             blink::mojom::ComputePressureStatus::kOk);
 
   const base::Time time = base::Time::Now() + kRateLimit;
-  const device::mojom::ComputePressureState state1{0.42, 0.84};
+  const ComputePressureState state1{0.42};
   pressure_manager_overrider_->UpdateClients(state1, time);
   observer3.WaitForUpdate();
-  const device::mojom::ComputePressureState state2{0.84, 0.42};
+  const ComputePressureState state2{0.84};
   pressure_manager_overrider_->UpdateClients(state2, time + kRateLimit);
   observer3.WaitForUpdate();
 
   ASSERT_EQ(observer3.updates().size(), 2u);
-  EXPECT_THAT(
-      observer3.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.25, 0.75)));
-  EXPECT_THAT(
-      observer3.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.75, 0.25)));
+  EXPECT_THAT(observer3.updates(),
+              testing::Contains(ComputePressureState{0.25}));
+  EXPECT_THAT(observer3.updates(),
+              testing::Contains(ComputePressureState{0.75}));
 
   ASSERT_EQ(observer1.updates().size(), 0u);
   ASSERT_EQ(observer2.updates().size(), 0u);
@@ -365,9 +358,9 @@ TEST_F(ComputePressureServiceImplTest, AddObserver_NoVisibility) {
   test_rvh()->SimulateWasHidden();
 
   // The first two updates should be blocked due to invisibility.
-  const device::mojom::ComputePressureState state1{0.0, 0.0};
+  const ComputePressureState state1{0.0};
   pressure_manager_overrider_->UpdateClients(state1, time + kRateLimit);
-  const device::mojom::ComputePressureState state2{1.0, 1.0};
+  const ComputePressureState state2{1.0};
   pressure_manager_overrider_->UpdateClients(state2, time + kRateLimit * 2);
   task_environment()->RunUntilIdle();
 
@@ -376,13 +369,12 @@ TEST_F(ComputePressureServiceImplTest, AddObserver_NoVisibility) {
   // The third update should be dispatched. It should not be rate-limited by the
   // time proximity to the second update, because the second update is not
   // dispatched.
-  const device::mojom::ComputePressureState state3{1.0, 1.0};
+  const ComputePressureState state3{1.0};
   pressure_manager_overrider_->UpdateClients(state3, time + kRateLimit * 2.5);
   observer.WaitForUpdate();
 
   ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0],
-            device::mojom::ComputePressureState(0.9, 0.75));
+  EXPECT_EQ(observer.updates()[0], ComputePressureState{0.9});
 }
 
 TEST_F(ComputePressureServiceImplTest, AddObserver_InvalidQuantization) {
@@ -392,8 +384,7 @@ TEST_F(ComputePressureServiceImplTest, AddObserver_InvalidQuantization) {
             blink::mojom::ComputePressureStatus::kOk);
 
   FakeComputePressureObserver invalid_observer;
-  blink::mojom::ComputePressureQuantization invalid_quantization(
-      std::vector<double>{-1.0}, std::vector<double>{0.5});
+  ComputePressureQuantization invalid_quantization{{-1.0}};
 
   {
     mojo::test::BadMessageObserver bad_message_observer;
@@ -406,20 +397,18 @@ TEST_F(ComputePressureServiceImplTest, AddObserver_InvalidQuantization) {
 
   const base::Time time = base::Time::Now();
 
-  const device::mojom::ComputePressureState state1{0.0, 0.0};
+  const ComputePressureState state1{0.0};
   pressure_manager_overrider_->UpdateClients(state1, time + kRateLimit);
   valid_observer.WaitForUpdate();
-  const device::mojom::ComputePressureState state2{1.0, 1.0};
+  const ComputePressureState state2{1.0};
   pressure_manager_overrider_->UpdateClients(state2, time + kRateLimit * 2);
   valid_observer.WaitForUpdate();
 
   ASSERT_EQ(valid_observer.updates().size(), 2u);
-  EXPECT_THAT(
-      valid_observer.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.1, 0.25)));
-  EXPECT_THAT(
-      valid_observer.updates(),
-      testing::Contains(device::mojom::ComputePressureState(0.9, 0.75)));
+  EXPECT_THAT(valid_observer.updates(),
+              testing::Contains(ComputePressureState{0.1}));
+  EXPECT_THAT(valid_observer.updates(),
+              testing::Contains(ComputePressureState{0.9}));
 
   ASSERT_EQ(invalid_observer.updates().size(), 0u);
 }

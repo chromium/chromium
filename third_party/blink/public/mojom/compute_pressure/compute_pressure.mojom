@@ -20,14 +20,10 @@ import "services/device/public/mojom/compute_pressure_state.mojom";
 // interval is 0.65, the average of 0.5 and 0.8.
 struct ComputePressureQuantization {
   array<double> cpu_utilization_thresholds;
-  array<double> cpu_speed_thresholds;
 };
 
 // The maximum size of ComputePressureQuantization.cpu_utilization_thresholds.
 const int32 kMaxComputePressureCpuUtilizationThresholds = 3;
-
-// The maximum size of ComputePressureQuantization.cpu_speed_thresholds.
-const int32 kMaxComputePressureCpuSpeedThresholds = 1;
 
 // Implemented by renderers to receive compute pressure info from the browser.
 //

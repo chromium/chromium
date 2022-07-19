@@ -13,13 +13,6 @@ struct ComputePressureSample {
   //
   // Values use a scale from 0.0 (no utilization) to 1.0 (100% utilization).
   double cpu_utilization;
-
-  // Average normalized clock speed over all CPU cores.
-  //
-  // The normalized clock speed for each CPU core uses a piecewise-linear scale
-  // from 0.0 (minimum clock speed) to 0.5 (base clock speed) to 1.0 (maximum
-  // clock-speed).
-  double cpu_speed;
 };
 
 }  // namespace device

@@ -24,13 +24,6 @@ bool ComputePressureQuantizer::IsValid(
   if (!ValueQuantizer::IsValid(quantization.cpu_utilization_thresholds))
     return false;
 
-  if (quantization.cpu_speed_thresholds.size() >
-      blink::mojom::kMaxComputePressureCpuSpeedThresholds) {
-    return false;
-  }
-  if (!ValueQuantizer::IsValid(quantization.cpu_speed_thresholds))
-    return false;
-
   return true;
 }
 
@@ -43,8 +36,6 @@ bool ComputePressureQuantizer::IsSame(
           quantization.cpu_utilization_thresholds)) {
     return false;
   }
-  if (!cpu_speed_quantizer_.IsSame(quantization.cpu_speed_thresholds))
-    return false;
 
   return true;
 }
@@ -56,7 +47,6 @@ device::mojom::ComputePressureState ComputePressureQuantizer::Quantize(
   device::mojom::ComputePressureState state;
   state.cpu_utilization =
       cpu_utilization_quantizer_.Quantize(sample->cpu_utilization);
-  state.cpu_speed = cpu_speed_quantizer_.Quantize(sample->cpu_speed);
 
   return state;
 }
@@ -68,7 +58,6 @@ void ComputePressureQuantizer::Assign(
 
   cpu_utilization_quantizer_.Assign(
       std::move(quantization->cpu_utilization_thresholds));
-  cpu_speed_quantizer_.Assign(std::move(quantization->cpu_speed_thresholds));
 }
 
 ComputePressureQuantizer::ValueQuantizer::ValueQuantizer() = default;

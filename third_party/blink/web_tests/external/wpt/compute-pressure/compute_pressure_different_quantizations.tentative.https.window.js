@@ -4,7 +4,7 @@ promise_test(async t => {
   const observer1_updates = [];
   const observer1 = new ComputePressureObserver(
       update => { observer1_updates.push(update); },
-      {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
+      {cpuUtilizationThresholds: [0.5]});
   t.add_cleanup(() => observer1.disconnect());
   // Ensure that observer1's quantization scheme gets registered as the frame's
   // scheme before observer2 starts.
@@ -17,7 +17,7 @@ promise_test(async t => {
           observer2_updates.push(update);
           resolve();
         },
-        {cpuUtilizationThresholds: [0.25], cpuSpeedThresholds: [0.75]});
+        {cpuUtilizationThresholds: [0.25]});
     t.add_cleanup(() => observer2.disconnect());
     observer2.observe('cpu').catch(reject);
   });
@@ -27,7 +27,7 @@ promise_test(async t => {
   //
   // The check below assumes that observer2.observe() completes before the
   // browser dispatches any update for observer1.  This assumption is highly
-  // likely to be true, because there shold be a 1-second delay between
+  // likely to be true, because there should be a 1-second delay between
   // observer1.observe() and the first update that observer1 would receive.
   assert_equals(
       observer1_updates.length, 0,
@@ -37,8 +37,6 @@ promise_test(async t => {
   assert_equals(observer2_updates.length, 1);
   assert_in_array(observer2_updates[0].cpuUtilization, [0.125, 0.625],
                   'cpuUtilization quantization');
-  assert_in_array(observer2_updates[0].cpuSpeed, [0.375, 0.875],
-                  'cpuSpeed quantization');
 
   // Go through one more update cycle so any (incorrect) update for observer1
   // makes it through the IPC queues.
@@ -52,7 +50,7 @@ promise_test(async t => {
           observer3_updates.push(update);
           resolve();
         },
-        {cpuUtilizationThresholds: [0.75], cpuSpeedThresholds: [0.25]});
+        {cpuUtilizationThresholds: [0.75]});
     t.add_cleanup(() => observer3.disconnect());
     observer3.observe('cpu').catch(reject);
   });
@@ -72,8 +70,5 @@ promise_test(async t => {
   assert_equals(observer3_updates.length, 1);
   assert_in_array(observer3_updates[0].cpuUtilization, [0.375, 0.875],
                   'cpuUtilization quantization');
-  assert_in_array(observer3_updates[0].cpuSpeed, [0.125, 0.625],
-                  'cpuSpeed quantization');
-
 }, 'ComputePressureObserver with a new quantization schema stops all ' +
    'other active observers in the same frame');

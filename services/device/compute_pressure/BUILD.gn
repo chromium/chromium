@@ -13,12 +13,8 @@ source_set("compute_pressure") {
     "compute_pressure_sample.h",
     "compute_pressure_sampler.cc",
     "compute_pressure_sampler.h",
-    "cpu_core_speed_info.cc",
-    "cpu_core_speed_info.h",
     "cpu_probe.cc",
     "cpu_probe.h",
-    "cpuid_base_frequency_parser.cc",
-    "cpuid_base_frequency_parser.h",
   ]
 
   public_deps = [ "//services/device/public/mojom" ]
@@ -26,7 +22,6 @@ source_set("compute_pressure") {
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",
-    "//third_party/re2",
   ]
 
   if (is_linux || is_chromeos) {
@@ -35,8 +30,6 @@ source_set("compute_pressure") {
       "cpu_probe_linux.h",
       "procfs_stat_cpu_parser.cc",
       "procfs_stat_cpu_parser.h",
-      "sysfs_cpufreq_core_parser.cc",
-      "sysfs_cpufreq_core_parser.h",
     ]
   }
 }

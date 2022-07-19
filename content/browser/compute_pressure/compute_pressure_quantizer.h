@@ -85,7 +85,6 @@ class CONTENT_EXPORT ComputePressureQuantizer {
 
   ValueQuantizer cpu_utilization_quantizer_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  ValueQuantizer cpu_speed_quantizer_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

@@ -4,54 +4,33 @@
 
 #include "services/device/compute_pressure/cpu_probe_linux.h"
 
-#include <stdint.h>
-
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/cpu.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
-#include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
-#include "base/strings/pattern.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "services/device/compute_pressure/cpu_core_speed_info.h"
-#include "services/device/compute_pressure/cpuid_base_frequency_parser.h"
 #include "services/device/compute_pressure/procfs_stat_cpu_parser.h"
-#include "services/device/compute_pressure/sysfs_cpufreq_core_parser.h"
 
 namespace device {
 
 // static
 std::unique_ptr<CpuProbeLinux> CpuProbeLinux::Create() {
   return base::WrapUnique(
-      new CpuProbeLinux(base::FilePath(ProcfsStatCpuParser::kProcfsStatPath),
-                        SysfsCpufreqCoreParser::kSysfsCpuPath));
+      new CpuProbeLinux(base::FilePath(ProcfsStatCpuParser::kProcfsStatPath)));
 }
 
 // static
 std::unique_ptr<CpuProbeLinux> CpuProbeLinux::CreateForTesting(
-    base::FilePath procfs_stat_path,
-    const base::FilePath::CharType* sysfs_root_path) {
-  return base::WrapUnique(
-      new CpuProbeLinux(std::move(procfs_stat_path), sysfs_root_path));
+    base::FilePath procfs_stat_path) {
+  return base::WrapUnique(new CpuProbeLinux(std::move(procfs_stat_path)));
 }
 
-CpuProbeLinux::CpuProbeLinux(base::FilePath procfs_stat_path,
-                             const base::FilePath::CharType* sysfs_root_path)
+CpuProbeLinux::CpuProbeLinux(base::FilePath procfs_stat_path)
     : stat_parser_(std::move(procfs_stat_path)),
-      sysfs_root_path_(sysfs_root_path),
       last_sample_(CpuProbe::kUnsupportedValue) {
-  DCHECK(sysfs_root_path_);
-
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -64,11 +43,10 @@ void CpuProbeLinux::Update() {
   const std::vector<ProcfsStatCpuParser::CoreTimes>& core_times =
       stat_parser_.core_times();
 
-  double utilization_sum = 0.0, speed_sum = 0.0;
-  int utilization_cores = 0, speed_cores = 0;
+  double utilization_sum = 0.0;
+  int utilization_cores = 0;
   for (size_t i = 0; i < core_times.size(); ++i) {
     DCHECK_GE(last_core_times_.size(), i);
-    DCHECK_EQ(last_core_times_.size(), cpufreq_parsers_.size());
 
     const ProcfsStatCpuParser::CoreTimes& current_core_times = core_times[i];
 
@@ -86,18 +64,11 @@ void CpuProbeLinux::Update() {
 
       utilization_sum += core_utilization;
       ++utilization_cores;
-
-      double core_speed = CoreSpeed(*cpufreq_parsers_[i]);
-      if (core_speed >= 0) {
-        speed_sum += core_speed;
-        ++speed_cores;
-      }
     }
   }
 
-  if (utilization_cores > 0 && speed_cores > 0) {
+  if (utilization_cores > 0) {
     last_sample_.cpu_utilization = utilization_sum / utilization_cores;
-    last_sample_.cpu_speed = speed_sum / speed_cores;
   } else {
     last_sample_ = CpuProbe::kUnsupportedValue;
   }
@@ -108,49 +79,14 @@ ComputePressureSample CpuProbeLinux::LastSample() {
   return last_sample_;
 }
 
-constexpr int64_t CpuProbeLinux::kUninitializedCpuidBaseFrequency;
-
 void CpuProbeLinux::InitializeCore(
     int core_index,
     const ProcfsStatCpuParser::CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(core_index, 0);
   DCHECK_EQ(last_core_times_.size(), static_cast<size_t>(core_index));
-  DCHECK_EQ(cpufreq_parsers_.size(), static_cast<size_t>(core_index));
-
-  if (core_index == 0)
-    Initialize();
 
   last_core_times_.push_back(initial_core_times);
-  cpufreq_parsers_.emplace_back(std::make_unique<SysfsCpufreqCoreParser>(
-      SysfsCpufreqCoreParser::CorePath(core_index, sysfs_root_path_)));
-}
-
-void CpuProbeLinux::Initialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(cpuid_base_frequency_, kUninitializedCpuidBaseFrequency)
-      << __func__ << " already called";
-
-  base::CPU cpu;
-  cpuid_base_frequency_ = ParseBaseFrequencyFromCpuid(cpu.cpu_brand());
-  DCHECK_GE(cpuid_base_frequency_, -1);
-}
-
-double CpuProbeLinux::CoreSpeed(SysfsCpufreqCoreParser& cpufreq_parser) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CpuCoreSpeedInfo core_speed_info;
-  core_speed_info.max_frequency = cpufreq_parser.ReadMaxFrequency();
-  core_speed_info.min_frequency = cpufreq_parser.ReadMinFrequency();
-  core_speed_info.current_frequency = cpufreq_parser.ReadCurrentFrequency();
-  core_speed_info.base_frequency = cpufreq_parser.ReadBaseFrequency();
-  if (core_speed_info.base_frequency == -1)
-    core_speed_info.base_frequency = cpuid_base_frequency_;
-
-  if (!core_speed_info.IsValid())
-    return -1;
-
-  return core_speed_info.NormalizedSpeed();
 }
 
 }  // namespace device

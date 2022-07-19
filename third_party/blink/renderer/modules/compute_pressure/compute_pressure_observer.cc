@@ -88,19 +88,6 @@ bool NormalizeObserverOptions(ComputePressureObserverOptions& options,
   }
   options.setCpuUtilizationThresholds(cpu_utilization_thresholds);
 
-  Vector<double> cpu_speed_thresholds = options.cpuSpeedThresholds();
-  if (cpu_speed_thresholds.size() >
-      mojom::blink::kMaxComputePressureCpuSpeedThresholds) {
-    cpu_speed_thresholds.resize(
-        mojom::blink::kMaxComputePressureCpuSpeedThresholds);
-  }
-  std::sort(cpu_speed_thresholds.begin(), cpu_speed_thresholds.end());
-  if (!ValidateThresholds(cpu_speed_thresholds, exception_state)) {
-    DCHECK(exception_state.HadException());
-    return false;
-  }
-  options.setCpuSpeedThresholds(cpu_speed_thresholds);
-
   return true;
 }
 
@@ -152,8 +139,7 @@ ScriptPromise ComputePressureObserver::observe(
           ->GetTaskRunner(TaskType::kMiscPlatformAPI);
 
   auto mojo_options = mojom::blink::ComputePressureQuantization::New(
-      normalized_options_->cpuUtilizationThresholds(),
-      normalized_options_->cpuSpeedThresholds());
+      normalized_options_->cpuUtilizationThresholds());
 
   compute_pressure_service_->AddObserver(
       receiver_.BindNewPipeAndPassRemote(std::move(task_runner)),
@@ -206,7 +192,6 @@ void ComputePressureObserver::OnUpdate(
     device::mojom::blink::ComputePressureStatePtr state) {
   auto* record = ComputePressureRecord::Create();
   record->setCpuUtilization(state->cpu_utilization);
-  record->setCpuSpeed(state->cpu_speed);
 
   // This should happen infrequently since `records_` is supposed
   // to be emptied at every callback invoking or takeRecords().

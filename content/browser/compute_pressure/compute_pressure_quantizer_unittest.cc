@@ -13,11 +13,14 @@
 
 namespace content {
 
+using blink::mojom::ComputePressureQuantization;
+using device::mojom::ComputePressureState;
+
 TEST(ComputePressureQuantizer, IsValid_Valid) {
-  std::vector<blink::mojom::ComputePressureQuantization> valid_cases = {
-      {{}, {}},
-      {{0.5}, {0.5}},
-      {{0.2, 0.5, 0.8}, {0.5}},
+  std::vector<ComputePressureQuantization> valid_cases = {
+      ComputePressureQuantization{},
+      ComputePressureQuantization{{0.5}},
+      ComputePressureQuantization{{0.2, 0.5, 0.8}},
   };
 
   for (const auto& quantization : valid_cases) {
@@ -26,18 +29,15 @@ TEST(ComputePressureQuantizer, IsValid_Valid) {
 }
 
 TEST(ComputePressureQuantizer, IsValid_Invalid) {
-  std::vector<blink::mojom::ComputePressureQuantization> invalid_cases = {
-      {{0.2, 0.3, 0.4, 0.5}, {0.5}},  // Too many utilization thresholds.
-      {{0.5}, {0.2, 0.5, 0.8}},       // Too many speed thresholds.
-      {{0.2, 0.8, 0.5}, {0.5}},       // Incorrectly sorted thresholds.
-      {{-1.0}, {0.5}},                // Threshold outside range.
-      {{0.0}, {0.5}},
-      {{1.0}, {0.5}},
-      {{2.0}, {0.5}},
-      {{0.5}, {-1.0}},
-      {{0.5}, {0.0}},
-      {{0.5}, {1.0}},
-      {{0.5}, {2.0}},
+  std::vector<ComputePressureQuantization> invalid_cases = {
+      ComputePressureQuantization{
+          {0.2, 0.3, 0.4, 0.5}},  // Too many utilization thresholds.
+      ComputePressureQuantization{
+          {0.2, 0.8, 0.5}},                 // Incorrectly sorted thresholds.
+      ComputePressureQuantization{{-1.0}},  // Threshold outside range.
+      ComputePressureQuantization{{0.0}},
+      ComputePressureQuantization{{1.0}},
+      ComputePressureQuantization{{2.0}},
   };
 
   for (const auto& quantization : invalid_cases) {
@@ -46,12 +46,15 @@ TEST(ComputePressureQuantizer, IsValid_Invalid) {
 }
 
 TEST(ComputePressureQuantizer, IsSame_True) {
-  std::vector<std::pair<blink::mojom::ComputePressureQuantization,
-                        blink::mojom::ComputePressureQuantization>>
+  std::vector<
+      std::pair<ComputePressureQuantization, ComputePressureQuantization>>
       true_cases = {
-          {{{0.1}, {0.2}}, {{0.1}, {0.2}}},
-          {{{0.2, 0.5, 0.8}, {0.5}}, {{0.2, 0.5, 0.8}, {0.5}}},
-          {{{0.3}, {0.2}}, {{0.1 + 0.1 + 0.1}, {0.1 + 0.1}}},
+          {ComputePressureQuantization{{0.1}},
+           ComputePressureQuantization{{0.1}}},
+          {ComputePressureQuantization{{0.2, 0.5, 0.8}},
+           ComputePressureQuantization{{0.2, 0.5, 0.8}}},
+          {ComputePressureQuantization{{0.3}},
+           ComputePressureQuantization{{0.1 + 0.1 + 0.1}}},
       };
 
   for (const auto& quantizations : true_cases) {
@@ -62,19 +65,21 @@ TEST(ComputePressureQuantizer, IsSame_True) {
 }
 
 TEST(ComputePressureQuantizer, IsSame_False) {
-  std::vector<std::pair<blink::mojom::ComputePressureQuantization,
-                        blink::mojom::ComputePressureQuantization>>
+  std::vector<
+      std::pair<ComputePressureQuantization, ComputePressureQuantization>>
       false_cases = {
-          {{{0.1}, {0.2}}, {{0.2}, {0.2}}},
-          {{{0.1}, {0.2}}, {{0.1}, {0.3}}},
-          {{{0.1, 0.15}, {0.2}}, {{0.1}, {0.2}}},
-          {{{0.1}, {}}, {{0.1}, {0.2}}},
-          {{{0.1}, {0.2}}, {{0.1, 0.15}, {0.2}}},
-          {{{0.1}, {0.2}}, {{0.1}, {}}},
-          {{{0.1}, {0.2}}, {{0.101}, {0.2}}},
-          {{{0.1}, {0.2}}, {{0.1}, {0.201}}},
-          {{{0.2, 0.5, 0.8}, {0.5}}, {{0.2, 0.6, 0.8}, {0.5}}},
-          {{{0.2, 0.5, 0.8}, {0.5}}, {{0.2, 0.5, 0.9}, {0.5}}},
+          {ComputePressureQuantization{{0.1}},
+           ComputePressureQuantization{{0.2}}},
+          {ComputePressureQuantization{{0.1, 0.15}},
+           ComputePressureQuantization{{0.1}}},
+          {ComputePressureQuantization{{0.1}},
+           ComputePressureQuantization{{0.1, 0.15}}},
+          {ComputePressureQuantization{{0.1}},
+           ComputePressureQuantization{{0.101}}},
+          {ComputePressureQuantization{{0.2, 0.5, 0.8}},
+           ComputePressureQuantization{{0.2, 0.6, 0.8}}},
+          {ComputePressureQuantization{{0.2, 0.5, 0.8}},
+           ComputePressureQuantization{{0.2, 0.5, 0.9}}},
       };
 
   for (const auto& quantizations : false_cases) {
@@ -86,45 +91,42 @@ TEST(ComputePressureQuantizer, IsSame_False) {
 
 TEST(ComputePressureQuantizer, Quantize_Empty) {
   ComputePressureQuantizer quantizer;
-  auto empty_quantization_ptr =
-      blink::mojom::ComputePressureQuantization::New();
+  auto empty_quantization_ptr = ComputePressureQuantization::New();
   quantizer.Assign(std::move(empty_quantization_ptr));
 
-  EXPECT_EQ(device::mojom::ComputePressureState(0.5, 0.5),
-            quantizer.Quantize(
-                device::mojom::ComputePressureState(0.0, 0.0).Clone()));
-  EXPECT_EQ(device::mojom::ComputePressureState(0.5, 0.5),
-            quantizer.Quantize(
-                device::mojom::ComputePressureState(1.0, 1.0).Clone()));
+  EXPECT_EQ(ComputePressureState{0.5},
+            quantizer.Quantize(ComputePressureState{0.0}.Clone()));
+  EXPECT_EQ(ComputePressureState{0.5},
+            quantizer.Quantize(ComputePressureState{1.0}.Clone()));
 }
 
 TEST(ComputePressureQuantizer, Quantize) {
   ComputePressureQuantizer quantizer;
-  auto quantization_ptr = blink::mojom::ComputePressureQuantization::New(
-      std::vector<double>{0.2, 0.5, 0.8}, std::vector<double>{0.5});
+  auto quantization_ptr =
+      ComputePressureQuantization::New(std::vector<double>{0.2, 0.5, 0.8});
   quantizer.Assign(std::move(quantization_ptr));
 
-  std::vector<std::pair<device::mojom::ComputePressureState,
-                        device::mojom::ComputePressureState>>
+  std::vector<std::pair<ComputePressureState, ComputePressureState>>
       test_cases = {
-          {{0.0, 0.0}, {0.1, 0.25}},    {{1.0, 0.0}, {0.9, 0.25}},
-          {{0.0, 1.0}, {0.1, 0.75}},    {{1.0, 1.0}, {0.9, 0.75}},
-          {{0.1, 0.1}, {0.1, 0.25}},    {{0.19, 0.19}, {0.1, 0.25}},
-          {{0.21, 0.21}, {0.35, 0.25}}, {{0.49, 0.49}, {0.35, 0.25}},
-          {{0.51, 0.51}, {0.65, 0.75}}, {{0.79, 0.79}, {0.65, 0.75}},
-          {{0.81, 0.81}, {0.9, 0.75}},  {{0.99, 0.99}, {0.9, 0.75}},
+          {ComputePressureState{0.0}, ComputePressureState{0.1}},
+          {ComputePressureState{1.0}, ComputePressureState{0.9}},
+          {ComputePressureState{0.1}, ComputePressureState{0.1}},
+          {ComputePressureState{0.19}, ComputePressureState{0.1}},
+          {ComputePressureState{0.21}, ComputePressureState{0.35}},
+          {ComputePressureState{0.49}, ComputePressureState{0.35}},
+          {ComputePressureState{0.51}, ComputePressureState{0.65}},
+          {ComputePressureState{0.79}, ComputePressureState{0.65}},
+          {ComputePressureState{0.81}, ComputePressureState{0.9}},
+          {ComputePressureState{0.99}, ComputePressureState{0.9}},
       };
 
   for (const auto& test_case : test_cases) {
-    device::mojom::ComputePressureState input = test_case.first;
-    device::mojom::ComputePressureState expected = test_case.second;
-    device::mojom::ComputePressureState output =
-        quantizer.Quantize(input.Clone());
+    ComputePressureState input = test_case.first;
+    ComputePressureState expected = test_case.second;
+    ComputePressureState output = quantizer.Quantize(input.Clone());
 
     EXPECT_DOUBLE_EQ(expected.cpu_utilization, output.cpu_utilization)
         << "Input cpu_utilization is: " << input.cpu_utilization;
-    EXPECT_DOUBLE_EQ(expected.cpu_speed, output.cpu_speed)
-        << "Input cpu_speed is: " << input.cpu_speed;
   }
 }
 

@@ -58,6 +58,8 @@ class CONTENT_EXPORT ComputePressureServiceImpl
                                    base::Time timestamp) override;
 
  private:
+  friend class content::DocumentUserData<ComputePressureServiceImpl>;
+
   ComputePressureServiceImpl(RenderFrameHost* render_frame_host,
                              base::TimeDelta visible_observer_rate_limit);
 

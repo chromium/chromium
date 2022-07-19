@@ -198,7 +198,7 @@ void ComputePressureServiceImpl::ResetObserverState() {
   last_reported_timestamp_ = base::Time::Now();
 
   // Setting to an invalid value, so any state is considered an update.
-  last_reported_state_ = {/*cpu_utilization=*/-1, /*cpu_speed=*/-1};
+  last_reported_state_ = device::mojom::ComputePressureState(-1);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(ComputePressureServiceImpl);

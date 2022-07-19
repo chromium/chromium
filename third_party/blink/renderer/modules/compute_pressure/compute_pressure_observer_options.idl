@@ -8,5 +8,4 @@
     SecureContext
 ] dictionary ComputePressureObserverOptions {
   sequence<double> cpuUtilizationThresholds = [];
-  sequence<double> cpuSpeedThresholds = [];
 };

@@ -32,11 +32,8 @@ namespace device {
 class CpuProbe {
  public:
   // LastSample() return value when the implementation fails to get a result.
-  static constexpr ComputePressureSample kUnsupportedValue = {
-      .cpu_utilization = 0.0,
-      // CPUs without dynamic clocking are considered to run at base speed.
-      .cpu_speed = 0.5,
-  };
+  static constexpr ComputePressureSample kUnsupportedValue = {.cpu_utilization =
+                                                                  0.0};
 
   // Instantiates the CpuProbe subclass most suitable for the current platform.
   //

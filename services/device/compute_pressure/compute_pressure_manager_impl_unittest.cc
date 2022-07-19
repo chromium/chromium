@@ -160,7 +160,7 @@ TEST_F(ComputePressureManagerImplTest, MAYBE_OneClient) {
 
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0].first, mojom::ComputePressureState(0.42, 0.84));
+  EXPECT_EQ(client.updates()[0].first, mojom::ComputePressureState{0.42});
 }
 
 // Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
@@ -184,14 +184,11 @@ TEST_F(ComputePressureManagerImplTest, MAYBE_ThreeClients) {
 
   FakeComputePressureClient::WaitForUpdates({&client1, &client2, &client3});
   ASSERT_EQ(client1.updates().size(), 1u);
-  EXPECT_EQ(client1.updates()[0].first,
-            mojom::ComputePressureState(0.42, 0.84));
+  EXPECT_EQ(client1.updates()[0].first, mojom::ComputePressureState{0.42});
   ASSERT_EQ(client2.updates().size(), 1u);
-  EXPECT_EQ(client2.updates()[0].first,
-            mojom::ComputePressureState(0.42, 0.84));
+  EXPECT_EQ(client2.updates()[0].first, mojom::ComputePressureState{0.42});
   ASSERT_EQ(client3.updates().size(), 1u);
-  EXPECT_EQ(client3.updates()[0].first,
-            mojom::ComputePressureState(0.42, 0.84));
+  EXPECT_EQ(client3.updates()[0].first, mojom::ComputePressureState{0.42});
 }
 
 TEST_F(ComputePressureManagerImplTest, AddClient_NoProbe) {
