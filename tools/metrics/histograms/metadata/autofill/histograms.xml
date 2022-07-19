@@ -1837,6 +1837,16 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
+<histogram name="Autofill.LabelInference.AssignedLabelSource"
+    enum="AssignedLabelSource" expires_after="2022-09-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs how a label for=x element was assigned to an input. Emitted during
+    label inference.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.LocalCardMigrationBubbleOffer{AutofillLocalCardMigrationBubbleShow}"
     enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2022-10-01">

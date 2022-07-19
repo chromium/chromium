@@ -4845,6 +4845,13 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Bottom right"/>
 </enum>
 
+<enum name="AssignedLabelSource">
+  <int value="0" label="Id"/>
+  <int value="1" label="Name"/>
+  <int value="2" label="Shadow host id"/>
+  <int value="3" label="Shadow host name"/>
+</enum>
+
 <enum name="Assistant.LibassistantDlcInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>

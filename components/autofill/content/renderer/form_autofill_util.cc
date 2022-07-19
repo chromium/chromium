@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -1295,6 +1296,17 @@ struct CompareByRendererId {
   }
 };
 
+// Autofill supports assigning <label for=x> tags to inputs if x its id/name,
+// or the id/name of a shadow host element containing the input.
+// This enum is used to track how often each case occurs in practise.
+enum class AssignedLabelSource {
+  kId = 0,
+  kName = 1,
+  kShadowHostId = 2,
+  kShadowHostName = 3,
+  kMaxValue = kShadowHostName,
+};
+
 // Searches |field_set| for a unique field with name |field_name|. If there is
 // none or more than one field with that name, the fields' shadow hosts' name
 // and id attributes are tested, and the first match is returned. Returns
@@ -1302,7 +1314,8 @@ struct CompareByRendererId {
 FormFieldData* SearchForFormControlByName(
     const std::u16string& field_name,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
-                         CompareByRendererId>& field_set) {
+                         CompareByRendererId>& field_set,
+    AssignedLabelSource& label_source) {
   if (field_name.empty())
     return nullptr;
 
@@ -1316,6 +1329,14 @@ FormFieldData* SearchForFormControlByName(
              base::Contains(p.second.shadow_host_id_attributes, field_name);
     };
     it = base::ranges::find_if(field_set, ShadowHostHasTargetName);
+    if (it != end) {
+      label_source =
+          base::Contains(it->second.shadow_host_name_attributes, field_name)
+              ? AssignedLabelSource::kShadowHostName
+              : AssignedLabelSource::kShadowHostId;
+    }
+  } else {
+    label_source = AssignedLabelSource::kName;
   }
   return it != end ? it->first : nullptr;
 }
@@ -1340,12 +1361,13 @@ void MatchLabelsAndFields(
     WebLabelElement label = item.To<WebLabelElement>();
     WebElement control = label.CorrespondingControl();
     FormFieldData* field_data = nullptr;
+    auto label_source = AssignedLabelSource::kId;
 
     if (control.IsNull()) {
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
       field_data = SearchForFormControlByName(label.GetAttribute(*kFor).Utf16(),
-                                              field_set);
+                                              field_set, label_source);
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
       if (form_control.FormControlTypeForAutofill() == *kHidden)
@@ -1367,6 +1389,11 @@ void MatchLabelsAndFields(
     if (!field_data->label.empty() && !label_text.empty())
       field_data->label += u" ";
     field_data->label += label_text;
+    // This temporary histogram is emitted inline, because browser files like
+    // AutofillMetrics cannot be included here.
+    // TODO(crbug.com/1339277): Remove.
+    base::UmaHistogramEnumeration("Autofill.LabelInference.AssignedLabelSource",
+                                  label_source);
   }
 }
 
