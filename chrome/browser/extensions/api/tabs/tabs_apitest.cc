@@ -22,6 +22,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -464,6 +465,26 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, IncognitoExtensionApiTabTest, testing::Bool());
+
+class ExtensionApiTabPrerenderingTest : public ExtensionApiTabTest {
+ public:
+  ExtensionApiTabPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &ExtensionApiTabPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~ExtensionApiTabPrerenderingTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetWebContentsAt(0);
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, Prerendering) {
+  ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
+}
 
 // Adding a new test? Awesome. But API tests are the old hotness. The new
 // hotness is extension_function_test_utils. See tabs_test.cc for an example.
