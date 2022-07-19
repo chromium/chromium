@@ -136,6 +136,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/history/HistoryUITest.java",
   "junit/src/org/chromium/chrome/browser/history_clusters/HistoryClustersCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMediatorTest.java",
+  "junit/src/org/chromium/chrome/browser/history_clusters/HistoryClustersMetricsLoggerTest.java",
   "junit/src/org/chromium/chrome/browser/homepage/HomepageManagerTest.java",
   "junit/src/org/chromium/chrome/browser/homepage/HomepagePolicyManagerTest.java",
   "junit/src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsUnitTest.java",
