@@ -127,11 +127,10 @@ void WebBundler::WriteWebBundleIndex() {
                                 reinterpret_cast<const char*>(body->data()),
                                 body->size())
                           : "");
-    GURL url = info->url;
-    GURL::Replacements replacements;
-    replacements.ClearRef();
-    url = url.ReplaceComponents(replacements);
-    builder.AddIndexEntry(url.spec(), response_location);
+    GURL::Replacements resource_replacements;
+    resource_replacements.ClearRef();
+    GURL resource_url = info->url.ReplaceComponents(resource_replacements);
+    builder.AddIndexEntry(resource_url.spec(), response_location);
   }
   std::vector<uint8_t> bundle = builder.CreateBundle();
   int written_size = file_.WriteAtCurrentPos(
