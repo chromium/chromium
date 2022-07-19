@@ -2059,10 +2059,6 @@
       status: "experimental",
     },
     {
-      name: "ScrollSnapAfterLayout",
-      status: "stable",
-    },
-    {
       name: "ScrollTimeline",
       status: "experimental",
       implied_by: ["AnimationWorklet", "CSSScrollTimeline"]
