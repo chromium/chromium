@@ -4951,6 +4951,35 @@ TEST_P(PaintPropertyTreeBuilderTest, PixelMovingFilter) {
             clip->PaintClipRect().Rect());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, SimpleFilterWithWillChangeTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='filter' style='filter:opacity(0.5); height:1000px;
+                            will-change: transform'>"
+    </div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("filter");
+  ASSERT_TRUE(properties);
+  auto* filter = properties->Filter();
+  ASSERT_TRUE(filter);
+  EXPECT_TRUE(filter->HasDirectCompositingReasons());
+  EXPECT_FALSE(properties->PixelMovingFilterClipExpander());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilterCreatesClipExpander) {
+  SetBodyInnerHTML(
+      "<div id='filter' style='height:1000px; will-change: filter'>");
+
+  auto* properties = PaintPropertiesForElement("filter");
+  ASSERT_TRUE(properties);
+  auto* filter = properties->Filter();
+  ASSERT_TRUE(filter);
+  EXPECT_TRUE(filter->HasDirectCompositingReasons());
+  auto* clip_expander = properties->PixelMovingFilterClipExpander();
+  ASSERT_TRUE(clip_expander);
+  EXPECT_EQ(filter, clip_expander->PixelMovingFilter());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, FilterReparentClips) {
   SetBodyInnerHTML(R"HTML(
     <div id='clip' style='overflow:hidden;'>

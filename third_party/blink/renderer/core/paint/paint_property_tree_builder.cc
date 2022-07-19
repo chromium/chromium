@@ -1704,7 +1704,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
       // This must be computed before std::move(state) below.
       bool needs_pixel_moving_filter_clip_expander =
-          state.direct_compositing_reasons != CompositingReason::kNone ||
+          (state.direct_compositing_reasons &
+           (CompositingReason::kWillChangeFilter |
+            CompositingReason::kActiveFilterAnimation)) ||
           state.filter.HasFilterThatMovesPixels();
 
       EffectPaintPropertyNode::AnimationState animation_state;

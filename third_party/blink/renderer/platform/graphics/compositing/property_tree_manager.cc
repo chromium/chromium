@@ -1272,7 +1272,8 @@ void PropertyTreeManager::UpdatePixelMovingFilterClipExpanders() {
     DCHECK(cc_clip);
     cc_clip->pixel_moving_filter_id =
         clip->PixelMovingFilter()->CcNodeId(new_sequence_number_);
-    DCHECK(!cc_clip->AppliesLocalClip());
+    // No DCHECK(!cc_clip->AppliesLocalClip()) because the PixelMovingFilter
+    // may not be composited, and the clip node is a no-op node.
   }
   pixel_moving_filter_clip_expanders_.clear();
 }

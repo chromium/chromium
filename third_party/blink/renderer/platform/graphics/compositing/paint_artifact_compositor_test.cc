@@ -4739,4 +4739,53 @@ TEST_P(PaintArtifactCompositorTest, ClearChangedStateWithIndirectTransform) {
   // This test passes if no DCHECK occurs.
 }
 
+TEST_P(PaintArtifactCompositorTest,
+       CompositedPixelMovingFilterWithClipExpander) {
+  CompositorFilterOperations filter_op;
+  filter_op.AppendBlurFilter(5);
+  auto filter =
+      CreateFilterEffect(e0(), filter_op, CompositingReason::kWillChangeFilter);
+  auto clip_expander = ClipPaintPropertyNode::Create(
+      c0(), ClipPaintPropertyNode::State(&t0(), filter.get()));
+
+  Update(TestPaintArtifact()
+             .Chunk(t0(), *clip_expander, *filter)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
+             .Build());
+  ASSERT_EQ(1u, LayerCount());
+  const auto* cc_clip_expander =
+      GetPropertyTrees().clip_tree().Node(LayerAt(0)->clip_tree_index());
+  EXPECT_FALSE(cc_clip_expander->AppliesLocalClip());
+  EXPECT_EQ(cc_clip_expander->pixel_moving_filter_id,
+            LayerAt(0)->effect_tree_index());
+}
+
+TEST_P(PaintArtifactCompositorTest,
+       NonCompositedPixelMovingFilterWithCompositedClipExpander) {
+  CompositorFilterOperations filter_op;
+  filter_op.AppendBlurFilter(5);
+  auto filter = CreateFilterEffect(e0(), filter_op);
+  auto clip_expander = ClipPaintPropertyNode::Create(
+      c0(), ClipPaintPropertyNode::State(&t0(), filter.get()));
+
+  EffectPaintPropertyNode::State mask_state;
+  mask_state.local_transform_space = &t0();
+  mask_state.output_clip = clip_expander.get();
+  mask_state.blend_mode = SkBlendMode::kDstIn;
+  mask_state.direct_compositing_reasons =
+      CompositingReason::kBackdropFilterMask;
+  auto mask = EffectPaintPropertyNode::Create(e0(), std::move(mask_state));
+
+  Update(TestPaintArtifact()
+             .Chunk(t0(), *clip_expander, *filter)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
+             .Chunk(t0(), *clip_expander, *mask)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kBlack)
+             .Build());
+  ASSERT_EQ(2u, LayerCount());
+  const auto* cc_clip_expander =
+      GetPropertyTrees().clip_tree().Node(LayerAt(0)->clip_tree_index());
+  EXPECT_TRUE(cc_clip_expander->AppliesLocalClip());
+}
+
 }  // namespace blink
