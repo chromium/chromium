@@ -14,7 +14,6 @@ After frame navigate
                       <head></head>
                     - <body>
                           <div id="iframe-2-element"></div>
-                          #top-layer
                       </body>
                   </html>
           </iframe>

@@ -27,7 +27,7 @@ external/wpt/infrastructure/reftest/reftest_multiple_mismatch-1.html [ Failure ]
 accessibility/slot-poison.html [ Failure ]
 
 # Temporarily disabled for a DevTools roll.
-crbug.com/1343290 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
+crbug.com/1313690 http/tests/devtools/elements/iframe-load-event.js [ Failure Pass ]
 
 # Temporarily disabled for DevTools.
 
