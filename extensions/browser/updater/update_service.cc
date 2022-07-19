@@ -108,7 +108,7 @@ void UpdateService::OnEvent(Events event, const std::string& extension_id) {
   bool should_perform_action_on_omaha_attributes = false;
 
   switch (event) {
-    case Events::COMPONENT_NOT_UPDATED:
+    case Events::COMPONENT_ALREADY_UP_TO_DATE:
       should_perform_action_on_omaha_attributes = true;
       break;
     case Events::COMPONENT_UPDATE_FOUND:

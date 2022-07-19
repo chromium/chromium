@@ -750,7 +750,7 @@ void Component::StateUpToDate::DoHandle() {
   auto& component = State::component();
   DCHECK(component.crx_component());
 
-  component.NotifyObservers(Events::COMPONENT_NOT_UPDATED);
+  component.NotifyObservers(Events::COMPONENT_ALREADY_UP_TO_DATE);
   EndState();
 }
 

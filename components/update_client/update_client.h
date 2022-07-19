@@ -411,7 +411,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
 
       // Sent when a CRX has not been updated because there was no update
       // available for this component.
-      COMPONENT_NOT_UPDATED,
+      COMPONENT_ALREADY_UP_TO_DATE,
 
       // Sent when an error ocurred during an update for any reason, including
       // the update check itself failed, or the download of the update payload

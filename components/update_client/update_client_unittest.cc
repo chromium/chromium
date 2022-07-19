@@ -359,7 +359,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
   }
@@ -586,8 +586,9 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                   "abagagagagagagagagagagagagagagag")).Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
-                                  "abagagagagagagagagagagagagagagag")).Times(1);
+    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
+                                  "abagagagagagagagagagagagagagagag"))
+        .Times(1);
   }
 
   std::vector<CrxUpdateItem> items;
@@ -2536,13 +2537,13 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
-    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
   }
@@ -3026,7 +3027,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
 
@@ -3322,19 +3323,19 @@ TEST_F(UpdateClientTest, RetryAfter) {
   EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
   EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
   EXPECT_CALL(observer, OnEvent(Events::COMPONENT_CHECKING_FOR_UPDATES,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
-  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_NOT_UPDATED,
+  EXPECT_CALL(observer, OnEvent(Events::COMPONENT_ALREADY_UP_TO_DATE,
                                 "jebgalgnebhfojomionfpkfelancnnkf"))
       .Times(1);
 
@@ -4419,7 +4420,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
         : update_client_(update_client) {}
 
     void OnEvent(Events event, const std::string& id) override {
-      if (event != Events::COMPONENT_NOT_UPDATED)
+      if (event != Events::COMPONENT_ALREADY_UP_TO_DATE)
         return;
       ++calls;
       CrxUpdateItem item;

@@ -412,7 +412,7 @@ void SwReporterOnDemandFetcher::OnEvent(Events event, const std::string& id) {
   if (id != kSwReporterComponentId)
     return;
 
-  if (event == Events::COMPONENT_NOT_UPDATED ||
+  if (event == Events::COMPONENT_ALREADY_UP_TO_DATE ||
       event == Events::COMPONENT_UPDATE_ERROR) {
     ReportOnDemandUpdateSucceededHistogram(false);
     std::move(on_error_callback_).Run();

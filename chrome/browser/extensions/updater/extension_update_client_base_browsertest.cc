@@ -101,9 +101,10 @@ class UpdateClientCompleteEventWaiter
 
   void OnEvent(update_client::UpdateClient::Observer::Events event,
                const std::string& id) final {
-    if (id_ == id && (event == UpdateClientEvents::COMPONENT_UPDATED ||
-                      event == UpdateClientEvents::COMPONENT_NOT_UPDATED ||
-                      event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
+    if (id_ == id &&
+        (event == UpdateClientEvents::COMPONENT_UPDATED ||
+         event == UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE ||
+         event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
       event_ = event;
       run_loop_.Quit();
     }

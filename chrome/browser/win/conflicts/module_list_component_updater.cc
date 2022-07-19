@@ -71,13 +71,14 @@ void ModuleListComponentUpdater::OnEvent(Events event,
   // For the second case, it means that the server is not offering any update
   // right now, either because it is too busy, or there is an issue with the
   // server-side component configuration.
-  //
-  // Note:
-  // The COMPONENT_NOT_UPDATED event can also be broadcasted when the component
-  // is already up-to-date. This is not the case here because this class only
-  // registers to the component updater service as an observer when the
-  // component version is 0.0.0.0 (aka not installed).
-  if (event == Events::COMPONENT_NOT_UPDATED ||
+
+  // Note: Because this class only registers as an observer to the component
+  // update service when the current component version is 0.0.0.0 (aka not
+  // installed), it is not possible that the service indicates that the
+  // component is up-to-date. But COMPONENT_ALREADY_UP_TO_DATE can also be
+  // broadcasted for different reasons, which is why it is being checked here.
+
+  if (event == Events::COMPONENT_ALREADY_UP_TO_DATE ||
       event == Events::COMPONENT_UPDATE_ERROR) {
     ModuleDatabase::GetTaskRunner()->PostTask(
         FROM_HERE,

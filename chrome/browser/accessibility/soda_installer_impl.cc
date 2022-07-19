@@ -161,7 +161,7 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
     case Events::COMPONENT_UPDATED:
-    case Events::COMPONENT_NOT_UPDATED:
+    case Events::COMPONENT_ALREADY_UP_TO_DATE:
       // Do nothing.
       break;
   }

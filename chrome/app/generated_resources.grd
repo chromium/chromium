@@ -5744,8 +5744,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPONENTS_EVT_STATUS_UPDATED" desc="Service Status">
         Component updated
       </message>
-      <message name="IDS_COMPONENTS_EVT_STATUS_NOTUPDATED" desc="Service Status">
-        Component not updated
+      <message name="IDS_COMPONENTS_EVT_STATUS_ALREADY_UP_TO_DATE" desc="Service Status">
+        Component already up to date
       </message>
       <message name="IDS_COMPONENTS_EVT_STATUS_UPDATE_ERROR" desc="Service Status">
         Update error

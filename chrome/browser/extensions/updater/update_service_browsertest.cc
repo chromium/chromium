@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
   extension_service()->updater()->CheckNow(std::move(params));
 
   // UpdateService should emit a not-updated event.
-  EXPECT_EQ(UpdateClientEvents::COMPONENT_NOT_UPDATED,
+  EXPECT_EQ(UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE,
             WaitOnComponentUpdaterCompleteEvent(kExtensionId));
 
   ASSERT_EQ(1, update_interceptor_->GetCount())

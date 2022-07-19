@@ -577,8 +577,8 @@ TEST_F(UpdateServiceTest, CheckOmahaMalwareAttributes) {
   const auto& request = update_client()->update_request(0);
   EXPECT_THAT(request.extension_ids, testing::ElementsAre(extension_id));
 
-  update_client()->RunDelayedUpdate(0,
-                                    UpdateClientEvents::COMPONENT_NOT_UPDATED);
+  update_client()->RunDelayedUpdate(
+      0, UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE);
   EXPECT_TRUE(registry->disabled_extensions().GetByID(extension_id));
 }
 
@@ -629,8 +629,8 @@ TEST_F(UpdateServiceTest, CheckNoOmahaAttributes) {
   const auto& request = update_client()->update_request(0);
   EXPECT_THAT(request.extension_ids, testing::ElementsAre(extension_id));
 
-  update_client()->RunDelayedUpdate(0,
-                                    UpdateClientEvents::COMPONENT_NOT_UPDATED);
+  update_client()->RunDelayedUpdate(
+      0, UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE);
   EXPECT_TRUE(registry->enabled_extensions().GetByID(extension_id));
   EXPECT_EQ(extensions::ALLOWLIST_UNDEFINED,
             extension_system()->GetExtensionAllowlistState(extension_id));

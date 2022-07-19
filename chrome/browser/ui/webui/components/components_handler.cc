@@ -127,8 +127,9 @@ std::u16string ComponentsHandler::ComponentEventToString(Events event) {
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_READY);
     case Events::COMPONENT_UPDATED:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_UPDATED);
-    case Events::COMPONENT_NOT_UPDATED:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_NOTUPDATED);
+    case Events::COMPONENT_ALREADY_UP_TO_DATE:
+      return l10n_util::GetStringUTF16(
+          IDS_COMPONENTS_EVT_STATUS_ALREADY_UP_TO_DATE);
     case Events::COMPONENT_UPDATE_ERROR:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_UPDATE_ERROR);
     case Events::COMPONENT_UPDATE_DOWNLOADING:
