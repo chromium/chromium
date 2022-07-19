@@ -170,8 +170,10 @@ class NetworkTrafficAnnotationTools():
       command_line = [self.auditor_path, "--build-path=" + self.build_path
                       ] + args
 
-    command = subprocess.Popen(
-        command_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    command = subprocess.Popen(command_line,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               encoding="utf-8")
     stdout_text, stderr_text = command.communicate()
     return_code = command.returncode
 
