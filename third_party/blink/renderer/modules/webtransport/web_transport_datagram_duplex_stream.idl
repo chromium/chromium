@@ -5,7 +5,6 @@
 // https://w3c.github.io/webtransport/#duplex-stream
 [
     Exposed=(Window,Worker),
-    RuntimeEnabled=WebTransport,
     SecureContext,
     ImplementedAs=DatagramDuplexStream
 ] interface WebTransportDatagramDuplexStream {

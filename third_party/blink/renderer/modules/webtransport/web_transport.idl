@@ -6,8 +6,7 @@
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker),
-    SecureContext,
-    RuntimeEnabled=WebTransport
+    SecureContext
 ] interface WebTransport {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
   [CallWith=ScriptState, RaisesException] Promise<WritableStream>

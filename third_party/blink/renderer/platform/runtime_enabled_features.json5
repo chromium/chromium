@@ -2687,14 +2687,9 @@
       status: "experimental",
     },
     {
-      name: "WebTransport",
-      status: "stable",
-    },
-    {
       name: "WebTransportCustomCertificates",
       origin_trial_feature_name: "WebTransportCustomCertificates",
       status: "stable",
-      depends_on: ["WebTransport"],
     },
     {
       name: "WebUSB",

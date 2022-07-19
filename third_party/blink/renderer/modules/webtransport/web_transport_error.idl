@@ -13,8 +13,7 @@ enum WebTransportErrorSource {
 // https://w3c.github.io/webtransport/#webtransporterror
 [
     Exposed=(Window,Worker),
-    SecureContext,
-    RuntimeEnabled=WebTransport
+    SecureContext
 ] interface WebTransportError : DOMException {
   constructor(optional WebTransportErrorInit init = {});
 
