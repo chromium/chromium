@@ -10,11 +10,9 @@ create {
   platform_re: "mac-.*"
   source {
     url {
-      download_url: "https://download.swift.org/swift-5.6.2-release/xcode/swift-5.6.2-RELEASE/swift-5.6.2-RELEASE-osx.pkg"
-      version: "5.6.2"
+      download_url: "https://download.swift.org/swift-5.7-branch/xcode/swift-5.7-DEVELOPMENT-SNAPSHOT-2022-07-17-a/swift-5.7-DEVELOPMENT-SNAPSHOT-2022-07-17-a-osx.pkg"
+      version: "5.7-20220717"
     }
-    # Needed to re-trigger packaging for 5.6.2. Not normally necessary.
-    patch_version: "cr2"
   }
   build {
     install: "install-mac.sh"
