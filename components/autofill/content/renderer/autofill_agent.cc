@@ -175,14 +175,15 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void SelectFieldOptionsDidChange(const FormData& form) override {
     DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
   }
-  void AskForValuesToFill(int32_t query_id,
-                          const FormData& form,
+  void AskForValuesToFill(const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
+                          int32_t query_id,
                           bool autoselect_first_suggestion,
                           TouchToFillEligible touch_to_fill_eligible) override {
-    DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, query_id, form, field,
-             bounding_box, autoselect_first_suggestion, touch_to_fill_eligible);
+    DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
+             bounding_box, query_id, autoselect_first_suggestion,
+             touch_to_fill_eligible);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusNoLongerOnForm(bool had_interacted_form) override {
@@ -940,7 +941,7 @@ void AutofillAgent::QueryAutofillSuggestions(
 
   is_popup_possibly_visible_ = true;
   GetAutofillDriver().AskForValuesToFill(
-      autofill_query_id_, form, field, field.bounds,
+      form, field, field.bounds, autofill_query_id_,
       autoselect_first_suggestion, touch_to_fill_eligible);
 }
 

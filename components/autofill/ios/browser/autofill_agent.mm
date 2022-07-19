@@ -331,8 +331,8 @@ void GetFormField(autofill::FormFieldData* field,
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:popupDelegate:.
-  autofillManager->OnAskForValuesToFill(++_lastQueryID, form, field,
-                                        gfx::RectF(),
+  autofillManager->OnAskForValuesToFill(form, field, gfx::RectF(),
+                                        ++_lastQueryID,
                                         /*autoselect_first_suggestion=*/false,
                                         autofill::TouchToFillEligible(false));
 }

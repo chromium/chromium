@@ -102,10 +102,10 @@ void AutofillProviderAndroid::DetachFromJavaAutofillProvider(JNIEnv* env) {
 
 void AutofillProviderAndroid::OnAskForValuesToFill(
     AndroidAutofillManager* manager,
-    int32_t query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
+    int32_t query_id,
     bool /*unused_autoselect_first_suggestion*/,
     TouchToFillEligible /*unused_touch_to_fill_eligible*/) {
   // The id isn't passed to Java side because Android API guarantees the

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -73,8 +74,6 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
 }
 
 }  // namespace
-
-using base::TimeTicks;
 
 // static
 void AutofillManager::LogAutofillTypePredictionsAvailable(
@@ -158,14 +157,37 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::OnFormSubmitted(const FormData& form,
-                                      bool known_success,
-                                      mojom::SubmissionSource source) {
-  if (IsValidFormData(form))
-    OnFormSubmittedImpl(form, known_success, source);
+void AutofillManager::FillCreditCardForm(int query_id,
+                                         const FormData& form,
+                                         const FormFieldData& field,
+                                         const CreditCard& credit_card,
+                                         const std::u16string& cvc) {
+  FillCreditCardFormImpl(form, field, credit_card, cvc, query_id);
+}
 
-  for (Observer& observer : observers_)
-    observer.OnFormSubmitted();
+void AutofillManager::FillProfileForm(const AutofillProfile& profile,
+                                      const FormData& form,
+                                      const FormFieldData& field) {
+  FillProfileFormImpl(form, field, profile);
+}
+
+void AutofillManager::OnDidFillAutofillFormData(
+    const FormData& form,
+    const base::TimeTicks timestamp) {
+  if (!IsValidFormData(form))
+    return;
+
+  OnDidFillAutofillFormDataImpl(form, timestamp);
+}
+
+void AutofillManager::OnFormSubmitted(const FormData& form,
+                                      const bool known_success,
+                                      const mojom::SubmissionSource source) {
+  if (!IsValidFormData(form))
+    return;
+
+  NotifyObservers(&Observer::OnFormSubmitted);
+  OnFormSubmittedImpl(form, known_success, source);
 }
 
 void AutofillManager::OnFormsSeen(
@@ -213,7 +235,6 @@ void AutofillManager::OnFormsSeen(
     AutofillMetrics::LogParseFormTiming(AutofillTickClock::NowTicks() -
                                         parse_form_start_time);
   }
-
   if (!parsed_forms.empty())
     OnFormsParsed(parsed_forms);
 }
@@ -276,15 +297,13 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
 void AutofillManager::OnTextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            const gfx::RectF& bounding_box,
-                                           const TimeTicks timestamp) {
+                                           const base::TimeTicks timestamp) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
+  NotifyObservers(&Observer::OnTextFieldDidChange);
 
-  for (Observer& observer : observers_) {
-    observer.OnTextFieldDidChange();
-  }
+  OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
@@ -293,10 +312,9 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  OnTextFieldDidScrollImpl(form, field, bounding_box);
+  NotifyObservers(&Observer::OnTextFieldDidScroll);
 
-  for (Observer& observer : observers_)
-    observer.OnTextFieldDidScroll();
+  OnTextFieldDidScrollImpl(form, field, bounding_box);
 }
 
 void AutofillManager::OnSelectControlDidChange(const FormData& form,
@@ -305,23 +323,22 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  OnSelectControlDidChangeImpl(form, field, bounding_box);
+  NotifyObservers(&Observer::OnSelectControlDidChange);
 
-  for (Observer& observer : observers_)
-    observer.OnSelectControlDidChange();
+  OnSelectControlDidChangeImpl(form, field, bounding_box);
 }
 
 void AutofillManager::OnAskForValuesToFill(
-    int query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
+    int query_id,
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  OnAskForValuesToFillImpl(query_id, form, field, bounding_box,
+  OnAskForValuesToFillImpl(form, field, bounding_box, query_id,
                            autoselect_first_suggestion, touch_to_fill_eligible);
 }
 
@@ -332,6 +349,39 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
     return;
 
   OnFocusOnFormFieldImpl(form, field, bounding_box);
+}
+
+void AutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
+  OnFocusNoLongerOnFormImpl(had_interacted_form);
+}
+
+void AutofillManager::OnDidPreviewAutofillFormData() {
+  OnDidPreviewAutofillFormDataImpl();
+}
+
+void AutofillManager::OnDidEndTextFieldEditing() {
+  OnDidEndTextFieldEditingImpl();
+}
+
+void AutofillManager::OnHidePopup() {
+  OnHidePopupImpl();
+}
+
+void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
+  if (!IsValidFormData(form))
+    return;
+
+  OnSelectFieldOptionsDidChangeImpl(form);
+}
+
+void AutofillManager::OnJavaScriptChangedAutofilledValue(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  if (!IsValidFormData(form))
+    return;
+
+  OnJavaScriptChangedAutofilledValueImpl(form, field, old_value);
 }
 
 // Returns true if |live_form| does not match |cached_form|.
@@ -424,8 +474,7 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
                                       /*should_keep_cached_value=*/true,
                                       /*only_server_and_autofill_state=*/true);
 
-    for (Observer& observer : observers_)
-      observer.OnFormParsed();
+    NotifyObservers(&Observer::OnFormParsed);
 
     if (form_structure.get()->value_from_dynamic_change_form())
       value_from_dynamic_change_form_ = true;

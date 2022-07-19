@@ -49,10 +49,10 @@ class AutofillProviderAndroid : public AutofillProvider {
   // AutofillProvider:
   void OnAskForValuesToFill(
       AndroidAutofillManager* manager,
-      int32_t query_id,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
+      int32_t query_id,
       bool /*unused_autoselect_first_suggestion*/,
       TouchToFillEligible /*unused_touch_to_fill_eligible*/) override;
   void OnTextFieldDidChange(AndroidAutofillManager* manager,

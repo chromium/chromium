@@ -330,13 +330,13 @@ void ContentAutofillDriver::SelectControlDidChangeImpl(
 }
 
 void ContentAutofillDriver::AskForValuesToFillImpl(
-    int32_t query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
+    int32_t query_id,
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
-  autofill_manager_->OnAskForValuesToFill(query_id, form, field, bounding_box,
+  autofill_manager_->OnAskForValuesToFill(form, field, bounding_box, query_id,
                                           autoselect_first_suggestion,
                                           touch_to_fill_eligible);
 }
@@ -373,14 +373,14 @@ void ContentAutofillDriver::DidEndTextFieldEditingImpl() {
 
 void ContentAutofillDriver::SelectFieldOptionsDidChangeImpl(
     const FormData& form) {
-  autofill_manager_->SelectFieldOptionsDidChange(form);
+  autofill_manager_->OnSelectFieldOptionsDidChange(form);
 }
 
 void ContentAutofillDriver::JavaScriptChangedAutofilledValueImpl(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& old_value) {
-  autofill_manager_->JavaScriptChangedAutofilledValue(form, field, old_value);
+  autofill_manager_->OnJavaScriptChangedAutofilledValue(form, field, old_value);
 }
 
 void ContentAutofillDriver::FillFormForAssistantImpl(
@@ -489,10 +489,10 @@ void ContentAutofillDriver::SelectControlDidChange(
 }
 
 void ContentAutofillDriver::AskForValuesToFill(
-    int32_t query_id,
     const FormData& raw_form,
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box,
+    int32_t query_id,
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
@@ -501,8 +501,8 @@ void ContentAutofillDriver::AskForValuesToFill(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
   GetAutofillRouter().AskForValuesToFill(
-      this, query_id, form, field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box),
+      this, form, field,
+      TransformBoundingBoxToViewportCoordinates(bounding_box), query_id,
       autoselect_first_suggestion, touch_to_fill_eligible);
 }
 

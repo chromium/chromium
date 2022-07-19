@@ -41,24 +41,24 @@ class AndroidAutofillManager : public AutofillManager {
 
   bool ShouldClearPreviewedForm() override;
 
-  void FillCreditCardForm(int query_id,
-                          const FormData& form,
-                          const FormFieldData& field,
-                          const CreditCard& credit_card,
-                          const std::u16string& cvc) override;
-  void FillProfileForm(const autofill::AutofillProfile& profile,
-                       const FormData& form,
-                       const FormFieldData& field) override;
+  void FillCreditCardFormImpl(const FormData& form,
+                              const FormFieldData& field,
+                              const CreditCard& credit_card,
+                              const std::u16string& cvc,
+                              int query_id) override;
+  void FillProfileFormImpl(const FormData& form,
+                           const FormFieldData& field,
+                           const autofill::AutofillProfile& profile) override;
 
-  void OnFocusNoLongerOnForm(bool had_interacted_form) override;
+  void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
 
-  void OnDidFillAutofillFormData(const FormData& form,
-                                 const base::TimeTicks timestamp) override;
+  void OnDidFillAutofillFormDataImpl(const FormData& form,
+                                     const base::TimeTicks timestamp) override;
 
-  void OnDidPreviewAutofillFormData() override {}
-  void OnDidEndTextFieldEditing() override {}
-  void OnHidePopup() override;
-  void SelectFieldOptionsDidChange(const FormData& form) override;
+  void OnDidPreviewAutofillFormDataImpl() override {}
+  void OnDidEndTextFieldEditingImpl() override {}
+  void OnHidePopupImpl() override;
+  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override {}
 
   void Reset() override;
 
@@ -106,10 +106,10 @@ class AndroidAutofillManager : public AutofillManager {
                                 const gfx::RectF& bounding_box) override;
 
   void OnAskForValuesToFillImpl(
-      int query_id,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
+      int query_id,
       bool autoselect_first_suggestion,
       TouchToFillEligible touch_to_fill_eligible) override;
 
@@ -121,10 +121,10 @@ class AndroidAutofillManager : public AutofillManager {
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
 
-  void JavaScriptChangedAutofilledValue(
+  void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
       const FormFieldData& field,
-      const std::u16string& old_value) override;
+      const std::u16string& old_value) override {}
 
   bool ShouldParseForms(const std::vector<FormData>& forms) override;
 

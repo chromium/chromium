@@ -368,8 +368,8 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
 }
 
 void AutofillExternalDelegate::OnCreditCardScanned(const CreditCard& card) {
-  manager_->FillCreditCardForm(query_id_, query_form_, query_field_, card,
-                               std::u16string());
+  manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
+                                   std::u16string(), query_id_);
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(int unique_id,

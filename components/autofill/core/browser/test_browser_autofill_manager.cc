@@ -162,7 +162,7 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
   BrowserAutofillManager::OnAskForValuesToFill(
-      query_id, form, field, bounding_box, autoselect_first_suggestion,
+      form, field, bounding_box, query_id, autoselect_first_suggestion,
       touch_to_fill_eligible);
 }
 

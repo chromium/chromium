@@ -511,7 +511,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                               const FormData& form,
                               const FormFieldData& field) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        query_id, form, field, gfx::RectF(),
+        form, field, gfx::RectF(), query_id,
         /*autoselect_first_suggestion=*/false, TouchToFillEligible(false));
   }
 
@@ -525,7 +525,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             const FormFieldData& field,
                             TouchToFillEligible touch_to_fill_eligible) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        query_id, form, field, gfx::RectF(),
+        form, field, gfx::RectF(), query_id,
         /*autoselect_first_suggestion=*/false, touch_to_fill_eligible);
   }
 
@@ -10135,7 +10135,7 @@ TEST_P(BrowserAutofillManagerRefillTest,
   // Simulate that JavaScript modifies the expiration date field.
   FormData form_after_js_modification = first_fill_data;
   form_after_js_modification.fields[2].value = test_case.exp_date_from_js;
-  browser_autofill_manager_->JavaScriptChangedAutofilledValue(
+  browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
       form_after_js_modification, form_after_js_modification.fields[2],
       u"04/2999");
 

@@ -49,18 +49,19 @@ bool AndroidAutofillManager::ShouldClearPreviewedForm() {
   return false;
 }
 
-void AndroidAutofillManager::FillCreditCardForm(int query_id,
-                                                const FormData& form,
-                                                const FormFieldData& field,
-                                                const CreditCard& credit_card,
-                                                const std::u16string& cvc) {
+void AndroidAutofillManager::FillCreditCardFormImpl(
+    const FormData& form,
+    const FormFieldData& field,
+    const CreditCard& credit_card,
+    const std::u16string& cvc,
+    int query_id) {
   NOTREACHED();
 }
 
-void AndroidAutofillManager::FillProfileForm(
-    const autofill::AutofillProfile& profile,
+void AndroidAutofillManager::FillProfileFormImpl(
     const FormData& form,
-    const FormFieldData& field) {
+    const FormFieldData& field,
+    const autofill::AutofillProfile& profile) {
   NOTREACHED();
 }
 
@@ -100,14 +101,14 @@ void AndroidAutofillManager::OnTextFieldDidScrollImpl(
 }
 
 void AndroidAutofillManager::OnAskForValuesToFillImpl(
-    int query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
+    int query_id,
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
   if (auto* provider = GetAutofillProvider()) {
-    provider->OnAskForValuesToFill(this, query_id, form, field, bounding_box,
+    provider->OnAskForValuesToFill(this, form, field, bounding_box, query_id,
                                    autoselect_first_suggestion,
                                    touch_to_fill_eligible);
   }
@@ -138,30 +139,23 @@ bool AndroidAutofillManager::ShouldParseForms(
   return true;
 }
 
-void AndroidAutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
+void AndroidAutofillManager::OnFocusNoLongerOnFormImpl(
+    bool had_interacted_form) {
   if (auto* provider = GetAutofillProvider())
     provider->OnFocusNoLongerOnForm(this, had_interacted_form);
 }
 
-void AndroidAutofillManager::OnDidFillAutofillFormData(
+void AndroidAutofillManager::OnDidFillAutofillFormDataImpl(
     const FormData& form,
     const base::TimeTicks timestamp) {
   if (auto* provider = GetAutofillProvider())
     provider->OnDidFillAutofillFormData(this, form, timestamp);
 }
 
-void AndroidAutofillManager::OnHidePopup() {
+void AndroidAutofillManager::OnHidePopupImpl() {
   if (auto* provider = GetAutofillProvider())
     provider->OnHidePopup(this);
 }
-
-void AndroidAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
-}
-
-void AndroidAutofillManager::JavaScriptChangedAutofilledValue(
-    const FormData& form,
-    const FormFieldData& field,
-    const std::u16string& old_value) {}
 
 void AndroidAutofillManager::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {

@@ -930,10 +930,10 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
 }
 
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
-    int query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& transformed_box,
+    int query_id,
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
@@ -1160,11 +1160,12 @@ void BrowserAutofillManager::FillOrPreviewForm(
     FillOrPreviewProfileForm(action, query_id, form, field, *profile);
 }
 
-void BrowserAutofillManager::FillCreditCardForm(int query_id,
-                                                const FormData& form,
-                                                const FormFieldData& field,
-                                                const CreditCard& credit_card,
-                                                const std::u16string& cvc) {
+void BrowserAutofillManager::FillCreditCardFormImpl(
+    const FormData& form,
+    const FormFieldData& field,
+    const CreditCard& credit_card,
+    const std::u16string& cvc,
+    int query_id) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
       !driver()->RendererIsAvailable()) {
     return;
@@ -1180,9 +1181,10 @@ void BrowserAutofillManager::FillCreditCardForm(int query_id,
                              autofill_field);
 }
 
-void BrowserAutofillManager::FillProfileForm(const AutofillProfile& profile,
-                                             const FormData& form,
-                                             const FormFieldData& field) {
+void BrowserAutofillManager::FillProfileFormImpl(
+    const FormData& form,
+    const FormFieldData& field,
+    const AutofillProfile& profile) {
   FillOrPreviewProfileForm(mojom::RendererFormDataAction::kFill,
                            /*query_id=*/kNoQueryId, form, field, profile);
 }
@@ -1216,7 +1218,8 @@ void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
   }
 }
 
-void BrowserAutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
+void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
+    bool had_interacted_form) {
   // For historical reasons, Chrome takes action on this message only if focus
   // was previously on a form with which the user had interacted.
   // TODO(crbug.com/1140473): Remove need for this short-circuit.
@@ -1270,12 +1273,12 @@ void BrowserAutofillManager::OnSelectControlDidChangeImpl(
   // TODO(crbug.com/814961): Handle select control change.
 }
 
-void BrowserAutofillManager::OnDidPreviewAutofillFormData() {
+void BrowserAutofillManager::OnDidPreviewAutofillFormDataImpl() {
   if (test_delegate_)
     test_delegate_->DidPreviewFormData();
 }
 
-void BrowserAutofillManager::OnDidFillAutofillFormData(
+void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
     const FormData& form,
     const TimeTicks timestamp) {
   if (test_delegate_)
@@ -1351,7 +1354,7 @@ void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
   }
 }
 
-void BrowserAutofillManager::OnHidePopup() {
+void BrowserAutofillManager::OnHidePopupImpl() {
   if (!IsAutofillEnabled())
     return;
 
@@ -1476,9 +1479,8 @@ void BrowserAutofillManager::SetDataList(
   external_delegate_->SetCurrentDataListValues(values, labels);
 }
 
-void BrowserAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
-  // Look for a cached version of the form. It will be a null pointer if none is
-  // found, which is fine.
+void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
+    const FormData& form) {
   FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
 
   FormStructure* form_structure = ParseForm(form, cached_form);
@@ -1491,7 +1493,7 @@ void BrowserAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
     TriggerRefill(form);
 }
 
-void BrowserAutofillManager::JavaScriptChangedAutofilledValue(
+void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& old_value) {
@@ -1624,15 +1626,15 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
         card_art_image ? *card_art_image : gfx::Image());
   }
 
-  FillCreditCardForm(credit_card_query_id_, credit_card_form_,
-                     credit_card_field_, *credit_card, cvc);
+  FillCreditCardFormImpl(credit_card_form_, credit_card_field_, *credit_card,
+                         cvc, credit_card_query_id_);
   if (credit_card->record_type() == CreditCard::FULL_SERVER_CARD ||
       credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
     credit_card_access_manager_->CacheUnmaskedCardInfo(*credit_card, cvc);
   }
 }
 
-void BrowserAutofillManager::OnDidEndTextFieldEditing() {
+void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
   external_delegate_->DidEndTextFieldEditing();
 }
 

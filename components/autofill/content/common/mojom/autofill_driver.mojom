@@ -56,10 +56,10 @@ interface AutofillDriver {
   // |touch_to_fill_eligible| indicates if the Touch To Fill surface could
   // be used for showing suggestions (e.g. when the user taps an input element
   // but not on text change).
-  AskForValuesToFill(int32 query_id,
-                     FormData form,
+  AskForValuesToFill(FormData form,
                      FormFieldData field,
                      gfx.mojom.RectF bounding_box,
+                     int32 query_id,
                      bool autoselect_first_suggestion,
                      TouchToFillEligible touch_to_fill_eligible);
 

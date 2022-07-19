@@ -129,14 +129,15 @@ void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate) {
   int query_id = 1;
   FormData form;
-  FormFieldData field;
-  field.is_focusable = true;
-  field.should_autocomplete = true;
+  form.url = GURL("https://foo.com/bar");
+  form.fields.emplace_back();
+  form.fields.front().is_focusable = true;
+  form.fields.front().should_autocomplete = true;
   gfx::RectF bounds(100.f, 100.f);
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
-  driver->AskForValuesToFill(query_id, form, field, bounds,
+  driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
                              /*autoselect_first_suggestion=*/false,
                              TouchToFillEligible(false));
 

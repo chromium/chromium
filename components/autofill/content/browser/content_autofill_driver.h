@@ -223,10 +223,10 @@ class ContentAutofillDriver : public AutofillDriver,
   void SelectControlDidChange(const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box) override;
-  void AskForValuesToFill(int32_t query_id,
-                          const FormData& form,
+  void AskForValuesToFill(const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
+                          int32_t query_id,
                           bool autoselect_first_suggestion,
                           TouchToFillEligible touch_to_fill_eligible) override;
   void HidePopup() override;
@@ -262,10 +262,10 @@ class ContentAutofillDriver : public AutofillDriver,
   void SelectControlDidChangeImpl(const FormData& form,
                                   const FormFieldData& field,
                                   const gfx::RectF& bounding_box);
-  void AskForValuesToFillImpl(int32_t query_id,
-                              const FormData& form,
+  void AskForValuesToFillImpl(const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box,
+                              int32_t query_id,
                               bool autoselect_first_suggestion,
                               TouchToFillEligible touch_to_fill_eligible);
   void HidePopupImpl();

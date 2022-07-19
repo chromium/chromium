@@ -158,12 +158,12 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                int unique_id),
               (override));
   MOCK_METHOD(void,
-              FillCreditCardForm,
-              (int query_id,
-               const FormData& form,
+              FillCreditCardFormImpl,
+              (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
-               const std::u16string& cvc),
+               const std::u16string& cvc,
+               int query_id),
               (override));
 
  private:
@@ -843,12 +843,12 @@ MATCHER_P(CreditCardMatches, card, "") {
 
 // Test that autofill manager will fill the credit card form after user scans a
 // credit card.
-TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardForm) {
+TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardFormImpl) {
   CreditCard card;
   test::SetCreditCardInfo(&card, "Alice", "4111", "1", "3000", "1");
-  EXPECT_CALL(
-      *browser_autofill_manager_,
-      FillCreditCardForm(_, _, _, CreditCardMatches(card), std::u16string()));
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillCreditCardFormImpl(_, _, CreditCardMatches(card),
+                                     std::u16string(), _));
   external_delegate_->OnCreditCardScanned(card);
 }
 
