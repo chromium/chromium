@@ -344,6 +344,10 @@ const base::Feature kClipboardHistoryReorder{"ClipboardHistoryReorder",
 const base::Feature kConsumerAutoUpdateToggleAllowed{
     "ConsumerAutoUpdateToggleAllowed", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable the changes of WMP features for CrosNext project.
+const base::Feature kCrosNextWMP{"CrosNextWMP",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
@@ -1807,6 +1811,10 @@ bool IsLauncherItemColorSyncEnabled() {
 
 bool IsConsumerAutoUpdateToggleAllowed() {
   return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
+}
+
+bool IsCrosNextWMPEnabled() {
+  return base::FeatureList::IsEnabled(kCrosNextWMP);
 }
 
 bool IsCryptohomeRecoveryFlowEnabled() {
