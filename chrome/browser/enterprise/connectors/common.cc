@@ -123,6 +123,7 @@ ReportingSettings::ReportingSettings(GURL url,
                                      bool per_profile)
     : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
 ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
+ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
 

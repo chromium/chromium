@@ -11,13 +11,11 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/policy/core/common/cloud/cloud_policy_core.h"
 
 namespace content {
 class BrowserContext;
@@ -86,6 +84,11 @@ class RealtimeReportingClient : public KeyedService,
   absl::optional<enterprise_connectors::ReportingSettings>
   GetReportingSettings();
 
+  // Returns the Gaia email address of the account signed in to the profile or
+  // an empty string if the profile is not signed in (declared virtual for
+  // tests).
+  virtual std::string GetProfileUserName() const;
+
   // Report safe browsing event through real-time reporting channel, if enabled.
   // Declared as virtual for tests.
   virtual void ReportRealtimeEvent(
@@ -139,10 +142,6 @@ class RealtimeReportingClient : public KeyedService,
 
   // Removes any path information and returns just the basename.
   static std::string GetBaseName(const std::string& filename);
-
-  // Returns the Gaia email address of the account signed in to the profile or
-  // an empty string if the profile is not signed in.
-  std::string GetProfileUserName() const;
 
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 

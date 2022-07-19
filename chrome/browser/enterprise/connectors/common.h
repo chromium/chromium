@@ -77,6 +77,7 @@ struct ReportingSettings {
   ReportingSettings();
   ReportingSettings(GURL url, const std::string& dm_token, bool per_profile);
   ReportingSettings(ReportingSettings&&);
+  ReportingSettings(const ReportingSettings&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 

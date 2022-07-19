@@ -6402,6 +6402,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/enterprise_connectors_policy_handler_unittest.cc",
       "../browser/enterprise/connectors/file_system/rename_handler_unittest.cc",
       "../browser/enterprise/connectors/file_system/service_settings_unittest.cc",
+      "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
       "../browser/enterprise/connectors/reporting/realtime_reporting_client_unittest.cc",
       "../browser/enterprise/connectors/reporting/reporting_service_settings_unittest.cc",
       "../browser/enterprise/connectors/service_provider_config_unittest.cc",
@@ -8667,6 +8668,7 @@ test("unit_tests") {
   if (is_castos) {
     sources -= [
       "../browser/enterprise/connectors/connectors_service_unittest.cc",
+      "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
       "../browser/ui/tab_contents/chrome_web_contents_view_handle_drop_unittest.cc",
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",

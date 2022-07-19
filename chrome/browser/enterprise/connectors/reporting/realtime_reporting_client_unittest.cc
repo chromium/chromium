@@ -2,42 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/enterprise/browser/enterprise_switches.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/tpm/stub_install_attributes.h"

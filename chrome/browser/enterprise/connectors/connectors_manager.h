@@ -9,6 +9,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,7 +32,8 @@ class ConnectorsManager {
   using FileSystemConnectorsSettings =
       std::map<FileSystemConnector, std::vector<FileSystemServiceSettings>>;
 
-  ConnectorsManager(PrefService* pref_service,
+  ConnectorsManager(ExtensionInstallEventRouter extension_install_router,
+                    PrefService* pref_service,
                     const ServiceProviderConfig* config,
                     bool observe_prefs = true);
   ~ConnectorsManager();
@@ -129,6 +131,9 @@ class ConnectorsManager {
   // Used to track changes of connector policies and propagate them in
   // |connector_settings_|.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // An observer to report extension install events via the reporting pipeline.
+  ExtensionInstallEventRouter extension_install_event_router_;
 };
 
 }  // namespace enterprise_connectors
