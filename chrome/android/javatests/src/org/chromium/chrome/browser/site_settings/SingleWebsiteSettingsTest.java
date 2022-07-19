@@ -176,8 +176,8 @@ public class SingleWebsiteSettingsTest {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
         website.setContentSettingException(type,
-                new ContentSettingException(
-                        type, website.getAddress().getOrigin(), value, "preference"));
+                new ContentSettingException(type, website.getAddress().getOrigin(), value,
+                        "preference", /*isEmbargoed=*/false));
 
         return website;
     }

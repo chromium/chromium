@@ -349,14 +349,21 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
 std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
     std::vector<ContentSettingsType> content_types) {
   DCHECK(settings_map_);
+
+  std::vector<ContentSettingsType> filtered_content_types;
+  for (ContentSettingsType content_type : content_types) {
+    if (IsEnabledForContentSetting(content_type))
+      filtered_content_types.emplace_back(content_type);
+  }
+  if (filtered_content_types.empty())
+    return std::set<GURL>();
+
   ContentSettingsForOneType embargo_settings;
   settings_map_->GetSettingsForOneType(
       ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, &embargo_settings);
   std::set<GURL> origins;
   for (const auto& e : embargo_settings) {
-    for (auto content_type : content_types) {
-      if (!IsEnabledForContentSetting(content_type))
-        continue;
+    for (auto content_type : filtered_content_types) {
       const GURL url(e.primary_pattern.ToString());
       if (IsEmbargoed(url, content_type)) {
         origins.insert(url);

@@ -55,6 +55,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -72,6 +73,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
@@ -89,6 +91,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.net.GURLUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -98,6 +101,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
@@ -297,6 +301,25 @@ public class PageInfoViewTest {
                     new int[] {BrowsingDataType.SITE_SETTINGS}, TimePeriod.ALL_TIME);
         });
         helper.waitForCallback(0);
+    }
+
+    private List<ContentSettingException> getNonWildcardContentSettingExceptions(
+            @ContentSettingsType int type) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            List<ContentSettingException> exceptions = new ArrayList<ContentSettingException>();
+            WebsitePreferenceBridgeJni.get().getContentSettingsExceptions(
+                    Profile.getLastUsedRegularProfile(), type, exceptions);
+            Iterator<ContentSettingException> exceptionIt = exceptions.iterator();
+            while (exceptionIt.hasNext()) {
+                ContentSettingException exception = exceptionIt.next();
+                if (WebsitePreferenceBridge.SITE_WILDCARD.equals(exception.getPrimaryPattern())
+                        && WebsitePreferenceBridge.SITE_WILDCARD.equals(
+                                exception.getSecondaryPattern())) {
+                    exceptionIt.remove();
+                }
+            }
+            return exceptions;
+        });
     }
 
     private void addSomeHistoryEntries() {
@@ -622,6 +645,44 @@ public class PageInfoViewTest {
         onView(withId(R.id.page_info_permissions_row))
                 .check(matches(withEffectiveVisibility(GONE)));
         expectHasPermissions(url, false);
+    }
+
+    /**
+     * Test that enabling the federated identity permission in the PageInfo UI clears the embargo.
+     */
+    @Test
+    @MediumTest
+    public void testClearFederatedIdentityEmbargoOnSubpage() throws Exception {
+        String rpUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
+        sActivityTestRule.loadUrl(rpUrl);
+
+        assertTrue(
+                getNonWildcardContentSettingExceptions(ContentSettingsType.FEDERATED_IDENTITY_API)
+                        .isEmpty());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { FederatedIdentityTestUtils.embargoFedCmForRelyingParty(new GURL(rpUrl)); });
+        {
+            List<ContentSettingException> exceptions = getNonWildcardContentSettingExceptions(
+                    ContentSettingsType.FEDERATED_IDENTITY_API);
+            assertEquals(1, exceptions.size());
+            assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
+            assertEquals(
+                    ContentSettingValues.BLOCK, exceptions.get(0).getContentSetting().intValue());
+        }
+
+        // Toggle the federated identity permission.
+        openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onView(withId(R.id.switchWidget)).perform(click());
+
+        {
+            List<ContentSettingException> exceptions = getNonWildcardContentSettingExceptions(
+                    ContentSettingsType.FEDERATED_IDENTITY_API);
+            assertEquals(1, exceptions.size());
+            assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
+            assertEquals(
+                    ContentSettingValues.ALLOW, exceptions.get(0).getContentSetting().intValue());
+        }
     }
 
     /**

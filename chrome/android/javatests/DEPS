@@ -66,6 +66,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "federated_identity_test_utils.cc": [
+    "+content/public/browser/federated_identity_api_permission_context_delegate.h",
+  ],
   "WebappNavigationTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],

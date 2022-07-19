@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -85,6 +86,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1566,6 +1568,42 @@ public class SiteSettingsTest {
 
             // Blocked origin should has no summary.
             Assert.assertNull(blockedGroup.getPreference(1).getSummary());
+        });
+        settingsActivity.finish();
+    }
+
+    /**
+     * Test that embargoing federated identity permission displays "Automatically Blocked" message
+     * in page info UI. Federated identity is a content setting. Content settings use a different
+     * code path than permissions (like notifications).
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testEmbargoedFederatedIdentity() throws Exception {
+        final String rpUrl = mPermissionRule.getURLWithHostName(
+                "example.com", "/chrome/test/data/android/simple.html");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { FederatedIdentityTestUtils.embargoFedCmForRelyingParty(new GURL(rpUrl)); });
+
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        Context context = InstrumentationRegistry.getTargetContext();
+        Intent intent = settingsLauncher.createSettingsActivityIntent(context,
+                SingleWebsiteSettings.class.getName(),
+                SingleWebsiteSettings.createFragmentArgsForSite(rpUrl));
+        final SettingsActivity settingsActivity =
+                (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
+                        intent);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final SingleWebsiteSettings websitePreferences =
+                    (SingleWebsiteSettings) settingsActivity.getMainFragment();
+            final Preference fedCmPreference =
+                    websitePreferences.findPreference("federated_identity_api_list");
+
+            Assert.assertEquals(context.getString(R.string.automatically_blocked),
+                    fedCmPreference.getSummary());
         });
         settingsActivity.finish();
     }

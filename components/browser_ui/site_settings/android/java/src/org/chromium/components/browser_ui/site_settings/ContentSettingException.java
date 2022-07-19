@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -22,7 +23,10 @@ public class ContentSettingException implements Serializable {
     private final String mPrimaryPattern;
     private final String mSecondaryPattern;
     private final @ContentSettingValues @Nullable Integer mContentSetting;
+    // TODO(crbug.com/1344877): Convert {@link #mSource} to enum to enable merging {@link #mSource}
+    // and {@link #mIsEmbargoed}.
     private final String mSource;
+    private final boolean mIsEmbargoed;
 
     /**
      * Construct a ContentSettingException.
@@ -30,16 +34,18 @@ public class ContentSettingException implements Serializable {
      * @param primaryPattern The primary host/domain pattern this exception covers.
      * @param secondaryPattern The secondary host/domain pattern this exception covers.
      * @param setting The setting for this exception, e.g. ALLOW or BLOCK.
-     * @param source The source for this exception, e.g. "policy".
+     * @param source The source for this exception.
+     * @param isEmbargoed Whether the site is under embargo for {@link type}.
      */
     public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
-            String secondaryPattern, @ContentSettingValues @Nullable Integer setting,
-            String source) {
+            String secondaryPattern, @ContentSettingValues @Nullable Integer setting, String source,
+            boolean isEmbargoed) {
         mContentSettingType = type;
         mPrimaryPattern = primaryPattern;
         mSecondaryPattern = secondaryPattern;
         mContentSetting = setting;
         mSource = source;
+        mIsEmbargoed = isEmbargoed;
     }
 
     /**
@@ -47,8 +53,8 @@ public class ContentSettingException implements Serializable {
      * Same as above but defaults secondaryPattern to wildcard.
      */
     public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
-            @ContentSettingValues @Nullable Integer setting, String source) {
-        this(type, primaryPattern, SITE_WILDCARD, setting, source);
+            @ContentSettingValues @Nullable Integer setting, String source, boolean isEmbargoed) {
+        this(type, primaryPattern, SITE_WILDCARD, setting, source, isEmbargoed);
     }
 
     public String getPrimaryPattern() {
@@ -57,6 +63,10 @@ public class ContentSettingException implements Serializable {
 
     public String getSecondaryPattern() {
         return mSecondaryPattern;
+    }
+
+    private @NonNull String getSecondaryPatternSafe() {
+        return (mSecondaryPattern == null) ? SITE_WILDCARD : mSecondaryPattern;
     }
 
     public String getSource() {
@@ -71,12 +81,16 @@ public class ContentSettingException implements Serializable {
         return mContentSettingType;
     }
 
+    public boolean isEmbargoed() {
+        return mIsEmbargoed;
+    }
+
     /**
      * Sets the content setting value for this exception.
      */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
         WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
-                mContentSettingType, mPrimaryPattern, mSecondaryPattern, value);
+                mContentSettingType, mPrimaryPattern, getSecondaryPatternSafe(), value);
     }
 }

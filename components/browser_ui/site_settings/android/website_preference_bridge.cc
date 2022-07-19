@@ -4,6 +4,7 @@
 
 #include <jni.h>
 #include <algorithm>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -78,6 +79,12 @@ HostContentSettingsMap* GetHostContentSettingsMap(
   return GetHostContentSettingsMap(unwrap(jbrowser_context_handle));
 }
 
+permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
+    BrowserContext* browser_context) {
+  return permissions::PermissionsClient::Get()
+      ->GetPermissionDecisionAutoBlocker(browser_context);
+}
+
 ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
     JNIEnv* env,
     const std::string& origin) {
@@ -120,8 +127,9 @@ void GetOrigins(JNIEnv* env,
                 InfoListInsertionFunction insertionFunc,
                 const JavaRef<jobject>& list,
                 jboolean managedOnly) {
+  BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   HostContentSettingsMap* content_settings_map =
-      GetHostContentSettingsMap(jbrowser_context_handle);
+      GetHostContentSettingsMap(browser_context);
   ContentSettingsForOneType all_settings;
   ContentSettingsForOneType embargo_settings;
 
@@ -217,8 +225,7 @@ void SetPermissionSettingForOrigin(
   // The permission may have been blocked due to being under embargo, so if it
   // was changed away from BLOCK, clear embargo status if it exists.
   if (setting != CONTENT_SETTING_BLOCK) {
-    permissions::PermissionsClient::Get()
-        ->GetPermissionDecisionAutoBlocker(browser_context)
+    GetPermissionDecisionAutoBlocker(browser_context)
         ->RemoveEmbargoAndResetCounts(origin_url, content_type);
   }
 
@@ -303,8 +310,7 @@ static jboolean JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
-      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
-          browser_context);
+      GetPermissionDecisionAutoBlocker(browser_context);
 
   return auto_blocker->IsEmbargoed(origin_url,
                                    ContentSettingsType::NOTIFICATIONS);
@@ -329,8 +335,7 @@ static void SetNotificationSettingForOrigin(
   GURL url = GURL(ConvertJavaStringToUTF8(env, origin));
   ContentSetting setting = static_cast<ContentSetting>(value);
 
-  permissions::PermissionsClient::Get()
-      ->GetPermissionDecisionAutoBlocker(browser_context)
+  GetPermissionDecisionAutoBlocker(browser_context)
       ->RemoveEmbargoAndResetCounts(url, ContentSettingsType::NOTIFICATIONS);
 
   permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -787,10 +792,16 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingDefaultScope(
     const JavaParamRef<jobject>& jprimary_url,
     const JavaParamRef<jobject>& jsecondary_url,
     int setting) {
+  GURL primary_url = *url::GURLAndroid::ToNativeGURL(env, jprimary_url);
+  if (setting != CONTENT_SETTING_BLOCK) {
+    GetPermissionDecisionAutoBlocker(unwrap(jbrowser_context_handle))
+        ->RemoveEmbargoAndResetCounts(
+            primary_url,
+            static_cast<ContentSettingsType>(content_settings_type));
+  }
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->SetContentSettingDefaultScope(
-          *url::GURLAndroid::ToNativeGURL(env, jprimary_url),
-          *url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
+          primary_url, *url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
           static_cast<ContentSettingsType>(content_settings_type),
           static_cast<ContentSetting>(setting));
 }
@@ -804,6 +815,14 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingCustomScope(
     int setting) {
   std::string primary_pattern_string =
       ConvertJavaStringToUTF8(env, primary_pattern);
+  GURL primary_url(primary_pattern_string);
+  if (setting != CONTENT_SETTING_BLOCK && primary_url.is_valid()) {
+    GetPermissionDecisionAutoBlocker(unwrap(jbrowser_context_handle))
+        ->RemoveEmbargoAndResetCounts(
+            primary_url,
+            static_cast<ContentSettingsType>(content_settings_type));
+  }
+
   std::string secondary_pattern_string =
       ConvertJavaStringToUTF8(env, secondary_pattern);
   GetHostContentSettingsMap(jbrowser_context_handle)
@@ -834,17 +853,39 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type,
     const JavaParamRef<jobject>& list) {
+  BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   ContentSettingsForOneType entries;
-  GetHostContentSettingsMap(jbrowser_context_handle)
+  GetHostContentSettingsMap(browser_context)
       ->GetSettingsForOneType(
           static_cast<ContentSettingsType>(content_settings_type), &entries);
-  for (size_t i = 0; i < entries.size(); ++i) {
+  std::vector<std::string> seen_origins;
+  for (const ContentSettingPatternSource& entry : entries) {
+    std::string origin = entry.primary_pattern.ToString();
+    seen_origins.push_back(origin);
+    Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
+        env, list, content_settings_type, ConvertUTF8ToJavaString(env, origin),
+        ConvertUTF8ToJavaString(env, entry.secondary_pattern.ToString()),
+        entry.GetContentSetting(), ConvertUTF8ToJavaString(env, entry.source),
+        /*is_embargoed=*/false);
+  }
+
+  // Add any origins which have been automatically blocked for this content
+  // setting. We use an empty embedder since embargo doesn't care about it.
+  std::set<GURL> embargoed_origins =
+      GetPermissionDecisionAutoBlocker(browser_context)
+          ->GetEmbargoedOrigins(
+              static_cast<ContentSettingsType>(content_settings_type));
+  ScopedJavaLocalRef<jstring> jembedder;
+  for (const GURL& embargoed_origin : embargoed_origins) {
+    if (base::Contains(seen_origins, embargoed_origin.spec()))
+      continue;
+    std::string embargoed_origin_pattern =
+        ContentSettingsPattern::FromURLNoWildcard(embargoed_origin).ToString();
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type,
-        ConvertUTF8ToJavaString(env, entries[i].primary_pattern.ToString()),
-        ConvertUTF8ToJavaString(env, entries[i].secondary_pattern.ToString()),
-        entries[i].GetContentSetting(),
-        ConvertUTF8ToJavaString(env, entries[i].source));
+        ConvertUTF8ToJavaString(env, embargoed_origin_pattern), jembedder,
+        CONTENT_SETTING_BLOCK, /*source=*/ScopedJavaLocalRef<jstring>(),
+        /*is_embargoed=*/true);
   }
 }
 

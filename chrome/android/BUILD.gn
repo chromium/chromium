@@ -1243,16 +1243,26 @@ robolectric_binary("chrome_junit_tests") {
 
 generate_jni("chrome_test_util_jni_headers") {
   testonly = true
-  sources = [ "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java" ]
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
+    "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
+  ]
 }
 
 source_set("chrome_test_util_jni") {
   testonly = true
-  sources = [ "javatests/src/custom_tabs_test_utils.cc" ]
+  sources = [
+    "javatests/src/custom_tabs_test_utils.cc",
+    "javatests/src/federated_identity_test_utils.cc",
+  ]
   deps = [
     ":chrome_test_util_jni_headers",
     "//base",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
     "//components/variations",
+    "//url:gurl_android",
+    "//url:url",
   ]
 }
 
@@ -1291,6 +1301,7 @@ android_library("chrome_test_util_java") {
   testonly = true
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTestRule.java",
     "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/directactions/FakeDirectActionReporter.java",
@@ -1332,6 +1343,7 @@ android_library("chrome_test_util_java") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -1622,6 +1634,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/video_tutorials:test_support_java",
     "//chrome/browser/webapps/android:java",
     "//chrome/test:sync_integration_test_support_java",
+    "//chrome/test:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_pagecontroller",
     "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",

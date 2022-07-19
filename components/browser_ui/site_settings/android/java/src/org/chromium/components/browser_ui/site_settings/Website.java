@@ -193,7 +193,8 @@ public final class Website implements Serializable {
             // permission.
             if (exception == null) {
                 exception = new ContentSettingException(ContentSettingsType.ADS,
-                        getAddress().getOrigin(), ContentSettingValues.BLOCK, "");
+                        getAddress().getOrigin(), ContentSettingValues.BLOCK, "",
+                        /*isEmbargoed=*/false);
                 setContentSettingException(type, exception);
             }
         } else if (type == ContentSettingsType.JAVASCRIPT) {
@@ -201,8 +202,8 @@ public final class Website implements Serializable {
             // because we show the javascript permission in Site Settings if javascript
             // is blocked by default.
             if (exception == null) {
-                exception = new ContentSettingException(
-                        ContentSettingsType.JAVASCRIPT, getAddress().getHost(), value, "");
+                exception = new ContentSettingException(ContentSettingsType.JAVASCRIPT,
+                        getAddress().getHost(), value, "", /*isEmbargoed=*/false);
                 setContentSettingException(type, exception);
             }
             // It's possible for either action to be emitted. This code path is hit
@@ -216,8 +217,8 @@ public final class Website implements Serializable {
             // It is possible to set the permission without having an existing exception,
             // because we always show the sound permission in Site Settings.
             if (exception == null) {
-                exception = new ContentSettingException(
-                        ContentSettingsType.SOUND, getAddress().getHost(), value, "");
+                exception = new ContentSettingException(ContentSettingsType.SOUND,
+                        getAddress().getHost(), value, "", /*isEmbargoed=*/false);
                 setContentSettingException(type, exception);
             }
             if (value == ContentSettingValues.BLOCK) {
@@ -232,6 +233,18 @@ public final class Website implements Serializable {
         if (exception != null) {
             exception.setContentSetting(browserContextHandle, value);
         }
+    }
+
+    /**
+     * Returns whether either the permission or the content setting for the associated {@link type}
+     * is embargoed.
+     */
+    public boolean isEmbargoed(@ContentSettingsType int type) {
+        PermissionInfo permissionInfo = getPermissionInfo(type);
+        if (permissionInfo != null && permissionInfo.isEmbargoed()) return true;
+
+        ContentSettingException exception = getContentSettingException(type);
+        return (exception != null && exception.isEmbargoed());
     }
 
     public void setLocalStorageInfo(LocalStorageInfo info) {
