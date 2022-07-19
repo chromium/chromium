@@ -6900,6 +6900,31 @@
             ]
         }
     ],
+    "PermissionsPostPromptSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Notifications_Accepted_20220712",
+                    "params": {
+                        "action_filter": "Accepted",
+                        "probability": "0.045",
+                        "request_type_filter": "Notifications",
+                        "trigger_id": "YU4bKoXZ40ugnJ3q1cK0QhGFeT4E"
+                    },
+                    "enable_features": [
+                        "PermissionsPostPromptSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlatformHEVCDecoderSupport": [
         {
             "platforms": [
