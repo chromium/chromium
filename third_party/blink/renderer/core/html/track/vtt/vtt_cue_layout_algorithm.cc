@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
 
-#include <cmath>
+#include <math.h>
 
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
@@ -24,7 +24,7 @@ void VttCueLayoutAlgorithm::Layout() {
   // https://w3c.github.io/webvtt/#apply-webvtt-cue-settings
   // 10. Adjust the positions of boxes according to the appropriate steps
   // from the following list:
-  if (std::isfinite(snap_to_lines_position_)) {
+  if (isfinite(snap_to_lines_position_)) {
     // ↪ If cue’s WebVTT cue snap-to-lines flag is true
     AdjustPositionWithSnapToLines();
   } else {
@@ -35,11 +35,11 @@ void VttCueLayoutAlgorithm::Layout() {
 
 LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
     LayoutUnit max_dimension) {
-  DCHECK(std::isfinite(snap_to_lines_position_));
+  DCHECK(isfinite(snap_to_lines_position_));
 
   // 4. Let line be cue's computed line.
   // 5. Round line to an integer by adding 0.5 and then flooring it.
-  float line = std::floorf(snap_to_lines_position_ + 0.5f);
+  float line = floorf(snap_to_lines_position_ + 0.5f);
 
   // 6. Vertical Growing Left: Add one to line then negate it.
   const auto& cue_box = *cue_.GetLayoutBox();
