@@ -377,13 +377,11 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
   return volume;
 }
 
-// static: |mount_path| is the fusebox daemon AttachStorage API 'subdir'.
+// static
 std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
     const base::FilePath& mount_path,
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     MountContext mount_context) {
-  const base::FilePath mount_point(util::kFuseBoxMediaPath);
-
   std::unique_ptr<Volume> volume(new Volume());
 
   switch (file_system_info.source()) {
@@ -404,7 +402,7 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
 
   volume->type_ = VOLUME_TYPE_PROVIDED;
   volume->file_system_type_ = util::kFuseBox;
-  volume->mount_path_ = mount_point.Append(mount_path);
+  volume->mount_path_ = mount_path;
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->mount_context_ = mount_context;
 
@@ -1325,7 +1323,8 @@ void VolumeManager::OnFuseboxAttachStorageProvidedFileSystem(
     return;
 
   // Create a Volume for the fusebox FSP storage device.
-  const base::FilePath mount_path = base::FilePath(subdir);
+  const base::FilePath mount_path =
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
   std::unique_ptr<Volume> volume = Volume::CreateForFuseBoxProvidedFileSystem(
       mount_path, file_system_info, volume_context);
 
@@ -1356,13 +1355,17 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   if (!fusebox_mounter_.get())
     return;
 
-  // Unmount the fusebox FSP storage device in files app.
+  // Get FSP chrome::storage |fsid| and fusebox daemon |subdir|.
   const std::string fsid =
       file_system_info.mount_path().BaseName().AsUTF8Unsafe();
   const std::string subdir = "fsp:" + fsid;
+
+  // Unmount the fusebox FSP storage device in files app.
+  const base::FilePath mount_path =
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
   std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxProvidedFileSystem(
-          base::FilePath(subdir), file_system_info, MOUNT_CONTEXT_UNKNOWN);
+      Volume::CreateForFuseBoxProvidedFileSystem(mount_path, file_system_info,
+                                                 MOUNT_CONTEXT_UNKNOWN);
   DoUnmountEvent(mount_error, *fusebox_volume);
 
   // Remove the fusebox FSP storage device from chrome::storage.
