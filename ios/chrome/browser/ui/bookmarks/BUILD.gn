@@ -131,6 +131,7 @@ source_set("core") {
     "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/browser/undo",
     "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
