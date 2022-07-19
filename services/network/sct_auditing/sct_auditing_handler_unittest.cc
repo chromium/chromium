@@ -1004,6 +1004,59 @@ TEST_F(SCTAuditingHandlerTest, LogNotFound) {
   }
 }
 
+// Regression test for crbug.com/1344881
+// Writes a pre-existing persisted reporter, starts up the SCTAuditingHandler,
+// waits for the Reporter to be created from the persisted data, and then
+// clears the pending reporters. (Prior to the fix for crbug.com/1344881, it was
+// possible for the ImportantFileWriter `after_write_callback` to run on the
+// background sequence in some circumstances, causing thread safety violations
+// when dereferencing the WeakPtr. This test explicitly covers the case where
+// the `after_write_callback` code path is exercised.)
+TEST_F(SCTAuditingHandlerTest, ClearPendingReports) {
+  // Set up previously persisted data on disk:
+  // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
+  // - Empty SCTClientReport for origin "example.test:443".
+  // - A simple BackoffEntry.
+  std::string persisted_report =
+      R"(
+        [{
+          "reporter_key":
+            "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+          "report": "EhUKExIRCgxleGFtcGxlLnRlc3QQuwM=",
+          "backoff_entry": [2,0,"30000000","11644578625551798"]
+        }]
+      )";
+  ASSERT_TRUE(base::WriteFile(persistence_path_, persisted_report));
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
+
+  SCTAuditingHandler handler(network_context_.get(), persistence_path_);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
+  handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
+
+  auto* file_writer = handler.GetFileWriterForTesting();
+  ASSERT_TRUE(file_writer);
+
+  WaitForRequests(1u);
+
+  EXPECT_EQ(handler.GetPendingReportersForTesting()->size(), 1u);
+  EXPECT_EQ(1, url_loader_factory_.NumPending());
+
+  // Clear pending reports (with persistence set up and data on disk) to
+  // exercise the full clearing and callbacks code paths.
+  base::RunLoop run_loop;
+  handler.ClearPendingReports(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the pending reporter was deleted.
+  EXPECT_TRUE(handler.GetPendingReportersForTesting()->empty());
+
+  // Check that the Reporter is no longer in the file.
+  EXPECT_FALSE(FileContentsHasString(
+      "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo="));
+}
+
 class NoPersistenceSCTAuditingHandlerTest : public SCTAuditingHandlerTest {
  public:
   void SetUp() override {

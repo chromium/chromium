@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -357,12 +358,6 @@ void SCTAuditingHandler::OnReportsLoadedFromDisk(
   DeserializeData(serialized);
 }
 
-void SCTAuditingHandler::OnWriteFinished(base::OnceClosure callback,
-                                         bool /*unused*/) {
-  DCHECK(background_runner_->RunsTasksInCurrentSequence());
-  foreground_runner_->PostTask(FROM_HERE, std::move(callback));
-}
-
 void SCTAuditingHandler::ClearPendingReports(base::OnceClosure callback) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
   // Delete any outstanding Reporters. This will delete any extant URLLoader
@@ -374,8 +369,18 @@ void SCTAuditingHandler::ClearPendingReports(base::OnceClosure callback) {
   if (writer_) {
     writer_->RegisterOnNextWriteCallbacks(
         base::OnceClosure(),
-        base::BindOnce(&SCTAuditingHandler::OnWriteFinished,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+        // The callback set by NetworkContext is a BarrierClosure that does not
+        // take any arguments. The ImportantFileWriter runs its callbacks on the
+        // background sequence. This addresses both issues by setting up the
+        // `after_write_callback` to post back to the foreground task runner and
+        // adapts the type signatures to drop the unused bool.
+        base::BindPostTask(
+            foreground_runner_,
+            base::BindOnce(
+                [](base::OnceCallback<void()> cb, bool /* unused */) {
+                  return std::move(cb).Run();
+                },
+                std::move(callback))));
     auto data = std::make_unique<std::string>();
     SerializeData(data.get());
     writer_->WriteNow(std::move(data));

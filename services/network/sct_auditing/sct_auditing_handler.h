@@ -137,12 +137,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   void OnReporterStateUpdated();
   void OnReporterFinished(net::HashValue reporter_key);
 
-  // Wrapper to pass the callback back to the foreground runner, as the
-  // underlying ImportantFileWriter runs its callback on the background runner.
-  // ImportantFileWriter requires a `OnceCallback<void(bool success)>` for the
-  // write completion callback, but the boolean is currently unused here.
-  void OnWriteFinished(base::OnceClosure callback, bool /*unused*/);
-
   void ReportHWMMetrics();
 
   mojom::URLLoaderFactory* GetURLLoaderFactory();
