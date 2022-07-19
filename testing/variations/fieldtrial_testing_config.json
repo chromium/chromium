@@ -6524,7 +6524,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220711",
+                    "name": "Enabled_NoSrp_20220719",
+                    "params": {
+                        "allow_srp": "false"
+                    },
                     "enable_features": [
                         "PaintPreviewShowOnStartup"
                     ]
