@@ -7,5 +7,5 @@
     ImplementedAs=DOMScheduler,
     Exposed=(Window,Worker)
 ] partial interface mixin WindowOrWorkerGlobalScope {
-  [RuntimeEnabled=WebScheduler, SameObject, Replaceable] readonly attribute Scheduler scheduler;
+  [SameObject, Replaceable] readonly attribute Scheduler scheduler;
 };

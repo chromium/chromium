@@ -6,8 +6,7 @@
 [
     Exposed=(Window,Worker),
     ImplementedAs=DOMTaskController,
-    MeasureAs=TaskControllerConstructor,
-    RuntimeEnabled=WebScheduler
+    MeasureAs=TaskControllerConstructor
 ] interface TaskController : AbortController {
     [CallWith=ExecutionContext] constructor(optional TaskControllerInit init = {});
     [MeasureAs=TaskControllerSetPriority, RaisesException] void setPriority(TaskPriority priority);

@@ -2689,10 +2689,6 @@
       depends_on: ["WebOTP"],
       status: "stable",
     },
-    {
-      name: "WebScheduler",
-      status: "stable",
-    },
     // WebShare is enabled by default on Android.
     {
       name: "WebShare",

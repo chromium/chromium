@@ -5,8 +5,7 @@
 // https://wicg.github.io/scheduling-apis/#sec-task-signal
 [
     Exposed=(Window,Worker),
-    ImplementedAs=DOMTaskSignal,
-    RuntimeEnabled=WebScheduler
+    ImplementedAs=DOMTaskSignal
 ] interface TaskSignal : AbortSignal {
   [MeasureAs=TaskSignalPriority] readonly attribute TaskPriority priority;
     attribute EventHandler onprioritychange;

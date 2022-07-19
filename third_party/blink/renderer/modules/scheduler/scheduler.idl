@@ -16,8 +16,7 @@ enum AncestorStatus {
 
 [
     Exposed=(Window,Worker),
-    ImplementedAs=DOMScheduler,
-    RuntimeEnabled=WebScheduler
+    ImplementedAs=DOMScheduler
 ] interface Scheduler {
     [CallWith=ScriptState, MeasureAs=SchedulerPostTask, RaisesException] Promise<any> postTask(SchedulerPostTaskCallback callback, optional SchedulerPostTaskOptions options = {});
     [RuntimeEnabled=UnexposedTaskIds, CallWith=ScriptState, Exposed=Window] readonly attribute unsigned long taskId;
