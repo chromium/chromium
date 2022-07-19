@@ -9,6 +9,12 @@ if (enable_google_benchmarks) {
     include_dirs = [ "src/include" ]
   }
 
+  # TODO(crbug.com/1344570): Remove once third_party/google_benchmark no longer
+  # uses std::wstring_convert.
+  config("benchmark_suppress_warnings") {
+    cflags = ["-Wno-deprecated-declarations"]
+  }
+
   source_set("google_benchmark") {
     testonly = true
 
@@ -60,7 +66,10 @@ if (enable_google_benchmarks) {
     all_dependent_configs = [ ":benchmark_config" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":benchmark_suppress_warnings",
+    ]
 
     defines = [
       # Tell gtest to always use standard regular expressions.
