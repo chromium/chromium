@@ -185,6 +185,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kInternalUserInteraction:
     case TaskType::kInternalIntersectionObserver:
     case TaskType::kInternalNavigationAssociated:
+    case TaskType::kInternalNavigationCancellation:
     case TaskType::kInternalContinueScriptLoading:
     case TaskType::kWakeLock:
       // UnthrottledTaskRunner is generally discouraged in future.

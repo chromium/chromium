@@ -469,6 +469,9 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       }
     case TaskType::kInternalNavigationAssociated:
       return FreezableTaskQueueTraits();
+    case TaskType::kInternalNavigationCancellation:
+      return FreezableTaskQueueTraits().SetPrioritisationType(
+          QueueTraits::PrioritisationType::kInternalNavigationCancellation);
     case TaskType::kInternalInputBlocking:
       return InputBlockingQueueTraits();
     // Some tasks in the tests need to run when objects are paused e.g. to hook
@@ -987,6 +990,9 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
       return TaskQueue::QueuePriority::kBestEffortPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::
         kPostMessageForwarding:
+      return TaskQueue::QueuePriority::kVeryHighPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::
+        kInternalNavigationCancellation:
       return TaskQueue::QueuePriority::kVeryHighPriority;
     default:
       break;

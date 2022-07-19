@@ -350,7 +350,7 @@ class ErrorPageWaiter : public content::WebContentsObserver {
   ~ErrorPageWaiter() override = default;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override {
+  void ReadyToCommitNavigation(content::NavigationHandle* handle) override {
     if (handle->GetNetErrorCode() != net::ERR_BLOCKED_BY_CLIENT) {
       is_error_page_ = false;
       return;
@@ -2258,7 +2258,6 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);
-
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 

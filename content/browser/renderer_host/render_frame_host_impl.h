@@ -2790,7 +2790,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
-          initiator_policy_container_host_keep_alive_handle) override;
+          initiator_policy_container_host_keep_alive_handle,
+      mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
+          renderer_cancellation_listener) override;
   void SubresourceResponseStarted(const url::SchemeHostPort& final_response_url,
                                   net::CertStatus cert_status) override;
   void ResourceLoadComplete(

@@ -131,6 +131,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalNavigationAssociated";
     case TaskType::kInternalNavigationAssociatedUnfreezable:
       return "InternalNavigationAssociatedUnfreezable";
+    case TaskType::kInternalNavigationCancellation:
+      return "InternalNavigationCancellation";
     case TaskType::kInternalContinueScriptLoading:
       return "InternalContinueScriptLoading";
     case TaskType::kWebSchedulingPostedTask:

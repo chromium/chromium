@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "content/common/frame.mojom.h"
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -91,9 +92,32 @@ void NavigationClient::Bind(
   SetDisconnectionHandler();
 }
 
-void NavigationClient::MarkWasInitiatedInThisFrame() {
+void NavigationClient::SetUpRendererInitiatedNavigation(
+    mojo::PendingRemote<mojom::NavigationRendererCancellationListener>
+        renderer_cancellation_listener_remote) {
   DCHECK(!was_initiated_in_this_frame_);
   was_initiated_in_this_frame_ = true;
+  renderer_cancellation_listener_remote_.Bind(
+      std::move(renderer_cancellation_listener_remote),
+      render_frame_->GetTaskRunner(
+          blink::TaskType::kInternalNavigationCancellation));
+
+  // Renderer-initiated navigations can be canceled from the JS task it was
+  // initiated from. If we post a task here, the task will run after the JS task
+  // that started the navigation had finished running. So, we can post a task to
+  // notify the browser that navigation cancellation is no longer possible from
+  // here.
+  render_frame_->GetTaskRunner(blink::TaskType::kInternalNavigationCancellation)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     &NavigationClient::NotifyNavigationCancellationWindowEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NavigationClient::NotifyNavigationCancellationWindowEnded() {
+  DCHECK(was_initiated_in_this_frame_);
+  renderer_cancellation_listener_remote_->RendererCancellationWindowEnded();
+  renderer_cancellation_listener_remote_.reset();
 }
 
 void NavigationClient::SetDisconnectionHandler() {

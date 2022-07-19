@@ -4143,6 +4143,8 @@ void RenderFrameImpl::AbortClientNavigation() {
   }
   NotifyObserversOfFailedProvisionalLoad();
   // See comment in header for more information of how navigation cleanup works.
+  // Note: This might not actually cancel the navigation if the navigation is
+  // already in the process of committing to a different RenderFrame.
   navigation_client_impl_.reset();
 }
 
@@ -5798,7 +5800,10 @@ void RenderFrameImpl::BeginNavigationInternal(
       navigation_client_remote;
   BindNavigationClient(
       navigation_client_remote.InitWithNewEndpointAndPassReceiver());
-  navigation_client_impl_->MarkWasInitiatedInThisFrame();
+  mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
+      renderer_cancellation_listener_receiver;
+  navigation_client_impl_->SetUpRendererInitiatedNavigation(
+      renderer_cancellation_listener_receiver.InitWithNewPipeAndPassRemote());
 
   bool current_frame_has_download_sandbox_flag = !frame_->IsAllowedToDownload();
   bool has_download_sandbox_flag =
@@ -5820,7 +5825,8 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  request_destination),
       std::move(begin_navigation_params), std::move(blob_url_token),
       std::move(navigation_client_remote),
-      std::move(initiator_policy_container_keep_alive_handle));
+      std::move(initiator_policy_container_keep_alive_handle),
+      std::move(renderer_cancellation_listener_receiver));
 }
 
 void RenderFrameImpl::DecodeDataURL(

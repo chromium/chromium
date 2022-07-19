@@ -1186,6 +1186,19 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
+<histogram
+    name="Navigation.RendererInitiatedCancellation.DeferStartToCancellationWindowEnd"
+    units="ms" expires_after="2022-10-21">
+  <owner>rakina@chromium.org</owner>
+  <owner>dcheng@chromium.org</owner>
+  <summary>
+    Measures the amount of time it takes from
+    RendererCancellationThrottle::WillProcessResponse() to
+    RendererCancellationThrottle::NavigationCancellationWindowEnded. Recorded
+    for each navigation that gets deferred by RendererCancellationThrottle.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.RequiresDedicatedProcess"
     enum="NavigationRequiresDedicatedProcess" expires_after="2022-10-09">
   <owner>alexmos@chromium.org</owner>

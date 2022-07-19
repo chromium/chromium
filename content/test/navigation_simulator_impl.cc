@@ -767,11 +767,15 @@ void NavigationSimulatorImpl::AbortFromRenderer() {
          "NavigationSimulatorImpl::Commit or  "
          "NavigationSimulatorImpl::CommitErrorPage.";
 
-  if (state_ < READY_TO_COMMIT)
+  if (state_ < READY_TO_COMMIT) {
     was_aborted_prior_to_ready_to_commit_ = true;
-
-  request_->RendererAbortedNavigationForTesting();
-  state_ = FINISHED;
+    request_->RendererRequestedNavigationCancellationForTesting();
+    state_ = FINISHED;
+  } else {
+    // Calling RendererRequestedNavigationCancellationForTesting() after the
+    // READY_TO_COMMIT stage will get ignored, so call AbortCommit() instead.
+    AbortCommit();
+  }
 
   CHECK_EQ(1, num_did_finish_navigation_called_);
 }
@@ -1342,7 +1346,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
       navigation_client_remote.InitWithNewEndpointAndPassReceiver();
   render_frame_host_->frame_host_receiver_for_testing().impl()->BeginNavigation(
       std::move(common_params), std::move(begin_params), mojo::NullRemote(),
-      std::move(navigation_client_remote), mojo::NullRemote());
+      std::move(navigation_client_remote), mojo::NullRemote(),
+      mojo::NullReceiver());
 
   NavigationRequest* request =
       render_frame_host_->frame_tree_node()->navigation_request();

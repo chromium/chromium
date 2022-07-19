@@ -160,8 +160,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kCompositor = 9,  // Main-thread only.
       kInput = 10,
       kPostMessageForwarding = 11,
+      kInternalNavigationCancellation = 12,
 
-      kCount = 12
+      kCount = 13
     };
 
     // kPrioritisationTypeWidthBits is the number of bits required

@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -21455,6 +21456,223 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
   EXPECT_EQ(4, controller.GetEntryCount());
   EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+}
+
+// Tests that renderer-initiated navigation cancellation from the same JS task
+// that created the navigation can still be triggered after WillProcessResponse,
+// as the browser defers the navigation until the JS task that started it
+// finishes.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       RendererInitiatedCancellationDueToJS) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Navigate to a page with an iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(contents(), url1));
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  GURL child_url = child->current_url();
+  GURL child_url_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // Now navigate the child frame to another same-site document, but cancel it
+  // from the JS task after a synchronous XHR request that we can control.
+  TestNavigationManager nav_manager(contents(), child_url_2);
+  ExecuteScriptAsync(child, R"(
+      location.href = '/title1.html';
+      var request = new XMLHttpRequest();
+      request.open("GET", "/fetch", /*async=*/false);
+      request.send("");
+      var fetch_success = (request.readyState == 4 && request.status == 200);
+      window.stop();
+    )");
+
+  // The navigation should be able to start, as the synchronous XHR request
+  // hasn't completed, and the navigation hasn't been canceled yet.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.ResumeNavigation();
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(nav_manager.GetNavigationHandle());
+  EXPECT_EQ(request, child->navigation_request());
+
+  // The navigation should be able to reach the WillProcessResponse stage,
+  // and gets deferred by RendererCancellationThrottle after that. Wait for the
+  // first NavigationThrottle deferral.
+  base::RunLoop run_loop;
+  NavigationThrottleRunner* throttle_runner =
+      request->GetNavigationThrottleRunnerForTesting();
+  throttle_runner->set_first_deferral_callback_for_testing(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the deferral is caused by RendererCancellationThrottle.
+  EXPECT_TRUE(request->IsDeferredForTesting());
+  EXPECT_STREQ("RendererCancellationThrottle",
+               throttle_runner->GetDeferringThrottle()->GetNameForLogging());
+  EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+  // Unblock the JS task in the renderer by sending the response for the sync
+  // XHR request. After that, the renderer will trigger navigation cancellation
+  // due to the window.stop() call.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "foo");
+  fetch_response.Done();
+
+  // The navigation got canceled without committing.
+  nav_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(nav_manager.was_successful());
+  EXPECT_EQ(child_url, child->current_url());
+  EXPECT_EQ(true, EvalJs(child, "fetch_success"));
+}
+
+// Tests that the crash of the renderer that created a navigation will cancel
+// the navigation.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       RendererInitiatedCancellationDueToCrash) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Navigate to a page with an iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(contents(), url1));
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  GURL child_url = child->current_url();
+  GURL child_url_2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Now navigate the child frame to another same-site page, but cancel it
+  // from the JS task after a synchronous XHR request that we can control.
+  TestNavigationManager nav_manager(contents(), child_url_2);
+  ExecuteScriptAsync(child, R"(
+      location.href = '/title1.html';
+      var request = new XMLHttpRequest();
+      request.open("GET", "/fetch", /*async=*/false);
+      request.send("");
+      var fetch_success = (request.readyState == 4 && request.status == 200);
+      window.stop();
+    )");
+
+  // The navigation should be able to start, as the synchronous XHR request
+  // hasn't completed, and the navigation hasn't been canceled yet.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.ResumeNavigation();
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(nav_manager.GetNavigationHandle());
+  EXPECT_EQ(request, child->navigation_request());
+
+  // The navigation should be able to reach the WillProcessResponse stage,
+  // and gets deferred by RendererCancellationThrottle after that. Wait for the
+  // first NavigationThrottle deferral.
+  base::RunLoop run_loop;
+  NavigationThrottleRunner* throttle_runner =
+      request->GetNavigationThrottleRunnerForTesting();
+  throttle_runner->set_first_deferral_callback_for_testing(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the deferral is caused by RendererCancellationThrottle.
+  EXPECT_TRUE(request->IsDeferredForTesting());
+  EXPECT_STREQ("RendererCancellationThrottle",
+               throttle_runner->GetDeferringThrottle()->GetNameForLogging());
+  EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+  // Kill the renderer process that started the navigation.
+  RenderProcessHost* child_process = child->current_frame_host()->GetProcess();
+  RenderProcessHostWatcher crash_observer(
+      child_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  child_process->Shutdown(0);
+  crash_observer.Wait();
+
+  // The navigation got canceled without committing.
+  nav_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(nav_manager.was_successful());
+  // If the process is not shared with the main frame, the current URL of the
+  // child frame is empty after the process crashed. If the process is shared,
+  // the child frame will be gone because the main frame's process crashed.
+  if (AreAllSitesIsolatedForTesting())
+    EXPECT_EQ(GURL(), child->current_url());
+}
+
+// Tests that if waiting for a renderer-initiated navigation cancellation takes
+// too long, a warning for an unresponsive renderer will be sent.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTestNoServer,
+    RendererInitiatedCancellationTimeoutWarnsUnresponsiveRenderer) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Navigate to a page with an iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(contents(), url1));
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  GURL child_url = child->current_url();
+  GURL child_url_2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Set the cancellation timeout to a low enough value to wait in the test.
+  RendererCancellationThrottle::SetCancellationTimeoutForTesting(
+      base::Milliseconds(100));
+  UnresponsiveRendererObserver unresponsive_renderer_observer(contents());
+
+  // Now navigate the child frame to another same-site page, but cancel it
+  // from the JS task after a synchronous XHR request that we can control.
+  TestNavigationManager nav_manager(contents(), child_url_2);
+  ExecuteScriptAsync(child, R"(
+      location.href = '/title1.html';
+      var request = new XMLHttpRequest();
+      request.open("GET", "/fetch", /*async=*/false);
+      request.send("");
+      var fetch_success = (request.readyState == 4 && request.status == 200);
+      window.stop();
+    )");
+
+  // The navigation should be able to start, as the synchronous XHR request
+  // hasn't completed, and the navigation hasn't been canceled yet.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.ResumeNavigation();
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(nav_manager.GetNavigationHandle());
+  EXPECT_EQ(request, child->navigation_request());
+
+  // The navigation should be able to reach the WillProcessResponse stage,
+  // and gets deferred by RendererCancellationThrottle after that. Wait for the
+  // first NavigationThrottle deferral.
+  base::RunLoop run_loop;
+  NavigationThrottleRunner* throttle_runner =
+      request->GetNavigationThrottleRunnerForTesting();
+  throttle_runner->set_first_deferral_callback_for_testing(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the deferral is caused by RendererCancellationThrottle.
+  EXPECT_TRUE(request->IsDeferredForTesting());
+  EXPECT_STREQ("RendererCancellationThrottle",
+               throttle_runner->GetDeferringThrottle()->GetNameForLogging());
+  EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+  // Verify that we will be notified about the unresponsive renderer.
+  RenderProcessHost* hung_process = unresponsive_renderer_observer.Wait();
+  EXPECT_EQ(hung_process, child->current_frame_host()->GetProcess());
+
+  // Verify that the throttle still waits for the renderer-initiated
+  // cancellation.
+  EXPECT_TRUE(request->IsDeferredForTesting());
+
+  // Reset the cancellation timeout to the default value.
+  RendererCancellationThrottle::SetCancellationTimeoutForTesting(
+      base::TimeDelta());
 }
 
 INSTANTIATE_TEST_SUITE_P(

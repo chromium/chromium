@@ -651,6 +651,19 @@ struct CreateNewWindowReply {
   blink.mojom.PolicyContainer policy_container;
 };
 
+// A per-navigation interface passed along with the BeginNavigation call, used
+// to listen to the end of the renderer-initiated navigation cancelation window
+// for that navigation. See comment below for more details.
+interface NavigationRendererCancellationListener {
+  // Called when the navigation cancellation window for a renderer-initiated
+  // navigation ended, as the JS task in which the navigation started had
+  // finished running. Renderer-initiated navigations need to wait for this
+  // message before they can commit, as those navigations can be canceled by
+  // script (e.g. through calling window.stop() or document.open()) that runs
+  // on the same task. See RendererCancellationThrottle for more details.
+  RendererCancellationWindowEnded();
+};
+
 // Implemented by the frame server (i.e. the browser process). For messages that
 // must be associated with the IPC channel.
 interface FrameHost {
@@ -786,13 +799,19 @@ interface FrameHost {
   // PolicyContainerHost is kept alive by LocalFrame's PolicyContainer.
   // TODO(ahemery): |navigation_client| should not be optional. Make it
   // mandatory.
+  // |renderer_cancellation_listener| is a per-navigation interface used to
+  // listen to the end of the renderer-initiated navigation cancelation window
+  // for this navigation. See comment for NavigationRendererCancellationListener
+  // for more details.
   BeginNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.BeginNavigationParams begin_params,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_associated_remote<NavigationClient>? navigation_client,
       pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
-          initiator_policy_container_keep_alive_handle);
+          initiator_policy_container_keep_alive_handle,
+      pending_receiver<NavigationRendererCancellationListener>
+          renderer_cancellation_listener);
 
   // Sent when a subresource response has started.
   //

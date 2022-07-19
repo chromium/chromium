@@ -262,6 +262,9 @@ enum class TaskType : unsigned char {
   // Cross-process PostMessage IPCs that are deferred in the current task.
   kInternalPostMessageForwarding = 79,
 
+  // Tasks related to renderer-initiated navigation cancellation.
+  kInternalNavigationCancellation = 80,
+
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
@@ -289,7 +292,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kInternalPostMessageForwarding,
+  kMaxValue = kInternalNavigationCancellation,
 };
 
 }  // namespace blink

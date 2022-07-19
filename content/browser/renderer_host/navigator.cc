@@ -938,7 +938,9 @@ void Navigator::OnBeginNavigation(
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker) {
+    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
+    mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
+        renderer_cancellation_listener) {
   TRACE_EVENT0("navigation", "Navigator::OnBeginNavigation");
   // TODO(clamy): the url sent by the renderer should be validated with
   // FilterURL.
@@ -990,7 +992,8 @@ void Navigator::OnBeginNavigation(
           controller_.GetEntryCount(), override_user_agent,
           std::move(blob_url_loader_factory), std::move(navigation_client),
           std::move(prefetched_signed_exchange_cache),
-          std::move(web_bundle_handle_tracker)));
+          std::move(web_bundle_handle_tracker),
+          std::move(renderer_cancellation_listener)));
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
 
   navigation_data_ = std::make_unique<NavigationMetricsData>(

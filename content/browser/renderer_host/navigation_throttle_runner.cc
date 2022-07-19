@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {
@@ -177,6 +178,11 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // throttles handling pages with 407 errors that require extra authentication.
   AddThrottle(HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
 
+  // Wait for renderer-initiated navigation cancelation window to end. This will
+  // wait for the JS task that starts the navigation to finish, so add it close
+  // to the end to not delay running other throttles.
+  AddThrottle(RendererCancellationThrottle::MaybeCreateThrottleFor(request));
+
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
                     std::make_move_iterator(testing_throttles.begin()),
@@ -240,6 +246,9 @@ void NavigationThrottleRunner::ProcessInternal() {
       case NavigationThrottle::DEFER:
         next_index_ = i + 1;
         defer_start_time_ = base::Time::Now();
+        if (first_deferral_callback_for_testing_) {
+          std::move(first_deferral_callback_for_testing_).Run();
+        }
         return;
     }
   }

@@ -1289,7 +1289,7 @@ class CONTENT_EXPORT RenderFrameImpl
   //   request NavigationClient
   //
   // Note that the initiating RenderFrameImpl does *not* own the request
-  // NavigationClient. Rather, the RanderFrameImpl that the navigation *targets*
+  // NavigationClient. Rather, the RenderFrameImpl that the navigation *targets*
   // is the RenderFrameImpl that owns the request NavigationClient.
   //
   // ## Commit NavigationClient ##
@@ -1318,8 +1318,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // Note that using RenderDocument means that all cross-document navigations
   // will use a provisional RenderFrameImpl: as such, all cross-document
   // navigations with RenderDocument will ignore cancellation after
-  // READY_TO_COMMIT. This is a known compatibility issue with RenderDocument
-  // and will need to eventually be addressed.
+  // READY_TO_COMMIT. To handle this, all renderer-initiated navigations will
+  // not enter the READY_TO_COMMIT stage until the task that initiated the
+  // navigation finishes, to ensure that no renderer-initiated navigation
+  // cancellation can take place after READY_TO_COMMIT. For more details, see
+  // RendererCancellationThrottle.
   std::unique_ptr<NavigationClient> navigation_client_impl_;
 
   // Creates various media clients.

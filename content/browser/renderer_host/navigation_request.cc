@@ -1180,7 +1180,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker) {
+    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
+    mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
+        renderer_cancellation_listener) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateRendererInitiated");
   // Only normal navigations to a different document or reloads are expected.
   // - Renderer-initiated same document navigations never start in the browser.
@@ -1273,7 +1275,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       std::move(web_bundle_handle_tracker),
       nullptr,  // rfh_restored_from_back_forward_cache
       initiator_process_id,
-      /*was_opener_suppressed=*/false, /*is_pdf=*/false));
+      /*was_opener_suppressed=*/false, /*is_pdf=*/false,
+      /*is_fenced_frame_opaque_url=*/absl::nullopt,
+      std::move(renderer_cancellation_listener)));
 
   return navigation_request;
 }
@@ -1447,7 +1451,9 @@ NavigationRequest::NavigationRequest(
     int initiator_process_id,
     bool was_opener_suppressed,
     bool is_pdf,
-    absl::optional<bool> is_fenced_frame_opaque_url)
+    absl::optional<bool> is_fenced_frame_opaque_url,
+    mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
+        renderer_cancellation_listener)
     : frame_tree_node_(frame_tree_node),
       is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
       common_params_(std::move(common_params)),
@@ -1587,6 +1593,21 @@ NavigationRequest::NavigationRequest(
 
     DCHECK(navigation_client.is_valid());
     SetNavigationClient(std::move(navigation_client));
+
+    // Wait for renderer-initiated cancellation if needed. Navigation can
+    // proceed as soon as the corresponding JS task in the renderer finishes
+    // without calling window.stop() or other navigation cancellation triggers.
+    // That means there is no need to synchronise this signal with other
+    // renderer events, so this interface doesn't have to be associated and can
+    // use a prioritized task runner.
+    // kNavigationNetworkResponse is used as CommitNavigation typically already
+    // runs in on a task from this task runner (via OnResponseReceived message
+    // received from the network service).
+    if (renderer_cancellation_listener.is_valid()) {
+      renderer_cancellation_listener_.Bind(
+          std::move(renderer_cancellation_listener),
+          GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+    }
   } else if (entry) {
     DCHECK(!navigation_client.is_valid());
     if (frame_entry) {
@@ -2523,8 +2544,9 @@ mojom::NavigationClient* NavigationRequest::GetCommitNavigationClient() {
       render_frame_host_->GetNavigationClientFromInterfaceProvider();
   HandleInterfaceDisconnection(
       &commit_navigation_client_,
-      base::BindOnce(&NavigationRequest::OnRendererAbortedNavigation,
-                     base::Unretained(this)));
+      base::BindOnce(
+          &NavigationRequest::OnRendererRequestedNavigationCancellation,
+          base::Unretained(this)));
   return commit_navigation_client_.get();
 }
 
@@ -5524,12 +5546,31 @@ void NavigationRequest::UpdateCommitNavigationParamsHistory() {
       navigation_controller.GetEntryCount();
 }
 
-void NavigationRequest::RendererAbortedNavigationForTesting() {
-  OnRendererAbortedNavigation();
+void NavigationRequest::RendererRequestedNavigationCancellationForTesting() {
+  OnRendererRequestedNavigationCancellation();
 }
 
-void NavigationRequest::OnRendererAbortedNavigation() {
-  if (IsWaitingToCommit()) {
+void NavigationRequest::OnRendererRequestedNavigationCancellation() {
+  // Renderer-initiated navigation cancellations can only happen before the
+  // navigation gets into the READY_TO_COMMIT state, because
+  // RendererCancellationThrottle will prevent renderer-initiated navigations
+  // from entering that state before the JS task that started the navigation
+  // finishes. After navigation reaches READY_TO_COMMIT stage, we should
+  // ignore these navigation cancellations, except for these two cases:
+  // 1. It reuses the current RenderFrame(Host), because the RenderFrame expects
+  // the navigation to be cancelled successfully (as the state in the renderer
+  // is already updated to cancel the navigation).
+  // TODO(https://crbug.com/936696): This case will eventually go away with
+  // RenderDocument as cross-document navigations won't reuse RenderFrameHosts
+  // anymore. Fix tests that expect this behavior.
+  // 2. The target renderer had crashed, so the speculative RenderFrame is not
+  // live anymore, because the navigation can't commit in a crashed renderer.
+  if (!IsWaitingToCommit()) {
+    // The cancellation happens before READY_TO_COMMIT.
+    frame_tree_node_->navigator().CancelNavigation(frame_tree_node_);
+  } else if (render_frame_host_ ==
+                 frame_tree_node_->render_manager()->current_frame_host() ||
+             !render_frame_host_->IsRenderFrameLive()) {
     // If the NavigationRequest has already reached READY_TO_COMMIT,
     // `render_frame_host_` owns `this`. Cache any needed state in stack
     // variables to avoid a use-after-free.
@@ -5542,11 +5583,9 @@ void NavigationRequest::OnRendererAbortedNavigation() {
     // runs in `CommitPendingIfNecessary()` that expects `DidStopLoading()`
     // won't be called if `FrameTreeNode::navigation_request()` is null...
     frame_tree_node->render_manager()->MaybeCleanUpNavigation();
-  } else {
-    frame_tree_node_->navigator().CancelNavigation(frame_tree_node_);
   }
 
-  // Do not add code after this, NavigationRequest has been destroyed.
+  // Do not add code after this, NavigationRequest might have been destroyed.
 }
 
 void NavigationRequest::HandleInterfaceDisconnection(
@@ -6138,8 +6177,9 @@ void NavigationRequest::SetNavigationClient(
   // Binds the OnAbort callback
   HandleInterfaceDisconnection(
       &request_navigation_client_,
-      base::BindOnce(&NavigationRequest::OnRendererAbortedNavigation,
-                     base::Unretained(this)));
+      base::BindOnce(
+          &NavigationRequest::OnRendererRequestedNavigationCancellation,
+          base::Unretained(this)));
 }
 
 bool NavigationRequest::NeedsUrlLoader() {
@@ -6215,7 +6255,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   // navigations do not, so we must look explicitly. We should not proceed and
   // claim "ReadyToCommitNavigation" to the delegate if the renderer is gone.
   if (!render_frame_host_->IsRenderFrameLive()) {
-    OnRendererAbortedNavigation();
+    OnRendererRequestedNavigationCancellation();
     // DO NOT ADD CODE AFTER THIS, as the NavigationHandle has been deleted
     // by the previous call.
     return;
@@ -7913,6 +7953,22 @@ void NavigationRequest::MaybeInjectIsolatedAppHeaders() {
 
   response()->headers->SetHeader(
       network::CrossOriginResourcePolicy::kHeaderName, "same-origin");
+}
+
+void NavigationRequest::RendererCancellationWindowEnded() {
+  // The renderer had indicated that the navigation cancellation window had
+  // ended, so the navigation can resume if it is currently waiting for this
+  // signal.
+  renderer_cancellation_window_ended_ = true;
+  if (renderer_cancellation_window_ended_callback_) {
+    std::move(renderer_cancellation_window_ended_callback_).Run();
+  }
+  renderer_cancellation_listener_.reset();
+}
+
+bool NavigationRequest::ShouldWaitForRendererCancellationWindowToEnd() {
+  return renderer_cancellation_listener_.is_bound() &&
+         !renderer_cancellation_window_ended_;
 }
 
 NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
