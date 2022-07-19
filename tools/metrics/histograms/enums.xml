@@ -71948,6 +71948,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Enterprise enrollment button"/>
 </enum>
 
+<enum name="OobeWebViewLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Load timeout"/>
+  <int value="2" label="Load error"/>
+  <int value="3" label="HTTP error"/>
+</enum>
+
 <enum name="OomInterventionBrowserMonitorStatus">
   <int value="0" label="Enabled with a valid config"/>
   <int value="1" label="Disabled since bad config param"/>

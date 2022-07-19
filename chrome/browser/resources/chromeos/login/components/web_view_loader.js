@@ -36,9 +36,35 @@ const WEB_VIEW_FONTS_CSS = {
  */
 const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
 
+/**
+ * Histogram name for the first load result UMA metric.
+ * @type {string}
+ */
+const FIRST_LOAD_RESULT_HISTOGRAM = 'OOBE.WebViewLoader.FirstLoadResult';
+
+/**
+ * This enum is tied directly to a UMA enum defined in
+ * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+ * change one without changing the other).
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ * @enum {number}
+ */
+const OobeWebViewLoadResult = {
+  SUCCESS: 0,
+  LOAD_TIMEOUT: 1,
+  LOAD_ERROR: 2,
+  HTTP_ERROR: 3,
+  MAX: 4,
+};
+
+
 // WebViewLoader assists on the process of loading an URL into a webview.
 // It listens for events from the webRequest API for the given URL and
 // calls load_failure_callback case of failure.
+// When using WebViewLoader to load a new webview, add the webview id with the
+// first character capitalized to the variants of
+// `OOBE.WebViewLoader.FirstLoadResult` histogram.
 /* #export */ class WebViewLoader {
   /**
    * @suppress {missingProperties} as WebView type has no addContentScripts
@@ -60,6 +86,7 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
     this.backOffTimer_ = 0;
     this.loadFailureCallback_ = load_failure_callback;
     this.url_ = '';
+    this.loadResultRecorded_ = false;
 
     if (clear_anchors) {
       // Add the CLEAR_ANCHORS_CONTENT_SCRIPT that will clear <a><\a>
@@ -126,11 +153,17 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
   // fire either 'onErrorOccurred' or 'onCompleted' before the timer runs out.
   // See: https://developer.chrome.com/extensions/webRequest
   onTimeoutError_() {
-    console.warn('Loading %s timed out', this.url_);
+    console.warn('Loading ' + this.url_ + ' timed out');
 
     // Return if we are no longer monitoring requests. Confidence check.
     if (!this.isPerformingRequests_) {
       return;
+    }
+
+    if (!this.loadResultRecorded_) {
+      this.loadResultRecorded_ = true;
+      this.RecordUMAHistogramForFirstLoadResult_(
+          OobeWebViewLoadResult.LOAD_TIMEOUT);
     }
 
     if (this.reloadRequested_) {
@@ -158,6 +191,12 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
       return;
     }
 
+    if (!this.loadResultRecorded_) {
+      this.loadResultRecorded_ = true;
+      this.RecordUMAHistogramForFirstLoadResult_(
+          OobeWebViewLoadResult.LOAD_ERROR);
+    }
+
     if (this.reloadRequested_) {
       this.loadWithFallbackTimer();
     } else {
@@ -178,15 +217,27 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
     // Http errors such as 4xx, 5xx hit here instead of 'onErrorOccurred'.
     if (details.statusCode != 200) {
       // Not a successful request. Perform a reload if requested.
+      console.info('Loading ' + this.url_ + ' has completed with HTTP error.');
+      if (!this.loadResultRecorded_) {
+        this.loadResultRecorded_ = true;
+        this.RecordUMAHistogramForFirstLoadResult_(
+            OobeWebViewLoadResult.HTTP_ERROR);
+      }
+
       if (this.reloadRequested_) {
         this.loadWithFallbackTimer();
       } else {
         this.loadAfterBackoff();
       }
-      console.info('Loading ' + this.url_ + ' has completed with HTTP error.');
     } else {
       // Success!
       console.info('Loading ' + this.url_ + ' has completed successfully.');
+      if (!this.loadResultRecorded_) {
+        this.loadResultRecorded_ = true;
+        this.RecordUMAHistogramForFirstLoadResult_(
+            OobeWebViewLoadResult.SUCCESS);
+      }
+
       this.clearInternalState();
     }
   }
@@ -218,6 +269,14 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
     } else {
       this.webview_.src = this.url_;
     }
+  }
+
+  RecordUMAHistogramForFirstLoadResult_(result) {
+    const id = this.webview_.id[0].toUpperCase() + this.webview_.id.slice(1);
+    const histogramName = FIRST_LOAD_RESULT_HISTOGRAM + '.' + id;
+    chrome.send(
+        'metricsHandler:recordInHistogram',
+        [histogramName, result, OobeWebViewLoadResult.MAX]);
   }
 }
 

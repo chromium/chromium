@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/hash/sha1.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -125,10 +126,21 @@ const test::UIPath kArcTosOkButton = {kConsolidatedConsentId, "arcTosOkButton"};
 // Privacy Policy Dialog
 const test::UIPath kPrivacyPolicyDialog = {kConsolidatedConsentId,
                                            "privacyPolicyDialog"};
-const test::UIPath kPrivacyPolicyWebview = {kConsolidatedConsentId,
-                                            "privacyPolicyWebview"};
+const test::UIPath kPrivacyPolicyWebview = {
+    kConsolidatedConsentId, "consolidatedConsentPrivacyPolicyWebview"};
 const test::UIPath kPrivacyPolicyOkButton = {kConsolidatedConsentId,
                                              "privacyOkButton"};
+
+// WebViewLoader histograms
+inline constexpr char kCrosEulaWebviewFirstLoadResult[] =
+    "OOBE.WebViewLoader.FirstLoadResult.ConsolidatedConsentCrosEulaWebview";
+inline constexpr char kGoogleEulaWebviewFirstLoadResult[] =
+    "OOBE.WebViewLoader.FirstLoadResult.ConsolidatedConsentGoogleEulaWebview";
+inline constexpr char kArcTosWebviewFirstLoadResult[] =
+    "OOBE.WebViewLoader.FirstLoadResult.ConsolidatedConsentArcTosWebview";
+inline constexpr char kPrivacyPolicyFirstLoadResult[] =
+    "OOBE.WebViewLoader.FirstLoadResult."
+    "ConsolidatedConsentPrivacyPolicyWebview";
 
 ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(
     const std::string& tos_content) {
@@ -207,6 +219,8 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
   }
 
   absl::optional<ConsolidatedConsentScreen::Result> screen_result_;
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
 
  protected:
   void HandleScreenExit(ConsolidatedConsentScreen::Result result) {
@@ -283,6 +297,13 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             ConsolidatedConsentScreen::Result::ACCEPTED);
+
+  histogram_tester->ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
+  histogram_tester->ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
+
+  // ARC is not available, ARC ToS and privacy policy will not be loaded.
+  histogram_tester->ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
+  histogram_tester->ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, LearnMore) {
@@ -480,6 +501,13 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_, ConsolidatedConsentScreen::Result::ACCEPTED);
+
+  histogram_tester->ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
+  histogram_tester->ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
+
+  // ARC is available, ARC ToS and privacy policy will be loaded.
+  histogram_tester->ExpectTotalCount(kArcTosWebviewFirstLoadResult, 1);
+  histogram_tester->ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

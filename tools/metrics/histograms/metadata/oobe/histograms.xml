@@ -503,6 +503,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.WebViewLoader.FirstLoadResult.{WebViewID}"
+    enum="OobeWebViewLoadResult" expires_after="2023-07-12">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the first result of loading the webview {WebViewID} in OOBE flow.
+    This metric is emitted every time a webview in OOBE is loaded using OOBE
+    WebViewLoader. Only the first load result of each load is emitted, ignoring
+    the re-load results.
+  </summary>
+  <token key="WebViewID">
+    <variant name="ArcTosView"/>
+    <variant name="ConsolidatedConsentArcTosWebview"/>
+    <variant name="ConsolidatedConsentCrosEulaWebview"/>
+    <variant name="ConsolidatedConsentGoogleEulaWebview"/>
+    <variant name="ConsolidatedConsentPrivacyPolicyWebview"/>
+    <variant name="GuestTosCrosEulaWebview"/>
+    <variant name="GuestTosGoogleEulaWebview"/>
+  </token>
+</histogram>
+
 <histogram name="OOBE.WelcomeScreen.A11yUserActions"
     enum="WelcomeScreenA11yUserAction" expires_after="2022-04-24">
   <owner>dkuzmin@google.com</owner>

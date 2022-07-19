@@ -616,6 +616,9 @@ IN_PROC_BROWSER_TEST_P(ParameterizedArcTermsOfServiceScreenTest, ClickAccept) {
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Arc-tos.Back", 0);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Arc_tos", 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.WebViewLoader.FirstLoadResult.ArcTosView", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

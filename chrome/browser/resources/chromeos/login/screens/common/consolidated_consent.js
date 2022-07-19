@@ -374,7 +374,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   loadPrivacyPolicyWebview_(online_tos_url) {
-    const webview = this.$.privacyPolicyWebview;
+    const webview = this.$.consolidatedConsentPrivacyPolicyWebview;
 
     var loadFailureCallback = () => {
       if (this.isDemo_) {
