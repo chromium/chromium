@@ -49,7 +49,6 @@ const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
 const char kTestClientMetadataEndpoint[] =
     "https://idp.test/client_metadata_endpoint";
-const char kTestRevocationEndpoint[] = "https://idp.test/revocation_endpoint";
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
@@ -173,26 +172,6 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return data;
   }
 
-  RevokeResponse SendRevokeRequestAndWaitForResponse(
-      const char* client_id,
-      const char* hint,
-      net::HttpStatusCode http_status = net::HTTP_NO_CONTENT) {
-    GURL revocation_endpoint(kTestRevocationEndpoint);
-    test_url_loader_factory().AddResponse(revocation_endpoint.spec(), "",
-                                          http_status);
-
-    RevokeResponse status;
-    base::RunLoop run_loop;
-    auto callback =
-        base::BindLambdaForTesting([&](RevokeResponse revoke_status) {
-          status = revoke_status;
-          run_loop.Quit();
-        });
-    manager().SendRevokeRequest(revocation_endpoint, client_id, hint,
-                                std::move(callback));
-    run_loop.Run();
-    return status;
-  }
   IdpNetworkRequestManager& manager() { return *manager_; }
 
   network::TestURLLoaderFactory& test_url_loader_factory() {
@@ -801,35 +780,6 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   ASSERT_TRUE(called);
   ASSERT_EQ("", data.privacy_policy_url);
   ASSERT_EQ("", data.terms_of_service_url);
-}
-
-// Tests the revoke implementation.
-TEST_F(IdpNetworkRequestManagerTest, Revoke) {
-  bool called = false;
-  auto interceptor =
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        called = true;
-        EXPECT_EQ(GURL(kTestRpUrl), request.referrer);
-        // Check that the request body is correct
-        ASSERT_NE(request.request_body, nullptr);
-        ASSERT_EQ(1ul, request.request_body->elements()->size());
-        const network::DataElement& elem =
-            request.request_body->elements()->at(0);
-        ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
-        const network::DataElementBytes& byte_elem =
-            elem.As<network::DataElementBytes>();
-        EXPECT_EQ("client_id=xxx&hint=yyy", byte_elem.AsStringPiece());
-      });
-  test_url_loader_factory().SetInterceptor(interceptor);
-  RevokeResponse status = SendRevokeRequestAndWaitForResponse("xxx", "yyy");
-  ASSERT_TRUE(called);
-  ASSERT_EQ(RevokeResponse::kSuccess, status);
-}
-
-TEST_F(IdpNetworkRequestManagerTest, RevokeError) {
-  RevokeResponse status =
-      SendRevokeRequestAndWaitForResponse("xxx", "yyy", net::HTTP_FORBIDDEN);
-  ASSERT_EQ(RevokeResponse::kError, status);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.

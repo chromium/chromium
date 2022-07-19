@@ -161,12 +161,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                 const std::string& request,
                                 TokenRequestCallback callback);
 
-  // Send a revoke token request to the IDP.
-  virtual void SendRevokeRequest(const GURL& revoke_url,
-                                 const std::string& client_id,
-                                 const std::string& hint,
-                                 RevokeCallback callback);
-
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 

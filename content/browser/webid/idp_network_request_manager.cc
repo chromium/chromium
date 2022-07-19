@@ -511,15 +511,6 @@ void OnTokenRequestParsed(
   std::move(callback).Run(FetchStatus::kSuccess, token->GetString());
 }
 
-void OnRevokeResponse(IdpNetworkRequestManager::RevokeCallback callback,
-                      std::unique_ptr<std::string> response_body,
-                      int response_code) {
-  IdpNetworkRequestManager::RevokeResponse status =
-      response_body ? IdpNetworkRequestManager::RevokeResponse::kSuccess
-                    : IdpNetworkRequestManager::RevokeResponse::kError;
-  std::move(callback).Run(status);
-}
-
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
                        std::unique_ptr<std::string> response_body,
                        int response_code) {
@@ -688,30 +679,6 @@ std::string CreateRevokeRequestBody(const std::string& client_id,
     return std::string();
   }
   return request_body;
-}
-
-void IdpNetworkRequestManager::SendRevokeRequest(const GURL& revoke_url,
-                                                 const std::string& client_id,
-                                                 const std::string& hint,
-                                                 RevokeCallback callback) {
-  std::string revoke_request_body;
-  if (!client_id.empty())
-    revoke_request_body += "client_id=" + client_id;
-
-  if (hint.empty()) {
-    std::move(callback).Run(RevokeResponse::kError);
-    return;
-  }
-  if (!revoke_request_body.empty())
-    revoke_request_body += "&";
-  revoke_request_body += "hint=" + hint;
-
-  std::unique_ptr<network::SimpleURLLoader> url_loader =
-      CreateCredentialedUrlLoader(revoke_url, /* send_referrer= */ true,
-                                  revoke_request_body);
-  DownloadUrl(std::move(url_loader),
-              base::BindOnce(&OnRevokeResponse, std::move(callback)),
-              maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
