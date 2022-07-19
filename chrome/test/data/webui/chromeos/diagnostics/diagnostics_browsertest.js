@@ -20,15 +20,16 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const dxTestSuites = 'chromeos/diagnostics/diagnostics_app_unified_test.js';
+const diagnosticsUrl =
+    `chrome://diagnostics/test_loader.html?module=${dxTestSuites}&host=test`;
 
 this.DiagnosticsApp = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
+    return diagnosticsUrl;
   }
 
   /** @override */
@@ -38,7 +39,7 @@ this.DiagnosticsApp = class extends PolymerTest {
 this.DiagnosticsAppWithNetwork = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
+    return diagnosticsUrl;
   }
 
   /** @override */
@@ -54,7 +55,7 @@ this.DiagnosticsAppWithNetwork = class extends PolymerTest {
 this.DiagnosticsAppWithInput = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
+    return diagnosticsUrl;
   }
 
   /** @override */
@@ -111,16 +112,7 @@ const debug_suites_list = [
   'WifiInfo',
 ];
 
-// TODO(crbug.com/1288529): DiagnosticsApp.BrowserTest and
-// DiagnosticsAppWithNetwork.BrowserTest and
-// DiagnosticsAppWithInput.BrowserTest are flaky on ChromeOS.
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
-GEN('# define MAYBE_BrowserTest DISABLED_BrowserTest');
-GEN('#else');
-GEN('# define MAYBE_BrowserTest BrowserTest');
-GEN('#endif');
-
-TEST_F('DiagnosticsApp', 'MAYBE_BrowserTest', function() {
+TEST_F('DiagnosticsApp', 'BrowserTest', function() {
   assertDeepEquals(
       debug_suites_list, Object.keys(test_suites_list),
       'List of registered tests suites and debug suites do not match.\n' +
@@ -129,11 +121,11 @@ TEST_F('DiagnosticsApp', 'MAYBE_BrowserTest', function() {
   mocha.run();
 });
 
-TEST_F('DiagnosticsAppWithNetwork', 'MAYBE_BrowserTest', function() {
+TEST_F('DiagnosticsAppWithNetwork', 'BrowserTest', function() {
   mocha.run();
 });
 
-TEST_F('DiagnosticsAppWithInput', 'MAYBE_BrowserTest', function() {
+TEST_F('DiagnosticsAppWithInput', 'BrowserTest', function() {
   mocha.run();
 });
 

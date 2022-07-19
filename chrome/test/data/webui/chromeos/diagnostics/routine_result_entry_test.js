@@ -114,7 +114,7 @@ export function routineResultEntryTestSuite() {
    */
   function getFailedTestContainer() {
     const failedTestContainer = /** @type {!HTMLSpanElement} */ (
-        routineResultEntryElement.$$('#failedTestText'));
+        routineResultEntryElement.$$('#failed-test-text'));
     assertTrue(!!failedTestContainer);
     return failedTestContainer;
   }
@@ -122,7 +122,7 @@ export function routineResultEntryTestSuite() {
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
-      const div = routineResultEntryElement.$$('.entryRow');
+      const div = routineResultEntryElement.$$('.entry-row');
       assertTrue(!!div);
     });
   });
