@@ -32,6 +32,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/public/common/features.h"
 
 // TODO(crbug.com/1215089): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -182,17 +183,27 @@ struct TabInfo {
   // [*] Actually, because `CropTarget`s are not stringifiable, an index
   // of the CropTarget is used, and translated by JS code back into
   // the CropTarget it had stored.
-  std::string CropTo(const std::string& crop_target,
-                     Frame frame,
-                     Track track = Track::kOriginal) {
+  bool CropTo(const std::string& crop_target,
+              Frame frame,
+              Track track = Track::kOriginal) {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetPrimaryMainFrame(),
         base::StringPrintf("cropToByIndex('%s', '%s', '%s');",
                            crop_target.c_str(), ToString(frame),
                            ToString(track)),
-        &script_result));
-    return script_result;
+        &script_result))
+        << "Failed to crop to: " << crop_target;
+
+    if (frame == Frame::kTopLevelDocument) {
+      EXPECT_EQ(0u, script_result.rfind("top-level-", 0)) << script_result;
+      return script_result == "top-level-crop-success";
+    }
+    if (frame == Frame::kEmbeddedFrame) {
+      EXPECT_EQ(0u, script_result.rfind("embedded-", 0)) << script_result;
+      return script_result == "embedded-crop-success";
+    }
+    return false;
   }
 
   bool CloneTrack() {
@@ -215,26 +226,36 @@ struct TabInfo {
     return script_result == "deallocate-success";
   }
 
-  bool HideElement(const std::string& element_id) {
+  bool HideElement(const char* element_id) {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetPrimaryMainFrame(),
-        base::StringPrintf("hideElement('%s');", element_id.c_str()),
-        &script_result));
+        base::StringPrintf("hideElement('%s');", element_id), &script_result));
     DCHECK(script_result == "hide-element-failure" ||
            script_result == "hide-element-success");
     return script_result == "hide-element-success";
   }
 
-  std::string CreateNewDivElement(Frame frame, const std::string& div_id) {
+  bool CreateNewElement(Frame frame, const char* tag, const std::string& id) {
     DCHECK_NE(frame, Frame::kNone);
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents->GetPrimaryMainFrame(),
-        base::StrCat({"createNewDivElement(\"", ToString(frame), "\", \"",
-                      div_id, "\");"}),
+        base::StrCat({"createNewElement(\"", ToString(frame), "\", \"", tag,
+                      "\", \"", id, "\");"}),
         &script_result));
-    return script_result;
+
+    if (frame == Frame::kEmbeddedFrame) {
+      EXPECT_EQ(0u, script_result.rfind("embedded-", 0)) << script_result;
+      return script_result == "embedded-new-element-success";
+    }
+    DCHECK(frame == Frame::kTopLevelDocument);
+    EXPECT_EQ(0u, script_result.rfind("top-level-", 0)) << script_result;
+    return script_result == "top-level-new-element-success";
+  }
+
+  bool CreateNewDivElement(Frame frame, const std::string& id) {
+    return CreateNewElement(frame, "div", id);
   }
 
   raw_ptr<Browser> browser;
@@ -248,6 +269,10 @@ struct TabInfo {
 // detection of JS errors.
 class RegionCaptureBrowserTest : public WebRtcTestBase {
  public:
+  RegionCaptureBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kRegionCaptureExperimentalSubtypes);
+  }
   ~RegionCaptureBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -349,6 +374,8 @@ class RegionCaptureBrowserTest : public WebRtcTestBase {
   // Each page is served from a distinct origin, thereby proving that cropping
   // works irrespective of whether iframes are in/out-of-process.
   std::vector<std::unique_ptr<net::EmbeddedTestServer>> servers_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
@@ -373,8 +400,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kTopLevelDocument);
   ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-  EXPECT_EQ(tab.CropTo(crop_target, Frame::kTopLevelDocument),
-            "top-level-crop-success");
+  EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
 }
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
@@ -385,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kEmbeddedFrame);
   ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-  EXPECT_EQ(tab.CropTo(crop_target, Frame::kTopLevelDocument),
-            "top-level-crop-success");
+  EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
 }
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
@@ -397,8 +422,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kTopLevelDocument);
   ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-  EXPECT_EQ(tab.CropTo(crop_target, Frame::kEmbeddedFrame),
-            "embedded-crop-success");
+  EXPECT_TRUE(tab.CropTo(crop_target, Frame::kEmbeddedFrame));
 }
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
@@ -409,8 +433,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kEmbeddedFrame);
   ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-  EXPECT_EQ(tab.CropTo(crop_target, Frame::kEmbeddedFrame),
-            "embedded-crop-success");
+  EXPECT_TRUE(tab.CropTo(crop_target, Frame::kEmbeddedFrame));
 }
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToAllowedToUncrop) {
@@ -420,11 +443,8 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToAllowedToUncrop) {
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kTopLevelDocument);
   ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-  ASSERT_EQ(tab.CropTo(crop_target, Frame::kTopLevelDocument),
-            "top-level-crop-success");
-
-  EXPECT_EQ(tab.CropTo("undefined", Frame::kTopLevelDocument),
-            "top-level-crop-success");
+  ASSERT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
+  EXPECT_TRUE(tab.CropTo("undefined", Frame::kTopLevelDocument));
 }
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
@@ -438,8 +458,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   // CropTo(cropTarget) is intentionally not called.
   // Instead, the test immediately calls CropTo(undefined) on a still-uncropped
   // track, attempting to stop cropping when no cropping was ever specified.
-  EXPECT_EQ(tab.CropTo("undefined", Frame::kTopLevelDocument),
-            "top-level-crop-success");
+  EXPECT_TRUE(tab.CropTo("undefined", Frame::kTopLevelDocument));
 }
 
 // The Promise resolves when it's guaranteed that no additional frames will
@@ -456,8 +475,31 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kTopLevelDocument, "div");
   ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-  EXPECT_EQ(tab.CropTo(crop_target, Frame::kTopLevelDocument),
-            "top-level-crop-success");
+  EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
+}
+
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
+                       CropToWorksForAllHtmlElements) {
+  // NOTE: this list is intentionally non-exhaustive, but represents a wide
+  // variety of element types.
+  static const std::vector<const char*> kElementTags{
+      "a",      "blockquote", "body",  "button", "canvas", "col",
+      "div",    "fieldset",   "form",  "h1",     "header", "hr",
+      "iframe", "img",        "input", "output", "span",   "video"};
+
+  SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
+  TabInfo& tab = tabs_[kMainTab];
+
+  for (size_t i = 0; i < kElementTags.size(); ++i) {
+    const std::string element_id = ("new_id_" + base::NumberToString(i));
+    ASSERT_TRUE(tab.CreateNewElement(Frame::kTopLevelDocument, kElementTags[i],
+                                     element_id));
+    const std::string crop_target =
+        tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id);
+    ASSERT_THAT(crop_target, IsExpectedCropTarget(base::NumberToString(i)));
+
+    EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
@@ -466,8 +508,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
 
   for (size_t i = 0; i < kMaxCropIdsPerWebContents; ++i) {
     const std::string element_id = ("new_id_" + base::NumberToString(i));
-    ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
-              "top-level-new-div-success");
+    ASSERT_TRUE(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id));
     const std::string crop_target =
         tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id);
     ASSERT_THAT(crop_target, IsExpectedCropTarget(base::NumberToString(i)));
@@ -476,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
   // Create one more element - this one won't get a crop-target.
   const std::string element_id =
       ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents));
-  ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
-            "top-level-new-div-success");
+  ASSERT_TRUE(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id));
   EXPECT_EQ(tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id),
             "top-level-produce-crop-target-error");
 }
@@ -488,8 +528,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInEmbeddedFrame) {
 
   for (size_t i = 0; i < kMaxCropIdsPerWebContents; ++i) {
     const std::string element_id = ("new_id_" + base::NumberToString(i));
-    ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
-              "embedded-new-div-success");
+    ASSERT_TRUE(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id));
     const std::string crop_target =
         tab.CropTargetFromElement(Frame::kEmbeddedFrame, element_id);
     ASSERT_THAT(crop_target, IsExpectedCropTarget(base::NumberToString(i)));
@@ -498,8 +537,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInEmbeddedFrame) {
   // Create one more element - this one won't get a crop-target.
   const std::string element_id =
       ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents));
-  ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
-            "embedded-new-div-success");
+  ASSERT_TRUE(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id));
   EXPECT_EQ(tab.CropTargetFromElement(Frame::kEmbeddedFrame, element_id),
             "embedded-produce-crop-target-error");
 }
@@ -515,8 +553,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   // crop-target.
   for (size_t i = 0; i < kMaxCropIdsPerWebContents - 1; ++i) {
     const std::string element_id = ("new_id_" + base::NumberToString(i));
-    ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
-              "top-level-new-div-success");
+    ASSERT_TRUE(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id));
     const std::string crop_target =
         tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id);
     ASSERT_THAT(crop_target, IsExpectedCropTarget(base::NumberToString(i)));
@@ -525,8 +562,7 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   // One more in the embedded frame is possible.
   std::string element_id =
       ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents - 1));
-  ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
-            "embedded-new-div-success");
+  ASSERT_TRUE(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id));
   const std::string crop_target =
       tab.CropTargetFromElement(Frame::kEmbeddedFrame, element_id);
   EXPECT_THAT(crop_target, IsExpectedCropTarget(base::NumberToString(
@@ -534,15 +570,13 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
 
   // Create one more element - this one won't get a crop-target.
   element_id = ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents));
-  ASSERT_EQ(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id),
-            "top-level-new-div-success");
+  ASSERT_TRUE(tab.CreateNewDivElement(Frame::kTopLevelDocument, element_id));
   EXPECT_EQ(tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id),
             "top-level-produce-crop-target-error");
   // Neither in the top-level nor in the embedded frame.
   element_id =
       ("new_id_" + base::NumberToString(kMaxCropIdsPerWebContents + 1));
-  ASSERT_EQ(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id),
-            "embedded-new-div-success");
+  ASSERT_TRUE(tab.CreateNewDivElement(Frame::kEmbeddedFrame, element_id));
   EXPECT_EQ(tab.CropTargetFromElement(Frame::kEmbeddedFrame, element_id),
             "embedded-produce-crop-target-error");
 }
@@ -572,14 +606,7 @@ class RegionCaptureClonesBrowserTest : public RegionCaptureBrowserTest {
   }
 
   bool CropTo(const std::string& crop_target, Frame frame, Track track) {
-    const std::string result =
-        tabs_[kMainTab].CropTo(crop_target, frame, track);
-
-    // This test suite only ever starts the capture from the top-level frame.
-    DCHECK(result == base::StrCat({ToString(frame), "-crop-success"}) ||
-           result == base::StrCat({ToString(frame), "-crop-error"}));
-
-    return result == base::StrCat({ToString(frame), "-crop-success"});
+    return tabs_[kMainTab].CropTo(crop_target, frame, track);
   }
 
   bool CloneTrack() { return tabs_[kMainTab].CloneTrack(); }
@@ -914,12 +941,8 @@ IN_PROC_BROWSER_TEST_P(RegionCaptureSelfCaptureOnlyBrowserTest, CropTo) {
   const bool expect_permitted =
       (self_capture_ && target_element_tab_ == kMainTab);
 
-  const std::string expected_result = base::StrCat(
-      {capturing_entity_ == Frame::kTopLevelDocument ? "top-level" : "embedded",
-       "-", expect_permitted ? "crop-success" : "crop-error"});
-
-  EXPECT_EQ(tabs_[kMainTab].CropTo(crop_target, capturing_entity_),
-            expected_result);
+  EXPECT_EQ(expect_permitted,
+            tabs_[kMainTab].CropTo(crop_target, capturing_entity_));
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

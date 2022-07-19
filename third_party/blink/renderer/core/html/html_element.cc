@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -1179,6 +1180,11 @@ void HTMLElement::setHidden(
       }
       break;
   }
+}
+
+bool HTMLElement::IsSupportedByRegionCapture() const {
+  return base::FeatureList::IsEnabled(
+      features::kRegionCaptureExperimentalSubtypes);
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {

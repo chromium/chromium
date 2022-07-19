@@ -1443,6 +1443,9 @@ const base::Feature kSecureContextFixForWorkers{
 const base::Feature kZeroCopyTabCapture{"ZeroCopyTabCapture",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRegionCaptureExperimentalSubtypes{
+    "RegionCaptureExperimentalSubtypes", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kUserAgentOverrideExperiment{
     "UserAgentOverrideExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
 

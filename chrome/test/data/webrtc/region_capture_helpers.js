@@ -33,34 +33,37 @@ function registerEmbeddedListeners() {
     } else if (type == "crop-to") {
       cropTo(event.data.cropTarget, event.data.targetFrame,
              event.data.targetTrackStr);
-    } else if (type  == "create-new-div-element") {
-      createNewDivElement(event.data.targetFrame, event.data.divId);
-    } else if (type == "start-second-capture") {
+    } else if (type == 'create-new-element') {
+      createNewElement(event.data.targetFrame, event.data.tag, event.data.id);
+    } else if (type == 'start-second-capture') {
       startSecondCapture(event.data.targetFrame);
-    } else if (type == "stop-capture") {
+    } else if (type == 'stop-capture') {
       stopCapture(event.data.targetFrame, event.data.targetTrack);
     }
   });
 }
 
-// Allows creating new div-elements for which new crop-targets may be created.
-async function createNewDivElement(targetFrame, divId) {
+// Allows creating new elements for which new crop-targets may be created.
+function createNewElement(targetFrame, tag, id) {
   if (role == targetFrame) {
-    const newDiv = document.createElement("div");
-    newDiv.id = divId;
-    document.body.appendChild(newDiv);
-    window.domAutomationController.send(`${role}-new-div-success`);
+    const newElement = document.createElement(tag);
+    newElement.id = id;
+    document.body.appendChild(newElement);
+    window.domAutomationController.send(`${role}-new-element-success`);
   } else {
     if (role != "top-level") {
-      window.domAutomationController.send(`${role}-new-div-error`)
+      window.domAutomationController.send(`${role}-new-element-error`)
       return;
     }
     const embedded_frame = document.getElementById("embedded_frame");
-      embedded_frame.contentWindow.postMessage({
-          messageType: "create-new-div-element",
+    embedded_frame.contentWindow.postMessage(
+        {
+          messageType: 'create-new-element',
           targetFrame: targetFrame,
-          divId: divId
-        }, "*");
+          tag: tag,
+          id: id
+        },
+        '*');
     // window.domAutomationController.send() called by embedded page.
   }
 }
@@ -178,12 +181,14 @@ async function cropTo(cropTarget, targetFrame, targetTrackStr) {
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
-      embedded_frame.contentWindow.postMessage({
-          messageType: "crop-to",
+    embedded_frame.contentWindow.postMessage(
+        {
+          messageType: 'crop-to',
           cropTarget: cropTarget,
           targetFrame: targetFrame,
           targetTrackStr: targetTrackStr
-        }, "*");
+        },
+        '*');
     // window.domAutomationController.send() called by embedded page.
     return;
   }

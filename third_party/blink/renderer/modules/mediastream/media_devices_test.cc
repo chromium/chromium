@@ -7,11 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -256,8 +258,11 @@ class MediaDevicesTest : public PageTestBase {
  public:
   using MediaDeviceInfos = HeapVector<Member<MediaDeviceInfo>>;
 
-  MediaDevicesTest() : device_infos_(MakeGarbageCollected<MediaDeviceInfos>()) {
-    dispatcher_host_ = std::make_unique<MockMediaDevicesDispatcherHost>();
+  MediaDevicesTest()
+      : dispatcher_host_(std::make_unique<MockMediaDevicesDispatcherHost>()),
+        device_infos_(MakeGarbageCollected<MediaDeviceInfos>()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kRegionCaptureExperimentalSubtypes);
   }
 
   MediaDevices* GetMediaDevices(LocalDOMWindow& window) {
@@ -323,6 +328,10 @@ class MediaDevicesTest : public PageTestBase {
     return *dispatcher_host_;
   }
 
+  base::test::ScopedFeatureList& scoped_feature_list() {
+    return scoped_feature_list_;
+  }
+
  private:
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<MockMediaDevicesDispatcherHost> dispatcher_host_;
@@ -332,6 +341,7 @@ class MediaDevicesTest : public PageTestBase {
   bool device_changed_ = false;
   bool listener_connection_error_ = false;
   Persistent<MediaDevices> media_devices_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
@@ -755,23 +765,38 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
 
   SetBodyContent(R"HTML(
     <div id='test-div'></div>
-    <iframe id='test-iframe' src="about:blank" />
+    <iframe id='test-iframe' src="about:blank"></iframe>
+    <p id='test-p'>
+      <var id='test-var'>e</var> equals mc<sup id='test-sup'>2</sup>, or is
+      <wbr id='test-wbr'>it mc<sub id='test-sub'>2</sub>?
+      <u id='test-u'>probz</u>.
+    </p>
+    <select id='test-select'>
+      <optgroup label="Bar" id='test-optgroup'>
+        <option value="foo" id='test-option'>Foo</option>
+      </optgroup>
+    </select>
   )HTML");
 
   Document& document = GetDocument();
-  Element* const div = document.getElementById("test-div");
-  const ScriptPromise div_promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
-  platform()->RunUntilIdle();
-  EXPECT_FALSE(div_promise.IsEmpty());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  static const std::vector<const char*> kElementIds{
+      "test-div",    "test-iframe",   "test-p",     "test-var",
+      "test-sup",    "test-wbr",      "test-sub",   "test-u",
+      "test-select", "test-optgroup", "test-option"};
 
-  Element* const iframe = document.getElementById("test-iframe");
-  const ScriptPromise iframe_promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), iframe, scope.GetExceptionState());
-  platform()->RunUntilIdle();
-  EXPECT_FALSE(iframe_promise.IsEmpty());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  for (const char* id : kElementIds) {
+    Element* const element = document.getElementById(id);
+    dispatcher_host().SetNextCropId(
+        String(base::GUID::GenerateRandomV4().AsLowercaseString()));
+    const ScriptPromise promise = media_devices->ProduceCropTarget(
+        scope.GetScriptState(), element, scope.GetExceptionState());
+
+    ScriptPromiseTester script_promise_tester(scope.GetScriptState(), promise);
+    script_promise_tester.WaitUntilSettled();
+    EXPECT_TRUE(script_promise_tester.IsFulfilled())
+        << "Failed promise for element id=" << id;
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+  }
 }
 
 TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfUnsupportedElementType) {
@@ -779,7 +804,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfUnsupportedElementType) {
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
 
-  // At the moment, buttons are unsupported by Region Capture.
+  // Currently if the experimental subtypes feature is not enabled, only
+  // <div> and <iframe> are supported.
+  scoped_feature_list().Reset();
   SetBodyContent(R"HTML(
     <button id='test-button'>Click!</button>
   )HTML");

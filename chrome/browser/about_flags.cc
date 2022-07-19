@@ -5718,6 +5718,14 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(blink::features::kZeroCopyTabCapture),
     },
 
+    {
+        "region-capture-experimental-subtypes",
+        flag_descriptions::kEnableRegionCaptureExperimentalSubtypesName,
+        flag_descriptions::kEnableRegionCaptureExperimentalSubtypesDescription,
+        kOsDesktop,
+        FEATURE_VALUE_TYPE(blink::features::kRegionCaptureExperimentalSubtypes),
+    },
+
 #if BUILDFLAG(ENABLE_PDF)
     {"accessible-pdf-form", flag_descriptions::kAccessiblePDFFormName,
      flag_descriptions::kAccessiblePDFFormDescription, kOsDesktop,

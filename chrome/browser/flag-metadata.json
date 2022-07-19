@@ -5395,6 +5395,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "region-capture-experimental-subtypes",
+    "owners": [ "jophba", "eladalon" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "related-searches",
     "owners": [ "gangwu", "related-searches-vteam@google.com" ],
     "expiry_milestone": 110
