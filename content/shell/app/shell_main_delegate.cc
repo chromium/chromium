@@ -134,11 +134,7 @@ ShellMainDelegate::ShellMainDelegate(bool is_content_browsertests)
 ShellMainDelegate::~ShellMainDelegate() {
 }
 
-bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
-  int dummy;
-  if (!exit_code)
-    exit_code = &dummy;
-
+absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch("run-layout-test")) {
     std::cerr << std::string(79, '*') << "\n"
@@ -184,7 +180,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
 
   RegisterShellPathProvider();
 
-  return false;
+  return absl::nullopt;
 }
 
 bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
@@ -330,17 +326,20 @@ void ShellMainDelegate::InitializeResourceBundle() {
 #endif
 }
 
-void ShellMainDelegate::PreBrowserMain() {
+absl::optional<int> ShellMainDelegate::PreBrowserMain() {
 #if BUILDFLAG(IS_MAC)
   RegisterShellCrApp();
 #endif
+  return absl::nullopt;
 }
 
-void ShellMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
   if (!ShouldCreateFeatureList(invoked_in)) {
     // Apply field trial testing configuration since content did not.
     browser_client_->CreateFeatureListAndFieldTrials();
   }
+  return absl::nullopt;
 }
 
 ContentClient* ShellMainDelegate::CreateContentClient() {

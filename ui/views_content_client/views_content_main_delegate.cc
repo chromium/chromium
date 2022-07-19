@@ -43,7 +43,7 @@ ViewsContentMainDelegate::ViewsContentMainDelegate(
 ViewsContentMainDelegate::~ViewsContentMainDelegate() {
 }
 
-bool ViewsContentMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> ViewsContentMainDelegate::BasicStartupComplete() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
@@ -60,7 +60,7 @@ bool ViewsContentMainDelegate::BasicStartupComplete(int* exit_code) {
 
   content::RegisterShellPathProvider();
 
-  return false;
+  return absl::nullopt;
 }
 
 void ViewsContentMainDelegate::PreSandboxStartup() {
@@ -85,9 +85,14 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
   views_content_client_->OnResourcesLoaded();
 }
 
-void ViewsContentMainDelegate::PreBrowserMain() {
-  content::ContentMainDelegate::PreBrowserMain();
+absl::optional<int> ViewsContentMainDelegate::PreBrowserMain() {
+  absl::optional<int> exit_code =
+      content::ContentMainDelegate::PreBrowserMain();
+  if (exit_code.has_value())
+    return exit_code;
+
   ViewsContentClientMainParts::PreBrowserMain();
+  return absl::nullopt;
 }
 
 content::ContentClient* ViewsContentMainDelegate::CreateContentClient() {

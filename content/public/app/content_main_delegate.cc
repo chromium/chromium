@@ -14,8 +14,8 @@
 
 namespace content {
 
-bool ContentMainDelegate::BasicStartupComplete(int* exit_code) {
-  return false;
+absl::optional<int> ContentMainDelegate::BasicStartupComplete() {
+  return absl::nullopt;
 }
 
 absl::variant<int, MainFunctionParams> ContentMainDelegate::RunProcess(
@@ -46,6 +46,10 @@ bool ContentMainDelegate::ShouldLockSchemeRegistry() {
   return true;
 }
 
+absl::optional<int> ContentMainDelegate::PreBrowserMain() {
+  return absl::nullopt;
+}
+
 bool ContentMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   return true;
 }
@@ -53,6 +57,11 @@ bool ContentMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
 variations::VariationsIdsProvider*
 ContentMainDelegate::CreateVariationsIdsProvider() {
   return nullptr;
+}
+
+absl::optional<int> ContentMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
+  return absl::nullopt;
 }
 
 ContentClient* ContentMainDelegate::CreateContentClient() {

@@ -72,12 +72,11 @@ WebEngineMainDelegate::WebEngineMainDelegate() {
 
 WebEngineMainDelegate::~WebEngineMainDelegate() = default;
 
-bool WebEngineMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (!InitLoggingFromCommandLine(*command_line)) {
-    *exit_code = 1;
-    return true;
+    return 1;
   }
 
   if (command_line->HasSwitch(switches::kGoogleApiKey)) {
@@ -90,7 +89,7 @@ bool WebEngineMainDelegate::BasicStartupComplete(int* exit_code) {
           switches::kCorsExemptHeaders),
       ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
-  return false;
+  return absl::nullopt;
 }
 
 void WebEngineMainDelegate::PreSandboxStartup() {

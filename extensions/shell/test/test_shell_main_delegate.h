@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/shell/app/shell_main_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(erikchen): Move #include to .cc file and forward declare
@@ -34,7 +35,7 @@ class TestShellMainDelegate : public extensions::ShellMainDelegate {
 
   // ContentMainDelegate implementation:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void PostEarlyInitialization(InvokedIn invoked_in) override;
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 #endif
 
  protected:

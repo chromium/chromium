@@ -28,11 +28,11 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   ~ContentMainDelegateImpl() override;
 
   // ContentMainDelegate implementation:
-  bool BasicStartupComplete(int* exit_code) override;
+  absl::optional<int> BasicStartupComplete() override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   void PreSandboxStartup() override;
-  void PostEarlyInitialization(InvokedIn invoked_in) override;
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;

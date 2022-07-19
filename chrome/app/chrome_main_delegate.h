@@ -14,6 +14,7 @@
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/chrome_content_client.h"
 #include "content/public/app/content_main_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -50,7 +51,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
  protected:
   // content::ContentMainDelegate:
-  bool BasicStartupComplete(int* exit_code) override;
+  absl::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   void SandboxInitialized(const std::string& process_type) override;
   absl::variant<int, content::MainFunctionParams> RunProcess(
@@ -62,8 +63,8 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
                           delegates) override;
   void ZygoteForked() override;
 #endif
-  void PreBrowserMain() override;
-  void PostEarlyInitialization(InvokedIn invoked_in) override;
+  absl::optional<int> PreBrowserMain() override;
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;

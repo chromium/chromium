@@ -123,7 +123,7 @@ ShellMainDelegate::ShellMainDelegate() {
 ShellMainDelegate::~ShellMainDelegate() {
 }
 
-bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
   InitLogging();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -136,7 +136,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   nacl::RegisterPathProvider();
 #endif
   extensions::RegisterPathProvider();
-  return false;
+  return absl::nullopt;
 }
 
 void ShellMainDelegate::PreSandboxStartup() {

@@ -17,6 +17,7 @@
 #include "headless/lib/headless_content_client.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -41,20 +42,20 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   ~HeadlessContentMainDelegate() override;
 
   // content::ContentMainDelegate implementation:
-  bool BasicStartupComplete(int* exit_code) override;
+  absl::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
 #if BUILDFLAG(IS_MAC)
-  void PreBrowserMain() override;
+  absl::optional<int> PreBrowserMain() override;
 #endif
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
 
-  void PostEarlyInitialization(InvokedIn invoked_in) override;
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 
   HeadlessBrowserImpl* browser() const { return browser_.get(); }
 

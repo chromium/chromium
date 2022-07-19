@@ -585,13 +585,15 @@ ChromeMainDelegate::ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks) {
 ChromeMainDelegate::~ChromeMainDelegate() {
 }
 
-void ChromeMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
   DCHECK(base::ThreadPoolInstance::Get());
   const auto* invoked_in_browser =
       absl::get_if<InvokedInBrowserProcess>(&invoked_in);
   if (!invoked_in_browser) {
     CommonEarlyInitialization();
-    return;
+    return absl::nullopt;
+    ;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -703,6 +705,8 @@ void ChromeMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
 #if BUILDFLAG(IS_MAC)
   chrome::CacheChannelInfo();
 #endif
+
+  return absl::nullopt;
 }
 
 bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
@@ -810,7 +814,7 @@ bool ChromeMainDelegate::ShouldHandleConsoleControlEvents() {
 }
 #endif
 
-bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->SaveChromeMainStats();
 #endif
@@ -844,10 +848,8 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_WIN)
   // Browser should not be sandboxed.
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
-  if (is_browser && IsSandboxedProcess()) {
-    *exit_code = chrome::RESULT_CODE_INVALID_SANDBOX_STATE;
-    return true;
-  }
+  if (is_browser && IsSandboxedProcess())
+    return chrome::RESULT_CODE_INVALID_SANDBOX_STATE;
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -875,13 +877,12 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 
 #if BUILDFLAG(IS_POSIX)
   if (HandleVersionSwitches(command_line)) {
-    *exit_code = 0;
-    return true;  // Got a --version switch; exit with a success error code.
+    return 0;  // Got a --version switch; exit with a success error code.
   }
   if (HandleCreditsSwitch(command_line)) {
-    *exit_code = 0;
-    return true;  // Got a --credits switch; exit with a success error code.
+    return 0;  // Got a --credits switch; exit with a success error code.
   }
+
   // TODO(crbug.com/1052397): Revisit the macro expression once build flag
   // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -893,8 +894,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_WIN)
   // Must do this before any other usage of command line!
   if (HasDeprecatedArguments(command_line.GetCommandLineString())) {
-    *exit_code = 1;
-    return true;
+    return 1;
   }
 
   // HandleVerifier detects and reports incorrect handle manipulations. It
@@ -956,10 +956,10 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     }
 
     diagnostics::DiagnosticsWriter writer(format);
-    *exit_code = diagnostics::DiagnosticsController::GetInstance()->Run(
+    int exit_code = diagnostics::DiagnosticsController::GetInstance()->Run(
         command_line, &writer);
     diagnostics::DiagnosticsController::GetInstance()->ClearResults();
-    return true;
+    return exit_code;
   }
 #endif
 
@@ -1008,8 +1008,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
                                                                &writer);
     if (diagnostics_exit_code) {
       // Diagnostics has failed somehow, so we exit.
-      *exit_code = diagnostics_exit_code;
-      return true;
+      return diagnostics_exit_code;
     }
 
     // Now we run the actual recovery tasks.
@@ -1019,8 +1018,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 
     if (recovery_exit_code) {
       // Recovery has failed somehow, so we exit.
-      *exit_code = recovery_exit_code;
-      return true;
+      return recovery_exit_code;
     }
   } else {  // Not running diagnostics or recovery.
     diagnostics::DiagnosticsController::GetInstance()->RecordRegularStartup();
@@ -1035,7 +1033,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   // partially-initialized, which the TLS object is supposed to protect again.
   heap_profiling::InitTLSSlot();
 
-  return false;
+  return absl::nullopt;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1476,7 +1474,7 @@ ChromeMainDelegate::CreateContentUtilityClient() {
   return chrome_content_utility_client_.get();
 }
 
-void ChromeMainDelegate::PreBrowserMain() {
+absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
 #if BUILDFLAG(IS_MAC)
   // Tell Cocoa to finish its initialization, which we want to do manually
   // instead of calling NSApplicationMain(). The primary reason is that NSAM()
@@ -1499,4 +1497,7 @@ void ChromeMainDelegate::PreBrowserMain() {
     l10n_util::OverrideLocaleWithCocoaLocale();
   }
 #endif
+
+  // Do not interrupt startup.
+  return absl::nullopt;
 }

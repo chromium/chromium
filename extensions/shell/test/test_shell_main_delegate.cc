@@ -50,12 +50,15 @@ TestShellMainDelegate::TestShellMainDelegate() {}
 TestShellMainDelegate::~TestShellMainDelegate() {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TestShellMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+absl::optional<int> TestShellMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
   if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in)) {
     // Browser tests on Lacros requires a non-null LacrosService.
     lacros_service_ = std::make_unique<chromeos::LacrosService>();
   }
   extensions::ShellMainDelegate::PostEarlyInitialization(invoked_in);
+
+  return absl::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

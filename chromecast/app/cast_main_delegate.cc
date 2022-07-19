@@ -72,7 +72,7 @@ CastMainDelegate::CastMainDelegate() {}
 
 CastMainDelegate::~CastMainDelegate() {}
 
-bool CastMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> CastMainDelegate::BasicStartupComplete() {
   RegisterPathProvider();
 
   logging::LoggingSettings settings;
@@ -160,7 +160,7 @@ bool CastMainDelegate::BasicStartupComplete(int* exit_code) {
   if (settings.logging_dest & logging::LOG_TO_FILE) {
     LOG(INFO) << "Logging to file: " << settings.log_file_path;
   }
-  return false;
+  return absl::nullopt;
 }
 
 void CastMainDelegate::PreSandboxStartup() {
@@ -237,10 +237,11 @@ bool CastMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
-void CastMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+absl::optional<int> CastMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
   if (ShouldCreateFeatureList(invoked_in)) {
     // content is handling the feature list.
-    return;
+    return absl::nullopt;
   }
 
   DCHECK(cast_feature_list_creator_);
@@ -282,6 +283,8 @@ void CastMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
   ProcessType process_type = use_browser_config ? ProcessType::kCastBrowser
                                                 : ProcessType::kCastService;
   cast_feature_list_creator_->CreatePrefServiceAndFeatureList(process_type);
+
+  return absl::nullopt;
 }
 
 void CastMainDelegate::InitializeResourceBundle() {

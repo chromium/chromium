@@ -154,11 +154,7 @@ ContentMainDelegateImpl::ContentMainDelegateImpl(MainParams params)
 
 ContentMainDelegateImpl::~ContentMainDelegateImpl() = default;
 
-bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
-  int dummy;
-  if (!exit_code)
-    exit_code = &dummy;
-
+absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
   // Disable features which are not currently supported in WebLayer. This allows
   // sites to do feature detection, and prevents crashes in some not fully
   // implemented features.
@@ -233,7 +229,7 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 
   RegisterPathProvider();
 
-  return false;
+  return absl::nullopt;
 }
 
 bool ContentMainDelegateImpl::ShouldCreateFeatureList(InvokedIn invoked_in) {
@@ -299,9 +295,11 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
 #endif
 }
 
-void ContentMainDelegateImpl::PostEarlyInitialization(InvokedIn invoked_in) {
+absl::optional<int> ContentMainDelegateImpl::PostEarlyInitialization(
+    InvokedIn invoked_in) {
   if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in))
     browser_client_->CreateFeatureListAndFieldTrials();
+  return absl::nullopt;
 }
 
 absl::variant<int, content::MainFunctionParams>

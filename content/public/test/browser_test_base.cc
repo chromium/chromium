@@ -602,8 +602,8 @@ void BrowserTestBase::SetUp() {
   // The delegate should have been set by JNI_OnLoad for the test target.
   DCHECK(delegate);
 
-  bool startup_error = delegate->BasicStartupComplete(/*exit_code=*/nullptr);
-  DCHECK(!startup_error);
+  absl::optional<int> startup_error = delegate->BasicStartupComplete();
+  ASSERT_FALSE(startup_error.has_value());
 
   InitializeMojo();
 
@@ -628,7 +628,9 @@ void BrowserTestBase::SetUp() {
 
     base::ThreadPoolInstance::Create("Browser");
 
-    delegate->PreBrowserMain();
+    absl::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
+    ASSERT_FALSE(pre_browser_main_exit_code.has_value());
+
     BrowserTaskExecutor::Create();
 
     auto* provider = delegate->CreateVariationsIdsProvider();
@@ -637,7 +639,9 @@ void BrowserTestBase::SetUp() {
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    delegate->PostEarlyInitialization(invoked_in_browser);
+    absl::optional<int> post_early_initialization_exit_code =
+        delegate->PostEarlyInitialization(invoked_in_browser);
+    ASSERT_FALSE(post_early_initialization_exit_code.has_value());
 
     StartBrowserThreadPool();
     BrowserTaskExecutor::PostFeatureListSetup();

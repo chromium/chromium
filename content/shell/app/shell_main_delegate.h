@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class ShellContentClient;
@@ -31,7 +32,7 @@ class ShellMainDelegate : public ContentMainDelegate {
   ~ShellMainDelegate() override;
 
   // ContentMainDelegate implementation:
-  bool BasicStartupComplete(int* exit_code) override;
+  absl::optional<int> BasicStartupComplete() override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   void PreSandboxStartup() override;
   absl::variant<int, MainFunctionParams> RunProcess(
@@ -40,8 +41,8 @@ class ShellMainDelegate : public ContentMainDelegate {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void ZygoteForked() override;
 #endif
-  void PreBrowserMain() override;
-  void PostEarlyInitialization(InvokedIn invoked_in) override;
+  absl::optional<int> PreBrowserMain() override;
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   ContentClient* CreateContentClient() override;
   ContentBrowserClient* CreateContentBrowserClient() override;
   ContentGpuClient* CreateContentGpuClient() override;
