@@ -122,7 +122,7 @@ class AX_EXPORT AXNode final {
          AXNode* parent,
          AXNodeID id,
          size_t index_in_parent,
-         size_t unignored_index_in_parent = 0);
+         size_t unignored_index_in_parent = 0u);
   virtual ~AXNode();
 
   // Accessors.
