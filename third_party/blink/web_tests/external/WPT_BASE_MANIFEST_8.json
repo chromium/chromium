@@ -150044,6 +150044,58 @@
         {}
        ]
       ],
+      "position-sticky-escape-scroller-001.html": [
+       "dd58327388fd903fc47fffd60a97a8a352118937",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/position-sticky-escape-scroller-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-escape-scroller-002.html": [
+       "225012b9ec8935e89f05db2627b50e75961f45d2",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/position-sticky-escape-scroller-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-escape-scroller-003.html": [
+       "434b2797055f42ebe3b73a0823060cf055e3c30b",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/position-sticky-escape-scroller-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-escape-scroller-004.html": [
+       "ed14d62ac44ed3d13efeb9d433ff3ffca34987a3",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/position-sticky-escape-scroller-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-fixed-ancestor-002.html": [
        "dc3c383ea5e9c89498898ce9f53af273dbfbc51d",
        [
@@ -235269,19 +235321,6 @@
        ]
       },
       "the-fieldset-and-legend-elements": {
-       "absolute-fixed-in-legend.html": [
-        "56d296977c1d93165ea2173bdf4303fa5cd9110e",
-        [
-         null,
-         [
-          [
-           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/absolute-fixed-in-legend-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "empty-scrollable.html": [
         "c968ed3f13666aef025b65a63c59d4f36a350ded",
         [
@@ -243210,12 +243249,12 @@
      ]
     ],
     "shadow-style-invalidation-vw-units.html": [
-     "98c69e19fe9dcb95c7df0895dbe0becf2a54b992",
+     "3f73f213adf3afb8581206fa62d2045c9a2d4f94",
      [
       null,
       [
        [
-        "/shadow-dom/imperative-slot-layout-invalidation-001-ref.html",
+        "/shadow-dom/shadow-style-invalidation-vw-units-ref.html",
         "=="
        ]
       ],
@@ -282669,6 +282708,18 @@
        "32115516ef6c17577a1221d2f33f6d018ee1b368",
        []
       ],
+      "position-sticky-escape-scroller-001-ref.html": [
+       "0d760d18dce03df5917086ccb0253a8ced421e36",
+       []
+      ],
+      "position-sticky-escape-scroller-002-ref.html": [
+       "2fa0a2a9ed46e9a5419784e58453a2830a751829",
+       []
+      ],
+      "position-sticky-escape-scroller-004-ref.html": [
+       "fa9f2b7dc05d204e260fa4ee2d32bcd348bd5fa1",
+       []
+      ],
       "position-sticky-fixed-ancestor-iframe-ref.html": [
        "37372ceca115e8c641623abb2fb8238b7eaf11db",
        []
@@ -312852,10 +312903,6 @@
         "f5b533c377160c77541187a301647e174069bd6d",
         []
        ],
-       "absolute-fixed-in-legend-ref.html": [
-        "f82faee114d258346bbd7456c5d36284c22622f3",
-        []
-       ],
        "empty-scrollable-ref.html": [
         "7fa15da174b701f2645fa588ed30395127707270",
         []
@@ -341644,7 +341691,7 @@
      ]
     ],
     "idb-partitioned-persistence.tentative.sub.html": [
-     "54f76f517d172ef1f739ff9dc5d78d3a1fc03b21",
+     "65a0a085e22af1c462977c6f9559d71c01822dd1",
      [
       null,
       {}
@@ -398912,6 +398959,13 @@
      ],
      "border-shorthand-serialization.html": [
       "9b5821563c49c8874f7bbd8dc4ffb2f9813a789e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "caretPositionFromPoint-with-transformation.html": [
+      "fcd02877ca90b947b23736b84055c566be6b2035",
       [
        null,
        {}
@@ -463651,14 +463705,14 @@
       ]
      ],
      "reflection-credentialless.tentative.https.any.js": [
-      "83344e51e5b13e80264b571251080abd302a3319",
+      "8354c8517ca2f7acea4d497f567f712cbfc0e9bb",
       [
        "html/cross-origin-embedder-policy/reflection-credentialless.tentative.https.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463669,7 +463723,18 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
+         ]
+        ]
+       }
+      ],
+      [
+       "html/cross-origin-embedder-policy/reflection-credentialless.tentative.https.any.sharedworker-module.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463680,7 +463745,7 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463691,21 +463756,21 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
       ]
      ],
      "reflection-require-corp.tentative.https.any.js": [
-      "ed668d8720db3231b7830057837f5402b69fc7f5",
+      "329b110aa735d677230ef9b242434192679e3175",
       [
        "html/cross-origin-embedder-policy/reflection-require-corp.tentative.https.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463716,7 +463781,18 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
+         ]
+        ]
+       }
+      ],
+      [
+       "html/cross-origin-embedder-policy/reflection-require-corp.tentative.https.any.sharedworker-module.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463727,7 +463803,7 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463738,21 +463814,21 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
       ]
      ],
      "reflection-unsafe-none.tentative.https.any.js": [
-      "0746d73183296a896e747d5dbcfc2147b5b94000",
+      "53d132900381f4dbdd09ee962e981c2bb82ce965",
       [
        "html/cross-origin-embedder-policy/reflection-unsafe-none.tentative.https.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463763,7 +463839,18 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
+         ]
+        ]
+       }
+      ],
+      [
+       "html/cross-origin-embedder-policy/reflection-unsafe-none.tentative.https.any.sharedworker-module.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463774,7 +463861,7 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
@@ -463785,7 +463872,7 @@
         "script_metadata": [
          [
           "global",
-          "window,dedicatedworker,sharedworker,serviceworker"
+          "window,worker,sharedworker-module"
          ]
         ]
        }
