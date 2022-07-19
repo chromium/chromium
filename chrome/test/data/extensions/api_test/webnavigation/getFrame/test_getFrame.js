@@ -22,6 +22,8 @@ if (inServiceWorker) {
 ready.then(async function() {
   var URL = chrome.extension.getURL("a.html");
   var URL_FRAMES = chrome.extension.getURL("b.html");
+  let config = await promise(chrome.test.getConfig);
+  let port = config.testServer.port;
   var processId = -1;
   var documentId;
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
@@ -147,7 +149,144 @@ ready.then(async function() {
           chrome.test.succeed();
       });
     },
+    async function testGetPrerenderingFrames() {
+      const urlPrefix =
+      `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
+      const initialUrl = urlPrefix + "a.html?initial";
+      const prerenderTargetUrl = urlPrefix + "a.html";
+      const initiatorUrl = urlPrefix + "prerender.html";
 
+      let tab = await promise(chrome.tabs.create, {url: initialUrl});
+
+      var done = chrome.test.listenForever(
+        chrome.webNavigation.onCommitted,
+        function (details) {
+          // Ignore frames other than the pre-rendered frame.
+          if (details.tabId != tab.id || details.url != prerenderTargetUrl)
+            return;
+          // prerendered main frame shouldn't have frameId = 0.
+          if (details.frameId == 0)
+            return;
+          chrome.webNavigation.getAllFrames(
+              {tabId: tab.id},
+            function (frameDetails) {
+              chrome.test.assertEq(
+                  [{errorOccurred: false,
+                    frameId: details.frameId,
+                    parentFrameId: -1,
+                    processId: details.processId,
+                    url: prerenderTargetUrl,
+                    documentId: details.documentId,
+                    documentLifecycle: "prerender",
+                    frameType: "outermost_frame"}],
+                    frameDetails.filter(ob => ob.url === prerenderTargetUrl));
+              done();
+          });
+      });
+
+      // TODO(crbug/1273341): Modify the testcase to be triggering concurrent
+      // multiple prerendering pages once it is supported.
+      // Navigate to a page that initiates prerendering "a.html".
+      chrome.tabs.update(tab.id, {"url": initiatorUrl});
+    },
+    async function testGetPrerenderingFramesAndSubframes() {
+      const urlPrefix =
+      `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
+      const initialUrl = urlPrefix + "a.html?initial";
+      const prerenderTargetUrl = urlPrefix + "c.html";
+      const prerenderTargetSubframeUrl = urlPrefix + "a.html";
+      const initiatorUrl = urlPrefix + "prerender_multipleframes.html";
+
+      let tab = await promise(chrome.tabs.create, {"url": initialUrl});
+
+      var done = chrome.test.listenForever(
+        chrome.webNavigation.onCommitted,
+        function (details) {
+          // Ignore frames other than the pre-rendered subframe to ensure all
+          // frames are loaded.
+          if (details.tabId != tab.id ||
+              details.url != prerenderTargetSubframeUrl)
+            return;
+
+          // A prerendered subframe is expected to have a parent.
+          if (details.parentFrameId == -1)
+            return;
+
+          chrome.webNavigation.getAllFrames(
+              {tabId: tab.id},
+            function (frameDetails) {
+              chrome.test.assertEq(
+                  [{errorOccurred: false,
+                    frameId: details.parentFrameId,
+                    parentFrameId: -1,
+                    processId: details.processId,
+                    url: prerenderTargetUrl,
+                    documentId: details.parentDocumentId,
+                    documentLifecycle: "prerender",
+                    frameType: "outermost_frame"},
+                    {errorOccurred: false,
+                    frameId: details.frameId,
+                    parentFrameId: details.parentFrameId,
+                    processId: details.processId,
+                    url: prerenderTargetSubframeUrl,
+                    documentId: details.documentId,
+                    parentDocumentId: details.parentDocumentId,
+                    documentLifecycle: "prerender",
+                    frameType: "sub_frame"}],
+                    frameDetails.filter(ob => ob.documentLifecycle ===
+                      "prerender"));
+              done();
+          });
+      });
+
+      // Navigate to a page that initiates prerendering "c.html", which contains
+      // a subframe "a.html".
+      chrome.tabs.update(tab.id, {"url": initiatorUrl});
+    },
+    async function testGetActivatedPrerenderingFrames() {
+      const urlPrefix =
+          `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
+      const initialUrl = urlPrefix + "a.html?initial";
+      const prerenderTargetUrl = urlPrefix + "a.html";
+      const initiatorUrl = urlPrefix + "prerender.html";
+
+      let tab = await promise(chrome.tabs.create, {"url": initialUrl});
+
+      var done = chrome.test.listenForever(
+        chrome.webNavigation.onCommitted,
+        function (details) {
+          // Ignore frames other than the pre-rendered frame.
+          if (details.tabId != tab.id || details.url != prerenderTargetUrl)
+            return;
+
+          // Trigger prerendered frame activation upon the first navigation.
+          if (details.documentLifecycle === 'prerender') {
+            // Inject a script that activates the pre-rendered page.
+            chrome.tabs.executeScript(tab.id,
+              {code: 'window.location.href = "./a.html";'});
+            return;
+          }
+
+          chrome.webNavigation.getAllFrames(
+              {tabId: tab.id},
+            function (frameDetails) {
+              chrome.test.assertEq(
+                  [{errorOccurred: false,
+                    frameId: 0,
+                    parentFrameId: -1,
+                    processId: details.processId,
+                    url: prerenderTargetUrl,
+                    documentId: details.documentId,
+                    documentLifecycle: "active",
+                    frameType: "outermost_frame"}],
+                    frameDetails.filter(ob => ob.url === prerenderTargetUrl));
+              done();
+          });
+      });
+
+      // Navigate to a page that initiates prerendering "a.html".
+      chrome.tabs.update(tab.id, {"url": initiatorUrl});
+    },
     // Load an URL with a frame which is detached during load.
     // getAllFrames should only return the remaining (main) frame.
     async function testFrameDetach() {

@@ -565,10 +565,9 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
 
   std::vector<GetAllFrames::Results::DetailsType> result_list;
 
-  // We only iterate the frames in the active page. We currently do not
-  // expose back/forward cached frames or prerender frames in the GetAllFrames
-  // API.
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  // We currently do not expose back/forward cached frames in the GetAllFrames
+  // API, but we do explicitly include prerendered frames.
+  web_contents->ForEachRenderFrameHost(
       base::BindRepeating(
           [](content::WebContents* web_contents,
              std::vector<GetAllFrames::Results::DetailsType>& result_list,
@@ -586,6 +585,14 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
             if (!navigation_state ||
                 !FrameNavigationState::IsValidUrl(navigation_state->GetUrl())) {
               return content::RenderFrameHost::FrameIterationAction::kContinue;
+            }
+
+            // Skip back/forward cached frames.
+            if (render_frame_host->IsInLifecycleState(
+                    content::RenderFrameHost::LifecycleState::
+                        kInBackForwardCache)) {
+              return content::RenderFrameHost::FrameIterationAction::
+                  kSkipChildren;
             }
 
             GetAllFrames::Results::DetailsType frame;

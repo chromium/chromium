@@ -45,6 +45,7 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/switches.h"
@@ -248,12 +249,20 @@ class WebNavigationApiTestWithContextType
     : public WebNavigationApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  WebNavigationApiTestWithContextType() : WebNavigationApiTest(GetParam()) {}
+  WebNavigationApiTestWithContextType()
+      : WebNavigationApiTest(GetParam()),
+        prerender_helper_(base::BindRepeating(
+            &WebNavigationApiTestWithContextType::GetWebContents,
+            base::Unretained(this))) {}
   ~WebNavigationApiTestWithContextType() override = default;
   WebNavigationApiTestWithContextType(
       const WebNavigationApiTestWithContextType&) = delete;
   WebNavigationApiTestWithContextType& operator=(
       const WebNavigationApiTestWithContextType&) = delete;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
 
  protected:
   [[nodiscard]] bool RunTest(const char* name,
@@ -261,6 +270,9 @@ class WebNavigationApiTestWithContextType
     return RunExtensionTest(name, {},
                             {.allow_in_incognito = allow_in_incognito});
   }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
@@ -268,6 +280,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, GetFrame) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
 }
 
@@ -336,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirectSingleProcess"))
       << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ResultCatcher catcher;
@@ -408,7 +421,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, UserAction) {
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webnavigation/userAction")) << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ResultCatcher catcher;
@@ -444,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, RequestOpenTab) {
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webnavigation/requestOpenTab")) << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ResultCatcher catcher;
@@ -483,7 +496,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, TargetBlank) {
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webnavigation/targetBlank")) << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ResultCatcher catcher;
@@ -638,7 +651,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webnavigation/crash")) << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ResultCatcher catcher;

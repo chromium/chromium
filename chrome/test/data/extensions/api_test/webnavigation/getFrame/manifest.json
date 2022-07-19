@@ -7,5 +7,5 @@
     "scripts": ["test_getFrame.js"],
     "persistent": false
   },
-  "permissions": ["webNavigation", "tabs"]
+  "permissions": ["webNavigation", "tabs", "<all_urls>"]
 }
