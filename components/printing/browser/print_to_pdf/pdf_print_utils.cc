@@ -4,6 +4,7 @@
 
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -132,10 +133,14 @@ GetPrintPagesParams(const GURL& page_url,
     return "bottom margin is negative";
 
   printing::PageMargins margins_in_points;
-  margins_in_points.left = margin_left_in_inches * printing::kPointsPerInch;
-  margins_in_points.right = margin_right_in_inches * printing::kPointsPerInch;
-  margins_in_points.top = margin_top_in_inches * printing::kPointsPerInch;
-  margins_in_points.bottom = margin_bottom_in_inches * printing::kPointsPerInch;
+  margins_in_points.left =
+      base::ClampFloor(margin_left_in_inches * printing::kPointsPerInch);
+  margins_in_points.right =
+      base::ClampFloor(margin_right_in_inches * printing::kPointsPerInch);
+  margins_in_points.top =
+      base::ClampFloor(margin_top_in_inches * printing::kPointsPerInch);
+  margins_in_points.bottom =
+      base::ClampFloor(margin_bottom_in_inches * printing::kPointsPerInch);
   print_settings.SetCustomMargins(margins_in_points);
 
   double paper_width_in_inches =
