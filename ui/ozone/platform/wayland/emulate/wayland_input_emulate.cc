@@ -188,15 +188,6 @@ void WaylandInputEmulate::EmulateKeyboardKey(gfx::AcceleratedWidget widget,
     return;
   }
 
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
-
-  auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
-
-  // Raise the window and set keyboard focus.
-  if (!wayland_proxy->WindowHasKeyboardFocus(widget))
-    weston_test_activate_surface(weston_test_, wlsurface);
-
   timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
   weston_test_send_key(weston_test_, static_cast<uint64_t>(ts.tv_sec) >> 32,
                        ts.tv_sec & 0xffffffff, ts.tv_nsec,
@@ -204,6 +195,8 @@ void WaylandInputEmulate::EmulateKeyboardKey(gfx::AcceleratedWidget widget,
                        (event_type == ui::EventType::ET_KEY_PRESSED
                             ? WL_KEYBOARD_KEY_STATE_PRESSED
                             : WL_KEYBOARD_KEY_STATE_RELEASED));
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  DCHECK(wayland_proxy);
   wayland_proxy->ScheduleDisplayFlush();
 }
 
@@ -223,26 +216,14 @@ void WaylandInputEmulate::EmulateTouch(gfx::AcceleratedWidget widget,
     return;
   }
 
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
-
-  auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
-
-  // If it's a toplevel window, activate it. This results in raising the the
-  // parent window and its children windows.
-  auto window_type = wayland_proxy->GetWindowType(widget);
-  if (window_type != ui::PlatformWindowType::kTooltip &&
-      window_type != ui::PlatformWindowType::kMenu &&
-      !wayland_proxy->WindowHasPointerFocus(widget)) {
-    weston_test_activate_surface(weston_test_, wlsurface);
-  }
-
   timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
   weston_test_send_touch(weston_test_, static_cast<uint64_t>(ts.tv_sec) >> 32,
                          ts.tv_sec & 0xffffffff, ts.tv_nsec, id,
                          wl_fixed_from_int(touch_screen_loc.x()),
                          wl_fixed_from_int(touch_screen_loc.y()),
                          EventTypeToWaylandTouchType(event_type));
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  DCHECK(wayland_proxy);
   wayland_proxy->ScheduleDisplayFlush();
 }
 
