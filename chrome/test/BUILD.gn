@@ -7167,7 +7167,7 @@ test("unit_tests") {
       "../browser/ui/ash/accessibility/accessibility_controller_client_unittest.cc",
       "../browser/ui/ash/accessibility/ax_tree_source_aura_unittest.cc",
       "../browser/ui/ash/ambient/ambient_client_impl_unittest.cc",
-      "../browser/ui/ash/app_access_notifier.cc",
+      "../browser/ui/ash/app_access_notifier_unittest.cc",
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
       "../browser/ui/ash/assistant/assistant_state_client_unittest.cc",
       "../browser/ui/ash/assistant/device_actions_unittest.cc",

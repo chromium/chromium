@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
@@ -101,7 +103,16 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
   base::Erase(mic_using_app_ids[active_user_account_id_], update.AppId());
 
-  if (update.Microphone() == apps::mojom::OptionalBool::kTrue) {
+  bool microphone_is_used =
+      update.Microphone() == apps::mojom::OptionalBool::kTrue;
+  bool camera_is_used = update.Camera() == apps::mojom::OptionalBool::kTrue;
+
+  if (ash::features::IsPrivacyIndicatorsEnabled()) {
+    ash::ModifyPrivacyIndicatorsNotification(update.AppId(), camera_is_used,
+                                             microphone_is_used);
+  }
+
+  if (microphone_is_used) {
     mic_using_app_ids[active_user_account_id_].push_front(update.AppId());
   }
 }

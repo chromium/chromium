@@ -158,7 +158,8 @@ enum class NotificationCatalogName {
   kLowPowerAdapter = 144,
   kTPMAutoUpdatePlanned = 145,
   kTPMAutoUpdateOnReboot = 146,
-  kMaxValue = kTPMAutoUpdateOnReboot
+  kPrivacyIndicators = 147,
+  kMaxValue = kPrivacyIndicators
 };
 
 // A living catalog that registers toasts.

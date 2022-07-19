@@ -3856,6 +3856,17 @@ Here are some things you can try to get started.
         An application is using your microphone
       </message>
 
+      <!-- For privacy indicators notification -->
+      <message name="IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC" desc="Title for a notification shown when an app is using the camera and the microphone.">
+        Camera and microphone in use
+      </message>
+      <message name="IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA" desc="Title for a notification shown when an app is using the camera.">
+        Camera in use
+      </message>
+      <message name="IDS_PRIVACY_NOTIFICATION_TITLE_MIC" desc="Title for a notification shown when an app is using the microphone.">
+        Microphone in use
+      </message>
+
       <!-- Strings for microphone mute switch notification -->
       <message name="IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the microphone while the microphone is muted.i Similar to IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE_WITH_APP_NAME, except this message contains a generic app name string. Used when the name of the app that's using the microphone cannot be determined.">
           An app wants to use the microphone

@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
@@ -18,6 +20,9 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
+
+const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 
 class TestAppAccessNotifier : public AppAccessNotifier {
  public:
@@ -37,7 +42,8 @@ class TestAppAccessNotifier : public AppAccessNotifier {
   AccountId user_account_id_ = EmptyAccountId();
 };
 
-class AppAccessNotifierTest : public testing::Test {
+class AppAccessNotifierTest : public testing::Test,
+                              public testing::WithParamInterface<bool> {
  public:
   AppAccessNotifierTest() = default;
   AppAccessNotifierTest(const AppAccessNotifierTest&) = delete;
@@ -46,6 +52,10 @@ class AppAccessNotifierTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    message_center::MessageCenter::Initialize();
+
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kPrivacyIndicators, IsPrivacyIndicatorsFeatureEnabled());
 
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     fake_user_manager_ = fake_user_manager.get();
@@ -60,8 +70,11 @@ class AppAccessNotifierTest : public testing::Test {
 
   void TearDown() override {
     microphone_mute_notification_delegate_.reset();
+    message_center::MessageCenter::Shutdown();
     testing::Test::TearDown();
   }
+
+  bool IsPrivacyIndicatorsFeatureEnabled() const { return GetParam(); }
 
   void SetupPrimaryUser() {
     registry_cache_primary_user_.SetAccountId(account_id_primary_user_);
@@ -102,7 +115,7 @@ class AppAccessNotifierTest : public testing::Test {
         cap_cache, reg_cache);
   }
 
-  static apps::AppPtr MakeApp(const char* app_id, const char* name) {
+  static apps::AppPtr MakeApp(const std::string app_id, const char* name) {
     apps::AppPtr app =
         std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
     app->name = name;
@@ -111,19 +124,21 @@ class AppAccessNotifierTest : public testing::Test {
   }
 
   static apps::mojom::CapabilityAccessPtr MakeCapabilityAccess(
-      const char* app_id,
+      const std::string app_id,
+      apps::mojom::OptionalBool camera,
       apps::mojom::OptionalBool microphone) {
     apps::mojom::CapabilityAccessPtr access =
         apps::mojom::CapabilityAccess::New();
     access->app_id = app_id;
-    access->camera = apps::mojom::OptionalBool::kFalse;
+    access->camera = camera;
     access->microphone = microphone;
     return access;
   }
 
-  void LaunchAppUsingMicrophone(const char* id,
-                                const char* name,
-                                bool use_microphone) {
+  void LaunchAppUsingCameraOrMicrophone(const std::string id,
+                                        const char* name,
+                                        bool use_camera,
+                                        bool use_microphone) {
     bool is_primary_user =
         (microphone_mute_notification_delegate_->GetActiveUserAccountId() ==
          account_id_primary_user_);
@@ -149,8 +164,11 @@ class AppAccessNotifierTest : public testing::Test {
 
     std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
     capability_access_deltas.push_back(MakeCapabilityAccess(
-        id, use_microphone ? apps::mojom::OptionalBool::kTrue
-                           : apps::mojom::OptionalBool::kFalse));
+        id,
+        use_camera ? apps::mojom::OptionalBool::kTrue
+                   : apps::mojom::OptionalBool::kFalse,
+        use_microphone ? apps::mojom::OptionalBool::kTrue
+                       : apps::mojom::OptionalBool::kFalse));
     cap_cache->OnCapabilityAccesses(std::move(capability_access_deltas));
   }
 
@@ -174,24 +192,33 @@ class AppAccessNotifierTest : public testing::Test {
 
   user_manager::FakeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AppAccessNotifierTest, NoAppsLaunched) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppAccessNotifierTest,
+    /*IsPrivacyIndicatorsFeatureEnabled()=*/::testing::Bool());
+
+TEST_P(AppAccessNotifierTest, NoAppsLaunched) {
   // Should return a completely value-free app_name.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 }
 
-TEST_F(AppAccessNotifierTest, AppLaunchedNotUsingMicrophone) {
-  LaunchAppUsingMicrophone("id_rose", "name_rose", false);
+TEST_P(AppAccessNotifierTest, AppLaunchedNotUsingMicrophone) {
+  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/false,
+                                   /*use_microphone=*/false);
 
   // Should return a completely value-free app_name.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 }
 
-TEST_F(AppAccessNotifierTest, AppLaunchedUsingMicrophone) {
-  LaunchAppUsingMicrophone("id_rose", "name_rose", true);
+TEST_P(AppAccessNotifierTest, AppLaunchedUsingMicrophone) {
+  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/false,
+                                   /*use_microphone=*/true);
 
   // Should return the name of our app.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
@@ -199,11 +226,15 @@ TEST_F(AppAccessNotifierTest, AppLaunchedUsingMicrophone) {
   EXPECT_EQ(app_name, u"name_rose");
 }
 
-TEST_F(AppAccessNotifierTest, MultipleAppsLaunchedUsingMicrophone) {
-  LaunchAppUsingMicrophone("id_rose", "name_rose", true);
-  LaunchAppUsingMicrophone("id_mars", "name_mars", true);
-  LaunchAppUsingMicrophone("id_zara", "name_zara", true);
-  LaunchAppUsingMicrophone("id_oscar", "name_oscar", false);
+TEST_P(AppAccessNotifierTest, MultipleAppsLaunchedUsingMicrophone) {
+  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/false,
+                                   /*use_microphone=*/true);
+  LaunchAppUsingCameraOrMicrophone("id_mars", "name_mars", /*use_camera=*/false,
+                                   /*use_microphone=*/true);
+  LaunchAppUsingCameraOrMicrophone("id_zara", "name_zara", /*use_camera=*/false,
+                                   /*use_microphone=*/true);
+  LaunchAppUsingCameraOrMicrophone(
+      "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/false);
 
   // Most recently launched mic-using app should be the one we use for the
   // notification.
@@ -212,20 +243,22 @@ TEST_F(AppAccessNotifierTest, MultipleAppsLaunchedUsingMicrophone) {
   EXPECT_EQ(app_name, u"name_zara");
 
   // Oscar starts using the mic, Oscar shows up in the notification.
-  LaunchAppUsingMicrophone("id_oscar", "name_oscar", true);
+  LaunchAppUsingCameraOrMicrophone(
+      "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/true);
   app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
   EXPECT_EQ(app_name, u"name_oscar");
 
   // If we "kill" Oscar (set to no longer be using the mic or camera),
   // the notification shows Zara again.
-  LaunchAppUsingMicrophone("id_oscar", "name_oscar", false);
+  LaunchAppUsingCameraOrMicrophone(
+      "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/false);
   app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
   EXPECT_EQ(app_name, u"name_zara");
 }
 
-TEST_F(AppAccessNotifierTest, MultipleUsers) {
+TEST_P(AppAccessNotifierTest, MultipleUsers) {
   // Prepare the secondary user.
   SetupSecondaryUser();
 
@@ -233,7 +266,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsers) {
   SetActiveUserAccountId(account_id_primary_user_);
 
   // Primary user launches a mic-using app.
-  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user", true);
+  LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true);
 
   // App we just launched should show up in the notification.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
@@ -244,7 +279,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsers) {
   SetActiveUserAccountId(account_id_secondary_user_);
 
   // Secondary user launches a mic-using app.
-  LaunchAppUsingMicrophone("id_secondary_user", "name_secondary_user", true);
+  LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true);
 
   // App we just launched should show up in the notification.
   app_name = GetAppAccessingMicrophone();
@@ -254,7 +291,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsers) {
   // Switch back to the primary user and "kill" the app it was running, no app
   // name to show.
   SetActiveUserAccountId(account_id_primary_user_);
-  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user", false);
+  LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/false);
   app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 
@@ -267,12 +306,14 @@ TEST_F(AppAccessNotifierTest, MultipleUsers) {
 
   // Now "kill" our secondary user's app and verify that there's no name to
   // show.
-  LaunchAppUsingMicrophone("id_secondary_user", "name_secondary_user", false);
+  LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/false);
   app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 }
 
-TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
+TEST_P(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   // Prepare the secondary user.
   SetupSecondaryUser();
 
@@ -280,7 +321,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   SetActiveUserAccountId(account_id_primary_user_);
 
   // Primary user launches a mic-using app.
-  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user", true);
+  LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true);
 
   // App we just launched should show up in the notification.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
@@ -288,8 +331,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   EXPECT_EQ(app_name, u"name_primary_user");
 
   // Primary user launches a second mic-using app.
-  LaunchAppUsingMicrophone("id_primary_user", "name_primary_user_another_app",
-                           true);
+  LaunchAppUsingCameraOrMicrophone(
+      "id_primary_user", "name_primary_user_another_app", /*use_camera=*/false,
+      /*use_microphone=*/true);
 
   // App we just launched should show up in the notification.
   app_name = GetAppAccessingMicrophone();
@@ -300,7 +344,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   SetActiveUserAccountId(account_id_secondary_user_);
 
   // Secondary user launches a mic-using app.
-  LaunchAppUsingMicrophone("id_secondary_user", "name_secondary_user", true);
+  LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true);
 
   // App we just launched should show up in the notification.
   app_name = GetAppAccessingMicrophone();
@@ -308,8 +354,9 @@ TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   EXPECT_EQ(app_name, u"name_secondary_user");
 
   // Secondary user launches a second mic-using app.
-  LaunchAppUsingMicrophone("id_secondary_user",
-                           "name_secondary_user_another_app", true);
+  LaunchAppUsingCameraOrMicrophone(
+      "id_secondary_user", "name_secondary_user_another_app",
+      /*use_camera=*/false, /*use_microphone=*/true);
 
   // App we just launched should show up in the notification.
   app_name = GetAppAccessingMicrophone();
@@ -323,4 +370,37 @@ TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
   EXPECT_EQ(app_name, u"name_primary_user_another_app");
+}
+
+TEST_P(AppAccessNotifierTest, AppAccessNotification) {
+  if (!IsPrivacyIndicatorsFeatureEnabled())
+    return;
+
+  // Test that notifications get created/removed when an app is accessing camera
+  // or microphone.
+  const std::string id1 = "test_app_id_1";
+  const std::string id2 = "test_app_id_2";
+
+  LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/false,
+                                   /*use_microphone=*/true);
+  LaunchAppUsingCameraOrMicrophone(id2, "test_app_name", /*use_camera=*/true,
+                                   /*use_microphone=*/false);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyIndicatorsNotificationIdPrefix + id1));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyIndicatorsNotificationIdPrefix + id2));
+
+  LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/false,
+                                   /*use_microphone=*/false);
+  LaunchAppUsingCameraOrMicrophone(id2, "test_app_name", /*use_camera=*/false,
+                                   /*use_microphone=*/false);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyIndicatorsNotificationIdPrefix + id1));
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyIndicatorsNotificationIdPrefix + id2));
+
+  LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/true,
+                                   /*use_microphone=*/true);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyIndicatorsNotificationIdPrefix + id1));
 }

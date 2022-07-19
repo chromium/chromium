@@ -1525,6 +1525,8 @@ component("ash") {
     "system/power/tray_power.h",
     "system/power/video_activity_notifier.cc",
     "system/power/video_activity_notifier.h",
+    "system/privacy/privacy_indicators_controller.cc",
+    "system/privacy/privacy_indicators_controller.h",
     "system/privacy_screen/privacy_screen_feature_pod_controller.cc",
     "system/privacy_screen/privacy_screen_feature_pod_controller.h",
     "system/privacy_screen/privacy_screen_toast_controller.cc",
