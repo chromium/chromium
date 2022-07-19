@@ -52,16 +52,16 @@ class PrivateAggregationBudgetStorageTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void OpenDatabase(bool run_in_memory,
-                    base::OnceClosure on_done_initializing) {
+  base::OnceClosure OpenDatabase(bool run_in_memory,
+                                 base::OnceClosure on_done_initializing) {
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         create_cb = base::BindOnce(
             &PrivateAggregationBudgetStorageTest::OnStorageInitialized,
             base::Unretained(this), std::move(on_done_initializing));
 
-    PrivateAggregationBudgetStorage::CreateAsync(db_task_runner_, run_in_memory,
-                                                 storage_directory(),
-                                                 std::move(create_cb));
+    return PrivateAggregationBudgetStorage::CreateAsync(
+        db_task_runner_, run_in_memory, storage_directory(),
+        std::move(create_cb));
   }
 
   // Waits for the database to be initialized.
@@ -240,6 +240,32 @@ TEST_F(PrivateAggregationBudgetStorageTest,
   OpenDatabase(
       /*run_in_memory=*/false,
       /*on_done_initializing=*/base::BindLambdaForTesting([this, &run_loop]() {
+        CloseDatabase();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(PrivateAggregationBudgetStorageTest,
+       StorageShutdownImmediatelyAfterCreation_DoesNotCrash) {
+  base::RunLoop run_loop;
+  base::OnceClosure shutdown = OpenDatabase(
+      /*run_in_memory=*/false,
+      /*on_done_initializing=*/base::BindLambdaForTesting([this, &run_loop]() {
+        CloseDatabase();
+        run_loop.Quit();
+      }));
+  std::move(shutdown).Run();
+  run_loop.Run();
+}
+
+TEST_F(PrivateAggregationBudgetStorageTest,
+       StorageShutdownImmediatelyAfterInitialization_DoesNotCrash) {
+  base::RunLoop run_loop;
+  base::OnceClosure shutdown = OpenDatabase(
+      /*run_in_memory=*/false,
+      /*on_done_initializing=*/base::BindLambdaForTesting([&, this]() {
+        std::move(shutdown).Run();
         CloseDatabase();
         run_loop.Quit();
       }));

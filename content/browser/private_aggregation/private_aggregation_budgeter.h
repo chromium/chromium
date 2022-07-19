@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -116,6 +116,10 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // Otherwise, owned by this class until destruction. Iff present,
   // `storage_status_` should be `kOpen`.
   std::unique_ptr<PrivateAggregationBudgetStorage> storage_;
+
+  // Holds a closure that will shut down the initializing storage until
+  // initialization is complete. After then, it is null.
+  base::OnceClosure shutdown_initializing_storage_;
 
   base::WeakPtrFactory<PrivateAggregationBudgeter> weak_factory_{this};
 };

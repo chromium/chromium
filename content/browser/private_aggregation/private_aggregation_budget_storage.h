@@ -51,8 +51,10 @@ class CONTENT_EXPORT PrivateAggregationBudgetStorage {
   // Calls `on_done_initializing` once initialization is complete, passing an
   // owning pointer if initialization was successful and nullptr otherwise. If
   // `exclusively_run_in_memory` is `true`, the database will not be persisted
-  // to disk.
-  static void CreateAsync(
+  // to disk. Returns a closure that shuts down the storage before it is
+  // finished initializing. This is necessary to avoid posting tasks after
+  // shutdown if initialization finishes too late.
+  static base::OnceClosure CreateAsync(
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       bool exclusively_run_in_memory,
       base::FilePath path_to_db_dir,
@@ -79,6 +81,11 @@ class CONTENT_EXPORT PrivateAggregationBudgetStorage {
     return &budgets_data_;
   }
 
+  // Asynchronously tears down the budget storage database. Can be called before
+  // initialization is complete. This is necessary to avoid posting tasks after
+  // shutdown if initialization finishes too late.
+  void Shutdown();
+
  private:
   explicit PrivateAggregationBudgetStorage(
       scoped_refptr<base::SequencedTaskRunner> db_task_runner);
@@ -87,11 +94,12 @@ class CONTENT_EXPORT PrivateAggregationBudgetStorage {
   // KeyValueData's initialization methods. If `exclusively_run_in_memory` is
   // true, the underlying database will be in-memory and not be persisted to
   // disk. Otherwise, a copy of the data is kept in-memory, but regularly
-  // flushed to disk.
-  [[nodiscard]] bool InitializeOnDbSequence(bool exclusively_run_in_memory,
+  // flushed to disk. Takes a raw pointer to the database in case `db_` is
+  // released before or while this is running.
+  [[nodiscard]] bool InitializeOnDbSequence(sql::Database* db,
+                                            bool exclusively_run_in_memory,
                                             base::FilePath path_to_db_dir);
 
-  void HandleInitializationFailure();
   void FinishInitializationOnMainSequence(
       std::unique_ptr<PrivateAggregationBudgetStorage> owned_this,
       base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
@@ -107,10 +115,14 @@ class CONTENT_EXPORT PrivateAggregationBudgetStorage {
   // sequence to clean up the DB.
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 
-  // Should only be accessed on the `db_task_runner_` sequence.
+  // Created on the main sequence, but otherwise should only be accessed on the
+  // `db_task_runner_` sequence. It is also released (but not deleted) on the
+  // main sequence.
   std::unique_ptr<sql::Database> db_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PrivateAggregationBudgetStorage> weak_factory_{this};
 };
 
 }  // namespace content
