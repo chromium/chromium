@@ -2244,7 +2244,7 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
 }
 
 bool LocalDOMWindow::DirectSocketCapability() const {
-  return Agent::IsDirectSocketEnabled();
+  return Agent::IsIsolatedApplication();
 }
 
 ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {

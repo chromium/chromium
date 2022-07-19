@@ -2584,10 +2584,7 @@ void RenderFrameImpl::CommitNavigation(
                            navigation_params.get());
   navigation_params->policy_container =
       ToWebPolicyContainer(std::move(policy_container));
-  // TODO(b/235479329): Rename IsDirectSocketEnabled().
-  // IsDirectSocketEnabled() implies this renderer is for an isolated
-  // application.
-  if (blink::IsDirectSocketEnabled() && frame_->IsOutermostMainFrame()) {
+  if (blink::IsIsolatedApplication() && frame_->IsOutermostMainFrame()) {
     navigation_params->permissions_policy_override = permissions_policy;
   }
 

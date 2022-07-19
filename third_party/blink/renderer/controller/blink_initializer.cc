@@ -222,13 +222,13 @@ bool IsCrossOriginIsolated() {
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
-void SetIsDirectSocketEnabled(bool value) {
-  Agent::SetIsDirectSocketEnabled(value);
+void SetIsIsolatedApplication(bool value) {
+  Agent::SetIsIsolatedApplication(value);
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
-bool IsDirectSocketEnabled() {
-  return Agent::IsDirectSocketEnabled();
+bool IsIsolatedApplication() {
+  return Agent::IsIsolatedApplication();
 }
 
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

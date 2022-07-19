@@ -68,9 +68,9 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
   //
   // TODO(mkwst): We need a specification for these restrictions:
   // https://crbug.com/1206150.
-  static bool IsDirectSocketEnabled();
-  // Only called from blink::SetIsDirectSocketEnabled.
-  static void SetIsDirectSocketEnabled(bool value);
+  static bool IsIsolatedApplication();
+  // Only called from blink::SetIsIsolatedApplication.
+  static void SetIsIsolatedApplication(bool value);
 
   // Representing agent cluster's "is origin-keyed" concept:
   // https://html.spec.whatwg.org/C/#is-origin-keyed

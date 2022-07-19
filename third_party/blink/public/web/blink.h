@@ -123,14 +123,14 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
 BLINK_EXPORT bool IsCrossOriginIsolated();
 
-// Direct sockets require isolation above and beyond what "cross-origin
-// isolation" provides. This flag corresponds to that set of restrictions.
-// Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
-// process global, and called at most once, prior to committing a frame.
+// Set whether this renderer process has the "isolated application" isolation
+// level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
+// flag is process global, and called at most once, prior to committing a
+// frame.
 //
 // TODO(mkwst): We need a specification for this restriction.
-BLINK_EXPORT void SetIsDirectSocketEnabled(bool value);
-BLINK_EXPORT bool IsDirectSocketEnabled();
+BLINK_EXPORT void SetIsIsolatedApplication(bool value);
+BLINK_EXPORT bool IsIsolatedApplication();
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_

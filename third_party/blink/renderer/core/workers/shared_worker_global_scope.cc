@@ -309,7 +309,7 @@ bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
 }
 
 bool SharedWorkerGlobalScope::DirectSocketCapability() const {
-  return Agent::IsDirectSocketEnabled();
+  return Agent::IsIsolatedApplication();
 }
 
 }  // namespace blink

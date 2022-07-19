@@ -2338,7 +2338,7 @@ void DocumentLoader::CommitNavigation() {
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
     security_init.ApplyPermissionsPolicy(
         *frame_.Get(), response_, frame_policy_,
-        Agent::IsDirectSocketEnabled() ? initial_permissions_policy_
+        Agent::IsIsolatedApplication() ? initial_permissions_policy_
                                        : absl::nullopt);
 
     // |document_policy_| is parsed in document loader because it is

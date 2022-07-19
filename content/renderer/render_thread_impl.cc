@@ -1363,8 +1363,8 @@ void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
 }
 
-void RenderThreadImpl::SetIsDirectSocketEnabled(bool value) {
-  blink::SetIsDirectSocketEnabled(value);
+void RenderThreadImpl::SetIsIsolatedApplication(bool value) {
+  blink::SetIsIsolatedApplication(value);
 }
 
 void RenderThreadImpl::CompositingModeFallbackToSoftware() {
