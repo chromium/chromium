@@ -249,9 +249,9 @@ void HandleRecord(const std::u16string& key_name,
   std::string value_name(base::UTF16ToUTF8(value));
   if (!base::StartsWith(value_name, kActionTriggerPrefix,
                         base::CompareCase::SENSITIVE)) {
-    base::Value value;
-    if (DecodePRegValue(type, data, value))
-      dict->SetValue(value_name, std::move(value));
+    base::Value preg_value;
+    if (DecodePRegValue(type, data, preg_value))
+      dict->SetValue(value_name, std::move(preg_value));
     return;
   }
 
