@@ -88,7 +88,7 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
                             EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, mValue),
                     (v, actionId, event)
                             -> false,
-                    /* filter = */ null, textWatcher);
+                    /* filter= */ null, textWatcher, /* focusAndShowKeyboard= */ false);
         }
     }
 

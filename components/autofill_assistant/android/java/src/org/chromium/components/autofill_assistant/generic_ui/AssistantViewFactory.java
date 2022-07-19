@@ -180,7 +180,7 @@ public class AssistantViewFactory {
                         delegate.onValueChanged(modelIdentifier,
                                 AssistantValue.createForStrings(new String[] {value.toString()}));
                     }
-                });
+                }, /* focusAndShowKeyboard= */ false);
         view.setTag(viewIdentifier);
         return view;
     }

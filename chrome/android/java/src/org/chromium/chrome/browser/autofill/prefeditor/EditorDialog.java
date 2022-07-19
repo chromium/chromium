@@ -540,8 +540,8 @@ public class EditorDialog
                 formatter = mPhoneFormatter;
             }
 
-            EditorTextField inputLayout = new EditorTextField(
-                    mActivity, fieldModel, mEditorActionListener, filter, formatter);
+            EditorTextField inputLayout = new EditorTextField(mActivity, fieldModel,
+                    mEditorActionListener, filter, formatter, /* focusAndShowKeyboard= */ false);
             mFieldViews.add(inputLayout);
 
             EditText input = inputLayout.getEditText();
