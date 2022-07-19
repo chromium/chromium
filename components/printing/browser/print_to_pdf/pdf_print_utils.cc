@@ -11,6 +11,9 @@
 #include "components/printing/browser/print_manager_utils.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "url/url_canon.h"
 
 namespace print_to_pdf {
@@ -145,9 +148,9 @@ GetPrintPagesParams(const GURL& page_url,
   if (paper_height_in_inches <= 0)
     return "paper height is zero or negative";
 
-  gfx::Size paper_size_in_points(
-      paper_width_in_inches * printing::kPointsPerInch,
-      paper_height_in_inches * printing::kPointsPerInch);
+  gfx::Size paper_size_in_points = gfx::ToRoundedSize(
+      gfx::SizeF(paper_width_in_inches * printing::kPointsPerInch,
+                 paper_height_in_inches * printing::kPointsPerInch));
   gfx::Rect printable_area_device_units(paper_size_in_points);
   print_settings.SetPrinterPrintableArea(paper_size_in_points,
                                          printable_area_device_units, true);
