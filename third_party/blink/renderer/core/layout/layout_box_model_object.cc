@@ -636,6 +636,8 @@ void LayoutBoxModelObject::UpdateFromStyle() {
   SetInline(style_to_use.IsDisplayInlineType());
   SetPositionState(style_to_use.GetPosition());
   SetHorizontalWritingMode(style_to_use.IsHorizontalWritingMode());
+  SetCanContainAbsolutePositionObjects(
+      ComputeIsAbsoluteContainer(&style_to_use));
   SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
 }
 
