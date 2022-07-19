@@ -87774,6 +87774,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Opened from lens context menu"/>
   <int value="2" label="Opened from side search page action button"/>
   <int value="3" label="Opened from user notes context menu in page"/>
+  <int value="4" label="Opened from comboxbox selected"/>
+  <int value="5" label="Opened from tab changed"/>
+  <int value="6" label="Opened from side panel entry deregistered"/>
 </enum>
 
 <enum name="SideSearchAvailabilityChangeType">

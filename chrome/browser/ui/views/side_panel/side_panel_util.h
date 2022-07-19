@@ -26,7 +26,10 @@ class SidePanelUtil {
     kLensContextMenu = 1,
     kSideSearchPageAction = 2,
     kNotesInPageContextMenu = 3,
-    kMaxValue = kNotesInPageContextMenu,
+    kComboboxSelected = 4,
+    kTabChanged = 5,
+    kSidePanelEntryDeregistered = 6,
+    kMaxValue = kSidePanelEntryDeregistered,
   };
 
   static void PopulateGlobalEntries(Browser* browser,

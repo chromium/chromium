@@ -508,7 +508,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
 
 bool SidePanelCoordinator::OnComboboxChangeTriggered(int index) {
   SidePanelEntry::Id entry_id = combobox_model_->GetIdAt(index);
-  Show(entry_id);
+  Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kComboboxSelected);
   return true;
 }
 
@@ -532,7 +532,8 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
   if (GetContentView() && selected_id.has_value() &&
       selected_id.value() == entry->id()) {
     if (global_registry_->active_entry().has_value()) {
-      Show(GetLastActiveEntryId().value_or(kDefaultEntry));
+      Show(GetLastActiveEntryId().value_or(kDefaultEntry),
+           SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered);
     } else {
       Close();
     }
@@ -569,10 +570,12 @@ void SidePanelCoordinator::OnTabStripModelChanged(
         !global_registry_->active_entry().has_value()) {
       Close();
     } else {
-      Show(GetLastActiveEntryId().value_or(kDefaultEntry));
+      Show(GetLastActiveEntryId().value_or(kDefaultEntry),
+           SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
-    Show(new_contextual_registry->active_entry().value()->id());
+    Show(new_contextual_registry->active_entry().value()->id(),
+         SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
   }
 }
