@@ -4,17 +4,6 @@
 <meta charset="utf-8">
 <link rel="match" href="iframe-initially-empty-is-updated-ref.html"/>
 <html>
-  <head>
-    <script>
-      window.onload = () => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            document.documentElement.classList.remove("reftest-wait");
-          });
-        });
-      }
-    </script>
-  </head>
   <body>
     <iframe src="resources/empty.html"></iframe>
     <script>
@@ -22,6 +11,11 @@
           .appendChild(document.createTextNode('Hello world!'));
       window[0].document.body.firstChild.style = 'color: green';
       window.stop();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove("reftest-wait");
+        });
+      });
     </script>
   </body>
 </html>
