@@ -497,12 +497,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_WritePoliciesToJSONFile) {
   // contents).
   VerifyExportingPolicies(expected_values);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // This also checks that we do not bypass the policy that blocks file
   // selection dialogs. This is a desktop only policy.
   values.Set(policy::key::kAllowFileSelectionDialogs,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
              policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
+
   popups_blocked_for_urls.Append("eeeeee");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,

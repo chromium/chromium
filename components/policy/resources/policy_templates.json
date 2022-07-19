@@ -10081,6 +10081,7 @@
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome.*:14-'],
+      'future_on': [ 'chrome_os' ],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -29417,6 +29418,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:91-'],
+      'future_on': ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

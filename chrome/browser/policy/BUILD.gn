@@ -176,7 +176,6 @@ source_set("policy_specific_browser_tests") {
     "test/certificate_transparency_policy_browsertest.cc",
     "test/event_path_policy_browsertest.cc",
     "test/network_prediction_policy_browsertest.cc",
-    "test/network_time_policy_browsertest.cc",
     "test/safe_browsing_policy_browsertest.cc",
     "test/shared_clipboard_enabled_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
@@ -252,8 +251,11 @@ source_set("policy_specific_browser_tests") {
     ]
   }
 
-  if (!is_android && !is_chromeos_ash) {
-    sources += [ "policy_startup_browsertest.cc" ]
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "policy_startup_browsertest.cc",
+      "test/network_time_policy_browsertest.cc",
+    ]
   }
 
   if (!is_chromeos_ash) {
@@ -391,14 +393,16 @@ source_set("browser_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    sources += [ "test/native_messaging_policy_browsertest.cc" ]
+    sources += [
+      "test/hardware_acceleration_mode_enabled_browsertest.cc",
+      "test/native_messaging_policy_browsertest.cc",
+    ]
   }
 
   if (!is_android && !is_chromeos_ash) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h",
-      "test/hardware_acceleration_mode_enabled_browsertest.cc",
     ]
   }
 

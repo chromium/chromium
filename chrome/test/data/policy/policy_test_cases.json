@@ -6287,6 +6287,8 @@
   },
   "MaxConnectionsPerProxy": {
     "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
       "win",
       "linux",
       "mac"
@@ -17043,7 +17045,9 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
