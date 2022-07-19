@@ -71,55 +71,55 @@ base::UnguessableToken DecodeToken(base::StringPiece input) {
 }
 
 base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   if (port.display_name && !port.display_name->empty())
-    value.SetStringKey(kPortNameKey, *port.display_name);
+    value.Set(kPortNameKey, *port.display_name);
   else
-    value.SetStringKey(kPortNameKey, port.path.LossyDisplayName());
+    value.Set(kPortNameKey, port.path.LossyDisplayName());
 
   if (!SerialChooserContext::CanStorePersistentEntry(port)) {
-    value.SetStringKey(kTokenKey, EncodeToken(port.token));
-    return value;
+    value.Set(kTokenKey, EncodeToken(port.token));
+    return base::Value(std::move(value));
   }
 
 #if BUILDFLAG(IS_WIN)
   // Windows provides a handy device identifier which we can rely on to be
   // sufficiently stable for identifying devices across restarts.
-  value.SetStringKey(kDeviceInstanceIdKey, port.device_instance_id);
+  value.Set(kDeviceInstanceIdKey, port.device_instance_id);
 #else
   DCHECK(port.has_vendor_id);
-  value.SetIntKey(kVendorIdKey, port.vendor_id);
+  value.Set(kVendorIdKey, port.vendor_id);
   DCHECK(port.has_product_id);
-  value.SetIntKey(kProductIdKey, port.product_id);
+  value.Set(kProductIdKey, port.product_id);
   DCHECK(port.serial_number);
-  value.SetStringKey(kSerialNumberKey, *port.serial_number);
+  value.Set(kSerialNumberKey, *port.serial_number);
 
 #if BUILDFLAG(IS_MAC)
   DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
-  value.SetStringKey(kUsbDriverKey, *port.usb_driver_name);
+  value.Set(kUsbDriverKey, *port.usb_driver_name);
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_WIN)
-  return value;
+  return base::Value(std::move(value));
 }
 
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value::Dict object;
   const char* product_name =
       device::UsbIds::GetProductName(vendor_id, product_id);
   if (product_name) {
-    object.SetStringKey(kPortNameKey, product_name);
+    object.Set(kPortNameKey, product_name);
   } else {
     const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
     if (vendor_name) {
-      object.SetStringKey(
+      object.Set(
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_NAME,
               base::ASCIIToUTF16(base::StringPrintf("%04X", product_id)),
               base::UTF8ToUTF16(vendor_name)));
     } else {
-      object.SetStringKey(
+      object.Set(
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID,
@@ -127,25 +127,24 @@ base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
               base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
     }
   }
-  return object;
+  return base::Value(std::move(object));
 }
 
 base::Value VendorIdToValue(uint16_t vendor_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value::Dict object;
   const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
   if (vendor_name) {
-    object.SetStringKey(kPortNameKey,
-                        l10n_util::GetStringFUTF16(
-                            IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME,
-                            base::UTF8ToUTF16(vendor_name)));
+    object.Set(kPortNameKey,
+               l10n_util::GetStringFUTF16(
+                   IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME,
+                   base::UTF8ToUTF16(vendor_name)));
   } else {
-    object.SetStringKey(
-        kPortNameKey,
-        l10n_util::GetStringFUTF16(
-            IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
-            base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
+    object.Set(kPortNameKey,
+               l10n_util::GetStringFUTF16(
+                   IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
+                   base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
   }
-  return object;
+  return base::Value(std::move(object));
 }
 
 void RecordPermissionRevocation(SerialPermissionRevoked type) {
@@ -267,13 +266,12 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     if (base::Contains(policy->all_ports_policy(), origin)) {
-      base::Value object(base::Value::Type::DICTIONARY);
-      object.SetStringKey(kPortNameKey,
-                          l10n_util::GetStringUTF16(
-                              IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
+      base::Value::Dict object;
+      object.Set(kPortNameKey, l10n_util::GetStringUTF16(
+                                   IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, base::Value(std::move(object)),
+          content_settings::SETTING_SOURCE_POLICY, IsOffTheRecord()));
     }
   }
 
@@ -325,14 +323,13 @@ SerialChooserContext::GetAllGrantedObjects() {
       }
     }
 
-    base::Value object(base::Value::Type::DICTIONARY);
-    object.SetStringKey(
-        kPortNameKey,
-        l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
+    base::Value::Dict object;
+    object.Set(kPortNameKey, l10n_util::GetStringUTF16(
+                                 IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
     for (const auto& origin : policy->all_ports_policy()) {
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, base::Value(object.Clone()),
+          content_settings::SETTING_SOURCE_POLICY, IsOffTheRecord()));
     }
   }
 
