@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/bind.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,10 +37,11 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
 }  // namespace
 
-@interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
+// Disables send_tab_to_self::kSendTabToSelfSigninPromo.
+@interface SendTabToSelfCoordinatorWithoutPromoTestCase : ChromeTestCase
 @end
 
-@implementation SendTabToSelfCoordinatorTestCase
+@implementation SendTabToSelfCoordinatorWithoutPromoTestCase
 
 - (void)setUp {
   [super setUp];
@@ -47,6 +49,13 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&RespondWithConstantPage));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(
+      send_tab_to_self::kSendTabToSelfSigninPromo);
+  return config;
 }
 
 - (void)testHideButtonIfSignedOutAndNoDeviceAccount {
@@ -89,6 +98,99 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
       assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testShowDevicePickerIfSignedInAndHasTargetDevice {
+  // Setting a recent timestamp here is necessary, otherwise the device will be
+  // considered expired and won't be displayed.
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
+                                enableSync:NO];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+// Enables send_tab_to_self::kSendTabToSelfSigninPromo.
+@interface SendTabToSelfCoordinatorWithPromoTestCase : ChromeTestCase
+@end
+
+@implementation SendTabToSelfCoordinatorWithPromoTestCase
+
+- (void)setUp {
+  [super setUp];
+
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&RespondWithConstantPage));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      send_tab_to_self::kSendTabToSelfSigninPromo);
+  return config;
+}
+
+- (void)testHideButtonIfSignedOutAndNoDeviceAccount {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
+      assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testShowPromoIfSignedOutAndHasDeviceAccount {
+  [SigninEarlGrey addFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
+      performAction:grey_tap()];
+
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+  // TODO(crbug.com/1264471): Test that clicking the sign-in button opens the
+  // device picker. In the current test the cookies aren't filled so the sign-in
+  // sheet shows ConsistencyPromoSigninMediatorErrorGeneric.
+}
+
+// TODO(crbug.com/1264471): For the moment this only tests the entry point is
+// shown. Implement the UI for this state and test it here.
+- (void)testShowButtonIfSignedInAndNoTargetDevice {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
+                                enableSync:NO];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testShowDevicePickerIfSignedInAndHasTargetDevice {

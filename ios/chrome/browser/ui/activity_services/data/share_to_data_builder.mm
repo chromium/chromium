@@ -9,6 +9,8 @@
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
@@ -79,7 +81,12 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  // Divergence between iOS and other platforms: today the sign-in promo UI only
+  // supports the case where there are already accounts on the device.
   BOOL can_send_tab_to_self =
+      accountManagerService->HasIdentities() &&
       send_tab_to_self::GetEntryPointDisplayReason(
           finalURLToShare,
           SyncServiceFactory::GetForBrowserState(browser_state),

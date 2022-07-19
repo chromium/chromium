@@ -20,6 +20,7 @@ source_set("send_tab_to_self") {
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/infobars/presentation",
@@ -75,6 +76,7 @@ source_set("eg2_tests") {
   sources = [ "send_tab_to_self_coordinator_egtest.mm" ]
   deps = [
     "//base",
+    "//components/send_tab_to_self",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

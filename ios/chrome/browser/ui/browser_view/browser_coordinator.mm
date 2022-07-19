@@ -1215,6 +1215,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
+                 signinPresenter:self
                              url:url
                            title:title];
   [_sendTabToSelfCoordinator start];

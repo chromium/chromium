@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@protocol SigninPresenter;
+
 class GURL;
 
 // Displays the send tab to self UI for all device form factors. Will show a
@@ -16,6 +18,7 @@ class GURL;
 
 - (id)initWithBaseViewController:(UIViewController*)baseViewController
                          browser:(Browser*)browser
+                 signinPresenter:(id<SigninPresenter>)signinPresenter
                              url:(const GURL&)url
                            title:(NSString*)title NS_DESIGNATED_INITIALIZER;
 

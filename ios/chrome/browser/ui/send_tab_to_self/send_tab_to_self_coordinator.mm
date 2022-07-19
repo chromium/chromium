@@ -5,16 +5,23 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
+#import <memory>
+#import <utility>
 
 #include "base/check.h"
 #import "base/ios/block_types.h"
 #include "base/mac/foundation_util.h"
+#import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/target_device_info.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_service_observer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -24,10 +31,13 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
@@ -37,6 +47,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,6 +59,54 @@ namespace {
 // Snackbar category for activity services.
 NSString* const kActivityServicesSnackbarCategory =
     @"ActivityServicesSnackbarCategory";
+
+class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
+ public:
+  using GetDisplayReasonCallback = base::RepeatingCallback<
+      absl::optional<send_tab_to_self::EntryPointDisplayReason>()>;
+
+  // Queries |get_display_reason_callback| until it indicates the device list is
+  // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
+  // calls |on_list_known_callback|. Destroying the object aborts the waiting.
+  TargetDeviceListWaiter(
+      syncer::SyncService* sync_service,
+      const GetDisplayReasonCallback& get_display_reason_callback,
+      base::OnceClosure on_list_known_callback)
+      : sync_service_(sync_service),
+        get_display_reason_callback_(get_display_reason_callback),
+        on_list_known_callback_(std::move(on_list_known_callback)) {
+    sync_service_->AddObserver(this);
+    OnStateChanged(sync_service_);
+  }
+
+  TargetDeviceListWaiter(const TargetDeviceListWaiter&) = delete;
+  TargetDeviceListWaiter& operator=(const TargetDeviceListWaiter&) = delete;
+
+  ~TargetDeviceListWaiter() override { sync_service_->RemoveObserver(this); }
+
+  void OnStateChanged(syncer::SyncService*) override {
+    absl::optional<send_tab_to_self::EntryPointDisplayReason> display_reason =
+        get_display_reason_callback_.Run();
+    if (!display_reason) {
+      // Model starting up, keep waiting.
+      return;
+    }
+    switch (*display_reason) {
+      case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
+        break;
+      case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
+      case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
+        sync_service_->RemoveObserver(this);
+        std::move(on_list_known_callback_).Run();
+        break;
+    }
+  }
+
+ private:
+  syncer::SyncService* const sync_service_;
+  const GetDisplayReasonCallback get_display_reason_callback_;
+  base::OnceClosure on_list_known_callback_;
+};
 
 void ShowSendingMessage(CommandDispatcher* dispatcher, NSString* deviceName) {
   if (!dispatcher) {
@@ -84,8 +143,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 @interface SendTabToSelfCoordinator () <UIViewControllerTransitioningDelegate,
                                         InfobarModalPositioner,
-                                        SendTabToSelfModalDelegate>
+                                        SendTabToSelfModalDelegate> {
+  std::unique_ptr<TargetDeviceListWaiter> _targetDeviceListWaiter;
+}
 
+@property(nonatomic, weak, readonly) id<SigninPresenter> signinPresenter;
 @property(nonatomic, assign, readonly) GURL url;
 @property(nonatomic, copy, readonly) NSString* title;
 
@@ -97,6 +159,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 // view controllers. This is called after this object is destroyed so it must
 // NOT rely on self. Instead the block should retain its dependencies.
 @property(nonatomic, copy) ProceduralBlock dismissedCompletion;
+@property(nonatomic, assign) BOOL stopped;
 
 @end
 
@@ -106,6 +169,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (id)initWithBaseViewController:(UIViewController*)baseViewController
                          browser:(Browser*)browser
+                 signinPresenter:(id<SigninPresenter>)signinPresenter
                              url:(const GURL&)url
                            title:(NSString*)title {
   self = [super initWithBaseViewController:baseViewController browser:browser];
@@ -113,6 +177,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     return nil;
   }
 
+  _signinPresenter = signinPresenter;
   _url = url;
   _title = title;
   return self;
@@ -121,39 +186,15 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 #pragma mark - ChromeCoordinator Methods
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  send_tab_to_self::SendTabToSelfSyncService* syncService =
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState);
-  // This modal should not be launched in incognito mode where syncService is
-  // undefined.
-  DCHECK(syncService);
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  DCHECK(accountManagerService);
-  ChromeIdentity* account =
-      AuthenticationServiceFactory::GetForBrowserState(browserState)
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  DCHECK(account) << "The user must be signed in to share a tab";
-  self.sendTabToSelfViewController = [[SendTabToSelfTableViewController alloc]
-      initWithDeviceList:syncService->GetSendTabToSelfModel()
-                             ->GetTargetDeviceInfoSortedList()
-                delegate:self
-           accountAvatar:accountManagerService->GetIdentityAvatarWithIdentity(
-                             account, IdentityAvatarSize::TableViewIcon)
-            accountEmail:account.userEmail];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-      initWithRootViewController:self.sendTabToSelfViewController];
-
-  navigationController.transitioningDelegate = self;
-  navigationController.modalPresentationStyle = UIModalPresentationCustom;
-  [self.baseViewController presentViewController:navigationController
-                                        animated:YES
-                                      completion:nil];
+  [self show];
 }
 
 // Do not call directly, use the hideSendTabToSelfUI() command instead!
 - (void)stop {
-  DCHECK(self.sendTabToSelfViewController) << "Already stopped";
+  DCHECK(!self.stopped) << "Already stopped";
+  self.stopped = YES;
+  // Abort the waiting if it's still ongoing.
+  _targetDeviceListWaiter.reset();
   [self.baseViewController
       dismissViewControllerAnimated:YES
                          completion:self.dismissedCompletion];
@@ -241,6 +282,102 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   };
   [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                       BrowserCoordinatorCommands) hideSendTabToSelfUI];
+}
+
+#pragma mark - Private
+
+- (void)show {
+  absl::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
+      [self displayReason];
+  DCHECK(displayReason);
+
+  switch (*displayReason) {
+    case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice: {
+      NOTIMPLEMENTED();
+      break;
+    }
+    case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
+      ChromeBrowserState* browserState = self.browser->GetBrowserState();
+      send_tab_to_self::SendTabToSelfSyncService* syncService =
+          SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState);
+      // This modal should not be launched in incognito mode where syncService
+      // is undefined.
+      DCHECK(syncService);
+      ChromeAccountManagerService* accountManagerService =
+          ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      DCHECK(accountManagerService);
+      ChromeIdentity* account =
+          AuthenticationServiceFactory::GetForBrowserState(browserState)
+              ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      DCHECK(account) << "The user must be signed in to share a tab";
+      self.sendTabToSelfViewController =
+          [[SendTabToSelfTableViewController alloc]
+              initWithDeviceList:syncService->GetSendTabToSelfModel()
+                                     ->GetTargetDeviceInfoSortedList()
+                        delegate:self
+                   accountAvatar:accountManagerService
+                                     ->GetIdentityAvatarWithIdentity(
+                                         account,
+                                         IdentityAvatarSize::TableViewIcon)
+                    accountEmail:account.userEmail];
+      UINavigationController* navigationController =
+          [[UINavigationController alloc]
+              initWithRootViewController:self.sendTabToSelfViewController];
+
+      navigationController.transitioningDelegate = self;
+      navigationController.modalPresentationStyle = UIModalPresentationCustom;
+      [self.baseViewController presentViewController:navigationController
+                                            animated:YES
+                                          completion:nil];
+      break;
+    }
+    case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
+      __weak __typeof(self) weakSelf = self;
+      ShowSigninCommandCompletionCallback callback = ^(BOOL succeeded) {
+        [weakSelf onSigninComplete:succeeded];
+      };
+      ShowSigninCommand* command = [[ShowSigninCommand alloc]
+          initWithOperation:AuthenticationOperationSigninOnly
+                   identity:nil
+                accessPoint:signin_metrics::AccessPoint::
+                                ACCESS_POINT_SEND_TAB_TO_SELF_PROMO
+                promoAction:signin_metrics::PromoAction::
+                                PROMO_ACTION_NO_SIGNIN_PROMO
+                   callback:callback];
+      [self.signinPresenter showSignin:command];
+      break;
+    }
+  }
+}
+
+- (void)onSigninComplete:(BOOL)succeeded {
+  if (!succeeded) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  _targetDeviceListWaiter = std::make_unique<TargetDeviceListWaiter>(
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()),
+      base::BindRepeating(
+          [](__typeof(self) strongSelf) { return [strongSelf displayReason]; },
+          weakSelf),
+      base::BindOnce(
+          [](__typeof(self) strongSelf) {
+            [strongSelf onTargetDeviceListReady];
+          },
+          weakSelf));
+}
+
+- (void)onTargetDeviceListReady {
+  _targetDeviceListWaiter.reset();
+  [self show];
+}
+
+- (absl::optional<send_tab_to_self::EntryPointDisplayReason>)displayReason {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  return send_tab_to_self::GetEntryPointDisplayReason(
+      _url, SyncServiceFactory::GetForBrowserState(browserState),
+      SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState),
+      browserState->GetPrefs());
 }
 
 @end
