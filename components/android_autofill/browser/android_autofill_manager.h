@@ -36,6 +36,11 @@ class AndroidAutofillManager : public AutofillManager {
 
   ~AndroidAutofillManager() override;
 
+  base::WeakPtr<AndroidAutofillManager> GetWeakPtrToLeafClass() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  base::WeakPtr<AutofillManager> GetWeakPtr() override;
   AutofillOfferManager* GetOfferManager() override;
   CreditCardAccessManager* GetCreditCardAccessManager() override;
 
@@ -63,10 +68,6 @@ class AndroidAutofillManager : public AutofillManager {
   void Reset() override;
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
-
-  base::WeakPtr<AndroidAutofillManager> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
   bool has_server_prediction() const { return has_server_prediction_; }
 

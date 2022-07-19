@@ -55,6 +55,11 @@ class MockAutofillManager : public AutofillManager {
                         client,
                         client->GetChannel(),
                         EnableDownloadManager(false)) {}
+
+  base::WeakPtr<AutofillManager> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(AutofillOfferManager*, GetOfferManager, (), (override));
   MOCK_METHOD(CreditCardAccessManager*,
@@ -165,6 +170,9 @@ class MockAutofillManager : public AutofillManager {
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
               (override));
+
+ private:
+  base::WeakPtrFactory<MockAutofillManager> weak_ptr_factory_{this};
 };
 
 class MockAutofillObserver : public AutofillManager::Observer {

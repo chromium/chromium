@@ -444,6 +444,10 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   single_field_form_fill_router_->CancelPendingQueries(this);
 }
 
+base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 AutofillOfferManager* BrowserAutofillManager::GetOfferManager() {
   return offer_manager_;
 }

@@ -105,6 +105,8 @@ class AutofillManager
     return client_;
   }
 
+  virtual base::WeakPtr<AutofillManager> GetWeakPtr() = 0;
+
   // May return nullptr.
   virtual AutofillOfferManager* GetOfferManager() = 0;
 

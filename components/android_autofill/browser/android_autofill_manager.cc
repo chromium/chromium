@@ -37,6 +37,10 @@ AndroidAutofillManager::AndroidAutofillManager(
 
 AndroidAutofillManager::~AndroidAutofillManager() = default;
 
+base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 AutofillOfferManager* AndroidAutofillManager::GetOfferManager() {
   return nullptr;
 }

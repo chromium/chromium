@@ -176,7 +176,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   gfx::RectF transformed_bounding = ToClientAreaBound(bounding_box);
 
   ScopedJavaLocalRef<jobject> form_obj = form_->GetJavaPeer(form_structure);
-  manager_ = manager->GetWeakPtr();
+  manager_ = manager->GetWeakPtrToLeafClass();
   Java_AutofillProvider_startAutofillSession(
       env, obj, form_obj, index, transformed_bounding.x(),
       transformed_bounding.y(), transformed_bounding.width(),

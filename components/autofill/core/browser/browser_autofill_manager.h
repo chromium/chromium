@@ -241,6 +241,7 @@ class BrowserAutofillManager : public AutofillManager,
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
 
   // AutofillManager:
+  base::WeakPtr<AutofillManager> GetWeakPtr() override;
   AutofillOfferManager* GetOfferManager() override;
   CreditCardAccessManager* GetCreditCardAccessManager() override;
   bool ShouldClearPreviewedForm() override;
