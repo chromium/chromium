@@ -1058,8 +1058,12 @@ class InlineSourceStream final
   ~InlineSourceStream() override = default;
 
   size_t GetMoreData(const uint8_t** src) override {
-    if (!text_)
+    if (!text_) {
+      // The V8 scanner requires a valid pointer when using TWO_BYTE sources,
+      // even if the length is 0.
+      *src = new uint8_t[0];
       return 0;
+    }
 
     size_t size = text_.CharactersSizeInBytes();
     auto data_copy = std::make_unique<uint8_t[]>(size);
