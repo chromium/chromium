@@ -105,7 +105,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [Measure, RuntimeEnabled=MediaCapture, Reflect] attribute DOMString capture;
 
     // https://html.spec.whatwg.org/multipage/input.html#dom-input-showpicker
-    [Measure, RaisesException, RuntimeEnabled=HTMLInputElementShowPicker] void showPicker();
+    [Measure, RaisesException] void showPicker();
 
     // Non-standard APIs
     [Reflect, MeasureAs=PrefixedDirectoryAttribute] attribute boolean webkitdirectory;
