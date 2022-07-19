@@ -102,6 +102,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kEventPath:
       return DeprecationInfo::WithTranslation(feature,
                                               DeprecationIssueType::kEventPath);
+    case WebFeature::kExpectCTHeader:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kExpectCTHeader);
     // Powerful features on insecure origins (https://goo.gl/rStTGz)
     case WebFeature::kGeolocationInsecureOrigin:
     case WebFeature::kGeolocationInsecureOriginIframe:

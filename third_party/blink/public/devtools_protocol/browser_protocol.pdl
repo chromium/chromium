@@ -754,6 +754,7 @@ experimental domain Audits
       DeprecationExample
       DocumentDomainSettingWithoutOriginAgentClusterHeader
       EventPath
+      ExpectCTHeader
       GeolocationInsecureOrigin
       GeolocationInsecureOriginDeprecatedNotRemoved
       GetUserMediaInsecureOrigin
