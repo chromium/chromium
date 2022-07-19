@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -106,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, DISABLED_OnScreensChangeEvent) {
   content::RenderFrameHost* remote_child =
       ChildFrameAt(tab->GetPrimaryMainFrame(), 1);
 
-  auto initial_result = std::vector<base::Value>();
-  initial_result.emplace_back(801);
+  auto initial_result = content::ListValueOf(801);
   auto* initial_script = R"(
       var screenDetails;
       var promiseForEvent = (target, evt) => {
@@ -159,9 +159,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, DISABLED_OnScreensChangeEvent) {
   )";
 
   {
-    auto result = std::vector<base::Value>();
-    result.emplace_back(801);
-    result.emplace_back(802);
+    auto result = content::ListValueOf(801, 802);
 
     EXPECT_EQ(result, EvalJs(tab, await_screens_change));
     EXPECT_EQ(result, EvalJs(local_child, await_screens_change));
@@ -184,8 +182,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, DISABLED_OnScreensChangeEvent) {
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   {
-    auto result = std::vector<base::Value>();
-    result.emplace_back(802);
+    auto result = content::ListValueOf(802);
 
     EXPECT_EQ(result, EvalJs(tab, await_screens_change));
     EXPECT_EQ(result, EvalJs(local_child, await_screens_change));
@@ -212,9 +209,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, DISABLED_OnScreensChangeEvent) {
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   {
-    auto result = std::vector<base::Value>();
-    result.emplace_back(803);
-    result.emplace_back(804);
+    auto result = content::ListValueOf(803, 804);
 
     EXPECT_EQ(result, EvalJs(tab, await_screens_change));
     EXPECT_EQ(result, EvalJs(local_child, await_screens_change));
