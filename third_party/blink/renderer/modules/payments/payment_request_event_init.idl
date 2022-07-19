@@ -12,6 +12,6 @@ dictionary PaymentRequestEventInit : ExtendableEventInit {
     PaymentCurrencyAmount total;
     sequence<PaymentDetailsModifier> modifiers;
     DOMString instrumentKey;
-    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] PaymentOptions paymentOptions;
-    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] sequence<PaymentShippingOption> shippingOptions;
+    PaymentOptions paymentOptions;
+    sequence<PaymentShippingOption> shippingOptions;
 };

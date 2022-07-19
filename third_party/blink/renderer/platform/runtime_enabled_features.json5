@@ -1766,10 +1766,6 @@
       status: "experimental",
     },
     {
-      name: "PaymentHandlerHandlesShippingAndContact",
-      status: "stable",
-    },
-    {
       name: "PaymentMethodChangeEvent",
       status: "stable",
     },
