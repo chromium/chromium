@@ -1,5 +1,5 @@
 (async function (testRunner) {
-  const { page, dp } = await testRunner.startBlank(`Test Invalid Origin`);
+  const { page, dp } = await testRunner.startBlank(`Test Invalid Origin Accept-CH`);
   await dp.Network.enable();
   await dp.Audits.enable();
   const promise = dp.Audits.onceIssueAdded();

@@ -30,6 +30,7 @@ class HttpEquiv {
                       const AtomicString& equiv,
                       const AtomicString& content,
                       bool in_document_head_element,
+                      bool is_sync_parser,
                       Element*);
 
  private:

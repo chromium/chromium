@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CLIENT_HINTS_PREFERENCES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CLIENT_HINTS_PREFERENCES_H_
 
+#include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -37,15 +38,13 @@ class PLATFORM_EXPORT ClientHintsPreferences {
   // `header_value`, and updates `this` to enable the requested client hints.
   // `url` is the URL of the page. `context` may be null. `is_http_equiv` is
   // true if 'accept-ch' is an 'http-equiv' attribute and not 'name'.
-  // `is_preload_or_sync_parser` is true if the HTML preloader saw the element
-  // or if the element was created by the parser. If client hints are not
-  // allowed for `url`, then `this` would not be updated. Returns true if
-  // client hints were modified.
-  bool UpdateFromMetaTagAcceptCH(const String& header_value,
-                                 const KURL& url,
-                                 Context* context,
-                                 bool is_http_equiv,
-                                 bool is_preload_or_sync_parser);
+  // `is_doc_preloader_or_sync_parser` is true if the document preloader or the
+  // synchronous parser created the element. Returns true if `this` is modified.
+  bool UpdateFromMetaCH(const String& header_value,
+                        const KURL& url,
+                        Context* context,
+                        network::MetaCHType type,
+                        bool is_doc_preloader_or_sync_parser);
 
   bool ShouldSend(network::mojom::WebClientHintsType type) const;
   void SetShouldSend(network::mojom::WebClientHintsType type);

@@ -1350,9 +1350,13 @@ const base::Feature kEarlyCodeCache{"EarlyCodeCache",
 const base::Feature kClientHintsMetaHTTPEquivAcceptCH{
     "ClientHintsMetaHTTPEquivAcceptCH", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Allow use of a named meta tag to set client hints.
+// Allow use of a named meta tag to set and delegate client hints.
 const base::Feature kClientHintsMetaNameAcceptCH{
     "ClientHintsMetaNameAcceptCH", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Allow use of a http-equiv meta tag to set and delegate client hints.
+const base::Feature kClientHintsMetaEquivDelegateCH{
+    "ClientHintsMetaEquivDelegateCH", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOriginAgentClusterDefaultEnabled{
     "OriginAgentClusterDefaultEnable", base::FEATURE_DISABLED_BY_DEFAULT};

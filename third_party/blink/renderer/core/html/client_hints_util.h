@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CLIENT_HINTS_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CLIENT_HINTS_UTIL_H_
 
+#include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -27,8 +28,8 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     const String& header_value,
     const KURL& url,
     ClientHintsPreferences::Context* context,
-    bool is_http_equiv,
-    bool is_preload_or_sync_parser);
+    network::MetaCHType type,
+    bool is_doc_preloader_or_sync_parser);
 
 // This modifies `container_policy` to reflect any changes to client hint
 // permissions which may have occurred via the named accept-ch meta tag.

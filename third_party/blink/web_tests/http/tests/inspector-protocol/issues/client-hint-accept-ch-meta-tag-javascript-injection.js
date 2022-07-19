@@ -1,5 +1,5 @@
 (async function (testRunner) {
-  const { page, dp } = await testRunner.startBlank(`Test JS Injection`);
+  const { page, dp } = await testRunner.startBlank(`Test JS Injection Accept-CH`);
   await dp.Network.enable();
   await dp.Audits.enable();
   const promise = dp.Audits.onceIssueAdded();

@@ -1,7 +1,7 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<meta name="Accept-CH" content="sec-ch-device-memory=( https://{{host}}:{{ports[https][0]}}/ ), device-memory=( https://{{host}}:{{ports[https][0]}}/ )">
-<title>Meta-name cross origin subresource without hints</title>
+<meta http-equiv="Delegate-CH" content="sec-ch-device-memory https://{{host}}:{{ports[https][0]}}/; device-memory https://{{host}}:{{ports[https][0]}}/">
+<title>Meta-equiv Delegate-CH cross origin subresource without hints</title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,7 +11,7 @@
 <script>
 verify_subresource_state(
   host_info.HTTPS_REMOTE_ORIGIN + "/client-hints/accept-ch-stickiness/resources/do-not-expect-received.py",
-  "meta-name cross origin subresource without hints");
+  "meta-equiv cross origin subresource without hints");
 </script>
 </body>
 </html>

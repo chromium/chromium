@@ -621,6 +621,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintsMetaNameAcceptCH;
 
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsMetaEquivDelegateCH;
+
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT extern const base::Feature

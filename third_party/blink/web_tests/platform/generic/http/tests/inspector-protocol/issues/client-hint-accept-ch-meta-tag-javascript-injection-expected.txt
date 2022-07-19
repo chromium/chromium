@@ -1,4 +1,4 @@
-Test JS Injection
+Test JS Injection Accept-CH
 Inspector issue: {
     issue : {
         code : ClientHintIssue

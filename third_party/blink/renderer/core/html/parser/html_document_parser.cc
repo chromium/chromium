@@ -1417,10 +1417,9 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
 
 void HTMLDocumentParser::ProcessPreloadData(
     std::unique_ptr<PendingPreloadData> preload_data) {
-  for (const auto& value : preload_data->accept_ch_values) {
-    HTMLMetaElement::ProcessMetaAcceptCH(*GetDocument(), value.value,
-                                         value.is_http_equiv,
-                                         value.is_preload_or_sync_parser);
+  for (const auto& value : preload_data->meta_ch_values) {
+    HTMLMetaElement::ProcessMetaCH(*GetDocument(), value.value, value.type,
+                                   value.is_doc_preloader);
   }
   // Make sure that the viewport is up-to-date, so that the correct viewport
   // dimensions will be fed to the preload scanner.

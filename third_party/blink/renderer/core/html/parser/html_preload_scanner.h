@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -52,20 +53,22 @@ class HTMLParserOptions;
 class HTMLTokenizer;
 class SegmentedString;
 
-// Encapsulates values from the <meta http-equiv="accept-ch"> or <meta
-// name="accept-ch"> tags. These are collected by the preload scanner to be
-// later handled on the main thread.
-struct AcceptCHValue {
+// Encapsulates values from the <meta http-equiv="accept-ch">, <meta
+// name="accept-ch">, or <meta http-equiv="delegate-ch"> tags. These are
+// collected by the preload scanner to be later handled on the main thread.
+struct MetaCHValue {
   AtomicString value;
-  bool is_http_equiv = false;
-  bool is_preload_or_sync_parser = false;
+  network::MetaCHType type = network::MetaCHType::HttpEquivAcceptCH;
+  // ClientHintsPreferences::UpdateFromMetaCH needs to know if the document
+  // preloader was used as otherwise the value may be discarded.
+  bool is_doc_preloader = false;
 };
-using AcceptCHValues = Vector<AcceptCHValue>;
+using MetaCHValues = Vector<MetaCHValue>;
 
 // Encapsulates data created by HTMLPreloadScanner that needs to be processed on
 // the main thread.
 struct PendingPreloadData {
-  AcceptCHValues accept_ch_values;
+  MetaCHValues meta_ch_values;
   absl::optional<ViewportDescription> viewport;
   bool has_csp_meta_tag = false;
   PreloadRequestStream requests;
@@ -109,7 +112,7 @@ class TokenPreloadScanner {
   void Scan(const HTMLToken&,
             const SegmentedString&,
             PreloadRequestStream& requests,
-            AcceptCHValues& accept_ch_values,
+            MetaCHValues& meta_ch_values,
             absl::optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
 
@@ -121,13 +124,13 @@ class TokenPreloadScanner {
   class StartTagScanner;
 
   void HandleMetaNameAttribute(const HTMLToken& token,
-                               AcceptCHValues& accept_ch_values,
+                               MetaCHValues& meta_ch_values,
                                absl::optional<ViewportDescription>* viewport);
 
   inline void ScanCommon(const HTMLToken&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,
-                         AcceptCHValues& accept_ch_values,
+                         MetaCHValues& meta_ch_values,
                          absl::optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 

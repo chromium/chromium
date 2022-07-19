@@ -40,12 +40,12 @@ void ClientHintsPreferences::CombineWith(
   }
 }
 
-bool ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
+bool ClientHintsPreferences::UpdateFromMetaCH(
     const String& header_value,
     const KURL& url,
     Context* context,
-    bool is_http_equiv,
-    bool is_preload_or_sync_parser) {
+    network::MetaCHType type,
+    bool is_doc_preloader_or_sync_parser) {
   // Client hints should be allowed only on secure URLs.
   if (!IsClientHintsAllowed(url))
     return false;
@@ -57,30 +57,37 @@ bool ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
   if (!header_value.ContainsOnlyASCIIOrEmpty())
     return false;
 
-  if (is_http_equiv) {
-    // Note: .Ascii() would convert tab to ?, which is undesirable.
-    absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
-        network::ParseClientHintsHeader(header_value.Latin1());
+  switch (type) {
+    case network::MetaCHType::HttpEquivAcceptCH: {
+      // Note: .Ascii() would convert tab to ?, which is undesirable.
+      absl::optional<std::vector<network::mojom::WebClientHintsType>>
+          parsed_ch = network::ParseClientHintsHeader(header_value.Latin1());
 
-    if (!parsed_ch.has_value())
-      return false;
+      if (!parsed_ch.has_value())
+        return false;
 
-    // Update first-party permissions for each client hint.
-    for (network::mojom::WebClientHintsType newly_enabled : parsed_ch.value()) {
-      enabled_hints_.SetIsEnabled(newly_enabled, true);
+      // Update first-party permissions for each client hint.
+      for (network::mojom::WebClientHintsType newly_enabled : parsed_ch.value())
+        enabled_hints_.SetIsEnabled(newly_enabled, true);
+      break;
     }
-  } else if (is_preload_or_sync_parser) {
-    // Note: .Ascii() would convert tab to ?, which is undesirable.
-    absl::optional<network::ClientHintToDelegatedThirdPartiesHeader> parsed_ch =
-        network::ParseClientHintToDelegatedThirdPartiesHeader(
-            header_value.Latin1());
+    case network::MetaCHType::NameAcceptCH:
+    case network::MetaCHType::HttpEquivDelegateCH: {
+      if (!is_doc_preloader_or_sync_parser)
+        break;
 
-    if (!parsed_ch.has_value())
-      return false;
+      // Note: .Ascii() would convert tab to ?, which is undesirable.
+      network::ClientHintToDelegatedThirdPartiesHeader parsed_ch =
+          network::ParseClientHintToDelegatedThirdPartiesHeader(
+              header_value.Latin1(), type);
 
-    // Update first-party permissions for each client hint.
-    for (const auto& pair : parsed_ch.value().map) {
-      enabled_hints_.SetIsEnabled(pair.first, true);
+      if (parsed_ch.map.empty())
+        return false;
+
+      // Update first-party permissions for each client hint.
+      for (const auto& pair : parsed_ch.map)
+        enabled_hints_.SetIsEnabled(pair.first, true);
+      break;
     }
   }
 

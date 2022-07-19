@@ -21,34 +21,35 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     const String& header_value,
     const KURL& url,
     ClientHintsPreferences::Context* context,
-    bool is_http_equiv,
-    bool is_preload_or_sync_parser) {
-  // If it's not http-equiv and it's not a preload-or-sync-parser visible
-  // meta tag, then we need to warn the dev that javascript injected the tag.
-  if (!is_http_equiv && !is_preload_or_sync_parser && local_dom_window &&
+    network::MetaCHType type,
+    bool is_doc_preloader_or_sync_parser) {
+  // If it's not http-equiv="accept-ch" and it's not a preload-or-sync-parser
+  // visible meta tag, then we need to warn the dev that js injected the tag.
+  if (type != network::MetaCHType::HttpEquivAcceptCH &&
+      !is_doc_preloader_or_sync_parser && local_dom_window &&
       RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
     AuditsIssue::ReportClientHintIssue(
         local_dom_window, ClientHintIssueReason::kMetaTagModifiedHTML);
   }
 
-  // If no hints were set, this is a http-equiv tag, this tag was added by
-  // javascript, the `local_dom_window` is missing, or the feature is disabled,
+  // If no hints were set, this is a http-equiv="accept-ch" tag, this tag was
+  // added by js, the `local_dom_window` is missing, or the feature is disabled,
   // there's nothing more to do.
-  if (!client_hints_preferences.UpdateFromMetaTagAcceptCH(
-          header_value, url, context, is_http_equiv,
-          is_preload_or_sync_parser) ||
-      is_http_equiv || !is_preload_or_sync_parser || !local_dom_window ||
+  if (!client_hints_preferences.UpdateFromMetaCH(
+          header_value, url, context, type, is_doc_preloader_or_sync_parser) ||
+      type == network::MetaCHType::HttpEquivAcceptCH ||
+      !is_doc_preloader_or_sync_parser || !local_dom_window ||
       !RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
     return;
   }
 
   // Note: .Ascii() would convert tab to ?, which is undesirable.
-  absl::optional<network::ClientHintToDelegatedThirdPartiesHeader> parsed_ch =
+  network::ClientHintToDelegatedThirdPartiesHeader parsed_ch =
       network::ParseClientHintToDelegatedThirdPartiesHeader(
-          header_value.Latin1());
+          header_value.Latin1(), type);
 
   // If invalid origins were seen in the allow list we need to warn the dev.
-  if (parsed_ch.value().had_invalid_origins) {
+  if (parsed_ch.had_invalid_origins) {
     AuditsIssue::ReportClientHintIssue(
         local_dom_window,
         ClientHintIssueReason::kMetaTagAllowListInvalidOrigin);
@@ -58,7 +59,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   auto* const current_policy =
       local_dom_window->GetSecurityContext().GetPermissionsPolicy();
   ParsedPermissionsPolicy container_policy;
-  for (const auto& pair : parsed_ch.value().map) {
+  for (const auto& pair : parsed_ch.map) {
     const auto& policy_name = GetClientHintToPolicyFeatureMap().at(pair.first);
 
     // We need to retain any preexisting settings, just adding new origins.

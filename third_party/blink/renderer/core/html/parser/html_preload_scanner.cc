@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
@@ -796,10 +797,10 @@ TokenPreloadScanner::~TokenPreloadScanner() = default;
 void TokenPreloadScanner::Scan(const HTMLToken& token,
                                const SegmentedString& source,
                                PreloadRequestStream& requests,
-                               AcceptCHValues& accept_ch_values,
+                               MetaCHValues& meta_ch_values,
                                absl::optional<ViewportDescription>* viewport,
                                bool* is_csp_meta_tag) {
-  ScanCommon(token, source, requests, accept_ch_values, viewport,
+  ScanCommon(token, source, requests, meta_ch_values, viewport,
              is_csp_meta_tag);
 }
 
@@ -840,7 +841,7 @@ static void HandleMetaReferrer(const String& attribute_value,
 
 void TokenPreloadScanner::HandleMetaNameAttribute(
     const HTMLToken& token,
-    AcceptCHValues& accept_ch_values,
+    MetaCHValues& meta_ch_values,
     absl::optional<ViewportDescription>* viewport) {
   const HTMLToken::Attribute* name_attribute =
       token.GetAttributeItem(html_names::kNameAttr);
@@ -867,11 +868,10 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
 
   if (EqualIgnoringASCIICase(name_attribute_value, http_names::kAcceptCH) &&
       RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
-    accept_ch_values.push_back(
-        AcceptCHValue{.value = content_attribute->GetValue(),
-                      .is_http_equiv = false,
-                      .is_preload_or_sync_parser =
-                          scanner_type_ == ScannerType::kMainDocument});
+    meta_ch_values.push_back(MetaCHValue{
+        .value = content_attribute->GetValue(),
+        .type = network::MetaCHType::NameAcceptCH,
+        .is_doc_preloader = scanner_type_ == ScannerType::kMainDocument});
   }
 }
 
@@ -879,7 +879,7 @@ void TokenPreloadScanner::ScanCommon(
     const HTMLToken& token,
     const SegmentedString& source,
     PreloadRequestStream& requests,
-    AcceptCHValues& accept_ch_values,
+    MetaCHValues& meta_ch_values,
     absl::optional<ViewportDescription>* viewport,
     bool* is_csp_meta_tag) {
   if (!document_parameters_->do_html_preload_scanning)
@@ -973,17 +973,30 @@ void TokenPreloadScanner::ScanCommon(
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
-              accept_ch_values.push_back(AcceptCHValue{
-                  .value = content_attribute->GetValue(),
-                  .is_http_equiv = true,
-                  .is_preload_or_sync_parser =
-                      scanner_type_ == ScannerType::kMainDocument});
+              meta_ch_values.push_back(
+                  MetaCHValue{.value = content_attribute->GetValue(),
+                              .type = network::MetaCHType::HttpEquivAcceptCH,
+                              .is_doc_preloader =
+                                  scanner_type_ == ScannerType::kMainDocument});
+            }
+          } else if (EqualIgnoringASCIICase(equiv_attribute_value,
+                                            http_names::kDelegateCH) &&
+                     RuntimeEnabledFeatures::
+                         ClientHintsMetaEquivDelegateCHEnabled()) {
+            const HTMLToken::Attribute* content_attribute =
+                token.GetAttributeItem(html_names::kContentAttr);
+            if (content_attribute) {
+              meta_ch_values.push_back(
+                  MetaCHValue{.value = content_attribute->GetValue(),
+                              .type = network::MetaCHType::HttpEquivDelegateCH,
+                              .is_doc_preloader =
+                                  scanner_type_ == ScannerType::kMainDocument});
             }
           }
           return;
         }
 
-        HandleMetaNameAttribute(token, accept_ch_values, viewport);
+        HandleMetaNameAttribute(token, meta_ch_values, viewport);
       }
 
       if (Match(tag_impl, html_names::kBodyTag)) {
@@ -1117,7 +1130,7 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
           AttemptStaticStringCreation(token_.GetName(), kLikely8Bit));
     bool seen_csp_meta_tag = false;
     scanner_.Scan(token_, source_, pending_data->requests,
-                  pending_data->accept_ch_values, &pending_data->viewport,
+                  pending_data->meta_ch_values, &pending_data->viewport,
                   &seen_csp_meta_tag);
     if (script_token_scanner_)
       script_token_scanner_->ScanToken(token_);

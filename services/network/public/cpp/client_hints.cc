@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
@@ -123,7 +124,7 @@ ParseClientHintsHeader(const std::string& header) {
     if (iter != decode_map.end())
       result.push_back(iter->second);
   }  // for list_item
-  return absl::make_optional(std::move(result));
+  return result;
 }
 
 ClientHintToDelegatedThirdPartiesHeader::
@@ -136,44 +137,89 @@ ClientHintToDelegatedThirdPartiesHeader::
     ClientHintToDelegatedThirdPartiesHeader(
         const ClientHintToDelegatedThirdPartiesHeader&) = default;
 
-absl::optional<const ClientHintToDelegatedThirdPartiesHeader>
-ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header) {
-  // Accept-CH is an sh-dictionary of tokens to origins; see:
-  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-header-structure-19#section-3.2
-  absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
-      // We need to lower-case the string here or dictionary parsing refuses to
-      // see the keys.
-      net::structured_headers::ParseDictionary(base::ToLowerASCII(header));
-  if (!maybe_dictionary.has_value())
-    return absl::nullopt;
-
+const ClientHintToDelegatedThirdPartiesHeader
+ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
+                                             MetaCHType type) {
+  const DecodeMap& decode_map = GetDecodeMap();
   ClientHintToDelegatedThirdPartiesHeader result;
 
-  // Now convert those to actual hint enums.
-  const DecodeMap& decode_map = GetDecodeMap();
-  for (const auto& dictionary_pair : maybe_dictionary.value()) {
-    std::vector<url::Origin> delegates;
-    for (const auto& member : dictionary_pair.second.member) {
-      if (!member.item.is_token())
-        continue;
-      const GURL maybe_gurl = GURL(member.item.GetString());
-      if (!maybe_gurl.is_valid()) {
-        result.had_invalid_origins = true;
-        continue;
-      }
-      url::Origin maybe_origin = url::Origin::Create(maybe_gurl);
-      if (maybe_origin.opaque()) {
-        result.had_invalid_origins = true;
-        continue;
-      }
-      delegates.push_back(maybe_origin);
+  switch (type) {
+    case MetaCHType::HttpEquivAcceptCH: {
+      // ParseClientHintsHeader should have been called instead.
+      NOTREACHED();
+      return ClientHintToDelegatedThirdPartiesHeader();
     }
-    const std::string& client_hint_string = dictionary_pair.first;
-    auto iter = decode_map.find(client_hint_string);
-    if (iter != decode_map.end())
-      result.map.insert(std::make_pair(iter->second, delegates));
-  }  // for dictionary_pair
-  return absl::make_optional(std::move(result));
+    case MetaCHType::NameAcceptCH: {
+      // Accept-CH is an sh-dictionary of tokens to origins; see:
+      // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-header-structure-19#section-3.2
+      absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
+          // We need to lower-case the string here or dictionary parsing refuses
+          // to see the keys.
+          net::structured_headers::ParseDictionary(base::ToLowerASCII(header));
+      if (!maybe_dictionary.has_value())
+        return ClientHintToDelegatedThirdPartiesHeader();
+
+      // Now convert those to actual hint enums.
+      for (const auto& dictionary_pair : maybe_dictionary.value()) {
+        std::vector<url::Origin> delegates;
+        for (const auto& member : dictionary_pair.second.member) {
+          if (!member.item.is_token())
+            continue;
+          const GURL maybe_gurl = GURL(member.item.GetString());
+          if (!maybe_gurl.is_valid()) {
+            result.had_invalid_origins = true;
+            continue;
+          }
+          url::Origin maybe_origin = url::Origin::Create(maybe_gurl);
+          if (maybe_origin.opaque()) {
+            result.had_invalid_origins = true;
+            continue;
+          }
+          delegates.push_back(maybe_origin);
+        }
+        const std::string& client_hint_string = dictionary_pair.first;
+        auto iter = decode_map.find(client_hint_string);
+        if (iter != decode_map.end())
+          result.map.insert(std::make_pair(iter->second, delegates));
+      }  // for dictionary_pair
+      return result;
+    }
+    case MetaCHType::HttpEquivDelegateCH: {
+      // We're building a scoped down version of
+      // ParsingContext::ParseFeaturePolicyToIR that supports only client hint
+      // features.
+      ClientHintToDelegatedThirdPartiesHeader result;
+      const auto& entries =
+          base::SplitString(base::ToLowerASCII(header), ";",
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      for (const auto& entry : entries) {
+        const auto& components = base::SplitString(
+            entry, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        // Shouldn't be possible given this only processes non-empty parts.
+        DCHECK(components.size());
+        auto found_token = decode_map.find(components[0]);
+        // Bail early if the token is invalid
+        if (found_token == decode_map.end())
+          continue;
+        std::vector<url::Origin> delegates;
+        for (size_t i = 1; i < components.size(); ++i) {
+          const GURL gurl = GURL(components[i]);
+          if (!gurl.is_valid()) {
+            result.had_invalid_origins = true;
+            continue;
+          }
+          url::Origin origin = url::Origin::Create(gurl);
+          if (origin.opaque()) {
+            result.had_invalid_origins = true;
+            continue;
+          }
+          delegates.push_back(origin);
+        }
+        result.map.insert(std::make_pair(found_token->second, delegates));
+      }
+      return result;
+    }
+  }
 }
 
 }  // namespace network

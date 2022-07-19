@@ -10,6 +10,12 @@ specific_include_rules = {
         "+url/gurl.h",
         "+url/origin.h",
     ],
+    "client_hints_util.h": [
+        "+services/network/public/cpp/client_hints.h",
+    ],
+    "html_meta_element.h": [
+        "+services/network/public/cpp/client_hints.h",
+    ],
     "trust_token_attribute_parsing_test.cc": [
         "+services/network/test",
     ],

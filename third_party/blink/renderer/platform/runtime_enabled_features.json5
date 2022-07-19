@@ -364,6 +364,10 @@
       status: "experimental",
     },
     {
+      name: "ClientHintsMetaEquivDelegateCH",
+      status: "stable",
+    },
+    {
       name: "ClientHintsMetaHTTPEquivAcceptCH",
       status: "stable",
     },

@@ -1,7 +1,7 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<meta name="Accept-CH" content="sec-ch-device-memory=( https://www1.{{host}}:{{ports[https][0]}}/ ), device-memory=( https://www1.{{host}}:{{ports[https][0]}}/ )">
-<title>Meta-name cross origin subresource with hints</title>
+<meta http-equiv="Delegate-CH" content="sec-ch-device-memory https://www1.{{host}}:{{ports[https][0]}}/; device-memory https://www1.{{host}}:{{ports[https][0]}}/">
+<title>Meta-equiv Delegate-CH cross origin iframe with hints</title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,9 +9,9 @@
 <script src="resources/accept-ch-test.js"></script>
 
 <script>
-verify_subresource_state(
+verify_iframe_state(
   host_info.HTTPS_REMOTE_ORIGIN + "/client-hints/accept-ch-stickiness/resources/do-expect-received.py",
-  "meta-name cross origin subresource with hints");
+  "meta-equiv cross origin iframe with hints");
 </script>
 </body>
 </html>

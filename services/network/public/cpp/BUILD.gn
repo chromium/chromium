@@ -497,3 +497,8 @@ fuzzer_test("cors_fuzzer") {
   sources = [ "cors/cors_fuzzer.cc" ]
   deps = [ ":cpp" ]
 }
+
+fuzzer_test("client_hints_fuzzer") {
+  sources = [ "client_hints_fuzzer.cc" ]
+  deps = [ ":cpp" ]
+}

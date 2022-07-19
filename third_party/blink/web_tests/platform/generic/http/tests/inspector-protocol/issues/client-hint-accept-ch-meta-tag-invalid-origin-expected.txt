@@ -1,4 +1,4 @@
-Test Invalid Origin
+Test Invalid Origin Accept-CH
 Inspector issue: {
     issue : {
         code : ClientHintIssue

@@ -51,9 +51,9 @@ namespace blink {
 HTMLMetaElement::HTMLMetaElement(Document& document,
                                  const CreateElementFlags flags)
     : HTMLElement(html_names::kMetaTag, document),
-      is_being_created_by_parser_with_sync_flag_(
-          flags.IsCreatedByParser() && !flags.IsAsyncCustomElements() &&
-          !document.IsInDocumentWrite()) {}
+      is_sync_parser_(flags.IsCreatedByParser() &&
+                      !flags.IsAsyncCustomElements() &&
+                      !document.IsInDocumentWrite()) {}
 
 static bool IsInvalidSeparator(UChar c) {
   return c == ';';
@@ -558,7 +558,7 @@ void HTMLMetaElement::ProcessHttpEquiv() {
   if (http_equiv_value.IsEmpty())
     return;
   HttpEquiv::Process(GetDocument(), http_equiv_value, content_value,
-                     InDocumentHead(this), this);
+                     InDocumentHead(this), is_sync_parser_, this);
 }
 
 void HTMLMetaElement::ProcessContent() {
@@ -623,8 +623,8 @@ void HTMLMetaElement::ProcessContent() {
                         WebFeature::kHTMLMetaElementMonetization);
     }
   } else if (EqualIgnoringASCIICase(name_value, http_names::kAcceptCH)) {
-    ProcessMetaAcceptCH(GetDocument(), content_value, /*is_http_equiv*/ false,
-                        is_being_created_by_parser_with_sync_flag_);
+    ProcessMetaCH(GetDocument(), content_value,
+                  network::MetaCHType::NameAcceptCH, is_sync_parser_);
   }
 }
 
@@ -661,14 +661,23 @@ const AtomicString& HTMLMetaElement::Itemprop() const {
 }
 
 // static
-void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
-                                          const AtomicString& content,
-                                          bool is_http_equiv,
-                                          bool is_preload_or_sync_parser) {
-  if (is_http_equiv
-          ? !RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled()
-          : !RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
-    return;
+void HTMLMetaElement::ProcessMetaCH(Document& document,
+                                    const AtomicString& content,
+                                    network::MetaCHType type,
+                                    bool is_doc_preloader_or_sync_parser) {
+  switch (type) {
+    case network::MetaCHType::HttpEquivAcceptCH:
+      if (!RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled())
+        return;
+      break;
+    case network::MetaCHType::NameAcceptCH:
+      if (!RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled())
+        return;
+      break;
+    case network::MetaCHType::HttpEquivDelegateCH:
+      if (!RuntimeEnabledFeatures::ClientHintsMetaEquivDelegateCHEnabled())
+        return;
+      break;
   }
 
   LocalFrame* frame = document.GetFrame();
@@ -686,18 +695,27 @@ void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
     return;
   }
 
-  UseCounter::Count(
-      document, is_http_equiv ? WebFeature::kClientHintsMetaHTTPEquivAcceptCH
-                              : WebFeature::kClientHintsMetaNameAcceptCH);
+  switch (type) {
+    case network::MetaCHType::HttpEquivAcceptCH:
+      UseCounter::Count(document,
+                        WebFeature::kClientHintsMetaHTTPEquivAcceptCH);
+      break;
+    case network::MetaCHType::NameAcceptCH:
+      UseCounter::Count(document, WebFeature::kClientHintsMetaNameAcceptCH);
+      break;
+    case network::MetaCHType::HttpEquivDelegateCH:
+      UseCounter::Count(document, WebFeature::kClientHintsMetaEquivDelegateCH);
+      break;
+  }
   FrameClientHintsPreferencesContext hints_context(frame);
   UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
       frame->GetClientHintsPreferences(), document.domWindow(), content,
-      document.Url(), &hints_context, is_http_equiv, is_preload_or_sync_parser);
+      document.Url(), &hints_context, type, is_doc_preloader_or_sync_parser);
 }
 
 void HTMLMetaElement::FinishParsingChildren() {
   // Flag the tag was parsed so if it's re-read we know it was modified.
-  is_being_created_by_parser_with_sync_flag_ = false;
+  is_sync_parser_ = false;
   HTMLElement::FinishParsingChildren();
 }
 

@@ -123,10 +123,10 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
       EXPECT_EQ(width, preload_request_->ResourceWidth());
 
       ClientHintsPreferences preload_preferences;
-      for (const auto& value : preload_data_->accept_ch_values) {
-        preload_preferences.UpdateFromMetaTagAcceptCH(
-            value.value, document_url_, nullptr, value.is_http_equiv,
-            value.is_preload_or_sync_parser);
+      for (const auto& value : preload_data_->meta_ch_values) {
+        preload_preferences.UpdateFromMetaCH(value.value, document_url_,
+                                             nullptr, value.type,
+                                             value.is_doc_preloader);
       }
       EXPECT_EQ(preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kDpr_DEPRECATED),

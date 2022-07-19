@@ -32,6 +32,7 @@ void HttpEquiv::Process(Document& document,
                         const AtomicString& equiv,
                         const AtomicString& content,
                         bool in_document_head_element,
+                        bool is_sync_parser,
                         Element* element) {
   DCHECK(!equiv.IsNull());
   DCHECK(!content.IsNull());
@@ -53,9 +54,13 @@ void HttpEquiv::Process(Document& document,
         "X-Frame-Options may only be set via an HTTP header sent along with a "
         "document. It may not be set inside <meta>."));
   } else if (EqualIgnoringASCIICase(equiv, http_names::kAcceptCH)) {
-    HTMLMetaElement::ProcessMetaAcceptCH(document, content,
-                                         /*is_http_equiv*/ true,
-                                         /*is_preload_or_sync_parser*/ true);
+    HTMLMetaElement::ProcessMetaCH(document, content,
+                                   network::MetaCHType::HttpEquivAcceptCH,
+                                   is_sync_parser);
+  } else if (EqualIgnoringASCIICase(equiv, http_names::kDelegateCH)) {
+    HTMLMetaElement::ProcessMetaCH(document, content,
+                                   network::MetaCHType::HttpEquivDelegateCH,
+                                   is_sync_parser);
   } else if (EqualIgnoringASCIICase(equiv, "content-security-policy") ||
              EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {

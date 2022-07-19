@@ -33,6 +33,7 @@
     "Content-Security-Policy",
     "Content-Security-Policy-Report-Only",
     "Content-Type",
+    "Delegate-CH",
     "Document-Policy",
     "Document-Policy-Report-Only",
     "ETag",
