@@ -528,12 +528,12 @@ async function createCartElement(): Promise<HTMLElement|null> {
     return null;
   }
 
+  let discountedCartCount = 0;
+
   if (loadTimeData.getBoolean('ruleBasedDiscountEnabled')) {
     if (consentVisible) {
       recordOccurence('NewTabPage.Carts.DiscountConsentShow');
     }
-
-    let discountedCartCount = 0;
 
     for (let i = 0; i < carts.length; i++) {
       const cart = carts[i];
@@ -543,11 +543,13 @@ async function createCartElement(): Promise<HTMLElement|null> {
             'NewTabPage.Carts.DiscountAt', i);
       }
     }
-
-    chrome.metricsPrivate.recordSmallCount(
-        'NewTabPage.Carts.DiscountCountAtLoad', discountedCartCount);
   }
+  chrome.metricsPrivate.recordSmallCount(
+      'NewTabPage.Carts.DiscountCountAtLoad', discountedCartCount);
 
+  chrome.metricsPrivate.recordSmallCount(
+      'NewTabPage.Carts.NonDiscountCountAtLoad',
+      carts.length - discountedCartCount);
   const element = new ChromeCartModuleElement();
   if (welcomeVisible) {
     element.headerChipText = loadTimeData.getString('modulesNewTagLabel');

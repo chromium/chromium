@@ -256,6 +256,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Carts.NonDiscountCountAtLoad" units="count"
+    expires_after="2022-12-25">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when the cart module is created. It records the number of carts
+    without discount (could be zero). Only logged on the 1P NTP. Note that even
+    if the user has Google as their default search engine, Incognito and Guest
+    mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2022-12-18">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>

@@ -1167,16 +1167,22 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       assertEquals(0, metrics.count('NewTabPage.Carts.DiscountCountAtLoad', 2));
+      assertEquals(
+          0, metrics.count('NewTabPage.Carts.NonDiscountCountAtLoad', 1));
       assertEquals(0, metrics.count('NewTabPage.Carts.DiscountAt', 0));
       assertEquals(0, metrics.count('NewTabPage.Carts.DiscountAt', 2));
+      assertEquals(0, metrics.count('NewTabPage.Carts.CartCount', 3));
 
       // Act.
       await chromeCartDescriptor.initialize(0);
 
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Carts.DiscountCountAtLoad', 2));
+      assertEquals(
+          1, metrics.count('NewTabPage.Carts.NonDiscountCountAtLoad', 1));
       assertEquals(1, metrics.count('NewTabPage.Carts.DiscountAt', 0));
       assertEquals(1, metrics.count('NewTabPage.Carts.DiscountAt', 2));
+      assertEquals(1, metrics.count('NewTabPage.Carts.CartCount', 3));
     });
   });
 
