@@ -207,7 +207,7 @@ suite('PaymentsSection', function() {
     assertEquals(
         creditCard.metadata!.summaryLabel,
         rowShadowRoot.querySelector<HTMLElement>(
-                         '#creditCardLabel')!.textContent);
+                         '#creditCardLabel')!.textContent!.trim());
     assertEquals(
         creditCard.expirationMonth + '/' + creditCard.expirationYear,
         rowShadowRoot.querySelector<HTMLElement>(

@@ -20,7 +20,9 @@
     </style>
     <div class="list-item">
       <div class="type-column">
-        <span id="creditCardLabel">[[creditCard.metadata.summaryLabel]]</span>
+        <span id="creditCardLabel" class="ellipses">
+          [[creditCard.metadata.summaryLabel]]
+        </span>
         <span id="virtualCardLabel"
             hidden$="[[!isVirtualCardEnrolled_(creditCard.metadata)]]">
           $i18n{virtualCardEnabled}
