@@ -8,7 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/prerender/prerender_utils.h"
 
 const base::Feature kSearchPrefetchServicePrefetching{
     "SearchPrefetchServicePrefetching", base::FEATURE_ENABLED_BY_DEFAULT};

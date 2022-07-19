@@ -15,7 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
-#include "chrome/browser/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"

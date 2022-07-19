@@ -1640,7 +1640,7 @@
     },
     'prerender': {
       'filepath': 'chrome/browser/chrome_content_browser_client_binder_policies' \
-                  '|chrome/browser/prerender/' \
+                  '|chrome/browser/preloading/prerender/' \
                   '|content/browser/mojo_binder_policy' \
                   '|content/browser/preloading/prerender/'
     },

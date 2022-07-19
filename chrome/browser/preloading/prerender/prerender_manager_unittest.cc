@@ -4,9 +4,9 @@
 
 #include <string>
 
-#include "chrome/browser/prerender/prerender_manager.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/render_frame_host.h"
