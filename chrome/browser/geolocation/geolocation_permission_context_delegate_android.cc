@@ -51,8 +51,9 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
             permissions::PermissionUtil::GetLastCommittedOriginAsURL(
                 rfh->GetMainFrame()),
             std::move(*callback), false /* persist */);
-    InstalledWebappBridge::DecidePermission(requesting_origin,
-                                            std::move(permission_callback));
+    InstalledWebappBridge::DecidePermission(
+        ContentSettingsType::GEOLOCATION, requesting_origin,
+        web_contents->GetLastCommittedURL(), std::move(permission_callback));
     return true;
   }
   return GeolocationPermissionContextDelegate::DecidePermission(

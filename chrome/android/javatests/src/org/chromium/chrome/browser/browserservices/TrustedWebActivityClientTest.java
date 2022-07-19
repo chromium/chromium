@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -216,16 +217,17 @@ public class TrustedWebActivityClientTest {
 
         CallbackHelper noTwaFound = new CallbackHelper();
 
-        TrustedWebActivityClient.PermissionCheckCallback callback =
-                new TrustedWebActivityClient.PermissionCheckCallback() {
-            @Override
-            public void onPermissionCheck(ComponentName answeringApp, boolean enabled) { }
+        TrustedWebActivityClient.PermissionCallback callback =
+                new TrustedWebActivityClient.PermissionCallback() {
+                    @Override
+                    public void onPermission(
+                            ComponentName app, @ContentSettingValues int settingValue) {}
 
-            @Override
-            public void onNoTwaFound() {
-                noTwaFound.notifyCalled();
-            }
-        };
+                    @Override
+                    public void onNoTwaFound() {
+                        noTwaFound.notifyCalled();
+                    }
+                };
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> mClient.checkNotificationPermission(scope, callback));

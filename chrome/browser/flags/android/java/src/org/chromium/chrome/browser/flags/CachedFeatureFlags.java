@@ -100,8 +100,6 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false)
                     .put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true)
                     .put(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false)
-                    .put(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION,
-                            true)
                     .put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false)
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .build();

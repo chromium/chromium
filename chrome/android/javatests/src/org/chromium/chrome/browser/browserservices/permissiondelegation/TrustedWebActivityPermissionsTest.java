@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -32,9 +33,9 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.UiDisableIf;
@@ -96,59 +97,59 @@ public class TrustedWebActivityPermissionsTest {
     @Test
     @MediumTest
     public void allowNotifications() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionManager.updatePermission(mOrigin, mPackage, NOTIFICATIONS, true));
+        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
+                                            NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
     }
 
     @Test
     @MediumTest
     public void blockNotifications() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionManager.updatePermission(mOrigin, mPackage, NOTIFICATIONS, false));
+        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
+                                            NOTIFICATIONS, ContentSettingValues.BLOCK));
         assertEquals("\"denied\"", getNotificationPermission());
     }
 
     @Test
     @MediumTest
     public void unregisterTwa() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionManager.updatePermission(mOrigin, mPackage, NOTIFICATIONS, true));
+        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
+                                            NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPermissionManager.unregister(mOrigin);
-        });
+        runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
         assertEquals("\"default\"", getNotificationPermission());
     }
 
     @Test
     @SmallTest
     public void detectTwa() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionManager.updatePermission(mOrigin, mPackage, NOTIFICATIONS, true));
+        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
+                                            NOTIFICATIONS, ContentSettingValues.ALLOW));
         assertTrue(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mPermissionManager.unregister(mOrigin); });
+        runOnUiThreadBlocking(() -> mPermissionManager.unregister(mOrigin));
         assertFalse(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
     }
 
     @Test
     @SmallTest
     public void allowGeolocation() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionManager.updatePermission(mOrigin, mPackage, GEOLOCATION, true));
-        assertTrue(WebappRegistry.getInstance().getPermissionStore().arePermissionEnabled(
-                GEOLOCATION, mOrigin));
+        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
+                                            GEOLOCATION, ContentSettingValues.ALLOW));
+        assertEquals(Integer.valueOf(ContentSettingValues.ALLOW),
+                WebappRegistry.getInstance().getPermissionStore().getPermission(
+                        GEOLOCATION, mOrigin));
     }
 
     @Test
     @SmallTest
     public void blockGeolocation() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionManager.updatePermission(mOrigin, mPackage, GEOLOCATION, false));
-        assertFalse(WebappRegistry.getInstance().getPermissionStore().arePermissionEnabled(
-                GEOLOCATION, mOrigin));
+        runOnUiThreadBlocking(() -> mPermissionManager.updatePermission(mOrigin, mPackage,
+                                            GEOLOCATION, ContentSettingValues.BLOCK));
+        assertEquals(Integer.valueOf(ContentSettingValues.BLOCK),
+                WebappRegistry.getInstance().getPermissionStore().getPermission(
+                        GEOLOCATION, mOrigin));
     }
 
     private String getNotificationPermission() throws TimeoutException {

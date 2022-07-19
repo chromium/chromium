@@ -187,7 +187,7 @@ public class NotificationPermissionUpdaterTest {
             callback.onPermission(
                     new ComponentName(packageName, "FakeClass"), mNotificationPermission);
             return true;
-        }).when(mTrustedWebActivityClient).checkNotificationPermissionSetting(eq(origin), any());
+        }).when(mTrustedWebActivityClient).checkNotificationPermission(eq(origin), any());
     }
 
     private void setNotificationPermission(@ContentSettingValues int permission) {
@@ -199,7 +199,7 @@ public class NotificationPermissionUpdaterTest {
             TrustedWebActivityClient.PermissionCallback callback = invocation.getArgument(1);
             callback.onNoTwaFound();
             return true;
-        }).when(mTrustedWebActivityClient).checkNotificationPermissionSetting(eq(origin), any());
+        }).when(mTrustedWebActivityClient).checkNotificationPermission(eq(origin), any());
     }
 
     private void verifyPermissionNotUpdated() {

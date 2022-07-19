@@ -88,25 +88,6 @@ public class TrustedWebActivityClient {
     private final TrustedWebActivityUmaRecorder mRecorder;
 
     /**
-     * Interface for callbacks to {@link #checkNotificationPermission} and {@link
-     * #checkLocationPermission}.
-     * TODO(crbug.com/1320272): Delete this interface once the new flow has shipped.
-     */
-    public interface PermissionCheckCallback {
-        /**
-         * May be called as a result of {@link #checkNotificationPermission} or {@link
-         * #checkLocationPermission}.
-         */
-        void onPermissionCheck(ComponentName answeringApp, boolean enabled);
-
-        /**
-         * Called when {@link #checkNotificationPermission} or {@link #checkLocationPermission}
-         * can't find a TWA to connect to.
-         */
-        default void onNoTwaFound() {}
-    }
-
-    /**
      * Interface for callbacks to get a permission setting from a TWA app.
      */
     public interface PermissionCallback {
@@ -165,39 +146,10 @@ public class TrustedWebActivityClient {
     }
 
     /**
-     * Checks whether the TWA of the given origin has the notification permission granted.
-     * @param callback Will be called with whether the permission is granted.
-     * @return {@code false} if no such TWA exists (in which case the callback will not be called).
-     *         Ensure that the app has been added to the {@link InstalledWebappPermissionManager}
-     *         before calling this.
-     * TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
-     */
-    public void checkNotificationPermission(Origin origin, PermissionCheckCallback callback) {
-        Resources res = ContextUtils.getApplicationContext().getResources();
-        String channelDisplayName = res.getString(R.string.notification_category_group_general);
-
-        connectAndExecute(
-                origin.uri(), new ExecutionCallback() {
-                    @Override
-                    public void onConnected(Origin originCopy, Connection service)
-                            throws RemoteException {
-                        callback.onPermissionCheck(service.getComponentName(),
-                                service.areNotificationsEnabled(channelDisplayName));
-                    }
-
-                    @Override
-                    public void onNoTwaFound() {
-                        callback.onNoTwaFound();
-                    }
-                });
-    }
-
-    /**
      * Gets the notification permission setting of the TWA for the given origin.
      * @param permissionCallback To be called with the permission setting.
      */
-    public void checkNotificationPermissionSetting(
-            Origin origin, PermissionCallback permissionCallback) {
+    public void checkNotificationPermission(Origin origin, PermissionCallback permissionCallback) {
         String channelName = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_category_group_general);
 
@@ -310,7 +262,7 @@ public class TrustedWebActivityClient {
      * Check location permission for the TWA of the given origin.
      * @param permissionCallback Will be called with whether the permission is granted.
      */
-    public void checkLocationPermission(Origin origin, PermissionCheckCallback permissionCallback) {
+    public void checkLocationPermission(Origin origin, PermissionCallback permissionCallback) {
         connectAndExecute(origin.uri(), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
@@ -325,8 +277,11 @@ public class TrustedWebActivityClient {
                                     && bundle != null) {
                                 granted = bundle.getBoolean(LOCATION_PERMISSION_RESULT);
                             }
-                            permissionCallback.onPermissionCheck(
-                                    service.getComponentName(), granted);
+                            @ContentSettingValues
+                            int settingValue = granted ? ContentSettingValues.ALLOW
+                                                       : ContentSettingValues.BLOCK;
+                            permissionCallback.onPermission(
+                                    service.getComponentName(), settingValue);
                         });
                     }
                 };
@@ -336,7 +291,8 @@ public class TrustedWebActivityClient {
                 // Set permission to false if the service does not know how to handle the
                 // extraCommand or did not handle the command.
                 if (executionResult == null || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
-                    permissionCallback.onPermissionCheck(service.getComponentName(), false);
+                    permissionCallback.onPermission(
+                            service.getComponentName(), ContentSettingValues.BLOCK);
                 }
             }
 
@@ -403,7 +359,7 @@ public class TrustedWebActivityClient {
             if (!service.areNotificationsEnabled(channelDisplayName)) {
                 mPermissionManager.updatePermission(origin,
                         service.getComponentName().getPackageName(),
-                        ContentSettingsType.NOTIFICATIONS, false);
+                        ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK);
 
                 // Attempting to notify when notifications are disabled won't have any effect, but
                 // returning here just saves us from doing unnecessary work.

@@ -93,17 +93,6 @@ public class InstalledWebappPermissionStore {
     }
 
     /**
-     * Whether permission of {@link ContentSettingsType} for the origin should be enabled due to
-     * delegation to an app. {@code null} if the origin is not linked to an app.
-     */
-    @Nullable
-    public Boolean arePermissionEnabled(@ContentSettingsType int type, Origin origin) {
-        String key = createPermissionKey(type, origin);
-        if (!mPreferences.contains(key)) return null;
-        return mPreferences.getBoolean(key, false);
-    }
-
-    /**
      * Retrieves the permission setting of {@link ContentSettingsType} for the origin due to
      * delegation to an app. Returns {@code null} if the origin is not linked to an app.
      */
@@ -111,14 +100,15 @@ public class InstalledWebappPermissionStore {
     public @ContentSettingValues Integer getPermission(
             @ContentSettingsType int type, Origin origin) {
         String key = createPermissionSettingKey(type, origin);
+
         if (!mPreferences.contains(key)) {
             // TODO(crbug.com/1323183): Clean up this fallback.
-            Boolean enabled = arePermissionEnabled(type, origin);
-            if (enabled == null) {
-                return null;
-            }
+            String fallbackKey = createPermissionKey(type, origin);
+            if (!mPreferences.contains(fallbackKey)) return null;
+            boolean enabled = mPreferences.getBoolean(fallbackKey, false);
             return enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
         }
+
         return mPreferences.getInt(key, ContentSettingValues.ASK);
     }
 
@@ -161,38 +151,6 @@ public class InstalledWebappPermissionStore {
             // data is not guaranteed if you do, nor is your ability to modify the instance at all.
             return new HashSet<>(mPreferences.getStringSet(KEY_ALL_ORIGINS, new HashSet<>()));
         }
-    }
-
-    /**
-     * Sets the permission state for the origin.
-     * Returns whether {@code true} if state was changed, {@code false} if the provided state was
-     * the same as the state beforehand.
-     * TODO(crbug.com/1320272): Delete this method when the new flow is complete.
-     */
-    boolean setStateForOrigin(Origin origin, String packageName, String appName,
-            @ContentSettingsType int type, boolean enabled) {
-        boolean modified = !getStoredOrigins().contains(origin.toString());
-
-        if (!modified) {
-            // Don't bother with these extra checks if we have a brand new origin.
-            boolean enabledChanged =
-                    enabled != mPreferences.getBoolean(createPermissionKey(type, origin), false);
-            boolean packageChanged =
-                    !packageName.equals(mPreferences.getString(createPackageNameKey(origin), null));
-            boolean appNameChanged =
-                    !appName.equals(mPreferences.getString(createAppNameKey(origin), null));
-            modified = enabledChanged || packageChanged || appNameChanged;
-        }
-
-        addOrigin(origin);
-
-        mPreferences.edit()
-                .putBoolean(createPermissionKey(type, origin), enabled)
-                .putString(createPackageNameKey(origin), packageName)
-                .putString(createAppNameKey(origin), appName)
-                .apply();
-
-        return modified;
     }
 
     /**
@@ -252,38 +210,12 @@ public class InstalledWebappPermissionStore {
                 .apply();
     }
 
-    /**
-     * Stores the notification state the origin had before the app was installed.
-     * TODO(crbug.com/1320272): Delete this method when the new flow is complete.
-     */
-    void setPreInstallNotificationState(Origin origin, boolean enabled) {
-        mPreferences.edit()
-                .putBoolean(createNotificationPreInstallPermissionKey(origin), enabled)
-                .apply();
-    }
-
     /** Stores the notification permission setting the origin had before the app was installed. */
-    void setPreInstallNotificationPermissionSetting(
+    void setPreInstallNotificationPermission(
             Origin origin, @ContentSettingValues int settingValue) {
         mPreferences.edit()
                 .putInt(createPreInstallNotificationPermissionSettingKey(origin), settingValue)
                 .apply();
-    }
-
-    /**
-     * Retrieves the notification state the origin had before the app was installed. {@code null} if
-     * no state is stored. If a value was stored, calling this method removes it.
-     */
-    @Nullable
-    Boolean getPreInstallNotificationState(Origin origin) {
-        String key = createNotificationPreInstallPermissionKey(origin);
-        if (!mPreferences.contains(key)) return null;
-
-        boolean enabled = mPreferences.getBoolean(key, false);
-
-        mPreferences.edit().remove(key).apply();
-
-        return enabled;
     }
 
     /**
@@ -295,12 +227,13 @@ public class InstalledWebappPermissionStore {
     @ContentSettingValues
     Integer getAndRemovePreInstallNotificationPermission(Origin origin) {
         String key = createPreInstallNotificationPermissionSettingKey(origin);
+
         if (!mPreferences.contains(key)) {
             // TODO(crbug.com/1323183): Clean up this fallback.
-            Boolean enabled = getPreInstallNotificationState(origin);
-            if (enabled == null) {
-                return null;
-            }
+            String fallbackKey = createNotificationPreInstallPermissionKey(origin);
+            if (!mPreferences.contains(fallbackKey)) return null;
+            boolean enabled = mPreferences.getBoolean(fallbackKey, false);
+            mPreferences.edit().remove(fallbackKey).apply();
             return enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
         }
 

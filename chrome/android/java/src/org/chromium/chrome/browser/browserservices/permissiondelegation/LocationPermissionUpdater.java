@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -56,13 +57,14 @@ public class LocationPermissionUpdater {
      */
     void checkPermission(Origin origin, long callback) {
         mTrustedWebActivityClient.checkLocationPermission(
-                origin, new TrustedWebActivityClient.PermissionCheckCallback() {
+                origin, new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
                     @Override
-                    public void onPermissionCheck(ComponentName answeringApp, boolean enabled) {
+                    public void onPermission(
+                            ComponentName app, @ContentSettingValues int settingValue) {
                         if (mCalled) return;
                         mCalled = true;
-                        updatePermission(origin, callback, answeringApp, enabled);
+                        updatePermission(origin, callback, app, settingValue);
                     }
 
                     @Override
@@ -70,17 +72,19 @@ public class LocationPermissionUpdater {
                         if (mCalled) return;
                         mCalled = true;
                         mPermissionManager.resetStoredPermission(origin, TYPE);
-                        InstalledWebappBridge.onGetPermissionResult(callback, false);
+                        InstalledWebappBridge.runPermissionCallback(
+                                callback, ContentSettingValues.BLOCK);
                     }
                 });
     }
 
-    private void updatePermission(
-            Origin origin, long callback, ComponentName app, boolean enabled) {
-        mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
+    private void updatePermission(Origin origin, long callback, ComponentName app,
+            @ContentSettingValues int settingValue) {
+        boolean enabled = settingValue == ContentSettingValues.ALLOW;
+        mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
         mUmaRecorder.recordLocationPermissionRequestResult(enabled);
         Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
-        InstalledWebappBridge.onGetPermissionResult(callback, enabled);
+        InstalledWebappBridge.runPermissionCallback(callback, settingValue);
     }
 }

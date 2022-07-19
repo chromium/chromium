@@ -9,6 +9,7 @@ import android.os.Build;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
@@ -63,20 +64,26 @@ public class NotificationChannelPreserver {
 
         assert status == NotificationChannelStatus.ENABLED ||
                 status == NotificationChannelStatus.BLOCKED;
-        mStore.setPreInstallNotificationState(origin, status == NotificationChannelStatus.ENABLED);
+
+        @ContentSettingValues
+        int settingValue = status == NotificationChannelStatus.ENABLED ? ContentSettingValues.ALLOW
+                                                                       : ContentSettingValues.BLOCK;
+        mStore.setPreInstallNotificationPermission(origin, settingValue);
         mSiteChannelsManager.deleteSiteChannel(channelId);
     }
 
     void restoreChannel(Origin origin) {
         if (beforeAndroidO()) return;
 
-        Boolean enabled = mStore.getPreInstallNotificationState(origin);
+        @ContentSettingValues
+        Integer settingValue = mStore.getAndRemovePreInstallNotificationPermission(origin);
 
-        if (enabled == null) {
-            // If no previous channel status was stored, a channel didn't previously exist.
+        if (settingValue == null) {
+            // If no previous value was stored, a channel didn't previously exist.
             return;
         }
 
+        boolean enabled = settingValue == ContentSettingValues.ALLOW;
         mSiteChannelsManager.createSiteChannel(
                 origin.toString(), System.currentTimeMillis(), enabled);
     }

@@ -8261,16 +8261,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpcomingSharingFeaturesDescription, kOsAll,
      FEATURE_VALUE_TYPE(share::kUpcomingSharingFeatures)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"trusted-web-activity-notification-permission-delegation",
-     flag_descriptions::kTrustedWebActivityNotificationPermissionDelegationName,
-     flag_descriptions::
-         kTrustedWebActivityNotificationPermissionDelegationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kTrustedWebActivityNotificationPermissionDelegation)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if defined(TOOLKIT_VIEWS)
     {"side-search", flag_descriptions::kSideSearchName,
      flag_descriptions::kSideSearchDescription, kOsDesktop,

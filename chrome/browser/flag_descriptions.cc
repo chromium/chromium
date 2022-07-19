@@ -3824,12 +3824,6 @@ const char kTranslateMessageUIDescription[] =
     "Controls whether the Translate Message UI will be shown instead of the "
     "Translate InfoBar.";
 
-const char kTrustedWebActivityNotificationPermissionDelegationName[] =
-    "TWA notification permission delegation";
-const char kTrustedWebActivityNotificationPermissionDelegationDescription[] =
-    "When enabled, notification permission requests for Trusted Web Activities "
-    "will be delegated to the app.";
-
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "

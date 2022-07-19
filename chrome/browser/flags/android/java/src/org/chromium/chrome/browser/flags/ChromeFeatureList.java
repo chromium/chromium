@@ -550,8 +550,6 @@ public abstract class ChromeFeatureList {
     public static final String TRANSLATE_ASSIST_CONTENT = "TranslateAssistContent";
     public static final String TRANSLATE_INTENT = "TranslateIntent";
     public static final String TRANSLATE_TFLITE = "TFLiteLanguageDetectionEnabled";
-    public static final String TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION =
-            "TrustedWebActivityNotificationPermissionDelegation";
     public static final String TRUSTED_WEB_ACTIVITY_POST_MESSAGE = "TrustedWebActivityPostMessage";
     public static final String TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT =
             "TrustedWebActivityQualityEnforcement";
@@ -678,8 +676,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTestDefaultEnabled = new CachedFlag(TEST_DEFAULT_ENABLED, true);
     public static final CachedFlag sToolbarUseHardwareBitmapDraw =
             new CachedFlag(TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false);
-    public static final CachedFlag sTrustedWebActivityNotificationPermissionDelegation =
-            new CachedFlag(TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION, true);
     public static final CachedFlag sUseChimeAndroidSdk =
             new CachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sWebApkTrampolineOnInitialIntent =

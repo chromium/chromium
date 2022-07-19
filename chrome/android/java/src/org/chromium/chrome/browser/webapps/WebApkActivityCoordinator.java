@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.Permissi
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.components.embedder_support.util.Origin;
@@ -64,18 +63,16 @@ public class WebApkActivityCoordinator implements DestroyObserver {
 
         mWebApkUpdateManager.get().updateIfNeeded(storage, mIntentDataProvider);
 
+        if (!BuildInfo.isAtLeastT()) {
+            return;
+        }
+
         // The scope should not be empty here, this is for a WebAPK that just launched.
         String scope = storage.getScope();
         assert !scope.isEmpty();
 
         Origin origin = Origin.create(scope);
         String packageName = storage.getWebApkPackageName();
-
-        if (!BuildInfo.isAtLeastT()
-                || !ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation
-                            .isEnabled()) {
-            return;
-        }
 
         mInstalledWebappRegistrar.registerClient(packageName, origin);
         PermissionUpdater.get().onWebApkLaunch(origin, packageName);

@@ -9,7 +9,6 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -98,22 +97,22 @@ public class InstalledWebappPermissionManagerTest {
     @Feature("TrustedWebActivities")
     public void locationPermissionAllowed_whenClientAllowed() {
         setClientLocationPermission(true);
-        setStoredLocationPermission(false);
+        setStoredLocationPermission(ContentSettingValues.BLOCK);
 
         assertEquals(ContentSettingValues.ALLOW,
                 mPermissionManager.getPermission(ContentSettingsType.GEOLOCATION, ORIGIN));
-        verifyLocationPermissionUpdated(true);
+        verifyLocationPermissionUpdated(ContentSettingValues.ALLOW);
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void locationPermissionBlocked_whenClientBlocked() {
         setClientLocationPermission(false);
-        setStoredLocationPermission(true);
+        setStoredLocationPermission(ContentSettingValues.ALLOW);
 
         assertEquals(ContentSettingValues.BLOCK,
                 mPermissionManager.getPermission(ContentSettingsType.GEOLOCATION, ORIGIN));
-        verifyLocationPermissionUpdated(false);
+        verifyLocationPermissionUpdated(ContentSettingValues.BLOCK);
     }
 
     @Test
@@ -139,13 +138,13 @@ public class InstalledWebappPermissionManagerTest {
                 mPermissionManager.getPermission(ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
 
-        setStoredLocationPermission(true);
+        setStoredLocationPermission(ContentSettingValues.ALLOW);
         setClientLocationPermission(false);
         assertEquals(ContentSettingValues.ASK,
                 mPermissionManager.getPermission(ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
 
-        setStoredLocationPermission(false);
+        setStoredLocationPermission(ContentSettingValues.BLOCK);
         setClientLocationPermission(false);
         assertEquals(ContentSettingValues.ASK,
                 mPermissionManager.getPermission(ContentSettingsType.GEOLOCATION, ORIGIN));
@@ -201,18 +200,18 @@ public class InstalledWebappPermissionManagerTest {
         mShadowPackageManager.installPackage(packageInfo);
     }
 
-    private void setStoredLocationPermission(Boolean enabled) {
-        when(mStore.arePermissionEnabled(eq(ContentSettingsType.GEOLOCATION), eq(ORIGIN)))
-                .thenReturn(enabled);
+    private void setStoredLocationPermission(@ContentSettingValues Integer settingValue) {
+        when(mStore.getPermission(eq(ContentSettingsType.GEOLOCATION), eq(ORIGIN)))
+                .thenReturn(settingValue);
     }
 
     private void verifyPermissionNotUpdated() {
         verify(mStore, never())
-                .setStateForOrigin(any(), anyString(), anyString(), anyInt(), anyBoolean());
+                .setStateForOrigin(any(), anyString(), anyString(), anyInt(), anyInt());
     }
 
-    private void verifyLocationPermissionUpdated(boolean enabled) {
+    private void verifyLocationPermissionUpdated(@ContentSettingValues int settingValue) {
         verify(mStore).setStateForOrigin(eq(ORIGIN), eq(PACKAGE_NAME), anyString(),
-                eq(ContentSettingsType.GEOLOCATION), eq(enabled));
+                eq(ContentSettingsType.GEOLOCATION), eq(settingValue));
     }
 }

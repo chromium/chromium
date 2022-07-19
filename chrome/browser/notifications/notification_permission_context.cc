@@ -180,9 +180,6 @@ void NotificationPermissionContext::DecidePermission(
           requesting_origin);
   bool contains_installed_webapp = contains_twa || contains_webapk;
   if (base::android::BuildInfo::GetInstance()->is_at_least_t() &&
-      chrome::android::IsJavaDrivenFeatureEnabled(
-          chrome::android::
-              kTrustedWebActivityNotificationPermissionDelegation) &&
       contains_installed_webapp) {
     // WebAPKs match URLs using a scope URL which may contain a path. An origin
     // has no path and would not fall within such a scope. So to find a matching

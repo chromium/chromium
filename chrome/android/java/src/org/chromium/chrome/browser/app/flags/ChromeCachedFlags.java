@@ -116,7 +116,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sTabStripImprovements);
                 add(ChromeFeatureList.sTabToGTSAnimation);
                 add(ChromeFeatureList.sToolbarUseHardwareBitmapDraw);
-                add(ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation);
                 add(ChromeFeatureList.sUseChimeAndroidSdk);
                 add(ChromeFeatureList.sWebApkTrampolineOnInitialIntent);
             }

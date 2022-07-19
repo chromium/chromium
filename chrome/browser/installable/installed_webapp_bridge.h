@@ -26,9 +26,6 @@ class InstalledWebappBridge {
 
   static void SetProviderInstance(InstalledWebappProvider* provider);
 
-  static void DecidePermission(const GURL& origin_url,
-                               PermissionCallback callback);
-
   static void DecidePermission(ContentSettingsType type,
                                const GURL& origin_url,
                                const GURL& last_committed_url,
