@@ -4165,10 +4165,6 @@
         'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
         'timeout_sec': 10800,
       },
-      'lacros_variations_tast_tests': {
-        'tast_expr': '("name:lacros.VariationSmoke")',
-        'timeout_sec': 10800,
-      },
       'ozone_unittests': {
         'timeout_sec': 3600,
       },
