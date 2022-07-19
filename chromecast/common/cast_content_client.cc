@@ -184,7 +184,7 @@ void CastContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {
 #if !BUILDFLAG(IS_FUCHSIA)
-  binders->Add(
+  binders->Add<heap_profiling::mojom::ProfilingClient>(
       base::BindRepeating(
           [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
                  receiver) {

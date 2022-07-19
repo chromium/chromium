@@ -427,9 +427,10 @@ mojom::blink::FileSystemManager& ModulesInitializer::GetFileSystemManager(
 
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   DCHECK(Platform::Current());
-  binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&WebDatabaseImpl::Bind)),
-              Platform::Current()->GetIOTaskRunner());
+  binders.Add<mojom::blink::WebDatabase>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&WebDatabaseImpl::Bind)),
+      Platform::Current()->GetIOTaskRunner());
 }
 
 }  // namespace blink

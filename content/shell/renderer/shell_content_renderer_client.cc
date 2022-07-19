@@ -133,14 +133,16 @@ void ShellContentRendererClient::RenderThreadStarted() {
 
 void ShellContentRendererClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
-  binders->Add(base::BindRepeating(&CreateRendererTestService),
-               base::ThreadTaskRunnerHandle::Get());
-  binders->Add(
+  binders->Add<mojom::TestService>(
+      base::BindRepeating(&CreateRendererTestService),
+      base::ThreadTaskRunnerHandle::Get());
+  binders->Add<mojom::PowerMonitorTest>(
       base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
       base::ThreadTaskRunnerHandle::Get());
-  binders->Add(base::BindRepeating(&web_cache::WebCacheImpl::BindReceiver,
-                                   base::Unretained(web_cache_impl_.get())),
-               base::ThreadTaskRunnerHandle::Get());
+  binders->Add<web_cache::mojom::WebCache>(
+      base::BindRepeating(&web_cache::WebCacheImpl::BindReceiver,
+                          base::Unretained(web_cache_impl_.get())),
+      base::ThreadTaskRunnerHandle::Get());
 }
 
 void ShellContentRendererClient::RenderFrameCreated(RenderFrame* render_frame) {

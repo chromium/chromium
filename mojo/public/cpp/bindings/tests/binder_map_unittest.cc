@@ -77,9 +77,10 @@ TEST_F(BinderMapTest, BasicMatch) {
 
   TestInterface1Impl impl;
   BinderMap map;
-  map.Add(base::BindRepeating(&TestInterface1Impl::Bind,
-                              base::Unretained(&impl), nullptr),
-          base::SequencedTaskRunnerHandle::Get());
+  map.Add<mojom::TestInterface1>(
+      base::BindRepeating(&TestInterface1Impl::Bind, base::Unretained(&impl),
+                          nullptr),
+      base::SequencedTaskRunnerHandle::Get());
   EXPECT_TRUE(map.TryBind(&receiver));
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -92,7 +93,7 @@ TEST_F(BinderMapTest, WithContext) {
   int context = 42;
   TestInterface1Impl impl;
   BinderMapWithContext<int*> map;
-  map.Add(base::BindRepeating(
+  map.Add<mojom::TestInterface1>(base::BindRepeating(
       [](TestInterface1Impl* impl, int* expected_context, int* context,
          mojo::PendingReceiver<mojom::TestInterface1> receiver) {
         EXPECT_EQ(context, expected_context);
@@ -126,12 +127,14 @@ TEST_F(BinderMapTest, CorrectSequence) {
   create_impl2_loop.Run();
 
   BinderMap map;
-  map.Add(base::BindRepeating(&TestInterface1Impl::Bind,
-                              base::Unretained(&impl1), task_runner1),
-          task_runner1);
-  map.Add(base::BindRepeating(&TestInterface2Impl::Bind,
-                              base::Unretained(impl2.get()), task_runner2),
-          task_runner2);
+  map.Add<mojom::TestInterface1>(
+      base::BindRepeating(&TestInterface1Impl::Bind, base::Unretained(&impl1),
+                          task_runner1),
+      task_runner1);
+  map.Add<mojom::TestInterface2>(
+      base::BindRepeating(&TestInterface2Impl::Bind,
+                          base::Unretained(impl2.get()), task_runner2),
+      task_runner2);
   EXPECT_TRUE(map.TryBind(&receiver1));
   EXPECT_TRUE(map.TryBind(&receiver2));
   remote1.FlushForTesting();

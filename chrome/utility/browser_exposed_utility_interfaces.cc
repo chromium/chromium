@@ -15,7 +15,8 @@
 
 void ExposeElevatedChromeUtilityInterfacesToBrowser(mojo::BinderMap* binders) {
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN)
-  binders->Add(base::BindRepeating(printing::PdfToEmfConverterFactory::Create),
-               base::ThreadTaskRunnerHandle::Get());
+  binders->Add<printing::mojom::PdfToEmfConverterFactory>(
+      base::BindRepeating(printing::PdfToEmfConverterFactory::Create),
+      base::ThreadTaskRunnerHandle::Get());
 #endif
 }

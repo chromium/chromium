@@ -73,8 +73,9 @@ void ExposeUtilityInterfacesToBrowser(mojo::BinderMap* binders) {
   }
 #endif  // BUILDFLAG(IS_WIN)
   if (bind_usage_reporter) {
-    binders->Add(base::BindRepeating(&CreateResourceUsageReporter),
-                 base::ThreadTaskRunnerHandle::Get());
+    binders->Add<mojom::ResourceUsageReporter>(
+        base::BindRepeating(&CreateResourceUsageReporter),
+        base::ThreadTaskRunnerHandle::Get());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

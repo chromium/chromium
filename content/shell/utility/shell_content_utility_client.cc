@@ -137,8 +137,9 @@ ShellContentUtilityClient::~ShellContentUtilityClient() = default;
 
 void ShellContentUtilityClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
-  binders->Add(base::BindRepeating(&TestUtilityServiceImpl::Create),
-               base::ThreadTaskRunnerHandle::Get());
+  binders->Add<mojom::TestService>(
+      base::BindRepeating(&TestUtilityServiceImpl::Create),
+      base::ThreadTaskRunnerHandle::Get());
   binders->Add<mojom::PowerMonitorTest>(
       base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
       base::ThreadTaskRunnerHandle::Get());

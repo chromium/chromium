@@ -13,8 +13,9 @@ namespace android_webview {
 
 void ExposeRendererInterfacesToBrowser(AwContentRendererClient* client,
                                        mojo::BinderMap* binders) {
-  binders->Add(client->visited_link_reader()->GetBindCallback(),
-               base::ThreadTaskRunnerHandle::Get());
+  binders->Add<visitedlink::mojom::VisitedLinkNotificationSink>(
+      client->visited_link_reader()->GetBindCallback(),
+      base::ThreadTaskRunnerHandle::Get());
 }
 
 }  // namespace android_webview

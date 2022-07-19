@@ -55,22 +55,24 @@ void BindSpellChecker(
 void ExposeChromeRendererInterfacesToBrowser(
     ChromeContentRendererClient* client,
     mojo::BinderMap* binders) {
-  binders->Add(
+  binders->Add<visitedlink::mojom::VisitedLinkNotificationSink>(
       client->GetChromeObserver()->visited_link_reader()->GetBindCallback(),
       base::SequencedTaskRunnerHandle::Get());
 
-  binders->Add(base::BindRepeating(&web_cache::WebCacheImpl::BindReceiver,
-                                   base::Unretained(client->GetWebCache())),
-               base::SequencedTaskRunnerHandle::Get());
+  binders->Add<web_cache::mojom::WebCache>(
+      base::BindRepeating(&web_cache::WebCacheImpl::BindReceiver,
+                          base::Unretained(client->GetWebCache())),
+      base::SequencedTaskRunnerHandle::Get());
 
-  binders->Add(base::BindRepeating(&BindWebRTCLoggingAgent, client),
-               base::SequencedTaskRunnerHandle::Get());
+  binders->Add<chrome::mojom::WebRtcLoggingAgent>(
+      base::BindRepeating(&BindWebRTCLoggingAgent, client),
+      base::SequencedTaskRunnerHandle::Get());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
   if (performance_manager::mechanism::UserspaceSwapImpl::
           PlatformSupportsUserspaceSwap()) {
-    binders->Add(
+    binders->Add<userspace_swap::mojom::UserspaceSwap>(
         base::BindRepeating(
             &performance_manager::mechanism::UserspaceSwapImpl::Create),
         base::SequencedTaskRunnerHandle::Get());
@@ -80,12 +82,14 @@ void ExposeChromeRendererInterfacesToBrowser(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
-  binders->Add(base::BindRepeating(&BindSpellChecker, client),
-               base::SequencedTaskRunnerHandle::Get());
+  binders->Add<spellcheck::mojom::SpellChecker>(
+      base::BindRepeating(&BindSpellChecker, client),
+      base::SequencedTaskRunnerHandle::Get());
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  binders->Add(base::BindRepeating(&FontPrewarmer::Bind),
-               base::SequencedTaskRunnerHandle::Get());
+  binders->Add<chrome::mojom::FontPrewarmer>(
+      base::BindRepeating(&FontPrewarmer::Bind),
+      base::SequencedTaskRunnerHandle::Get());
 #endif
 }

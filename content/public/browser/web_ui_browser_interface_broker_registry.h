@@ -30,7 +30,7 @@ class InterfaceRegistrationHelper {
     // binder_map.
     binder_initializers_->push_back(
         base::BindRepeating([](WebUIBinderMap* binder_map) {
-          binder_map->Add(base::BindRepeating(
+          binder_map->Add<Interface>(base::BindRepeating(
               [](WebUIController* controller,
                  mojo::PendingReceiver<Interface> receiver) {
                 auto* concrete_controller = controller->GetAs<ControllerType>();

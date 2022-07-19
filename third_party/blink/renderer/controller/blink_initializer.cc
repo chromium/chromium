@@ -240,32 +240,38 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&OomInterventionImpl::BindReceiver)),
-              main_thread->GetTaskRunner());
+  binders.Add<mojom::blink::OomIntervention>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&OomInterventionImpl::BindReceiver)),
+      main_thread->GetTaskRunner());
 
-  binders.Add(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  &CrashMemoryMetricsReporterImpl::Bind)),
-              main_thread->GetTaskRunner());
+  binders.Add<mojom::blink::CrashMemoryMetricsReporter>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&CrashMemoryMetricsReporterImpl::Bind)),
+      main_thread->GetTaskRunner());
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&MemoryUsageMonitorPosix::Bind)),
-              main_thread->GetTaskRunner());
+  binders.Add<mojom::blink::MemoryUsageMonitorLinux>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&MemoryUsageMonitorPosix::Bind)),
+      main_thread->GetTaskRunner());
 #endif
 
-  binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&BlinkLeakDetector::Bind)),
-              main_thread->GetTaskRunner());
+  binders.Add<mojom::blink::LeakDetector>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&BlinkLeakDetector::Bind)),
+      main_thread->GetTaskRunner());
 
-  binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&DiskDataAllocator::Bind)),
-              main_thread->GetTaskRunner());
+  binders.Add<mojom::blink::DiskAllocator>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&DiskDataAllocator::Bind)),
+      main_thread->GetTaskRunner());
 
-  binders.Add(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  &V8DetailedMemoryReporterImpl::Bind)),
-              main_thread->GetTaskRunner());
+  binders.Add<mojom::blink::V8DetailedMemoryReporter>(
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&V8DetailedMemoryReporterImpl::Bind)),
+      main_thread->GetTaskRunner());
 }
 
 void BlinkInitializer::InitLocalFrame(LocalFrame& frame) const {

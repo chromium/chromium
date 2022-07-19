@@ -163,12 +163,14 @@ void ExposeRendererInterfacesToBrowser(
     mojo::BinderMap* binders) {
   DCHECK(render_thread);
 
-  binders->Add(base::BindRepeating(&SharedWorkerFactoryImpl::Create),
-               base::ThreadTaskRunnerHandle::Get());
-  binders->Add(base::BindRepeating(&CreateResourceUsageReporter, render_thread),
-               base::ThreadTaskRunnerHandle::Get());
+  binders->Add<blink::mojom::SharedWorkerFactory>(
+      base::BindRepeating(&SharedWorkerFactoryImpl::Create),
+      base::ThreadTaskRunnerHandle::Get());
+  binders->Add<mojom::ResourceUsageReporter>(
+      base::BindRepeating(&CreateResourceUsageReporter, render_thread),
+      base::ThreadTaskRunnerHandle::Get());
 #if BUILDFLAG(IS_ANDROID)
-  binders->Add(
+  binders->Add<auction_worklet::mojom::AuctionWorkletService>(
       base::BindRepeating(
           &auction_worklet::AuctionWorkletServiceImpl::CreateForRenderer),
       base::ThreadTaskRunnerHandle::Get());
@@ -182,10 +184,11 @@ void ExposeRendererInterfacesToBrowser(
   // instead of the main thread, so startup isn't blocked on the main thread.
   // Currently it's on the main thread as CreateEmbeddedWorker accesses
   // `cors_exempt_header_list` from `render_thread`.
-  binders->Add(base::BindRepeating(&CreateEmbeddedWorker,
-                                   task_runner_for_service_worker_startup,
-                                   render_thread),
-               base::ThreadTaskRunnerHandle::Get());
+  binders->Add<blink::mojom::EmbeddedWorkerInstanceClient>(
+      base::BindRepeating(&CreateEmbeddedWorker,
+                          task_runner_for_service_worker_startup,
+                          render_thread),
+      base::ThreadTaskRunnerHandle::Get());
 
   GetContentClient()->renderer()->ExposeInterfacesToBrowser(binders);
 }

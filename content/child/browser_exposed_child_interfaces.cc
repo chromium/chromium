@@ -18,9 +18,10 @@ namespace content {
 void ExposeChildInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {
-  binders->Add(base::BindRepeating(&ChildHistogramFetcherFactoryImpl::Create),
-               io_task_runner);
-  binders->Add(
+  binders->Add<mojom::ChildHistogramFetcherFactory>(
+      base::BindRepeating(&ChildHistogramFetcherFactoryImpl::Create),
+      io_task_runner);
+  binders->Add<tracing::mojom::TracedProcess>(
       base::BindRepeating(&tracing::TracedProcess::OnTracedProcessRequest),
       base::SequencedTaskRunnerHandle::Get());
 
