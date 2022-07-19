@@ -11,11 +11,14 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
@@ -156,14 +159,23 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   }
 
   // Show follow in-product help (IPH) if eligible.
-  const bool channel_recommended =
-      ios::GetChromeBrowserProvider().GetFollowProvider()->GetRecommendedStatus(
-          web_page_urls);
 
   // Do not show follow IPH if:
   // 1. The site is not recommended;
   // 2. The IPH was shown too recently.
-  if (!channel_recommended || !IsFollowIPHShownFrequencyEligible())
+  if (!ios::GetChromeBrowserProvider()
+           .GetFollowProvider()
+           ->GetRecommendedStatus(web_page_urls) ||
+      !IsFollowIPHShownFrequencyEligible())
+    return;
+
+  feature_engagement::Tracker* feature_engagement_tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
+  // Do not show follow IPH if the feature engagement conditions are
+  // not fulfilled. Ex. Don not show more than 5 Follow IPHs per week.
+  if (!feature_engagement_tracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHFollowWhileBrowsingFeature))
     return;
 
   // Check if the site has enough visit count.
