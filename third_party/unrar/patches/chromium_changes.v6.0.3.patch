@@ -221,7 +221,7 @@ index abcd3c3385c5d..2c264b1070401 100644
 \ No newline at end of file
 +#endif
 diff --git a/third_party/unrar/src/extract.hpp b/third_party/unrar/src/extract.hpp
-index 159759b563f5f..9a659591d4f35 100644
+index 159759b563f5f..d38ff8658ecdd 100644
 --- a/third_party/unrar/src/extract.hpp
 +++ b/third_party/unrar/src/extract.hpp
 @@ -37,8 +37,8 @@ class CmdExtract
@@ -235,13 +235,14 @@ index 159759b563f5f..9a659591d4f35 100644
  
      // If any non-zero solid file was successfully unpacked before current.
      // If true and if current encrypted file is broken, obviously
-@@ -62,6 +62,10 @@ class CmdExtract
+@@ -62,6 +62,11 @@ class CmdExtract
      void ExtractArchiveInit(Archive &Arc);
      bool ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat);
      static void UnstoreFile(ComprDataIO &DataIO,int64 DestUnpSize);
 +
 +#if defined(CHROMIUM_UNRAR)
 +    int64 GetCurrentFileSize() { return DataIO.CurUnpWrite; }
++    bool IsMissingNextVolume() { return DataIO.NextVolumeMissing; }
 +#endif
  };
  

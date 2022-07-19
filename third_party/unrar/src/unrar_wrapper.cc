@@ -65,7 +65,24 @@ bool RarReader::ExtractNextEntry() {
       current_entry_.is_directory = archive_->FileHead.Dir;
       current_entry_.is_encrypted = archive_->FileHead.Encrypted;
       current_entry_.file_size = extractor_->GetCurrentFileSize();
-      return true;
+
+      if (success) {
+        return true;
+      }
+
+      if (archive_->FileHead.Encrypted) {
+        // Since Chromium doesn't have the password, manually skip over the
+        // encrypted data and fill in the metadata we do have.
+        archive_->SeekToNext();
+        return true;
+      }
+
+      if (extractor_->IsMissingNextVolume()) {
+        // Since Chromium doesn't have the next volume, manually skip over this
+        // file, but report the metadata we do have.
+        archive_->SeekToNext();
+        return true;
+      }
     }
   }
 

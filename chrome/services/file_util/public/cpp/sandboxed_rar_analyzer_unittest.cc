@@ -197,10 +197,31 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPassword) {
 
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
-  EXPECT_EQ(results.archived_binary.size(), 1);
+  ASSERT_EQ(results.archived_binary.size(), 1);
   EXPECT_EQ(results.archived_binary[0].file_basename(), "file1.txt");
   EXPECT_FALSE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+}
+
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPasswordMultipleFiles) {
+  // Can list files inside an archive that has password protected data.
+  // passwd_two_fiels.rar contains 2 files: file1.txt and file2.txt
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd_two_files.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_FALSE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 2);
+  EXPECT_EQ(results.archived_binary[0].file_basename(), "file1.txt");
+  EXPECT_FALSE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_EQ(results.archived_binary[1].file_basename(), "file2.txt");
+  EXPECT_FALSE(results.archived_binary[1].is_executable());
+  EXPECT_FALSE(results.archived_binary[1].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
@@ -324,6 +345,22 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeMultipartRarContainingExecutable) {
   ASSERT_TRUE(results.success);
   ASSERT_TRUE(results.has_executable);
   EXPECT_EQ(1, results.archived_binary.size());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+}
+
+TEST_F(SandboxedRarAnalyzerTest,
+       AnalyzeMultipartRarContainingMultipleExecutables) {
+  base::FilePath path;
+  // Contains one part of two different exe files.
+  ASSERT_NO_FATAL_FAILURE(
+      path = GetFilePath("multipart_multiple_file.part0002.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  ASSERT_TRUE(results.success);
+  ASSERT_TRUE(results.has_executable);
+  EXPECT_EQ(2, results.archived_binary.size());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
