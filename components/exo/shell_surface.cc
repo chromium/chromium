@@ -420,6 +420,14 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
   }
 }
 
+void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
+  ShellSurfaceBase::OnWindowAddedToRootWindow(window);
+  if (window != widget_->GetNativeWindow())
+    return;
+  if (!origin_change_callback_.is_null())
+    origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ash::WindowStateObserver overrides:
 

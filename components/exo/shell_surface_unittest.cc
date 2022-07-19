@@ -1732,6 +1732,28 @@ TEST_F(ShellSurfaceTest, ServerStartResize) {
             size.width() + kDragAmount);
 }
 
+// Make sure that dragging to another display will update the origin to
+// correct value.
+TEST_F(ShellSurfaceTest, UpdateBoundsWhenDraggedToAnotherDisplay) {
+  UpdateDisplay("800x600, 800x600");
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  shell_surface->SetWindowBounds({0, 0, 64, 64});
+
+  gfx::Point last_origin;
+  auto origin_change = [&](const gfx::Point& p) { last_origin = p; };
+
+  shell_surface->set_origin_change_callback(
+      base::BindLambdaForTesting(origin_change));
+  event_generator->MoveMouseTo(1, 1);
+  event_generator->PressLeftButton();
+  shell_surface->StartMove();
+  event_generator->MoveMouseTo(801, 1);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(last_origin, gfx::Point(800, 0));
+}
+
 // Make sure that resize shadow does not update until commit when the window
 // property |aura::client::kUseWindowBoundsForShadow| is false.
 TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {

@@ -310,8 +310,10 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel) {
           toplevel->ClearProperty(ash::kIsDraggingTabsKey);
           toplevel->ClearProperty(ash::kTabDraggingSourceWindowKey);
         }
-        if (extended_drag_source)
+        if (extended_drag_source) {
           extended_drag_source->dragged_window_holder_.reset();
+          extended_drag_source->event_blocker_.reset();
+        }
       },
       base::Unretained(toplevel), weak_factory_.GetWeakPtr());
 

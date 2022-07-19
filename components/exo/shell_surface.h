@@ -119,6 +119,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
 
   // Overridden from ash::WindowStateObserver:
   void OnPreWindowStateTypeChange(ash::WindowState* window_state,

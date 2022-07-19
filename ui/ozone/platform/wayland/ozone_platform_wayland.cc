@@ -20,6 +20,7 @@
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
@@ -281,13 +282,14 @@ class OzonePlatformWayland : public OzonePlatform,
       properties->set_parent_for_non_top_level_windows = true;
       properties->app_modal_dialogs_use_event_blocker = true;
 
-      // By design, clients are disallowed to manipulate global screen
-      // coordinates, instead only surface-local ones are supported.
+      // Xdg/Wl shell protocol does not disallow clients to manipulate global
+      // screen coordinates, instead only surface-local ones are supported.
       // Non-toplevel surfaces, for example, must be positioned relative to
       // their parents. As for toplevel surfaces, clients simply don't know
       // their position on screens and always assume they are located at some
       // arbitrary position.
-      properties->supports_global_screen_coordinates = false;
+      properties->supports_global_screen_coordinates =
+          features::IsWaylandScreenCoordinatesEnabled();
 
       initialised = true;
     }
