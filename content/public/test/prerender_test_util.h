@@ -78,6 +78,20 @@ class PrerenderHostObserver {
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
 };
 
+// Enables appropriate features for Prerender2.
+// This also disables the memory requirement of Prerender2 on Android so that
+// test can run on any bot.
+class ScopedPrerenderFeatureList {
+ public:
+  ScopedPrerenderFeatureList();
+  ScopedPrerenderFeatureList(const ScopedPrerenderFeatureList&) = delete;
+  ScopedPrerenderFeatureList& operator=(const ScopedPrerenderFeatureList&) =
+      delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Browser tests can use this class to more conveniently leverage prerendering.
 class PrerenderTestHelper {
  public:
@@ -172,7 +186,7 @@ class PrerenderTestHelper {
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
   std::map<std::string, net::test_server::HttpRequest::HeaderMap>
       request_headers_by_path_ GUARDED_BY(lock_);
-  base::test::ScopedFeatureList feature_list_;
+  ScopedPrerenderFeatureList feature_list_;
   base::OnceClosure monitor_callback_ GUARDED_BY(lock_);
   base::Lock lock_;
   WebContents::Getter get_web_contents_fn_;

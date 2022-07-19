@@ -2163,22 +2163,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
 
 class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
  public:
-  ContentScriptApiPrerenderingTest()
-      : prerender_helper_(base::BindRepeating(
-            &ContentScriptApiPrerenderingTest::GetWebContents,
-            base::Unretained(this))) {}
-  ~ContentScriptApiPrerenderingTest() override = default;
+  ContentScriptApiPrerenderingTest() = default;
 
  private:
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-  void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
-    ContentScriptApiTest::SetUp();
-  }
-
-  content::test::PrerenderTestHelper prerender_helper_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 // TODO(crbug.com/1344548): Re-enable this test
