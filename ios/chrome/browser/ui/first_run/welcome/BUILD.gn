@@ -49,6 +49,7 @@ source_set("welcome_ui") {
     "//base",
     "//components/metrics",
     "//components/prefs",
+    "//components/web_resource",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/commands",

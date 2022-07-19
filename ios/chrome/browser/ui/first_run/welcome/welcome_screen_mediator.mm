@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"
 
-#include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_service.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_consumer.h"
@@ -38,6 +39,15 @@
 - (void)setMetricsReportingEnabled:(BOOL)enabled {
   GetApplicationContext()->GetLocalState()->SetBoolean(
       metrics::prefs::kMetricsReportingEnabled, enabled);
+}
+
+- (void)acceptToS {
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  // Sets a LocalState pref marking EULA as accepted.
+  if (!prefs->GetBoolean(prefs::kEulaAccepted)) {
+    prefs->SetBoolean(prefs::kEulaAccepted, true);
+    prefs->CommitPendingWrite();
+  }
 }
 
 #pragma mark - Properties

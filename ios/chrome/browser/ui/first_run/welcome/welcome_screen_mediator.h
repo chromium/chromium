@@ -27,6 +27,10 @@
 // Persists the opt-in state for metrics reporting to the prefs.
 - (void)setMetricsReportingEnabled:(BOOL)enabled;
 
+// Accepts Terms of Services. Persists the acceptance of terms and conditions
+// and to the prefs.
+- (void)acceptToS;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_WELCOME_SCREEN_MEDIATOR_H_

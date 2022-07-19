@@ -98,6 +98,7 @@
 - (void)didTapPrimaryActionButton {
   // TODO(crbug.com/1189815): Remember that the welcome screen has been shown in
   // NSUserDefaults.
+  [self.mediator acceptToS];
   if (fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
       NewMobileIdentityConsistencyFRE::kOld) {
     [self.mediator

@@ -14,6 +14,7 @@ source_set("signin") {
     ":signin_ui",
     "//components/metrics",
     "//components/prefs",
+    "//components/web_resource",
     "//ios/chrome/browser:application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",

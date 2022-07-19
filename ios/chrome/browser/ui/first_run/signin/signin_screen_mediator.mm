@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -207,8 +208,10 @@
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
+    self.localPrefService->SetBoolean(prefs::kEulaAccepted, true);
     self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
                                       self.UMAReportingUserChoice);
+    self.localPrefService->CommitPendingWrite();
     base::UmaHistogramEnumeration("FirstRun.Stage", firstRunStage);
     RecordFirstRunSignInMetrics(self.identityManager, self.attemptStatus,
                                 self.hadIdentitiesAtStartup);
