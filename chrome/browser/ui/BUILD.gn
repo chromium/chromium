@@ -698,11 +698,6 @@ static_library("ui") {
     ]
   }
   if (is_chromeos) {
-    sources += [
-      "views/frame/highlight_border_overlay_chromeos.cc",
-      "views/frame/highlight_border_overlay_chromeos.h",
-    ]
-
     deps += [
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
