@@ -198,7 +198,8 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
   if (menu_type == apps::mojom::MenuType::kShelf) {
-    AddCommandItem(ash::MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW, &menu_items);
+    AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
+                   &menu_items);
   }
 
   if (crostini::IsUninstallable(profile_, app_id)) {
@@ -206,7 +207,7 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
   }
 
   if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
-    AddCommandItem(ash::MENU_OPEN_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                    &menu_items);
   }
 

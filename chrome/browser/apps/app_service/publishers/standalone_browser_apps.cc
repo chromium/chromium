@@ -201,7 +201,7 @@ void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
                                          apps::mojom::MenuType menu_type,
                                          int64_t display_id,
                                          GetMenuModelCallback callback) {
-  std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile_));
+  std::move(callback).Run(CreateBrowserMenuItems(profile_));
 }
 
 void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {

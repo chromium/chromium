@@ -83,32 +83,23 @@ void AddShortcutCommandItem(int command_id,
   (*menu_items)->items.push_back(std::move(menu_item));
 }
 
-void CreateOpenNewSubmenu(apps::mojom::MenuType menu_type,
-                          uint32_t string_id,
+void CreateOpenNewSubmenu(uint32_t string_id,
                           apps::mojom::MenuItemsPtr* menu_items) {
   apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
   menu_item->type = apps::mojom::MenuItemType::kSubmenu;
-  menu_item->command_id = (menu_type == apps::mojom::MenuType::kAppList)
-                              ? ash::LAUNCH_NEW
-                              : ash::MENU_OPEN_NEW;
+  menu_item->command_id = ash::LAUNCH_NEW;
   menu_item->string_id = string_id;
 
   menu_item->submenu.push_back(
-      CreateRadioItem((menu_type == apps::mojom::MenuType::kAppList)
-                          ? ash::USE_LAUNCH_TYPE_REGULAR
-                          : ash::LAUNCH_TYPE_REGULAR_TAB,
+      CreateRadioItem(ash::USE_LAUNCH_TYPE_REGULAR,
                       IDS_APP_LIST_CONTEXT_MENU_NEW_TAB, kGroupId));
   menu_item->submenu.push_back(
-      CreateRadioItem((menu_type == apps::mojom::MenuType::kAppList)
-                          ? ash::USE_LAUNCH_TYPE_WINDOW
-                          : ash::LAUNCH_TYPE_WINDOW,
+      CreateRadioItem(ash::USE_LAUNCH_TYPE_WINDOW,
                       IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, kGroupId));
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
     menu_item->submenu.push_back(
-        CreateRadioItem((menu_type == apps::mojom::MenuType::kAppList)
-                            ? ash::USE_LAUNCH_TYPE_TABBED_WINDOW
-                            : ash::LAUNCH_TYPE_TABBED_WINDOW,
+        CreateRadioItem(ash::USE_LAUNCH_TYPE_TABBED_WINDOW,
                         IDS_APP_LIST_CONTEXT_MENU_NEW_TABBED_WINDOW, kGroupId));
   }
 
@@ -162,10 +153,8 @@ bool PopulateNewItemFromMojoMenuItems(
   }
 
   auto& item = menu_items[0];
-  if (item->command_id != ash::LAUNCH_NEW &&
-      item->command_id != ash::MENU_OPEN_NEW) {
+  if (item->command_id != ash::LAUNCH_NEW)
     return false;
-  }
 
   const ui::ColorId color_id = GetColorIdForMenuItemIcon();
   switch (item->type) {
@@ -238,27 +227,22 @@ apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type) {
   return apps::mojom::MenuType::kShelf;
 }
 
-mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
-                                           const Profile* profile) {
+mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile) {
   DCHECK(profile);
   mojom::MenuItemsPtr menu_items = mojom::MenuItems::New();
 
   // "Normal" windows are not allowed when incognito is enforced.
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
       IncognitoModePrefs::Availability::kForced) {
-    AddCommandItem((menu_type == mojom::MenuType::kAppList)
-                       ? ash::APP_CONTEXT_MENU_NEW_WINDOW
-                       : ash::MENU_NEW_WINDOW,
-                   IDS_APP_LIST_NEW_WINDOW, &menu_items);
+    AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
+                   &menu_items);
   }
 
   // Incognito windows are not allowed when incognito is disabled.
   if (!profile->IsOffTheRecord() &&
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
           IncognitoModePrefs::Availability::kDisabled) {
-    AddCommandItem((menu_type == mojom::MenuType::kAppList)
-                       ? ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW
-                       : ash::MENU_NEW_INCOGNITO_WINDOW,
+    AddCommandItem(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW,
                    IDS_APP_LIST_NEW_INCOGNITO_WINDOW, &menu_items);
   }
 

@@ -315,8 +315,7 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
   DCHECK(!is_platform_app);
 
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
-  apps::CreateOpenNewSubmenu(menu_type,
-                             display_mode == WindowMode::kWindow
+  apps::CreateOpenNewSubmenu(display_mode == WindowMode::kWindow
                                  ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
                                  : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
                              &menu_items);

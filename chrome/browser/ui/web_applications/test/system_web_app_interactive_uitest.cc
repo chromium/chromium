@@ -1123,8 +1123,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNewWindowMenuItemTest,
   ASSERT_TRUE(shelf_item_delegate);
 
   ExpectMenuCommandLaunchesSystemWebApp(
-      GetShelfContextMenu(shelf_item_delegate, GetDisplayId()),
-      ash::MENU_OPEN_NEW, maybe_installation_->GetAppUrl());
+      GetShelfContextMenu(shelf_item_delegate, GetDisplayId()), ash::LAUNCH_NEW,
+      maybe_installation_->GetAppUrl());
 
   EXPECT_EQ(2U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }

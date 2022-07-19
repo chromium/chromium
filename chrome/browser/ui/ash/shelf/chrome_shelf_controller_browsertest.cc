@@ -2782,10 +2782,11 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, LaunchAppFromContextMenu) {
   ASSERT_TRUE(shelf_menu_model_adapter->IsShowingMenu());
 
   // Click at the menu item whose command is ash::MENU_NEW_WINDOW.
-  event_generator.MoveMouseTo(shelf_menu_model_adapter->root_for_testing()
-                                  ->GetMenuItemByID(ash::MENU_NEW_WINDOW)
-                                  ->GetBoundsInScreen()
-                                  .CenterPoint());
+  event_generator.MoveMouseTo(
+      shelf_menu_model_adapter->root_for_testing()
+          ->GetMenuItemByID(ash::APP_CONTEXT_MENU_NEW_WINDOW)
+          ->GetBoundsInScreen()
+          .CenterPoint());
   event_generator.ClickLeftButton();
 
   // Verify that hotseat is hidden.

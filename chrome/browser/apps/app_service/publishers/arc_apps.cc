@@ -1147,10 +1147,8 @@ void ArcApps::GetMenuModel(const std::string& app_id,
 
   // Add Open item if the app is not opened and not suspended.
   if (!base::Contains(app_id_to_task_ids_, app_id) && !app_info->suspended) {
-    AddCommandItem((menu_type == apps::mojom::MenuType::kAppList)
-                       ? ash::LAUNCH_NEW
-                       : ash::MENU_OPEN_NEW,
-                   IDS_APP_CONTEXT_MENU_ACTIVATE_ARC, &menu_items);
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+                   &menu_items);
   }
 
   if (app_info->shortcut) {

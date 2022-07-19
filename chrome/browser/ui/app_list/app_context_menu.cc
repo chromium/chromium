@@ -103,7 +103,6 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::UNINSTALL:
       return views::kUninstallIcon;
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-    case ash::MENU_OPEN_NEW:
       return views::kNewWindowIcon;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
       return views::kNewIncognitoWindowIcon;

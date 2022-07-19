@@ -56,8 +56,7 @@ void AddShortcutCommandItem(int command_id,
 
 // Adds a LAUNCH_NEW menu item to |menu_items|, and create radio items for the
 // submenu.
-void CreateOpenNewSubmenu(apps::mojom::MenuType menu_type,
-                          uint32_t string_id,
+void CreateOpenNewSubmenu(uint32_t string_id,
                           apps::mojom::MenuItemsPtr* menu_items);
 
 // Returns true if the open menu item can be added, when |menu_type| is Shelf,
@@ -95,8 +94,7 @@ base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type);
 apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
 
 // Returns the browser menu items for the given |menu_type|.
-mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
-                                           const Profile* profile);
+mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile);
 
 ui::ColorId GetColorIdForMenuItemIcon();
 

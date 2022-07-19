@@ -58,11 +58,11 @@ bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
 
 apps::WindowMode ConvertLaunchTypeCommandToWindowMode(int command_id) {
   switch (command_id) {
-    case ash::LAUNCH_TYPE_REGULAR_TAB:
+    case ash::USE_LAUNCH_TYPE_REGULAR:
       return apps::WindowMode::kBrowser;
-    case ash::LAUNCH_TYPE_WINDOW:
+    case ash::USE_LAUNCH_TYPE_WINDOW:
       return apps::WindowMode::kWindow;
-    case ash::LAUNCH_TYPE_TABBED_WINDOW:
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       return apps::WindowMode::kTabbedWindow;
     default:
       return apps::WindowMode::kUnknown;
@@ -72,13 +72,13 @@ apps::WindowMode ConvertLaunchTypeCommandToWindowMode(int command_id) {
 extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
     int command_id) {
   switch (command_id) {
-    case ash::LAUNCH_TYPE_PINNED_TAB:
+    case ash::USE_LAUNCH_TYPE_PINNED:
       return extensions::LAUNCH_TYPE_PINNED;
-    case ash::LAUNCH_TYPE_REGULAR_TAB:
+    case ash::USE_LAUNCH_TYPE_REGULAR:
       return extensions::LAUNCH_TYPE_REGULAR;
-    case ash::LAUNCH_TYPE_WINDOW:
+    case ash::USE_LAUNCH_TYPE_WINDOW:
       return extensions::LAUNCH_TYPE_WINDOW;
-    case ash::LAUNCH_TYPE_FULLSCREEN:
+    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
       return extensions::LAUNCH_TYPE_FULLSCREEN;
     default:
       return extensions::LAUNCH_TYPE_INVALID;
@@ -140,9 +140,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
           controller()->profile());
       break;
 
-    case ash::MENU_NEW_WINDOW:
+    case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       if (app_type_ == apps::AppType::kCrostini) {
-        ShelfContextMenu::ExecuteCommand(ash::MENU_OPEN_NEW, event_flags);
+        ShelfContextMenu::ExecuteCommand(ash::LAUNCH_NEW, event_flags);
       } else if (app_type_ == apps::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(
             /*incongnito=*/false, /*should_trigger_session_restore=*/false);
@@ -155,7 +155,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
           controller()->profile());
       break;
 
-    case ash::MENU_NEW_INCOGNITO_WINDOW:
+    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
       if (app_type_ == apps::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(
             /*incognito=*/true, /*should_trigger_session_restore=*/false);
@@ -182,15 +182,15 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       }
       break;
 
-    case ash::LAUNCH_TYPE_TABBED_WINDOW:
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       [[fallthrough]];
-    case ash::LAUNCH_TYPE_PINNED_TAB:
+    case ash::USE_LAUNCH_TYPE_PINNED:
       [[fallthrough]];
-    case ash::LAUNCH_TYPE_REGULAR_TAB:
+    case ash::USE_LAUNCH_TYPE_REGULAR:
       [[fallthrough]];
-    case ash::LAUNCH_TYPE_WINDOW:
+    case ash::USE_LAUNCH_TYPE_WINDOW:
       [[fallthrough]];
-    case ash::LAUNCH_TYPE_FULLSCREEN:
+    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
       SetLaunchType(command_id);
       break;
 
@@ -237,9 +237,8 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
     case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
-      if ((command_id >= ash::LAUNCH_TYPE_PINNED_TAB &&
-           command_id <= ash::LAUNCH_TYPE_WINDOW) ||
-          command_id == ash::LAUNCH_TYPE_TABBED_WINDOW) {
+      if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
+          command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         auto user_window_mode = apps::WindowMode::kUnknown;
         apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
             ->AppRegistryCache()
@@ -254,8 +253,8 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
       return ShelfContextMenu::IsCommandIdChecked(command_id);
     }
     case apps::AppType::kChromeApp:
-      if (command_id >= ash::LAUNCH_TYPE_PINNED_TAB &&
-          command_id <= ash::LAUNCH_TYPE_WINDOW) {
+      if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
+          command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         return GetExtensionLaunchType() ==
                ConvertLaunchTypeCommandToExtensionLaunchType(command_id);
       } else if (command_id < ash::COMMAND_ID_COUNT) {
@@ -315,8 +314,9 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
 
   // "New Window" should go above "Pin".
   if (menu_items->items.size() > index &&
-      menu_items->items[index]->command_id == ash::MENU_NEW_WINDOW) {
-    AddContextMenuOption(menu_model.get(), ash::MENU_NEW_WINDOW,
+      menu_items->items[index]->command_id ==
+          ash::APP_CONTEXT_MENU_NEW_WINDOW) {
+    AddContextMenuOption(menu_model.get(), ash::APP_CONTEXT_MENU_NEW_WINDOW,
                          menu_items->items[index]->string_id);
     ++index;
   }
@@ -427,7 +427,7 @@ void AppServiceShelfContextMenu::BuildArcAppShortcutsMenu(
     const bool app_is_open = controller()->IsOpen(item().id);
     if (!app_is_open && !app_info->suspended) {
       DCHECK(app_info->launchable);
-      AddContextMenuOption(menu_model.get(), ash::MENU_OPEN_NEW,
+      AddContextMenuOption(menu_model.get(), ash::LAUNCH_NEW,
                            IDS_APP_CONTEXT_MENU_ACTIVATE_ARC);
     }
 
@@ -447,7 +447,7 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
     AddContextMenuOption(menu_model, ash::MENU_CLOSE,
                          IDS_SHELF_CONTEXT_MENU_CLOSE);
   } else {
-    AddContextMenuOption(menu_model, ash::MENU_OPEN_NEW,
+    AddContextMenuOption(menu_model, ash::LAUNCH_NEW,
                          IDS_APP_CONTEXT_MENU_ACTIVATE_ARC);
   }
 }
@@ -519,15 +519,15 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
 
 void AppServiceShelfContextMenu::SetExtensionLaunchType(int command_id) {
   switch (static_cast<ash::CommandId>(command_id)) {
-    case ash::LAUNCH_TYPE_PINNED_TAB:
+    case ash::USE_LAUNCH_TYPE_PINNED:
       extensions::SetLaunchType(controller()->profile(), item().id.app_id,
                                 extensions::LAUNCH_TYPE_PINNED);
       break;
-    case ash::LAUNCH_TYPE_REGULAR_TAB:
+    case ash::USE_LAUNCH_TYPE_REGULAR:
       extensions::SetLaunchType(controller()->profile(), item().id.app_id,
                                 extensions::LAUNCH_TYPE_REGULAR);
       break;
-    case ash::LAUNCH_TYPE_WINDOW: {
+    case ash::USE_LAUNCH_TYPE_WINDOW: {
       // Hosted apps can only toggle between LAUNCH_WINDOW and LAUNCH_REGULAR.
       extensions::LaunchType launch_type =
           GetExtensionLaunchType() == extensions::LAUNCH_TYPE_WINDOW
@@ -538,7 +538,7 @@ void AppServiceShelfContextMenu::SetExtensionLaunchType(int command_id) {
                                 launch_type);
       break;
     }
-    case ash::LAUNCH_TYPE_FULLSCREEN:
+    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
       extensions::SetLaunchType(controller()->profile(), item().id.app_id,
                                 extensions::LAUNCH_TYPE_FULLSCREEN);
       break;

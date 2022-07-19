@@ -429,10 +429,6 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
   }
 
   switch (command_id) {
-    // Used by ShelfContextMenu (shelf).
-    case CommandId::MENU_OPEN_NEW:
-    case CommandId::MENU_NEW_WINDOW:
-    case CommandId::MENU_NEW_INCOGNITO_WINDOW:
     // Used by AppContextMenu and/or ShelfContextMenu.
     case CommandId::LAUNCH_NEW:
     case CommandId::SHOW_APP_INFO:
@@ -447,12 +443,6 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
 
     // Used by ShelfContextMenu (shelf).
     case CommandId::MENU_CLOSE:
-    case CommandId::MENU_PIN:
-    case CommandId::LAUNCH_TYPE_PINNED_TAB:
-    case CommandId::LAUNCH_TYPE_REGULAR_TAB:
-    case CommandId::LAUNCH_TYPE_FULLSCREEN:
-    case CommandId::LAUNCH_TYPE_WINDOW:
-    case CommandId::LAUNCH_TYPE_TABBED_WINDOW:
     case CommandId::SWAP_WITH_NEXT:
     case CommandId::SWAP_WITH_PREVIOUS:
     // Used by AppMenuModelAdapter
@@ -482,6 +472,17 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     // Used by ShelfApplicationMenuModel.
     case CommandId::APP_MENU_ITEM_ID_FIRST:
     case CommandId::APP_MENU_ITEM_ID_LAST:
+      return false;
+    case CommandId::DEPRECATED_MENU_OPEN_NEW:
+    case CommandId::DEPRECATED_MENU_PIN:
+    case CommandId::DEPRECATED_MENU_NEW_WINDOW:
+    case CommandId::DEPRECATED_MENU_NEW_INCOGNITO_WINDOW:
+    case CommandId::DEPRECATED_LAUNCH_TYPE_PINNED_TAB:
+    case CommandId::DEPRECATED_LAUNCH_TYPE_REGULAR_TAB:
+    case CommandId::DEPRECATED_LAUNCH_TYPE_WINDOW:
+    case CommandId::DEPRECATED_LAUNCH_TYPE_TABBED_WINDOW:
+    case CommandId::DEPRECATED_LAUNCH_TYPE_FULLSCREEN:
+      NOTREACHED();
       return false;
   }
   NOTREACHED();

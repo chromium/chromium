@@ -405,14 +405,11 @@ void WebApps::GetMenuModel(const std::string& app_id,
     auto* system_app =
         ash::SystemWebAppManager::Get(profile())->GetSystemApp(swa_type);
     if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
-      apps::AddCommandItem(menu_type == apps::mojom::MenuType::kAppList
-                               ? ash::LAUNCH_NEW
-                               : ash::MENU_OPEN_NEW,
+      apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, &menu_items);
     }
   } else {
     apps::CreateOpenNewSubmenu(
-        menu_type,
         publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
             ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
             : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,

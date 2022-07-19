@@ -337,14 +337,13 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
   }
 
   if (app_id == app_constants::kChromeAppId) {
-    std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile()));
+    std::move(callback).Run(CreateBrowserMenuItems(profile()));
     return;
   }
 
   bool is_platform_app = extension->is_platform_app();
   if (!is_platform_app) {
     CreateOpenNewSubmenu(
-        menu_type,
         extensions::GetLaunchType(extensions::ExtensionPrefs::Get(profile()),
                                   extension) ==
                 extensions::LaunchType::LAUNCH_TYPE_WINDOW
