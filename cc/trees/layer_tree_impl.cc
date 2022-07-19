@@ -1210,6 +1210,17 @@ void LayerTreeImpl::SetPageScaleOnActiveTree(float active_page_scale) {
   DCHECK(IsActiveTree());
   DCHECK(lifecycle().AllowsPropertyTreeAccess());
   float clamped_page_scale = ClampPageScaleFactorToLimits(active_page_scale);
+  // Temporary crash logging for https://crbug.com/845097.
+  static bool has_dumped_without_crashing = false;
+  if (!host_impl_->settings().is_for_scalable_page &&
+      clamped_page_scale != 1.f && !has_dumped_without_crashing) {
+    has_dumped_without_crashing = true;
+    static auto* psf_oopif_error = base::debug::AllocateCrashKeyString(
+        "psf_oopif_error", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        psf_oopif_error, base::StringPrintf("%f", clamped_page_scale));
+    base::debug::DumpWithoutCrashing();
+  }
   if (page_scale_factor()->SetCurrent(clamped_page_scale))
     DidUpdatePageScale();
 }
