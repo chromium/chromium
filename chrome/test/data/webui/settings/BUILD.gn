@@ -155,8 +155,8 @@ if (is_chromeos_ash) {
 } else {
   non_preprocessed_files += [
     "fake_language_settings_private.ts",
-    "languages_subpage_details_tests.ts",
-    "languages_subpage_tests.ts",
+    "languages_page_details_tests.ts",
+    "languages_page_tests.ts",
     "languages_tests.ts",
     "metrics_reporting_tests.ts",
     "people_page_manage_profile_test.ts",

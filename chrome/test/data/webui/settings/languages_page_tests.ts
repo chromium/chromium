@@ -7,7 +7,7 @@ import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrCheckboxElement, kMenuCloseDelay, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesSubpageElement} from 'chrome://settings/lazy_load.js';
+import {CrCheckboxElement, kMenuCloseDelay, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement, CrButtonElement, CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
@@ -18,18 +18,18 @@ import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
-const languages_subpage_tests = {
+const languages_page_tests = {
   TestNames: {
     AddLanguagesDialog: 'add languages dialog',
     LanguageMenu: 'language menu',
   },
 };
 
-Object.assign(window, {languages_subpage_tests});
+Object.assign(window, {languages_page_tests});
 
-suite('languages subpage', function() {
+suite('languages page', function() {
   let languageHelper: LanguageHelper;
-  let languagesSubpage: SettingsLanguagesSubpageElement;
+  let languagesPage: SettingsLanguagesPageElement;
   let actionMenu: CrActionMenuElement;
   let browserProxy: TestLanguagesBrowserProxy;
 
@@ -63,22 +63,22 @@ suite('languages subpage', function() {
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
 
-      languagesSubpage = document.createElement('settings-languages-subpage');
+      languagesPage = document.createElement('settings-languages-page');
 
-      languagesSubpage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, languagesSubpage, 'prefs');
+      languagesPage.prefs = settingsPrefs.prefs;
+      fakeDataBind(settingsPrefs, languagesPage, 'prefs');
 
-      languagesSubpage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'language-helper');
+      languagesPage.languageHelper = settingsLanguages.languageHelper;
+      fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
 
-      languagesSubpage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'languages');
+      languagesPage.languages = settingsLanguages.languages;
+      fakeDataBind(settingsLanguages, languagesPage, 'languages');
 
-      document.body.appendChild(languagesSubpage);
+      document.body.appendChild(languagesPage);
       flush();
-      actionMenu = languagesSubpage.$.menu.get();
+      actionMenu = languagesPage.$.menu.get();
 
-      languageHelper = languagesSubpage.languageHelper;
+      languageHelper = languagesPage.languageHelper;
       return languageHelper.whenReady();
     });
   });
@@ -87,7 +87,7 @@ suite('languages subpage', function() {
     document.body.innerHTML = '';
   });
 
-  suite(languages_subpage_tests.TestNames.AddLanguagesDialog, function() {
+  suite(languages_page_tests.TestNames.AddLanguagesDialog, function() {
     let dialog: SettingsAddLanguagesDialogElement;
     let dialogItems: NodeListOf<CrCheckboxElement>;
     let cancelButton: CrButtonElement;
@@ -108,7 +108,7 @@ suite('languages subpage', function() {
         // Sanity check: the dialog should no longer be in the DOM.
         assertEquals(
             null,
-            languagesSubpage.shadowRoot!.querySelector(
+            languagesPage.shadowRoot!.querySelector(
                 'settings-add-languages-dialog'));
         observer.disconnect();
         assertTrue(!!dialogClosedResolver);
@@ -118,15 +118,15 @@ suite('languages subpage', function() {
 
     setup(function() {
       const addLanguagesButton =
-          languagesSubpage.shadowRoot!.querySelector<HTMLElement>(
+          languagesPage.shadowRoot!.querySelector<HTMLElement>(
               '#addLanguages')!;
-      const whenDialogOpen = eventToPromise('cr-dialog-open', languagesSubpage);
+      const whenDialogOpen = eventToPromise('cr-dialog-open', languagesPage);
       addLanguagesButton.click();
 
       // The page stamps the dialog, registers listeners, and populates the
       // iron-list asynchronously at microtask timing, so wait for a new task.
       return whenDialogOpen.then(() => {
-        dialog = languagesSubpage.shadowRoot!.querySelector(
+        dialog = languagesPage.shadowRoot!.querySelector(
             'settings-add-languages-dialog')!;
         assertTrue(!!dialog);
 
@@ -135,7 +135,7 @@ suite('languages subpage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            languagesSubpage.shadowRoot!, {childList: true});
+            languagesPage.shadowRoot!, {childList: true});
 
         actionButton = dialog.shadowRoot!.querySelector<CrButtonElement>(
             '.action-button')!;
@@ -180,7 +180,7 @@ suite('languages subpage', function() {
       return dialogClosedResolver.promise.then(function() {
         assertEquals(
             initialLanguages,
-            languagesSubpage.getPref('intl.accept_languages').value);
+            languagesPage.getPref('intl.accept_languages').value);
       });
     });
 
@@ -190,7 +190,7 @@ suite('languages subpage', function() {
       flush();
       assertEquals(
           dialog,
-          languagesSubpage.shadowRoot!.querySelector(
+          languagesPage.shadowRoot!.querySelector(
               'settings-add-languages-dialog'));
 
       // Check and uncheck one language.
@@ -210,7 +210,7 @@ suite('languages subpage', function() {
 
       assertEquals(
           initialLanguages + ',en,tk',
-          languagesSubpage.getPref('intl.accept_languages').value);
+          languagesPage.getPref('intl.accept_languages').value);
 
       return dialogClosedResolver.promise;
     });
@@ -267,7 +267,7 @@ suite('languages subpage', function() {
     });
   });
 
-  suite(languages_subpage_tests.TestNames.LanguageMenu, function() {
+  suite(languages_page_tests.TestNames.LanguageMenu, function() {
     /*
      * Finds, asserts and returns the menu item for the given i18n key.
      * @param i18nKey Name of the i18n string for the item's text.
@@ -300,7 +300,7 @@ suite('languages subpage', function() {
 
     test('structure', function() {
       const languageOptionsDropdownTrigger =
-          languagesSubpage.shadowRoot!.querySelector('cr-icon-button');
+          languagesPage.shadowRoot!.querySelector('cr-icon-button');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -312,24 +312,24 @@ suite('languages subpage', function() {
       // Disable Translate. On platforms that can't change the UI language,
       // this hides all the checkboxes, so the separator isn't needed.
       // Chrome OS and Windows still show a checkbox and thus the separator.
-      languagesSubpage.setPrefValue('translate.enabled', false);
+      languagesPage.setPrefValue('translate.enabled', false);
       assertEquals(isChromeOS || isWindows ? 1 : 0, separator.offsetHeight);
     });
 
     test('test translate.enable toggle', function() {
       const settingsToggle =
-          languagesSubpage.shadowRoot!.querySelector<HTMLElement>(
+          languagesPage.shadowRoot!.querySelector<HTMLElement>(
               '#offerTranslateOtherLanguages');
       assertTrue(!!settingsToggle);
 
       // Clicking on the toggle switches it to false.
       settingsToggle.click();
-      let newToggleValue = languagesSubpage.getPref('translate.enabled').value;
+      let newToggleValue = languagesPage.getPref('translate.enabled').value;
       assertFalse(newToggleValue);
 
       // Clicking on the toggle switches it to true again.
       settingsToggle.click();
-      newToggleValue = languagesSubpage.getPref('translate.enabled').value;
+      newToggleValue = languagesPage.getPref('translate.enabled').value;
       assertTrue(newToggleValue);
     });
 
@@ -347,10 +347,10 @@ suite('languages subpage', function() {
       let item = null;
 
       const listItems =
-          languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+          languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
       const domRepeat =
-          languagesSubpage.shadowRoot!.querySelector('dom-repeat');
+          languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
 
       let num_visibles = 0;
@@ -376,7 +376,7 @@ suite('languages subpage', function() {
     test('toggle translate for a specific language', function(done) {
       // Open options for 'sw'.
       const languageOptionsDropdownTrigger =
-          languagesSubpage.shadowRoot!.querySelector<HTMLElement>('#more-sw');
+          languagesPage.shadowRoot!.querySelector<HTMLElement>('#more-sw');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -397,7 +397,7 @@ suite('languages subpage', function() {
         assertFalse(actionMenu.open);
         assertDeepEquals(
             ['en-US', 'sw'],
-            languagesSubpage.getPref('translate_blocked_languages').value);
+            languagesPage.getPref('translate_blocked_languages').value);
         done();
       }, kMenuCloseDelay + 1);
     });
@@ -405,7 +405,7 @@ suite('languages subpage', function() {
     test('toggle translate for target language', function() {
       // Open options for 'en'.
       const languageOptionsDropdownTrigger =
-          languagesSubpage.shadowRoot!.querySelector('cr-icon-button');
+          languagesPage.shadowRoot!.querySelector('cr-icon-button');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -418,11 +418,11 @@ suite('languages subpage', function() {
 
     test('disable translate hides language-specific option', function() {
       // Disables translate.
-      languagesSubpage.setPrefValue('translate.enabled', false);
+      languagesPage.setPrefValue('translate.enabled', false);
 
       // Open options for 'sw'.
       const languageOptionsDropdownTrigger =
-          languagesSubpage.shadowRoot!.querySelector<HTMLElement>('#more-sw');
+          languagesPage.shadowRoot!.querySelector<HTMLElement>('#more-sw');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -443,10 +443,10 @@ suite('languages subpage', function() {
 
       // Find the new language item.
       const items =
-          languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+          languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
       const domRepeat =
-          languagesSubpage.shadowRoot!.querySelector('dom-repeat');
+          languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -466,22 +466,22 @@ suite('languages subpage', function() {
 
       assertEquals(
           initialLanguages,
-          languagesSubpage.getPref('intl.accept_languages').value);
+          languagesPage.getPref('intl.accept_languages').value);
     });
 
     test('remove last blocked language', function() {
       assertEquals(
           initialLanguages,
-          languagesSubpage.getPref('intl.accept_languages').value);
+          languagesPage.getPref('intl.accept_languages').value);
       assertDeepEquals(
           ['en-US'],
-          languagesSubpage.getPref('translate_blocked_languages').value);
+          languagesPage.getPref('translate_blocked_languages').value);
 
       const items =
-          languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+          languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
       const domRepeat =
-          languagesSubpage.shadowRoot!.querySelector('dom-repeat');
+          languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -498,10 +498,10 @@ suite('languages subpage', function() {
 
     test('remove language when starting with 2 languages', function() {
       const items =
-          languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+          languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
       const domRepeat =
-          languagesSubpage.shadowRoot!.querySelector('dom-repeat');
+          languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -520,7 +520,7 @@ suite('languages subpage', function() {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          'en-US', languagesSubpage.getPref('intl.accept_languages').value);
+          'en-US', languagesPage.getPref('intl.accept_languages').value);
     });
 
     test('move up/down buttons', function() {
@@ -532,7 +532,7 @@ suite('languages subpage', function() {
       flush();
 
       const menuButtons =
-          languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+          languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>(
                   '.list-item cr-icon-button.icon-more-vert');
 

@@ -5,7 +5,7 @@
 // clang-format off
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesSubpageElement} from 'chrome://settings/lazy_load.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
@@ -16,18 +16,18 @@ import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
-const languages_subpage_details_tests = {
+const languages_page_details_tests = {
   TestNames: {
     AlwaysTranslateDialog: 'always translate dialog',
     NeverTranslateDialog: 'never translate dialog',
   },
 };
 
-Object.assign(window, {languages_subpage_details_tests});
+Object.assign(window, {languages_page_details_tests});
 
-suite('languages subpage detailed settings', function() {
+suite('languages page detailed settings', function() {
   let languageHelper: LanguageHelper;
-  let languagesSubpage: SettingsLanguagesSubpageElement;
+  let languagesPage: SettingsLanguagesPageElement;
   let browserProxy: TestLanguagesBrowserProxy;
 
   // Always Translate language pref name for the platform.
@@ -64,21 +64,21 @@ suite('languages subpage detailed settings', function() {
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
 
-      languagesSubpage = document.createElement('settings-languages-subpage');
+      languagesPage = document.createElement('settings-languages-page');
 
-      languagesSubpage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, languagesSubpage, 'prefs');
+      languagesPage.prefs = settingsPrefs.prefs;
+      fakeDataBind(settingsPrefs, languagesPage, 'prefs');
 
-      languagesSubpage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'language-helper');
+      languagesPage.languageHelper = settingsLanguages.languageHelper;
+      fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
 
-      languagesSubpage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'languages');
+      languagesPage.languages = settingsLanguages.languages;
+      fakeDataBind(settingsLanguages, languagesPage, 'languages');
 
-      document.body.appendChild(languagesSubpage);
+      document.body.appendChild(languagesPage);
       flush();
 
-      languageHelper = languagesSubpage.languageHelper;
+      languageHelper = languagesPage.languageHelper;
       return languageHelper.whenReady();
     });
   });
@@ -88,7 +88,7 @@ suite('languages subpage detailed settings', function() {
   });
 
   suite(
-      languages_subpage_details_tests.TestNames.AlwaysTranslateDialog,
+      languages_page_details_tests.TestNames.AlwaysTranslateDialog,
       function() {
         let dialog: SettingsAddLanguagesDialogElement;
         let dialogClosedResolver: PromiseResolver<void>;
@@ -107,7 +107,7 @@ suite('languages subpage detailed settings', function() {
             // Sanity check: the dialog should no longer be in the DOM.
             assertEquals(
                 null,
-                languagesSubpage.shadowRoot!.querySelector(
+                languagesPage.shadowRoot!.querySelector(
                     'settings-add-languages-dialog'));
             observer.disconnect();
             assertTrue(!!dialogClosedResolver);
@@ -117,10 +117,10 @@ suite('languages subpage detailed settings', function() {
 
         setup(function() {
           const addLanguagesButton =
-              languagesSubpage.shadowRoot!.querySelector<HTMLElement>(
+              languagesPage.shadowRoot!.querySelector<HTMLElement>(
                   '#addAlwaysTranslate');
           const whenDialogOpen =
-              eventToPromise('cr-dialog-open', languagesSubpage);
+              eventToPromise('cr-dialog-open', languagesPage);
           assertTrue(!!addLanguagesButton);
           addLanguagesButton.click();
 
@@ -128,7 +128,7 @@ suite('languages subpage detailed settings', function() {
           // iron-list asynchronously at microtask timing, so wait for a new
           // task.
           return whenDialogOpen.then(() => {
-            dialog = languagesSubpage.shadowRoot!.querySelector(
+            dialog = languagesPage.shadowRoot!.querySelector(
                 'settings-add-languages-dialog')!;
             assertTrue(!!dialog);
             assertEquals(dialog.id, 'alwaysTranslateDialog');
@@ -138,7 +138,7 @@ suite('languages subpage detailed settings', function() {
             dialogClosedResolver = new PromiseResolver();
             dialogClosedObserver = new MutationObserver(onMutation);
             dialogClosedObserver.observe(
-                languagesSubpage.shadowRoot!, {childList: true});
+                languagesPage.shadowRoot!, {childList: true});
 
             flush();
           });
@@ -154,14 +154,14 @@ suite('languages subpage detailed settings', function() {
           dialog.$.dialog.close();
           assertDeepEquals(
               ['en', 'no'],
-              languagesSubpage.getPref(alwaysTranslatePref).value);
+              languagesPage.getPref(alwaysTranslatePref).value);
 
           return dialogClosedResolver.promise;
         });
       });
 
   suite(
-      languages_subpage_details_tests.TestNames.NeverTranslateDialog,
+      languages_page_details_tests.TestNames.NeverTranslateDialog,
       function() {
         let dialog: SettingsAddLanguagesDialogElement;
         let dialogClosedResolver: PromiseResolver<void>;
@@ -180,7 +180,7 @@ suite('languages subpage detailed settings', function() {
             // Sanity check: the dialog should no longer be in the DOM.
             assertEquals(
                 null,
-                languagesSubpage.shadowRoot!.querySelector(
+                languagesPage.shadowRoot!.querySelector(
                     'settings-add-languages-dialog'));
             observer.disconnect();
             assertTrue(!!dialogClosedResolver);
@@ -190,10 +190,10 @@ suite('languages subpage detailed settings', function() {
 
         setup(function() {
           const addLanguagesButton =
-              languagesSubpage.shadowRoot!.querySelector<HTMLElement>(
+              languagesPage.shadowRoot!.querySelector<HTMLElement>(
                   '#addNeverTranslate');
           const whenDialogOpen =
-              eventToPromise('cr-dialog-open', languagesSubpage);
+              eventToPromise('cr-dialog-open', languagesPage);
           assertTrue(!!addLanguagesButton);
           addLanguagesButton.click();
 
@@ -201,7 +201,7 @@ suite('languages subpage detailed settings', function() {
           // iron-list asynchronously at microtask timing, so wait for a new
           // task.
           return whenDialogOpen.then(() => {
-            dialog = languagesSubpage.shadowRoot!.querySelector(
+            dialog = languagesPage.shadowRoot!.querySelector(
                 'settings-add-languages-dialog')!;
             assertTrue(!!dialog);
             assertEquals(dialog.id, 'neverTranslateDialog');
@@ -211,7 +211,7 @@ suite('languages subpage detailed settings', function() {
             dialogClosedResolver = new PromiseResolver();
             dialogClosedObserver = new MutationObserver(onMutation);
             dialogClosedObserver.observe(
-                languagesSubpage.shadowRoot!, {childList: true});
+                languagesPage.shadowRoot!, {childList: true});
 
             flush();
           });
@@ -227,7 +227,7 @@ suite('languages subpage detailed settings', function() {
           dialog.$.dialog.close();
           assertDeepEquals(
               ['en-US', 'sw', 'no'],
-              languagesSubpage.getPref(neverTranslatePref).value);
+              languagesPage.getPref(neverTranslatePref).value);
 
           return dialogClosedResolver.promise;
         });

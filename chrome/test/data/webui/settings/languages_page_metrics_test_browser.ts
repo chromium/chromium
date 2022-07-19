@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesSubpageElement} from 'chrome://settings/lazy_load.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -34,7 +34,7 @@ class TestLanguageSettingsMetricsProxy extends TestBrowserProxy implements
 
 suite('LanguagesPageMetricsBrowser', function() {
   let languageHelper: LanguageHelper;
-  let languagesSubpage: SettingsLanguagesSubpageElement;
+  let languagesPage: SettingsLanguagesPageElement;
   let browserProxy: TestLanguagesBrowserProxy;
   let languageSettingsMetricsProxy: TestLanguageSettingsMetricsProxy;
 
@@ -69,27 +69,27 @@ suite('LanguagesPageMetricsBrowser', function() {
       fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
       document.body.appendChild(settingsLanguages);
 
-      languagesSubpage = document.createElement('settings-languages-subpage');
+      languagesPage = document.createElement('settings-languages-page');
 
       // Prefs would normally be data-bound to settings-languages-page.
-      languagesSubpage.prefs = settingsLanguages.prefs;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'prefs');
+      languagesPage.prefs = settingsLanguages.prefs;
+      fakeDataBind(settingsLanguages, languagesPage, 'prefs');
 
-      languagesSubpage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'language-helper');
+      languagesPage.languageHelper = settingsLanguages.languageHelper;
+      fakeDataBind(settingsLanguages, languagesPage, 'language-helper');
 
-      languagesSubpage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, languagesSubpage, 'languages');
+      languagesPage.languages = settingsLanguages.languages;
+      fakeDataBind(settingsLanguages, languagesPage, 'languages');
 
-      document.body.appendChild(languagesSubpage);
-      languageHelper = languagesSubpage.languageHelper;
+      document.body.appendChild(languagesPage);
+      languageHelper = languagesPage.languageHelper;
       return languageHelper.whenReady();
     });
   });
 
   test('records when adding languages', async () => {
-    languagesSubpage.shadowRoot!.querySelector<HTMLElement>(
-                                    '#addLanguages')!.click();
+    languagesPage.shadowRoot!.querySelector<HTMLElement>(
+        '#addLanguages')!.click();
     flush();
 
     assertEquals(
@@ -99,8 +99,8 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
 
   test('records when disabling translate.enable toggle', async () => {
-    languagesSubpage.setPrefValue('translate.enabled', true);
-    languagesSubpage.shadowRoot!
+    languagesPage.setPrefValue('translate.enabled', true);
+    languagesPage.shadowRoot!
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
     flush();
 
@@ -110,8 +110,8 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
 
   test('records when enabling translate.enable toggle', async () => {
-    languagesSubpage.setPrefValue('translate.enabled', false);
-    languagesSubpage.shadowRoot!
+    languagesPage.setPrefValue('translate.enabled', false);
+    languagesPage.shadowRoot!
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
     flush();
 
@@ -122,7 +122,7 @@ suite('LanguagesPageMetricsBrowser', function() {
 
   test('records when three-dot menu is opened', async () => {
     const menuButtons =
-        languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+        languagesPage.shadowRoot!.querySelector('#languagesSection')!
             .querySelectorAll<HTMLElement>(
                 '.list-item cr-icon-button.icon-more-vert');
 
@@ -135,7 +135,7 @@ suite('LanguagesPageMetricsBrowser', function() {
 
   test('records when ticking translate checkbox', async () => {
     const menuButtons =
-        languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+        languagesPage.shadowRoot!.querySelector('#languagesSection')!
             .querySelectorAll<HTMLElement>(
                 '.list-item cr-icon-button.icon-more-vert');
 
@@ -143,7 +143,7 @@ suite('LanguagesPageMetricsBrowser', function() {
     // as first language is the language used for translation.
     menuButtons[1]!.click();
     flush();
-    const actionMenu = languagesSubpage.$.menu.get();
+    const actionMenu = languagesPage.$.menu.get();
     assertTrue(actionMenu.open);
     const item = actionMenu.querySelector<HTMLElement>('#offerTranslations');
     assertTrue(!!item);
@@ -167,14 +167,14 @@ suite('LanguagesPageMetricsBrowser', function() {
     languageHelper.enableLanguage('sw');
     // Testing the 'Change Chrome Language' button with 'sw'
     const languagesSection =
-        languagesSubpage.shadowRoot!.querySelector('#languagesSection');
+        languagesPage.shadowRoot!.querySelector('#languagesSection');
     assertTrue(!!languagesSection);
     const menuButton = languagesSection.querySelector<HTMLElement>(
         '.list-item cr-icon-button#more-sw');
     assertTrue(!!menuButton);
     menuButton.click();
     flush();
-    const actionMenu = languagesSubpage.$.menu.get();
+    const actionMenu = languagesPage.$.menu.get();
     assertTrue(actionMenu.open);
     const item = actionMenu.querySelector<HTMLElement>('#uiLanguageItem');
     assertTrue(!!item);
@@ -194,12 +194,12 @@ suite('LanguagesPageMetricsBrowser', function() {
     flush();
 
     const menuButtons =
-        languagesSubpage.shadowRoot!.querySelector('#languagesSection')!
+        languagesPage.shadowRoot!.querySelector('#languagesSection')!
             .querySelectorAll<HTMLElement>(
                 '.list-item cr-icon-button.icon-more-vert');
 
     menuButtons[1]!.click();
-    const actionMenu = languagesSubpage.$.menu.get();
+    const actionMenu = languagesPage.$.menu.get();
     assertTrue(actionMenu.open);
 
     function getMenuItem(i18nKey: string): HTMLElement {

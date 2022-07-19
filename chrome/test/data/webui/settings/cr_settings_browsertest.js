@@ -112,42 +112,42 @@ TEST_F('CrSettingsSpellCheckPageTest', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
-var CrSettingsLanguagesSubpageTest = class extends CrSettingsBrowserTest {
+var CrSettingsLanguagesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/languages_page_tests.js';
   }
 };
 
-TEST_F('CrSettingsLanguagesSubpageTest', 'AddLanguagesDialog', function() {
-  mocha.grep(languages_subpage_tests.TestNames.AddLanguagesDialog).run();
+TEST_F('CrSettingsLanguagesPageTest', 'AddLanguagesDialog', function() {
+  mocha.grep(languages_page_tests.TestNames.AddLanguagesDialog).run();
 });
 
-TEST_F('CrSettingsLanguagesSubpageTest', 'LanguageMenu', function() {
-  mocha.grep(languages_subpage_tests.TestNames.LanguageMenu).run();
+TEST_F('CrSettingsLanguagesPageTest', 'LanguageMenu', function() {
+  mocha.grep(languages_page_tests.TestNames.LanguageMenu).run();
 });
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_LACROS)');
-var CrSettingsLanguagesSubpageDetailedTest =
+var CrSettingsLanguagesPageDetailedTest =
     class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_details_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/languages_page_details_tests.js';
   }
 };
 
 TEST_F(
-    'CrSettingsLanguagesSubpageDetailedTest', 'AlwaysTranslateDialog',
+    'CrSettingsLanguagesPageDetailedTest', 'AlwaysTranslateDialog',
     function() {
       mocha
-          .grep(languages_subpage_details_tests.TestNames.AlwaysTranslateDialog)
+          .grep(languages_page_details_tests.TestNames.AlwaysTranslateDialog)
           .run();
     });
 
 TEST_F(
-    'CrSettingsLanguagesSubpageDetailedTest', 'NeverTranslateDialog',
+    'CrSettingsLanguagesPageDetailedTest', 'NeverTranslateDialog',
     function() {
-      mocha.grep(languages_subpage_details_tests.TestNames.NeverTranslateDialog)
+      mocha.grep(languages_page_details_tests.TestNames.NeverTranslateDialog)
           .run();
     });
 GEN('#endif');
