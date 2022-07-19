@@ -290,7 +290,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         mUserActionTester = new UserActionTester();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
 
-        scrollToSetting(withText("example2.com"));
+        scrollToSetting(withText("example.com"));
         clickImageButtonNextToText("example.com");
         assertThat(getFledgeSites(), not(hasItem("example.com")));
         assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
