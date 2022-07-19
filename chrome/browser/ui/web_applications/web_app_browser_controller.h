@@ -35,9 +35,11 @@
 class Browser;
 class SkBitmap;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class SystemWebAppDelegate;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace digital_asset_links {
 class DigitalAssetLinksHandler;
@@ -60,7 +62,9 @@ class WebAppBrowserController : public AppBrowserController,
   WebAppBrowserController(WebAppProvider& provider,
                           Browser* browser,
                           AppId app_id,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                           const ash::SystemWebAppDelegate* system_app,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                           bool has_tab_strip);
   WebAppBrowserController(const WebAppBrowserController&) = delete;
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
@@ -90,7 +94,9 @@ class WebAppBrowserController : public AppBrowserController,
   void ToggleWindowControlsOverlayEnabled() override;
   gfx::Rect GetDefaultBounds() const override;
   bool HasReloadButton() const override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const ash::SystemWebAppDelegate* system_app() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldShowCustomTabBar() const override;
@@ -136,7 +142,9 @@ class WebAppBrowserController : public AppBrowserController,
   absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
 
   WebAppProvider& provider_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegate> system_app_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   mutable absl::optional<ui::ImageModel> app_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS)

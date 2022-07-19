@@ -87,10 +87,12 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_controller->system_app()) {
     AddChildView(std::make_unique<SystemAppAccessibleName>(
         app_controller->GetAppShortName()));
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (app_controller->AppUsesWindowControlsOverlay()) {
     window_controls_overlay_toggle_button_ = AddChildView(

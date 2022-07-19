@@ -11,8 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -56,6 +54,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #endif
 
@@ -185,27 +185,40 @@ bool AppBrowserController::has_tab_strip() const {
 }
 
 bool AppBrowserController::HasTitlebarMenuButton() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Hide for system apps.
   return !system_app();
+#else
+  return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool AppBrowserController::HasTitlebarAppOriginText() const {
+  bool hide = base::FeatureList::IsEnabled(features::kHideWebAppOriginText);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not show origin text for System Apps.
-  bool hide = system_app() ||
-              base::FeatureList::IsEnabled(features::kHideWebAppOriginText);
+  if (system_app())
+    hide = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return !hide;
 }
 
 bool AppBrowserController::HasTitlebarContentSettings() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not show content settings for System Apps.
   return !system_app();
+#else
+  return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 std::vector<PageActionIconType> AppBrowserController::GetTitleBarPageActions()
     const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_app()) {
     return {PageActionIconType::kFind, PageActionIconType::kZoom};
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::vector<PageActionIconType> types_enabled;
   types_enabled.push_back(PageActionIconType::kFind);
@@ -247,9 +260,11 @@ bool AppBrowserController::HasReloadButton() const {
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const ash::SystemWebAppDelegate* AppBrowserController::system_app() const {
   return nullptr;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
   return GetFormattedUrlOrigin();
@@ -350,8 +365,12 @@ std::u16string AppBrowserController::GetTitle() const {
 }
 
 std::string AppBrowserController::GetTitleForMediaControls() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only return the app name if we're a System Web App.
-  return system_app() ? base::UTF16ToUTF8(GetAppShortName()) : std::string();
+  if (system_app())
+    return base::UTF16ToUTF8(GetAppShortName());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::string();
 }
 
 GURL AppBrowserController::GetAppNewTabUrl() const {

@@ -576,7 +576,11 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   bool BrowserIsSystemWebApp() const override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return browser_view_->browser()->app_controller()->system_app();
+#else
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   bool BrowserIsWebApp() const override {

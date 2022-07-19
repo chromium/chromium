@@ -29,9 +29,11 @@ class BrowserThemePack;
 class CustomThemeSupplier;
 class TabMenuModelFactory;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class SystemWebAppDelegate;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gfx {
 class Rect;
@@ -178,8 +180,10 @@ class AppBrowserController
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the SystemWebAppDelegate if any for this controller.
   virtual const ash::SystemWebAppDelegate* system_app() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be

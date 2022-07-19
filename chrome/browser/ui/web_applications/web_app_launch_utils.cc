@@ -19,7 +19,6 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -65,6 +64,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -224,22 +224,29 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   auto* const provider =
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar().IsInstalled(app_id)) {
-    const ash::SystemWebAppDelegate* system_app = nullptr;
+    bool should_have_tab_strip_for_swa = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    const ash::SystemWebAppDelegate* system_app = nullptr;
     auto system_app_type =
         ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
     if (system_app_type) {
       system_app =
           ash::SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile())
               ->GetSystemApp(*system_app_type);
+      should_have_tab_strip_for_swa =
+          system_app && system_app->ShouldHaveTabStrip();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     const bool has_tab_strip =
         !browser->is_type_app_popup() &&
-        ((system_app && system_app->ShouldHaveTabStrip()) ||
+        (should_have_tab_strip_for_swa ||
          provider->registrar().IsTabbedWindowModeEnabled(app_id));
-    controller = std::make_unique<WebAppBrowserController>(
-        *provider, browser, app_id, system_app, has_tab_strip);
+    controller =
+        std::make_unique<WebAppBrowserController>(*provider, browser, app_id,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                                                  system_app,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                                                  has_tab_strip);
   } else {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     const extensions::Extension* extension =

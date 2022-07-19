@@ -1623,8 +1623,12 @@ void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
 }
 
 bool TabStrip::ShowDomainInHoverCards() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const auto* app_controller = GetBrowser()->app_controller();
-  return !app_controller || !app_controller->system_app();
+  if (app_controller && app_controller->system_app())
+    return false;
+#endif
+  return true;
 }
 
 bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
