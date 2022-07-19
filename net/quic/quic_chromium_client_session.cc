@@ -2854,6 +2854,8 @@ void QuicChromiumClientSession::NotifyRequestsOfConfirmation(int net_error) {
 void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
   DCHECK(allow_port_migration_ && !migrate_session_early_v2_);
 
+  current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
+
   if (!version().UsesHttp3())
     return;
 
@@ -2872,7 +2874,6 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
     return;
   }
 
-  current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
   net_log_.BeginEvent(NetLogEventType::QUIC_PORT_MIGRATION_TRIGGERED);
 
   if (!stream_factory_)
