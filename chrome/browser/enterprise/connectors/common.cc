@@ -304,16 +304,16 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 
 bool ShouldPromptReviewForDownload(Profile* profile,
                                    download::DownloadDangerType danger_type) {
+  // Review dialog only appears if custom UI has been set by the admin.
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
       danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
     return ConnectorsServiceFactory::GetForBrowserContext(profile)
-        ->HasCustomInfoToDisplay(AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
+        ->HasExtraUiToDisplay(AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
   } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
     return ConnectorsServiceFactory::GetForBrowserContext(profile)
-        ->HasCustomInfoToDisplay(AnalysisConnector::FILE_DOWNLOADED,
-                                 kMalwareTag);
+        ->HasExtraUiToDisplay(AnalysisConnector::FILE_DOWNLOADED, kMalwareTag);
   }
   return false;
 }
@@ -351,10 +351,8 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
           .value_or(GURL());
 
   bool bypass_justification_required =
-      connectors_service
-          ->GetBypassJustificationRequired(AnalysisConnector::FILE_DOWNLOADED,
-                                           tag)
-          .value_or(false);
+      connectors_service->GetBypassJustificationRequired(
+          AnalysisConnector::FILE_DOWNLOADED, tag);
 
   // This dialog opens itself, and is thereafter owned by constrained window
   // code.
