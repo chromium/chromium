@@ -59,7 +59,6 @@
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -1370,7 +1369,6 @@ void StoragePartitionImpl::Initialize(
   }
 
   font_access_manager_ = FontAccessManager::Create();
-  compute_pressure_manager_ = ComputePressureManager::Create();
 
   if (base::FeatureList::IsEnabled(kPrivacySandboxAggregationService)) {
     aggregation_service_ =
@@ -1686,11 +1684,6 @@ BrowsingTopicsSiteDataManager*
 StoragePartitionImpl::GetBrowsingTopicsSiteDataManager() {
   DCHECK(initialized_);
   return browsing_topics_site_data_manager_.get();
-}
-
-ComputePressureManager* StoragePartitionImpl::GetComputePressureManager() {
-  DCHECK(initialized_);
-  return compute_pressure_manager_.get();
 }
 
 ContentIndexContextImpl* StoragePartitionImpl::GetContentIndexContext() {

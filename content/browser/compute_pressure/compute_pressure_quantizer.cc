@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
-#include "base/sequence_checker.h"
 #include "content/browser/compute_pressure/compute_pressure_quantizer.h"
+
+#include <vector>
 
 namespace content {
 
@@ -50,14 +49,14 @@ bool ComputePressureQuantizer::IsSame(
   return true;
 }
 
-blink::mojom::ComputePressureState ComputePressureQuantizer::Quantize(
-    ComputePressureSample sample) const {
+device::mojom::ComputePressureState ComputePressureQuantizer::Quantize(
+    device::mojom::ComputePressureStatePtr sample) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  blink::mojom::ComputePressureState state;
+  device::mojom::ComputePressureState state;
   state.cpu_utilization =
-      cpu_utilization_quantizer_.Quantize(sample.cpu_utilization);
-  state.cpu_speed = cpu_speed_quantizer_.Quantize(sample.cpu_speed);
+      cpu_utilization_quantizer_.Quantize(sample->cpu_utilization);
+  state.cpu_speed = cpu_speed_quantizer_.Quantize(sample->cpu_speed);
 
   return state;
 }

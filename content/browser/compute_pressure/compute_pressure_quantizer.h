@@ -7,22 +7,21 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "content/browser/compute_pressure/compute_pressure_sample.h"
 #include "content/common/content_export.h"
+#include "services/device/public/mojom/compute_pressure_state.mojom.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
 
 namespace content {
 
-// Quantizes compute pressure data for an origin.
+// Quantizes compute pressure data for a frame.
 //
 // See blink::mojom::ComputePressureQuantization for a descripion of the
-// quantization scheme. The scheme converts a high-entropy ComputePressureSample
-// into a low-entropy blink::mojom::ComputePressureState, which minimizes the
-// amount of information exposed to a Web page that uses the Compute Pressure
-// API.
+// quantization scheme. The scheme converts a high-entropy
+// device::mojom::ComputePressureState into a low-entropy one, which minimizes
+// the amount of information exposed to a Web page that uses the Compute
+// Pressure API.
 //
 // This class is not thread-safe, so each instance must be used on one sequence.
 class CONTENT_EXPORT ComputePressureQuantizer {
@@ -53,8 +52,8 @@ class CONTENT_EXPORT ComputePressureQuantizer {
   void Assign(blink::mojom::ComputePressureQuantizationPtr quantization);
 
   // Quantizes `sample` using the current quantization scheme.
-  blink::mojom::ComputePressureState Quantize(
-      ComputePressureSample sample) const;
+  device::mojom::ComputePressureState Quantize(
+      device::mojom::ComputePressureStatePtr sample) const;
 
  private:
   // Quantizes a single value in compute pressure data.

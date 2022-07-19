@@ -7,9 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "content/browser/compute_pressure/compute_pressure_sample.h"
-#include "content/browser/compute_pressure/compute_pressure_sampler.h"
-#include "content/browser/compute_pressure/compute_pressure_test_support.h"
+#include "services/device/public/mojom/compute_pressure_state.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
 
@@ -92,10 +90,12 @@ TEST(ComputePressureQuantizer, Quantize_Empty) {
       blink::mojom::ComputePressureQuantization::New();
   quantizer.Assign(std::move(empty_quantization_ptr));
 
-  EXPECT_EQ(blink::mojom::ComputePressureState(0.5, 0.5),
-            quantizer.Quantize({.cpu_utilization = 0.0, .cpu_speed = 0.0}));
-  EXPECT_EQ(blink::mojom::ComputePressureState(0.5, 0.5),
-            quantizer.Quantize({.cpu_utilization = 1.0, .cpu_speed = 1.0}));
+  EXPECT_EQ(device::mojom::ComputePressureState(0.5, 0.5),
+            quantizer.Quantize(
+                device::mojom::ComputePressureState(0.0, 0.0).Clone()));
+  EXPECT_EQ(device::mojom::ComputePressureState(0.5, 0.5),
+            quantizer.Quantize(
+                device::mojom::ComputePressureState(1.0, 1.0).Clone()));
 }
 
 TEST(ComputePressureQuantizer, Quantize) {
@@ -104,8 +104,8 @@ TEST(ComputePressureQuantizer, Quantize) {
       std::vector<double>{0.2, 0.5, 0.8}, std::vector<double>{0.5});
   quantizer.Assign(std::move(quantization_ptr));
 
-  std::vector<
-      std::pair<ComputePressureSample, blink::mojom::ComputePressureState>>
+  std::vector<std::pair<device::mojom::ComputePressureState,
+                        device::mojom::ComputePressureState>>
       test_cases = {
           {{0.0, 0.0}, {0.1, 0.25}},    {{1.0, 0.0}, {0.9, 0.25}},
           {{0.0, 1.0}, {0.1, 0.75}},    {{1.0, 1.0}, {0.9, 0.75}},
@@ -116,12 +116,15 @@ TEST(ComputePressureQuantizer, Quantize) {
       };
 
   for (const auto& test_case : test_cases) {
-    ComputePressureSample input = test_case.first;
-    blink::mojom::ComputePressureState expected = test_case.second;
-    blink::mojom::ComputePressureState output = quantizer.Quantize(input);
+    device::mojom::ComputePressureState input = test_case.first;
+    device::mojom::ComputePressureState expected = test_case.second;
+    device::mojom::ComputePressureState output =
+        quantizer.Quantize(input.Clone());
 
-    EXPECT_DOUBLE_EQ(expected.cpu_utilization, output.cpu_utilization) << input;
-    EXPECT_DOUBLE_EQ(expected.cpu_speed, output.cpu_speed) << input;
+    EXPECT_DOUBLE_EQ(expected.cpu_utilization, output.cpu_utilization)
+        << "Input cpu_utilization is: " << input.cpu_utilization;
+    EXPECT_DOUBLE_EQ(expected.cpu_speed, output.cpu_speed)
+        << "Input cpu_speed is: " << input.cpu_speed;
   }
 }
 

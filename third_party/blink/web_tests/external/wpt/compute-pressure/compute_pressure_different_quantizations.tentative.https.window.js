@@ -6,7 +6,7 @@ promise_test(async t => {
       update => { observer1_updates.push(update); },
       {cpuUtilizationThresholds: [0.5], cpuSpeedThresholds: [0.5]});
   t.add_cleanup(() => observer1.disconnect());
-  // Ensure that observer1's quantization scheme gets registered as the origin's
+  // Ensure that observer1's quantization scheme gets registered as the frame's
   // scheme before observer2 starts.
   await observer1.observe('cpu');
 
@@ -76,4 +76,4 @@ promise_test(async t => {
                   'cpuSpeed quantization');
 
 }, 'ComputePressureObserver with a new quantization schema stops all ' +
-   'other active observers');
+   'other active observers in the same frame');

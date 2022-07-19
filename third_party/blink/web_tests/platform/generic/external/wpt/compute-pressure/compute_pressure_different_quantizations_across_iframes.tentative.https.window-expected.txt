@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL ComputePressureObserver with a new quantization schema stops all other active observers assert_equals: observer2.observe() should have stopped observer1; the two observers have different quantization schemes expected 0 but got 1
+Harness: the test ran to completion.
+

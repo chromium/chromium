@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
 #include "services/device/bluetooth/bluetooth_system_factory.h"
+#include "services/device/compute_pressure/compute_pressure_manager_impl.h"
 #include "services/device/device_posture/device_posture_platform_provider.h"
 #include "services/device/device_posture/device_posture_provider_impl.h"
 #include "services/device/fingerprint/fingerprint.h"
@@ -180,6 +181,12 @@ void DeviceService::OverrideGeolocationContextBinderForTesting(
   internal::GetGeolocationContextBinderOverride() = std::move(binder);
 }
 
+// static
+void DeviceService::OverrideComputePressureManagerBinderForTesting(
+    ComputePressureManagerBinder binder) {
+  internal::GetComputePressureManagerBinderOverride() = std::move(binder);
+}
+
 void DeviceService::BindBatteryMonitor(
     mojo::PendingReceiver<mojom::BatteryMonitor> receiver) {
 #if BUILDFLAG(IS_ANDROID)
@@ -187,6 +194,20 @@ void DeviceService::BindBatteryMonitor(
 #else
   BatteryMonitorImpl::Create(std::move(receiver));
 #endif
+}
+
+void DeviceService::BindComputePressureManager(
+    mojo::PendingReceiver<mojom::ComputePressureManager> receiver) {
+  const auto& binder_override =
+      internal::GetComputePressureManagerBinderOverride();
+  if (binder_override) {
+    binder_override.Run(std::move(receiver));
+    return;
+  }
+
+  if (!compute_pressure_manager_)
+    compute_pressure_manager_ = ComputePressureManagerImpl::Create();
+  compute_pressure_manager_->Bind(std::move(receiver));
 }
 
 #if BUILDFLAG(IS_ANDROID)

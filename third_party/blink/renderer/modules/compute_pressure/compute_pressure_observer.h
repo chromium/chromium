@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_COMPUTE_PRESSURE_OBSERVER_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/mojom/compute_pressure_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_compute_pressure_record.h"
@@ -64,7 +65,7 @@ class ComputePressureObserver final
   void Trace(blink::Visitor*) const override;
 
   // mojom::blink::ComputePressureObserver implementation.
-  void OnUpdate(mojom::blink::ComputePressureStatePtr state) override;
+  void OnUpdate(device::mojom::blink::ComputePressureStatePtr state) override;
 
   // ExecutionContextLifecycleObserver implementation.
   void ContextDestroyed() override;
@@ -91,7 +92,8 @@ class ComputePressureObserver final
   HeapVector<Member<ComputePressureRecord>, kMaxQueuedRecords> records_;
 
   // Connection to the browser-side implementation.
-  HeapMojoRemote<mojom::blink::ComputePressureHost> compute_pressure_host_;
+  HeapMojoRemote<mojom::blink::ComputePressureService>
+      compute_pressure_service_;
 
   // Routes ComputePressureObserver mojo messages to this instance.
   HeapMojoReceiver<mojom::blink::ComputePressureObserver,

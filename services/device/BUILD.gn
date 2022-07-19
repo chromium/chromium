@@ -37,6 +37,7 @@ source_set("lib") {
   deps = [
     ":binder_overrides",
     "//build:chromeos_buildflags",
+    "//services/device/compute_pressure",
     "//services/device/device_posture",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
@@ -134,6 +135,12 @@ source_set("tests") {
 
   sources = [
     "battery/battery_status_service_unittest.cc",
+    "compute_pressure/compute_pressure_manager_impl_unittest.cc",
+    "compute_pressure/compute_pressure_sampler_unittest.cc",
+    "compute_pressure/compute_pressure_test_support.cc",
+    "compute_pressure/compute_pressure_test_support.h",
+    "compute_pressure/cpu_core_speed_info_unittest.cc",
+    "compute_pressure/cpuid_base_frequency_parser_unittest.cc",
     "generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer_unittest.cc",
     "generic_sensor/fake_platform_sensor_and_provider.cc",
     "generic_sensor/fake_platform_sensor_and_provider.h",
@@ -178,6 +185,7 @@ source_set("tests") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
+    "//services/device/compute_pressure",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/geolocation:test_support",
@@ -299,6 +307,14 @@ source_set("tests") {
         ]
       }
     }
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "compute_pressure/cpu_probe_linux_unittest.cc",
+      "compute_pressure/procfs_stat_cpu_parser_unittest.cc",
+      "compute_pressure/sysfs_cpufreq_core_parser_unittest.cc",
+    ]
   }
 
   if (is_serial_enabled_platform) {

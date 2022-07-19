@@ -29,7 +29,7 @@ promise_test(async t => {
   iframe.remove();
 
   // Calling observe() from a detached iframe should fail but not crash.
-  await promise_rejects_dom(t, 'InvalidStateError', iframe_DOMException,
+  await promise_rejects_dom(t, 'NotSupportedError', iframe_DOMException,
                             observer.observe('cpu'));
 }, 'ComputePressureObserver.observe() on detached frame rejects');
 

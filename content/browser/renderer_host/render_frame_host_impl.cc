@@ -58,7 +58,6 @@
 #include "content/browser/can_commit_status.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
@@ -10798,12 +10797,6 @@ void RenderFrameHostImpl::GetFontAccessManager(
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   GetStoragePartition()->GetFontAccessManager()->BindReceiver(
       GetGlobalId(), std::move(receiver));
-}
-
-void RenderFrameHostImpl::BindComputePressureHost(
-    mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
-  GetStoragePartition()->GetComputePressureManager()->BindReceiver(
-      GetLastCommittedOrigin(), GetGlobalId(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::GetFileSystemAccessManager(

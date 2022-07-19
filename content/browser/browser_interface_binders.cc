@@ -20,6 +20,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
+#include "content/browser/compute_pressure/compute_pressure_service_impl.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -737,8 +738,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::CodeCacheHost>(base::BindRepeating(
       &RenderFrameHostImpl::CreateCodeCacheHost, base::Unretained(host)));
 
-  map->Add<blink::mojom::ComputePressureHost>(base::BindRepeating(
-      &RenderFrameHostImpl::BindComputePressureHost, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    map->Add<blink::mojom::ComputePressureService>(base::BindRepeating(
+        &ComputePressureServiceImpl::Create, base::Unretained(host)));
+  }
 
   map->Add<blink::mojom::ContactsManager>(
       base::BindRepeating(ContactsManagerImpl::Create, base::Unretained(host)));

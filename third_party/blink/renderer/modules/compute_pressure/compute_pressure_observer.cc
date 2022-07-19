@@ -29,10 +29,10 @@ ComputePressureObserver::ComputePressureObserver(
     : ExecutionContextLifecycleStateObserver(execution_context),
       observer_callback_(observer_callback),
       normalized_options_(normalized_options),
-      compute_pressure_host_(execution_context),
+      compute_pressure_service_(execution_context),
       receiver_(this, execution_context) {
   execution_context->GetBrowserInterfaceBroker().GetInterface(
-      compute_pressure_host_.BindNewPipeAndPassReceiver(
+      compute_pressure_service_.BindNewPipeAndPassReceiver(
           execution_context->GetTaskRunner(TaskType::kUserInteraction)));
   // ExecutionContextLifecycleStateObserver.
   UpdateStateIfNeeded();
@@ -136,9 +136,9 @@ ScriptPromise ComputePressureObserver::observe(
     ScriptState* script_state,
     V8ComputePressureSource source,
     ExceptionState& exception_state) {
-  if (!compute_pressure_host_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "ComputePressureHost backend went away");
+  if (!compute_pressure_service_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Compute pressure is not available");
     return ScriptPromise();
   }
 
@@ -155,7 +155,7 @@ ScriptPromise ComputePressureObserver::observe(
       normalized_options_->cpuUtilizationThresholds(),
       normalized_options_->cpuSpeedThresholds());
 
-  compute_pressure_host_->AddObserver(
+  compute_pressure_service_->AddObserver(
       receiver_.BindNewPipeAndPassRemote(std::move(task_runner)),
       std::move(mojo_options),
       WTF::Bind(&ComputePressureObserver::DidAddObserver,
@@ -195,7 +195,7 @@ void ComputePressureObserver::disconnect() {
 void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
   visitor->Trace(observer_callback_);
   visitor->Trace(normalized_options_);
-  visitor->Trace(compute_pressure_host_);
+  visitor->Trace(compute_pressure_service_);
   visitor->Trace(receiver_);
   visitor->Trace(records_);
   ScriptWrappable::Trace(visitor);
@@ -203,7 +203,7 @@ void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
 }
 
 void ComputePressureObserver::OnUpdate(
-    mojom::blink::ComputePressureStatePtr state) {
+    device::mojom::blink::ComputePressureStatePtr state) {
   auto* record = ComputePressureRecord::Create();
   record->setCpuUtilization(state->cpu_utilization);
   record->setCpuSpeed(state->cpu_speed);

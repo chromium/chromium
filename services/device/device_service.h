@@ -19,6 +19,7 @@
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/public_ip_address_geolocation_provider.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
+#include "services/device/public/mojom/compute_pressure_manager.mojom.h"
 #include "services/device/public/mojom/device_posture_provider.mojom.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
@@ -77,6 +78,7 @@ class SerialPortManagerImpl;
 class DevicePostureProviderImpl;
 #endif
 
+class ComputePressureManagerImpl;
 class DeviceService;
 class GeolocationManager;
 class PlatformSensorProvider;
@@ -133,6 +135,13 @@ class DeviceService : public mojom::DeviceService {
   static void OverrideGeolocationContextBinderForTesting(
       GeolocationContextBinder binder);
 
+  // Supports global override of ComputePressureManager binding within the
+  // service.
+  using ComputePressureManagerBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::ComputePressureManager>)>;
+  static void OverrideComputePressureManagerBinderForTesting(
+      ComputePressureManagerBinder binder);
+
 #if BUILDFLAG(IS_ANDROID)
   // Allows tests to override how frame hosts bind NFCProvider receivers.
   using NFCProviderBinder = base::RepeatingCallback<void(
@@ -158,6 +167,9 @@ class DeviceService : public mojom::DeviceService {
 
   void BindBatteryMonitor(
       mojo::PendingReceiver<mojom::BatteryMonitor> receiver) override;
+
+  void BindComputePressureManager(
+      mojo::PendingReceiver<mojom::ComputePressureManager> receiver) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void BindNFCProvider(
@@ -214,6 +226,7 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::UsbDeviceManagerTest> receiver) override;
 
   mojo::ReceiverSet<mojom::DeviceService> receivers_;
+  std::unique_ptr<ComputePressureManagerImpl> compute_pressure_manager_;
   std::unique_ptr<PowerMonitorMessageBroadcaster>
       power_monitor_message_broadcaster_;
   std::unique_ptr<PublicIpAddressGeolocationProvider>

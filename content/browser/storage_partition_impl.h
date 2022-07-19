@@ -72,7 +72,6 @@ class BluetoothAllowedDevicesMap;
 class BroadcastChannelService;
 class BucketManager;
 class CacheStorageControlWrapper;
-class ComputePressureManager;
 class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
@@ -254,7 +253,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   AttributionManager* GetAttributionManager();
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManager> font_access_manager);
-  ComputePressureManager* GetComputePressureManager();
   std::string GetPartitionDomain();
   AggregationServiceImpl* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
@@ -661,10 +659,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // Owning pointer to the SharedStorageManager for this partition.
   std::unique_ptr<storage::SharedStorageManager> shared_storage_manager_;
-
-  // TODO(crbug.com/1205695): ComputePressureManager should live elsewher. The
-  //                          Compute Pressure API does not store data.
-  std::unique_ptr<ComputePressureManager> compute_pressure_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The

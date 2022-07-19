@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/mojom/compute_pressure_manager.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -22,6 +23,11 @@ using GeolocationContextBinder = base::RepeatingCallback<void(
     mojo::PendingReceiver<device::mojom::GeolocationContext>)>;
 COMPONENT_EXPORT(DEVICE_SERVICE_BINDER_OVERRIDES)
 GeolocationContextBinder& GetGeolocationContextBinderOverride();
+
+using ComputePressureManagerBinder = base::RepeatingCallback<void(
+    mojo::PendingReceiver<device::mojom::ComputePressureManager>)>;
+COMPONENT_EXPORT(DEVICE_SERVICE_BINDER_OVERRIDES)
+ComputePressureManagerBinder& GetComputePressureManagerBinderOverride();
 
 #if BUILDFLAG(IS_ANDROID)
 using NFCProviderBinder = base::RepeatingCallback<void(

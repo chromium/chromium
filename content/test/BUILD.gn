@@ -2135,14 +2135,8 @@ test("content_unittests") {
     "../browser/client_hints/client_hints_unittest.cc",
     "../browser/code_cache/generated_code_cache_unittest.cc",
     "../browser/code_cache/simple_lru_cache_unittest.cc",
-    "../browser/compute_pressure/compute_pressure_host_unittest.cc",
-    "../browser/compute_pressure/compute_pressure_manager_unittest.cc",
     "../browser/compute_pressure/compute_pressure_quantizer_unittest.cc",
-    "../browser/compute_pressure/compute_pressure_sampler_unittest.cc",
-    "../browser/compute_pressure/compute_pressure_test_support.cc",
-    "../browser/compute_pressure/compute_pressure_test_support.h",
-    "../browser/compute_pressure/cpu_core_speed_info_unittest.cc",
-    "../browser/compute_pressure/cpuid_base_frequency_parser_unittest.cc",
+    "../browser/compute_pressure/compute_pressure_service_impl_unittest.cc",
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
@@ -2582,14 +2576,6 @@ test("content_unittests") {
   if (is_win) {
     sources +=
         [ "../renderer/media/win/overlay_state_observer_impl_unittest.cc" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    sources += [
-      "../browser/compute_pressure/cpu_probe_linux_unittest.cc",
-      "../browser/compute_pressure/procfs_stat_cpu_parser_unittest.cc",
-      "../browser/compute_pressure/sysfs_cpufreq_core_parser_unittest.cc",
-    ]
   }
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {

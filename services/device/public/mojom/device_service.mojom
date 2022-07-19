@@ -5,8 +5,8 @@
 module device.mojom;
 
 import "services/device/public/mojom/battery_monitor.mojom";
+import "services/device/public/mojom/compute_pressure_manager.mojom";
 import "services/device/public/mojom/fingerprint.mojom";
-import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
@@ -65,6 +65,9 @@ interface DeviceService {
 
   // Binds a BatteryMonitor endpoint.
   BindBatteryMonitor(pending_receiver<BatteryMonitor> receiver);
+
+  // Binds a ComputePressureManager endpoint.
+  BindComputePressureManager(pending_receiver<ComputePressureManager> receiver);
 
   // Binds a NFCProvider endpoint.
   [EnableIf=is_android]
