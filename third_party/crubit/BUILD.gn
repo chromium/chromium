@@ -32,7 +32,6 @@ source_set("deps_of_rs_api_impl") {
 }
 
 rust_static_library("ctor") {
-  visibility = [ ":*" ]
   crate_root = "${_support_dir}/ctor.rs"
   sources = [ "${_support_dir}/ctor.rs" ]
   build_native_rust_unit_tests = true
@@ -51,7 +50,6 @@ rust_macro("ctor_proc_macros") {
 }
 
 rust_static_library("forward_declare") {
-  visibility = [ ":*" ]
   crate_root = "${_support_dir}/forward_declare.rs"
   sources = [ "${_support_dir}/forward_declare.rs" ]
   build_native_rust_unit_tests = true
@@ -70,7 +68,6 @@ rust_macro("forward_declare_proc_macros") {
 }
 
 rust_static_library("oops") {
-  visibility = [ ":*" ]
   crate_root = "${_support_dir}/oops.rs"
   sources = [ "${_support_dir}/oops.rs" ]
   build_native_rust_unit_tests = true

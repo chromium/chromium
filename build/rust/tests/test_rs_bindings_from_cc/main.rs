@@ -21,4 +21,12 @@ mod tests {
         let x = ::self_contained_target_rs_api::CcPodStruct { value: 123 };
         assert_eq!(x.value, 123);
     }
+
+    #[test]
+    fn test_target_depending_on_another() {
+        ctor::emplace! {
+            let x = ::target_depending_on_another_rs_api::CreateCcPodStructFromValue(456);
+        }
+        assert_eq!(x.value, 456);
+    }
 }

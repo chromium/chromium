@@ -26,13 +26,25 @@ import("//build/rust/mixed_static_library.gni")
 #     Implementation note: This doesn't just take *all* the headers of the C++
 #     target, because typically only a *subset* of headers provides the
 #     *public* API that bindings are needed for.
+#     TODO(crbug.com/1329611): Internal headers still need to be included in
+#     the targets_and_headers metadata...
 #
-#   TODO(crbug.com/1297592): Support dependencies in the generated bindings.
-#   Tentative plan:
-#   1) introduce `bindings_target` and use it A) in regular `deps` of
-#      mixed_static_library and B) to build the crate name by appending
-#      "_rs_api" suffix.
-#   2) introduce `bindings_deps` and use it when gathering GN metadata.
+#   deps:
+#     Other `rs_bindings_from_cc` targets that the bindings need to depend on
+#     (e.g. because APIs in the `public_headers` refer to `struct`s declared in
+#     those other targets. Note how in the usage example below bindings for
+#     `struct Goat` are provided by `goat_rs_api`, and that therefore the
+#     bindings for the `TeleportGoat` provided by `teleport_rs_api` depend on
+#     `goat_rs_api`).
+#
+#     Oftentimes `deps` can be a copy of the `public_deps` of the bindings
+#     target, but depending on targets with the suffix "_rs_api".  Still, there
+#     are scenarios where `deps` don't parallel *all* entries from `public_deps`:
+#       * `public_deps` that don't expose Rust APIs (i.e. there are no
+#         "..._rs_api" targets to depend on).
+#       * `public_deps` that Crubit bindings don't depend on (dependencies that
+#          don't provide re-exportable C++ APIs, or that only provide items
+#          that are ignored by Crubit - e.g. `#define`s).
 #
 # Usage example:
 #
@@ -43,26 +55,48 @@ import("//build/rust/mixed_static_library.gni")
 #       rust_executable("my_target") {
 #         crate_root = "main.rs"
 #         sources = [ "main.rs" ]
-#         deps = [ ":cpp_lib_rs_api" ]
+#         deps = [ ":teleport_rs_api" ]
 #       ]
 #
-#       # Crubit's convention is to append "_rs_api" suffix to the target name
-#       # when naming the generated Rust crate.
-#       rs_bindings_from_cc("cpp_lib") {
-#         public_headers = ["cpp_lib.h"]
+#       # This will generate "teleport_rs_api" target that provides Rust
+#       # bindings for the "teleport.h" header from the ":teleport" source
+#       # set.
+#       rs_bindings_from_cc("teleport") {
+#         public_headers = ["teleport.h"]
+#         deps = [ ":goat_rs_api" ]  # Parallel's `public_deps` of ":teleport".
 #       }
 #
-#       source_set("cpp_lib") {
-#         sources = [ "cpp_lib.h", ... ]
+#       source_set("teleport") {
+#         sources = [ "teleport.h", ... ]
+#         public_deps = [ ":goat" ]
 #       }
 #
-#   cpp_lib.h:
-#     void TeleportGoats(int number_of_goats);
+#       rs_bindings_from_cc("goat") {
+#         public_headers = ["goat.h"]
+#       }
+#       source_set("goat") {
+#         sources = [ "goat.h", ... ]
+#       }
+#
+#   teleport.h:
+#     #include "goat.h"
+#     void TeleportGoat(const Goat& goat_to_teleport);
+#
+#   goat.h:
+#     struct Goat { ... };
 #
 #   main.rs:
 #     fn main() {
-#       cpp_lib_rs_api::TeleportGoats(42);
+#       let g: goat_rs_api::Goat = ...;
+#       teleport_rs_api::TeleportGoat(&g);
 #     }
+#
+# Debugging and implementation notes:
+#
+# - Consider running the build while CRUBIT_DEBUG environment variable is set.
+#   This will generate additional `.ir` file and log extra information from
+#   the `run_rs_bindings_from_cc.py` script (e.g. full cmdlines for invoking
+#   `rs_bindings_from_cc`).
 #
 template("rs_bindings_from_cc") {
   # Mandatory parameter: public_headers.
@@ -84,9 +118,20 @@ template("rs_bindings_from_cc") {
     _visibility = invoker.visibility
   }
 
-  # Future parameters:
+  # Optional parameter: deps.
+  #
+  # TODO(crbug.com/1329611): Can we somehow assert that `_deps` only contains
+  # some "..._rs_api" targets crated via
+  # `mixed_static_library($_lib_target_name)` below?  foreach(dep, _deps) {
+  # assert something }
+  _deps = []
+  if (defined(invoker.deps)) {
+    _deps = invoker.deps
+  }
+
+  # TODO(crbug.com/1329611): Should `_bindings_target` or `_lib_target_name` be
+  # provided explicitly?
   _bindings_target = ":${target_name}"
-  _bindings_deps = []
 
   # Various names and paths that are shared across multiple targets defined
   # in the template here.
@@ -103,7 +148,10 @@ template("rs_bindings_from_cc") {
   # and putting it into GN's `metadata`.
   group(_metadata_target_name) {
     testonly = _testonly
-    visibility = [ ":${_gen_metadata_target_name}" ]
+    visibility = [
+      ":${_gen_metadata_target_name}",
+      ":${_lib_target_name}",
+    ]
     deps = []
 
     metadata = {
@@ -111,7 +159,11 @@ template("rs_bindings_from_cc") {
       # `--targets_and_headers` cmdline argument of `rs_bindings_from_cc`.
       crubit_target_and_headers = [
         {
-          t = _base_target_name
+          # The `get_label_info` call below expands ":foo_rs_api" into
+          # something like "//dir/bar/baz:foo_rs_api".  Crubit assumes that
+          # there is a colon + uses the after-colon-suffix as the name of the
+          # crate.
+          t = get_label_info(":${_lib_target_name}", "label_no_toolchain")
           h = _rebased_public_headers
         },
       ]
@@ -125,20 +177,18 @@ template("rs_bindings_from_cc") {
     visibility = [ ":${_gen_bindings_target_name}" ]
 
     deps = [ ":${_metadata_target_name}" ]
-    deps += _bindings_deps
+    deps += _deps
 
     testonly = _testonly
     outputs = [ _metadata_path ]
     output_conversion = "json"
     data_keys = [ "crubit_target_and_headers" ]
 
-    # TODO(https://crbug.com/1329611): Use `walk_keys` to limit how deep the
-    # transitive dependency goes.  Crubit doesn't care about all the `public_deps`
-    # - for example if target1.h re-exports a function from target2.h that uses
-    # only built-in C types as parameter types and return type, then Crubit doesn't
-    # need to know about target2.h when generating bindings for target1.h.  Crubit
-    # only needs to know about target2.h if bindings for target1.h need to expose
-    # types that get their bindings from target2.h.
+    # `walk_keys` are used to limit how deep the transitive dependency goes.
+    # This is important, because Crubit doesn't care about all the `deps` or
+    # `public_deps` of the `_bindings_target`.  (See also the doc comment about
+    # `rs_bindings_from_cc.deps` parameter at the top of this file.)
+    walk_keys = [ "crubit_metadata_deps" ]
   }
 
   # Exposing the generated Rust bindings.
@@ -149,21 +199,32 @@ template("rs_bindings_from_cc") {
     }
 
     sources = [ _cc_out_path ]
-    deps = _bindings_deps
+    deps = _deps
     deps += [
       ":${_gen_bindings_target_name}",
+      ":${_metadata_target_name}",
       "//third_party/crubit:deps_of_rs_api_impl",
       _bindings_target,
     ]
 
+    # Chromium already covers `chromium/src/` and `out/Release/gen` in the
+    # include path, but we need to explicitly add `out/Release` below.  This
+    # is needed, because `--public_headers` passed to Crubit use paths relative
+    # to the `out/Release` directory.  See also b/239238801.
+    include_dirs = [ root_build_dir ]
+
     rs_sources = [ _rs_out_path ]
     rs_crate_name = _lib_target_name
     rs_crate_root = _rs_out_path
-    rs_deps = _bindings_deps
+    rs_deps = _deps
     rs_deps += [
       ":${_gen_bindings_target_name}",
       "//third_party/crubit:deps_of_rs_api",
     ]
+
+    metadata = {
+      crubit_metadata_deps = _deps + [ ":${_metadata_target_name}" ]
+    }
   }
 
   # Invoking Crubit's `rs_bindings_from_cc` tool to generate Rust bindings.
