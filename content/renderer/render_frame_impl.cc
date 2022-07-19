@@ -5318,6 +5318,19 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
   // replacement too.
   DCHECK(IsMainFrame() || navigation_params->frame_load_type ==
                               WebFrameLoadType::kReplaceCurrentItem);
+
+  // This corresponds to steps 3 and 20 of
+  // https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context,
+  // which sets the new Document's `referrer` member to the initiator frame's
+  // full unredacted URL, in the case of new browsing context creation.
+  if (info->initiator_frame_token.has_value()) {
+    WebFrame* initiator =
+        WebFrame::FromFrameToken(info->initiator_frame_token.value());
+    DCHECK(initiator->IsWebLocalFrame());
+    navigation_params->referrer =
+        initiator->ToWebLocalFrame()->GetDocument().Url().GetString();
+  }
+
   frame_->CommitNavigation(std::move(navigation_params), BuildDocumentState());
 }
 

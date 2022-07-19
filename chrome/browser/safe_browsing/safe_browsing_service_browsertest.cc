@@ -905,15 +905,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   EXPECT_TRUE(got_hit_report());
   EXPECT_EQ(img_url, hit_report().malicious_url);
   EXPECT_TRUE(hit_report().is_subresource);
-  // When InitialNavigationEntry is enabled, the page report URL should be
-  // about:blank, as the last committed entry is the synchronous about:blank
-  // commit. When InitialNavigationEntry is disabled, it should be empty as the
-  // synchronous about:blank commit was ignored (didn't create NavigationEntry).
-  EXPECT_EQ(blink::features::IsInitialNavigationEntryEnabled()
-                ? GURL(url::kAboutBlankURL)
-                : GURL(),
-            hit_report().page_url);
-  EXPECT_EQ(GURL(), hit_report().referrer_url);
+  // Page report URLs should be about:blank, as the last committed navigation is
+  // the synchronous about:blank commit.
+  EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().page_url);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().referrer_url);
 
   // Proceed through it.
   security_interstitials::SecurityInterstitialTabHelper* helper =
