@@ -14819,7 +14819,13 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   // Verify no jump.
   float y = CurrentScrollOffset(scrolling_layer).y();
-  EXPECT_TRUE(y > 1 && y < 49);
+  if (features::IsImpulseScrollAnimationEnabled()) {
+    // Impulse scroll animation is faster than non-impulse, which results in a
+    // traveled distance larger than the original 50px.
+    EXPECT_TRUE(y > 50 && y < 100);
+  } else {
+    EXPECT_TRUE(y > 1 && y < 49);
+  }
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
