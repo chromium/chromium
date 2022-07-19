@@ -27,6 +27,6 @@ if (!(window as GCRWebType).__gCrWeb) {
   (window as GCRWebType).__gCrWeb = {};
 }
 
-const gCrWeb: any = (window as GCRWebType).__gCrWeb = {};
+const gCrWeb: any = (window as GCRWebType).__gCrWeb;
 
 export {gCrWeb};
