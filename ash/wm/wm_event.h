@@ -203,8 +203,8 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
 class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
  public:
   enum class SnapRatio {
-    kDefaultSnapRatio,
     kOneThirdSnapRatio,
+    kDefaultSnapRatio,
     kTwoThirdSnapRatio
   };
 

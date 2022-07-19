@@ -211,16 +211,6 @@ void BaseState::UpdateMinimizedState(WindowState* window_state,
 gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
     const WindowStateType state_type) {
-  return BaseState::GetSnappedWindowBoundsInParent(window, state_type,
-                                                   kDefaultSnapRatio);
-}
-
-gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
-    aura::Window* window,
-    const WindowStateType state_type,
-    float snap_ratio) {
-  DCHECK(state_type == WindowStateType::kPrimarySnapped ||
-         state_type == WindowStateType::kSecondarySnapped);
   gfx::Rect bounds_in_parent;
   if (ShouldAllowSplitView()) {
     bounds_in_parent =
@@ -228,15 +218,13 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
             (state_type == WindowStateType::kPrimarySnapped)
                 ? SplitViewController::LEFT
                 : SplitViewController::RIGHT,
-            window, snap_ratio);
+            window);
   } else {
-    // Use `window_positioning_utils` to calculate the snapped window bounds.
-    bounds_in_parent = ash::GetSnappedWindowBoundsInParent(
-        window,
-        state_type == WindowStateType::kPrimarySnapped
-            ? SnapViewType::kPrimary
-            : SnapViewType::kSecondary,
-        snap_ratio);
+    bounds_in_parent = (state_type == WindowStateType::kPrimarySnapped)
+                           ? GetDefaultSnappedWindowBoundsInParent(
+                                 window, SnapViewType::kPrimary)
+                           : GetDefaultSnappedWindowBoundsInParent(
+                                 window, SnapViewType::kSecondary);
   }
   return bounds_in_parent;
 }

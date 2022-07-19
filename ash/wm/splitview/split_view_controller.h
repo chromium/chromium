@@ -216,30 +216,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // |left_window_|. All the other window will open on the right side.
   aura::Window* GetDefaultSnappedWindow();
 
-  // Gets snapped bounds based on |snap_position|, the side of the screen to
-  // snap to, and |snap_ratio|, the ratio of the screen that the snapped window
-  // will occupy, adjusted to accommodate the minimum size of
-  // |window_for_minimum_size| if |window_for_minimum_size| is not null.
-  gfx::Rect GetSnappedWindowBoundsInParent(
-      SnapPosition snap_position,
-      aura::Window* window_for_minimum_size,
-      float snap_ratio);
-
-  // Gets snapped bounds based on |snap_position|, |divider_position_|, and
-  // |kDefaultSnapRatio|, adjusted to accommodate the minimum size of
-  // |window_for_minimum_size| if |window_for_minimum_size| is not null.
+  // Gets snapped bounds based on |snap_position| and |divider_position_|,
+  // adjusted to accommodate the minimum size of |window_for_minimum_size| if
+  // |window_for_minimum_size| is not null.
   gfx::Rect GetSnappedWindowBoundsInParent(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size);
-
-  // Gets snapped bounds in screen coordinates based on |snap_position| and
-  // |snap_ratio|.
-  gfx::Rect GetSnappedWindowBoundsInScreen(
-      SnapPosition snap_position,
-      aura::Window* window_for_minimum_size,
-      float snap_ratio);
-
-  // Gets snapped bounds in screen coordinates for |kDefaultSnapRatio|.
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size);
@@ -251,11 +233,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Gets the default value of |divider_position_|.
   int GetDefaultDividerPosition() const;
-
-  // Calculates the new divider position to move |divider_position_| to, such
-  // that the primary window will occupy |snap_ratio| of the screen, and the
-  // secondary window will occupy the rest.
-  int GetDividerPosition(float snap_ratio) const;
 
   // Returns true during the divider snap animation.
   bool IsDividerAnimating() const;
