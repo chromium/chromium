@@ -1427,10 +1427,6 @@
       status: {"Android": "stable"},
     },
     {
-      name: "MediaControlsUseCutOutByDefault",
-      status: "stable",
-    },
-    {
       name: "MediaElementVolumeGreaterThanOne",
     },
     // Set to reflect the kMediaEngagementBypassAutoplayPolicies feature.
