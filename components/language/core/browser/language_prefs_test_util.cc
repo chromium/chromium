@@ -72,14 +72,13 @@ void LanguagePrefTester::SetLanguagePrefs(
 
 void LanguagePrefTester::SetForcedLanguagePrefs(
     std::vector<std::string>&& languages) {
-  base::Value::ListStorage languages_list;
+  base::Value::List languages_list;
 
   for (std::string language : languages) {
-    languages_list.push_back(base::Value(std::move(language)));
+    languages_list.Append(std::move(language));
   }
 
-  prefs_->Set(language::prefs::kForcedLanguages,
-              base::Value(std::move(languages_list)));
+  prefs_->SetList(language::prefs::kForcedLanguages, std::move(languages_list));
 }
 
 }  // namespace test
