@@ -304,3 +304,83 @@ script_test("weblayer_shell_wpt") {
     "//third_party/blink/tools:wpt_tests_android_isolate",
   ]
 }
+
+# TODO(rayankans): Update `run_weblayer_shell` to also deploy the browserfragment shell with a
+# browser sandbox APK.
+
+browserfragment_shell_manifest =
+    "$target_gen_dir/browserfragment_shell_manifest/AndroidManifest.xml"
+
+jinja_template("browserfragment_shell_manifest") {
+  input = "browserfragment_shell_apk/AndroidManifest.xml"
+  output = browserfragment_shell_manifest
+}
+
+android_resources("browserfragment_shell_resources") {
+  sources = [
+    "browserfragment_shell_apk/res/layout/main.xml",
+    "browserfragment_shell_apk/res/values/styles.xml",
+  ]
+}
+
+android_library("browserfragment_shell_java") {
+  testonly = true
+  resources_package = "org.chromium.browserfragment.shell"
+
+  sources = [ "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/BrowserFragmentShellActivity.java" ]
+
+  deps = [
+    ":browserfragment_shell_resources",
+    "//base:base_java",
+    "//third_party/android_deps:com_google_guava_guava_android_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//weblayer/public/java:browserfragment_java",
+  ]
+}
+
+android_apk("browserfragment_shell_apk") {
+  testonly = true
+
+  # Test runner does not support having "additional apks" that are incremental.
+  never_incremental = true
+
+  deps = [
+    ":browserfragment_shell_java",
+    ":browserfragment_shell_manifest",
+    ":browserfragment_shell_resources",
+  ]
+
+  apk_name = "BFShell"
+  android_manifest = browserfragment_shell_manifest
+  min_sdk_version = default_min_sdk_version
+  target_sdk_version = 28
+  android_manifest_dep = ":browserfragment_shell_manifest"
+  shared_resources = true
+}
+
+browser_sandbox_manifest =
+    "$target_gen_dir/browser_sandbox_manifest/AndroidManifest.xml"
+
+jinja_template("browser_sandbox_manifest") {
+  input = "browser_sandbox_apk/AndroidManifest.xml"
+  output = browser_sandbox_manifest
+}
+
+android_apk("browser_sandbox_apk") {
+  testonly = true
+
+  # Test runner does not support having "additional apks" that are incremental.
+  never_incremental = true
+
+  deps = [
+    ":browser_sandbox_manifest",
+    "//weblayer/public/java:browserfragment_sandbox_java",
+  ]
+
+  apk_name = "BFSandbox"
+  android_manifest = browser_sandbox_manifest
+  min_sdk_version = default_min_sdk_version
+  target_sdk_version = 28
+  android_manifest_dep = ":browser_sandbox_manifest"
+  shared_resources = true
+}

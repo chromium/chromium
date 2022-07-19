@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.chromium.browserfragment.shell">
+
+    <application android:label="BF shell"
+        android:supportsRtl="true">
+        <activity android:name="BrowserFragmentShellActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@style/ShellTheme"
+                  android:windowSoftInputMode="adjustResize"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
