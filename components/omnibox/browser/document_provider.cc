@@ -556,7 +556,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
         KeywordProvider::GetSubstitutingTemplateURLForInput(
             template_url_service, &keyword_input);
     if (keyword_provider &&
-        IsExplicitlyInKeywordMode(input, keyword_provider->keyword()) &&
+        InExplicitKeywordMode(input, keyword_provider->keyword()) &&
         !base::StartsWith(input.text(), u"drive.google.com",
                           base::CompareCase::SENSITIVE)) {
       return false;

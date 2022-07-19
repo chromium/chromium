@@ -306,6 +306,12 @@ size_t AutocompleteProvider::TrimSchemePrefix(std::u16string* url,
 }
 
 // static
+bool AutocompleteProvider::InKeywordMode(const AutocompleteInput& input) {
+  return input.keyword_mode_entry_method() !=
+         metrics::OmniboxEventProto::INVALID;
+}
+
+// static
 bool AutocompleteProvider::InExplicitExperimentalKeywordMode(
     const AutocompleteInput& input,
     const std::u16string& keyword) {
@@ -313,11 +319,11 @@ bool AutocompleteProvider::InExplicitExperimentalKeywordMode(
          input.prefer_keyword() &&
          base::StartsWith(input.text(), keyword,
                           base::CompareCase::SENSITIVE) &&
-         IsExplicitlyInKeywordMode(input, keyword);
+         InExplicitKeywordMode(input, keyword);
 }
 
 // static
-bool AutocompleteProvider::IsExplicitlyInKeywordMode(
+bool AutocompleteProvider::InExplicitKeywordMode(
     const AutocompleteInput& input,
     const std::u16string& keyword) {
   // It is important to this method that we determine if the user entered
