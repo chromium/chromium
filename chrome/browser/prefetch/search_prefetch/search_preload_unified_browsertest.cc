@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 // able to interact with Android UI.
 // TODO(https://crbug.com/1342481): On LacrOS, the window's bound changes
 // unexpectedly, and it stops auto completing.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
@@ -1043,9 +1043,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
 // after taking response away. Without prerender, these prefetches could have
 // helped improve the performance of loading SRPs, so it is necessary to
 // understand the percentage of failing ones.
-// TODO(https://crbug.com/1344850): Flaky.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       DISABLED_PrerenderFailAfterResponseServed) {
+                       PrerenderFailAfterResponseServed) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
@@ -1120,6 +1119,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_real_url));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
