@@ -55,34 +55,6 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() const {
   return window_host->GetNativeViewAccessibleForNSView();
 }
 
-const std::string& ViewAXPlatformNodeDelegateMac::GetName() const {
-  // By default, the kDialog name is the title of the window. NSAccessibility
-  // then applies that name to the native NSWindow. This causes VoiceOver to
-  // double-speak the name. In the case of some dialogs, such as the one
-  // associated with a JavaScript alert, we set the accessible description
-  // to the message contents. For screen readers which prefer the description
-  // over the displayed text, this causes both the title and message to be
-  // presented to the user. At the present time, VoiceOver is not one of those
-  // screen readers. Therefore if we have a dialog whose name is the same as
-  // the window title, and we also have an explicitly-provided description, set
-  // the name of the dialog to that description. This causes VoiceOver to read
-  // both the title and the displayed text. Note that in order for this to
-  // work, it is necessary for the View to also call OverrideNativeWindowTitle.
-  // Otherwise, NSAccessibility will set the window title to the message text.
-  const std::string& name = ViewAXPlatformNodeDelegate::GetName();
-  if (!ui::IsDialog(GetRole()) ||
-      !HasStringAttribute(ax::mojom::StringAttribute::kDescription))
-    return name;
-
-  if (auto* widget = view()->GetWidget()) {
-    if (auto* widget_delegate = widget->widget_delegate()) {
-      if (base::UTF16ToUTF8(widget_delegate->GetWindowTitle()) == name)
-        return GetStringAttribute(ax::mojom::StringAttribute::kDescription);
-    }
-  }
-  return name;
-}
-
 void ViewAXPlatformNodeDelegateMac::OverrideNativeWindowTitle(
     const std::string& title) {
   if (gfx::NativeViewAccessible ax_window = GetNSWindow()) {

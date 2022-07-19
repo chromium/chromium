@@ -48,33 +48,11 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
             base::SysNSStringToUTF16([native_dialog accessibilityHelp]));
 
   // While some screen readers use the accessible description to know what to
-  // present to the user, VoiceOver currently does not. Therefore, we override
-  // the RootView's accessible name in ViewAXPlatformNodeDelegateMac. That name
-  // is then exposed as the accessibilityTitle (and not accessibilityLabel) on
-  // the Mac because in AXPlatformNodeCocoa, window roles (including dialog) do
-  // not expose an accessibilityLabel.
-  EXPECT_EQ(message,
-            base::SysNSStringToUTF16([native_dialog accessibilityTitle]));
-  EXPECT_EQ(u"", base::SysNSStringToUTF16([native_dialog accessibilityLabel]));
-
-  // The parent of the native dialog should be a window.
+  // present to the user, VoiceOver currently does not. Therefore, we set the
+  // accessibilityLabel of the native window to contain both the title and
+  // the message so that both are presented to the user.
   gfx::NativeViewAccessible native_window = [native_dialog accessibilityParent];
   EXPECT_EQ(NSAccessibilityWindowRole, [native_window accessibilityRole]);
-
-  // On the Mac, the native window's accessible title comes from the "contents"
-  // of the window. In this case, that is the accessibilityTitle of the RootView
-  // which we overrode as described above. As a result, the native window's
-  // accessibilityTitle is now also the message text. It is not necessary to
-  // unset it. (See next comment.)
-  EXPECT_EQ(message,
-            base::SysNSStringToUTF16([native_window accessibilityTitle]));
-
-  // When an object has both an accessibilityLabel and an accessibilityTitle,
-  // VoiceOver prefers the value of accessibilityLabel. Because the native
-  // window is not an AXPlatformNodeCocoa object, we can set the value of
-  // accessibilityLabel on the window to the original title ("url.com
-  // says") via OverrideNativeWindowTitle and VoiceOver presents that
-  // prior to speaking the RootView's message text.
-  EXPECT_EQ(title,
+  EXPECT_EQ(title + u", " + message,
             base::SysNSStringToUTF16([native_window accessibilityLabel]));
 }

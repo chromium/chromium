@@ -26,9 +26,6 @@ class ViewAXPlatformNodeDelegateMac : public ViewAXPlatformNodeDelegate {
 
   // |ViewAccessibility| overrides:
   void OverrideNativeWindowTitle(const std::string& title) override;
-
-  // |AXPlatformNodeDelegate| overrides:
-  const std::string& GetName() const override;
 };
 
 }  // namespace views
