@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 #include "ios/chrome/browser/discover_feed/feed_constants.h"
 #include "ios/chrome/browser/discover_feed/feed_model_configuration.h"
+#import "ios/chrome/browser/procedural_block_types.h"
 
 @class FeedMetricsRecorder;
 
@@ -68,6 +69,22 @@ class DiscoverFeedService : public KeyedService {
   // Refreshes the Discover Feed. Once the Feed model is refreshed it will
   // update all ViewControllers returned by NewFeedViewController.
   virtual void RefreshFeed() = 0;
+
+  // Performs a background refresh for the feed. `completion` is called
+  // after success, failure, or timeout. The BOOL argument indicates whether the
+  // refresh was successful or a failure.
+  // TODO(crbug.com/1343695): Make this a pure virtual function.
+  virtual void PerformBackgroundRefreshes(ProceduralBlockWithBool completion);
+
+  // Stops the background refresh task and cleans up any temporary objects. This
+  // is called by the OS when the task is taking too long.
+  // TODO(crbug.com/1343695): Make this a pure virtual function.
+  virtual void HandleBackgroundRefreshTaskExpiration();
+
+  // The earliest datetime at which the next background refresh should be
+  // scheduled.
+  // TODO(crbug.com/1343695): Make this a pure virtual function.
+  virtual NSDate* GetEarliestBackgroundRefreshBeginDate();
 
   // Returns whether the Following feed model has unseen content.
   virtual BOOL GetFollowingFeedHasUnseenContent() = 0;

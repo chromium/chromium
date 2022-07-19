@@ -30,3 +30,15 @@ void DiscoverFeedService::NotifyDiscoverFeedModelRecreated() {
     observer.OnDiscoverFeedModelRecreated();
   }
 }
+
+// TODO(crbug.com/1343695): Make this a pure virtual function.
+void DiscoverFeedService::PerformBackgroundRefreshes(
+    ProceduralBlockWithBool completion) {}
+
+// TODO(crbug.com/1343695): Make this a pure virtual function.
+void DiscoverFeedService::HandleBackgroundRefreshTaskExpiration() {}
+
+// TODO(crbug.com/1343695): Make this a pure virtual function.
+NSDate* DiscoverFeedService::GetEarliestBackgroundRefreshBeginDate() {
+  return nil;
+}

@@ -33,6 +33,11 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   void UpdateTheme() final {}
   void RefreshFeedIfNeeded() final {}
   void RefreshFeed() final {}
+
+  void PerformBackgroundRefreshes(ProceduralBlockWithBool completion) final {}
+  void HandleBackgroundRefreshTaskExpiration() final {}
+  NSDate* GetEarliestBackgroundRefreshBeginDate() final { return nil; }
+
   BOOL GetFollowingFeedHasUnseenContent() final { return NO; }
   void SetFollowingFeedContentSeen() final {}
 };
