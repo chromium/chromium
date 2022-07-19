@@ -113,18 +113,17 @@ bool IsValidFeatureOrFieldTrialName(StringPiece name) {
   return IsStringASCII(name) && name.find_first_of(",<*") == std::string::npos;
 }
 
-// Splits |text| into two parts by the |separator| where the first part will be
+// Splits |first| into two parts by the |separator| where the first part will be
 // returned updated in |first| and the second part will be returned as |second|.
 // This function returns false if there is more than one |separator| in |first|.
 // If there is no |separator| presented in |first|, this function will not
 // modify |first| and |second|. It's used for splitting the |enable_features|
 // flag into feature name, field trial name and feature parameters.
-bool SplitIntoTwo(StringPiece text,
-                  StringPiece separator,
+bool SplitIntoTwo(const std::string& separator,
                   StringPiece* first,
                   std::string* second) {
   std::vector<StringPiece> parts =
-      SplitStringPiece(text, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
+      SplitStringPiece(*first, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
   if (parts.size() == 2) {
     *second = std::string(parts[1]);
   } else if (parts.size() > 2) {
@@ -149,21 +148,31 @@ bool ParseEnableFeatures(const std::string& enable_features,
   std::vector<std::string> enable_features_list;
   std::vector<std::string> force_fieldtrials_list;
   std::vector<std::string> force_fieldtrial_params_list;
-  for (const auto& enable_feature :
+  for (auto& enable_feature :
        FeatureList::SplitFeatureListString(enable_features)) {
-    std::string feature_name;
-    std::string study;
-    std::string group;
+    // First, check whether ":" is present. If true, feature parameters were
+    // set for this feature.
     std::string feature_params;
-    if (!FeatureList::ParseEnableFeatureString(
-            enable_feature, &feature_name, &study, &group, &feature_params)) {
+    if (!SplitIntoTwo(":", &enable_feature, &feature_params))
       return false;
-    }
+    // Then, check whether "." is present. If true, a group was specified for
+    // this feature.
+    std::string group;
+    if (!SplitIntoTwo(".", &enable_feature, &group))
+      return false;
+    // Finally, check whether "<" is present. If true, a study was specified for
+    // this feature.
+    std::string study;
+    if (!SplitIntoTwo("<", &enable_feature, &study))
+      return false;
 
+    const std::string feature_name(enable_feature);
     // If feature params were set but group and study weren't, associate the
     // feature and its feature params to a synthetic field trial as the
     // feature params only make sense when it's combined with a field trial.
     if (!feature_params.empty()) {
+      study = study.empty() ? "Study" + feature_name : study;
+      group = group.empty() ? "Group" + feature_name : group;
       force_fieldtrials_list.push_back(study + "/" + group);
       force_fieldtrial_params_list.push_back(study + "." + group + ":" +
                                              feature_params);
@@ -358,10 +367,8 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
 }
 
 void FeatureList::GetFeatureOverrides(std::string* enable_overrides,
-                                      std::string* disable_overrides,
-                                      bool include_group_name) const {
-  GetFeatureOverridesImpl(enable_overrides, disable_overrides, false,
-                          include_group_name);
+                                      std::string* disable_overrides) const {
+  GetFeatureOverridesImpl(enable_overrides, disable_overrides, false);
 }
 
 void FeatureList::GetCommandLineFeatureOverrides(
@@ -412,45 +419,6 @@ FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
 std::vector<StringPiece> FeatureList::SplitFeatureListString(
     StringPiece input) {
   return SplitStringPiece(input, ",", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
-}
-
-// static
-bool FeatureList::ParseEnableFeatureString(StringPiece enable_feature,
-                                           std::string* feature_name,
-                                           std::string* study_name,
-                                           std::string* group_name,
-                                           std::string* params) {
-  StringPiece first;
-  // First, check whether ":" is present. If true, feature parameters were
-  // set for this feature.
-  std::string feature_params;
-  if (!SplitIntoTwo(enable_feature, ":", &first, &feature_params))
-    return false;
-  // Then, check whether "." is present. If true, a group was specified for
-  // this feature.
-  std::string group;
-  if (!SplitIntoTwo(first, ".", &first, &group))
-    return false;
-  // Finally, check whether "<" is present. If true, a study was specified for
-  // this feature.
-  std::string study;
-  if (!SplitIntoTwo(first, "<", &first, &study))
-    return false;
-
-  std::string enable_feature_name(first);
-  // If feature params were set but group and study weren't, associate the
-  // feature and its feature params to a synthetic field trial as the
-  // feature params only make sense when it's combined with a field trial.
-  if (!feature_params.empty()) {
-    study = study.empty() ? "Study" + enable_feature_name : study;
-    group = group.empty() ? "Group" + enable_feature_name : group;
-  }
-
-  feature_name->swap(enable_feature_name);
-  study_name->swap(study);
-  group_name->swap(group);
-  params->swap(feature_params);
-  return true;
 }
 
 // static
@@ -714,8 +682,7 @@ void FeatureList::RegisterOverride(StringPiece feature_name,
 
 void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
                                           std::string* disable_overrides,
-                                          bool command_line_only,
-                                          bool include_group_name) const {
+                                          bool command_line_only) const {
   DCHECK(initialized_);
 
   // Check that the FieldTrialList this is associated with, if any, is the
@@ -755,13 +722,8 @@ void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
       target_list->push_back('*');
     target_list->append(entry.first);
     if (entry.second.field_trial) {
-      auto* const field_trial = entry.second.field_trial;
       target_list->push_back('<');
-      target_list->append(field_trial->trial_name());
-      if (include_group_name) {
-        target_list->push_back('.');
-        target_list->append(field_trial->GetGroupNameWithoutActivation());
-      }
+      target_list->append(entry.second.field_trial->trial_name());
     }
   }
 }
