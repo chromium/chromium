@@ -211,7 +211,10 @@ class WebAppCommand {
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
   // Because this is owned by the command manager, it will always outlive this
   // object. Thus a raw pointer is save.
-  raw_ptr<content::WebContents> shared_web_contents_;
+  //
+  // TODO(crbug.com/1298696): unit_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<content::WebContents, DegradeToNoOpWhenMTE> shared_web_contents_;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
 };
