@@ -1119,8 +1119,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
     executable = "recipe:build_perf",
     execution_timeout = 10 * time.hour,
-    # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
-    reclient_instance = rbe_instance.DEFAULT,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    reclient_instance = rbe_instance.DEFAULT_CQ,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
     # Target luci-chromium-ci-bionic-us-central1-c-1000-ssd-hm32-*.
     os = os.LINUX_DEFAULT,
@@ -1155,8 +1155,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
     executable = "recipe:build_perf",
     execution_timeout = 6 * time.hour,
-    # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
-    reclient_instance = rbe_instance.DEFAULT,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    reclient_instance = rbe_instance.DEFAULT_CQ,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
     use_clang_coverage = True,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -1192,8 +1192,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
     executable = "recipe:build_perf",
     execution_timeout = 6 * time.hour,
-    # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
-    reclient_instance = rbe_instance.DEFAULT,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    reclient_instance = rbe_instance.DEFAULT_CQ,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
     use_clang_coverage = True,
     # Target luci-chromium-ci-win10-ssd-32-*.
