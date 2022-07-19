@@ -103,12 +103,6 @@ void RenderAccessibilityManager::HandleAccessibilityEvents(
       std::move(updates_and_events), reset_token, std::move(callback));
 }
 
-void RenderAccessibilityManager::HandleLocationChanges(
-    std::vector<blink::mojom::LocationChangesPtr> changes) {
-  GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
-      std::move(changes));
-}
-
 mojo::Remote<blink::mojom::RenderAccessibilityHost>&
 RenderAccessibilityManager::GetOrCreateRemoteRenderAccessibilityHost() {
   if (!render_accessibility_host_) {

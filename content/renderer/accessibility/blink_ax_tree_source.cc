@@ -261,51 +261,6 @@ void BlinkAXTreeSource::SetLoadInlineTextBoxesForId(int32_t id) {
   load_inline_text_boxes_ids_.insert(id);
 }
 
-void BlinkAXTreeSource::PopulateAXRelativeBounds(WebAXObject obj,
-                                                 ui::AXRelativeBounds* bounds,
-                                                 bool* clips_children) const {
-  WebAXObject offset_container;
-  gfx::RectF bounds_in_container;
-  gfx::Transform container_transform;
-  obj.GetRelativeBounds(offset_container, bounds_in_container,
-                        container_transform, clips_children);
-  bounds->bounds = bounds_in_container;
-  if (!offset_container.IsDetached())
-    bounds->offset_container_id = offset_container.AxID();
-
-  if (content::AXShouldIncludePageScaleFactorInRoot() && obj.Equals(root())) {
-    const WebView* web_view = render_frame_->GetWebView();
-    container_transform.Scale(web_view->PageScaleFactor(),
-                              web_view->PageScaleFactor());
-    container_transform.Translate(
-        -web_view->VisualViewportOffset().OffsetFromOrigin());
-  }
-
-  if (!container_transform.IsIdentity())
-    bounds->transform = std::make_unique<gfx::Transform>(container_transform);
-}
-
-bool BlinkAXTreeSource::HasCachedBoundingBox(int32_t id) const {
-  return base::Contains(cached_bounding_boxes_, id);
-}
-
-const ui::AXRelativeBounds& BlinkAXTreeSource::GetCachedBoundingBox(
-    int32_t id) const {
-  auto iter = cached_bounding_boxes_.find(id);
-  DCHECK(iter != cached_bounding_boxes_.end());
-  return iter->second;
-}
-
-void BlinkAXTreeSource::SetCachedBoundingBox(
-    int32_t id,
-    const ui::AXRelativeBounds& bounds) {
-  cached_bounding_boxes_[id] = bounds;
-}
-
-size_t BlinkAXTreeSource::GetCachedBoundingBoxCount() const {
-  return cached_bounding_boxes_.size();
-}
-
 bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   CHECK(frozen_);
   tree_data->doctype = "html";
@@ -471,7 +426,7 @@ std::string BlinkAXTreeSource::GetDebugString(blink::WebAXObject node) const {
 }
 
 void BlinkAXTreeSource::SerializerClearedNode(int32_t node_id) {
-  cached_bounding_boxes_.erase(node_id);
+  GetRoot().SerializerClearedNode(node_id);
 }
 
 void BlinkAXTreeSource::SerializeNode(WebAXObject src,
@@ -505,10 +460,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     return;
   }
 
-  // Bounding boxes are needed on all nodes, including ignored, for hit testing.
-  SerializeBoundingBoxAttributes(src, dst);
-  cached_bounding_boxes_[dst->id] = dst->relative_bounds;
-
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
   // verbalizations can be made if they actually receive focus.
@@ -537,20 +488,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     // representing an image, so add it directly using AddStringAttribute.
     dst->AddStringAttribute(ax::mojom::StringAttribute::kImageDataUrl,
                             src.ImageDataUrl(max_image_data_size_).Utf8());
-  }
-}
-
-void BlinkAXTreeSource::SerializeBoundingBoxAttributes(
-    WebAXObject src,
-    ui::AXNodeData* dst) const {
-  bool clips_children = false;
-  PopulateAXRelativeBounds(src, &dst->relative_bounds, &clips_children);
-  if (clips_children)
-    dst->AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
-
-  if (src.IsLineBreakingObject()) {
-    dst->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                          true);
   }
 }
 

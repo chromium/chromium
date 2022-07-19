@@ -13,4 +13,5 @@ include_rules = [
     "+ui/accessibility/ax_mode.h",
     "+ui/accessibility/ax_node_data.h",
     "+ui/accessibility/ax_role_properties.h",
+    "+ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
 ]

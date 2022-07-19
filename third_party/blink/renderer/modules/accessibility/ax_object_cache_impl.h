@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
@@ -197,8 +198,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleFrameRectsChanged(Document&) override;
 
   // Invalidates the bounding box, which can be later retrieved by
-  // GetAllObjectsWithChangedBounds.
+  // SerializeLocationChanges.
   void InvalidateBoundingBox(const LayoutObject*) override;
+
+  void SetCachedBoundingBox(AXID id, const ui::AXRelativeBounds& bounds);
+
+  void SerializerClearedNode(AXID id);
 
   const AtomicString& ComputedRoleForNode(Node*) override;
   String ComputedNameForNode(Node*) override;
@@ -364,9 +369,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool HasBeenDisposed() { return has_been_disposed_; }
 
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
-  // since the last query. Clears the vector so that the next time it's
+  // since the last query. Sends the resulting vector over mojo to the browser
+  // process. Clears the vector so that the next time it's
   // called, it will only retrieve objects that have changed since now.
-  HeapVector<Member<AXObject>> GetAllObjectsWithChangedBounds();
+  void SerializeLocationChanges();
 
   static constexpr int kDataTableHeuristicMinRows = 20;
 
@@ -405,6 +411,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AXID);
 
  private:
+  mojo::Remote<mojom::blink::RenderAccessibilityHost>&
+  GetOrCreateRemoteRenderAccessibilityHost();
+
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
   struct AXEventParams final : public GarbageCollected<AXEventParams> {
@@ -630,7 +639,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Invalidates the bounding boxes of fixed or sticky positioned objects which
   // should be updated when the scroll offset is changed. Like
   // InvalidateBoundingBox, it can be later retrieved by
-  // GetAllObjectsWithChangedBounds.
+  // SerializeLocationChanges.
   void InvalidateBoundingBoxForFixedOrStickyPosition();
 
   // Return true if this is the popup document. There can only be one popup
@@ -675,8 +684,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   HashMap<AXID, WebAXAutofillState> autofill_state_map_;
 
   // The set of node IDs whose bounds has changed since the last time
-  // GetAllObjectsWithChangedBounds was called.
+  // SerializeLocationChanges was called.
   HashSet<AXID> changed_bounds_ids_;
+
+  // Known locations and sizes of bounding boxes that are known to have been
+  // serialized.
+  HashMap<AXID, ui::AXRelativeBounds> cached_bounding_boxes_;
 
   // The list of node IDs whose position is fixed or sticky.
   HashSet<AXID> fixed_or_sticky_node_ids_;
@@ -702,6 +715,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.
   static bool use_ax_menu_list_;
+
+  mojo::Remote<mojom::blink::RenderAccessibilityHost>
+      render_accessibility_host_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
 };

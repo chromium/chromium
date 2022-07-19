@@ -653,6 +653,7 @@ _CONFIG = [
             'ui::AXEventIntent',
             'ui::AXMode',
             'ui::AXNodeData',
+            'ui::AXRelativeBounds',
             'ui::AXTreeID',
             'ui::kAXModeBasic',
             'ui::kAXModeComplete',

@@ -79,8 +79,6 @@ class CONTENT_EXPORT RenderAccessibilityManager
       blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
       int32_t reset_token,
       blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback);
-  void HandleLocationChanges(
-      std::vector<blink::mojom::LocationChangesPtr> changes);
 
   void CloseConnection();
 

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 
@@ -39,8 +39,12 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
  public:
   RenderAccessibilityHost(
       base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl,
-      mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver,
       ui::AXTreeID tree_id);
+
+  void Bind(
+      mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver) {
+    receiver_.Add(this, std::move(receiver));
+  }
 
   RenderAccessibilityHost(const RenderAccessibilityHost&) = delete;
   RenderAccessibilityHost& operator=(const RenderAccessibilityHost&) = delete;
@@ -56,7 +60,9 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
 
  private:
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl_;
-  mojo::Receiver<blink::mojom::RenderAccessibilityHost> receiver_;
+  // TODO(chrishtr): change this back to a Receiver once all render process
+  /// callsites of this mojo interface have been migrated to Blink.
+  mojo::ReceiverSet<blink::mojom::RenderAccessibilityHost> receiver_;
   const ui::AXTreeID tree_id_;
 };
 

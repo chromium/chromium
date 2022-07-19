@@ -16,10 +16,8 @@ namespace content {
 
 RenderAccessibilityHost::RenderAccessibilityHost(
     base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl,
-    mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver,
     ui::AXTreeID tree_id)
     : render_frame_host_impl_(std::move(render_frame_host_impl)),
-      receiver_{this, std::move(receiver)},
       tree_id_(tree_id) {}
 
 RenderAccessibilityHost::~RenderAccessibilityHost() = default;

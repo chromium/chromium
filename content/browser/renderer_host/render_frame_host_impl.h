@@ -3882,6 +3882,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       render_accessibility_;
 
   base::SequenceBound<RenderAccessibilityHost> render_accessibility_host_;
+  ui::AXTreeID render_accessibility_host_ax_tree_id_;
 
   mojo::AssociatedReceiver<mojom::DomAutomationControllerHost>
       dom_automation_controller_receiver_{this};

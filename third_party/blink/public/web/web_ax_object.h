@@ -132,6 +132,8 @@ class WebAXObject {
   BLINK_EXPORT void Serialize(ui::AXNodeData* node_data,
                               ui::AXMode accessibility_mode) const;
 
+  BLINK_EXPORT void SerializerClearedNode(int node_id) const;
+
   BLINK_EXPORT ax::mojom::CheckedState CheckedState() const;
   BLINK_EXPORT bool IsCheckable() const;
   BLINK_EXPORT bool IsClickable() const;
@@ -345,10 +347,9 @@ class WebAXObject {
                                       bool* clips_children = nullptr) const;
 
   // Retrieves a vector of all WebAXObjects in this document whose
-  // bounding boxes may have changed since the last query. Can be called
-  // on any object.
-  BLINK_EXPORT void GetAllObjectsWithChangedBounds(
-      WebVector<WebAXObject>& out_changed_bounds_objects) const;
+  // bounding boxes may have changed since the last query. Sends that vector
+  // via mojo to the browser process.
+  BLINK_EXPORT void SerializeLocationChanges() const;
 
   // Exchanges a WebAXObject with another.
   BLINK_EXPORT void Swap(WebAXObject& other);

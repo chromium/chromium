@@ -238,6 +238,10 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   private_->Serialize(node_data, accessibility_mode);
 }
 
+BLINK_EXPORT void WebAXObject::SerializerClearedNode(int node_id) const {
+  private_->AXObjectCache().SerializerClearedNode(node_id);
+}
+
 WebString WebAXObject::AutoComplete() const {
   if (IsDetached())
     return WebString();
@@ -1142,18 +1146,11 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
   bounds_in_container = bounds;
 }
 
-void WebAXObject::GetAllObjectsWithChangedBounds(
-    WebVector<WebAXObject>& out_changed_bounds_objects) const {
+void WebAXObject::SerializeLocationChanges() const {
   if (IsDetached())
     return;
 
-  HeapVector<Member<AXObject>> changed_bounds_objects =
-      private_->AXObjectCache().GetAllObjectsWithChangedBounds();
-
-  out_changed_bounds_objects.reserve(changed_bounds_objects.size());
-  out_changed_bounds_objects.resize(changed_bounds_objects.size());
-  std::copy(changed_bounds_objects.begin(), changed_bounds_objects.end(),
-            out_changed_bounds_objects.begin());
+  private_->AXObjectCache().SerializeLocationChanges();
 }
 
 bool WebAXObject::ScrollToMakeVisible() const {

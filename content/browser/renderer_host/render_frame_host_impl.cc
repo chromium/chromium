@@ -10374,13 +10374,19 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
   // tasks in flight: use `render_frame_scoped_weak_ptr_factory_` to ensure
   // those tasks are dropped if they arrive after the reset of their
   // corresponding RenderAccessibilityHost.
-  render_accessibility_host_ = base::SequenceBound<RenderAccessibilityHost>(
-      base::FeatureList::IsEnabled(
-          features::kRenderAccessibilityHostDeserializationOffMainThread)
-          ? base::ThreadPool::CreateSequencedTaskRunner({})
-          : base::SequencedTaskRunnerHandle::Get(),
-      render_frame_scoped_weak_ptr_factory_.GetWeakPtr(), std::move(receiver),
-      GetAXTreeID());
+  ui::AXTreeID ax_tree_id = GetAXTreeID();
+  if (!render_accessibility_host_ ||
+      ax_tree_id != render_accessibility_host_ax_tree_id_) {
+    render_accessibility_host_ = base::SequenceBound<RenderAccessibilityHost>(
+        base::FeatureList::IsEnabled(
+            features::kRenderAccessibilityHostDeserializationOffMainThread)
+            ? base::ThreadPool::CreateSequencedTaskRunner({})
+            : base::SequencedTaskRunnerHandle::Get(),
+        render_frame_scoped_weak_ptr_factory_.GetWeakPtr(), ax_tree_id);
+  }
+  render_accessibility_host_ax_tree_id_ = ax_tree_id;
+  render_accessibility_host_.AsyncCall(&RenderAccessibilityHost::Bind)
+      .WithArgs(std::move(receiver));
 }
 
 bool RenderFrameHostImpl::CancelPrerendering(

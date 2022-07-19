@@ -63,6 +63,7 @@ class Transform;
 namespace ui {
 struct AXActionData;
 struct AXNodeData;
+struct AXRelativeBounds;
 }
 
 namespace blink {
@@ -1330,6 +1331,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // used during UpdateCachedValuesIfNecessary() without causing recursion.
   String ToString(bool verbose = false, bool cached_values_only = false) const;
 
+  void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
+                                bool* clips_children) const;
+
  protected:
   AXID id_;
   // Any parent, regardless of whether it's ignored or not included in the tree.
@@ -1396,6 +1400,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AXObject* TableParent() const;
 
   // Helpers for serialization.
+  void SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const;
   void SerializeActionAttributes(ui::AXNodeData* node_data);
   void SerializeChildTreeID(ui::AXNodeData* node_data);
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data);

@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -1242,6 +1243,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   // Always try to serialize child tree ids.
   SerializeChildTreeID(node_data);
 
+  if (!accessibility_mode.has_mode(ui::AXMode::kPDF))
+    SerializeBoundingBoxAttributes(*node_data);
+
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
   // verbalizations can be made if they actually receive focus.
@@ -1280,6 +1284,50 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeLiveRegionAttributes(node_data);
 
   SerializeOtherScreenReaderAttributes(node_data);
+}
+
+void AXObject::SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const {
+  bool clips_children = false;
+  PopulateAXRelativeBounds(dst.relative_bounds, &clips_children);
+  if (clips_children) {
+    dst.AddBoolAttribute(ax::mojom::blink::BoolAttribute::kClipsChildren, true);
+  }
+
+  if (IsLineBreakingObject()) {
+    dst.AddBoolAttribute(ax::mojom::blink::BoolAttribute::kIsLineBreakingObject,
+                         true);
+  }
+  AXObjectCache().SetCachedBoundingBox(AXObjectID(), dst.relative_bounds);
+}
+
+static bool AXShouldIncludePageScaleFactorInRoot() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+  return true;
+#else
+  return false;
+#endif
+}
+
+void AXObject::PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
+                                        bool* clips_children) const {
+  AXObject* offset_container;
+  gfx::RectF bounds_in_container;
+  gfx::Transform container_transform;
+  GetRelativeBounds(&offset_container, bounds_in_container, container_transform,
+                    clips_children);
+  bounds.bounds = bounds_in_container;
+  if (offset_container && !offset_container->IsDetached())
+    bounds.offset_container_id = offset_container->AXObjectID();
+
+  if (AXShouldIncludePageScaleFactorInRoot() && IsRoot()) {
+    const Page* page = GetDocument()->GetPage();
+    container_transform.Scale(page->PageScaleFactor(), page->PageScaleFactor());
+    container_transform.Translate(
+        -page->GetVisualViewport().VisibleRect().origin().OffsetFromOrigin());
+  }
+
+  if (!container_transform.IsIdentity())
+    bounds.transform = std::make_unique<gfx::Transform>(container_transform);
 }
 
 void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {

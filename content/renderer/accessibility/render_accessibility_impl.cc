@@ -1103,9 +1103,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
 void RenderAccessibilityImpl::SendLocationChanges() {
   TRACE_EVENT0("accessibility", "RenderAccessibilityImpl::SendLocationChanges");
-
-  std::vector<blink::mojom::LocationChangesPtr> changes;
-
   // Update layout on the root of the tree.
   WebAXObject root = tree_source_->GetRoot();
 
@@ -1114,37 +1111,7 @@ void RenderAccessibilityImpl::SendLocationChanges() {
   if (!root.MaybeUpdateLayoutAndCheckValidity())
     return;
 
-  blink::WebVector<WebAXObject> changed_bounds_objects;
-  root.GetAllObjectsWithChangedBounds(changed_bounds_objects);
-  for (const WebAXObject& obj : changed_bounds_objects) {
-    // See if we had a previous location. If not, this whole subtree must
-    // be new, so no need to update.
-    int id = obj.AxID();
-    if (!tree_source_->HasCachedBoundingBox(id))
-      continue;
-
-    // If the location has changed, append it to the IPC message.
-    ui::AXRelativeBounds new_location;
-    tree_source_->PopulateAXRelativeBounds(obj, &new_location);
-    if (new_location != tree_source_->GetCachedBoundingBox(id))
-      changes.push_back(blink::mojom::LocationChanges::New(id, new_location));
-
-    // Save the new location.
-    tree_source_->SetCachedBoundingBox(id, new_location);
-  }
-
-  if (changes.empty())
-    return;
-
-  // Ensure that the number of cached bounding boxes doesn't exceed the
-  // number of nodes in the tree, that would indicate the cache could
-  // grow without bounds. Calls from the serializer to
-  // BlinkAXTreeSerializer::SerializerClearedNode are supposed to keep the
-  // cache trimmed to only actual nodes in the tree.
-  DCHECK_LE(tree_source_->GetCachedBoundingBoxCount(),
-            serializer_->ClientTreeNodeCount());
-
-  render_accessibility_manager_->HandleLocationChanges(std::move(changes));
+  root.SerializeLocationChanges();
 }
 
 void RenderAccessibilityImpl::OnAccessibilityEventsHandled() {

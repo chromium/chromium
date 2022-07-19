@@ -166,12 +166,12 @@ class RenderAccessibilityHostInterceptor
 
   void BindRenderAccessibilityHostReceiver(
       mojo::ScopedMessagePipeHandle handle) {
-    receiver_.Bind(mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost>(
-        std::move(handle)));
+    receiver_.Add(this,
+                  mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost>(
+                      std::move(handle)));
 
-    receiver_.set_disconnect_handler(base::BindOnce(
-        [](mojo::Receiver<blink::mojom::RenderAccessibilityHost>* receiver) {
-          receiver->reset();
+    receiver_.set_disconnect_handler(base::BindRepeating(
+        [](mojo::ReceiverSet<blink::mojom::RenderAccessibilityHost>* receiver) {
         },
         base::Unretained(&receiver_)));
   }
@@ -209,7 +209,7 @@ class RenderAccessibilityHostInterceptor
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 
-  mojo::Receiver<blink::mojom::RenderAccessibilityHost> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::RenderAccessibilityHost> receiver_;
   mojo::Remote<blink::mojom::RenderAccessibilityHost> local_frame_host_remote_;
 
   std::vector<::ui::AXTreeUpdate> handled_updates_;
