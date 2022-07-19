@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
 }
 
 // TODO(crbug.com/1344609): Test flaky on Mac.
-#if defined(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MultiProfile DISABLED_MultiProfile
 #else
 #define MAYBE_MultiProfile MultiProfile
