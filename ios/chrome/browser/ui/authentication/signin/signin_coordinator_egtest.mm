@@ -1018,9 +1018,9 @@ void ExpectSyncConsentHistogram(
 // Flaky, crbug.com/1279995.
 - (void)DISABLED_testSyncTypesDisabledPolicy {
   // Set policy.
-  std::vector<base::Value> values;
-  values.push_back(base::Value("tabs"));
-  policy_test_utils::SetPolicy(base::Value(std::move(values)),
+  base::Value::List list;
+  list.Append("tabs");
+  policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);
 
   // Check that the promo description is updated.

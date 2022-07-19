@@ -22,10 +22,10 @@ UserApprovedAccountListManager::~UserApprovedAccountListManager() {}
 std::vector<CoreAccountId>
 UserApprovedAccountListManager::GetApprovedAccountIDList() const {
   DCHECK(pref_service_);
-  const base::Value* accounts_pref =
-      pref_service_->GetList(prefs::kSigninLastAccounts);
+  const base::Value::List& accounts_pref =
+      pref_service_->GetValueList(prefs::kSigninLastAccounts);
   std::vector<CoreAccountId> accounts;
-  for (const auto& value : accounts_pref->GetListDeprecated()) {
+  for (const auto& value : accounts_pref) {
     DCHECK(value.is_string());
     DCHECK(!value.GetString().empty());
     accounts.push_back(CoreAccountId::FromString(value.GetString()));
@@ -37,11 +37,11 @@ void UserApprovedAccountListManager::SetApprovedAccountList(
     const std::vector<CoreAccountInfo>& account_list) {
   DCHECK(pref_service_);
   DCHECK(!account_list.empty());
-  std::vector<base::Value> accounts_pref_value;
+  base::Value::List accounts_pref_value;
   for (const CoreAccountInfo& account_info : account_list)
-    accounts_pref_value.emplace_back(account_info.account_id.ToString());
-  pref_service_->Set(prefs::kSigninLastAccounts,
-                     base::Value(std::move(accounts_pref_value)));
+    accounts_pref_value.Append(account_info.account_id.ToString());
+  pref_service_->SetList(prefs::kSigninLastAccounts,
+                         std::move(accounts_pref_value));
 }
 
 void UserApprovedAccountListManager::ClearApprovedAccountList() {
