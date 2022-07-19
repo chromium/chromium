@@ -25,6 +25,7 @@ base::FilePath CreateClientBucketPath(const base::FilePath& profile_path,
     case QuotaClientType::kIndexedDatabase:
       return bucket_directory.Append(kIndexedDbDirectory);
     case QuotaClientType::kBackgroundFetch:
+      return bucket_directory.Append(kBackgroundFetchDirectory);
     case QuotaClientType::kServiceWorkerCache:
       return bucket_directory.Append(kCacheStorageDirectory);
     case QuotaClientType::kServiceWorker:

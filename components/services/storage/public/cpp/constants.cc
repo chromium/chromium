@@ -41,6 +41,11 @@ const base::FilePath::CharType kFileSystemDirectory[] =
 const base::FilePath::CharType kIndexedDbDirectory[] =
     FILE_PATH_LITERAL("IndexedDB");
 
+// The path where BackgroundFetch data is persisted on disk for partitioned
+// storage.
+const base::FilePath::CharType kBackgroundFetchDirectory[] =
+    FILE_PATH_LITERAL("BackgroundFetch");
+
 // The path where CacheStorage data is persisted on disk for partitioned
 // storage.
 const base::FilePath::CharType kCacheStorageDirectory[] =

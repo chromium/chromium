@@ -91,11 +91,14 @@ TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
                 bucket->ToBucketLocator(), QuotaClientType::kIndexedDatabase),
             expected_path);
 
-  // BackgroundFetch/CacheStorage
-  expected_path = bucket_path.AppendASCII("CacheStorage");
+  // BackgroundFetch
+  expected_path = bucket_path.AppendASCII("BackgroundFetch");
   EXPECT_EQ(quota_manager_proxy_->GetClientBucketPath(
                 bucket->ToBucketLocator(), QuotaClientType::kBackgroundFetch),
             expected_path);
+
+  // CacheStorage
+  expected_path = bucket_path.AppendASCII("CacheStorage");
   EXPECT_EQ(
       quota_manager_proxy_->GetClientBucketPath(
           bucket->ToBucketLocator(), QuotaClientType::kServiceWorkerCache),

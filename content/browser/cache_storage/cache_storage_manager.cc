@@ -681,10 +681,20 @@ base::FilePath CacheStorageManager::ConstructBucketPath(
                                bucket_locator.storage_key.origin(), owner);
   }
   // Non-default bucket & first/third-party partition:
-  // {{storage_partition_path}}/WebStorage/{{bucket_id}}/CacheStorage/...
-  return storage::CreateClientBucketPath(
-      profile_path, bucket_locator,
-      storage::QuotaClientType::kServiceWorkerCache);
+  // {{storage_partition_path}}/WebStorage/{{bucket_id}}/CacheStorage/... and
+  // {{storage_partition_path}}/WebStorage/{{bucket_id}}/BackgroundFetch/...
+  switch (owner) {
+    case storage::mojom::CacheStorageOwner::kCacheAPI:
+      return storage::CreateClientBucketPath(
+          profile_path, bucket_locator,
+          storage::QuotaClientType::kServiceWorkerCache);
+    case storage::mojom::CacheStorageOwner::kBackgroundFetch:
+      return storage::CreateClientBucketPath(
+          profile_path, bucket_locator,
+          storage::QuotaClientType::kBackgroundFetch);
+    default:
+      NOTREACHED();
+  }
 }
 
 // static

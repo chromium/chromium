@@ -35,6 +35,9 @@ COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
 extern const base::FilePath::CharType kIndexedDbDirectory[];
 
 COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+extern const base::FilePath::CharType kBackgroundFetchDirectory[];
+
+COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
 extern const base::FilePath::CharType kCacheStorageDirectory[];
 
 COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
