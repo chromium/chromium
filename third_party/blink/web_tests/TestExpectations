@@ -5211,8 +5211,6 @@ crbug.com/1098383 [ Mac ] fast/events/scrollbar-double-click.html [ Failure Pass
 
 # DevTools roll
 crbug.com/1006759 http/tests/devtools/elements/styles-1/edit-value-url-with-color.js [ Skip ]
-crbug.com/1330482 http/tests/devtools/unit/viewport-datagrid-items-attached-to-dom.js [ Failure Pass ]
-crbug.com/1330482 http/tests/devtools/unit/viewport-datagrid-items-expandable-attached-to-dom.js [ Failure Pass ]
 
 #Mixed content autoupgrades make these tests not applicable, since they check for mixed content audio/video
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.html [ Failure ]
