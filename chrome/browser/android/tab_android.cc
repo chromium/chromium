@@ -211,6 +211,16 @@ sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() const {
   return synced_tab_delegate_.get();
 }
 
+bool TabAndroid::IsIncognito() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const bool is_incognito =
+      Java_TabImpl_isIncognito(env, weak_java_tab_.get(env));
+  if (Profile* profile = GetProfile()) {
+    CHECK_EQ(is_incognito, profile->IsOffTheRecord());
+  }
+  return is_incognito;
+}
+
 void TabAndroid::DeleteFrozenNavigationEntries(
     const WebContentsState::DeletionPredicate& predicate) {
   JNIEnv* env = base::android::AttachCurrentThread();

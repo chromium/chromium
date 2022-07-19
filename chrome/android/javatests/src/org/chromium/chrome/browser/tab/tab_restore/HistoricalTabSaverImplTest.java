@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -118,6 +119,27 @@ public class HistoricalTabSaverImplTest {
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
         expectedEntries.add(new HistoricalEntry(frozenTab));
         assertEntriesAre(Collections.singletonList(expectedEntries));
+    }
+
+    /**
+     * Tests saving a single frozen tab that cannot be restored. Needs native to test handling of a
+     * frozen tab that cannot be restored.
+     */
+    @Test
+    @MediumTest
+    public void testCreateHistoricalTab_Frozen_CannotRestore() {
+        final Tab tab = sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /*incognito=*/false);
+        final Tab frozenTab = freezeTab(tab);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { CriticalPersistedTabData.from(frozenTab).setWebContentsState(null); });
+        // Clear the entry created by freezing the tab.
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+
+        TabRestoreServiceUtils.createTabEntry(mTabModel, frozenTab);
+
+        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        assertEntriesAre(empty);
     }
 
     /**

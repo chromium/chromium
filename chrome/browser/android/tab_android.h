@@ -35,7 +35,7 @@ class TabWebContentsDelegateAndroid;
 namespace content {
 class DevToolsAgentHost;
 class WebContents;
-}
+}  // namespace content
 
 class TabAndroid : public base::SupportsUserData {
  public:
@@ -99,6 +99,10 @@ class TabAndroid : public base::SupportsUserData {
   // WebContents.  Can return NULL.
   Profile* GetProfile() const;
   sync_sessions::SyncedTabDelegate* GetSyncedTabDelegate() const;
+
+  // Whether this tab is an incognito tab. Prefer
+  // `GetProfile()->IsOffTheRecord()` unless `web_contents()` is nullptr.
+  bool IsIncognito() const;
 
   // Delete navigation entries matching predicate from frozen state.
   void DeleteFrozenNavigationEntries(

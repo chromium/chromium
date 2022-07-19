@@ -445,6 +445,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         return isShowingErrorPage() || !hasSecurityIssue;
     }
 
+    @CalledByNative
     @Override
     public boolean isIncognito() {
         return mIncognito;

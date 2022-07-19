@@ -15,6 +15,7 @@
 #include "chrome/android/chrome_jni_headers/HistoricalTabSaverImpl_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -167,6 +168,19 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
         Java_HistoricalTabSaverImpl_createTemporaryWebContents(
             env, tab->GetJavaObject()));
     was_frozen = true;
+    // Fallback to an empty web contents in the event state restoration
+    // fails. This will just not be added to the TabRestoreService.
+    if (!contents) {
+      // This is only called on non-incognito pathways.
+      CHECK(!tab->IsIncognito());
+
+      Profile* profile = ProfileManager::GetActiveUserProfile();
+      content::WebContents::CreateParams params(profile);
+      params.initially_hidden = true;
+      params.desired_renderer_state =
+          content::WebContents::CreateParams::kNoRendererProcess;
+      contents = content::WebContents::Create(params).release();
+    }
   }
   return base::WrapUnique(new ScopedWebContents(contents, was_frozen));
 }
