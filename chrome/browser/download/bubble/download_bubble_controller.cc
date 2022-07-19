@@ -12,6 +12,9 @@
 #include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
@@ -485,4 +488,16 @@ void DownloadBubbleUIController::RetryDownload(
       download::DownloadSource::RETRY_FROM_BUBBLE);
 
   download_manager_->DownloadUrl(std::move(download_url_params));
+}
+
+void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
+    const std::string& guid) {
+  DownloadCoreService* download_core_service =
+      DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+  if (!download_core_service)
+    return;
+  ChromeDownloadManagerDelegate* delegate =
+      download_core_service->GetDownloadManagerDelegate();
+  if (delegate)
+    delegate->ScheduleCancelForEphemeralWarning(guid);
 }

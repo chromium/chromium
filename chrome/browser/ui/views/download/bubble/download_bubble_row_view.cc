@@ -136,6 +136,7 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
     LoadIcon();
     UpdateButtons();
   }
+  RecordDownloadDisplayed();
   UpdateLabels();
   UpdateProgressBar();
 }
@@ -573,6 +574,15 @@ void DownloadBubbleRowView::RecordMetricsOnUpdate() {
       model_->GetState() == download::DownloadItem::COMPLETE) {
     RecordDownloadBubbleDragInfo(DownloadDragInfo::DOWNLOAD_COMPLETE);
     has_download_completion_been_logged_ = true;
+  }
+}
+
+void DownloadBubbleRowView::RecordDownloadDisplayed() {
+  if (!model_->GetEphemeralWarningUiShownTime().has_value() &&
+      model_->IsEphemeralWarning()) {
+    model_->SetEphemeralWarningUiShownTime(base::Time::Now());
+    bubble_controller_->ScheduleCancelForEphemeralWarning(
+        model_->GetDownloadItem()->GetGuid());
   }
 }
 

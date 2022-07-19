@@ -45,11 +45,13 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -309,7 +311,9 @@ class ChromeDownloadManagerDelegateTest
 };
 
 ChromeDownloadManagerDelegateTest::ChromeDownloadManagerDelegateTest()
-    : download_manager_(new ::testing::NiceMock<content::MockDownloadManager>),
+    : ChromeRenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      download_manager_(new ::testing::NiceMock<content::MockDownloadManager>),
       testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
 void ChromeDownloadManagerDelegateTest::SetUp() {
@@ -1323,6 +1327,47 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+
+  delegate()->ScheduleCancelForEphemeralWarning(download_item->GetGuid());
+
+  // Cancel should not be called until threshold is reached
+  EXPECT_CALL(*download_item, Cancel(false)).Times(0);
+  task_environment()->AdvanceClock(base::Minutes(59));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(*download_item, Cancel(false)).Times(1);
+  task_environment()->AdvanceClock(base::Hours(1));
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ChromeDownloadManagerDelegateTest,
+       ScheduleCancelForEphemeralWarning_DownloadKept) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
+
+  delegate()->ScheduleCancelForEphemeralWarning(download_item->GetGuid());
+
+  // Cancel should not be called until threshold is reached
+  EXPECT_CALL(*download_item, Cancel(false)).Times(0);
+  task_environment()->AdvanceClock(base::Hours(1));
+  base::RunLoop().RunUntilIdle();
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 namespace {

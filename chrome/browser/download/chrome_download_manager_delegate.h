@@ -185,6 +185,13 @@ class ChromeDownloadManagerDelegate
   bool ShouldBlockFile(download::DownloadItem* item,
                        download::DownloadDangerType danger_type) const;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Schedules the ephemeral warning download to be canceled. It will only be
+  // canceled if it continues to be an ephemeral warning that hasn't been acted
+  // on when the scheduled time arrives.
+  void ScheduleCancelForEphemeralWarning(const std::string& guid);
+#endif
+
  protected:
   virtual safe_browsing::DownloadProtectionService*
       GetDownloadProtectionService();
@@ -293,6 +300,12 @@ class ChromeDownloadManagerDelegate
   // Returns whether this is the most recent download in the rare event where
   // multiple downloads are associated with the same file path.
   bool IsMostRecentDownloadItemAtFilePath(download::DownloadItem* download);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Cancels a download if it's still an ephemeral warning (and has not been
+  // acted on by the user).
+  void CancelForEphemeralWarning(const std::string& guid);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Called after a unique file name is generated in the case that there is a

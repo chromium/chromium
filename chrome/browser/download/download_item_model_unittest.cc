@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -23,6 +24,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/download_item_reroute_info.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -855,7 +857,45 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_BubbleV2Off) {
     }
   }
 }
-#endif
+
+TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
+  auto in_progress = DownloadItem::IN_PROGRESS;
+  auto canceled = DownloadItem::CANCELLED;
+  auto never = absl::optional<base::Time>();
+  auto two_mins_ago = base::Time::Now() - base::Minutes(2);
+  auto ten_mins_ago = base::Time::Now() - base::Minutes(10);
+  auto dangerous_file = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
+  auto not_dangerous = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+
+  const struct TestCase {
+    DownloadItem::DownloadState state;
+    download::DownloadDangerType danger_type;
+    absl::optional<base::Time> shown_time;
+    bool expected_should_show;
+  } kTestCases[] = {
+      {in_progress, not_dangerous, two_mins_ago, true},
+      {in_progress, not_dangerous, ten_mins_ago, true},
+      {in_progress, dangerous_file, never, true},
+      {in_progress, dangerous_file, two_mins_ago, true},
+      {in_progress, dangerous_file, ten_mins_ago, false},
+      {canceled, dangerous_file, two_mins_ago, false},
+      {canceled, dangerous_file, ten_mins_ago, false},
+      {canceled, not_dangerous, two_mins_ago, true},
+      {canceled, not_dangerous, ten_mins_ago, true},
+  };
+
+  SetIsBubbleV2Enabled(true);
+  SetupDownloadItemDefaults();
+  for (const auto& test_case : kTestCases) {
+    EXPECT_CALL(item(), GetState()).WillRepeatedly(Return(test_case.state));
+    EXPECT_CALL(item(), GetDangerType())
+        .WillRepeatedly(Return(test_case.danger_type));
+    model().SetEphemeralWarningUiShownTime(test_case.shown_time);
+
+    EXPECT_EQ(test_case.expected_should_show, model().ShouldShowInBubble());
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
   SetupDownloadItemDefaults();

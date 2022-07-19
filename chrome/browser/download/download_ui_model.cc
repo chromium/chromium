@@ -395,10 +395,6 @@ bool DownloadUIModel::ShouldShowInShelf() const {
 
 void DownloadUIModel::SetShouldShowInShelf(bool should_show) {}
 
-bool DownloadUIModel::ShouldShowInBubble() const {
-  return ShouldShowInShelf();
-}
-
 bool DownloadUIModel::ShouldNotifyUI() const {
   return true;
 }
@@ -414,6 +410,14 @@ bool DownloadUIModel::WasUIWarningShown() const {
 }
 
 void DownloadUIModel::SetWasUIWarningShown(bool was_ui_warning_shown) {}
+
+absl::optional<base::Time> DownloadUIModel::GetEphemeralWarningUiShownTime()
+    const {
+  return absl::optional<base::Time>();
+}
+
+void DownloadUIModel::SetEphemeralWarningUiShownTime(
+    absl::optional<base::Time> time) {}
 
 bool DownloadUIModel::ShouldPreferOpeningInBrowser() const {
   return true;
@@ -1138,7 +1142,16 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfo() const {
                            ui::kColorSecondaryForeground);
   }
 }
-#endif
+
+bool DownloadUIModel::ShouldShowInBubble() const {
+  return ShouldShowInShelf();
+}
+
+bool DownloadUIModel::IsEphemeralWarning() const {
+  return false;
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::string DownloadUIModel::GetMimeType() const {
   return "text/html";

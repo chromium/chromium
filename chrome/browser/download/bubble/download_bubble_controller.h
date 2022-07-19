@@ -84,6 +84,11 @@ class DownloadBubbleUIController
   // Returns whether the incognito icon should be shown for the download.
   bool ShouldShowIncognitoIcon(const DownloadUIModel* model) const;
 
+  // Schedules the ephemeral warning download to be canceled. It will only be
+  // canceled if it continues to be an ephemeral warning that hasn't been acted
+  // on when the scheduled time arrives.
+  void ScheduleCancelForEphemeralWarning(const std::string& guid);
+
   // Returns the DownloadDisplayController. Should always return a valid
   // controller.
   DownloadDisplayController* display_controller_for_testing() {

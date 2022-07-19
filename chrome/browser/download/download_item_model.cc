@@ -64,6 +64,11 @@ using ReportThreatDetailsResult =
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+// How long an ephemeral warning is displayed on the download bubble.
+constexpr base::TimeDelta kEphemeralWarningLifetimeOnBubble = base::Minutes(5);
+#endif
+
 // Per DownloadItem data used by DownloadItemModel. The model doesn't keep any
 // state since there could be multiple models associated with a single
 // DownloadItem, and the lifetime of the model is shorter than the DownloadItem.
@@ -100,6 +105,11 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
   // Whether the safe browsing download warning was shown (and recorded) earlier
   // on the UI.
   bool was_ui_warning_shown_ = false;
+
+  // Tracks when an ephemeral warning was first displayed on the UI. Does not
+  // persist on restart, though ephemeral warning downloads are canceled by
+  // then as all in-progress downloads are.
+  absl::optional<base::Time> ephemeral_warning_ui_shown_time_;
 
  private:
   DownloadItemModelData();
@@ -371,23 +381,6 @@ void DownloadItemModel::SetShouldShowInShelf(bool should_show) {
   data->should_show_in_shelf_ = should_show;
 }
 
-bool DownloadItemModel::ShouldShowInBubble() const {
-  // Downloads blocked by local policies should be notified, otherwise users
-  // won't get any feedback that the download has failed.
-  bool should_notify =
-      download_->GetLastReason() ==
-          download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
-      download_->GetMixedContentStatus() !=
-          download::DownloadItem::MixedContentStatus::SILENT_BLOCK;
-
-  // Wait until the target path is determined.
-  if (download_->GetTargetFilePath().empty() && !should_notify) {
-    return false;
-  }
-
-  return DownloadUIModel::ShouldShowInBubble();
-}
-
 bool DownloadItemModel::ShouldNotifyUI() const {
   if (download_->IsTransient())
     return false;
@@ -426,6 +419,19 @@ bool DownloadItemModel::WasUIWarningShown() const {
 void DownloadItemModel::SetWasUIWarningShown(bool was_ui_warning_shown) {
   DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
   data->was_ui_warning_shown_ = was_ui_warning_shown;
+}
+
+absl::optional<base::Time> DownloadItemModel::GetEphemeralWarningUiShownTime()
+    const {
+  const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
+  return data ? data->ephemeral_warning_ui_shown_time_
+              : absl::optional<base::Time>();
+}
+
+void DownloadItemModel::SetEphemeralWarningUiShownTime(
+    absl::optional<base::Time> ephemeral_warning_ui_shown_time) {
+  DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
+  data->ephemeral_warning_ui_shown_time_ = ephemeral_warning_ui_shown_time;
 }
 
 bool DownloadItemModel::ShouldPreferOpeningInBrowser() const {
@@ -874,7 +880,87 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
   }
 }
-#endif
+
+bool DownloadItemModel::ShouldShowInBubble() const {
+  // Downloads blocked by local policies should be notified, otherwise users
+  // won't get any feedback that the download has failed.
+  bool should_notify =
+      download_->GetLastReason() ==
+          download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
+      download_->GetMixedContentStatus() !=
+          download::DownloadItem::MixedContentStatus::SILENT_BLOCK;
+
+  // Wait until the target path is determined.
+  if (download_->GetTargetFilePath().empty() && !should_notify) {
+    return false;
+  }
+
+  if (IsEphemeralWarning()) {
+    // Ephemeral warnings become canceled if the browser shuts down (or an hour
+    // after being displayed if the user hasn't acted on them). These should no
+    // longer be shown, regardless of what the shown time is set to.
+    if (download_->GetState() == download::DownloadItem::CANCELLED) {
+      return false;
+    }
+
+    // If the user hasn't acted on an ephemeral warning within 5 minutes, it
+    // should no longer be shown in the bubble. (IsEphemeralWarning no longer
+    // returns true once the user has acted on the warning.)
+    auto warning_shown_time = GetEphemeralWarningUiShownTime();
+    if (warning_shown_time.has_value() &&
+        base::Time::Now() - warning_shown_time.value() >
+            kEphemeralWarningLifetimeOnBubble) {
+      return false;
+    }
+  }
+
+  return DownloadUIModel::ShouldShowInBubble();
+}
+
+bool DownloadItemModel::IsEphemeralWarning() const {
+  if (!IsBubbleV2Enabled()) {
+    return false;
+  }
+
+  switch (GetMixedContentStatus()) {
+    case download::DownloadItem::MixedContentStatus::BLOCK:
+    case download::DownloadItem::MixedContentStatus::WARN:
+      return true;
+    case download::DownloadItem::MixedContentStatus::UNKNOWN:
+    case download::DownloadItem::MixedContentStatus::SAFE:
+    case download::DownloadItem::MixedContentStatus::VALIDATED:
+    case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+      break;
+  }
+
+  switch (GetDangerType()) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+      return true;
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return false;
+  }
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 offline_items_collection::FailState DownloadItemModel::GetLastFailState()
     const {

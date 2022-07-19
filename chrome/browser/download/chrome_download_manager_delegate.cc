@@ -139,6 +139,13 @@ using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+// How long an ephemeral warning lasts before being automatically canceled (if
+// there is no user interaction).
+constexpr base::TimeDelta kEphemeralWarningLifetimeBeforeCancel =
+    base::Hours(1);
+#endif
+
 // Used with GetPlatformDownloadPath() to indicate which platform path to
 // return.
 enum PlatformDownloadPathType {
@@ -1789,3 +1796,29 @@ void ChromeDownloadManagerDelegate::ConnectToQuarantineService(
                               std::move(receiver));
 #endif  // !BUILDFLAG(IS_WIN)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
+    const std::string& guid) {
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ChromeDownloadManagerDelegate::CancelForEphemeralWarning,
+                     weak_ptr_factory_.GetWeakPtr(), guid),
+      kEphemeralWarningLifetimeBeforeCancel);
+}
+
+void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
+    const std::string& guid) {
+  download::DownloadItem* download = download_manager_->GetDownloadByGuid(guid);
+
+  if (!download) {
+    // The download may have been destroyed since the task was scheduled
+    return;
+  }
+
+  // Confirm that the user has not already acted on the warning.
+  if (std::make_unique<DownloadItemModel>(download)->IsEphemeralWarning()) {
+    download->Cancel(/*user_cancel=*/false);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

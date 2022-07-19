@@ -283,9 +283,6 @@ class DownloadUIModel {
   // Returns |true| if this download should be displayed in the downloads shelf.
   virtual bool ShouldShowInShelf() const;
 
-  // Returns |true| if this download should be displayed in the download bubble.
-  virtual bool ShouldShowInBubble() const;
-
   // Change whether the download should be displayed on the downloads
   // shelf. Setting this is only effective if the download hasn't already been
   // displayed in the shelf.
@@ -312,6 +309,13 @@ class DownloadUIModel {
 
   // Change what's returned by WasUIWarningShown().
   virtual void SetWasUIWarningShown(bool was_ui_warning_shown);
+
+  // If this is an ephemeral warning, returns when the bubble first displayed
+  // the warning. If the warning has not yet shown (or this isn't an ephemeral
+  // warning), it returns no value. This does not persist across restarts.
+  virtual absl::optional<base::Time> GetEphemeralWarningUiShownTime() const;
+
+  virtual void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time);
 
   // Returns |true| if opening in the browser is preferred for this download. If
   // |false|, the download should be opened with the system default application.
@@ -475,6 +479,14 @@ class DownloadUIModel {
   BubbleUIInfo GetBubbleUIInfoForInterrupted(
       offline_items_collection::FailState fail_state) const;
   BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete() const;
+
+  // Returns |true| if this download should be displayed in the download bubble.
+  virtual bool ShouldShowInBubble() const;
+
+  // Ephemeral warnings are ones that are quickly removed from the bubble if the
+  // user has not acted on them, and later deleted altogether. Is this that kind
+  // of warning?
+  virtual bool IsEphemeralWarning() const;
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -500,6 +512,11 @@ class DownloadUIModel {
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns whether the DownloadBubbleV2 functionality is enabled.
+  bool IsBubbleV2Enabled() const;
+#endif
+
  private:
   friend class DownloadItemModelTest;
 
@@ -512,8 +529,6 @@ class DownloadUIModel {
   // Setting an override for whether the DownloadBubbleV2 functionality is
   // enabled.
   void set_is_bubble_v2_enabled_for_testing(bool is_enabled);
-  // Returns whether the DownloadBubbleV2 functionality is enabled.
-  bool IsBubbleV2Enabled() const;
 #endif
 
   // Unowned Clock to override the time of "Now".

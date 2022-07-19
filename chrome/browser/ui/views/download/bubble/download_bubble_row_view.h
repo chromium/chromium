@@ -100,6 +100,7 @@ class DownloadBubbleRowView : public views::View,
   void UpdateProgressBar();
   void UpdateLabels();
   void RecordMetricsOnUpdate();
+  void RecordDownloadDisplayed();
 
   // Load the icon, from the cache or from IconManager::LoadIcon.
   void LoadIcon();
