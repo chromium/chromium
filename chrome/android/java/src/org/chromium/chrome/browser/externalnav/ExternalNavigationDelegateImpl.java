@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
@@ -317,8 +316,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean shouldLaunchWebApksOnInitialIntent() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT);
+                && ChromeFeatureList.sWebApkTrampolineOnInitialIntent.isEnabled();
     }
 
     @Override

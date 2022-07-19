@@ -35,7 +35,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -100,7 +99,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Instance switcher is supported on S, and on some R platforms where the new
         // launch mode is backported.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER);
+        return ChromeFeatureList.sInstanceSwitcher.isEnabled();
     }
 
     /**

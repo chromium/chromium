@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaGestureEve
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -750,12 +749,12 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     private boolean isGridTabSwitcherPolishEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+        return ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
                 && TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }
 
     private boolean isGridTabSwitcherNonPolishEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+        return ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
                 && !TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }
 

@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Over
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -82,7 +81,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
             if (mClickPendingIntent == null) return;
             Intent extraIntent = new Intent();
             int originalId = v.getId();
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS)) {
+            if (ChromeFeatureList.sCctRemoveRemoteViewIds.isEnabled()) {
                 originalId = (Integer) v.getTag(R.id.view_id_tag_key);
             }
             extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, originalId);
@@ -324,7 +323,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
                 if (view != null) view.setOnClickListener(mBottomBarClickListener);
             }
         }
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS)) {
+        if (ChromeFeatureList.sCctRemoveRemoteViewIds.isEnabled()) {
             // Set all views' ids to be View.NO_ID to prevent them clashing with
             // chrome's resource ids. See http://crbug.com/1061872
             transformViewIds(inflatedView);

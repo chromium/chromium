@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -183,9 +182,8 @@ public class WebApkServiceClient {
                     return;
                 }
                 if (BuildInfo.isAtLeastT()
-                        && CachedFeatureFlags.isEnabled(
-                                ChromeFeatureList
-                                        .TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+                        && ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation
+                                   .isEnabled()) {
                     InstalledWebappPermissionManager.get().updatePermission(
                             origin, webApkPackage, ContentSettingsType.NOTIFICATIONS, settingValue);
                 }

@@ -35,7 +35,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.crash.FirebaseConfig;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -300,7 +299,7 @@ public class SplitCompatApplication extends Application {
     }
 
     private static Boolean shouldUseDebugFlags() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);
+        return ChromeFeatureList.sCommandLineOnNonRooted.isEnabled();
     }
 
     private static void updateMemoryPressurePolling(@ApplicationState int newState) {

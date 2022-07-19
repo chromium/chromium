@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideService;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideServiceFactory;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -184,8 +183,7 @@ public class ProcessInitializationHandler {
         // This function controls whether BrowserTaskExecutor posts pre-native bootstrap tasks at
         // the front or back of the Looper's queue.
         BrowserTaskExecutor.setShouldPrioritizePreNativeBootstrapTasks(
-                !CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS));
+                !ChromeFeatureList.sElidePrioritizationOfPreNativeBootstrapTasks.isEnabled());
 
         Context application = ContextUtils.getApplicationContext();
 

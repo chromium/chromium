@@ -144,7 +144,7 @@ public class ReturnToChromeUtilTest {
         // clang-format on
 
         // TODO(crbug.com/1095637): Make it work for instant start.
-        assumeFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        assumeFalse(ChromeFeatureList.sInstantStart.isEnabled());
 
         testTabSwitcherModeTriggeredBeyondThreshold();
 

@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
@@ -942,7 +941,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private boolean useCriticalPersistedTabData() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
+        return ChromeFeatureList.sCriticalPersistedTabData.isEnabled();
     }
 
     @Nullable

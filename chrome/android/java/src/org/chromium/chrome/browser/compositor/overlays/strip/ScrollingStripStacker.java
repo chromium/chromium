@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -19,8 +18,7 @@ public class ScrollingStripStacker extends StripStacker {
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
             float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
             float cachedTabWidth) {
-        boolean tabStripImpEnabled =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
         for (int i = 0; i < indexOrderedTabs.length; i++) {
             StripLayoutTab tab = indexOrderedTabs[i];
             if (tabStripImpEnabled) {
@@ -42,7 +40,7 @@ public class ScrollingStripStacker extends StripStacker {
     public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth,
             float stripLeftMargin, float stripRightMargin, float stripWidth, float buttonWidth,
             float touchTargetOffset, float cachedTabWidth, boolean animate) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) {
+        if (ChromeFeatureList.sTabStripImprovements.isEnabled()) {
             return super.computeNewTabButtonOffset(indexOrderedTabs, tabOverlapWidth,
                     stripLeftMargin, stripRightMargin, stripWidth, buttonWidth, touchTargetOffset,
                     cachedTabWidth, animate);

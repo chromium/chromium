@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.animation.FloatProperty;
@@ -648,8 +647,7 @@ public class StripLayoutTab implements VirtualView {
     }
 
     private RectF getCloseRect() {
-        boolean tabStripImprovementsEnabled =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        boolean tabStripImprovementsEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
         int closeButtonWidth = tabStripImprovementsEnabled ? CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP
                                                            : CLOSE_BUTTON_WIDTH_DP;
         if (!LocalizationUtils.isLayoutRtl()) {

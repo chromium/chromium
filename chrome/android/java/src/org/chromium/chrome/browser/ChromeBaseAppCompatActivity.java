@@ -29,7 +29,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
@@ -233,7 +232,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // use the old value and then content will pick up the enabled value, causing one execution
         // of inconsistency.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && !CachedFeatureFlags.isEnabled(ChromeFeatureList.ELASTIC_OVERSCROLL)) {
+                && !ChromeFeatureList.sElasticOverscroll.isEnabled()) {
             setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }
 
@@ -244,7 +243,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // color state list that depends on colorPrimary.
         setTheme(R.style.ThemeOverlay_DynamicColorOverrides);
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID)) {
+        if (ChromeFeatureList.sDynamicColorButtonsAndroid.isEnabled()) {
             setTheme(R.style.ThemeOverlay_DynamicButtons);
         }
     }

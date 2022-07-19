@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -285,8 +284,7 @@ public class SplashController
         // - closing activity (example: https://crbug.com/856544#c41)
         // - send activity to the background (example: https://crbug.com/856544#c30)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT)) {
+                && ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent.isEnabled()) {
             return TranslucencyRemoval.ON_SPLASH_HIDDEN;
         }
         return TranslucencyRemoval.ON_SPLASH_SHOWN;

@@ -11,7 +11,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -68,7 +67,7 @@ public class DownloadTaskScheduler {
                 TimeUtils.SECONDS_PER_MINUTE * 5, TimeUtils.SECONDS_PER_MINUTE * 10);
         scheduleTask(DownloadTaskType.CLEANUP_TASK, false, false, 0,
                 TimeUtils.SECONDS_PER_HOUR * 12, TimeUtils.SECONDS_PER_HOUR * 24);
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
+        if (ChromeFeatureList.sDownloadsAutoResumptionNative.isEnabled()) {
             scheduleTask(DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK, false, false, 0,
                     TimeUtils.SECONDS_PER_MINUTE * 5, TimeUtils.SECONDS_PER_DAY);
         }

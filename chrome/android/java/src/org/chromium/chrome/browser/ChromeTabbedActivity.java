@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificati
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fonts.FontPreloader;
@@ -2933,7 +2932,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected boolean supportsDynamicColors() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
+        return ChromeFeatureList.sDynamicColorAndroid.isEnabled();
     }
 
     /**

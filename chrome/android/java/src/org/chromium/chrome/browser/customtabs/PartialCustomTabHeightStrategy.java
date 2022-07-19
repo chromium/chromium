@@ -48,7 +48,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -165,8 +164,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            if (!CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE)) {
+            if (!ChromeFeatureList.sCctResizableAllowResizeByUserGesture.isEnabled()) {
                 return false;
             }
 
@@ -268,8 +266,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mOnResizedCallback = onResizedCallback;
         // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
         // 90% of the height.
-        mFullyExpandedAdjustmentHeight =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT)
+        mFullyExpandedAdjustmentHeight = ChromeFeatureList.sCctResizable90MaximumHeight.isEnabled()
                 ? (int) ((mMaxHeight - getFullyExpandedYCoordinate()) * EXTRA_HEIGHT_RATIO)
                 : 0;
 

@@ -12,7 +12,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
@@ -117,7 +116,7 @@ public class StartupPaintPreviewHelper {
      * @return the feature availability
      */
     public static boolean isEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
+        return ChromeFeatureList.sPaintPreviewShowOnStartup.isEnabled();
     }
 
     /**

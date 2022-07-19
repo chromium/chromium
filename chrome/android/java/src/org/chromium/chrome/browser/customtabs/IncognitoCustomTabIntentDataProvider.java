@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
@@ -109,8 +108,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     private static boolean isIntentFromThirdPartyAllowed() {
-        return CachedFeatureFlags.isEnabled(
-                ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY);
+        return ChromeFeatureList.sCctIncognitoAvailableToThirdParty.isEnabled();
     }
 
     private static boolean isIntentFromFirstParty(Intent intent) {
@@ -195,7 +193,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     public static boolean isValidIncognitoIntent(Intent intent) {
         if (!isIncognitoRequested(intent)) return false;
         if (!isTrustedIntent(intent)) return false;
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_INCOGNITO);
+        return ChromeFeatureList.sCctIncognito.isEnabled();
     }
 
     private String resolveUrlToLoad(Intent intent) {

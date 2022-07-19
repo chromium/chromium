@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
@@ -751,7 +750,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isNewWindowMenuFeatureEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.NEW_WINDOW_APP_MENU);
+        return ChromeFeatureList.sNewWindowAppMenu.isEnabled();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -802,8 +801,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean shouldShowPaintPreview(
             boolean isChromeScheme, @NonNull Tab currentTab, boolean isIncognito) {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_DEMO) && !isChromeScheme
-                && !isIncognito;
+        return ChromeFeatureList.sPaintPreviewDemo.isEnabled() && !isChromeScheme && !isIncognito;
     }
 
     /**
@@ -1195,7 +1193,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         boolean isRequestDesktopSite =
                 currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)) {
+        if (ChromeFeatureList.sAppMenuMobileSiteOption.isEnabled()) {
             requestMenuLabel.setTitle(isRequestDesktopSite
                             ? R.string.menu_item_request_mobile_site
                             : R.string.menu_item_request_desktop_site);

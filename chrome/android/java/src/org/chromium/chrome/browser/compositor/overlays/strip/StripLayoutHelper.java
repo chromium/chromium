@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -208,8 +207,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_DP;
         mNewTabButtonWidth = NEW_TAB_BUTTON_WIDTH_DP;
         mModelSelectorButton = modelSelectorButton;
-        mTabStripImpEnabled =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        mTabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
 
         mRightMargin = LocalizationUtils.isLayoutRtl()
                 ? 0
@@ -872,8 +870,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 3. Check if we should start the reorder mode. Disabling this for tab strip improvements
         // experiments to prevent accidentally entering reorder mode when scrolling the tab strip.
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
-                && !mInReorderMode) {
+        if (!ChromeFeatureList.sTabStripImprovements.isEnabled() && !mInReorderMode) {
             final float absTotalX = Math.abs(totalX);
             final float absTotalY = Math.abs(totalY);
             if (totalY > mReorderMoveStartThreshold && absTotalX < mReorderMoveStartThreshold * 2.f

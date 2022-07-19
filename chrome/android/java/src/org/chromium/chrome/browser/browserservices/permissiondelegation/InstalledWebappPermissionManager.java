@@ -28,7 +28,6 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -256,9 +255,8 @@ public class InstalledWebappPermissionManager {
     int getPermission(@ContentSettingsType int type, Origin origin) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS: {
-                if (CachedFeatureFlags.isEnabled(
-                            ChromeFeatureList
-                                    .TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+                if (ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation
+                                .isEnabled()) {
                     @ContentSettingValues
                     Integer settingValue = mStore.getPermission(type, origin);
                     if (settingValue == null) {

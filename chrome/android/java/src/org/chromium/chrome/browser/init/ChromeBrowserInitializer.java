@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.download.DownloadManagerService;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -216,7 +215,7 @@ public class ChromeBrowserInitializer {
         ThreadUtils.assertOnUiThread();
         if (mPreInflationStartupComplete) return;
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP)) {
+        if (ChromeFeatureList.sCreateSafebrowsingOnStartup.isEnabled()) {
             new Thread(SafeBrowsingApiBridge::ensureInitialized).start();
         }
 

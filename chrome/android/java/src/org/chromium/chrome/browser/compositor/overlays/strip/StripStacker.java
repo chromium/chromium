@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -96,8 +95,7 @@ public abstract class StripStacker {
             float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
             float touchTargetOffset, float cachedTabWidth, boolean animate) {
         float rightEdge = stripLeftMargin;
-        boolean tabStripImpEnabled =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
 
         for (StripLayoutTab tab : indexOrderedTabs) {
             float tabWidth;
@@ -132,8 +130,7 @@ public abstract class StripStacker {
             float stripLeftMargin, float stripRightMargin, float stripWidth,
             float newTabButtonWidth, float touchTargetOffset, float cachedTabWidth,
             boolean animate) {
-        boolean tabStripImpEnabled =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
 
         float leftEdge = stripWidth - stripRightMargin;
 

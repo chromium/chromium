@@ -16,7 +16,6 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
@@ -65,8 +64,7 @@ public class NotificationPermissionUpdater {
         // The function passed to this method call may not be executed in the case of the app not
         // having a TrustedWebActivityService. That's fine because we only want to update the
         // permission if a TrustedWebActivityService exists.
-        if (CachedFeatureFlags.isEnabled(
-                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+        if (ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation.isEnabled()) {
             mTrustedWebActivityClient.checkNotificationPermissionSetting(origin,
                     (app, settingValue)
                             -> updatePermission(
@@ -79,9 +77,8 @@ public class NotificationPermissionUpdater {
 
     public void onWebApkLaunch(Origin origin, String packageName) {
         if (!BuildInfo.isAtLeastT()
-                || !CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList
-                                .TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+                || !ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation
+                            .isEnabled()) {
             return;
         }
         WebApkServiceClient.getInstance().checkNotificationPermission(packageName,
@@ -97,8 +94,7 @@ public class NotificationPermissionUpdater {
     public void onClientAppUninstalled(Origin origin) {
         // See if there is any other app installed that could handle the notifications (and update
         // to that apps notification permission if it exists).
-        if (CachedFeatureFlags.isEnabled(
-                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+        if (ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation.isEnabled()) {
             mTrustedWebActivityClient.checkNotificationPermissionSetting(
                     origin, new TrustedWebActivityClient.PermissionCallback() {
                         @Override

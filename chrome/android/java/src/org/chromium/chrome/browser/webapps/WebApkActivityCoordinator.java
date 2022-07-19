@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.Permissi
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -73,9 +72,8 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         String packageName = storage.getWebApkPackageName();
 
         if (!BuildInfo.isAtLeastT()
-                || !CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList
-                                .TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+                || !ChromeFeatureList.sTrustedWebActivityNotificationPermissionDelegation
+                            .isEnabled()) {
             return;
         }
 

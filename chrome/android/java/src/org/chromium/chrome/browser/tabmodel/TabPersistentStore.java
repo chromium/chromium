@@ -34,7 +34,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -1664,7 +1663,7 @@ public class TabPersistentStore {
     }
 
     private static boolean isCriticalPersistedTabDataEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
+        return ChromeFeatureList.sCriticalPersistedTabData.isEnabled();
     }
 
     private class LoadTabTask extends AsyncTask<TabState> {
