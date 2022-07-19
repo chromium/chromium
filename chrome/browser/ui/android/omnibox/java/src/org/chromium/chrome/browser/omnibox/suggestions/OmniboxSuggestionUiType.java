@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({OmniboxSuggestionUiType.DEFAULT, OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
         OmniboxSuggestionUiType.ANSWER_SUGGESTION, OmniboxSuggestionUiType.ENTITY_SUGGESTION,
         OmniboxSuggestionUiType.TAIL_SUGGESTION, OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
-        OmniboxSuggestionUiType.TILE_SUGGESTION, OmniboxSuggestionUiType.TILE_NAVSUGGEST,
+        OmniboxSuggestionUiType.HEADER, OmniboxSuggestionUiType.TILE_NAVSUGGEST,
         OmniboxSuggestionUiType.PEDAL_SUGGESTION})
 @Retention(RetentionPolicy.SOURCE)
 public @interface OmniboxSuggestionUiType {
@@ -23,8 +23,7 @@ public @interface OmniboxSuggestionUiType {
     int ENTITY_SUGGESTION = 3;
     int TAIL_SUGGESTION = 4;
     int CLIPBOARD_SUGGESTION = 5;
-    int TILE_SUGGESTION = 6;
-    int HEADER = 7;
-    int TILE_NAVSUGGEST = 8;
-    int PEDAL_SUGGESTION = 9;
+    int HEADER = 6;
+    int TILE_NAVSUGGEST = 7;
+    int PEDAL_SUGGESTION = 8;
 }

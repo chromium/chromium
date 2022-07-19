@@ -137,12 +137,19 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     private class HistogramRecordingRecycledViewPool extends RecycledViewPool {
         HistogramRecordingRecycledViewPool() {
-            setMaxRecycledViews(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1);
+            // The list below should include suggestions defined in OmniboxSuggestionUiType
+            // and specify the maximum anticipated volume of suggestions of each type.
+            // For readability reasons, keep the order of this list same as the order of
+            // the types defined in OmniboxSuggestionUiType.
+            setMaxRecycledViews(OmniboxSuggestionUiType.DEFAULT, 20);
             setMaxRecycledViews(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION, 1);
             setMaxRecycledViews(OmniboxSuggestionUiType.ANSWER_SUGGESTION, 1);
-            setMaxRecycledViews(OmniboxSuggestionUiType.DEFAULT, 15);
             setMaxRecycledViews(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 5);
-            setMaxRecycledViews(OmniboxSuggestionUiType.TAIL_SUGGESTION, 10);
+            setMaxRecycledViews(OmniboxSuggestionUiType.TAIL_SUGGESTION, 15);
+            setMaxRecycledViews(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1);
+            setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
+            setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
+            setMaxRecycledViews(OmniboxSuggestionUiType.PEDAL_SUGGESTION, 3);
         }
 
         @Override
