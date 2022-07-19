@@ -87,6 +87,7 @@ ModelTypeSet DefaultInterestedDataTypes() {
 
 sync_pb::DeviceInfoSpecifics CreateSpecifics(
     int suffix,
+    const std::string& fcm_registration_token,
     const ModelTypeSet& interested_data_types) {
   sync_pb::DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(CacheGuidForSuffix(suffix));
@@ -104,11 +105,17 @@ sync_pb::DeviceInfoSpecifics CreateSpecifics(
     mutable_interested_data_type_ids.Add(
         syncer::GetSpecificsFieldNumberFromModelType(type));
   }
+  if (!fcm_registration_token.empty()) {
+    specifics.mutable_invalidation_fields()->set_instance_id_token(
+        fcm_registration_token);
+  }
   return specifics;
 }
 
+// Creates specifics for a client without sync standalone invalidations.
 sync_pb::DeviceInfoSpecifics CreateSpecifics(int suffix) {
-  return CreateSpecifics(suffix, DefaultInterestedDataTypes());
+  return CreateSpecifics(suffix, /*fcm_registration_token=*/"",
+                         DefaultInterestedDataTypes());
 }
 
 class SingleClientDeviceInfoSyncTest : public SyncTest {
@@ -134,7 +141,8 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
         ->GetDeviceInfoTracker();
   }
 
-  // Injects a test DeviceInfo entity to the fake server, given |suffix|.
+  // Injects a test DeviceInfo entity to the fake server with disabled sync
+  // standalone invalidations, given |suffix|.
   void InjectDeviceInfoEntityToServer(int suffix) {
     InjectDeviceInfoSpecificsToServer(CreateSpecifics(suffix));
   }
@@ -350,6 +358,42 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   GetFakeServer()->GetLastCommitMessage(&message);
 
   EXPECT_TRUE(message.commit().config_params().single_client());
+  EXPECT_TRUE(message.commit()
+                  .config_params()
+                  .single_client_with_standalone_invalidations());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientDeviceInfoSyncTest,
+    ShouldSetTheOnlyClientFlagForStandaloneInvalidationsOnly) {
+  // A client without standalone invalidations shouldn't affect |single_client|
+  // flag.
+  InjectDeviceInfoEntityToServer(/*suffix=*/1);
+
+  ASSERT_TRUE(SetupSync());
+
+  // Single client flag could be dropped due to a DeviceInfo update in the last
+  // GetUpdates request. The next sync cycle may download the latest committed
+  // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
+  // there are at least 2 sync cycles and check the second one only.
+  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
+                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  .Wait());
+
+  // Perform the second sync cycle.
+  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
+                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  GetFakeServer()->GetLastCommitMessage(&message);
+
+  EXPECT_FALSE(message.commit().config_params().single_client());
+  EXPECT_TRUE(message.commit()
+                  .config_params()
+                  .single_client_with_standalone_invalidations());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
@@ -357,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // There is a remote client which is not interested in BOOKMARKS.
   const ModelTypeSet remote_interested_data_types =
       Difference(DefaultInterestedDataTypes(), {syncer::BOOKMARKS});
-  InjectDeviceInfoSpecificsToServer(
-      CreateSpecifics(/*suffix=*/1, remote_interested_data_types));
+  InjectDeviceInfoSpecificsToServer(CreateSpecifics(
+      /*suffix=*/1, "fcm_token_1", remote_interested_data_types));
 
   ASSERT_TRUE(SetupSync());
 
@@ -384,11 +428,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // in the just-committed bookmark, so for the purpose of this commit, the
   // committing client is the "single" one.
   EXPECT_TRUE(message.commit().config_params().single_client());
+  EXPECT_TRUE(message.commit()
+                  .config_params()
+                  .single_client_with_standalone_invalidations());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldNotProvideTheOnlyClientFlag) {
-  InjectDeviceInfoEntityToServer(/*suffix=*/1);
+  InjectDeviceInfoSpecificsToServer(CreateSpecifics(
+      /*suffix=*/1, "fcm_token_1", DefaultInterestedDataTypes()));
 
   ASSERT_TRUE(SetupSync());
 
@@ -413,6 +461,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   GetFakeServer()->GetLastCommitMessage(&message);
 
   EXPECT_FALSE(message.commit().config_params().single_client());
+  EXPECT_FALSE(message.commit()
+                   .config_params()
+                   .single_client_with_standalone_invalidations());
 }
 
 // This test verifies that single_client optimization flag is not set after
@@ -445,6 +496,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   GetFakeServer()->GetLastCommitMessage(&message);
 
   EXPECT_FALSE(message.commit().config_params().single_client());
+  EXPECT_FALSE(message.commit()
+                   .config_params()
+                   .single_client_with_standalone_invalidations());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,

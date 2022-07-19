@@ -30,6 +30,7 @@ void AddClientConfigParamsToMessage(
     bool proxy_tabs_datatype_enabled,
     bool cookie_jar_mismatch,
     bool single_client,
+    bool single_client_with_standalone_invalidations,
     const std::vector<std::string>& fcm_registration_tokens,
     sync_pb::CommitMessage* message);
 

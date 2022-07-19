@@ -37,23 +37,34 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   const std::vector<std::unique_ptr<syncer::DeviceInfo>> active_devices =
       GetActiveDevices();
   if (active_devices.empty()) {
-    // This may happen if the engine is not initialized yet.
+    // This may happen if the engine is not initialized yet. In other cases,
+    // |active_devices| must contain at least the local device.
     return syncer::ActiveDevicesInvalidationInfo::CreateUninitialized();
   }
 
   std::vector<std::string> fcm_registration_tokens;
-  syncer::ModelTypeSet interested_data_types;
+
+  // List of interested data types for all other clients.
+  syncer::ModelTypeSet all_interested_data_types;
+
+  // List of interested data types for all the clients with enabled sync
+  // standalone invalidations.
+  syncer::ModelTypeSet standalone_invalidations_interested_data_types;
 
   for (const std::unique_ptr<syncer::DeviceInfo>& device : active_devices) {
     if (!local_cache_guid.empty() && device->guid() == local_cache_guid) {
       continue;
     }
 
-    interested_data_types.PutAll(device->interested_data_types());
-    if (!device->fcm_registration_token().empty() &&
-        base::FeatureList::IsEnabled(
-            switches::kSyncUseFCMRegistrationTokensList)) {
-      fcm_registration_tokens.push_back(device->fcm_registration_token());
+    all_interested_data_types.PutAll(device->interested_data_types());
+
+    if (!device->fcm_registration_token().empty()) {
+      standalone_invalidations_interested_data_types.PutAll(
+          device->interested_data_types());
+      if (base::FeatureList::IsEnabled(
+              switches::kSyncUseFCMRegistrationTokensList)) {
+        fcm_registration_tokens.push_back(device->fcm_registration_token());
+      }
     }
   }
 
@@ -68,7 +79,8 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   }
 
   return syncer::ActiveDevicesInvalidationInfo::Create(
-      std::move(fcm_registration_tokens), interested_data_types);
+      std::move(fcm_registration_tokens), all_interested_data_types,
+      standalone_invalidations_interested_data_types);
 }
 
 void ActiveDevicesProviderImpl::SetActiveDevicesChangedCallback(

@@ -17,10 +17,13 @@ ActiveDevicesInvalidationInfo::CreateUninitialized() {
 // static
 ActiveDevicesInvalidationInfo ActiveDevicesInvalidationInfo::Create(
     std::vector<std::string> fcm_registration_tokens,
-    ModelTypeSet interested_data_types) {
+    ModelTypeSet all_interested_data_types,
+    ModelTypeSet standalone_invalidations_interested_data_types) {
   ActiveDevicesInvalidationInfo result(/*initialized=*/true);
   result.fcm_registration_tokens_ = std::move(fcm_registration_tokens);
-  result.interested_data_types_ = interested_data_types;
+  result.all_interested_data_types_ = all_interested_data_types;
+  result.standalone_invalidations_interested_data_types_ =
+      standalone_invalidations_interested_data_types;
   return result;
 }
 
@@ -44,7 +47,18 @@ bool ActiveDevicesInvalidationInfo::IsSingleClientForTypes(
     return false;
   }
 
-  return Intersection(types, interested_data_types_).Empty();
+  return Intersection(types, all_interested_data_types_).Empty();
+}
+
+bool ActiveDevicesInvalidationInfo::
+    IsSingleClientWithStandaloneInvalidationsForTypes(
+        const ModelTypeSet& types) const {
+  if (!initialized_) {
+    return false;
+  }
+
+  return Intersection(types, standalone_invalidations_interested_data_types_)
+      .Empty();
 }
 
 }  // namespace syncer

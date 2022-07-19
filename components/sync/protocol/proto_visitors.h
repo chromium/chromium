@@ -299,6 +299,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ClientConfigParams& proto) {
   VISIT(cookie_jar_mismatch);
   VISIT(single_client);
   VISIT_REP(devices_fcm_registration_tokens);
+  VISIT(single_client_with_standalone_invalidations);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ClientStatus& proto) {

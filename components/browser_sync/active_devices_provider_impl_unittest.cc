@@ -19,7 +19,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,6 +26,7 @@ using syncer::ActiveDevicesInvalidationInfo;
 using syncer::DeviceInfo;
 using syncer::FakeDeviceInfoTracker;
 using syncer::ModelTypeSet;
+using testing::Contains;
 using testing::IsEmpty;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -83,11 +83,11 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldFilterInactiveDevices) {
   base::test::ScopedFeatureList feature_override(
       switches::kSyncFilterOutInactiveDevicesForSingleClient);
   AddDevice("local_device_pulse_interval",
-            /*fcm_registration_token=*/"", DefaultInterestedDataTypes(),
+            /*fcm_registration_token=*/"token_1", DefaultInterestedDataTypes(),
             clock_.Now() - base::Minutes(kPulseIntervalMinutes + 1));
 
   // Very old device.
-  AddDevice("device_inactive", /*fcm_registration_token=*/"",
+  AddDevice("device_inactive", /*fcm_registration_token=*/"token_2",
             DefaultInterestedDataTypes(), clock_.Now() - base::Days(100));
 
   // The local device should be considered active due to margin even though the
@@ -98,7 +98,7 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldFilterInactiveDevices) {
       active_devices_provider_.CalculateInvalidationInfo(
           /*local_cache_guid=*/std::string());
   EXPECT_FALSE(result_no_guid.IsSingleClientForTypes({syncer::BOOKMARKS}));
-  EXPECT_THAT(result_no_guid.fcm_registration_tokens(), IsEmpty());
+  EXPECT_THAT(result_no_guid.fcm_registration_tokens(), Contains("token_1"));
 
   // Should ignore the local device and ignore the old device even if it's
   // interested in bookmarks.
@@ -123,6 +123,56 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnIfSingleDeviceByDataType) {
           device_list_.front()->guid());
   EXPECT_TRUE(result_local_guid.IsSingleClientForTypes({syncer::SESSIONS}));
   EXPECT_FALSE(result_local_guid.IsSingleClientForTypes({syncer::BOOKMARKS}));
+
+  // Standalone invalidations are disabled, hence it should be a single device
+  // for BOOKMARKS as well.
+  EXPECT_TRUE(
+      result_local_guid.IsSingleClientWithStandaloneInvalidationsForTypes(
+          {syncer::BOOKMARKS}));
+}
+
+TEST_F(ActiveDevicesProviderImplTest,
+       ShouldReturnIfSingleClientWithStandaloneInvalidations) {
+  AddDevice("local_device", /*fcm_registration_token=*/"token_1",
+            DefaultInterestedDataTypes(), clock_.Now());
+  AddDevice("remote_device", /*fcm_registration_token=*/"token_2",
+            Difference(DefaultInterestedDataTypes(), {syncer::SESSIONS}),
+            clock_.Now());
+
+  // Remote device has disabled sessions data type and current device should be
+  // considered as the only client.
+  const ActiveDevicesInvalidationInfo result_local_guid =
+      active_devices_provider_.CalculateInvalidationInfo(
+          device_list_.front()->guid());
+  EXPECT_TRUE(
+      result_local_guid.IsSingleClientWithStandaloneInvalidationsForTypes(
+          {syncer::SESSIONS}));
+  EXPECT_FALSE(
+      result_local_guid.IsSingleClientWithStandaloneInvalidationsForTypes(
+          {syncer::BOOKMARKS}));
+
+  // Since all the clients with enabled standalone invalidations, single client
+  // should have the same results.
+  EXPECT_TRUE(result_local_guid.IsSingleClientForTypes({syncer::SESSIONS}));
+  EXPECT_FALSE(result_local_guid.IsSingleClientForTypes({syncer::BOOKMARKS}));
+}
+
+TEST_F(ActiveDevicesProviderImplTest,
+       ShouldReturnSingleClientForStandaloneInvalidationsOnly) {
+  AddDevice("local_device", /*fcm_registration_token=*/"token_1",
+            DefaultInterestedDataTypes(), clock_.Now());
+
+  // A remote device doesn't subscribe to standalone invalidations.
+  AddDevice("remote_device", /*fcm_registration_token=*/"",
+            DefaultInterestedDataTypes(), clock_.Now());
+
+  const ActiveDevicesInvalidationInfo result =
+      active_devices_provider_.CalculateInvalidationInfo(
+          device_list_.front()->guid());
+
+  EXPECT_FALSE(result.IsSingleClientForTypes({syncer::BOOKMARKS}));
+  EXPECT_TRUE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
+      {syncer::BOOKMARKS}));
 }
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldReturnZeroDevices) {
@@ -135,6 +185,8 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnZeroDevices) {
   // this a single-client situation.
   EXPECT_THAT(result.fcm_registration_tokens(), IsEmpty());
   EXPECT_FALSE(result.IsSingleClientForTypes({syncer::BOOKMARKS}));
+  EXPECT_FALSE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
+      {syncer::BOOKMARKS}));
 }
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldInvokeCallback) {
@@ -186,19 +238,22 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnEmptyListWhenTooManyDevices) {
               clock_.Now() - base::Minutes(1));
   }
 
-  EXPECT_THAT(active_devices_provider_
-                  .CalculateInvalidationInfo(/*local_cache_guid=*/std::string())
-                  .fcm_registration_tokens(),
-              IsEmpty());
+  ActiveDevicesInvalidationInfo result =
+      active_devices_provider_.CalculateInvalidationInfo(
+          /*local_cache_guid=*/std::string());
+  EXPECT_THAT(result.fcm_registration_tokens(), IsEmpty());
+  EXPECT_FALSE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
+      {syncer::BOOKMARKS}));
 
   // Double check that all other devices will result in an empty FCM
   // registration token list.
   AddDevice("extra_device", "extra_token", DefaultInterestedDataTypes(),
             clock_.Now());
-  EXPECT_THAT(active_devices_provider_
-                  .CalculateInvalidationInfo(/*local_cache_guid=*/std::string())
-                  .fcm_registration_tokens(),
-              IsEmpty());
+  result = active_devices_provider_.CalculateInvalidationInfo(
+      /*local_cache_guid=*/std::string());
+  EXPECT_THAT(result.fcm_registration_tokens(), IsEmpty());
+  EXPECT_FALSE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
+      {syncer::BOOKMARKS}));
 }
 
 }  // namespace

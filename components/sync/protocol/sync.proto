@@ -57,7 +57,12 @@ message ClientConfigParams {
   // Indicates that the client is not aware of any other active clients
   // interested in the committed data types. This flag shows that it is not
   // necessary to send invalidations for the committed data. A client is
-  // considered active if it's DeviceInfo has updated recent enough.
+  // considered active if it's DeviceInfo has updated recent enough. This flag
+  // does not take into account whether standalone invalidations are enabled (as
+  // opposed to |single_client_with_standalone_invalidations|). However, it's
+  // set depending on interested data types of other devices, e.g. if there are
+  // other devices but they are not interested in SESSION data type, and current
+  // commit request contains only SESSION, it will be set to true.
   optional bool single_client = 4;
 
   // A list of FCM registration tokens which are obtained from other clients.
@@ -69,10 +74,23 @@ message ClientConfigParams {
   // 2. There are too many active devices and the list would have too many
   // items.
   // 3. An empty list could also mean that the current client is the only
-  // client. This case should be covered by the |single_client| field instead
-  // (otherwise it could be mixed up with older clients). The server doesn't
-  // have to use this field and can ignore it.
+  // client. This case should be covered by the
+  // |single_client_with_standalone_invalidations| field instead (otherwise it
+  // could be mixed up with older clients). The server doesn't have to use this
+  // field and can ignore it. Note that this list does not take into account
+  // interested data types from the other clients.
+  // TODO(crbug.com/1344803): use interested data types to narrow down the list
+  // of FCM tokens.
   repeated string devices_fcm_registration_tokens = 5;
+
+  // Similar to |single_client| but takes into account only clients with enabled
+  // sync standalone invalidations. When set to true, there are no other clients
+  // with sync standalone invalidations interested in the committing types and
+  // hence it's not necessary to send out standalone invalidations (it may still
+  // be necessary to send out invalidations using the legacy system, see
+  // |single_client| instead).
+  // Introduced in M105.
+  optional bool single_client_with_standalone_invalidations = 6;
 }
 
 message CommitMessage {
