@@ -137,6 +137,10 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.SetAllowedToBeDefault(input);
   }
 
+  if (provider->InKeywordMode(input)) {
+    match.from_keyword = true;
+  }
+
   return match;
 }
 

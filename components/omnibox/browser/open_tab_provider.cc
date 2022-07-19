@@ -47,7 +47,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
     for (const std::u16string& query_term : query_terms) {
       if (title.find(query_term) != std::string::npos) {
         matches_.push_back(
-            CreateOpenTabMatch(input.text(), web_contents->GetTitle(), url));
+            CreateOpenTabMatch(input, web_contents->GetTitle(), url));
         break;
       }
     }
@@ -56,7 +56,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
 }
 
 AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
-    const std::u16string& input_text,
+    const AutocompleteInput& input,
     const std::u16string& title,
     const GURL& url) {
   DCHECK(url.is_valid());
@@ -76,17 +76,21 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   match.allowed_to_be_default_match = true;
 
   match.contents = base::UTF8ToUTF16(url.spec());
-  auto contents_terms = FindTermMatches(input_text, match.contents);
+  auto contents_terms = FindTermMatches(input.text(), match.contents);
   match.contents_class = ClassifyTermMatches(
       contents_terms, match.contents.size(),
       ACMatchClassification::MATCH | ACMatchClassification::URL,
       ACMatchClassification::URL);
 
   match.description = title;
-  auto description_terms = FindTermMatches(input_text, match.description);
+  auto description_terms = FindTermMatches(input.text(), match.description);
   match.description_class = ClassifyTermMatches(
       description_terms, match.description.size(), ACMatchClassification::MATCH,
       ACMatchClassification::NONE);
+
+  if (InKeywordMode(input)) {
+    match.from_keyword = true;
+  }
 
   return match;
 }

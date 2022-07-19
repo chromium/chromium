@@ -1464,6 +1464,8 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
   // Turn on keyword mode, test result again, we should get back the result for
   // google.com since we're searching only for the user text after the keyword.
   input3.set_prefer_keyword(true);
+  input3.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
   autocomplete_->Start(input3, false);
   if (!autocomplete_->done())
     base::RunLoop().Run();
@@ -1471,4 +1473,5 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
   matches_ = autocomplete_->matches();
   ASSERT_GT(matches_.size(), 0u);
   EXPECT_EQ(GURL("http://www.google.com/"), matches_[0].destination_url);
+  EXPECT_TRUE(matches_[0].from_keyword);
 }

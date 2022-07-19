@@ -25,7 +25,7 @@ class OpenTabProvider : public AutocompleteProvider {
  private:
   ~OpenTabProvider() override;
 
-  AutocompleteMatch CreateOpenTabMatch(const std::u16string& input_text,
+  AutocompleteMatch CreateOpenTabMatch(const AutocompleteInput& input,
                                        const std::u16string& title,
                                        const GURL& url);
 

@@ -289,6 +289,10 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.SetAllowedToBeDefault(autocomplete_input_);
   }
 
+  if (InKeywordMode(autocomplete_input_)) {
+    match.from_keyword = true;
+  }
+
   match.RecordAdditionalInfo("typed count", info.typed_count());
   match.RecordAdditionalInfo("visit count", info.visit_count());
   match.RecordAdditionalInfo("last visit", info.last_visit());

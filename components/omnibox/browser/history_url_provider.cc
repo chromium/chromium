@@ -470,6 +470,11 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   }
 
   what_you_typed_match.relevance = CalculateRelevance(WHAT_YOU_TYPED, 0);
+  if (InKeywordMode(autocomplete_input)) {
+    // TODO(yoangela): We may want to suppress what you typed matches when in
+    // keyword mode.
+    what_you_typed_match.from_keyword = true;
+  }
 
   // Add the what-you-typed match as a fallback in case we can't get the history
   // service or URL DB; otherwise, we'll replace this match lower down.  Don't
@@ -1150,6 +1155,10 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(params.input_before_fixup);
+  }
+
+  if (InKeywordMode(params.input)) {
+    match.from_keyword = true;
   }
 
   RecordAdditionalInfoFromUrlRow(info, &match);
