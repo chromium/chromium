@@ -364,6 +364,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
+        TabLayout.Tab firstTab = tabLayout.getTabAt(0);
+        int leftPadding = firstTab.view.getPaddingLeft();
+        firstTab.view.setPadding(leftPadding, 0, leftPadding, 0);
+        tabLayout.getTabAt(1).view.setPadding(leftPadding, 0, leftPadding, 0);
+
         return viewGroup;
     }
 
