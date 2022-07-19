@@ -5363,7 +5363,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceDiscardDownload) {
   ASSERT_TRUE(updated_downloads.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceKeepDownload) {
+// TODO the test is flaky on Mac. See https://crbug.com/1345657.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FeedbackServiceKeepDownload DISABLED_FeedbackServiceKeepDownload
+#else
+#define MAYBE_FeedbackServiceKeepDownload FeedbackServiceKeepDownload
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_FeedbackServiceKeepDownload) {
   // Make all file types DANGEROUS for testing.
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
