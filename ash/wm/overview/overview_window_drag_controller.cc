@@ -811,16 +811,21 @@ void OverviewWindowDragController::SnapWindow(
     SplitViewController::SnapPosition snap_position) {
   DCHECK_NE(snap_position, SplitViewController::NONE);
 
-  // |item_| will be deleted after SplitViewController::SnapWindow().
   DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
               ->IsDividerAnimating());
   aura::Window* window = item_->GetWindow();
   WindowState::Get(window)->set_snap_action_source(
       WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
 
+  // If `window` is currently fullscreen, snapping it will trigger a work area
+  // change, which triggers `OverviewSession::OnDisplayMetricsChanged`. Display
+  // changes normally end dragging for simplicity, but we need `item` to be
+  // nullptr before that happens so we can skip resetting the window gesture.
+  // See crbug.com/1330042 for more details. `item_` will be deleted after
+  // SplitViewController::SnapWindow().
+  item_ = nullptr;
   split_view_controller->SnapWindow(window, snap_position,
                                     /*activate_window=*/true);
-  item_ = nullptr;
 }
 
 OverviewGrid* OverviewWindowDragController::GetCurrentGrid() const {
