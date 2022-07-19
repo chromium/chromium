@@ -237,7 +237,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   base::ObserverList<Observer> observers_;
 
   // Stores the attempt corresponding to this prerender to log various metrics.
-  raw_ptr<PreloadingAttemptImpl> attempt_;
+  raw_ptr<PreloadingAttemptImpl, DanglingUntriaged> attempt_;
 
   // Navigation parameters for the navigation which loaded the main document of
   // the prerendered page, copied immediately after BeginNavigation when
