@@ -34,6 +34,7 @@ class FeedbackServiceProvider
                   SendReportCallback callback) override;
   void OpenDiagnosticsApp() override;
   void OpenExploreApp() override;
+  void OpenMetricsDialog() override;
 
   void BindInterface(
       mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>

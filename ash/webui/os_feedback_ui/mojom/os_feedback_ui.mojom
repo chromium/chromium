@@ -141,4 +141,6 @@ interface FeedbackServiceProvider {
   OpenDiagnosticsApp();
   // Open Explore app.
   OpenExploreApp();
+  // Open metrics dialog (which displays chrome://histograms).
+  OpenMetricsDialog();
 };

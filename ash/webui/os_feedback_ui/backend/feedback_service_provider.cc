@@ -54,6 +54,10 @@ void FeedbackServiceProvider::OpenExploreApp() {
   feedback_delegate_->OpenExploreApp();
 }
 
+void FeedbackServiceProvider::OpenMetricsDialog() {
+  feedback_delegate_->OpenMetricsDialog();
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {

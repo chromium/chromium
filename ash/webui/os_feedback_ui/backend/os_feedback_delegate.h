@@ -43,6 +43,8 @@ class OsFeedbackDelegate {
   virtual void OpenDiagnosticsApp() = 0;
   // Open Explore app.
   virtual void OpenExploreApp() = 0;
+  // Open metrics dialog (which displays chrome://histograms).
+  virtual void OpenMetricsDialog() = 0;
 };
 
 }  // namespace ash

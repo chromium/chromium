@@ -40,6 +40,8 @@ export class FakeFeedbackServiceProvider {
       openDiagnosticsApp: 0,
       /** @type {number} */
       openExploreApp: 0,
+      /** @type {number} */
+      openMetricsDialog: 0,
     };
   }
 
@@ -146,5 +148,19 @@ export class FakeFeedbackServiceProvider {
    */
   openExploreApp() {
     this.callCounts_.openExploreApp++;
+  }
+
+  /**
+   * @return {number}
+   */
+  getOpenMetricsDialogCallCount() {
+    return this.callCounts_.openMetricsDialog;
+  }
+
+  /**
+   * @return {void}
+   */
+  openMetricsDialog() {
+    this.callCounts_.openMetricsDialog++;
   }
 }

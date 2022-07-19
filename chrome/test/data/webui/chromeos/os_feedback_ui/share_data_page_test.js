@@ -6,8 +6,10 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js'
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 
 import {fakeEmptyFeedbackContext, fakeFeedbackContext} from 'chrome://os-feedback/fake_data.js';
+import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
+import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -23,8 +25,14 @@ export function shareDataPageTestSuite() {
   /** @type {?ShareDataPageElement} */
   let page = null;
 
+  /** @type {?FakeFeedbackServiceProvider} */
+  let feedbackServiceProvider;
+
   setup(() => {
     document.body.innerHTML = '';
+
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   });
 
   teardown(() => {
@@ -535,5 +543,19 @@ export function shareDataPageTestSuite() {
     page.reEnableSendReportButton();
     const reportNoSysInfo = (await clickSendAndWait(page)).report;
     assertFalse(!!reportNoSysInfo.feedbackContext.extraDiagnostics);
+  });
+
+  /**
+   * Test that feedbackServiceProvider.openMetricsDialog is called
+   * when #histogramsLink ("metrics") link is clicked.
+   */
+  test('openMetricsDialog', async () => {
+    await initializePage();
+
+    assertEquals(0, feedbackServiceProvider.getOpenMetricsDialogCallCount());
+
+    getElement('#histogramsLink').click();
+
+    assertEquals(1, feedbackServiceProvider.getOpenMetricsDialogCallCount());
   });
 }

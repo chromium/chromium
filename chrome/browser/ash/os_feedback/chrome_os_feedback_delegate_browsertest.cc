@@ -8,8 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -17,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -27,6 +30,8 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feedback/feedback_report.h"
@@ -38,6 +43,7 @@
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -67,7 +73,10 @@ const std::u16string kDescription = u"This is a fake description";
 
 class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
  public:
-  ChromeOsFeedbackDelegateTest() = default;
+  ChromeOsFeedbackDelegateTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kOsFeedback);
+  }
+
   ~ChromeOsFeedbackDelegateTest() override = default;
 
   absl::optional<GURL> GetLastActivePageUrl() {
@@ -128,6 +137,9 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
   GURL diagnostics_url_ = GURL(ash::kChromeUIDiagnosticsAppUrl);
   GURL explore_url_ = GURL(ash::kChromeUIHelpAppURL);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test GetApplicationLocale returns a valid locale.
@@ -303,6 +315,53 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
 
   EXPECT_TRUE(app_browser);
   EXPECT_EQ(explore_url_, FindActiveUrl(app_browser));
+}
+
+// Test that the Metrics (Histograms) dialog opens
+// when OpenMetricsDialog is invoked.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
+  // Install system apps, namely the Feedback App.
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  GURL feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
+
+  // Initialize NavigationObserver to start watching for navigation events.
+  // NavigationObserver is necessary to avoid crash on opening dialog,
+  // because we need to wait for the Feedback app to finish launching
+  // before opening the metrics dialog.
+  content::TestNavigationObserver navigation_observer(feedback_url_);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Launch the feedback app.
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), feedback_url_.spec());
+
+  // Wait for the Feedback app to launch.
+  navigation_observer.Wait();
+
+  Browser* feedback_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::OS_FEEDBACK);
+
+  EXPECT_NE(feedback_browser, nullptr);
+
+  gfx::NativeWindow feedback_window =
+      feedback_browser->window()->GetNativeWindow();
+
+  std::set<views::Widget*> owned_widgets_pre_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0);
+
+  // Initialize the delegate.
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+
+  feedback_delegate_.OpenMetricsDialog();
+
+  std::set<views::Widget*> owned_widgets_post_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window,
+                                    &owned_widgets_post_dialog);
+
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
 }
 
 }  // namespace ash

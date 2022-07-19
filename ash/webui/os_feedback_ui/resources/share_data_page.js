@@ -14,7 +14,8 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERMS_OF_SERVICE_URL} from './feedback_constants.js';
 import {FeedbackFlowState} from './feedback_flow.js';
-import {AttachedFile, FeedbackContext, Report} from './feedback_types.js';
+import {AttachedFile, FeedbackContext, FeedbackServiceProviderInterface, Report} from './feedback_types.js';
+import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
@@ -70,6 +71,9 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @protected
      */
     this.privacyNote_;
+
+    /** @private {!FeedbackServiceProviderInterface} */
+    this.feedbackServiceProvider_ = getFeedbackServiceProvider();
   }
 
   ready() {
@@ -125,6 +129,32 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       consentCheckbox.disabled = false;
       this.$.userConsentLabel.classList.remove('disabled-input-text');
     }
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleOpenMetricsDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
+
+    this.feedbackServiceProvider_.openMetricsDialog();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleOpenSysInfoDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
   }
 
   /**
@@ -249,9 +279,15 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         'includeSystemInfoAndMetricsCheckboxLabel', {attrs: ['id']});
 
     const sysInfoLink = this.shadowRoot.querySelector('#sysInfoLink');
+    // Setting href causes <a> tag to display as link.
     sysInfoLink.setAttribute('href', '#');
+    sysInfoLink.addEventListener(
+        'click', (e) => void this.handleOpenSysInfoDialog_(e));
+
     const histogramsLink = this.shadowRoot.querySelector('#histogramsLink');
     histogramsLink.setAttribute('href', '#');
+    histogramsLink.addEventListener(
+        'click', (e) => void this.handleOpenMetricsDialog_(e));
   }
 }
 

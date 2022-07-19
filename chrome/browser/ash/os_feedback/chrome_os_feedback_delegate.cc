@@ -27,6 +27,9 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
@@ -233,6 +236,24 @@ void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
 
 void ChromeOsFeedbackDelegate::OpenExploreApp() {
   ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP);
+}
+
+void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
+  Browser* feedback_browser = ash::FindSystemWebAppBrowser(
+      profile_, ash::SystemWebAppType::OS_FEEDBACK);
+
+  gfx::NativeWindow window = feedback_browser->window()->GetNativeWindow();
+
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+
+  ChildWebDialog* child_dialog = new ChildWebDialog(
+      profile_, widget, GURL(chrome::kChromeUIHistogramsURL),
+      /*title=*/std::u16string(),
+      /*modal_type=*/ui::MODAL_TYPE_NONE, /*dialog_width=*/640,
+      /*dialog_height=*/400, /*can_resize=*/true,
+      /*can_minimize=*/true);
+
+  child_dialog->Show();
 }
 
 }  // namespace ash

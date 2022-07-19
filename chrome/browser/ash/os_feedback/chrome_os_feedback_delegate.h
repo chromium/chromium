@@ -43,6 +43,7 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
                   SendReportCallback callback) override;
   void OpenDiagnosticsApp() override;
   void OpenExploreApp() override;
+  void OpenMetricsDialog() override;
 
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);
