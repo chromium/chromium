@@ -5,8 +5,7 @@
 // See spec in developement at
 // https://w3c.github.io/mediacapture-insertable-streams/
 [
-    Exposed(Window MediaStreamTrackInWindow, Worker MediaStreamTrackInWorker),
-    RuntimeEnabled=MediaStreamInsertableStreams
+    Exposed(Window MediaStreamTrackInWindow, Worker MediaStreamTrackInWorker)
 ]
 interface MediaStreamTrackGenerator : MediaStreamTrack {
   [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackGenerator]

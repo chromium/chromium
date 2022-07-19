@@ -1482,11 +1482,6 @@
       status: "stable",
     },
     {
-      name: "MediaStreamInsertableStreams",
-      status: "stable",
-      origin_trial_feature_name: "WebCodecs"
-    },
-    {
       // Feature added "guarding" the already launched exposure of
       // MediaStreamTracks in the Window contexts, to allow exposure in other
       // contexts to be feature controlled, crbug.com/c/1290274.

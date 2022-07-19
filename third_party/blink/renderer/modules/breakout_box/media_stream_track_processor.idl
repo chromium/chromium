@@ -5,8 +5,7 @@
 // See spec in developement at
 // https://w3c.github.io/mediacapture-insertable-streams/
 [
-    Exposed=Window,
-    RuntimeEnabled=MediaStreamInsertableStreams
+    Exposed=Window
 ]
 interface MediaStreamTrackProcessor {
   [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackProcessor]
