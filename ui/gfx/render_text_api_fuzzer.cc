@@ -342,7 +342,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kApplyColor:
-        if (generate_only_homogeneous_styles) {
+        if (!generate_only_homogeneous_styles) {
           render_text->ApplyColor(
               ConsumeSkColor(&fdp),
               ConsumeRange(&fdp, render_text->text().length()));
@@ -354,7 +354,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kApplyStyle:
-        if (generate_only_homogeneous_styles) {
+        if (!generate_only_homogeneous_styles) {
           render_text->ApplyStyle(
               ConsumeStyle(&fdp), fdp.ConsumeBool(),
               ConsumeRange(&fdp, render_text->text().length()));
@@ -366,7 +366,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
 
       case RenderTextAPI::kApplyWeight:
-        if (generate_only_homogeneous_styles) {
+        if (!generate_only_homogeneous_styles) {
           render_text->ApplyWeight(
               ConsumeWeight(&fdp),
               ConsumeRange(&fdp, render_text->text().length()));
