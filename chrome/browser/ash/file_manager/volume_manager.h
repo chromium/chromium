@@ -519,6 +519,8 @@ class VolumeManager : public KeyedService,
       MountContext volume_context,
       int error);
 
+  void ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(std::string* volume_id) const;
+
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
 
   io_task::IOTaskController* io_task_controller() {

@@ -1339,6 +1339,19 @@ void VolumeManager::OnFuseboxAttachStorageProvidedFileSystem(
   DoMountEvent(chromeos::MOUNT_ERROR_NONE, std::move(volume));
 }
 
+void VolumeManager::ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(
+    std::string* volume_id) const {
+  DCHECK(volume_id);
+
+  static const base::FilePath::CharType kFuseBoxFSPVolumeIdPrefix[] =
+      FILE_PATH_LITERAL("fuseboxprovided:fsp:");
+  if (!base::StartsWith(*volume_id, kFuseBoxFSPVolumeIdPrefix))
+    return;
+
+  int prefix = strlen(kFuseBoxFSPVolumeIdPrefix);
+  *volume_id = volume_id->substr(prefix).insert(0, "provided:");
+}
+
 void VolumeManager::OnProvidedFileSystemUnmount(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     base::File::Error error) {
