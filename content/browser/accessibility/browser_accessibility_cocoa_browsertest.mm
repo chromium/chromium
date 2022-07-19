@@ -203,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   BrowserAccessibilityCocoa* cocoa_text = text->GetNativeViewAccessible();
   ASSERT_NE(nil, cocoa_text);
 
-  NSPoint position = [cocoa_text accessibilityFrame].origin;
-  NSSize size = [cocoa_text accessibilityFrame].size;
+  NSPoint position = [[cocoa_text position] pointValue];
 
+  NSSize size = cocoa_text.accessibilityFrame.size;
   NSRect frame = NSMakeRect(position.x, position.y, size.width, size.height);
 
   NSPoint p0_before = position;
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   content_size.Enlarge(0, dh);
   shell()->ResizeWebContentForTests(content_size);
 
-  NSPoint p0_after = [cocoa_text accessibilityFrame].origin;
+  NSPoint p0_after = [[cocoa_text position] pointValue];
   NSRect r0_after = [cocoa_text frameForRange:NSMakeRange(0, 5)];
 
   ASSERT_EQ(p0_before.y + dh, p0_after.y);

@@ -364,10 +364,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPopupValue) {
   RunTypedTest<kMacAttributes>("ax-popup-value.html");
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPosition) {
-  RunTypedTest<kMacAttributes>("ax-position.html");
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
   RunTypedTest<kMacAction>("ax-press-button.html");
 }

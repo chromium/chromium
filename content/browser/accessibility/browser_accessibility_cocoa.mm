@@ -617,6 +617,7 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
       {NSAccessibilityParentAttribute, @"parent"},
+      {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
       {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
       {NSAccessibilityRowIndexRangeAttribute, @"rowIndexRange"},
@@ -1086,6 +1087,13 @@ bool content::IsNSRange(id value) {
   CHECK(manager);
   DCHECK(manager->GetParentView());
   return manager->GetParentView();
+}
+
+- (NSValue*)position {
+  if (![self instanceActive])
+    return nil;
+  NSPoint pointInScreen = [self accessibilityFrame].origin;
+  return [NSValue valueWithPoint:pointInScreen];
 }
 
 // Returns an enum indicating the role from owner_.
@@ -2453,6 +2461,7 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityHelpAttribute,
                        NSAccessibilityLinkedUIElementsAttribute,
                        NSAccessibilityParentAttribute,
+                       NSAccessibilityPositionAttribute,
                        NSAccessibilityRoleAttribute,
                        NSAccessibilityRoleDescriptionAttribute,
                        NSAccessibilitySelectedTextMarkerRangeAttribute,
