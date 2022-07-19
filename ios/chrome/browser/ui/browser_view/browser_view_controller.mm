@@ -482,6 +482,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self) {
     DCHECK(browser);
 
+    self.browser = browser;
     _browserContainerViewController = browserContainerViewController;
     _commandDispatcher = dispatcher;
     _keyCommandsProvider = keyCommandsProvider;
@@ -511,8 +512,28 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
 
-    if (browser)
-      [self updateWithBrowser:browser];
+    _isOffTheRecord = browser->GetBrowserState()->IsOffTheRecord();
+
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _allWebStateObservationForwarder =
+        std::make_unique<AllWebStateObservationForwarder>(
+            browser->GetWebStateList(), _webStateObserverBridge.get());
+
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
+    _URLLoadingObserverBridge =
+        std::make_unique<UrlLoadingObserverBridge>(self);
+    UrlLoadingNotifierBrowserAgent::FromBrowser(browser)->AddObserver(
+        _URLLoadingObserverBridge.get());
+
+    // When starting the browser with an open tab, it is necessary to reset the
+    // clipsToBounds property of the WKWebView so the page can bleed behind the
+    // toolbar.
+    if (self.currentWebState) {
+      self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds =
+          NO;
+    }
   }
   return self;
 }
@@ -1509,51 +1530,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - ** Private BVC Methods **
-
-#pragma mark - Private Methods: BVC Initialization
-// BVC initialization
-// ------------------
-// If the BVC is initialized with a valid browser state & browser immediately,
-// the path is straightforward: functionality is enabled, and the UI is built
-// when -viewDidLoad is called.
-// If the BVC is initialized without a browser state or browser, the browser
-// and browser state may or may not be provided before -viewDidLoad is called.
-// In most cases, they will not, to improve startup performance.
-// In order to handle this, initialization of various aspects of BVC have been
-// broken out into the following functions, which have expectations (enforced
-// with DCHECKs) regarding `self.browserState`, `self.browser`, and [self
-// isViewLoaded].
-
-// Updates non-view-related functionality with the given browser and tab
-// model.
-// Does not matter whether or not the view has been loaded.
-// TODO(crbug.com/1272524): Move this all into the init. Update the rest of the
-// code to assume that if the BVC isn't shutdown, it has a valid Browser. Update
-// the comments above to reflect reality.
-- (void)updateWithBrowser:(Browser*)browser {
-  DCHECK(browser);
-  DCHECK(!self.browser);
-  self.browser = browser;
-  _isOffTheRecord = self.browserState->IsOffTheRecord();
-
-  _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
-  _allWebStateObservationForwarder =
-      std::make_unique<AllWebStateObservationForwarder>(
-          self.browser->GetWebStateList(), _webStateObserverBridge.get());
-
-  _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-  self.browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
-  _URLLoadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
-  UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser)
-      ->AddObserver(_URLLoadingObserverBridge.get());
-
-  // When starting the browser with an open tab, it is necessary to reset the
-  // clipsToBounds property of the WKWebView so the page can bleed behind the
-  // toolbar.
-  if (self.currentWebState) {
-    self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
-  }
-}
 
 // On iOS7, iPad should match iOS6 status bar.  Install a simple black bar under
 // the status bar to mimic this layout.
