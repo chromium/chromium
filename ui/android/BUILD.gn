@@ -373,6 +373,7 @@ android_library("ui_no_recycler_view_java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -594,6 +595,7 @@ android_library("ui_unit_device_javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/ui/resources/dynamics/HardwareDrawTest.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
   ]
@@ -602,8 +604,10 @@ android_library("ui_unit_device_javatests") {
     ":clipboard_java_test_support",
     ":ui_java",
     ":ui_java_test_support",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

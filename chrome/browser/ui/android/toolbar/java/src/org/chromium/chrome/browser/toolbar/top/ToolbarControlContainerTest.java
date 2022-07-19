@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -21,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
@@ -32,6 +34,10 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnaps
 public class ToolbarControlContainerTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+    @Mock
+    private ResourceFactory.Natives mResourceFactoryJni;
 
     @Mock
     private View mToolbarContainer;
@@ -40,6 +46,8 @@ public class ToolbarControlContainerTest {
 
     @Before
     public void before() {
+        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
         UmaRecorderHolder.resetForTesting();
         Mockito.when(mToolbarContainer.getWidth()).thenReturn(1);
         Mockito.when(mToolbarContainer.getHeight()).thenReturn(1);
@@ -50,6 +58,8 @@ public class ToolbarControlContainerTest {
     public void testIsDirty() {
         ToolbarViewResourceAdapter adapter =
                 new ToolbarViewResourceAdapter(mToolbarContainer, false);
+        adapter.setOnResourceReadyCallback((resource) -> {});
+
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason"));
@@ -81,7 +91,7 @@ public class ToolbarControlContainerTest {
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
-        adapter.getBitmap();
+        adapter.triggerBitmapCapture();
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -90,19 +100,14 @@ public class ToolbarControlContainerTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
-
-        // Need to be careful here. #getBitmap() in debug builds will call isDirty. Reset histogram
-        // tracking to avoid being needing to depend on build type.
-        UmaRecorderHolder.resetForTesting();
-
-        Assert.assertEquals(0,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
         adapter.forceInvalidate();
         Assert.assertTrue(adapter.isDirty());
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));

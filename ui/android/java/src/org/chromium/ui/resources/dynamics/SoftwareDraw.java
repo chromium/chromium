@@ -10,8 +10,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.ui.resources.dynamics.ViewResourceAdapter.CaptureResult;
 
 /** Simple bitmap capture approach simply calling {@link View#draw(Canvas)}. */
 public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
@@ -19,11 +19,6 @@ public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
 
     @Override
     public boolean shouldRemoveResourceOnNullBitmap() {
-        return false;
-    }
-
-    @Override
-    public boolean shouldPretendIsDirty() {
         return false;
     }
 
@@ -36,8 +31,8 @@ public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
     }
 
     @Override
-    public CaptureResult syncCaptureBitmap(
-            View view, Rect dirtyRect, float scale, CaptureObserver observer) {
+    public boolean startBitmapCapture(View view, Rect dirtyRect, float scale,
+            CaptureObserver observer, Callback<Bitmap> onBitmapCapture) {
         try (TraceEvent e = TraceEvent.scoped("SoftwareDraw:syncCaptureBitmap")) {
             int scaledWidth = (int) (view.getWidth() * scale);
             int scaledHeight = (int) (view.getHeight() * scale);
@@ -65,7 +60,9 @@ public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
                 assert mBitmap.getWidth() == 1 && mBitmap.getHeight() == 1;
                 mBitmap.setPixel(0, 0, Color.TRANSPARENT);
             }
-            return new CaptureResult(mBitmap, !isEmpty);
+
+            onBitmapCapture.onResult(mBitmap);
+            return !isEmpty;
         }
     }
 }
