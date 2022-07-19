@@ -19,3 +19,17 @@ source_set("trash_service") {
 
   public_deps = [ "//chromeos/ash/components/trash_service/public/mojom" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "public/cpp/trash_service_unittest.cc" ]
+
+  deps = [
+    ":trash_service",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/trash_service/public/cpp",
+    "//testing/gtest",
+  ]
+}

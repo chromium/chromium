@@ -5,11 +5,27 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_TRASH_SERVICE_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_TRASH_SERVICE_IMPL_H_
 
+#include <stdint.h>
+
+#include "base/files/file.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos::trash_service {
+
+// Constant representing the maximum buffer to read from a supplied .trashinfo
+// file. The buffer should be made up of:
+//   - 12 bytes for the trash info header
+//   - 1 byte for the new line character
+//   - 5 bytes for the "Path=" token
+//   - `PATH_MAX` bytes for the maximum allowable path (from <linux/limits.h>)
+//   - 1 byte for the newline after the path
+//   - 12 bytes for the "DeletionDate=" token
+//   - 1 byte for the new line character
+//   - 24 bytes for the ISO-8601 compliant date string
+// Any remaining content in the file is ignored past this read limit.
+extern const size_t kMaxReadBufferInBytes;
 
 // Implementation of the Trash utility process. The trash implementation follows
 // the XDG specification which maintains metadata in a user visible directory at
@@ -31,8 +47,10 @@ class TrashServiceImpl : public mojom::TrashService {
   TrashServiceImpl(const TrashServiceImpl&) = delete;
   TrashServiceImpl& operator=(const TrashServiceImpl&) = delete;
 
-  // TODO(b/238943248): Add the ParseTrashInfoFile method with implementation
-  // here.
+  // mojom::TrashService:
+  void ParseTrashInfoFile(base::File trash_info_file,
+                          ParseTrashInfoFileCallback callback) override;
+
  private:
   mojo::ReceiverSet<mojom::TrashService> receivers_;
 };

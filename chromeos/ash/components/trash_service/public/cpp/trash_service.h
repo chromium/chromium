@@ -5,10 +5,17 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
 #define CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
 
+#include "base/callback_forward.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos::trash_service {
+
+using ParseTrashInfoCallback = base::OnceCallback<
+    void(base::File::Error, const base::FilePath&, base::Time)>;
 
 // Starts up an out-of-process Trash service, binds receiver and returns the
 // pending remote.

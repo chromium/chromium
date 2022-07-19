@@ -1852,6 +1852,7 @@ source_set("ash") {
     "//chromeos/ash/components/hibernate:buildflags",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/oobe_quick_start",
+    "//chromeos/ash/components/trash_service/public/mojom",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/cros_healthd/private/cpp",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",

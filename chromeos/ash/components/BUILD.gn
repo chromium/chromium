@@ -19,6 +19,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service/public/mojom:unit_tests",
     "//chromeos/ash/components/memory:unit_tests",
     "//chromeos/ash/components/oobe_quick_start:unit_tests",
+    "//chromeos/ash/components/trash_service:unit_tests",
   ]
 
   if (target_cpu == "x64") {
