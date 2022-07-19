@@ -3972,6 +3972,11 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Hash code collides with multiple accounts"/>
 </enum>
 
+<enum name="ArcAuthReauthReason">
+  <int value="0" label="AndroidID is missing"/>
+  <int value="1" label="Main account is missing"/>
+</enum>
+
 <enum name="ArcBootContinueCodeInstallationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Host side code is not ready"/>

@@ -539,6 +539,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Auth.Reauth.Reason{ArcUserTypes}"
+    enum="ArcAuthReauthReason" expires_after="2022-12-04">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records why ARC restarted the provisioning flow by reauthenticating and
+    adding the user to ARC. This happens when ARC detects missing AndroidID or
+    primary user in the Account Manager. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
+</histogram>
+
 <histogram name="Arc.Auth.RequestAccountInfoResult.Primary"
     enum="ArcAuthCodeStatus" expires_after="2022-12-04">
   <owner>anastasiian@google.com</owner>
