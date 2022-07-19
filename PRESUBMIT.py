@@ -343,6 +343,9 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
         'ios/chrome/browser/ui/icons/chrome_symbol.h'
       ),
       True,
+      excluded_paths=(
+        'ios/chrome/browser/ui/icons/chrome_symbol.mm',
+      ),
     ),
 )
 
