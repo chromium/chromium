@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
-@protocol ActivityServicePositioner;
 class Browser;
 @class BookmarkInteractionController;
 @class BrowserContainerViewController;
@@ -129,10 +128,6 @@ typedef struct {
 // The container used for infobar modal overlays.
 @property(nonatomic, strong)
     UIViewController* infobarModalOverlayContainerViewController;
-
-// Positioner for activity services attached to the toolbar.
-@property(nonatomic, readonly) id<ActivityServicePositioner>
-    activityServicePositioner;
 
 // Scheduler for the non-modal default browser promo.
 // TODO(crbug.com/1204120): The BVC should not need this model-level object.

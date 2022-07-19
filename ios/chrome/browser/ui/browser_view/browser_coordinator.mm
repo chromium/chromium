@@ -1062,20 +1062,19 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   // Exit fullscreen if needed to make sure that share button is visible.
   _fullscreenController->ExitFullscreen();
 
+  id<ActivityServicePositioner> positioner =
+      _primaryToolbarCoordinator.activityServicePositioner;
   UIBarButtonItem* anchor = nil;
-  if ([self.viewController.activityServicePositioner
-          respondsToSelector:@selector(barButtonItem)]) {
-    anchor = self.viewController.activityServicePositioner.barButtonItem;
+  if ([positioner respondsToSelector:@selector(barButtonItem)]) {
+    anchor = positioner.barButtonItem;
   }
 
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                           params:params
-                      originView:self.viewController.activityServicePositioner
-                                     .sourceView
-                      originRect:self.viewController.activityServicePositioner
-                                     .sourceRect
+                      originView:positioner.sourceView
+                      originRect:positioner.sourceRect
                           anchor:anchor];
   [self.sharingCoordinator start];
 }

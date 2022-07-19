@@ -774,10 +774,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Public methods
 
-- (id<ActivityServicePositioner>)activityServicePositioner {
-  return [self.primaryToolbarCoordinator activityServicePositioner];
-}
-
 - (void)setPrimary:(BOOL)primary {
   TabUsageRecorderBrowserAgent* tabUsageRecorder =
       TabUsageRecorderBrowserAgent::FromBrowser(_browser);
