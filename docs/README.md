@@ -1,22 +1,30 @@
 # Chromium docs
 
-This directory contains chromium project documentation in
-[Gitiles-flavored Markdown].  It is automatically [rendered by Gitiles].
+This directory contains [chromium project](https://www.chromium.org/Home/)
+documentation in [Gitiles-flavored Markdown]. It is automatically
+[rendered by Gitiles].
 
 [Gitiles-flavored Markdown]: https://gerrit.googlesource.com/gitiles/+/master/Documentation/markdown.md
 [rendered by Gitiles]: https://chromium.googlesource.com/chromium/src/+/main/docs/
 
-If you add new documents, please also add a link to them in the Document Index
-below.
+**If you add new documents, please also add a link to them in the Document Index
+below.**
 
 [TOC]
 
 ## Creating Documentation
 
-Markdown documents must follow the
-[style guide](https://github.com/google/styleguide/tree/gh-pages/docguide).
+### Guidelines
 
-### Preview local changes using [md_browser](../tools/md_browser/)
+*   See the [Chromium Documentation Guidelines](/documentation_guidelines.md)
+    and the
+    [Chromium Documentation Best Practices](/documentation_best_practices.md).
+*   Markdown documents must follow the
+    [style guide](https://github.com/google/styleguide/tree/gh-pages/docguide).
+
+### Previewing changes
+
+#### Locally using [md_browser](../tools/md_browser/)
 
 ```bash
 # in chromium checkout
@@ -25,7 +33,7 @@ Markdown documents must follow the
 
 This is only an estimate. The **gitiles** view may differ.
 
-### Review changes online with gerrit's links to gitiles
+#### Online with Gerrit's links to gitiles
 
 1.  Upload a patch to gerrit, or receive a review request.
     e.g. https://chromium-review.googlesource.com/c/3362532
@@ -37,7 +45,7 @@ This is only an estimate. The **gitiles** view may differ.
     -> Patchset 3
     [browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)
     | DOWNLOAD <br>
-    at the top left of the page. Click on the second 
+    at the top left of the page. Click on the second
     "[browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)"
     link to open the preview for the current patch set.
 
