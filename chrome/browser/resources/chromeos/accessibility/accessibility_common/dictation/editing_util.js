@@ -310,10 +310,11 @@ export class EditingUtil {
 }
 
 /**
+ * Includes full-width symbols that are commonly used in Japanese.
  * @private {!RegExp}
  * @const
  */
-EditingUtil.END_OF_SENTENCE_REGEX_ = /[;!.?]/;
+EditingUtil.END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]/;
 
 /**
  * @private {!RegExp}
@@ -332,18 +333,18 @@ EditingUtil.ENDS_WITH_WHITESPACE_REGEX_ = /\s$/;
  * @const
  */
 EditingUtil.PUNCTUATION_REGEX_ =
-    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g;
+    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/g;
 
 /**
  * @private {!RegExp}
  * @const
  */
 EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_ =
-    /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/;
+    /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/;
 
 /**
  * @private {!RegExp}
  * @const
  */
 EditingUtil.ENDS_WITH_PUNCTUATION_REGEX_ =
-    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]$/;
+    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]$/;

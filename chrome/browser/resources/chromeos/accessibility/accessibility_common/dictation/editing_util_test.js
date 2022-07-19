@@ -437,3 +437,47 @@ AX_TEST_F('DictationEditingUtilTest', 'SmartCapitalization', function() {
   commitText = 'biology';
   assertEquals('biology', f());
 });
+
+AX_TEST_F('DictationEditingUtilTest', 'NavNextSentJa', function() {
+  let value;
+  let caretIndex;
+  const f = () => EditingUtil.navNextSent(value, caretIndex);
+
+  // Simple.
+  value = '私はテニスが好きです。バスケットボールも好きです。';
+  caretIndex = 0;
+  assertEquals(11, f());
+
+  // Middle of first sentence.
+  value = '私はテニスが好きです。バスケットボールも好きです。';
+  caretIndex = 4;
+  assertEquals(11, f());
+
+  // If the end of the sentence can't be found, then moving to the next sentence
+  // should take us to the end of the value.
+  value = '私はテニスが好きです。';
+  caretIndex = 0;
+  assertEquals(value.length, f());
+});
+
+AX_TEST_F('DictationEditingUtilTest', 'NavPrevSentJa', function() {
+  let value;
+  let caretIndex;
+  const f = () => EditingUtil.navPrevSent(value, caretIndex);
+
+  // Simple.
+  value = '私はテニスが好きです。バスケットボールも好きです。';
+  caretIndex = value.length;
+  assertEquals(10, f());
+
+  // Middle of second sentence.
+  value = '私はテニスが好きです。バスケットボールも好きです。';
+  caretIndex = 20;
+  assertEquals(10, f());
+
+  // If the end of the sentence can't be found, then moving to the previous
+  // sentence should take us to the beginning of the value.
+  value = '私はテニスが好きです。';
+  caretIndex = value.length;
+  assertEquals(0, f());
+});
