@@ -34,12 +34,12 @@ UIImageSymbolConfiguration* kDefaultSettingsRootSymbolConfiguration =
 
 }  // namespace
 
-UIImage* DefaultSettingsRootSymbol(NSString* symbolName) {
+UIImage* DefaultSettingsRootSymbol(NSString* symbol_name) {
   return DefaultSymbolWithConfiguration(
-      symbolName, kDefaultSettingsRootSymbolConfiguration);
+      symbol_name, kDefaultSettingsRootSymbolConfiguration);
 }
 
-UIImage* CustomSettingsRootSymbol(NSString* symbolName) {
-  return CustomSymbolWithConfiguration(symbolName,
+UIImage* CustomSettingsRootSymbol(NSString* symbol_name) {
+  return CustomSymbolWithConfiguration(symbol_name,
                                        kDefaultSettingsRootSymbolConfiguration);
 }
