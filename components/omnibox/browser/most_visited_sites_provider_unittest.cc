@@ -379,6 +379,7 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   // Assume that top sites list has not been loaded yet from the DB.
   ASSERT_FALSE(top_sites_->loaded());
   auto input = BuildAutocompleteInputForWebOnFocus();
+  input.set_focus_type(OmniboxFocusType::DEFAULT);
   input.set_want_asynchronous_matches(false);
   controller_->Start(input);
   EXPECT_TRUE(provider_->done());

@@ -443,6 +443,12 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   TRACE_EVENT1("omnibox", "AutocompleteController::Start", "text",
                base::UTF16ToUTF8(input.text()));
 
+  // Providers assume synchronous inputs (`want_asynchronous_matches() ==
+  // false`) have default focus type (`focus_type() == DEFAULT`). See
+  // crbug.com/1339425.
+  DCHECK(input.want_asynchronous_matches() ||
+         input.focus_type() == OmniboxFocusType::DEFAULT);
+
   // When input.want_asynchronous_matches() is false, the AutocompleteController
   // is being used for text classification, which should not notify observers.
   // TODO(manukh): This seems unnecessary; `AutocompleteClassifier` and
@@ -503,8 +509,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     provider->Start(input_, minimal_changes);
-    if (!input.want_asynchronous_matches())
-      DCHECK(provider->done());
     // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 5s
     // buckets.
     // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. It
@@ -1131,16 +1135,19 @@ void AutocompleteController::NotifyChanged(bool notify_default_match) {
 }
 
 void AutocompleteController::CheckIfDone() {
+  bool all_providers_done = true;
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;
 
     if (!provider->done()) {
-      done_ = false;
-      return;
+      all_providers_done = false;
+      break;
     }
   }
-  done_ = true;
+  // If asynchronous matches have been disallowed, all providers should be done.
+  DCHECK(input_.want_asynchronous_matches() || all_providers_done);
+  done_ = all_providers_done;
 }
 
 void AutocompleteController::StartExpireTimer() {
