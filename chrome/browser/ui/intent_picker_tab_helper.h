@@ -48,9 +48,11 @@ class IntentPickerTabHelper
 
   // Returns true if the icon should be shown using an expanded chip-style
   // button.
-  bool ShouldShowExpandedChip() const { return show_expanded_chip_from_usage_; }
+  bool ShouldShowExpandedChip() const {
+    return show_expanded_chip_from_usage_ || current_app_is_preferred_;
+  }
 
-  const ui::ImageModel& app_icon() const { return app_icon_; }
+  const ui::ImageModel& app_icon() const { return current_app_icon_; }
 
   using IntentPickerIconLoaderCallback =
       base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo> apps)>;
@@ -104,8 +106,15 @@ class IntentPickerTabHelper
   // on this origin.
   bool show_expanded_chip_from_usage_ = false;
 
-  std::string last_shown_app_id_;
-  ui::ImageModel app_icon_;
+  // Contains the app ID of an app which can be opened through the intent
+  // picker. This is only set when ShowIconForApps() is called with a single
+  // app. Will be set to the empty string in all other cases (e.g. when there
+  // are multiple apps available, or when the icon is not visible).
+  std::string current_app_id_;
+  // True if |current_app_id_| is set as the preferred app for its http/https
+  // links.
+  bool current_app_is_preferred_ = false;
+  ui::ImageModel current_app_icon_;
 
   base::OnceClosure icon_update_closure_;
 

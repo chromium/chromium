@@ -110,6 +110,22 @@ class IntentChipButtonBrowserTest
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetSupportedLinksPreference() {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->SetSupportedLinksPreference(test_web_app_id());
+
+    // Wait for asynchronous preferred apps changes with lacros web apps and/or
+    // mojo app service.
+    if (web_app::IsWebAppsCrosapiEnabled() ||
+        !base::FeatureList::IsEnabled(
+            apps::kAppServicePreferredAppsWithoutMojom)) {
+      apps_util::PreferredAppUpdateWaiter waiter(proxy->PreferredAppsList());
+      waiter.WaitForPreferredAppUpdate(test_web_app_id());
+    }
+  }
+#endif
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   web_app::AppId overlapping_app_id_;
@@ -184,17 +200,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
     GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
   InstallTestWebApp();
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-  proxy->SetSupportedLinksPreference(test_web_app_id());
-
-  // Wait for asynchronous preferred apps changes with lacros web apps and/or
-  // mojo app service.
-  if (web_app::IsWebAppsCrosapiEnabled() ||
-      !base::FeatureList::IsEnabled(
-          apps::kAppServicePreferredAppsWithoutMojom)) {
-    apps_util::PreferredAppUpdateWaiter waiter(proxy->PreferredAppsList());
-    waiter.WaitForPreferredAppUpdate(test_web_app_id());
-  }
+  SetSupportedLinksPreference();
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
@@ -206,6 +212,37 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));
 }
+
+IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
+                       ShowsIntentChipExpandedForPreferredApp) {
+  if (!HasRequiredAshVersionForLacros())
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
+
+  InstallTestWebApp();
+  SetSupportedLinksPreference();
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL out_of_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+
+  // First three visits will always show as expanded.
+  for (int i = 0; i < 3; i++) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
+    EXPECT_TRUE(GetIntentChip()->GetVisible());
+    EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), out_of_scope_url));
+    EXPECT_FALSE(GetIntentChip()->GetVisible());
+  }
+
+  // Fourth visit should show as expanded because the app is set as preferred
+  // for this URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class IntentChipButtonSkipIntentPickerBrowserTest

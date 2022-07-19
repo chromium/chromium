@@ -94,9 +94,10 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
     return;
 
   if (apps::features::LinkCapturingUiUpdateEnabled()) {
-    tab_helper->app_icon_ = ui::ImageModel();
+    tab_helper->current_app_icon_ = ui::ImageModel();
     tab_helper->show_expanded_chip_from_usage_ = false;
-    tab_helper->last_shown_app_id_ = std::string();
+    tab_helper->current_app_id_ = std::string();
+    tab_helper->current_app_is_preferred_ = false;
     tab_helper->last_shown_origin_ = url::Origin();
   }
 
@@ -106,7 +107,6 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
 void IntentPickerTabHelper::ShowIconForApps(
     const std::vector<apps::IntentPickerAppInfo>& apps) {
 #if BUILDFLAG(IS_CHROMEOS)
-
   // We enter this block when we have apps available and there weren't any
   // previously.
   if (!should_show_icon_ && !apps.empty()) {
@@ -120,23 +120,33 @@ void IntentPickerTabHelper::ShowIconForApps(
   }
 #endif
 
-  if (apps::features::AppIconInIntentChipEnabled()) {
-    if (apps.size() == 1 && apps[0].launch_name != last_shown_app_id_) {
-      const std::string& app_id = apps[0].launch_name;
-      auto app_type = GetAppType(apps[0].type);
+  if (apps::features::LinkCapturingUiUpdateEnabled()) {
+    if (apps.size() == 1 && apps[0].launch_name != current_app_id_) {
+      current_app_id_ = apps[0].launch_name;
 
       Profile* profile =
           Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-      last_shown_app_id_ = app_id;
-      LoadSingleAppIcon(
-          profile, app_type, app_id, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-          base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
-                         weak_factory_.GetWeakPtr(), app_id));
-      return;
+      // If this app is the preferred app to handle this URL, the icon will
+      // always be shown as expanded, regardless of the usage-based decision
+      // calculated in UpdateExpandedState().
+      current_app_is_preferred_ =
+          apps::AppServiceProxyFactory::GetForProfile(profile)
+              ->PreferredAppsList()
+              .IsPreferredAppForSupportedLinks(current_app_id_);
+
+      if (apps::features::AppIconInIntentChipEnabled()) {
+        LoadSingleAppIcon(
+            profile, GetAppType(apps[0].type), current_app_id_,
+            GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+            base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
+                           weak_factory_.GetWeakPtr(), current_app_id_));
+        return;
+      }
     } else if (apps.size() != 1) {
-      app_icon_ = ui::ImageModel();
-      last_shown_app_id_ = std::string();
+      current_app_icon_ = ui::ImageModel();
+      current_app_id_ = std::string();
+      current_app_is_preferred_ = false;
     }
   }
 
@@ -236,14 +246,15 @@ void IntentPickerTabHelper::UpdateExpandedState(bool should_show_icon) {
 
 void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
                                                    apps::IconValuePtr icon) {
-  if (app_id != last_shown_app_id_)
+  if (app_id != current_app_id_)
     return;
 
   if (icon && icon->icon_type == apps::IconType::kStandard) {
-    app_icon_ = ui::ImageModel::FromImage(gfx::Image(icon->uncompressed));
+    current_app_icon_ =
+        ui::ImageModel::FromImage(gfx::Image(icon->uncompressed));
   } else {
-    last_shown_app_id_ = std::string();
-    app_icon_ = ui::ImageModel();
+    current_app_id_ = std::string();
+    current_app_icon_ = ui::ImageModel();
   }
 
   ShowIconForLinkIntent(true);
