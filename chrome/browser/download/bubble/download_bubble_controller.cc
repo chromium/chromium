@@ -405,6 +405,10 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::RESUME:
+    case DownloadCommands::PAUSE:
+    case DownloadCommands::OPEN_WHEN_COMPLETE:
+    case DownloadCommands::SHOW_IN_FOLDER:
+    case DownloadCommands::ALWAYS_OPEN_TYPE:
       commands.ExecuteCommand(command);
       break;
     default:

@@ -685,6 +685,11 @@ DownloadUIModel::BubbleUIInfo::SubpageButton::SubpageButton(
     std::u16string label,
     bool is_prominent)
     : command(command), label(label), is_prominent(is_prominent) {}
+DownloadUIModel::BubbleUIInfo::QuickAction::QuickAction(
+    DownloadCommands::Command command,
+    const std::u16string& hover_text,
+    const gfx::VectorIcon* icon)
+    : command(command), hover_text(hover_text), icon(icon) {}
 DownloadUIModel::BubbleUIInfo::BubbleUIInfo() = default;
 DownloadUIModel::BubbleUIInfo::~BubbleUIInfo() = default;
 DownloadUIModel::BubbleUIInfo::BubbleUIInfo(const BubbleUIInfo& rhs) = default;
@@ -720,6 +725,14 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddSubpageButton(
 DownloadUIModel::BubbleUIInfo&
 DownloadUIModel::BubbleUIInfo::SetProgressBarLooping() {
   is_progress_bar_looping = true;
+  return *this;
+}
+
+DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddQuickAction(
+    DownloadCommands::Command command,
+    const std::u16string& label,
+    const gfx::VectorIcon* icon) {
+  quick_actions.emplace_back(command, label, icon);
   return *this;
 }
 
@@ -1075,9 +1088,33 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
   bool has_progress_bar = GetState() == DownloadItem::IN_PROGRESS;
   BubbleUIInfo bubble_ui_info = DownloadUIModel::BubbleUIInfo(has_progress_bar);
   if (has_progress_bar) {
-    bubble_ui_info.AddPrimaryButton(IsPaused()
-                                        ? DownloadCommands::Command::RESUME
-                                        : DownloadCommands::Command::CANCEL);
+    if (IsPaused()) {
+      bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::RESUME);
+      bubble_ui_info.AddQuickAction(
+          DownloadCommands::Command::RESUME,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
+          &vector_icons::kPlayArrowIcon);
+    } else {
+      bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::CANCEL);
+      bubble_ui_info.AddQuickAction(
+          DownloadCommands::Command::PAUSE,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
+          &vector_icons::kPauseIcon);
+    }
+    bubble_ui_info.AddQuickAction(
+        DownloadCommands::Command::CANCEL,
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
+        &vector_icons::kCloseIcon);
+  } else {
+    bubble_ui_info.AddQuickAction(
+        DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
+        &vector_icons::kOpenInNewIcon);
+    bubble_ui_info.AddQuickAction(
+        DownloadCommands::Command::SHOW_IN_FOLDER,
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
+        &vector_icons::kFolderIcon);
   }
   return bubble_ui_info;
 }

@@ -289,7 +289,8 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.
     row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), bubble_controller_.get(), this));
+        std::move(model), row_list_view.get(), bubble_controller_.get(), this,
+        browser_));
   }
 
   auto scroll_view = std::make_unique<views::ScrollView>();

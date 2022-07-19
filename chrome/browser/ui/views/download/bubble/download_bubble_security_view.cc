@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"

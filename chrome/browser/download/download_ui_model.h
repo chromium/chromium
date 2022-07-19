@@ -98,6 +98,15 @@ class DownloadUIModel {
                     bool is_prominent);
     };
 
+    struct QuickAction {
+      DownloadCommands::Command command;
+      std::u16string hover_text;
+      raw_ptr<const gfx::VectorIcon> icon = nullptr;
+      QuickAction(DownloadCommands::Command command,
+                  const std::u16string& hover_text,
+                  const gfx::VectorIcon* icon);
+    };
+
     // has a progress bar and a cancel button.
     bool has_progress_bar = false;
     bool is_progress_bar_looping = false;
@@ -120,6 +129,9 @@ class DownloadUIModel {
     bool has_primary_button = false;
     DownloadCommands::Command primary_button_command;
 
+    // List of quick actions
+    std::vector<QuickAction> quick_actions;
+
     // Subpage buttons
     std::vector<SubpageButton> subpage_buttons;
 
@@ -138,6 +150,9 @@ class DownloadUIModel {
                                    DownloadCommands::Command command,
                                    bool is_prominent);
     BubbleUIInfo& SetProgressBarLooping();
+    BubbleUIInfo& AddQuickAction(DownloadCommands::Command command,
+                                 const std::u16string& label,
+                                 const gfx::VectorIcon* icon);
   };
 #endif
 

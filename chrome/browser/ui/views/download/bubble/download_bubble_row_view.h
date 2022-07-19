@@ -22,6 +22,7 @@ namespace views {
 class ImageView;
 class Label;
 class MdTextButton;
+class ImageButton;
 class ProgressBar;
 class FlexLayoutView;
 }  // namespace views
@@ -31,7 +32,8 @@ class DownloadBubbleUIController;
 
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
-                              public DownloadUIModel::Delegate {
+                              public DownloadUIModel::Delegate,
+                              public views::FocusChangeListener {
  public:
   METADATA_HEADER(DownloadBubbleRowView);
 
@@ -39,18 +41,27 @@ class DownloadBubbleRowView : public views::View,
       DownloadUIModel::DownloadUIModelPtr model,
       DownloadBubbleRowListView* row_list_view,
       DownloadBubbleUIController* bubble_controller,
-      DownloadBubbleNavigationHandler* navigation_handler);
+      DownloadBubbleNavigationHandler* navigation_handler,
+      Browser* browser);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
 
   // Overrides views::View:
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void OnThemeChanged() override;
   void Layout() override;
   Views GetChildrenInZOrder() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
+
+  // Overrides views::FocusChangeListener
+  void OnWillChangeFocus(views::View* before, views::View* now) override;
+  void OnDidChangeFocus(views::View* before, views::View* now) override {}
+
+  void UpdateQuickActionsVisibilityAndFocus(bool visible,
+                                            bool request_focus_on_last);
 
   // Overrides DownloadUIModel::Delegate:
   void OnDownloadOpened() override;
@@ -72,13 +83,20 @@ class DownloadBubbleRowView : public views::View,
                                   float new_device_scale_factor) override;
 
  private:
-  raw_ptr<views::MdTextButton> AddMainPageButton(
-      DownloadCommands::Command command,
-      const std::u16string& button_string);
+  views::MdTextButton* AddMainPageButton(DownloadCommands::Command command,
+                                         const std::u16string& button_string);
+  views::ImageButton* AddQuickAction(DownloadCommands::Command command);
+  views::ImageButton* GetActionButtonForCommand(
+      DownloadCommands::Command command);
 
   // If there is any change in state, update UI info.
-  void UpdateBubbleUIInfo();
-  void UpdateButtonsForItems();
+  // Returns whether the ui info was changed.
+  bool UpdateBubbleUIInfo(bool initial_setup);
+
+  // Update the DownloadBubbleRowView's members.
+  void UpdateRow(bool initial_setup);
+
+  void UpdateButtons();
   void UpdateProgressBar();
   void UpdateLabels();
   void RecordMetricsOnUpdate();
@@ -117,7 +135,18 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<views::MdTextButton> resume_button_ = nullptr;
   raw_ptr<views::MdTextButton> review_button_ = nullptr;
   raw_ptr<views::MdTextButton> retry_button_ = nullptr;
+
+  // Quick Actions on the main page.
+  raw_ptr<views::ImageButton> resume_action_ = nullptr;
+  raw_ptr<views::ImageButton> pause_action_ = nullptr;
+  raw_ptr<views::ImageButton> open_when_complete_action_ = nullptr;
+  raw_ptr<views::ImageButton> cancel_action_ = nullptr;
+  raw_ptr<views::ImageButton> show_in_folder_action_ = nullptr;
+
+  // Holder for the main button.
   raw_ptr<views::FlexLayoutView> main_button_holder_ = nullptr;
+  // Holder for the quick actions.
+  raw_ptr<views::FlexLayoutView> quick_action_holder_ = nullptr;
 
   // The progress bar for in-progress downloads.
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
@@ -142,6 +171,8 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
 
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   download::DownloadItemMode mode_;
   download::DownloadItem::DownloadState state_;

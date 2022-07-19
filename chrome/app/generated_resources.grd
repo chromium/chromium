@@ -2751,6 +2751,42 @@ are declared in tools/grit/grit_rule.gni.
                desc="For Incognito/Guest mode, text notifying that downloads are visible to others on the device.">
         Anyone using this device can see downloaded files
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION"
+            desc="Accessibility/tooltip label for action to resume a download.">
+        Resume
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION"
+              desc="Accessibility/tooltip label for action to pause a download.">
+        Pause
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION"
+              desc="Accessibility/tooltip label for action to cancel a download.">
+        Cancel
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION"
+              desc="Accessibility/tooltip label for action to open a download.">
+        Open
+      </message>
+      <if expr="is_macosx">
+            <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION"
+                  desc="Mac: Accessibility/tooltip label for showing the file in the Finder">
+              Show in Finder
+            </message>
+      </if>
+      <if expr="not is_macosx">
+        <if expr="not use_titlecase">
+            <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION"
+                     desc="Accessibility/tooltip label for showing the file in file explorer">
+              Show in folder
+            </message>
+          </if>
+          <if expr="use_titlecase">
+            <message name="IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION"
+                     desc="In Title Case: Accessibility/tooltip label for showing the file in file explorer">
+              Show in Folder
+            </message>
+          </if>
+      </if>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">
