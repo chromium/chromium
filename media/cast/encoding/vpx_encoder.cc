@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "media/base/video_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -294,7 +295,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
       encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
     }
     encoded_frame->rtp_timestamp =
-        RtpTimeTicks::FromTimeDelta(video_frame->timestamp(), kVideoFrequency);
+        ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
     encoded_frame->reference_time = reference_time;
     encoded_frame->data.assign(
         static_cast<const uint8_t*>(pkt->data.frame.buf),

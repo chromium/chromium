@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/media_switches.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 
@@ -37,16 +37,7 @@ std::unique_ptr<FrameSender> FrameSender::Create(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
     CastTransport* const transport_sender,
-    Client* client) {
-  // TODO(https://crbug.com/1212803): return a new OpenscreenSender if the
-  // Open Screen cast streaming session flag is enabled.
-  if (base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession)) {
-    NOTIMPLEMENTED()
-        << "Enabled the OpenscreenCastStreamingFlag, but no FrameSenderImpl "
-           "implementation yet.";
-    return nullptr;
-  }
-
+    Client& client) {
   return std::make_unique<FrameSenderImpl>(cast_environment, config,
                                            transport_sender, client);
 }
@@ -84,7 +75,7 @@ FrameSenderImpl::FrameSenderImpl(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
     CastTransport* const transport_sender,
-    Client* client)
+    Client& client)
     : cast_environment_(cast_environment),
       config_(config),
       target_playout_delay_(config.max_playout_delay),
@@ -163,7 +154,7 @@ void FrameSenderImpl::SendRtcpReport(bool schedule_future_reports) {
   const base::TimeDelta time_delta =
       now - GetRecordedReferenceTime(last_sent_frame_id_);
   const RtpTimeDelta rtp_delta =
-      RtpTimeDelta::FromTimeDelta(time_delta, config_.rtp_timebase);
+      ToRtpTimeDelta(time_delta, config_.rtp_timebase);
   const RtpTimeTicks now_as_rtp_timestamp =
       GetRecordedRtpTimestamp(last_sent_frame_id_) + rtp_delta;
   transport_sender_->SendSenderReport(config_.sender_ssrc, now,
@@ -253,7 +244,7 @@ void FrameSenderImpl::RecordLatestFrameTimestamps(
 }
 
 base::TimeDelta FrameSenderImpl::GetInFlightMediaDuration() const {
-  const base::TimeDelta encoder_duration = client_->GetEncoderBacklogDuration();
+  const base::TimeDelta encoder_duration = client_.GetEncoderBacklogDuration();
   // No frames are in flight, so only look at the encoder duration.
   if (last_sent_frame_id_ == latest_acked_frame_id_) {
     return encoder_duration;
@@ -263,8 +254,8 @@ base::TimeDelta FrameSenderImpl::GetInFlightMediaDuration() const {
       GetRecordedRtpTimestamp(latest_acked_frame_id_);
   const RtpTimeTicks newest_acked_timestamp =
       GetRecordedRtpTimestamp(last_sent_frame_id_);
-  return (newest_acked_timestamp - oldest_acked_timestamp)
-             .ToTimeDelta(config_.rtp_timebase) +
+  return ToTimeDelta(newest_acked_timestamp - oldest_acked_timestamp,
+                     config_.rtp_timebase) +
          encoder_duration;
 }
 
@@ -332,7 +323,7 @@ void FrameSenderImpl::EnqueueFrame(
     std::vector<FrameId> cancel_sending_frames;
     for (FrameId id = latest_acked_frame_id_ + 1; id < frame_id; ++id) {
       cancel_sending_frames.push_back(id);
-      client_->OnFrameCanceled(id);
+      client_.OnFrameCanceled(id);
     }
     transport_sender_->CancelSendingFrames(config_.sender_ssrc,
                                            cancel_sending_frames);
@@ -392,8 +383,8 @@ void FrameSenderImpl::EnqueueFrame(
     SendRtcpReport(is_last_aggressive_report);
   }
 
-  congestion_control_->SendFrameToTransport(
-      frame_id, encoded_frame->data.size() * 8, last_send_time_);
+  congestion_control_->WillSendFrameToTransport(
+      frame_id, encoded_frame->data.size(), last_send_time_);
 
   if (send_target_playout_delay_) {
     encoded_frame->new_playout_delay_ms =
@@ -491,7 +482,7 @@ void FrameSenderImpl::OnReceivedCastFeedback(
     do {
       ++latest_acked_frame_id_;
       frames_to_cancel.push_back(latest_acked_frame_id_);
-      client_->OnFrameCanceled(latest_acked_frame_id_);
+      client_.OnFrameCanceled(latest_acked_frame_id_);
       // This is a good place to match the trace for frame ids
       // since this ensures we not only track frame ids that are
       // implicitly ACKed, but also handles duplicate ACKs
@@ -515,7 +506,7 @@ bool FrameSenderImpl::ShouldDropNextFrame(
   // Check that accepting the next frame won't cause more frames to become
   // in-flight than the system's design limit.
   const int count_frames_in_flight =
-      GetUnacknowledgedFrameCount() + client_->GetNumberOfFramesInEncoder();
+      GetUnacknowledgedFrameCount() + client_.GetNumberOfFramesInEncoder();
   if (count_frames_in_flight >= kMaxUnackedFrames) {
     VLOG(1) << SENDER_SSRC << "Dropping: Too many frames would be in-flight.";
     return true;

@@ -26,6 +26,10 @@ namespace media {
 class MojoDataPipeReader;
 }  // namespace media
 
+namespace openscreen::cast {
+class Sender;
+}  // namespace openscreen::cast
+
 namespace mirroring {
 
 // RTP sender for a single Cast Remoting RTP stream. The client calls Send() to
@@ -35,9 +39,23 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
     : public media::mojom::RemotingDataStreamSender,
       public media::cast::FrameSender::Client {
  public:
-  // |transport| is expected to outlive this class.
+  // Old way of instantiating using a cast transport. |transport| is expected to
+  // outlive this class.
+  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
+  // successfully launched.
   RemotingSender(scoped_refptr<media::cast::CastEnvironment> cast_environment,
                  media::cast::CastTransport* transport,
+                 const media::cast::FrameSenderConfig& config,
+                 mojo::ScopedDataPipeConsumerHandle pipe,
+                 mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+                     stream_sender,
+                 base::OnceClosure error_callback);
+
+  // New way of instantiating using an openscreen::cast::Sender. Since the
+  // |Sender| instance is destroyed when renegotiation is complete, |this|
+  // is also invalid and should be immediately torn down.
+  RemotingSender(scoped_refptr<media::cast::CastEnvironment> cast_environment,
+                 openscreen::cast::Sender* sender,
                  const media::cast::FrameSenderConfig& config,
                  mojo::ScopedDataPipeConsumerHandle pipe,
                  mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
@@ -50,6 +68,14 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   ~RemotingSender() override;
 
  private:
+  RemotingSender(scoped_refptr<media::cast::CastEnvironment> cast_environment,
+                 std::unique_ptr<media::cast::FrameSender> sender,
+                 const media::cast::FrameSenderConfig& config,
+                 mojo::ScopedDataPipeConsumerHandle pipe,
+                 mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+                     stream_sender,
+                 base::OnceClosure error_callback);
+
   // Friend class for unit tests.
   friend class RemotingSenderTest;
 

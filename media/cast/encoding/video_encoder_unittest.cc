@@ -21,6 +21,7 @@
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/common/video_frame_factory.h"
@@ -265,8 +266,7 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
                 encoded_frames->emplace_back(std::move(encoded_frame));
               },
               encoded_frames_weak_factory.GetWeakPtr(),
-              RtpTimeTicks::FromTimeDelta(timestamp, kVideoFrequency),
-              reference_time));
+              ToRtpTimeTicks(timestamp, kVideoFrequency), reference_time));
       if (accepted_request) {
         ++count_frames_accepted;
       }

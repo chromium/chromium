@@ -4,6 +4,7 @@
 
 #include "media/cast/test/receiver/receiver_stats.h"
 
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
 namespace media {
@@ -109,9 +110,8 @@ void ReceiverStats::UpdateStatistics(const RtpCastHeader& header,
   if (total_number_packets_ > 0) {
     const base::TimeDelta packet_time_difference =
         now - last_received_packet_time_;
-    const base::TimeDelta media_time_differerence =
-        (header.rtp_timestamp - last_received_rtp_timestamp_)
-            .ToTimeDelta(rtp_timebase);
+    const base::TimeDelta media_time_differerence = ToTimeDelta(
+        header.rtp_timestamp - last_received_rtp_timestamp_, rtp_timebase);
     const base::TimeDelta delta =
         packet_time_difference - media_time_differerence;
     // Update jitter.

@@ -12,9 +12,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "media/base/media_switches.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
+#include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace mirroring {
 
@@ -25,10 +29,43 @@ RemotingSender::RemotingSender(
     mojo::ScopedDataPipeConsumerHandle pipe,
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> stream_sender,
     base::OnceClosure error_callback)
-    : frame_sender_(media::cast::FrameSender::Create(cast_environment,
-                                                     config,
-                                                     transport,
-                                                     this)),
+    : RemotingSender(cast_environment,
+                     media::cast::FrameSender::Create(cast_environment,
+                                                      config,
+                                                      transport,
+                                                      *this),
+                     config,
+                     std::move(pipe),
+                     std::move(stream_sender),
+                     std::move(error_callback)) {}
+
+RemotingSender::RemotingSender(
+    scoped_refptr<media::cast::CastEnvironment> cast_environment,
+    openscreen::cast::Sender* sender,
+    const media::cast::FrameSenderConfig& config,
+    mojo::ScopedDataPipeConsumerHandle pipe,
+    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> stream_sender,
+    base::OnceClosure error_callback)
+    : RemotingSender(cast_environment,
+                     media::cast::FrameSender::Create(cast_environment,
+                                                      config,
+                                                      sender,
+                                                      *this),
+                     config,
+                     std::move(pipe),
+                     std::move(stream_sender),
+                     std::move(error_callback)) {
+  DCHECK(base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
+}
+
+RemotingSender::RemotingSender(
+    scoped_refptr<media::cast::CastEnvironment> cast_environment,
+    std::unique_ptr<media::cast::FrameSender> frame_sender,
+    const media::cast::FrameSenderConfig& config,
+    mojo::ScopedDataPipeConsumerHandle pipe,
+    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> stream_sender,
+    base::OnceClosure error_callback)
+    : frame_sender_(std::move(frame_sender)),
       clock_(cast_environment->Clock()),
       error_callback_(std::move(error_callback)),
       data_pipe_reader_(new media::MojoDataPipeReader(std::move(pipe))),
@@ -160,7 +197,7 @@ void RemotingSender::TrySendFrame() {
   remoting_frame->rtp_timestamp =
       last_frame_rtp_timestamp +
       std::max(media::cast::RtpTimeDelta::FromTicks(1),
-               media::cast::RtpTimeDelta::FromTimeDelta(
+               ToRtpTimeDelta(
                    remoting_frame->reference_time - last_frame_reference_time,
                    media::cast::kRemotingRtpTimebase));
   remoting_frame->data.swap(next_frame_data_);

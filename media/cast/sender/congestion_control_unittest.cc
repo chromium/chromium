@@ -47,15 +47,15 @@ class CongestionControlTest : public ::testing::Test {
   }
 
   void Run(int num_frames,
-           size_t frame_size,
+           size_t frame_size_in_bytes,
            base::TimeDelta rtt,
            base::TimeDelta frame_delay,
            base::TimeDelta ack_time) {
     const FrameId end = FrameId::first() + num_frames;
     for (frame_id_ = FrameId::first(); frame_id_ < end; frame_id_++) {
       congestion_control_->UpdateRtt(rtt);
-      congestion_control_->SendFrameToTransport(
-          frame_id_, frame_size, testing_clock_.NowTicks());
+      congestion_control_->WillSendFrameToTransport(
+          frame_id_, frame_size_in_bytes, testing_clock_.NowTicks());
       task_runner_->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&CongestionControlTest::AckFrame,
@@ -75,13 +75,13 @@ class CongestionControlTest : public ::testing::Test {
 // estimations of network bandwidth and how much is in-flight (i.e, using the
 // "target buffer fill" model).
 TEST_F(CongestionControlTest, SimpleRun) {
-  uint32_t frame_size = 10000 * 8;
-  Run(500, frame_size, base::Milliseconds(10),
+  uint32_t frame_size_in_bytes = 10000;
+  Run(500, frame_size_in_bytes, base::Milliseconds(10),
       base::Milliseconds(kFrameDelayMs), base::Milliseconds(45));
   // Empty the buffer.
   task_runner_->Sleep(base::Milliseconds(100));
 
-  uint32_t safe_bitrate = frame_size * 1000 / kFrameDelayMs;
+  uint32_t safe_bitrate = frame_size_in_bytes * 1000 * 8 / kFrameDelayMs;
   uint32_t bitrate = congestion_control_->GetBitrate(
       testing_clock_.NowTicks() + base::Milliseconds(300),
       base::Milliseconds(300));
@@ -103,8 +103,8 @@ TEST_F(CongestionControlTest, SimpleRun) {
               safe_bitrate * 0.05);
 
   // Add a large (100ms) frame.
-  congestion_control_->SendFrameToTransport(
-      frame_id_++, safe_bitrate * 100 / 1000, testing_clock_.NowTicks());
+  congestion_control_->WillSendFrameToTransport(
+      frame_id_++, safe_bitrate * 100 / 1000 / 8, testing_clock_.NowTicks());
 
   // Results should show that we have ~200ms to send.
   bitrate = congestion_control_->GetBitrate(
@@ -115,8 +115,8 @@ TEST_F(CongestionControlTest, SimpleRun) {
               safe_bitrate * 0.05);
 
   // Add another large (100ms) frame.
-  congestion_control_->SendFrameToTransport(
-      frame_id_++, safe_bitrate * 100 / 1000, testing_clock_.NowTicks());
+  congestion_control_->WillSendFrameToTransport(
+      frame_id_++, safe_bitrate * 100 / 1000 / 8, testing_clock_.NowTicks());
 
   // Results should show that we have ~100ms to send.
   bitrate = congestion_control_->GetBitrate(
@@ -157,8 +157,8 @@ TEST_F(CongestionControlTest, RetainsSufficientHistory) {
   // GetBitrate() returns an in-range value at each step.
   FrameId frame_id = FrameId::first();
   for (int i = 0; i < kMaxUnackedFrames; ++i) {
-    congestion_control_->SendFrameToTransport(frame_id, 16384,
-                                              testing_clock_.NowTicks());
+    congestion_control_->WillSendFrameToTransport(frame_id, 16384 / 8,
+                                                  testing_clock_.NowTicks());
 
     bitrate = congestion_control_->GetBitrate(
         testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);

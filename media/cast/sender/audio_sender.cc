@@ -9,10 +9,14 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "media/base/media_switches.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/audio_encoder.h"
 #include "media/cast/net/cast_transport_config.h"
+#include "media/cast/sender/openscreen_frame_sender.h"
+#include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
 
@@ -20,12 +24,33 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,
                          StatusChangeOnceCallback status_change_cb,
                          CastTransport* const transport_sender)
+    : AudioSender(cast_environment,
+                  audio_config,
+                  std::move(status_change_cb),
+                  FrameSender::Create(cast_environment,
+                                      audio_config,
+                                      transport_sender,
+                                      *this)) {}
+
+AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
+                         const FrameSenderConfig& audio_config,
+                         StatusChangeOnceCallback status_change_cb,
+                         openscreen::cast::Sender* sender)
+    : AudioSender(
+          cast_environment,
+          audio_config,
+          std::move(status_change_cb),
+          FrameSender::Create(cast_environment, audio_config, sender, *this)) {
+  DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
+}
+
+AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
+                         const FrameSenderConfig& audio_config,
+                         StatusChangeOnceCallback status_change_cb,
+                         std::unique_ptr<FrameSender> sender)
     : cast_environment_(cast_environment),
       rtp_timebase_(audio_config.rtp_timebase),
-      frame_sender_(FrameSender::Create(cast_environment,
-                                        audio_config,
-                                        transport_sender,
-                                        this)) {
+      frame_sender_(std::move(sender)) {
   if (!audio_config.use_external_encoder) {
     audio_encoder_ = std::make_unique<AudioEncoder>(
         std::move(cast_environment), audio_config.channels, rtp_timebase_,
@@ -61,7 +86,7 @@ void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
   }
 
   const base::TimeDelta next_frame_duration =
-      RtpTimeDelta::FromTicks(audio_bus->frames()).ToTimeDelta(rtp_timebase_);
+      ToTimeDelta(RtpTimeDelta::FromTicks(audio_bus->frames()), rtp_timebase_);
   if (frame_sender_->ShouldDropNextFrame(next_frame_duration))
     return;
 
@@ -90,8 +115,8 @@ int AudioSender::GetNumberOfFramesInEncoder() const {
 }
 
 base::TimeDelta AudioSender::GetEncoderBacklogDuration() const {
-  return RtpTimeDelta::FromTicks(samples_in_encoder_)
-      .ToTimeDelta(rtp_timebase_);
+  return ToTimeDelta(RtpTimeDelta::FromTicks(samples_in_encoder_),
+                     rtp_timebase_);
 }
 
 void AudioSender::OnEncodedAudioFrame(

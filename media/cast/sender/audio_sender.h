@@ -17,6 +17,10 @@
 #include "media/cast/cast_sender.h"
 #include "media/cast/sender/frame_sender.h"
 
+namespace openscreen::cast {
+class Sender;
+}
+
 namespace media::cast {
 
 class AudioEncoder;
@@ -29,10 +33,21 @@ class AudioEncoder;
 // timeouts.
 class AudioSender final : public FrameSender::Client {
  public:
+  // Old way to instantiate, using a cast transport.
+  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
+  // successfully launched.
   AudioSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& audio_config,
               StatusChangeOnceCallback status_change_cb,
               CastTransport* const transport_sender);
+
+  // New way of instantiating using an openscreen::cast::Sender. Since the
+  // |Sender| instance is destroyed when renegotiation is complete, |this|
+  // is also invalid and should be immediately torn down.
+  AudioSender(scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& audio_config,
+              StatusChangeOnceCallback status_change_cb,
+              openscreen::cast::Sender* sender);
 
   AudioSender(const AudioSender&) = delete;
   AudioSender& operator=(const AudioSender&) = delete;
@@ -56,6 +71,11 @@ class AudioSender final : public FrameSender::Client {
   base::TimeDelta GetEncoderBacklogDuration() const final;
 
  private:
+  AudioSender(scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& audio_config,
+              StatusChangeOnceCallback status_change_cb,
+              std::unique_ptr<FrameSender> sender);
+
   // Called by the |audio_encoder_| with the next EncodedFrame to send.
   void OnEncodedAudioFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame,
                            int samples_skipped);

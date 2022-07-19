@@ -68,6 +68,7 @@ component("mirroring_service") {
     "//third_party/jsoncpp",  # Required by Open Screen API.
     "//third_party/libaom:libaom_buildflags",
     "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:sender",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -118,6 +119,7 @@ source_set("unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:sender",
   ]
 
   include_dirs = [ "//third_party/openscreen/src" ]

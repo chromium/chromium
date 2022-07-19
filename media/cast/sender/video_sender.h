@@ -18,6 +18,10 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/sender/frame_sender.h"
 
+namespace openscreen::cast {
+class Sender;
+}
+
 namespace media {
 class VideoFrame;
 }
@@ -38,11 +42,25 @@ using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 // timeouts.
 class VideoSender : public FrameSender::Client {
  public:
+  // Old way to instantiate, using a cast transport.
+  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
+  // successfully launched.
   VideoSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& video_config,
               StatusChangeCallback status_change_cb,
               const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
               CastTransport* const transport_sender,
+              PlayoutDelayChangeCB playout_delay_change_cb,
+              media::VideoCaptureFeedbackCB feedback_callback);
+
+  // New way of instantiating using an openscreen::cast::Sender. Since the
+  // |Sender| instance is destroyed when renegotiation is complete, |this|
+  // is also invalid and should be immediately torn down.
+  VideoSender(scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& video_config,
+              StatusChangeCallback status_change_cb,
+              const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+              openscreen::cast::Sender* sender,
               PlayoutDelayChangeCB playout_delay_change_cb,
               media::VideoCaptureFeedbackCB feedback_callback);
 
@@ -76,6 +94,14 @@ class VideoSender : public FrameSender::Client {
   FrameSender* frame_sender_for_testing() { return frame_sender_.get(); }
 
  private:
+  VideoSender(scoped_refptr<CastEnvironment> cast_environment,
+              const FrameSenderConfig& video_config,
+              StatusChangeCallback status_change_cb,
+              const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+              std::unique_ptr<FrameSender> sender,
+              PlayoutDelayChangeCB playout_delay_change_cb,
+              media::VideoCaptureFeedbackCB feedback_callback);
+
   // Called by the |video_encoder_| with the next EncodedFrame to send.
   void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            std::unique_ptr<SenderEncodedFrame> encoded_frame);

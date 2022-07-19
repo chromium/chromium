@@ -17,6 +17,7 @@
 #include "media/base/video_util.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
@@ -66,7 +67,7 @@ class VideoDecoder::ImplBase
       return;
     }
     decoded_frame->set_timestamp(
-        encoded_frame->rtp_timestamp.ToTimeDelta(kVideoFrequency));
+        ToTimeDelta(encoded_frame->rtp_timestamp, kVideoFrequency));
 
     std::unique_ptr<FrameEvent> decode_event(new FrameEvent());
     decode_event->timestamp = cast_environment_->Clock()->NowTicks();

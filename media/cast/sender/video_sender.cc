@@ -13,10 +13,14 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/video_encoder.h"
 #include "media/cast/net/cast_transport_config.h"
+#include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
+#include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
 
@@ -84,6 +88,44 @@ void LogVideoCaptureTimestamps(CastEnvironment* cast_environment,
 
 }  // namespace
 
+VideoSender::VideoSender(
+    scoped_refptr<CastEnvironment> cast_environment,
+    const FrameSenderConfig& video_config,
+    StatusChangeCallback status_change_cb,
+    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+    CastTransport* const transport_sender,
+    PlayoutDelayChangeCB playout_delay_change_cb,
+    media::VideoCaptureFeedbackCB feedback_callback)
+    : VideoSender(cast_environment,
+                  video_config,
+                  std::move(status_change_cb),
+                  std::move(create_vea_cb),
+                  FrameSender::Create(cast_environment,
+                                      video_config,
+                                      transport_sender,
+                                      *this),
+                  std::move(playout_delay_change_cb),
+                  std::move(feedback_callback)) {}
+
+VideoSender::VideoSender(
+    scoped_refptr<CastEnvironment> cast_environment,
+    const FrameSenderConfig& video_config,
+    StatusChangeCallback status_change_cb,
+    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+    openscreen::cast::Sender* sender,
+    PlayoutDelayChangeCB playout_delay_change_cb,
+    media::VideoCaptureFeedbackCB feedback_callback)
+    : VideoSender(
+          cast_environment,
+          video_config,
+          std::move(status_change_cb),
+          std::move(create_vea_cb),
+          FrameSender::Create(cast_environment, video_config, sender, *this),
+          std::move(playout_delay_change_cb),
+          std::move(feedback_callback)) {
+  DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
+}
+
 // Note, we use a fixed bitrate value when external video encoder is used.
 // Some hardware encoder shows bad behavior if we set the bitrate too
 // frequently, e.g. quality drop, not abiding by target bitrate, etc.
@@ -93,13 +135,10 @@ VideoSender::VideoSender(
     const FrameSenderConfig& video_config,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    CastTransport* const transport_sender,
+    std::unique_ptr<FrameSender> sender,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_callback)
-    : frame_sender_(FrameSender::Create(cast_environment,
-                                        video_config,
-                                        transport_sender,
-                                        this)),
+    : frame_sender_(std::move(sender)),
       cast_environment_(cast_environment),
       min_playout_delay_(video_config.min_playout_delay),
       max_playout_delay_(video_config.max_playout_delay),
@@ -128,7 +167,7 @@ void VideoSender::InsertRawVideoFrame(
   }
 
   const RtpTimeTicks rtp_timestamp =
-      RtpTimeTicks::FromTimeDelta(video_frame->timestamp(), kVideoFrequency);
+      ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
   LogVideoCaptureTimestamps(cast_environment_.get(), *video_frame,
                             rtp_timestamp);
 

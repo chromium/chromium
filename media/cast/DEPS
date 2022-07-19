@@ -5,6 +5,8 @@ include_rules = [
   "+net",
   "+third_party/libyuv",
   "+third_party/libaom",
+  "+third_party/openscreen/src/cast/streaming",
+  "+third_party/openscreen/src/platform/api",
   "+third_party/zlib",
   "+ui/base",
   "+ui/gfx",

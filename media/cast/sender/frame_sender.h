@@ -17,6 +17,10 @@
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/sender/congestion_control.h"
 
+namespace openscreen::cast {
+class Sender;
+}
+
 namespace media::cast {
 
 struct SenderEncodedFrame;
@@ -46,11 +50,21 @@ class FrameSender {
     virtual void OnFrameCanceled(FrameId frame_id) {}
   };
 
+  // Method of creating a frame sender using a cast transport.
+  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
+  // successfully launched.
   static std::unique_ptr<FrameSender> Create(
       scoped_refptr<CastEnvironment> cast_environment,
       const FrameSenderConfig& config,
       CastTransport* const transport_sender,
-      Client* client);
+      Client& client);
+
+  // Method of creating a frame sender using an openscreen::cast::Sender.
+  static std::unique_ptr<FrameSender> Create(
+      scoped_refptr<CastEnvironment> cast_environment,
+      const FrameSenderConfig& config,
+      openscreen::cast::Sender* sender,
+      Client& client);
 
   FrameSender();
   FrameSender(FrameSender&&) = delete;
@@ -85,6 +99,9 @@ class FrameSender {
   virtual bool ShouldDropNextFrame(base::TimeDelta frame_duration) const = 0;
 
   // Returns the RTP timestamp on the frame associated with |frame_id|.
+  // In practice this should be implemented as a ring buffer using the lower
+  // eight bits of the FrameId, so timestamps older than 256 frames will be
+  // incorrect.
   virtual RtpTimeTicks GetRecordedRtpTimestamp(FrameId frame_id) const = 0;
 
   // Returns the number of frames that were sent but not yet acknowledged.
@@ -113,6 +130,10 @@ class FrameSender {
   virtual FrameId LatestAckedFrameId() const = 0;
 
   // RTCP client-specific methods.
+  // TODO(https://crbug.com/1318499): these assume we are using an RTCP client,
+  // which is not true when this implementation is backed by an
+  // OpenscreenFrameSender. These methods should be removed and tests updated to
+  // use a different mechanism.
   virtual void OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) = 0;
   virtual void OnReceivedPli() = 0;
   virtual void OnMeasuredRoundTripTime(base::TimeDelta rtt) = 0;

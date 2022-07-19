@@ -27,9 +27,9 @@ source_set("common") {
     "common/encoded_frame.cc",
     "common/encoded_frame.h",
     "common/expanded_value_base.h",
-    "common/frame_id.cc",
     "common/frame_id.h",
-    "common/rtp_time.cc",
+    "common/openscreen_conversion_helpers.cc",
+    "common/openscreen_conversion_helpers.h",
     "common/rtp_time.h",
     "common/sender_encoded_frame.cc",
     "common/sender_encoded_frame.h",
@@ -61,6 +61,7 @@ source_set("common") {
     ":logging_proto",
     "//base",
     "//crypto",
+    "//media",
     "//net",
     "//third_party/zlib",
   ]
@@ -69,6 +70,9 @@ source_set("common") {
     # The generated headers reference headers within protobuf_lite, so
     # dependencies must be able to find those headers too.
     ":logging_proto",
+    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:sender",
   ]
 }
 
@@ -200,6 +204,8 @@ source_set("sender") {
     "sender/frame_sender.h",
     "sender/frame_sender_impl.cc",
     "sender/frame_sender_impl.h",
+    "sender/openscreen_frame_sender.cc",
+    "sender/openscreen_frame_sender.h",
     "sender/performance_metrics_overlay.cc",
     "sender/performance_metrics_overlay.h",
     "sender/video_sender.cc",
@@ -211,8 +217,10 @@ source_set("sender") {
     ":encoding",
     ":net",
     "//base",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media",
     "//media/capture:capture_base",
+    "//third_party/openscreen/src/cast/streaming:sender",
     "//ui/gfx/geometry",
   ]
 
@@ -301,6 +309,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":common",
     ":net",
     ":sender",
     ":test_receiver",
@@ -330,7 +339,7 @@ test("cast_unittests") {
 
   sources = [
     "common/expanded_value_base_unittest.cc",
-    "common/rtp_time_unittest.cc",
+    "common/openscreen_conversion_helpers_unittest.cc",
     "encoding/audio_encoder_unittest.cc",
     "encoding/external_video_encoder_unittest.cc",
     "encoding/video_encoder_unittest.cc",
@@ -375,12 +384,14 @@ test("cast_unittests") {
     "//base",
     "//base:cfi_buildflags",
     "//base/test:test_support",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media:test_support",
     "//media/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:sender",
     "//third_party/opus",
   ]
 
@@ -499,6 +510,7 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
       "//base",
       "//build/win:default_exe_manifest",
       "//net",
+      "//third_party/openscreen/src/cast/streaming:common",
     ]
   }
 } else {  # !(is_win || is_mac || is_linux || is_chromeos_lacros)
@@ -512,6 +524,7 @@ if (is_linux || is_chromeos_lacros) {
     sources = [ "test/utility/tap_proxy.cc" ]
 
     deps = [
+      ":common",
       ":test_support",
       "//base",
       "//base/test:test_support",

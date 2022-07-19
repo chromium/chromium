@@ -54,11 +54,16 @@ def _CheckForUseOfWrongClock(input_api, output_api):
   # base::Time class.  We want to prevent these from triggerring a warning.
   base_time_konstant_pattern = r'(^|\W)Time::k\w+'
 
+  # Regular expression to detect usage of openscreen clock types, which are
+  # allowed depending on DEPS rules.
+  openscreen_time_pattern = r'(^|\W)openscreen::Clock\s*'
+
   problem_re = input_api.re.compile(
       r'(' + base_time_type_pattern + r')|(' + base_time_member_pattern + r')')
   exception_re = input_api.re.compile(
       r'(' + using_base_time_decl_pattern + r')|(' +
-      base_time_konstant_pattern + r')')
+      base_time_konstant_pattern +  r')|(' +
+      openscreen_time_pattern + r')')
   problems = []
   for f in input_api.AffectedSourceFiles(_FilterFile):
     for line_number, line in f.ChangedContents():

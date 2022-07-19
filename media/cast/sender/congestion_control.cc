@@ -44,9 +44,9 @@ class AdaptiveCongestionControl final : public CongestionControl {
   // CongestionControl implementation.
   void UpdateRtt(base::TimeDelta rtt) final;
   void UpdateTargetPlayoutDelay(base::TimeDelta delay) final;
-  void SendFrameToTransport(FrameId frame_id,
-                            size_t frame_size_in_bits,
-                            base::TimeTicks when) final;
+  void WillSendFrameToTransport(FrameId frame_id,
+                                size_t frame_size_in_bytes,
+                                base::TimeTicks when) final;
   void AckFrame(FrameId frame_id, base::TimeTicks when) final;
   void AckLaterFrames(std::vector<FrameId> received_frames,
                       base::TimeTicks when) final;
@@ -118,9 +118,9 @@ class FixedCongestionControl final : public CongestionControl {
   // CongestionControl implementation.
   void UpdateRtt(base::TimeDelta rtt) final {}
   void UpdateTargetPlayoutDelay(base::TimeDelta delay) final {}
-  void SendFrameToTransport(FrameId frame_id,
-                            size_t frame_size_in_bits,
-                            base::TimeTicks when) final {}
+  void WillSendFrameToTransport(FrameId frame_id,
+                                size_t frame_size_in_bytes,
+                                base::TimeTicks when) final {}
   void AckFrame(FrameId frame_id, base::TimeTicks when) final {}
   void AckLaterFrames(std::vector<FrameId> received_frames,
                       base::TimeTicks when) final {}
@@ -319,14 +319,15 @@ void AdaptiveCongestionControl::AckLaterFrames(
   }
 }
 
-void AdaptiveCongestionControl::SendFrameToTransport(FrameId frame_id,
-                                                     size_t frame_size_in_bits,
-                                                     base::TimeTicks when) {
+void AdaptiveCongestionControl::WillSendFrameToTransport(
+    FrameId frame_id,
+    size_t frame_size_in_bytes,
+    base::TimeTicks when) {
   last_enqueued_frame_ = frame_id;
   FrameStats* frame_stats = GetFrameStats(frame_id);
   DCHECK(frame_stats);
   frame_stats->enqueue_time = when;
-  frame_stats->frame_size_in_bits = frame_size_in_bits;
+  frame_stats->frame_size_in_bits = frame_size_in_bytes * 8;
 }
 
 base::TimeTicks AdaptiveCongestionControl::EstimatedSendingTime(

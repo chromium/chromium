@@ -11,6 +11,7 @@
 #include "media/base/video_frame.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/common/frame_id.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
@@ -52,7 +53,7 @@ void FakeSoftwareVideoEncoder::Encode(
     encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
   }
   encoded_frame->rtp_timestamp =
-      RtpTimeTicks::FromTimeDelta(video_frame->timestamp(), kVideoFrequency);
+      ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
   encoded_frame->reference_time = reference_time;
 
   base::Value values(base::Value::Type::DICTIONARY);

@@ -37,6 +37,7 @@
 #include "media/base/video_util.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/vpx_quantizer_parser.h"
@@ -426,8 +427,8 @@ class ExternalVideoEncoder::VEAClientImpl final
       } else {
         encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
       }
-      encoded_frame->rtp_timestamp = RtpTimeTicks::FromTimeDelta(
-          request.video_frame->timestamp(), kVideoFrequency);
+      encoded_frame->rtp_timestamp =
+          ToRtpTimeTicks(request.video_frame->timestamp(), kVideoFrequency);
       encoded_frame->reference_time = request.reference_time;
 
       std::string header = stream_header_.str();

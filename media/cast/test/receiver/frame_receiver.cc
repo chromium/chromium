@@ -15,6 +15,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 
@@ -165,7 +166,7 @@ void FrameReceiver::ProcessParsedPacket(const RtpCastHeader& rtp_header,
       // Note: It's okay for the conversion ToTimeDelta() to be approximate
       // because |lip_sync_drift_| will account for accumulated errors.
       lip_sync_reference_time_ +=
-          (fresh_sync_rtp - lip_sync_rtp_timestamp_).ToTimeDelta(rtp_timebase_);
+          ToTimeDelta(fresh_sync_rtp - lip_sync_rtp_timestamp_, rtp_timebase_);
     }
     lip_sync_rtp_timestamp_ = fresh_sync_rtp;
     lip_sync_drift_.Update(now,
@@ -303,8 +304,8 @@ base::TimeTicks FrameReceiver::GetPlayoutTime(const EncodedFrame& frame) const {
     target_playout_delay = base::Milliseconds(frame.new_playout_delay_ms);
   }
   return lip_sync_reference_time_ + lip_sync_drift_.Current() +
-         (frame.rtp_timestamp - lip_sync_rtp_timestamp_)
-             .ToTimeDelta(rtp_timebase_) +
+         ToTimeDelta(frame.rtp_timestamp - lip_sync_rtp_timestamp_,
+                     rtp_timebase_) +
          target_playout_delay;
 }
 

@@ -29,9 +29,9 @@ class CongestionControl {
   virtual void UpdateTargetPlayoutDelay(base::TimeDelta delay) = 0;
 
   // Called when an encoded frame is enqueued for transport.
-  virtual void SendFrameToTransport(FrameId frame_id,
-                                    size_t frame_size_in_bits,
-                                    base::TimeTicks when) = 0;
+  virtual void WillSendFrameToTransport(FrameId frame_id,
+                                        size_t frame_size_in_bytes,
+                                        base::TimeTicks when) = 0;
 
   // Called when we receive an ACK for a frame.
   virtual void AckFrame(FrameId frame_id, base::TimeTicks when) = 0;

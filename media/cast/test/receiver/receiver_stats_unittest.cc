@@ -8,6 +8,7 @@
 
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 #include "media/cast/test/receiver/receiver_stats.h"
@@ -63,7 +64,7 @@ TEST_F(ReceiverStatsTest, LossCount) {
       stats_.UpdateStatistics(rtp_header_, kVideoFrequency);
     if (i % 3) {
       rtp_header_.rtp_timestamp +=
-          RtpTimeDelta::FromTimeDelta(base::Milliseconds(33), kVideoFrequency);
+          ToRtpTimeDelta(base::Milliseconds(33), kVideoFrequency);
     }
     ++rtp_header_.sequence_number;
     testing_clock_.Advance(delta_increments_);
@@ -82,7 +83,7 @@ TEST_F(ReceiverStatsTest, NoLossWrap) {
     stats_.UpdateStatistics(rtp_header_, kVideoFrequency);
     if (i % 3) {
       rtp_header_.rtp_timestamp +=
-          RtpTimeDelta::FromTimeDelta(base::Milliseconds(33), kVideoFrequency);
+          ToRtpTimeDelta(base::Milliseconds(33), kVideoFrequency);
     }
     ++rtp_header_.sequence_number;
     testing_clock_.Advance(delta_increments_);
@@ -119,7 +120,7 @@ TEST_F(ReceiverStatsTest, BasicJitter) {
     stats_.UpdateStatistics(rtp_header_, kVideoFrequency);
     ++rtp_header_.sequence_number;
     rtp_header_.rtp_timestamp +=
-        RtpTimeDelta::FromTimeDelta(base::Milliseconds(33), kVideoFrequency);
+        ToRtpTimeDelta(base::Milliseconds(33), kVideoFrequency);
     testing_clock_.Advance(delta_increments_);
   }
   RtpReceiverStatistics s = stats_.GetStatistics();
@@ -137,7 +138,7 @@ TEST_F(ReceiverStatsTest, NonTrivialJitter) {
     stats_.UpdateStatistics(rtp_header_, kVideoFrequency);
     ++rtp_header_.sequence_number;
     rtp_header_.rtp_timestamp +=
-        RtpTimeDelta::FromTimeDelta(base::Milliseconds(33), kVideoFrequency);
+        ToRtpTimeDelta(base::Milliseconds(33), kVideoFrequency);
     base::TimeDelta additional_delta = base::Milliseconds(kAdditionalIncrement);
     testing_clock_.Advance(delta_increments_ + additional_delta);
   }

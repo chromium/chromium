@@ -18,6 +18,7 @@
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/logging/simple_event_subscriber.h"
 #include "media/cast/net/cast_transport_impl.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
@@ -130,7 +131,7 @@ class FrameReceiverTest : public ::testing::Test {
   void FeedLipSyncInfoIntoReceiver() {
     const base::TimeTicks now = testing_clock_.NowTicks();
     const RtpTimeTicks rtp_timestamp =
-        RtpTimeTicks::FromTimeDelta(now - start_time_, config_.rtp_timebase);
+        ToRtpTimeTicks(now - start_time_, config_.rtp_timebase);
     CHECK_LE(RtpTimeTicks(), rtp_timestamp);
     uint32_t ntp_seconds;
     uint32_t ntp_fraction;
@@ -248,7 +249,7 @@ TEST_F(FrameReceiverTest, ReceivesFramesSkippingWhenAppropriate) {
   const base::TimeDelta time_advance_per_frame =
       base::Seconds(1) / config_.target_frame_rate;
   const RtpTimeDelta rtp_advance_per_frame =
-      RtpTimeDelta::FromTimeDelta(time_advance_per_frame, config_.rtp_timebase);
+      ToRtpTimeDelta(time_advance_per_frame, config_.rtp_timebase);
 
   // Feed and process lip sync in receiver.
   FeedLipSyncInfoIntoReceiver();
@@ -362,7 +363,7 @@ TEST_F(FrameReceiverTest, ReceivesFramesRefusingToSkipAny) {
   const base::TimeDelta time_advance_per_frame =
       base::Seconds(1) / config_.target_frame_rate;
   const RtpTimeDelta rtp_advance_per_frame =
-      RtpTimeDelta::FromTimeDelta(time_advance_per_frame, config_.rtp_timebase);
+      ToRtpTimeDelta(time_advance_per_frame, config_.rtp_timebase);
 
   // Feed and process lip sync in receiver.
   FeedLipSyncInfoIntoReceiver();

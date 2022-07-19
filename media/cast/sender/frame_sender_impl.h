@@ -29,7 +29,7 @@ class FrameSenderImpl : public FrameSender {
   FrameSenderImpl(scoped_refptr<CastEnvironment> cast_environment,
                   const FrameSenderConfig& config,
                   CastTransport* const transport_sender,
-                  Client* client);
+                  Client& client);
   ~FrameSenderImpl() override;
 
   // FrameSender overrides.
@@ -115,7 +115,7 @@ class FrameSenderImpl : public FrameSender {
   const raw_ptr<CastTransport> transport_sender_;
 
   // The frame sender client.
-  raw_ptr<Client> client_ = nullptr;
+  Client& client_;
 
   // Whether this is an audio or video frame sender.
   const bool is_audio_;

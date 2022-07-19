@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/mac/video_frame_mac.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/common/video_frame_factory.h"
@@ -390,8 +391,7 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
   // We'll get the pointer back from the VideoToolbox completion callback.
   std::unique_ptr<InProgressH264VTFrameEncode> request(
       new InProgressH264VTFrameEncode(
-          RtpTimeTicks::FromTimeDelta(video_frame->timestamp(),
-                                      kVideoFrequency),
+          ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency),
           reference_time, std::move(frame_encoded_callback)));
 
   // Build a suitable frame properties dictionary for keyframes.
