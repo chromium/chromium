@@ -2181,7 +2181,6 @@ chrome_common_shared_library("libchromefortest") {
     "//components/minidump_uploader",
     "//components/paint_preview/player/android:test_support",
     "//components/sync",
-    "//components/sync/test/fake_server:fake_server_android",
     "//content/public/test/android:content_native_test_support",
     "//content/test:test_support",
     "//ui/base/clipboard:clipboard_test_support",
@@ -2544,6 +2543,7 @@ generate_jni("test_support_jni_headers") {
     "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
     "javatests/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchTestBridge.java",
     "javatests/src/org/chromium/chrome/browser/query_tiles/QueryTileFakeServer.java",
+    "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
     "javatests/src/org/chromium/chrome/browser/test/MockCertVerifierRuleAndroid.java",
   ]
 }
@@ -2594,16 +2594,21 @@ static_library("browser_test_support") {
     "../browser/offline_pages/android/offline_test_util_jni.cc",
     "../browser/offline_pages/android/prefetch_test_bridge.cc",
     "../browser/query_tiles/query_tile_fake_server.cc",
+    "../browser/sync/android/fake_server_helper_android.cc",
   ]
   deps = [
     ":test_support_jni_headers",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/thumbnail:test_support",
     "//components/offline_pages/core/background:test_support",
     "//components/query_tiles",
     "//components/query_tiles/test:test_support",
+    "//components/sync:test_support_nigori",
+    "//components/sync/test/fake_server",
     "//content/test:test_support",
     "//net:test_support",
+    "//url:gurl_android",
     "//url:gurl_android_test_helper",
   ]
 }

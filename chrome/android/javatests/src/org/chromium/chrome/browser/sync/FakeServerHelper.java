@@ -59,16 +59,14 @@ public class FakeServerHelper {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (sFakeServerHelper == null) return;
 
-            FakeServerHelperJni.get().deleteFakeServer(sFakeServerHelper.mNativeFakeServer,
-                    SyncService.get().getNativeSyncServiceImplForTest());
+            FakeServerHelperJni.get().deleteFakeServer(sFakeServerHelper.mNativeFakeServer);
             sFakeServerHelper = null;
         });
     }
 
     private FakeServerHelper() {
         ThreadUtils.assertOnUiThread();
-        mNativeFakeServer = FakeServerHelperJni.get().createFakeServer(
-                SyncService.get().getNativeSyncServiceImplForTest());
+        mNativeFakeServer = FakeServerHelperJni.get().createFakeServer();
         assert mNativeFakeServer != 0L;
     }
 
@@ -290,14 +288,8 @@ public class FakeServerHelper {
 
     @NativeMethods
     interface Natives {
-        // TODO(crbug.com/1215369): Remove the syncServiceImpl parameter below and retrieve the
-        // native SyncServiceImpl directly in native. SyncServiceImpl.getSyncServiceImplForTest()
-        // can be removed then.
-        // TODO(crbug.com/1215369): SyncTestRule (the only current user of FakeServerHelper), should
-        // consider always using the real SyncServiceImpl Java object, since the real native one
-        // is being used anyway.
-        long createFakeServer(long syncServiceImpl);
-        void deleteFakeServer(long fakeServer, long syncServiceImpl);
+        long createFakeServer();
+        void deleteFakeServer(long fakeServer);
         boolean verifyEntityCountByTypeAndName(
                 long fakeServer, int count, int modelType, String name);
         boolean verifySessions(long fakeServer, String[] urlArray);

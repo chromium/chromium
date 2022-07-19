@@ -13,21 +13,21 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 
 namespace syncer {
-class SyncServiceImpl;
+class SyncService;
 class SyncSetupInProgressHandle;
 }  // namespace syncer
 
-// Forwards calls from SyncServiceImpl.java to the native SyncServiceImpl and
+// Forwards calls from SyncServiceImpl.java to the native SyncService and
 // back. Instead of directly implementing JNI free functions, this class is used
 // so it can manage the lifetime of objects like SyncSetupInProgressHandle.
 // Note that on Android, there's only a single profile, a single native
-// SyncServiceImpl, and therefore a single instance of this class.
+// SyncService, and therefore a single instance of this class.
 // Must only be accessed from the UI thread.
 class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
   // |native_sync_service| and |java_sync_service| must not be null.
   SyncServiceAndroidBridge(JNIEnv* env,
-                           syncer::SyncServiceImpl* native_sync_service,
+                           syncer::SyncService* native_sync_service,
                            jobject java_sync_service);
   ~SyncServiceAndroidBridge() override;
 
@@ -87,11 +87,10 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
   jlong GetLastSyncedTimeForDebugging(JNIEnv* env);
-  jlong GetNativeSyncServiceImplForTest(JNIEnv* env);
 
  private:
   // A reference to the sync service for this profile.
-  const raw_ptr<syncer::SyncServiceImpl> native_sync_service_;
+  const raw_ptr<syncer::SyncService> native_sync_service_;
 
   // Java-side SyncServiceImpl object.
   const JavaObjectWeakGlobalRef java_sync_service_;

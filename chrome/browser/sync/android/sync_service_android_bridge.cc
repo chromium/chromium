@@ -28,8 +28,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -45,8 +46,8 @@ using content::BrowserThread;
 namespace {
 
 // Native callback for the JNI GetAllNodes method. When
-// SyncServiceImpl::GetAllNodes completes, this method is called and the
-// results are sent to the Java callback.
+// SyncService::GetAllNodesForDebugging() completes, this method is called and
+// the results are sent to the Java callback.
 void NativeGetAllNodesCallback(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
@@ -75,7 +76,7 @@ ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
 
 SyncServiceAndroidBridge::SyncServiceAndroidBridge(
     JNIEnv* env,
-    syncer::SyncServiceImpl* native_sync_service,
+    syncer::SyncService* native_sync_service,
     jobject java_sync_service)
     : native_sync_service_(native_sync_service),
       java_sync_service_(env, java_sync_service) {
@@ -355,19 +356,13 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
       (last_sync_time - base::Time::UnixEpoch()).InMicroseconds());
 }
 
-jlong SyncServiceAndroidBridge::GetNativeSyncServiceImplForTest(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return reinterpret_cast<intptr_t>(native_sync_service_.get());
-}
-
 static jlong JNI_SyncServiceImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_sync_service) {
   DCHECK(g_browser_process && g_browser_process->profile_manager());
 
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(
-          ProfileManager::GetLastUsedProfile());
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(ProfileManager::GetLastUsedProfile());
   if (!sync_service) {
     return 0;
   }

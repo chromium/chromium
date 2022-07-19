@@ -332,10 +332,4 @@ public abstract class SyncService {
      */
     @VisibleForTesting
     public abstract void getAllNodes(Callback<JSONArray> callback);
-
-    /**
-     * TODO(crbug.com/949504): Remove and do this directly in native code.
-     */
-    @VisibleForTesting
-    public abstract long getNativeSyncServiceImplForTest();
 }

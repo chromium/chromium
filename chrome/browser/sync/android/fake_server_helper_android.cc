@@ -13,6 +13,10 @@
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "chrome/android/test_support_jni_headers/FakeServerHelper_jni.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -22,7 +26,6 @@
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync/test/fake_server/fake_server.h"
-#include "components/sync/test/fake_server/fake_server_jni/FakeServerHelper_jni.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
@@ -85,25 +88,26 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
   return bookmark_builder.BuildBookmark(gurl);
 }
 
+syncer::SyncServiceImpl* GetSyncServiceImpl() {
+  DCHECK(g_browser_process && g_browser_process->profile_manager());
+  return SyncServiceFactory::GetAsSyncServiceImplForProfile(
+      ProfileManager::GetLastUsedProfile());
+}
+
 }  // namespace
 
-static jlong JNI_FakeServerHelper_CreateFakeServer(JNIEnv* env,
-                                                   jlong sync_service_impl) {
+static jlong JNI_FakeServerHelper_CreateFakeServer(JNIEnv* env) {
   auto* fake_server = new fake_server::FakeServer();
-  auto* service_ptr =
-      reinterpret_cast<syncer::SyncServiceImpl*>(sync_service_impl);
-  service_ptr->OverrideNetworkForTest(
+  GetSyncServiceImpl()->OverrideNetworkForTest(
       fake_server::CreateFakeServerHttpPostProviderFactory(
           fake_server->AsWeakPtr()));
   return reinterpret_cast<intptr_t>(fake_server);
 }
 
 static void JNI_FakeServerHelper_DeleteFakeServer(JNIEnv* env,
-                                                  jlong fake_server,
-                                                  jlong sync_service_impl) {
-  auto* service_ptr =
-      reinterpret_cast<syncer::SyncServiceImpl*>(sync_service_impl);
-  service_ptr->OverrideNetworkForTest(syncer::CreateHttpPostProviderFactory());
+                                                  jlong fake_server) {
+  GetSyncServiceImpl()->OverrideNetworkForTest(
+      syncer::CreateHttpPostProviderFactory());
   delete reinterpret_cast<fake_server::FakeServer*>(fake_server);
 }
 

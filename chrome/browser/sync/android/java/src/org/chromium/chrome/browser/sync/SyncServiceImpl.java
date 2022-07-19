@@ -369,12 +369,6 @@ public class SyncServiceImpl extends SyncService {
         return modelTypeArray;
     }
 
-    @VisibleForTesting
-    @Override
-    public long getNativeSyncServiceImplForTest() {
-        return SyncServiceImplJni.get().getNativeSyncServiceImplForTest(mSyncServiceAndroidBridge);
-    }
-
     @NativeMethods
     interface Natives {
         long init(SyncServiceImpl caller);
@@ -421,6 +415,5 @@ public class SyncServiceImpl extends SyncService {
         boolean shouldOfferTrustedVaultOptIn(long nativeSyncServiceAndroidBridge);
         void triggerRefresh(long nativeSyncServiceAndroidBridge);
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);
-        long getNativeSyncServiceImplForTest(long nativeSyncServiceAndroidBridge);
     }
 }

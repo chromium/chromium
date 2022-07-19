@@ -45,25 +45,3 @@ static_library("fake_server") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
-
-if (is_android) {
-  generate_jni("fake_server_jni") {
-    testonly = true
-    sources = [ "//chrome/android/javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java" ]
-  }
-
-  static_library("fake_server_android") {
-    testonly = true
-    sources = [ "android/fake_server_helper_android.cc" ]
-    deps = [
-      ":fake_server",
-      ":fake_server_jni",
-      "//base",
-      "//components/sync",
-      "//components/sync:test_support_nigori",
-      "//testing/gtest",
-      "//url:gurl_android",
-      "//url:url",
-    ]
-  }
-}
