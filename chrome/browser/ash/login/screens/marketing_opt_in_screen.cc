@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -39,6 +40,16 @@
 
 namespace ash {
 namespace {
+
+constexpr char kUserActionGetStarted[] = "get-started";
+constexpr char kUserActionSetA11yNavigationButtonsEnabled[] =
+    "set-a11y-button-enable";
+
+void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
+  base::UmaHistogramBoolean(
+      "Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE",
+      enabled);
+}
 
 // Records the opt-in and opt-out rates for Chromebook emails. Differentiates
 // between users who have a default opt-in vs. a default opt-out option.
@@ -79,19 +90,19 @@ std::string MarketingOptInScreen::GetResultString(Result result) {
 }
 
 MarketingOptInScreen::MarketingOptInScreen(
-    MarketingOptInScreenView* view,
+    base::WeakPtr<MarketingOptInScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(MarketingOptInScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
 MarketingOptInScreen::~MarketingOptInScreen() {
-  if (view_)
-    view_->Bind(nullptr);
+  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning()) {
+    a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
+  }
 }
 
 bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
@@ -120,10 +131,12 @@ void MarketingOptInScreen::ShowImpl() {
   const bool cloud_gaming_enabled =
       chromeos::features::IsCloudGamingDeviceEnabled();
 
-  view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
-              /*opt_in_default_state=*/IsDefaultOptInCountry(),
-              /*legal_footer_visible=*/legal_footer_visible,
-              /*cloud_gaming_enabled=*/cloud_gaming_enabled);
+  if (view_) {
+    view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
+                /*opt_in_default_state=*/IsDefaultOptInCountry(),
+                /*legal_footer_visible=*/legal_footer_visible,
+                /*cloud_gaming_enabled=*/cloud_gaming_enabled);
+  }
 
   // Mark the screen as shown for this user.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -131,14 +144,16 @@ void MarketingOptInScreen::ShowImpl() {
 
   // Only show the link for accessibility settings if the gesture navigation
   // screen was shown.
-  view_->UpdateA11ySettingsButtonVisibility(
-      static_cast<GestureNavigationScreen*>(
-          WizardController::default_controller()->screen_manager()->GetScreen(
-              GestureNavigationScreenView::kScreenId))
-          ->was_shown());
+  if (view_) {
+    view_->UpdateA11ySettingsButtonVisibility(
+        static_cast<GestureNavigationScreen*>(
+            WizardController::default_controller()->screen_manager()->GetScreen(
+                GestureNavigationScreenView::kScreenId))
+            ->was_shown());
 
-  view_->UpdateA11yShelfNavigationButtonToggle(prefs->GetBoolean(
-      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+    view_->UpdateA11yShelfNavigationButtonToggle(prefs->GetBoolean(
+        prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+  }
 
   // Observe the a11y shelf navigation buttons pref so the setting toggle in the
   // screen can be updated if the pref value changes.
@@ -155,8 +170,24 @@ void MarketingOptInScreen::HideImpl() {
   if (is_hidden())
     return;
   active_user_pref_change_registrar_.reset();
-  if (view_)
-    view_->Hide();
+}
+
+void MarketingOptInScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionGetStarted) {
+    CHECK_EQ(args.size(), 2);
+    const bool chromebook_email_opt_in = args[1].GetBool();
+    OnGetStarted(chromebook_email_opt_in);
+    return;
+  }
+  if (action_id == kUserActionSetA11yNavigationButtonsEnabled) {
+    CHECK_EQ(args.size(), 2);
+    const bool enabled = args[1].GetBool();
+    SetA11yNavigationButtonsEnabled(enabled);
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
@@ -185,13 +216,16 @@ void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
 }
 
 void MarketingOptInScreen::SetA11yButtonVisibilityForTest(bool shown) {
-  view_->UpdateA11ySettingsButtonVisibility(shown);
+  if (view_) {
+    view_->UpdateA11ySettingsButtonVisibility(shown);
+  }
 }
 
 void MarketingOptInScreen::OnA11yShelfNavigationButtonPrefChanged() {
-  view_->UpdateA11yShelfNavigationButtonToggle(
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
+  if (view_) {
+    ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+        prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled);
+  }
 }
 
 bool MarketingOptInScreen::IsCurrentUserManaged() {
@@ -241,6 +275,15 @@ void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
   if (is_default_country || is_extended_country || is_double_optin_country) {
     country_ = region.value();
   }
+}
+
+void MarketingOptInScreen::SetA11yNavigationButtonsEnabled(bool enabled) {
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
+      enabled);
+  a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
+      FROM_HERE, base::Seconds(10),
+      base::BindOnce(&RecordShowShelfNavigationButtonsValueChange, enabled));
 }
 
 bool MarketingOptInScreen::ShouldShowOptionToSubscribe() {

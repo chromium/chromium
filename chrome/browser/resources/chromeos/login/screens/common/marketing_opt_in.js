@@ -166,9 +166,7 @@ class MarketingOptIn extends MarketingScreenElementBase {
    */
   onGetStarted_() {
     this.setAnimationPlay_(false);
-    chrome.send(
-        'login.MarketingOptInScreen.onGetStarted',
-        [this.$.chromebookUpdatesOption.checked]);
+    this.userActed(['get-started', this.$.chromebookUpdatesOption.checked]);
   }
 
   /**
@@ -207,9 +205,8 @@ class MarketingOptIn extends MarketingScreenElementBase {
    * @private
    */
   onA11yNavButtonsSettingChanged_() {
-    chrome.send('login.MarketingOptInScreen.setA11yNavigationButtonsEnabled', [
-      this.$.a11yNavButtonToggle.checked,
-    ]);
+    this.userActed(
+        ['set-a11y-button-enable', this.$.a11yNavButtonToggle.checked]);
   }
 
   /**

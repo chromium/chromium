@@ -6,15 +6,11 @@
 
 #include <utility>
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
-#include "components/prefs/pref_service.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
@@ -26,23 +22,12 @@ constexpr char kOptInDefaultState[] = "optInDefaultState";
 constexpr char kLegalFooterVisibility[] = "legalFooterVisibility";
 constexpr char kCloudGamingDevice[] = "cloudGamingDevice";
 
-void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
-  base::UmaHistogramBoolean(
-      "Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE",
-      enabled);
-}
-
 }  // namespace
-
-constexpr StaticOobeScreenId MarketingOptInScreenView::kScreenId;
 
 MarketingOptInScreenHandler::MarketingOptInScreenHandler()
     : BaseScreenHandler(kScreenId) {}
 
-MarketingOptInScreenHandler::~MarketingOptInScreenHandler() {
-  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
-    a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
-}
+MarketingOptInScreenHandler::~MarketingOptInScreenHandler() = default;
 
 void MarketingOptInScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -84,11 +69,6 @@ void MarketingOptInScreenHandler::DeclareLocalizedValues(
                IDS_MARKETING_OPT_IN_ACCESSIBILITY_DONE_BUTTON);
 }
 
-void MarketingOptInScreenHandler::Bind(MarketingOptInScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
 void MarketingOptInScreenHandler::Show(bool opt_in_visible,
                                        bool opt_in_default_state,
                                        bool legal_footer_visible,
@@ -102,51 +82,19 @@ void MarketingOptInScreenHandler::Show(bool opt_in_visible,
   ShowInWebUI(std::move(data));
 }
 
-void MarketingOptInScreenHandler::Hide() {
-  if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
-    a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
-}
-
 void MarketingOptInScreenHandler::UpdateA11ySettingsButtonVisibility(
     bool shown) {
-  CallJS("login.MarketingOptInScreen.updateA11ySettingsButtonVisibility",
-         shown);
+  CallExternalAPI("updateA11ySettingsButtonVisibility", shown);
 }
 
 void MarketingOptInScreenHandler::UpdateA11yShelfNavigationButtonToggle(
     bool enabled) {
-  CallJS("login.MarketingOptInScreen.updateA11yNavigationButtonToggle",
-         enabled);
-}
-
-void MarketingOptInScreenHandler::InitializeDeprecated() {}
-
-void MarketingOptInScreenHandler::RegisterMessages() {
-  AddCallback("login.MarketingOptInScreen.onGetStarted",
-              &MarketingOptInScreenHandler::HandleOnGetStarted);
-  AddCallback(
-      "login.MarketingOptInScreen.setA11yNavigationButtonsEnabled",
-      &MarketingOptInScreenHandler::HandleSetA11yNavigationButtonsEnabled);
+  CallExternalAPI("updateA11yNavigationButtonToggle", enabled);
 }
 
 void MarketingOptInScreenHandler::GetAdditionalParameters(
     base::Value::Dict* parameters) {
   BaseScreenHandler::GetAdditionalParameters(parameters);
-}
-
-void MarketingOptInScreenHandler::HandleOnGetStarted(
-    bool chromebook_email_opt_in) {
-  screen_->OnGetStarted(chromebook_email_opt_in);
-}
-
-void MarketingOptInScreenHandler::HandleSetA11yNavigationButtonsEnabled(
-    bool enabled) {
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
-      enabled);
-  a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
-      FROM_HERE, base::Seconds(10),
-      base::BindOnce(&RecordShowShelfNavigationButtonsValueChange, enabled));
 }
 
 }  // namespace chromeos

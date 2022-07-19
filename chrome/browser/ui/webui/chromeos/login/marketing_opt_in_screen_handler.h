@@ -5,35 +5,28 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MARKETING_OPT_IN_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MARKETING_OPT_IN_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class MarketingOptInScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between MarketingOptInScreen and its
 // WebUI representation.
-class MarketingOptInScreenView {
+class MarketingOptInScreenView
+    : public base::SupportsWeakPtr<MarketingOptInScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"marketing-opt-in"};
+  inline constexpr static StaticOobeScreenId kScreenId{"marketing-opt-in",
+                                                       "MarketingOptInScreen"};
 
   virtual ~MarketingOptInScreenView() = default;
-
-  // Sets screen this view belongs to.
-  virtual void Bind(ash::MarketingOptInScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show(bool opt_in_visible,
                     bool opt_in_default_state,
                     bool legal_footer_visible,
                     bool cloud_gaming_enabled) = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
 
   // Sets whether the a11y Settings button is visible.
   virtual void UpdateA11ySettingsButtonVisibility(bool shown) = 0;
@@ -62,32 +55,16 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // MarketingOptInScreenView:
-  void Bind(ash::MarketingOptInScreen* screen) override;
   void Show(bool opt_in_visible,
             bool opt_in_default_state,
             bool legal_footer_visible,
             bool cloud_gaming_enabled) override;
-  void Hide() override;
   void UpdateA11ySettingsButtonVisibility(bool shown) override;
   void UpdateA11yShelfNavigationButtonToggle(bool enabled) override;
 
  private:
   // BaseScreenHandler:
-  void InitializeDeprecated() override;
-  void RegisterMessages() override;
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
-
-  // WebUI event handlers.
-  void HandleOnGetStarted(bool chromebook_email_opt_in);
-  void HandleSetA11yNavigationButtonsEnabled(bool enabled);
-
-  ash::MarketingOptInScreen* screen_ = nullptr;
-
-  // Timer to record user changed value for the accessibility setting to turn
-  // shelf navigation buttons on in tablet mode. The metric is recorded with 10
-  // second delay to avoid overreporting when the user keeps toggling the
-  // setting value in the screen UI.
-  base::OneShotTimer a11y_nav_buttons_toggle_metrics_reporter_timer_;
 };
 
 }  // namespace chromeos
