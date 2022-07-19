@@ -1431,11 +1431,6 @@
       status: "test",
     },
     {
-      // https://github.com/whatwg/html/pull/6569
-      name: "MediaMetaThemeColor",
-      status: "stable",
-    },
-    {
       name: "MediaPreservesPitch",
       status: "stable",
     },
