@@ -1763,6 +1763,24 @@ std::wstring ComputeUserChoiceHash(const std::wstring& extension,
       base::span<uint8_t>(reinterpret_cast<uint8_t*>(input), sizeof(input))));
 }
 
+// ScopedPIDLFromPath class, and the idea of using IPinnedList3::Modify,
+// are thanks to Gee Law <https://geelaw.blog/entries/msedge-pins/>
+class ScopedPIDLFromPath {
+ public:
+  explicit ScopedPIDLFromPath(PCWSTR path)
+      : p_id_list_(ILCreateFromPath(path)) {}
+  ~ScopedPIDLFromPath() {
+    if (p_id_list_)
+      ILFree(p_id_list_);
+  }
+  PIDLIST_ABSOLUTE Get() const { return p_id_list_; }
+
+ private:
+  PIDLIST_ABSOLUTE const p_id_list_;
+};
+
+enum class PinnedListModifyCaller { kExplorer = 4 };
+
 }  // namespace
 
 const wchar_t* ShellUtil::kRegAppProtocolHandlers = L"\\AppProtocolHandlers";
@@ -3035,4 +3053,50 @@ std::wstring ShellUtil::ComputeUserChoiceHashForTesting(
     return std::wstring();
 
   return ComputeUserChoiceHash(extension, sid, prog_id, datetime, shell_salt);
+}
+
+// Undocumented COM interface for manipulating taskbar pinned list.
+class __declspec(uuid("0DD79AE2-D156-45D4-9EEB-3B549769E940")) IPinnedList3
+    : public IUnknown {
+ public:
+  virtual HRESULT STDMETHODCALLTYPE EnumObjects() = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetPinnableInfo() = 0;
+  virtual HRESULT STDMETHODCALLTYPE IsPinnable() = 0;
+  virtual HRESULT STDMETHODCALLTYPE Resolve() = 0;
+  virtual HRESULT STDMETHODCALLTYPE LegacyModify() = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetChangeCount() = 0;
+  virtual HRESULT STDMETHODCALLTYPE IsPinned() = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetPinnedItem() = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetAppIDForPinnedItem() = 0;
+  virtual HRESULT STDMETHODCALLTYPE ItemChangeNotify() = 0;
+  virtual HRESULT STDMETHODCALLTYPE UpdateForRemovedItemsAsNecessary() = 0;
+  virtual HRESULT STDMETHODCALLTYPE PinShellLink() = 0;
+  virtual HRESULT STDMETHODCALLTYPE GetPinnedItemForAppID() = 0;
+  virtual HRESULT STDMETHODCALLTYPE Modify(PCIDLIST_ABSOLUTE unpin,
+                                           PCIDLIST_ABSOLUTE pin,
+                                           PinnedListModifyCaller caller) = 0;
+};
+
+// static
+bool ShellUtil::PinShortcut(const base::FilePath& shortcut) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS5)
+    return false;
+
+  static constexpr GUID CLSID_TaskbandPin = {
+      0x90aa3a4e,
+      0x1cba,
+      0x4233,
+      {0xb8, 0xbb, 0x53, 0x57, 0x73, 0xd4, 0x84, 0x49}};
+
+  ScopedPIDLFromPath item_id_list(shortcut.value().data());
+  Microsoft::WRL::ComPtr<IPinnedList3> pinned_list;
+  HRESULT hr =
+      CoCreateInstance(CLSID_TaskbandPin, nullptr, CLSCTX_INPROC_SERVER,
+                       IID_PPV_ARGS(&pinned_list));
+  if (FAILED(hr))
+    return false;
+
+  hr = pinned_list->Modify(nullptr, item_id_list.Get(),
+                           PinnedListModifyCaller::kExplorer);
+  return SUCCEEDED(hr);
 }

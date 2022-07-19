@@ -859,6 +859,10 @@ class ShellUtil {
       const std::wstring& sid,
       const std::wstring& prog_id,
       const std::wstring& datetime);
+
+  // Use IPinnedList3 to pin shortcut to taskbar on WIN10_RS5 and above.
+  // Returns true if pinning was successful.
+  static bool PinShortcut(const base::FilePath& shortcut);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
