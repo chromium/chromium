@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
@@ -187,6 +188,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1345655")
     public void testEagerSuspension() {
         mActivityTestRule.loadUrl(mStartingUrl);
         CriteriaHelper.pollUiThread(() -> !mTab.isLoading());
@@ -232,6 +234,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1345655")
     public void testMultiWindow() {
         mActivityTestRule.loadUrl(mStartingUrl);
         Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
@@ -319,6 +322,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1345655")
     public void testNavigationFromSuspendedTabToInterstitial() {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         startLoadingUrl(mTab, mStartingUrl);
