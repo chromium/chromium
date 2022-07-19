@@ -1069,6 +1069,11 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (profile->GetPath() == ProfileManager::GetSystemProfilePath())
+    return nullptr;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =

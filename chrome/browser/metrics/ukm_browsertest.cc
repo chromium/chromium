@@ -76,6 +76,11 @@
 #include "content/public/browser/web_contents.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profile_ui_test_utils.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
 namespace metrics {
 namespace {
 
@@ -548,8 +553,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 
   CloseBrowserSynchronously(guest_browser);
-  // TODO(crbug/746076): UKM doesn't actually get re-enabled yet.
-  // EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   // Client ID should not have been reset.
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
 
@@ -557,6 +561,41 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
   CloseBrowserSynchronously(regular_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+// ProfilePicker and System profile do not exist on Chrome Ash and on Android.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+// Displaying the ProfilePicker implicitly creates a System Profile.
+// System Profile shouldn't have any effect on the UKM Enable Status.
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, ProfilePickerCheck) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  MetricsConsentOverride metrics_consent(true);
+
+  Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      EnableSyncForProfile(profile);
+
+  Browser* regular_browser = CreateBrowser(profile);
+  ASSERT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // ProfilePicker creates a SystemProfile.
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  profiles::testing::WaitForPickerWidgetCreated();
+
+  Profile* system_profile =
+      g_browser_process->profile_manager()->GetProfileByPath(
+          ProfileManager::GetSystemProfilePath());
+  ASSERT_TRUE(system_profile);
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  ProfilePicker::Hide();
+  profiles::testing::WaitForPickerClosed();
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  CloseBrowserSynchronously(regular_browser);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 // Not applicable to Android as it doesn't have multiple profiles.
 #if !BUILDFLAG(IS_ANDROID)

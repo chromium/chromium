@@ -1028,6 +1028,19 @@ bool ChromeMetricsServiceClient::RegisterObservers() {
 }
 
 bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
+  // Only Original Profiles are checked in this call, meaning Incognito and
+  // Guest Off the record status are not checked in this method for UKM consent.
+  // The equivalent check is done in this method
+  // `MetricsServicesManager::UpdateUkmService()`
+  DCHECK(!profile->IsOffTheRecord());
+
+  // Non-Regular Profiles consent information are not expected to be
+  // observed or checked, therefore they are whitelisted for the UKM
+  // validation that checks consent on all profiles.
+  // E.g System Profile consent should be always true.
+  if (!profile->IsRegularProfile())
+    return true;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore the signin, lock screen app and lock screen profile for sync
   // disables / history deletion.
@@ -1043,14 +1056,12 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   // for metrics collection, ignoring the sign-in profile, lock screen app
   // profile, and guest sessions.
   //
-  // TODO(crbug.com/1016655): This conditional would be better placed in
+  // TODO(crbug.com/1016655): This call would be better placed in
   // metrics::structured::Recorder, but can't be because it depends on Chrome
   // code. Investigate whether there's a way of checking this from the
   // component.
-  if (!profile->IsGuestSession()) {
-    metrics::structured::Recorder::GetInstance()->ProfileAdded(
-        profile->GetPath());
-  }
+  metrics::structured::Recorder::GetInstance()->ProfileAdded(
+      profile->GetPath());
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
