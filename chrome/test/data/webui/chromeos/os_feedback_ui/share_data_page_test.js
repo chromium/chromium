@@ -169,12 +169,13 @@ export function shareDataPageTestSuite() {
     assertEquals(2, emailDropdown.options.length);
 
     const firstOption = emailDropdown.options.item(0);
-    assertEquals('test.user2@test.com', firstOption.textContent);
-    assertEquals('test.user2@test.com', firstOption.value);
+    assertEquals('test.user2@test.com', firstOption.textContent.trim());
+    assertEquals('test.user2@test.com', firstOption.value.trim());
 
     const secondOption = emailDropdown.options.item(1);
-    assertEquals('Don\'t include email address', secondOption.textContent);
-    assertEquals('', secondOption.value);
+    assertEquals(
+        'Don\'t include email address', secondOption.textContent.trim());
+    assertEquals('', secondOption.value.trim());
 
     // The user email section should be visible.
     const userEmailElement = getElement('#userEmail');

@@ -79,6 +79,11 @@
     margin-bottom: 24px;
   }
 
+  .md-select {
+    height: 32px;
+    width: 248px;
+  }
+
   #shareDiagnosticData {
     height: 96px;
     margin-bottom: 24px;
@@ -164,9 +169,15 @@
     <div id="userEmail" class="text-field-container"
         hidden$="[[!hasEmail_(feedbackContext)]]">
       <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
-      <select id="userEmailDropDown" aria-labelledby="userEmailLabel">
-        <option value$="[[feedbackContext.email]]">[[feedbackContext.email]]</option>
-        <option value="" id="anonymousUser">[[i18n('anonymousUser')]]</option>
+      <select id="userEmailDropDown" class="md-select"
+          aria-labelledby="userEmailLabel">
+        <option value$="[[feedbackContext.email]]"
+            class="email-dropdown">
+          [[feedbackContext.email]]
+        </option>
+        <option value="" id="anonymousUser" class="email-dropdown">
+          [[i18n('anonymousUser')]]
+        </option>
       </select>
     </div>
     <!-- User consent -->
