@@ -88,7 +88,7 @@ class ActivityTrackerTest : public testing::Test {
     return GlobalActivityTracker::Get()->user_data_allocator_.cache_used();
   }
 
-  void HandleProcessExit(int64_t id,
+  void HandleProcessExit(ProcessId id,
                          int64_t stamp,
                          int code,
                          GlobalActivityTracker::ProcessPhase phase,
@@ -102,7 +102,7 @@ class ActivityTrackerTest : public testing::Test {
     exit_data_ = std::move(data);
   }
 
-  int64_t exit_id_ = 0;
+  ProcessId exit_id_ = 0;
   int64_t exit_stamp_;
   int exit_code_;
   GlobalActivityTracker::ProcessPhase exit_phase_;
@@ -484,7 +484,7 @@ TEST_F(ActivityTrackerTest, ThreadDeathTest) {
 TEST_F(ActivityTrackerTest, ProcessDeathTest) {
   // This doesn't actually create and destroy a process. Instead, it uses for-
   // testing interfaces to simulate data created by other processes.
-  const int64_t other_process_id = GetCurrentProcId() + 1;
+  const ProcessId other_process_id = GetCurrentProcId() + 1;
 
   GlobalActivityTracker::CreateWithLocalMemory(kMemorySize, 0, "", 3, 0);
   GlobalActivityTracker* global = GlobalActivityTracker::Get();
@@ -528,7 +528,7 @@ TEST_F(ActivityTrackerTest, ProcessDeathTest) {
   // Change the objects to appear to be owned by another process. Use a "past"
   // time so that exit-time is always later than create-time.
   const int64_t past_stamp = Time::Now().ToInternalValue() - 1;
-  int64_t owning_id;
+  ProcessId owning_id;
   int64_t stamp;
   ASSERT_TRUE(ActivityUserData::GetOwningProcessId(
       global->process_data().GetBaseAddress(), &owning_id, &stamp));
@@ -554,7 +554,7 @@ TEST_F(ActivityTrackerTest, ProcessDeathTest) {
   EXPECT_EQ(other_process_id, owning_id);
 
   // Check that process exit will perform callback and free the allocations.
-  ASSERT_EQ(0, exit_id_);
+  ASSERT_EQ(ProcessId{0}, exit_id_);
   ASSERT_EQ(GlobalActivityTracker::kTypeIdProcessDataRecord,
             global->allocator()->GetType(proc_data_ref));
   ASSERT_EQ(GlobalActivityTracker::kTypeIdActivityTracker,

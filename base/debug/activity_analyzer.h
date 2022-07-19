@@ -39,7 +39,7 @@ class BASE_EXPORT ThreadActivityAnalyzer {
   // multiple processes.
   class ThreadKey {
    public:
-    ThreadKey(int64_t pid, int64_t tid) : pid_(pid), tid_(tid) {}
+    ThreadKey(ProcessId pid, int64_t tid) : pid_(pid), tid_(tid) {}
 
     bool operator<(const ThreadKey& rhs) const {
       if (pid_ != rhs.pid_)
@@ -52,7 +52,7 @@ class BASE_EXPORT ThreadActivityAnalyzer {
     }
 
    private:
-    int64_t pid_;
+    ProcessId pid_;
     int64_t tid_;
   };
 
@@ -84,7 +84,7 @@ class BASE_EXPORT ThreadActivityAnalyzer {
   bool IsValid() { return activity_snapshot_valid_; }
 
   // Gets the process id and its creation stamp.
-  int64_t GetProcessId(int64_t* out_stamp = nullptr) {
+  ProcessId GetProcessId(int64_t* out_stamp = nullptr) {
     if (out_stamp)
       *out_stamp = activity_snapshot_.create_stamp;
     return activity_snapshot_.process_id;
@@ -165,8 +165,8 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // returned in the order they're found meaning that a first-launched
   // controlling process will be found first. Note, however, that space
   // freed by an exiting process may be re-used by a later process.
-  int64_t GetFirstProcess();
-  int64_t GetNextProcess();
+  ProcessId GetFirstProcess();
+  ProcessId GetNextProcess();
 
   // Iterates over all known valid analyzers for the a given process or returns
   // null if there are no more.
@@ -174,7 +174,7 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // GetFirstProcess() must be called first in order to capture a global
   // snapshot! Ownership stays with the global analyzer object and all existing
   // analyzer pointers are invalidated when GetFirstProcess() is called.
-  ThreadActivityAnalyzer* GetFirstAnalyzer(int64_t pid);
+  ThreadActivityAnalyzer* GetFirstAnalyzer(ProcessId pid);
   ThreadActivityAnalyzer* GetNextAnalyzer();
 
   // Gets the analyzer for a specific thread or null if there is none.
@@ -182,13 +182,13 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   ThreadActivityAnalyzer* GetAnalyzerForThread(const ThreadKey& key);
 
   // Extract user data based on a reference and its identifier.
-  ActivityUserData::Snapshot GetUserDataSnapshot(int64_t pid,
+  ActivityUserData::Snapshot GetUserDataSnapshot(ProcessId pid,
                                                  uint32_t ref,
                                                  uint32_t id);
 
   // Extract the data for a specific process. An empty snapshot will be
   // returned if the process is not known.
-  const ActivityUserData::Snapshot& GetProcessDataSnapshot(int64_t pid);
+  const ActivityUserData::Snapshot& GetProcessDataSnapshot(ProcessId pid);
 
   // Gets all log messages stored within.
   std::vector<std::string> GetLogMessages();
@@ -196,7 +196,7 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // Gets modules corresponding to a pid. This pid must come from a call to
   // GetFirst/NextProcess. Only modules that were first registered prior to
   // GetFirstProcess's snapshot are returned.
-  std::vector<GlobalActivityTracker::ModuleInfo> GetModules(int64_t pid);
+  std::vector<GlobalActivityTracker::ModuleInfo> GetModules(ProcessId pid);
 
   // Gets the corresponding "program location" for a given "program counter".
   // This will return {0,0} if no mapping could be found.
@@ -217,7 +217,7 @@ class BASE_EXPORT GlobalActivityAnalyzer {
     UserDataSnapshot(UserDataSnapshot&& rhs);
     ~UserDataSnapshot();
 
-    int64_t process_id;
+    ProcessId process_id;
     int64_t create_stamp;
     ActivityUserData::Snapshot data;
   };
@@ -239,11 +239,11 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   std::set<PersistentMemoryAllocator::Reference> memory_references_;
 
   // A set of all process-data memory references found within the allocator.
-  std::map<int64_t, UserDataSnapshot> process_data_;
+  std::map<ProcessId, UserDataSnapshot> process_data_;
 
   // A set of all process IDs collected during PrepareAllAnalyzers. These are
   // popped and returned one-by-one with calls to GetFirst/NextProcess().
-  std::vector<int64_t> process_ids_;
+  std::vector<ProcessId> process_ids_;
 
   // A map, keyed by ThreadKey, of all valid activity analyzers.
   AnalyzerMap analyzers_;
@@ -251,7 +251,7 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // The iterator within the analyzers_ map for returning analyzers through
   // first/next iteration.
   AnalyzerMap::iterator analyzers_iterator_;
-  int64_t analyzers_iterator_pid_;
+  ProcessId analyzers_iterator_pid_;
 };
 
 }  // namespace debug

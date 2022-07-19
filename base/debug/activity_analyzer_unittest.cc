@@ -70,7 +70,7 @@ class ActivityAnalyzerTest : public testing::Test {
   }
 
   template <typename Function>
-  void AsOtherProcess(int64_t pid, Function function) {
+  void AsOtherProcess(ProcessId pid, Function function) {
     std::unique_ptr<GlobalActivityTracker> old_global =
         GlobalActivityTracker::ReleaseForTesting();
     ASSERT_TRUE(old_global);
@@ -182,14 +182,14 @@ TEST_F(ActivityAnalyzerTest, MAYBE_GlobalAnalyzerConstruction) {
       const_cast<void*>(allocator->data()), allocator->size(), 0, 0, "", true));
 
   // The only thread at this point is the test thread of this process.
-  const int64_t pid = analyzer.GetFirstProcess();
-  ASSERT_NE(0, pid);
+  const ProcessId pid = analyzer.GetFirstProcess();
+  ASSERT_NE(ProcessId{0}, pid);
   ThreadActivityAnalyzer* ta1 = analyzer.GetFirstAnalyzer(pid);
   ASSERT_TRUE(ta1);
   EXPECT_FALSE(analyzer.GetNextAnalyzer());
   ThreadActivityAnalyzer::ThreadKey tk1 = ta1->GetThreadKey();
   EXPECT_EQ(ta1, analyzer.GetAnalyzerForThread(tk1));
-  EXPECT_EQ(0, analyzer.GetNextProcess());
+  EXPECT_EQ(ProcessId{0}, analyzer.GetNextProcess());
 
   // Create a second thread that will do something.
   SimpleActivityThread t2("t2", nullptr, Activity::ACT_TASK,
@@ -203,7 +203,7 @@ TEST_F(ActivityAnalyzerTest, MAYBE_GlobalAnalyzerConstruction) {
   EXPECT_TRUE(analyzer.GetFirstAnalyzer(pid));
   EXPECT_TRUE(analyzer.GetNextAnalyzer());
   EXPECT_FALSE(analyzer.GetNextAnalyzer());
-  EXPECT_EQ(0, analyzer.GetNextProcess());
+  EXPECT_EQ(ProcessId{0}, analyzer.GetNextProcess());
 
   // Let thread exit.
   t2.Exit();
@@ -217,7 +217,7 @@ TEST_F(ActivityAnalyzerTest, MAYBE_GlobalAnalyzerConstruction) {
   ThreadActivityAnalyzer::ThreadKey tk2 = ta2->GetThreadKey();
   EXPECT_EQ(ta2, analyzer.GetAnalyzerForThread(tk2));
   EXPECT_EQ(tk1, tk2);
-  EXPECT_EQ(0, analyzer.GetNextProcess());
+  EXPECT_EQ(ProcessId{0}, analyzer.GetNextProcess());
 
   // Verify that there is process data.
   const ActivityUserData::Snapshot& data_snapshot =
@@ -241,8 +241,8 @@ TEST_F(ActivityAnalyzerTest, GlobalAnalyzerFromSharedMemory) {
   std::unique_ptr<GlobalActivityAnalyzer> analyzer =
       GlobalActivityAnalyzer::CreateWithSharedMemory(std::move(ro_mapping));
 
-  const int64_t pid = analyzer->GetFirstProcess();
-  ASSERT_NE(0, pid);
+  const ProcessId pid = analyzer->GetFirstProcess();
+  ASSERT_NE(ProcessId{0}, pid);
   const ActivityUserData::Snapshot& data_snapshot =
       analyzer->GetProcessDataSnapshot(pid);
   ASSERT_LE(1U, data_snapshot.size());
@@ -353,7 +353,7 @@ TEST_F(ActivityAnalyzerTest, UserDataSnapshotTest) {
 }
 
 TEST_F(ActivityAnalyzerTest, GlobalUserDataTest) {
-  const int64_t pid = GetCurrentProcId();
+  const ProcessId pid = GetCurrentProcId();
   GlobalActivityTracker::CreateWithLocalMemory(kMemorySize, 0, "", 3, 0);
 
   const char string1[] = "foo";
@@ -379,7 +379,7 @@ TEST_F(ActivityAnalyzerTest, GlobalUserDataTest) {
   process_data.SetReference("ref", string1, sizeof(string1));
   process_data.SetStringReference("sref", string2);
 
-  int64_t first_pid = global_analyzer.GetFirstProcess();
+  ProcessId first_pid = global_analyzer.GetFirstProcess();
   DCHECK_EQ(pid, first_pid);
   const ActivityUserData::Snapshot& snapshot =
       global_analyzer.GetProcessDataSnapshot(pid);
@@ -503,17 +503,20 @@ TEST_F(ActivityAnalyzerTest, GlobalLogMessages) {
 }
 
 TEST_F(ActivityAnalyzerTest, GlobalMultiProcess) {
-  GlobalActivityTracker::CreateWithLocalMemory(kMemorySize, 0, "", 3, 1001);
+  constexpr ProcessId kProcessIdA = 1001;
+  constexpr ProcessId kProcessIdB = 2002;
+  GlobalActivityTracker::CreateWithLocalMemory(kMemorySize, 0, "", 3,
+                                               kProcessIdA);
   GlobalActivityTracker* global = GlobalActivityTracker::Get();
   PersistentMemoryAllocator* allocator = global->allocator();
-  EXPECT_EQ(1001, global->process_id());
+  EXPECT_EQ(kProcessIdA, global->process_id());
 
-  int64_t process_id;
+  ProcessId process_id;
   int64_t create_stamp;
   ActivityUserData::GetOwningProcessId(
       GlobalActivityTracker::Get()->process_data().GetBaseAddress(),
       &process_id, &create_stamp);
-  ASSERT_EQ(1001, process_id);
+  ASSERT_EQ(kProcessIdA, process_id);
 
   GlobalActivityTracker::Get()->process_data().SetInt("pid",
                                                       global->process_id());
@@ -521,35 +524,35 @@ TEST_F(ActivityAnalyzerTest, GlobalMultiProcess) {
   GlobalActivityAnalyzer analyzer(std::make_unique<PersistentMemoryAllocator>(
       const_cast<void*>(allocator->data()), allocator->size(), 0, 0, "", true));
 
-  AsOtherProcess(2002, [&global]() {
+  AsOtherProcess(kProcessIdB, [&global, kProcessIdB]() {
     ASSERT_NE(global, GlobalActivityTracker::Get());
-    EXPECT_EQ(2002, GlobalActivityTracker::Get()->process_id());
+    EXPECT_EQ(kProcessIdB, GlobalActivityTracker::Get()->process_id());
 
-    int64_t process_id;
+    ProcessId process_id;
     int64_t create_stamp;
     ActivityUserData::GetOwningProcessId(
         GlobalActivityTracker::Get()->process_data().GetBaseAddress(),
         &process_id, &create_stamp);
-    ASSERT_EQ(2002, process_id);
+    ASSERT_EQ(kProcessIdB, process_id);
 
     GlobalActivityTracker::Get()->process_data().SetInt(
         "pid", GlobalActivityTracker::Get()->process_id());
   });
   ASSERT_EQ(global, GlobalActivityTracker::Get());
-  EXPECT_EQ(1001, GlobalActivityTracker::Get()->process_id());
+  EXPECT_EQ(kProcessIdA, GlobalActivityTracker::Get()->process_id());
 
-  const int64_t pid1 = analyzer.GetFirstProcess();
-  ASSERT_EQ(1001, pid1);
-  const int64_t pid2 = analyzer.GetNextProcess();
-  ASSERT_EQ(2002, pid2);
-  EXPECT_EQ(0, analyzer.GetNextProcess());
+  const ProcessId pid1 = analyzer.GetFirstProcess();
+  ASSERT_EQ(kProcessIdA, pid1);
+  const ProcessId pid2 = analyzer.GetNextProcess();
+  ASSERT_EQ(kProcessIdB, pid2);
+  EXPECT_EQ(ProcessId{0}, analyzer.GetNextProcess());
 
   const ActivityUserData::Snapshot& pdata1 =
       analyzer.GetProcessDataSnapshot(pid1);
   const ActivityUserData::Snapshot& pdata2 =
       analyzer.GetProcessDataSnapshot(pid2);
-  EXPECT_EQ(1001, pdata1.at("pid").GetInt());
-  EXPECT_EQ(2002, pdata2.at("pid").GetInt());
+  EXPECT_EQ(kProcessIdA, static_cast<ProcessId>(pdata1.at("pid").GetInt()));
+  EXPECT_EQ(kProcessIdB, static_cast<ProcessId>(pdata2.at("pid").GetInt()));
 }
 
 }  // namespace debug

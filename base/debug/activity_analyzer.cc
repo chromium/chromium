@@ -152,20 +152,21 @@ GlobalActivityAnalyzer::CreateWithSharedMemory(
           std::move(mapping), 0, StringPiece()));
 }
 
-int64_t GlobalActivityAnalyzer::GetFirstProcess() {
+ProcessId GlobalActivityAnalyzer::GetFirstProcess() {
   PrepareAllAnalyzers();
   return GetNextProcess();
 }
 
-int64_t GlobalActivityAnalyzer::GetNextProcess() {
+ProcessId GlobalActivityAnalyzer::GetNextProcess() {
   if (process_ids_.empty())
     return 0;
-  int64_t pid = process_ids_.back();
+  ProcessId pid = process_ids_.back();
   process_ids_.pop_back();
   return pid;
 }
 
-ThreadActivityAnalyzer* GlobalActivityAnalyzer::GetFirstAnalyzer(int64_t pid) {
+ThreadActivityAnalyzer* GlobalActivityAnalyzer::GetFirstAnalyzer(
+    ProcessId pid) {
   analyzers_iterator_ = analyzers_.begin();
   analyzers_iterator_pid_ = pid;
   if (analyzers_iterator_ == analyzers_.end())
@@ -200,7 +201,7 @@ ThreadActivityAnalyzer* GlobalActivityAnalyzer::GetAnalyzerForThread(
 }
 
 ActivityUserData::Snapshot GlobalActivityAnalyzer::GetUserDataSnapshot(
-    int64_t pid,
+    ProcessId pid,
     uint32_t ref,
     uint32_t id) {
   ActivityUserData::Snapshot snapshot;
@@ -212,7 +213,7 @@ ActivityUserData::Snapshot GlobalActivityAnalyzer::GetUserDataSnapshot(
     size_t size = allocator_->GetAllocSize(ref);
     const ActivityUserData user_data(memory, size);
     user_data.CreateSnapshot(&snapshot);
-    int64_t process_id;
+    ProcessId process_id;
     int64_t create_stamp;
     if (!ActivityUserData::GetOwningProcessId(memory, &process_id,
                                               &create_stamp) ||
@@ -227,7 +228,7 @@ ActivityUserData::Snapshot GlobalActivityAnalyzer::GetUserDataSnapshot(
 }
 
 const ActivityUserData::Snapshot&
-GlobalActivityAnalyzer::GetProcessDataSnapshot(int64_t pid) {
+GlobalActivityAnalyzer::GetProcessDataSnapshot(ProcessId pid) {
   auto iter = process_data_.find(pid);
   if (iter == process_data_.end())
     return GetEmptyUserDataSnapshot();
@@ -255,7 +256,7 @@ std::vector<std::string> GlobalActivityAnalyzer::GetLogMessages() {
 }
 
 std::vector<GlobalActivityTracker::ModuleInfo>
-GlobalActivityAnalyzer::GetModules(int64_t pid) {
+GlobalActivityAnalyzer::GetModules(ProcessId pid) {
   std::vector<GlobalActivityTracker::ModuleInfo> modules;
 
   PersistentMemoryAllocator::Iterator iter(allocator_.get());
@@ -264,7 +265,7 @@ GlobalActivityAnalyzer::GetModules(int64_t pid) {
       (record =
            iter.GetNextOfObject<GlobalActivityTracker::ModuleInfoRecord>()) !=
       nullptr) {
-    int64_t process_id;
+    ProcessId process_id;
     int64_t create_stamp;
     if (!OwningProcess::GetOwningProcessId(&record->owner, &process_id,
                                            &create_stamp) ||
@@ -325,7 +326,7 @@ void GlobalActivityAnalyzer::PrepareAllAnalyzers() {
   analyzers_.clear();
   process_data_.clear();
   process_ids_.clear();
-  std::set<int64_t> seen_pids;
+  std::set<ProcessId> seen_pids;
 
   // Go through all the known references and create objects for them with
   // snapshots of the current state.
@@ -351,7 +352,7 @@ void GlobalActivityAnalyzer::PrepareAllAnalyzers() {
         analyzer->AddGlobalInformation(this);
 
         // Track PIDs.
-        int64_t pid = analyzer->GetProcessId();
+        ProcessId pid = analyzer->GetProcessId();
         if (seen_pids.find(pid) == seen_pids.end()) {
           process_ids_.push_back(pid);
           seen_pids.insert(pid);
@@ -367,7 +368,7 @@ void GlobalActivityAnalyzer::PrepareAllAnalyzers() {
 
       case GlobalActivityTracker::kTypeIdProcessDataRecord: {
         // Get the PID associated with this data record.
-        int64_t process_id;
+        ProcessId process_id;
         int64_t create_stamp;
         ActivityUserData::GetOwningProcessId(base, &process_id, &create_stamp);
         DCHECK(!base::Contains(process_data_, process_id));
