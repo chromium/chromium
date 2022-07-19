@@ -29,7 +29,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -49,6 +48,7 @@ class ViewsAXTreeManagerTest : public ViewsTestBase,
                                public ::testing::WithParamInterface<bool> {
  public:
   ViewsAXTreeManagerTest() = default;
+  ~ViewsAXTreeManagerTest() override = default;
   ViewsAXTreeManagerTest(const ViewsAXTreeManagerTest&) = delete;
   ViewsAXTreeManagerTest& operator=(const ViewsAXTreeManagerTest&) = delete;
 
@@ -60,19 +60,12 @@ class ViewsAXTreeManagerTest : public ViewsTestBase,
                        const std::string& name_or_value) const;
   void WaitFor(const ui::AXEventGenerator::Event event);
 
-  Widget* widget() const { return widget_.get(); }
+  Widget* widget() const { return widget_; }
   Button* button() const { return button_; }
   Label* label() const { return label_; }
-  ViewsAXTreeManager* manager() const {
-    return features::IsAccessibilityTreeForViewsEnabled()
-               ? absl::get<raw_ptr<ViewsAXTreeManager>>(manager_).get()
-               : absl::get<std::unique_ptr<ViewsAXTreeManager>>(manager_).get();
-  }
+  ViewsAXTreeManager* manager() const { return manager_.get(); }
 
  private:
-  using TestOwnedManager = std::unique_ptr<ViewsAXTreeManager>;
-  using WidgetOwnedManager = raw_ptr<ViewsAXTreeManager>;
-
   ui::AXNode* FindNodeInSubtree(ui::AXNode* root,
                                 const ax::mojom::Role role,
                                 const std::string& name_or_value) const;
@@ -80,10 +73,10 @@ class ViewsAXTreeManagerTest : public ViewsTestBase,
                         ui::AXEventGenerator::Event event,
                         ui::AXNodeID node_id);
 
-  UniqueWidgetPtr widget_;
+  raw_ptr<Widget> widget_ = nullptr;
   raw_ptr<Button> button_ = nullptr;
   raw_ptr<Label> label_ = nullptr;
-  absl::variant<TestOwnedManager, WidgetOwnedManager> manager_;
+  std::unique_ptr<ViewsAXTreeManager> manager_;
   ui::AXEventGenerator::Event event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -97,8 +90,9 @@ void ViewsAXTreeManagerTest::SetUp() {
         {features::kEnableAccessibilityTreeForViews}, {});
   }
 
-  widget_ = std::make_unique<Widget>();
+  widget_ = new Widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 200, 200);
   widget_->Init(std::move(params));
 
@@ -114,12 +108,13 @@ void ViewsAXTreeManagerTest::SetUp() {
   // AccessibilityTreeForViewsEnabled will create and manage its own
   // ViewsAXTreeManager, so we don't need to create one for testing.
   if (features::IsAccessibilityTreeForViewsEnabled()) {
-    manager_ = widget_->GetRootView()->GetViewAccessibility().AXTreeManager();
+    manager_.reset(
+        widget_->GetRootView()->GetViewAccessibility().AXTreeManager());
   } else {
-    manager_ = std::make_unique<ViewsAXTreeManager>(widget_.get());
+    manager_ = std::make_unique<ViewsAXTreeManager>(widget_);
   }
 
-  ASSERT_NE(nullptr, manager());
+  ASSERT_NE(nullptr, manager_);
   manager()->SetGeneratedEventCallbackForTesting(base::BindRepeating(
       &ViewsAXTreeManagerTest::OnGeneratedEvent, base::Unretained(this)));
   WaitFor(ui::AXEventGenerator::Event::SUBTREE_CREATED);
@@ -128,11 +123,7 @@ void ViewsAXTreeManagerTest::SetUp() {
 void ViewsAXTreeManagerTest::TearDown() {
   if (manager())
     manager()->UnsetGeneratedEventCallbackForTesting();
-  if (features::IsAccessibilityTreeForViewsEnabled())
-    manager_.emplace<WidgetOwnedManager>(nullptr);
-  else
-    manager_.emplace<TestOwnedManager>(nullptr);
-
+  manager_.reset();
   CloseWidget();
   ViewsTestBase::TearDown();
 }
@@ -224,6 +215,23 @@ TEST_P(ViewsAXTreeManagerTest, PerformAction) {
   WaitFor(ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED);
 }
 
+TEST_P(ViewsAXTreeManagerTest, CloseWidget) {
+  // This test is only relevant when IsAccessibilityTreeForViewsEnabled is set,
+  // as it tests the lifetime management of ViewsAXTreeManager when a Widget is
+  // closed.
+  if (!features::IsAccessibilityTreeForViewsEnabled())
+    return;
+
+  ui::AXNode* ax_button = FindNode(ax::mojom::Role::kButton, "");
+  ASSERT_NE(nullptr, ax_button);
+
+  CloseWidget();
+
+  // Looking up a node after its Widget has been closed should return nullptr.
+  ax_button = FindNode(ax::mojom::Role::kButton, "");
+  EXPECT_EQ(nullptr, ax_button);
+}
+
 TEST_P(ViewsAXTreeManagerTest, MultipleTopLevelWidgets) {
   // This test is only relevant when IsAccessibilityTreeForViewsEnabled is set,
   // as it tests the lifetime management of ViewsAXTreeManager when a Widget is
@@ -231,8 +239,9 @@ TEST_P(ViewsAXTreeManagerTest, MultipleTopLevelWidgets) {
   if (!features::IsAccessibilityTreeForViewsEnabled())
     return;
 
-  UniqueWidgetPtr second_widget = std::make_unique<Widget>();
+  std::unique_ptr<Widget> second_widget = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 200, 200);
   second_widget->Init(std::move(params));
 
