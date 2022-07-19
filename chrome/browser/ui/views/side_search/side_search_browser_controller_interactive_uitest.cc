@@ -638,8 +638,16 @@ IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
   EXPECT_TRUE(side_search_panel->GetVisible());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_OpeningGlobalPanelsClosesAllContextualPanels \
+  DISABLED_OpeningGlobalPanelsClosesAllContextualPanels
+#else
+#define MAYBE_OpeningGlobalPanelsClosesAllContextualPanels \
+  OpeningGlobalPanelsClosesAllContextualPanels
+#endif
 IN_PROC_BROWSER_TEST_F(SideSearchDSEClobberingTest,
-                       OpeningGlobalPanelsClosesAllContextualPanels) {
+                       MAYBE_OpeningGlobalPanelsClosesAllContextualPanels) {
   auto* global_panel = GetGlobalSidePanelFor(browser());
   auto* side_search_panel = GetSidePanelFor(browser());
   AppendTab(browser(), GetNonMatchingUrl());

@@ -140,9 +140,17 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows \
+  DISABLED_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows
+#else
+#define MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows \
+  SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows
+#endif
 IN_PROC_BROWSER_TEST_F(
     SideSearchV2Test,
-    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+    MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   Browser* browser2 = CreateBrowser(browser()->profile());
