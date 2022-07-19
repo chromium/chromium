@@ -38,7 +38,7 @@ class CORE_EXPORT BoxPaintInvalidator {
       const PhysicalRect& old_layout_overflow,
       const PhysicalRect& new_layout_overflow);
 
-  enum BackgroundInvalidationType { kNone = 0, kIncremental, kFull };
+  enum class BackgroundInvalidationType { kNone = 0, kIncremental, kFull };
   BackgroundInvalidationType ComputeViewBackgroundInvalidation();
   BackgroundInvalidationType ComputeBackgroundInvalidation(
       bool& should_invalidate_all_layers);
