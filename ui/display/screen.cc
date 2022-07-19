@@ -85,26 +85,11 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+Screen::ScreenSaverSuspender::~ScreenSaverSuspender() = default;
+
 std::unique_ptr<Screen::ScreenSaverSuspender> Screen::SuspendScreenSaver() {
-  SetScreenSaverSuspended(true);
-  screen_saver_suspension_count_++;
-  return base::WrapUnique(new Screen::ScreenSaverSuspender(this));
-}
-
-Screen::ScreenSaverSuspender::~ScreenSaverSuspender() {
-  // Check that this suspender still refers to the active screen. Particularly
-  // in tests, the screen might be destructed before the suspender.
-  if (screen_ == GetScreen()) {
-    screen_->screen_saver_suspension_count_--;
-    if (screen_->screen_saver_suspension_count_ == 0) {
-      screen_->SetScreenSaverSuspended(false);
-    }
-  }
-}
-
-bool Screen::SetScreenSaverSuspended(bool suspend) {
   NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 

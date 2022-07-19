@@ -134,28 +134,22 @@ class DISPLAY_EXPORT Screen {
   // its existence.
   class ScreenSaverSuspender {
    public:
-    ScreenSaverSuspender(const Screen&) = delete;
-    ScreenSaverSuspender& operator=(const Screen&) = delete;
+    ScreenSaverSuspender() = default;
 
-    // Notifies |screen_| that this instance is being destructed, and causes its
-    // platform-specific screensaver to be un-suspended if this is the last such
-    // remaining instance.
-    ~ScreenSaverSuspender();
+    ScreenSaverSuspender(const ScreenSaverSuspender&) = delete;
+    ScreenSaverSuspender& operator=(const ScreenSaverSuspender&) = delete;
 
-   private:
-    friend class Screen;
-
-    explicit ScreenSaverSuspender(Screen* screen) : screen_(screen) {}
-
-    raw_ptr<Screen, DanglingUntriaged> screen_;
+    // Causes the platform-specific screensaver to be un-suspended iff this is
+    // the last remaining instance.
+    virtual ~ScreenSaverSuspender() = 0;
   };
 
   // Suspends the platform-specific screensaver until the returned
-  // |ScreenSaverSuspender| is destructed. This method allows stacking multiple
-  // overlapping calls, such that the platform-specific screensaver will not be
-  // un-suspended until all returned |SreenSaverSuspender| instances have been
-  // destructed.
-  std::unique_ptr<ScreenSaverSuspender> SuspendScreenSaver();
+  // |ScreenSaverSuspender| is destructed, or returns nullptr if suspension
+  // failed. This method allows stacking multiple overlapping calls, such that
+  // the platform-specific screensaver will not be un-suspended until all
+  // returned |ScreenSaverSuspender| instances have been destructed.
+  virtual std::unique_ptr<ScreenSaverSuspender> SuspendScreenSaver();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 
   // Returns whether the screensaver is currently running.
@@ -201,12 +195,6 @@ class DISPLAY_EXPORT Screen {
       const gfx::GpuExtraInfo& gpu_extra_info);
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-  // Suspends or un-suspends the platform-specific screensaver, and returns
-  // whether the operation was successful.
-  virtual bool SetScreenSaverSuspended(bool suspend);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-
   void set_shutdown(bool shutdown) { shutdown_ = shutdown; }
 
  private:
