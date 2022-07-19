@@ -10,6 +10,7 @@
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
@@ -206,8 +207,13 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
                     login::ExtractSamlPasswordAttributesEnabled());
   params.SetStringKey("clientVersion", version_info::GetVersionNumber());
   params.SetBoolKey("readOnlyEmail", true);
-  params.SetBoolKey("enableAzureADIntegration",
-                    ash::features::IsAzureADIntegrationEnabled());
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state->IsManagedPreference(
+          ash::prefs::kUrlParameterToAutofillSAMLUsername)) {
+    params.SetStringKey("urlParameterToAutofillSAMLUsername",
+                        local_state->GetString(
+                            ash::prefs::kUrlParameterToAutofillSAMLUsername));
+  }
 
   CallJavascript("loadAuthenticator", params);
   if (features::IsNewLockScreenReauthLayoutEnabled()) {

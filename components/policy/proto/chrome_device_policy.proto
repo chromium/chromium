@@ -910,6 +910,14 @@ message SAMLSettingsProto {
   // every time a user authenticates via SAML during login. If false, cookies
   // are transferred during each user's first login only.
   optional bool transfer_saml_cookies = 1;
+
+  // If this policy is not configured or set to a blank string, users will have
+  // to manually enter their username on SAML IdP page during online
+  // authentication on the sign-in screen and the lock screen.
+  // Otherwise, this string is expected to contain a url parameter name which
+  // should be used on IdP web page as $|autofill_saml_username|=[user's email]
+  // to autofill the username.
+  optional string url_parameter_to_autofill_saml_username = 2;
 }
 
 message RebootOnShutdownProto {

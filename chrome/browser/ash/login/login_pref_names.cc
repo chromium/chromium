@@ -123,5 +123,10 @@ const char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 // Indicates that the reven board was updated from CloudReady to Flex.
 const char kOobeRevenUpdatedToFlex[] = "OobeRevenUpdatedToFlex";
 
+// A string pref containing url parameter name which can be used on SAML IdP web
+// page to autofill the username field.
+const char kUrlParameterToAutofillSAMLUsername[] =
+    "saml.UrlParameterToAutofillSAMLUsername";
+
 }  // namespace prefs
 }  // namespace ash

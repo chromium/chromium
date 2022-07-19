@@ -106,6 +106,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   if (switches::IsRevenBranding()) {
     registry->RegisterBooleanPref(prefs::kOobeRevenUpdatedToFlex, false);
   }
+  registry->RegisterStringPref(prefs::kUrlParameterToAutofillSAMLUsername,
+                               std::string());
 }
 
 // static

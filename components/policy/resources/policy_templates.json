@@ -952,6 +952,7 @@
         'DeviceFamilyLinkAccountsAllowed',
         'DeviceLoginScreenPromptOnMultipleMatchingCertificates',
         'DeviceRunAutomaticCleanupOnLogin',
+        'DeviceAutofillSAMLUsername'
       ],
     },
     {
@@ -16484,6 +16485,31 @@
 
       This policy affects users whose domain matches the device's enrollment domain only. For all other users, cookies set by the IdP are transferred to the user's profile during their first login on the device only.''',
       'arc_support': 'Cookies transferred to the user\'s profile are not accessible to Android apps.',
+    },
+    {
+      'name': 'DeviceAutofillSAMLUsername',
+      'owners': ['andreydav@google.com', 'chromeos-commercial-identity@google.com'],
+      'type': 'string',
+      'schema': { 'type': 'string' },
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud' ],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': 'login_hint',
+      'id': 997,
+      'caption': '''Autofill username on SAML IdP page''',
+      'tags': ['website-sharing', 'local-data-access'],
+      'desc': '''<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> can try to autofill username field on SAML IdP page during online authentication on the sign-in screen and the lock screen.
+
+      It will use user's email assosiated with their <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> profile, so this setting should be disabled if users are expected to use different emails on SAML IdP page.
+
+      The string recieved through this policy will be used as a url parameter name on IdP page with user's email as a value.
+
+      Server side is expected to be responsible for the mapping between Identity providers and url parameters which they support.''',
+      'arc_support': 'This policy has no effect on Android apps.',
     },
     {
       'name': 'EasyUnlockAllowed',
@@ -32185,6 +32211,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceKeylockerForStorageEncryptionEnabled': 'keylocker_for_storage_encryption_enabled.enabled',
     'DeviceRunAutomaticCleanupOnLogin': 'device_run_automatic_cleanup_on_login.value',
     'DeviceEncryptedReportingPipelineEnabled': 'device_reporting.encrypted_reporting_pipeline_enabled',
+    'DeviceAutofillSAMLUsername': 'saml_settings.url_parameter_to_autofill_saml_username'
   },
   'policy_atomic_group_definitions': [
     {
@@ -32717,6 +32744,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 996,
+  'highest_id_currently_used': 997,
   'highest_atomic_group_id_currently_used': 43
 }

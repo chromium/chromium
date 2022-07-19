@@ -1694,6 +1694,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kIdleProfileCloseTimeout,
     prefs::kIdleProfileCloseTimeout,
     base::Value::Type::INTEGER },
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  { key::kDeviceAutofillSAMLUsername,
+    ash::prefs::kUrlParameterToAutofillSAMLUsername,
+    base::Value::Type::STRING },
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 // clang-format on
 

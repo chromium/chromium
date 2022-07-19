@@ -104,7 +104,7 @@ cr.define('cr.login', function() {
    *   isSupervisedUser: boolean,
    *   isDeviceOwner: boolean,
    *   ssoProfile: string,
-   *   enableAzureADIntegration: boolean
+   *   urlParameterToAutofillSAMLUsername: string
    * }}
    */
   /* #export */ let AuthParams;
@@ -212,7 +212,9 @@ cr.define('cr.login', function() {
     // can still change it and then proceed.  This is used on desktop when the
     // user disconnects their profile then reconnects, to encourage them to use
     // the same account.
-    'email', 'readOnlyEmail', 'realm',
+    'email',
+    'readOnlyEmail',
+    'realm',
     // If the authentication is done via external IdP, 'startsOnSamlPage'
     // indicates whether the flow should start on the IdP page.
     'startsOnSamlPage',
@@ -223,8 +225,9 @@ cr.define('cr.login', function() {
     'isDeviceOwner',     // True if the user is device owner.
     'doSamlRedirect',    // True if the authentication is done via external IdP.
     'rart',              // Encrypted reauth request token.
-    'enableAzureADIntegration',  // True if features specific to Azure AD are
-                                 // enabled
+    // Url parameter name for SAML IdP web page which is used to autofill the
+    // username.
+    'urlParameterToAutofillSAMLUsername',
   ];
 
   // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -438,8 +441,8 @@ cr.define('cr.login', function() {
       /** @private {?SyncTrustedVaultKeys} */
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
-      /** @private {boolean} */
-      this.isAzureADIntegrationEnabled_ = false;
+      /** @private {string|null} */
+      this.urlParameterToAutofillSAMLUsername_ = null;
 
       window.addEventListener(
           'message', e => this.onMessageFromWebview_(e), false);
@@ -482,7 +485,7 @@ cr.define('cr.login', function() {
       this.maybeClearGaiaTimeout_();
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
-      this.isAzureADIntegrationEnabled_ = false;
+      this.urlParameterToAutofillSAMLUsername_ = null;
     }
 
     /**
@@ -649,7 +652,8 @@ cr.define('cr.login', function() {
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
-      this.isAzureADIntegrationEnabled_ = data.enableAzureADIntegration;
+      this.urlParameterToAutofillSAMLUsername_ =
+          data.urlParameterToAutofillSAMLUsername;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
       this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
@@ -902,7 +906,8 @@ cr.define('cr.login', function() {
      * @private
      */
     maybeAutofillUsernameIfAzureAD_(url) {
-      if (!this.isAzureADIntegrationEnabled_) {
+      if (!this.urlParameterToAutofillSAMLUsername_ ||
+          this.urlParameterToAutofillSAMLUsername_.length === 0) {
         return;
       }
       if (!url.startsWith('https')) {
@@ -912,7 +917,8 @@ cr.define('cr.login', function() {
         return;
       }
       if (this.isAzureAD_(new URL(url))) {
-        url = appendParam(url, 'login_hint', this.email_);
+        url = appendParam(
+            url, this.urlParameterToAutofillSAMLUsername_, this.email_);
         this.webview_.src = url;
       }
     }

@@ -222,11 +222,6 @@ const base::Feature kAutocompleteExtendedSuggestions{
 const base::Feature kAutocorrectParamsTuning{"AutocorrectParamsTuning",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables features specific to integration with Azure AD as a third party
-// identity provider.
-const base::Feature kAzureADIntegration{"AzureADIntegration",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the persistent desks bar at the top of the screen in clamshell mode
 // when there are more than one desk.
 const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1744,10 +1739,6 @@ bool IsAudioSettingsPageEnabled() {
 
 bool IsAutoNightLightEnabled() {
   return base::FeatureList::IsEnabled(kAutoNightLight);
-}
-
-bool IsAzureADIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kAzureADIntegration);
 }
 
 bool IsBackgroundBlurEnabled() {

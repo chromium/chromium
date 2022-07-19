@@ -102,7 +102,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutocompleteExtendedSuggestions;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutocorrectParamsTuning;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAzureADIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothFixA2dpPacketSize;
@@ -673,7 +672,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistantNativeIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistiveMultiWordEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAudioSettingsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAzureADIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBentoBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothRevampEnabled();

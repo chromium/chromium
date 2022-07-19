@@ -409,4 +409,19 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceEncryptedReportingPipelineEnabled) {
                                std::move(prompt_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceAutofillSAMLUsername) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceAutofillSAMLUsername);
+
+  base::Value autofill_saml_username_value("login_hint");
+  device_policy.mutable_saml_settings()
+      ->set_url_parameter_to_autofill_saml_username(
+          autofill_saml_username_value.GetString());
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceAutofillSAMLUsername,
+                               std::move(autofill_saml_username_value));
+}
+
 }  // namespace policy

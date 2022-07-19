@@ -32044,6 +32044,7 @@ Called by update_document_policy_enum.py.-->
   <int value="994" label="IdleProfileCloseTimeout"/>
   <int value="995" label="NewWindowsInKioskAllowed"/>
   <int value="996" label="EncryptedClientHelloEnabled"/>
+  <int value="997" label="DeviceAutofillSAMLUsername"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
