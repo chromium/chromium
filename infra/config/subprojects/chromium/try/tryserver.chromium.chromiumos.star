@@ -207,6 +207,7 @@ try_.orchestrator_builder(
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
+    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
