@@ -117,23 +117,6 @@ class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
   base::ScopedTempDir user_data_dir_;
 };
 
-class MockChromeProcessSingleton : public ChromeProcessSingleton {
- public:
-  explicit MockChromeProcessSingleton(const base::FilePath& user_data_dir)
-      : ChromeProcessSingleton(
-            user_data_dir,
-            base::BindRepeating(
-                &MockChromeProcessSingleton::NotificationCallback,
-                base::Unretained(this))) {}
-
- private:
-  bool NotificationCallback(const base::CommandLine& command_line,
-                            const base::FilePath& current_directory) {
-    NOTREACHED();
-    return true;
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
                        ChromeProcessSingletonExists) {
   // Pass the user data dir to the child process which will try
@@ -164,7 +147,7 @@ MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
   if (user_data_dir.empty())
     return kErrorResultCode;
 
-  MockChromeProcessSingleton chrome_process_singleton(user_data_dir);
+  ChromeProcessSingleton chrome_process_singleton(user_data_dir);
   ProcessSingleton::NotifyResult notify_result =
       chrome_process_singleton.NotifyOtherProcessOrCreate();
 
