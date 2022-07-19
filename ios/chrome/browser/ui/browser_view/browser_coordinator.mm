@@ -186,7 +186,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                                   SnapshotGeneratorDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
-                                  WebStateListObserving>
+                                  WebStateListObserving,
+                                  WebNavigationNTPDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -535,8 +536,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                  keyCommandsProvider:_keyCommandsProvider
                         dependencies:_viewControllerDependencies];
 
-  WebNavigationBrowserAgent::FromBrowser(self.browser)
-      ->SetDelegate(_viewController);
+  WebNavigationBrowserAgent::FromBrowser(self.browser)->SetDelegate(self);
 
   self.contextMenuProvider = [[ContextMenuConfigurationProvider alloc]
          initWithBrowser:self.browser
@@ -2107,17 +2107,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   return UIViewTintAdjustmentModeAutomatic;
 }
 
-- (BOOL)isNTPActiveForCurrentWebState {
-  web::WebState* currentWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(currentWebState);
-    return (NTPHelper && NTPHelper->IsActive());
-  }
-  return NO;
-}
-
 #pragma mark - NewTabPageCommands
 
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
@@ -2157,6 +2146,23 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   UrlLoadParams urlLoadParams =
       UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
   urlLoadingBrowserAgent->Load(urlLoadParams);
+}
+
+#pragma mark - WebNavigationNTPDelegate
+
+- (BOOL)isNTPActiveForCurrentWebState {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(currentWebState);
+    return NTPHelper && NTPHelper->IsActive();
+  }
+  return NO;
+}
+
+- (void)reloadNTPForWebState:(web::WebState*)webState {
+  [_ntpCoordinator reload];
 }
 
 @end

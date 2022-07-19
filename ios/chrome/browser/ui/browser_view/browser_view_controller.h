@@ -87,7 +87,6 @@ typedef struct {
                         PageInfoPresentation,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
-                        WebNavigationNTPDelegate,
                         WebStateContainerViewProvider,
                         BrowserCommands>
 

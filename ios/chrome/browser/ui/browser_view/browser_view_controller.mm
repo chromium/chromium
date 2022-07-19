@@ -2363,6 +2363,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.ntpCoordinator stop];
 }
 
+// TODO(crbug.com/1345210) Remove `isNTPActiveForCurrentWebState` method from
+// BVC
+- (BOOL)isNTPActiveForCurrentWebState {
+  if (self.currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(self.currentWebState);
+    return NTPHelper && NTPHelper->IsActive();
+  }
+  return NO;
+}
+
 #pragma mark - ** Protocol Implementations and Helpers **
 
 #pragma mark - ThumbStripSupporting
@@ -2426,21 +2437,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.ntpCoordinator.panGestureHandler = nil;
 
   _thumbStripEnabled = NO;
-}
-
-#pragma mark - WebNavigationNTPDelegate
-
-- (BOOL)isNTPActiveForCurrentWebState {
-  if (self.currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(self.currentWebState);
-    return (NTPHelper && NTPHelper->IsActive());
-  }
-  return NO;
-}
-
-- (void)reloadNTPForWebState:(web::WebState*)webState {
-  [self.ntpCoordinator reload];
 }
 
 #pragma mark - ViewRevealingAnimatee
