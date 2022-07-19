@@ -5,7 +5,15 @@
 GEN_INCLUDE(['../dictation_test_base.js']);
 
 /** Dictation tests for speech parsing. */
-DictationParseTest = class extends DictationE2ETestBase {};
+DictationParseTest = class extends DictationE2ETestBase {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'SpeechParser',
+        '/accessibility_common/dictation/parse/speech_parser.js');
+  }
+};
 
 // Tests that the InputTextStrategy always returns an InputTextViewMacro,
 // regardless of the speech input.
@@ -95,4 +103,32 @@ AX_TEST_F(
 
       const macro = await strategy.parse('delete two characters');
       assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
+    });
+
+AX_TEST_F(
+    'DictationParseTest', 'AreCommandsSupportedForLocales', async function() {
+      // True if the language part of the code matches.
+      assertTrue(SpeechParser.areCommandsSupported('en-US', 'en'));
+      assertTrue(SpeechParser.areCommandsSupported('EN-US', 'en'));
+      assertTrue(SpeechParser.areCommandsSupported('en-US', 'en-US'));
+      assertTrue(SpeechParser.areCommandsSupported('en-GB', 'en-US'));
+      assertTrue(SpeechParser.areCommandsSupported('es-CR', 'es'));
+      assertTrue(SpeechParser.areCommandsSupported('es-CR', 'es-ES'));
+
+      // False if the language part of the code doesn't match, in most cases.
+      assertFalse(SpeechParser.areCommandsSupported('en-US', 'ja-JP'));
+      assertFalse(SpeechParser.areCommandsSupported('ja-JP', 'en-US'));
+      assertFalse(SpeechParser.areCommandsSupported('iw-IL', 'en-US'));
+      assertFalse(SpeechParser.areCommandsSupported('no-NO', 'es-ES'));
+      assertFalse(SpeechParser.areCommandsSupported('yue-Hant-HK', 'en-US'));
+
+      // Special cases: these Dictation locales can map to
+      // existing UI languages.
+      assertTrue(SpeechParser.areCommandsSupported('iw-IL', 'he'));
+      assertTrue(SpeechParser.areCommandsSupported('iw-IL', 'he-IL'));
+      assertTrue(SpeechParser.areCommandsSupported('no-NO', 'nb'));
+      assertTrue(SpeechParser.areCommandsSupported('no-NO', 'nb-NB'));
+      assertFalse(SpeechParser.areCommandsSupported('yue-Hant-HK', 'zh'));
+      assertFalse(SpeechParser.areCommandsSupported('yue-Hant-HK', 'zh-CN'));
+      assertTrue(SpeechParser.areCommandsSupported('yue-Hant-HK', 'zh-TW'));
     });

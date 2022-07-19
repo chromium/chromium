@@ -509,8 +509,11 @@ export class Dictation {
    * @private
    */
   propagateLocale_(locale) {
-    this.speechParser_.initialize(locale);
+    const commandsSupported =
+        SpeechParser.areCommandsSupported(locale, chrome.i18n.getUILanguage());
+    this.speechParser_.initialize(locale, commandsSupported);
     this.inputController_.setLocale(locale);
+    this.uiController_.setHintsSupported(commandsSupported);
   }
 }
 

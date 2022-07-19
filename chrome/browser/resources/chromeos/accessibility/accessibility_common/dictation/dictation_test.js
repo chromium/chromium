@@ -218,3 +218,22 @@ AX_TEST_F(
       // No text should be committed.
       assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
     });
+
+
+AX_TEST_F('DictationE2ETest', 'NoCommandsWhenNotSupported', async function() {
+  this.toggleDictationOn();
+  this.sendFinalSpeechResult('New line');
+  await this.assertCommittedText('\n');
+  this.mockInputIme.clearLastParameters();
+
+  // System language is en-US. If the Dictation locale doesn't match,
+  // commands should not work.
+  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
+  // Wait for the callbacks to Dictation.
+  await this.getPref(Dictation.DICTATION_LOCALE_PREF);
+
+  // Now this text should just get typed in instead of reinterpreted.
+  this.sendFinalSpeechResult('New line');
+  await this.assertCommittedText('New line');
+  this.mockInputIme.clearLastParameters();
+});

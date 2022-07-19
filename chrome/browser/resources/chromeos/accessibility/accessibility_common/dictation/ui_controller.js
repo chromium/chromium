@@ -36,6 +36,18 @@ export class UIController {
   constructor() {
     /** @private {?number} */
     this.showHintsTimeoutId_ = null;
+
+    /** @private {boolean} */
+    this.hintsSupported_ = true;
+  }
+
+  /**
+   * Sets whether hints are supported. If hints are not
+   * supported, they will not be shown.
+   * @param {boolean} supported
+   */
+  setHintsSupported(supported) {
+    this.hintsSupported_ = supported;
   }
 
   /**
@@ -73,7 +85,7 @@ export class UIController {
         break;
     }
 
-    if (!context) {
+    if (!context || !this.hintsSupported_) {
       return;
     }
 
