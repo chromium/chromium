@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_GRANT_PERMISSION_CONTEXT_H_
 
 #include "base/gtest_prod_util.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_context_base.h"
 
 extern const int kDefaultImplicitGrantLimit;
@@ -16,6 +15,11 @@ class StorageAccessGrantPermissionContext
  public:
   explicit StorageAccessGrantPermissionContext(
       content::BrowserContext* browser_context);
+
+  StorageAccessGrantPermissionContext(
+      const StorageAccessGrantPermissionContext&) = delete;
+  StorageAccessGrantPermissionContext& operator=(
+      const StorageAccessGrantPermissionContext&) = delete;
 
   ~StorageAccessGrantPermissionContext() override;
 
@@ -34,11 +38,6 @@ class StorageAccessGrantPermissionContext
                            ExplicitGrantAccept);
   friend class StorageAccessGrantPermissionContextTest;
   friend class StorageAccessGrantPermissionContextAPIEnabledTest;
-
-  StorageAccessGrantPermissionContext(
-      const StorageAccessGrantPermissionContext&) = delete;
-  StorageAccessGrantPermissionContext& operator=(
-      const StorageAccessGrantPermissionContext&) = delete;
 
   // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override;
@@ -74,8 +73,6 @@ class StorageAccessGrantPermissionContext
       bool persist,
       ContentSetting content_setting,
       bool implicit_result);
-
-  ContentSettingsType content_settings_type_;
 };
 
 #endif  // CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_GRANT_PERMISSION_CONTEXT_H_

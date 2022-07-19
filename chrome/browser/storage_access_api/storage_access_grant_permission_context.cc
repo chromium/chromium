@@ -13,6 +13,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,8 +47,7 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
-          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI),
-      content_settings_type_(ContentSettingsType::STORAGE_ACCESS) {}
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
 
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;
