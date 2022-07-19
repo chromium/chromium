@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import fnmatch
 import logging
 import os
 import re
@@ -65,12 +66,11 @@ extension_harness_additional_script = r"""
 
 # For whatever reason, these tests don't like being run in parallel, so run them
 # serially.
-SERIAL_TESTS = {
-    # transformfeedback tests due to crbug.com/1345466.
-    'deqp/functional/gles3/transformfeedback/basic_types_separate_lines.html',
-    'deqp/functional/gles3/transformfeedback/interpolation_smooth.html',
-    'deqp/functional/gles3/transformfeedback/point_size.html',
-    'deqp/functional/gles3/transformfeedback/random_separate_lines.html',
+SERIAL_TESTS = {}
+
+SERIAL_TEST_GLOBS = {
+    # crbug.com/1345466.
+    'deqp/functional/gles3/transformfeedback/*',
 }
 
 
@@ -111,7 +111,11 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return 'webgl_conformance'
 
   def CanRunInParallel(self) -> bool:
-    return self.shortName() not in SERIAL_TESTS
+    name = self.shortName()
+    for glob in SERIAL_TEST_GLOBS:
+      if fnmatch.fnmatch(name, glob):
+        return False
+    return name not in SERIAL_TESTS
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
