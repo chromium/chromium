@@ -993,11 +993,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowEulaDeclined) {
   mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
-  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
   mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK);
 
-  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  CheckCurrentScreen(MockDemoPreferencesScreenView::kScreenId);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
@@ -2528,30 +2528,27 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
-
-  WizardController::default_controller()->StartDemoModeSetup();
-
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
 
-  mock_demo_preferences_screen_->ExitScreen(
-      DemoPreferencesScreen::Result::COMPLETED);
+  WizardController::default_controller()->StartDemoModeSetup();
 
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
+
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
+
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
 
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
-    mock_network_screen_->ExitScreen(
-        NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
+    mock_demo_preferences_screen_->ExitScreen(
+        DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
     base::RunLoop().RunUntilIdle();
 
@@ -2571,7 +2568,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
     // The flow when OobeConsolidatedConsent is disabled:
     // Network -> EULA -> ARC ToS -> Update -> Auto Enrollment.
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
+    mock_demo_preferences_screen_->ExitScreen(
+        DemoPreferencesScreen::Result::COMPLETED);
 
     CheckCurrentScreen(EulaView::kScreenId);
     EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2586,6 +2584,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
     EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
     EXPECT_CALL(*mock_arc_terms_of_service_screen_, HideImpl()).Times(1);
+    EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
     mock_arc_terms_of_service_screen_->ExitScreen(
         ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
@@ -2598,6 +2597,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
     EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
     EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(0);
     EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
+
     mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
   }
 
@@ -2620,30 +2620,29 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
-
-  WizardController::default_controller()->StartDemoModeSetup();
-
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
 
-  mock_demo_preferences_screen_->ExitScreen(
-      DemoPreferencesScreen::Result::COMPLETED);
+  WizardController::default_controller()->StartDemoModeSetup();
 
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
+
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
+
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
-    mock_network_screen_->ExitScreen(
-        NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
+    mock_demo_preferences_screen_->ExitScreen(
+        DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
     CheckCurrentScreen(UpdateView::kScreenId);
     EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2666,7 +2665,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
     // Network -> EULA -> ARC ToS -> Update -> Auto Enrollment.
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
 
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
+    mock_demo_preferences_screen_->ExitScreen(
+        DemoPreferencesScreen::Result::COMPLETED);
 
     CheckCurrentScreen(EulaView::kScreenId);
     EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2722,12 +2722,18 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoPreferencesCanceled) {
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
 
   mock_demo_preferences_screen_->ExitScreen(
       DemoPreferencesScreen::Result::CANCELED);
 
-  CheckCurrentScreen(WelcomeView::kScreenId);
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+
+  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
+
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::BACK_DEMO);
+
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 
@@ -2740,12 +2746,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, NetworkBackPressed) {
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
 
   mock_network_screen_->ExitScreen(NetworkScreen::Result::BACK_DEMO);
 
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, EulaBackPressed) {
@@ -2762,11 +2768,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, EulaBackPressed) {
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
 
   mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK);
 
-  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 
@@ -2847,31 +2853,30 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
-
-  WizardController::default_controller()->StartDemoModeSetup();
-
-  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
-  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-
-  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
 
-  mock_demo_preferences_screen_->ExitScreen(
-      DemoPreferencesScreen::Result::COMPLETED);
+  WizardController::default_controller()->StartDemoModeSetup();
 
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
+
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
+
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
 
-    mock_network_screen_->ExitScreen(
-        NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
+    mock_demo_preferences_screen_->ExitScreen(
+        DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
     CheckCurrentScreen(UpdateView::kScreenId);
     EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
@@ -2891,7 +2896,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
     // Network -> EULA -> ARC ToS -> Update -> Auto Enrollment.
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(1);
 
-    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_DEMO);
+    mock_demo_preferences_screen_->ExitScreen(
+        DemoPreferencesScreen::Result::COMPLETED);
 
     CheckCurrentScreen(EulaView::kScreenId);
     EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());

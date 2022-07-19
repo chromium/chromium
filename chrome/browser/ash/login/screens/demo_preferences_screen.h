@@ -23,7 +23,7 @@ class DemoPreferencesScreen
     : public BaseScreen,
       public input_method::InputMethodManager::Observer {
  public:
-  enum class Result { COMPLETED, CANCELED };
+  enum class Result { COMPLETED, COMPLETED_CONSOLIDATED_CONSENT, CANCELED };
 
   static std::string GetResultString(Result result);
 

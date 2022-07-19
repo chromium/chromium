@@ -1398,11 +1398,10 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       ShowEulaScreen();
       break;
     case NetworkScreen::Result::CONNECTED_DEMO:
-    case NetworkScreen::Result::NOT_APPLICABLE_CONNECTED_DEMO:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
-      ShowEulaScreen();
+      ShowDemoModePreferencesScreen();
       break;
     case NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
     case NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
@@ -1411,19 +1410,10 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       PerformPostEulaActions();
       InitiateOOBEUpdate();
       break;
-    case NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
-    case NetworkScreen::Result::
-        NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT:
-      DCHECK(demo_setup_controller_);
-      demo_setup_controller_->set_demo_config(
-          DemoSession::DemoModeConfig::kOnline);
-      MaybeTakeTPMOwnership();
-      PerformPostEulaActions();
-      InitiateOOBEUpdate();
-      break;
     case NetworkScreen::Result::BACK_DEMO:
       DCHECK(demo_setup_controller_);
-      ShowDemoModePreferencesScreen();
+      demo_setup_controller_.reset();
+      ShowWelcomeScreen();
       break;
     case NetworkScreen::Result::BACK_REGULAR:
       DCHECK(!demo_setup_controller_);
@@ -1454,7 +1444,7 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
       OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
       break;
     case EulaScreen::Result::BACK:
-      ShowNetworkScreen();
+      ShowDemoModePreferencesScreen();
       break;
   }
 }
@@ -1648,11 +1638,17 @@ void WizardController::OnDemoPreferencesScreenExit(
 
   switch (result) {
     case DemoPreferencesScreen::Result::COMPLETED:
-      ShowNetworkScreen();
+      ShowEulaScreen();
+      break;
+    case DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT:
+      demo_setup_controller_->set_demo_config(
+          DemoSession::DemoModeConfig::kOnline);
+      MaybeTakeTPMOwnership();
+      PerformPostEulaActions();
+      InitiateOOBEUpdate();
       break;
     case DemoPreferencesScreen::Result::CANCELED:
-      demo_setup_controller_.reset();
-      ShowWelcomeScreen();
+      ShowNetworkScreen();
       break;
   }
 }
@@ -2266,8 +2262,10 @@ bool WizardController::HandleAccelerator(LoginAcceleratorAction action) {
 }
 
 void WizardController::StartDemoModeSetup() {
+  // Start Demo Mode by initiate demo set up controller and showing the first
+  // network screen in demo mode setup flow.
   demo_setup_controller_ = std::make_unique<DemoSetupController>();
-  ShowDemoModePreferencesScreen();
+  ShowNetworkScreen();
 }
 
 void WizardController::SimulateDemoModeSetupForTesting(
