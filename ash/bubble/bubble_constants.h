@@ -5,6 +5,8 @@
 #ifndef ASH_BUBBLE_BUBBLE_CONSTANTS_H_
 #define ASH_BUBBLE_BUBBLE_CONSTANTS_H_
 
+#include "ash/style/system_shadow.h"
+
 namespace ash {
 
 // The corner radius of a bubble, like the system tray bubble or the
@@ -16,7 +18,8 @@ constexpr int kBubbleCornerRadius = 16;
 constexpr int kBubbleMenuPadding = 8;
 
 // The elevation used for system tray bubble.
-constexpr int kBubbleShadowElevation = 12;
+constexpr SystemShadow::Type kBubbleShadowType =
+    SystemShadow::Type::kElevation12;
 
 }  // namespace ash
 

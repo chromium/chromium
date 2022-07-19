@@ -971,6 +971,8 @@ component("ash") {
     "style/style_util.h",
     "style/system_shadow.cc",
     "style/system_shadow.h",
+    "style/system_shadow_on_nine_patch_layer.cc",
+    "style/system_shadow_on_nine_patch_layer.h",
     "style/system_toast_style.cc",
     "style/system_toast_style.h",
     "system/accessibility/accessibility_feature_disable_dialog.cc",

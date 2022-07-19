@@ -261,8 +261,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
       desk_mirrored_contents_view_(new views::View),
       force_occlusion_tracker_visible_(
           std::make_unique<aura::WindowOcclusionTracker::ScopedForceVisible>(
-              mini_view->GetDeskContainer())),
-      shadow_(std::make_unique<SystemShadow>(kDefaultShadowType)) {
+              mini_view->GetDeskContainer())) {
   DCHECK(mini_view_);
 
   SetFocusPainter(nullptr);
@@ -278,15 +277,16 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
-  shadow_->SetRoundedCornerRadius(kCornerRadius);
-  layer()->Add(shadow_->layer());
-
   wallpaper_preview_->SetPaintToLayer();
   auto* wallpaper_preview_layer = wallpaper_preview_->layer();
   wallpaper_preview_layer->SetFillsBoundsOpaquely(false);
   wallpaper_preview_layer->SetRoundedCornerRadius(kCornerRadii);
   wallpaper_preview_layer->SetIsFastRoundedCorner(true);
   AddChildView(wallpaper_preview_);
+
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      wallpaper_preview_, kDefaultShadowType);
+  shadow_->SetRoundedCornerRadius(kCornerRadius);
 
   desk_mirrored_contents_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   ui::Layer* contents_view_layer = desk_mirrored_contents_view_->layer();
@@ -394,7 +394,6 @@ void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void DeskPreviewView::Layout() {
   const gfx::Rect bounds = GetContentsBounds();
-  shadow_->SetContentBounds(bounds);
   wallpaper_preview_->SetBoundsRect(bounds);
   desk_mirrored_contents_view_->SetBoundsRect(bounds);
 

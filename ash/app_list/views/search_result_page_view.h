@@ -31,7 +31,7 @@ class SearchResultBaseView;
 class SearchResultListView;
 class SearchResultTileItemListView;
 class SearchResultPageAnchoredDialog;
-class ViewShadow;
+class SystemShadow;
 
 // The search results page for the app list.
 class ASH_EXPORT SearchResultPageView
@@ -244,7 +244,7 @@ class ASH_EXPORT SearchResultPageView
   SearchResultsState current_search_results_state_ =
       SearchResultsState::kClosed;
 
-  std::unique_ptr<ViewShadow> view_shadow_;
+  std::unique_ptr<SystemShadow> shadow_;
 
   // The controller that manages dialogs modal to the search results page.
   std::unique_ptr<SearchResultPageDialogController> dialog_controller_;

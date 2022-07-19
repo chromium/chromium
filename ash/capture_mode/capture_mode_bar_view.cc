@@ -73,9 +73,9 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
           kCaptureModeCloseIcon))),
-      shadow_(this,
-              SystemShadow::GetElevationFromType(
-                  SystemShadow::Type::kElevation12)) {
+      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
+          SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
@@ -119,8 +119,7 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
         kBorderRadius, views::HighlightBorder::Type::kHighlightBorder2,
         /*use_light_colors=*/false));
   }
-  shadow_.shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
-  shadow_.SetRoundedCornerRadius(kBorderRadius);
+  shadow_->SetRoundedCornerRadius(kBorderRadius);
 }
 
 CaptureModeBarView::~CaptureModeBarView() = default;

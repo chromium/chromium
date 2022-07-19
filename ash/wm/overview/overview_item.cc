@@ -699,7 +699,7 @@ void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
         transform_window_.IsMinimized()
             ? std::make_unique<DragWindowController>(
                   item_widget_->GetNativeWindow(), is_touch_dragging,
-                  absl::make_optional(shadow_->content_bounds()))
+                  absl::make_optional(shadow_->GetContentBounds()))
             : std::make_unique<DragWindowController>(GetWindow(),
                                                      is_touch_dragging);
   }
@@ -720,11 +720,11 @@ void OverviewItem::SetShadowBounds(
     return;
 
   if (!bounds_in_screen) {
-    shadow_->layer()->SetVisible(false);
+    shadow_->GetLayer()->SetVisible(false);
     return;
   }
 
-  shadow_->layer()->SetVisible(true);
+  shadow_->GetLayer()->SetVisible(true);
   gfx::Rect bounds_in_item =
       gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
   bounds_in_item.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
@@ -1073,10 +1073,10 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
 }
 
 gfx::Rect OverviewItem::GetShadowBoundsForTesting() {
-  if (!shadow_ || !shadow_->layer()->visible())
+  if (!shadow_ || !shadow_->GetLayer()->visible())
     return gfx::Rect();
 
-  return shadow_->content_bounds();
+  return shadow_->GetContentBounds();
 }
 
 gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
@@ -1266,8 +1266,11 @@ void OverviewItem::CreateItemWidget() {
   aura::Window* widget_window = item_widget_->GetNativeWindow();
   widget_window->parent()->StackChildBelow(widget_window, GetWindow());
 
-  shadow_ = std::make_unique<SystemShadow>(kDefaultShadowType);
-  item_widget_->GetLayer()->Add(shadow_->layer());
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(kDefaultShadowType);
+  auto* shadow_layer = shadow_->GetLayer();
+  auto* widget_layer = item_widget_->GetLayer();
+  widget_layer->Add(shadow_layer);
+  widget_layer->StackAtBottom(shadow_layer);
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
@@ -1277,7 +1280,7 @@ void OverviewItem::CreateItemWidget() {
           GetWindow(), transform_window_.IsMinimized()));
   item_widget_->Show();
   item_widget_->SetOpacity(0.f);
-  item_widget_->GetLayer()->SetMasksToBounds(false);
+  widget_layer->SetMasksToBounds(false);
 }
 
 void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {

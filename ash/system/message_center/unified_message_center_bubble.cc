@@ -115,8 +115,8 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   }
 
   // Create a shadow for bubble widget.
-  shadow_ = SystemShadow::CreateShadowForWidget(
-      bubble_widget_, SystemShadow::Type::kElevation12);
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForWindow(
+      bubble_widget_->GetNativeWindow(), SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
 
   bubble_view_->InitializeAndShowBubble();
@@ -199,14 +199,10 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
 
   // When the last notification is removed, the content bounds of message center
   // may become too small such which makes the shadow's bounds smaller than its
-  // blur region. To avoid this, we do not update shadow's content bounds and
-  // hide the shadow when the message center has no notifications.
-  if (message_center_view_->message_list_view()->GetTotalNotificationCount()) {
-    shadow_->layer()->SetVisible(true);
-    shadow_->SetContentBounds(bubble_view_->GetContentsBounds());
-  } else {
-    shadow_->layer()->SetVisible(false);
-  }
+  // blur region. To avoid this, we hide the shadow when the message center has
+  // no notifications.
+  shadow_->GetLayer()->SetVisible(
+      message_center_view_->message_list_view()->GetTotalNotificationCount());
 }
 
 void UnifiedMessageCenterBubble::FocusEntered(bool reverse) {

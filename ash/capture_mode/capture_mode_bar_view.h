@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -21,6 +20,7 @@ class CaptureModeButton;
 class CaptureModeSourceView;
 class CaptureModeToggleButton;
 class CaptureModeTypeView;
+class SystemShadow;
 
 // A view that acts as the content view of the capture mode bar widget.
 // It has a set of buttons to toggle between image and video capture, and
@@ -86,7 +86,7 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   views::Separator* separator_2_;
   CaptureModeToggleButton* settings_button_;
   CaptureModeButton* close_button_;
-  ViewShadow shadow_;
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash

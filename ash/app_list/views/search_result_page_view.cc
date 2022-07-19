@@ -24,7 +24,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
@@ -200,12 +199,9 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   contents_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  view_shadow_ = std::make_unique<ViewShadow>(
-      this,
-      SystemShadow::GetElevationFromType(kSearchBoxSearchResultShadowType));
-  view_shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
-  view_shadow_->SetRoundedCornerRadius(
-      kSearchBoxBorderCornerRadiusSearchResult);
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, kSearchBoxSearchResultShadowType);
+  shadow_->SetRoundedCornerRadius(kSearchBoxBorderCornerRadiusSearchResult);
 
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be
@@ -603,7 +599,7 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
   gfx::Rect clip_rect = from_rect;
   clip_rect -= to_rect.OffsetFromOrigin();
   layer()->SetClipRect(clip_rect);
-  view_shadow_.reset();
+  shadow_.reset();
 
   base::TimeDelta duration;
   if (from_rect.height() < to_rect.height()) {
@@ -632,11 +628,9 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
 }
 
 void SearchResultPageView::OnAnimationBetweenBoundsEnded() {
-  view_shadow_ = std::make_unique<ViewShadow>(
-      this,
-      SystemShadow::GetElevationFromType(kSearchBoxSearchResultShadowType));
-  view_shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
-  view_shadow_->SetRoundedCornerRadius(
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, kSearchBoxSearchResultShadowType);
+  shadow_->SetRoundedCornerRadius(
       GetCornerRadiusForSearchResultsState(current_search_results_state_));
 
   // To keep the animation visible for closing transitions from expanded search
@@ -841,8 +835,8 @@ void SearchResultPageView::AnimateYPosition(AppListViewState target_view_state,
     Layout();
 
   animator.Run(default_offset, layer());
-  if (view_shadow_)
-    animator.Run(default_offset, view_shadow_->shadow()->shadow_layer());
+  if (shadow_)
+    animator.Run(default_offset, shadow_->GetNinePatchLayer());
   SearchResultPageAnchoredDialog* search_page_dialog =
       dialog_controller_->dialog();
   if (search_page_dialog) {
@@ -926,7 +920,7 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
       // This changes the shadow's corner immediately while this corner bounds
       // gradually. This would be fine because this would be unnoticeable to
       // users.
-      view_shadow_->SetRoundedCornerRadius(to_radius);
+      shadow_->SetRoundedCornerRadius(to_radius);
     }
 
     // Animate the shadow's bounds through transform.
@@ -936,11 +930,11 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
       transform.Scale(
           static_cast<float>(from_rect.width()) / to_rect.width(),
           static_cast<float>(from_rect.height()) / to_rect.height());
-      view_shadow_->shadow()->layer()->SetTransform(transform);
+      shadow_->GetLayer()->SetTransform(transform);
 
-      auto settings = contents_view->CreateTransitionAnimationSettings(
-          view_shadow_->shadow()->layer());
-      view_shadow_->shadow()->layer()->SetTransform(gfx::Transform());
+      auto settings =
+          contents_view->CreateTransitionAnimationSettings(shadow_->GetLayer());
+      shadow_->GetLayer()->SetTransform(gfx::Transform());
     }
   }
 }

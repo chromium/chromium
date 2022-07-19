@@ -12,7 +12,6 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -101,11 +100,9 @@ PowerButtonMenuView::PowerButtonMenuView(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
   RecreateItems();
 
-  // Create a view shadow.
-  shadow_ = std::make_unique<ViewShadow>(
-      this,
-      SystemShadow::GetElevationFromType(SystemShadow::Type::kElevation12));
-  shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+  // Create a system shadow for current view.
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kMenuCornerRadius);
 }
 
@@ -130,7 +127,7 @@ void PowerButtonMenuView::ScheduleShowHideAnimation(bool show) {
   }
 
   SetLayerAnimation(layer(), this, show, transform);
-  SetLayerAnimation(shadow_->shadow()->layer(), nullptr, show, transform);
+  SetLayerAnimation(shadow_->GetLayer(), nullptr, show, transform);
 }
 
 PowerButtonMenuView::TransformDisplacement

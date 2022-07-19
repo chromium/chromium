@@ -14,9 +14,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -308,8 +308,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   if (params_.has_shadow) {
-    shadow_ = std::make_unique<ViewShadow>(this, params_.shadow_elevation);
-    shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+        this, params_.shadow_type);
     shadow_->SetRoundedCornerRadius(params_.corner_radius);
   }
 
