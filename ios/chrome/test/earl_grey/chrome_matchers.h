@@ -281,6 +281,9 @@ id<GREYMatcher> SettingsSafetyCheckTableView();
 // Returns a matcher for the privacy settings table view.
 id<GREYMatcher> SettingsPrivacyTableView();
 
+// Returns a matcher for the privacy safe browsing settings table view.
+id<GREYMatcher> SettingsPrivacySafeBrowsingTableView();
+
 // Returns a matcher for the Content Settings button on the main Settings
 // screen.
 id<GREYMatcher> ContentSettingsButton();

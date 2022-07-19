@@ -356,6 +356,10 @@ id<GREYMatcher> SettingsPrivacyTableView() {
   return [ChromeMatchersAppInterface settingsPrivacyTableView];
 }
 
+id<GREYMatcher> SettingsPrivacySafeBrowsingTableView() {
+  return [ChromeMatchersAppInterface settingsPrivacySafeBrowsingTableView];
+}
+
 id<GREYMatcher> ContentSettingsButton() {
   return [ChromeMatchersAppInterface contentSettingsButton];
 }

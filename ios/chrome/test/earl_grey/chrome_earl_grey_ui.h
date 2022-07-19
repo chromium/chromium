@@ -83,6 +83,12 @@
 // the Privacy menu is not open when this is called there will be a GREYAssert.
 - (void)tapPrivacyMenuButton:(id<GREYMatcher>)buttonMatcher;
 
+// Scrolls to find the button in the Privacy Safe Browsing menu with the
+// corresponding |buttonMatcher|, and then taps it. If |buttonMatcher| is not
+// found, or the Privacy Safe Browsing menu is not open when this is called
+// there will be a GREYAssert.
+- (void)tapPrivacySafeBrowsingMenuButton:(id<GREYMatcher>)buttonMatcher;
+
 // Scrolls to find the button in the Clear Browsing Data menu with the
 // corresponding |buttonMatcher|, and then taps it. If |buttonMatcher| is
 // not found, or the Clear Browsing Data menu is not open when this is called
