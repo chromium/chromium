@@ -73,10 +73,6 @@ constexpr int kRightMargin = 40;
 // The size of the space between the top boundary of the WebContents and the top
 // boundary of the bubble.
 constexpr int kTopMargin = 16;
-// The maximum height that the multi-account-picker can have. This value was
-// chosen so that if there are more than two accounts, the picker will show up
-// as a scrollbar.
-constexpr int kMaxScrollViewHeight = 150;
 
 constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -558,13 +554,17 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->ClipHeightTo(0, kMaxScrollViewHeight);
   views::View* row = scroll_view->SetContents(std::make_unique<views::View>());
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (const auto& account : accounts) {
     row->AddChildView(CreateAccountRow(account, /*should_hover=*/true));
   }
+  // The maximum height that the multi-account-picker can have. This value was
+  // chosen so that if there are more than two accounts, the picker will show up
+  // as a scrollbar showing 2 accounts plus half of the third one.
+  int per_account_size = row->GetPreferredSize().height() / accounts.size();
+  scroll_view->ClipHeightTo(0, static_cast<int>(per_account_size * 2.5));
   return scroll_view;
 }
 
