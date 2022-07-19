@@ -42,11 +42,6 @@ base::test::ScopedFeatureList::FeatureAndParams probability_one{
     {{"probability", "1.000"},
      {"survey", kHatsSurveyTriggerSettings},
      {"en_site_id", "test_site_id"}}};
-base::test::ScopedFeatureList::FeatureAndParams settings_probability_one{
-    features::kHappinessTrackingSurveysForDesktopSettings,
-    {{"probability", "1.000"},
-     {"survey", kHatsSurveyTriggerSettings},
-     {"en_site_id", "test_site_id"}}};
 
 class ScopedSetMetricsConsent {
  public:
@@ -128,9 +123,7 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
       delete;
 
  protected:
-  HatsServiceProbabilityOne()
-      : HatsServiceBrowserTestBase(
-            {probability_one, settings_probability_one}) {}
+  HatsServiceProbabilityOne() : HatsServiceBrowserTestBase({probability_one}) {}
 
   ~HatsServiceProbabilityOne() override = default;
 

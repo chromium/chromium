@@ -77,9 +77,14 @@
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 
 namespace base {
+
+namespace test {
+class ScopedFeatureList;
+}  // namespace test
 
 class FieldTrialList;
 struct LaunchOptions;
@@ -114,6 +119,13 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
                                       uint32_t randomization_seed) const = 0;
   };
 
+  // Separate type from FieldTrial::PickleState so that it can use StringPieces.
+  struct State {
+    StringPiece trial_name;
+    StringPiece group_name;
+    bool activated = false;
+  };
+
   // A pair representing a Field Trial and its selected group.
   struct ActiveGroup {
     std::string trial_name;
@@ -124,14 +136,14 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // active. String members are pointers to the underlying strings owned by the
   // FieldTrial object. Does not use StringPiece to avoid conversions back to
   // std::string.
-  struct BASE_EXPORT State {
+  struct BASE_EXPORT PickleState {
     raw_ptr<const std::string, DanglingUntriaged> trial_name = nullptr;
     raw_ptr<const std::string, DanglingUntriaged> group_name = nullptr;
     bool activated = false;
 
-    State();
-    State(const State& other);
-    ~State();
+    PickleState();
+    PickleState(const PickleState& other);
+    ~PickleState();
   };
 
   // We create one FieldTrialEntry per field trial in shared memory, via
@@ -329,7 +341,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // the trial has not been disabled true is returned and |field_trial_state|
   // is filled in; otherwise, the result is false and |field_trial_state| is
   // left untouched.
-  bool GetStateWhileLocked(State* field_trial_state, bool include_disabled);
+  bool GetStateWhileLocked(PickleState* field_trial_state,
+                           bool include_disabled);
 
   // Returns the group_name. A winner need not have been chosen.
   const std::string& group_name_internal() const { return group_name_; }
@@ -654,6 +667,27 @@ class BASE_EXPORT FieldTrialList {
   // For testing, sets the global instance to |instance|.
   static void RestoreInstanceForTesting(FieldTrialList* instance);
 
+  // Creates a list of FieldTrial::State for all FieldTrial instances.
+  // StringPiece members are bound to the lifetime of the corresponding
+  // FieldTrial.
+  static std::vector<FieldTrial::State> GetAllFieldTrialStates(
+      PassKey<test::ScopedFeatureList>);
+
+  // Create FieldTrials from a list of FieldTrial::State. This method is only
+  // available to ScopedFeatureList for testing. The most typical usescase is:
+  // (1) AllStatesToFieldTrialStates(&field_trials);
+  // (2) backup_ = BackupInstanceForTesting();
+  //     // field_trials depends on backup_'s lifetype.
+  // (3) field_trial_list_ = new FieldTrialList();
+  // (4) CreateTrialsFromFieldTrialStates(field_trials);
+  //     // Copy backup_'s fieldtrials to the new field_trial_list_ while
+  //     // backup_ is alive.
+  // For resurrestion in another process, need to use AllStatesToString and
+  // CreateFieldTrialsFromString.
+  static bool CreateTrialsFromFieldTrialStates(
+      PassKey<test::ScopedFeatureList>,
+      const std::vector<FieldTrial::State>& entries);
+
  private:
   // Allow tests to access our innards for testing purposes.
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, InstantiateAllocator);
@@ -741,6 +775,12 @@ class BASE_EXPORT FieldTrialList {
 
   // Returns all the registered trials.
   static RegistrationMap GetRegisteredTrials();
+
+  // Create field trials from a list of FieldTrial::State.
+  // CreateTrialsFromString() and CreateTrialsFromFieldTrialStates() use this
+  // method internally.
+  static bool CreateTrialsFromFieldTrialStatesInternal(
+      const std::vector<FieldTrial::State>& entries);
 
   static FieldTrialList* global_;  // The singleton of this class.
 
