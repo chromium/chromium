@@ -48,6 +48,7 @@ CRUBIT_SUB_REVISION = 1
 
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 CRUBIT_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'crubit', 'src')
+BAZEL_EXE = os.path.join(CHROMIUM_DIR, 'tools', 'bazel', 'bazel')
 
 
 def RunCommand(command, env=None, cwd=None, fail_hard=True):
@@ -138,7 +139,7 @@ def BuildCrubit(gcc_toolchain_path):
     #     2. extra_args += ["--dynamic_mode=off"]
 
     # Run bazel build ...
-    args = ["bazel", "build", "rs_bindings_from_cc:rs_bindings_from_cc_impl"]
+    args = [BAZEL_EXE, "build", "rs_bindings_from_cc:rs_bindings_from_cc_impl"]
     RunCommand(args + extra_args, env=env, cwd=CRUBIT_SRC_DIR)
 
 
@@ -146,7 +147,7 @@ def ShutdownBazel():
     # This needs to use the same arguments as BuildCrubit, because otherwise
     # we get: WARNING: Running Bazel server needs to be killed, because the
     # startup options are different.
-    RunCommand(["bazel", "shutdown"], cwd=CRUBIT_SRC_DIR)
+    RunCommand([BAZEL_EXE, "shutdown"], cwd=CRUBIT_SRC_DIR)
 
 
 def main():
