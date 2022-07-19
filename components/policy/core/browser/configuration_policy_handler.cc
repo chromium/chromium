@@ -377,8 +377,6 @@ bool SchemaValidatingPolicyHandler::CheckPolicySettings(
   bool result = schema_.Validate(*value, strategy_, &error_path, &error);
 
   if (errors && !error.empty()) {
-    if (error_path.empty())
-      error_path = "(ROOT)";
     errors->AddError(policy_name(), error_path, error);
   }
 
@@ -401,8 +399,6 @@ bool SchemaValidatingPolicyHandler::CheckAndGetValue(
       schema_.Normalize(output->get(), strategy_, &error_path, &error, nullptr);
 
   if (errors && !error.empty()) {
-    if (error_path.empty())
-      error_path = "(ROOT)";
     errors->AddError(policy_name(), error_path, error);
   }
 
@@ -510,7 +506,7 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckSingleJsonString(
   // First validate the root value is a string.
   if (!root_value->is_string()) {
     if (errors) {
-      errors->AddError(policy_name(), "(ROOT)", IDS_POLICY_TYPE_ERROR,
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::STRING));
     }
     return false;
@@ -531,7 +527,7 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckListOfJsonStrings(
   // First validate the root value is a list.
   if (!root_value->is_list()) {
     if (errors) {
-      errors->AddError(policy_name(), "(ROOT)", IDS_POLICY_TYPE_ERROR,
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::LIST));
     }
     return false;
@@ -605,7 +601,7 @@ std::string SimpleJsonStringSchemaValidatingPolicyHandler::ErrorPath(
                : base::StringPrintf("items[%d].%s", index,
                                     json_error_path.c_str());
   }
-  return json_error_path.empty() ? "(ROOT)" : json_error_path;
+  return json_error_path;
 }
 
 void SimpleJsonStringSchemaValidatingPolicyHandler::ApplyPolicySettings(

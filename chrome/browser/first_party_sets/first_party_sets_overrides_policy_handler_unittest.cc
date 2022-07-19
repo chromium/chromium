@@ -89,9 +89,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
-      u"Schema validation error at \"(ROOT)\": Unknown property: unknown");
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error: Unknown property: unknown");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -150,7 +149,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
-            u"Schema validation error at \"(ROOT)\": Policy type mismatch: "
+            u"Schema validation error: Policy type mismatch: "
             u"expected: \"dictionary\", actual: \"list\".");
 }
 
@@ -348,9 +347,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   // CheckPolicySettings returns true, and errors on the last unknown property.
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
-      u"Schema validation error at \"(ROOT)\": Unknown property: unknown3");
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error: Unknown property: unknown3");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,

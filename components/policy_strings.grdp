@@ -193,6 +193,9 @@
   <message name="IDS_POLICY_SCHEMA_VALIDATION_ERROR" desc="The text displayed in the status column when the policy value doesn't conform to the policy schema.">
     Schema validation error at "<ph name="ERROR_PATH">$1<ex>AC.Delays.ScreenOff</ex></ph>": <ph name="ERROR">$2<ex>Value is out of range.</ex></ph>
   </message>
+  <message name="IDS_POLICY_SCHEMA_VALIDATION_ERROR_WITHOUT_PATH" desc="The text displayed in the status column when the policy value doesn't conform to the policy schema.">
+    Schema validation error: <ph name="ERROR">$1<ex>Value is out of range.</ex></ph>
+  </message>
   <message name="IDS_POLICY_INVALID_JSON_ERROR" desc="The text displayed in the status column when the policy value should be a valid JSON string, but it cannot be parsed as JSON.">
     Error while parsing JSON value: <ph name="ERROR">$1<ex>Line 2, Column 3: Map keys must be quoted.</ex></ph>
   </message>

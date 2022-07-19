@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -98,6 +99,8 @@ class DictSubkeyPendingError : public SimplePendingError {
   ~DictSubkeyPendingError() override = default;
 
   std::u16string GetMessage() const override {
+    DCHECK(!subkey_.empty());
+
     return l10n_util::GetStringFUTF16(IDS_POLICY_SUBKEY_ERROR,
                                       base::ASCIIToUTF16(subkey_),
                                       SimplePendingError::GetMessage());
@@ -142,6 +145,11 @@ class SchemaValidatingPendingError : public SimplePendingError {
   ~SchemaValidatingPendingError() override = default;
 
   std::u16string GetMessage() const override {
+    if (error_path_.empty()) {
+      return l10n_util::GetStringFUTF16(
+          IDS_POLICY_SCHEMA_VALIDATION_ERROR_WITHOUT_PATH,
+          SimplePendingError::GetMessage());
+    }
     return l10n_util::GetStringFUTF16(IDS_POLICY_SCHEMA_VALIDATION_ERROR,
                                       base::ASCIIToUTF16(error_path_),
                                       SimplePendingError::GetMessage());
@@ -168,8 +176,12 @@ void PolicyErrorMap::AddError(const std::string& policy, int message_id) {
 void PolicyErrorMap::AddError(const std::string& policy,
                               const std::string& subkey,
                               int message_id) {
-  AddError(std::make_unique<DictSubkeyPendingError>(policy, subkey, message_id,
-                                                    std::string()));
+  if (subkey.empty()) {
+    AddError(std::make_unique<SimplePendingError>(policy, message_id));
+  } else {
+    AddError(std::make_unique<DictSubkeyPendingError>(
+        policy, subkey, message_id, std::string()));
+  }
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
@@ -198,8 +210,13 @@ void PolicyErrorMap::AddError(const std::string& policy,
                               const std::string& subkey,
                               int message_id,
                               const std::string& replacement) {
-  AddError(std::make_unique<DictSubkeyPendingError>(policy, subkey, message_id,
-                                                    replacement));
+  if (subkey.empty()) {
+    AddError(
+        std::make_unique<SimplePendingError>(policy, message_id, replacement));
+  } else {
+    AddError(std::make_unique<DictSubkeyPendingError>(policy, subkey,
+                                                      message_id, replacement));
+  }
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,

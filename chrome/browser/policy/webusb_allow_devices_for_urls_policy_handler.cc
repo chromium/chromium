@@ -19,6 +19,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -138,8 +139,6 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
   }
 
   if (errors && !error.empty()) {
-    if (error_path.empty())
-      error_path = "(ROOT)";
     errors->AddError(policy_name(), error_path, error);
   }
 
