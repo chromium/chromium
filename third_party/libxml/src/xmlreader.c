@@ -2181,36 +2181,16 @@ xmlFreeTextReader(xmlTextReaderPtr reader) {
 	xmlFree(reader->patternTab);
     }
 #endif
-    if (reader->faketext != NULL) {
-	xmlFreeNode(reader->faketext);
-    }
+    if (reader->mode != XML_TEXTREADER_MODE_CLOSED)
+        xmlTextReaderClose(reader);
     if (reader->ctxt != NULL) {
         if (reader->dict == reader->ctxt->dict)
 	    reader->dict = NULL;
-#ifdef LIBXML_VALID_ENABLED
-	if ((reader->ctxt->vctxt.vstateTab != NULL) &&
-	    (reader->ctxt->vctxt.vstateMax > 0)){
-#ifdef LIBXML_REGEXP_ENABLED
-            while (reader->ctxt->vctxt.vstateNr > 0)
-                xmlValidatePopElement(&reader->ctxt->vctxt, NULL, NULL, NULL);
-#endif /* LIBXML_REGEXP_ENABLED */
-	    xmlFree(reader->ctxt->vctxt.vstateTab);
-	    reader->ctxt->vctxt.vstateTab = NULL;
-	    reader->ctxt->vctxt.vstateMax = 0;
-	}
-#endif /* LIBXML_VALID_ENABLED */
-	if (reader->ctxt->myDoc != NULL) {
-	    if (reader->preserve == 0)
-		xmlTextReaderFreeDoc(reader, reader->ctxt->myDoc);
-	    reader->ctxt->myDoc = NULL;
-	}
 	if (reader->allocs & XML_TEXTREADER_CTXT)
 	    xmlFreeParserCtxt(reader->ctxt);
     }
     if (reader->sax != NULL)
 	xmlFree(reader->sax);
-    if ((reader->input != NULL)  && (reader->allocs & XML_TEXTREADER_INPUT))
-	xmlFreeParserInputBuffer(reader->input);
     if (reader->buffer != NULL)
         xmlBufFree(reader->buffer);
     if (reader->entTab != NULL)
@@ -2241,7 +2221,23 @@ xmlTextReaderClose(xmlTextReaderPtr reader) {
     reader->node = NULL;
     reader->curnode = NULL;
     reader->mode = XML_TEXTREADER_MODE_CLOSED;
+    if (reader->faketext != NULL) {
+        xmlFreeNode(reader->faketext);
+        reader->faketext = NULL;
+    }
     if (reader->ctxt != NULL) {
+#ifdef LIBXML_VALID_ENABLED
+	if ((reader->ctxt->vctxt.vstateTab != NULL) &&
+	    (reader->ctxt->vctxt.vstateMax > 0)){
+#ifdef LIBXML_REGEXP_ENABLED
+            while (reader->ctxt->vctxt.vstateNr > 0)
+                xmlValidatePopElement(&reader->ctxt->vctxt, NULL, NULL, NULL);
+#endif /* LIBXML_REGEXP_ENABLED */
+	    xmlFree(reader->ctxt->vctxt.vstateTab);
+	    reader->ctxt->vctxt.vstateTab = NULL;
+	    reader->ctxt->vctxt.vstateMax = 0;
+	}
+#endif /* LIBXML_VALID_ENABLED */
 	xmlStopParser(reader->ctxt);
 	if (reader->ctxt->myDoc != NULL) {
 	    if (reader->preserve == 0)

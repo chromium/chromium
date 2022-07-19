@@ -906,8 +906,10 @@ xmlCleanupThreads(void)
     if (libxml_is_threaded != 0)
         pthread_key_delete(globalkey);
     once_control = once_control_init;
-#elif defined(HAVE_WIN32_THREADS) && !defined(HAVE_COMPILER_TLS) && (!defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL))
+#elif defined(HAVE_WIN32_THREADS)
+#if !defined(HAVE_COMPILER_TLS)
     if (globalkey != TLS_OUT_OF_INDEXES) {
+#if !defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL)
         xmlGlobalStateCleanupHelperParams *p;
 
         EnterCriticalSection(&cleanup_helpers_cs);
@@ -921,10 +923,16 @@ xmlCleanupThreads(void)
         }
         cleanup_helpers_head = 0;
         LeaveCriticalSection(&cleanup_helpers_cs);
+#endif
         TlsFree(globalkey);
         globalkey = TLS_OUT_OF_INDEXES;
     }
+#if !defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL)
     DeleteCriticalSection(&cleanup_helpers_cs);
+#endif
+#endif
+    run_once.done = 0;
+    run_once.control = 0;
 #endif
 }
 

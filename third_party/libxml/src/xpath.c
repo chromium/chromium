@@ -490,11 +490,17 @@ double xmlXPathNINF = 0.0;
 ATTRIBUTE_NO_SANITIZE("float-divide-by-zero")
 void
 xmlXPathInit(void) {
+#if defined(NAN) && defined(INFINITY)
+    xmlXPathNAN = NAN;
+    xmlXPathPINF = INFINITY;
+    xmlXPathNINF = -INFINITY;
+#else
     /* MSVC doesn't allow division by zero in constant expressions. */
     double zero = 0.0;
     xmlXPathNAN = 0.0 / zero;
     xmlXPathPINF = 1.0 / zero;
     xmlXPathNINF = -xmlXPathPINF;
+#endif
 }
 
 /**

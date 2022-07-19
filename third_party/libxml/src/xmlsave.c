@@ -1379,7 +1379,7 @@ xhtmlAttrListDumpOutput(xmlSaveCtxtPtr ctxt, xmlAttrPtr cur) {
 		 (htmlIsBooleanAttr(cur->name))) {
 	    if (cur->children != NULL)
 		xmlFreeNode(cur->children);
-	    cur->children = xmlNewText(cur->name);
+	    cur->children = xmlNewDocText(cur->doc, cur->name);
 	    if (cur->children != NULL)
 		cur->children->parent = (xmlNodePtr) cur;
 	}

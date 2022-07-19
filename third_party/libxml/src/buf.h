@@ -32,15 +32,11 @@ void xmlBufEmpty(xmlBufPtr buf);
 
 /* size_t xmlBufShrink(xmlBufPtr buf, size_t len); */
 int xmlBufGrow(xmlBufPtr buf, int len);
-int xmlBufInflate(xmlBufPtr buf, size_t len);
 int xmlBufResize(xmlBufPtr buf, size_t len);
 
 int xmlBufAdd(xmlBufPtr buf, const xmlChar *str, int len);
-int xmlBufAddHead(xmlBufPtr buf, const xmlChar *str, int len);
 int xmlBufCat(xmlBufPtr buf, const xmlChar *str);
 int xmlBufCCat(xmlBufPtr buf, const char *str);
-int xmlBufWriteCHAR(xmlBufPtr buf, const xmlChar *string);
-int xmlBufWriteChar(xmlBufPtr buf, const char *string);
 int xmlBufWriteQuotedString(xmlBufPtr buf, const xmlChar *string);
 
 size_t xmlBufAvail(const xmlBufPtr buf);
@@ -48,7 +44,6 @@ size_t xmlBufLength(const xmlBufPtr buf);
 /* size_t xmlBufUse(const xmlBufPtr buf); */
 int xmlBufIsEmpty(const xmlBufPtr buf);
 int xmlBufAddLen(xmlBufPtr buf, size_t len);
-int xmlBufErase(xmlBufPtr buf, size_t len);
 
 /* const xmlChar * xmlBufContent(const xmlBuf *buf); */
 /* const xmlChar * xmlBufEnd(xmlBufPtr buf); */

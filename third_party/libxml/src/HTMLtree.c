@@ -987,7 +987,14 @@ void
 htmlDocContentDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr cur,
 	                       const char *encoding ATTRIBUTE_UNUSED,
                                int format) {
+    int type = 0;
+    if (cur) {
+        type = cur->type;
+        cur->type = XML_HTML_DOCUMENT_NODE;
+    }
     htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, NULL, format);
+    if (cur)
+        cur->type = (xmlElementType) type;
 }
 
 /**
