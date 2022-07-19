@@ -6,10 +6,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_accelerator_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_target_chromeos.h"
+#include "third_party/blink/renderer/extensions/chromeos/event_type_chromeos_names.h"
+#include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_screen.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.h"
 
@@ -138,6 +141,18 @@ void CrosWindowManagement::ScreensCallback(
 void CrosWindowManagement::DispatchStartEvent() {
   DLOG(INFO) << "Dispatching event";
   DispatchEvent(*Event::Create(event_type_names::kStart));
+}
+
+void CrosWindowManagement::DispatchAcceleratorEvent(
+    mojom::blink::AcceleratorEventPtr event) {
+  auto* event_init = CrosAcceleratorEventInit::Create();
+  event_init->setAcceleratorName(event->accelerator_name);
+  event_init->setRepeat(event->repeat);
+  const AtomicString& type =
+      event->type == mojom::blink::AcceleratorEvent::Type::kDown
+          ? event_type_names::kAcceleratordown
+          : event_type_names::kAcceleratorup;
+  DispatchEvent(*CrosAcceleratorEvent::Create(type, event_init));
 }
 
 }  // namespace blink

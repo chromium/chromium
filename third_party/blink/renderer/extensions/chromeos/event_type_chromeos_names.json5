@@ -6,5 +6,6 @@
 
   data: [
     "acceleratordown",
+    "acceleratorup",
   ]
 }

@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/events/event_handler.h"
 
 namespace views {
 class Widget;
@@ -17,7 +18,8 @@ class Widget;
 
 namespace ash {
 
-class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
+class WindowManagementImpl : public blink::mojom::CrosWindowManagement,
+                             public ui::EventHandler {
  public:
   explicit WindowManagementImpl(
       int32_t render_process_host_id,
@@ -29,6 +31,9 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
   // Sends a 'start' event to the renderer through the
   // blink::mojom::CrosWindowManagementStartObserver interface.
   void DispatchStartEvent();
+
+  // ui::EventHandler
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   // blink::mojom::CrosWindowManagement
   void GetAllWindows(GetAllWindowsCallback callback) override;

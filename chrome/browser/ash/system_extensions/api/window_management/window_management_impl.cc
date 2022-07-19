@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/wm/window_state.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -20,9 +21,12 @@
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/env.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -34,12 +38,57 @@ WindowManagementImpl::WindowManagementImpl(
         blink::mojom::CrosWindowManagementStartObserver>
         pending_associated_remote)
     : render_process_host_id_(render_process_host_id),
-      observer_(std::move(pending_associated_remote)) {}
+      observer_(std::move(pending_associated_remote)) {
+  // Let WindowManagementImpl be a PreTargetHandler on aura::Env to ensure that
+  // it receives KeyEvents.
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      this, ui::EventTarget::Priority::kAccessibility);
+}
 
-WindowManagementImpl::~WindowManagementImpl() = default;
+WindowManagementImpl::~WindowManagementImpl() {
+  aura::Env::GetInstance()->RemovePreTargetHandler(this);
+}
 
 void WindowManagementImpl::DispatchStartEvent() {
   observer_->DispatchStartEvent();
+}
+
+void WindowManagementImpl::OnKeyEvent(ui::KeyEvent* event) {
+  DCHECK(event->type() == ui::EventType::ET_KEY_PRESSED ||
+         event->type() == ui::EventType::ET_KEY_RELEASED);
+  // TODO(b/238578914): Eventually we will allow System Extensions to register
+  // their accelerators, but for prototyping, we just send any key press with a
+  // modifier.
+  std::vector<std::string> keys;
+  if (event->IsControlDown()) {
+    keys.push_back(
+        ui::KeycodeConverter::DomKeyToKeyString(ui::DomKey::CONTROL));
+  }
+  if (event->IsAltDown()) {
+    keys.push_back(ui::KeycodeConverter::DomKeyToKeyString(ui::DomKey::ALT));
+  }
+
+  // No modifiers pressed.
+  if (keys.size() == 0)
+    return;
+
+  // Only modifiers pressed.
+  const std::string key =
+      ui::KeycodeConverter::DomKeyToKeyString(event->GetDomKey());
+  if (base::Contains(keys, key)) {
+    return;
+  }
+  keys.push_back(key);
+
+  blink::mojom::AcceleratorEventPtr event_ptr =
+      blink::mojom::AcceleratorEvent::New();
+  event_ptr->type = event->type() == ui::EventType::ET_KEY_PRESSED
+                        ? blink::mojom::AcceleratorEvent::Type::kDown
+                        : blink::mojom::AcceleratorEvent::Type::kUp;
+  event_ptr->accelerator_name = base::JoinString(keys, " ");
+  event_ptr->repeat = event->is_repeat();
+
+  observer_->DispatchAcceleratorEvent(std::move(event_ptr));
 }
 
 void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {

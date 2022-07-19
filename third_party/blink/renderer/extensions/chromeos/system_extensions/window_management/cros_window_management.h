@@ -59,6 +59,8 @@ class CrosWindowManagement
 
   // mojom::blink::CrosWindowManagementObserver
   void DispatchStartEvent() override;
+  void DispatchAcceleratorEvent(
+      mojom::blink::AcceleratorEventPtr event) override;
 
  private:
   HeapMojoRemote<mojom::blink::CrosWindowManagementFactory>

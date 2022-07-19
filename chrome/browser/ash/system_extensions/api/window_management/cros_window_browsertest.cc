@@ -10,12 +10,14 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
@@ -30,15 +32,18 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/console_message.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/window.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 class AshTestBase;
@@ -150,6 +155,11 @@ class ServiceWorkerConsoleObserver
 
     LOG(ERROR) << "Console message received.";
     return message_.value();
+  }
+
+  base::Value WaitAndGetNextConsoleMessageAsValue() {
+    std::string result = base::UTF16ToUTF8(WaitAndGetNextConsoleMessage());
+    return *base::JSONReader::Read(result);
   }
 
   void OnReportConsoleMessage(int64_t version_id,
@@ -269,6 +279,39 @@ class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     debug_observer_ = std::make_unique<DebugServiceWorkerContextObserver>(
         browser()->profile());
+  }
+
+  void InstallSystemExtension() {
+    auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+    auto& install_manager = provider.install_manager();
+
+    base::RunLoop run_loop;
+    install_manager.InstallUnpackedExtensionFromDir(
+        GetWindowManagerExtensionDir(),
+        base::BindLambdaForTesting(
+            [&](InstallStatusOrSystemExtensionId result) {
+              ASSERT_TRUE(result.ok());
+              ASSERT_EQ(kTestSystemExtensionId, result.value());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  void InstallAndStartExtension() {
+    ServiceWorkerConsoleObserver sw_console_observer(
+        browser()->profile(),
+        GURL("chrome-untrusted://system-extension-echo-01020304/"));
+
+    InstallSystemExtension();
+
+    ASSERT_EQ(u"start event fired",
+              sw_console_observer.WaitAndGetNextConsoleMessage());
+  }
+
+  ServiceWorkerConsoleObserver GetConsoleObserver() {
+    return ServiceWorkerConsoleObserver(
+        browser()->profile(),
+        GURL("chrome-untrusted://system-extension-echo-01020304/"));
   }
 
  private:
@@ -826,30 +869,104 @@ async function cros_test() {
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
-  auto& provider = SystemExtensionsProvider::Get(browser()->profile());
-  auto& install_manager = provider.install_manager();
-
   // TODO(b/230811571): Rather than using the console to wait for the
   // observer to get called, we should add support for running async functions
   // to content::ServiceWorkerContext::ExecuteScriptForTest.
-  ServiceWorkerConsoleObserver sw_console_observer(
-      browser()->profile(),
-      GURL("chrome-untrusted://system-extension-echo-01020304/"));
-
-  base::RunLoop run_loop;
-  LOG(ERROR) << "Starting installation.";
-  install_manager.InstallUnpackedExtensionFromDir(
-      GetWindowManagerExtensionDir(),
-      base::BindLambdaForTesting([&](InstallStatusOrSystemExtensionId result) {
-        ASSERT_TRUE(result.ok());
-        ASSERT_EQ(kTestSystemExtensionId, result.value());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  LOG(ERROR) << "Installation finished.";
-
+  auto sw_console_observer = GetConsoleObserver();
+  InstallSystemExtension();
   EXPECT_EQ(u"start event fired",
             sw_console_observer.WaitAndGetNextConsoleMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, AcceleratorEvent) {
+  InstallAndStartExtension();
+
+  auto observer = GetConsoleObserver();
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_A,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
+  const auto& dict = result.GetDict();
+
+  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
+  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
+  EXPECT_FALSE(*dict.FindBool("repeat"));
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+                       AcceleratorEvent_Repeat) {
+  InstallAndStartExtension();
+
+  auto observer = GetConsoleObserver();
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_A,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_IS_REPEAT);
+
+  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
+  const auto& dict = result.GetDict();
+
+  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
+  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
+  EXPECT_TRUE(*dict.FindBool("repeat"));
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+                       AcceleratorEvent_NoEvent) {
+  InstallAndStartExtension();
+
+  auto observer = GetConsoleObserver();
+  // The following key presses shouldn't generate events.
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_SHIFT_DOWN);
+  generator.PressKey(ui::KeyboardCode::VKEY_SHIFT, ui::EF_SHIFT_DOWN);
+  generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
+
+  // Should generate an event.
+  generator.PressKey(ui::KeyboardCode::VKEY_A,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
+  const auto& dict = result.GetDict();
+
+  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
+  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
+  EXPECT_FALSE(*dict.FindBool("repeat"));
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, AcceleratorEvent_Shift) {
+  InstallAndStartExtension();
+
+  auto observer = GetConsoleObserver();
+  // Shift shouldn't appear as a key.
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_A,
+                     ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+
+  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
+  const auto& dict = result.GetDict();
+
+  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
+  EXPECT_EQ("Alt A", *dict.FindString("name"));
+  EXPECT_FALSE(*dict.FindBool("repeat"));
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+                       AcceleratorEvent_ReleaseKey) {
+  InstallAndStartExtension();
+
+  auto observer = GetConsoleObserver();
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.ReleaseKey(ui::KeyboardCode::VKEY_A,
+                       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
+  const auto& dict = result.GetDict();
+
+  EXPECT_EQ("acceleratorup", *dict.FindString("type"));
+  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
+  EXPECT_FALSE(*dict.FindBool("repeat"));
 }
 
 }  //  namespace ash
