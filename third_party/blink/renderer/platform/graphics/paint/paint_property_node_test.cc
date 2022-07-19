@@ -473,6 +473,26 @@ TEST_F(PaintPropertyNodeTest, ChangeTransformOriginDuringCompositedAnimation) {
   ExpectUnchangedState();
 }
 
+TEST_F(PaintPropertyNodeTest,
+       ChangeTransform2dAxisAlignmentAndOriginDuringCompositedAnimation) {
+  ResetAllChanged();
+  ExpectUnchangedState();
+  TransformPaintPropertyNode::AnimationState animation_state;
+  animation_state.is_running_animation_on_compositor = true;
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
+            transform.child1->Update(
+                *transform.ancestor,
+                TransformPaintPropertyNode::State{
+                    {TransformationMatrix().Rotate(2), gfx::Point3F(1, 2, 3)}},
+                animation_state));
+
+  EXPECT_TRUE(transform.child1->Changed(
+      PaintPropertyChangeType::kChangedOnlySimpleValues, *transform.root));
+
+  ResetAllChanged();
+  ExpectUnchangedState();
+}
+
 TEST_F(PaintPropertyNodeTest, TransformChangeOneChild) {
   ResetAllChanged();
   ExpectUnchangedState();

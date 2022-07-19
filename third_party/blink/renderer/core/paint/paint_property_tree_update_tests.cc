@@ -1653,9 +1653,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   auto* paint_artifact_compositor =
       GetDocument().View()->GetPaintArtifactCompositor();
   EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
-  // PaintArtifactCompositor can't clear the NeedsUpdate flag by itself when
-  // there is no cc::LayerTreeHost.
-  paint_artifact_compositor->ClearNeedsUpdateForTesting();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
 
   // Simulates changing transform and transform-origin during an animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
