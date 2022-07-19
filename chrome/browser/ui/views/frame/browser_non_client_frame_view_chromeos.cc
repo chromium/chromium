@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/highlight_border_overlay_chromeos.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_search_frame_caption_button.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -781,8 +782,10 @@ void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
   if (!chromeos::features::IsDarkLightModeEnabled())
     return;
 
-  highlight_border_overlay_ =
-      std::make_unique<HighlightBorderOverlay>(GetWidget());
+  highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(
+      GetWidget(),
+      gfx::RoundedCornersF(chromeos::kTopCornerRadiusWhenRestored,
+                           chromeos::kTopCornerRadiusWhenRestored, 0, 0));
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
-#include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,12 +26,12 @@ namespace {
 class WebAppNonClientFrameViewAshTest;
 }
 
+class HighlightBorderOverlay;
 class ProfileIndicatorIcon;
 class TabIconView;
 
 namespace chromeos {
 class FrameCaptionButtonContainerView;
-class HighlightBorderOverlay;
 }  // namespace chromeos
 
 // Provides the BrowserNonClientFrameView for Chrome OS.

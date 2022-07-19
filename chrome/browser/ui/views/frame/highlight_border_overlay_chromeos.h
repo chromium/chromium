@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_HIGHLIGHT_BORDER_OVERLAY_H_
-#define CHROMEOS_UI_FRAME_HIGHLIGHT_BORDER_OVERLAY_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_HIGHLIGHT_BORDER_OVERLAY_CHROMEOS_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_HIGHLIGHT_BORDER_OVERLAY_CHROMEOS_H_
 
-#include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/tablet_state.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Canvas;
@@ -25,50 +25,46 @@ class Widget;
 // inner border covers on the window contents and outer border is outside the
 // window. It uses `kHighlightBorder3` as its border type which has low opacity
 // of outer border.
-class HighlightBorderOverlay : public aura::WindowObserver,
+class HighlightBorderOverlay : public views::WidgetObserver,
                                public display::DisplayObserver {
  public:
-  explicit HighlightBorderOverlay(views::Widget* widget);
+  HighlightBorderOverlay(views::Widget* widget,
+                         const gfx::RoundedCornersF& rounded_corner);
   HighlightBorderOverlay(const HighlightBorderOverlay&) = delete;
   HighlightBorderOverlay& operator=(const HighlightBorderOverlay&) = delete;
   ~HighlightBorderOverlay() override;
 
   // Paint a highlight border on the canvas.
   void PaintBorder(gfx::Canvas* canvas);
-
   // Calculate image source size according to rounded corner radius and border
   // thickness.
   gfx::Size CalculateImageSourceSize() const;
 
-  // aura::WindowObserver:
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override;
+  // WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetThemeChanged(views::Widget* widget) override;
 
-  // display::DisplayObserver:
-  void OnDisplayTabletStateChanged(display::TabletState state) override;
+  // display::DisplayObserver
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
 
  private:
   // Calculate the painting region of border.
   gfx::Insets CalculateBorderRegion() const;
 
-  // Update layer visibility and bounds according to current window bounds and
-  // work area.
-  void UpdateLayerVisibilityAndBounds();
-
+  // Update layer visibility according to current window bounds and work area.
+  void UpdateLayerVisibility();
+  // Update layer bounds according to current widget bounds.
+  void UpdateLayerBounds();
   // Update the nine patch layer with current highlight border settings.
   void UpdateNinePatchLayer();
 
   ui::Layer layer_;
   base::raw_ptr<views::Widget> widget_;
-  base::raw_ptr<aura::Window> window_;
-  int rounded_corner_radius_ = 0;
+  gfx::RoundedCornersF rounded_corner_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };
 
-#endif  // CHROMEOS_UI_FRAME_HIGHLIGHT_BORDER_OVERLAY_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_HIGHLIGHT_BORDER_OVERLAY_CHROMEOS_H_
