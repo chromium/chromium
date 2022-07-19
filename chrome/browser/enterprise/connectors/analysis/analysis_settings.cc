@@ -80,6 +80,11 @@ const std::string CloudOrLocalAnalysisSettings::local_path() const {
   return absl::get<LocalAnalysisSettings>(*this).local_path;
 }
 
+bool CloudOrLocalAnalysisSettings::user_specific() const {
+  DCHECK(absl::holds_alternative<LocalAnalysisSettings>(*this));
+  return absl::get<LocalAnalysisSettings>(*this).user_specific;
+}
+
 AnalysisSettings::AnalysisSettings() = default;
 AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
 AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;

@@ -166,6 +166,7 @@ absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     DCHECK(analysis_config_->local_path);
     LocalAnalysisSettings local_settings;
     local_settings.local_path = analysis_config_->local_path;
+    local_settings.user_specific = analysis_config_->user_specific;
     settings.cloud_or_local_settings =
         CloudOrLocalAnalysisSettings(std::move(local_settings));
   }

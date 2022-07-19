@@ -263,6 +263,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
     if (GetParam().expected_settings != NoSettings() && !is_cloud_) {
       LocalAnalysisSettings local_settings;
       local_settings.local_path = "test_path";
+      local_settings.user_specific = true;
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(local_settings));
 
@@ -352,6 +353,8 @@ TEST_P(AnalysisServiceSettingsTest, LocalTest) {
         analysis_settings.value().cloud_or_local_settings.is_local_analysis());
     ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.local_path(),
               expected_settings()->cloud_or_local_settings.local_path());
+    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.user_specific(),
+              expected_settings()->cloud_or_local_settings.user_specific());
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
     for (const auto& entry : expected_settings()->tags) {

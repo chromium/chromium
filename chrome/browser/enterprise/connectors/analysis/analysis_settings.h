@@ -66,6 +66,7 @@ struct LocalAnalysisSettings {
   ~LocalAnalysisSettings();
 
   std::string local_path;
+  bool user_specific;
 };
 
 class CloudOrLocalAnalysisSettings
@@ -93,6 +94,7 @@ class CloudOrLocalAnalysisSettings
   // Only call these when the LocalAnalysisSettings variant is used.
   const LocalAnalysisSettings& local_settings() const;
   const std::string local_path() const;
+  bool user_specific() const;
 };
 
 // Main struct holding settings data for the content analysis Connector.

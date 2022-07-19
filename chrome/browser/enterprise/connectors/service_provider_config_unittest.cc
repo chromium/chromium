@@ -155,6 +155,7 @@ TEST(ServiceProviderConfigTest, LocalTest) {
   ASSERT_FALSE(service_provider.analysis->url);
   ASSERT_TRUE(service_provider.analysis->local_path);
   ASSERT_EQ("test_path", std::string(service_provider.analysis->local_path));
+  ASSERT_TRUE(service_provider.analysis->user_specific);
 
   // The test local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);

@@ -169,6 +169,7 @@ constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{
 constexpr AnalysisConfig kLocalTestAnalysisConfig = {
     .local_path = "test_path",
     .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
+    .user_specific = true,
 };
 
 constexpr ReportingConfig kGoogleReportingConfig = {

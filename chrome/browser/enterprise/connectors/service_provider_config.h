@@ -40,6 +40,7 @@ struct AnalysisConfig {
   const char* local_path = nullptr;
 
   const base::span<const SupportedTag> supported_tags;
+  const bool user_specific = false;
 };
 
 struct ReportingConfig {

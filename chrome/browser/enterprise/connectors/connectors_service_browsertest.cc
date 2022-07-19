@@ -503,6 +503,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ASSERT_TRUE(settings.value().cloud_or_local_settings.is_local_analysis());
       ASSERT_EQ("test_path",
                 settings.value().cloud_or_local_settings.local_path());
+      ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
     } else {
       ASSERT_FALSE(settings.has_value());
     }
@@ -566,6 +567,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
             settings.value().cloud_or_local_settings.is_local_analysis());
         ASSERT_EQ("test_path",
                   settings.value().cloud_or_local_settings.local_path());
+        ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
       } else {
         ASSERT_FALSE(settings.has_value());
       }
@@ -640,6 +642,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
             settings.value().cloud_or_local_settings.is_local_analysis());
         ASSERT_EQ("test_path",
                   settings.value().cloud_or_local_settings.local_path());
+        ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
       } else {
         ASSERT_FALSE(settings.has_value());
       }
