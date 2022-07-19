@@ -33,7 +33,7 @@ def main(raw_args):
 
   clobber_cache_utils.clobber_caches(args.swarming_server,
                                      pool,
-                                     'chromium:%s' % args.bucket,
+                                     '%s:%s' % (args.project, args.bucket),
                                      cache,
                                      'cache/builder',
                                      args.dry_run,
