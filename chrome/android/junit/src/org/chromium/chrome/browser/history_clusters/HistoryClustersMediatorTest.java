@@ -64,6 +64,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -160,7 +161,9 @@ public class HistoryClustersMediatorTest {
             }
 
             @Override
-            public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab) {
+            public <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(
+                    GURL gurl, boolean inIncognito, boolean createNewTab,
+                    @Nullable SerializableList additionalUrls) {
                 return mIntent;
             }
 

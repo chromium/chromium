@@ -221,10 +221,33 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)), false, false);
     }
 
+    void openVisitsInNewTabs(List<ClusterVisit> visits, boolean isIncognito) {
+        for (ClusterVisit visit : visits) {
+            mMetricsLogger.recordVisitAction(
+                    HistoryClustersMetricsLogger.VisitAction.CLICKED, visit);
+        }
+
+        if (mDelegate.isSeparateActivity() && visits.size() > 1) {
+            ArrayList<String> additionalUrls = new ArrayList<>(visits.size() - 1);
+            for (int i = 1; i < visits.size(); i++) {
+                additionalUrls.add(visits.get(i).getNormalizedUrl().getSpec());
+            }
+
+            Intent intent = mDelegate.getOpenUrlIntent(
+                    visits.get(0).getNormalizedUrl(), isIncognito, true, additionalUrls);
+            ContextUtils.getApplicationContext().startActivity(intent);
+        } else {
+            for (ClusterVisit visit : visits) {
+                navigateToUrl(visit.getNormalizedUrl(), isIncognito, true);
+            }
+        }
+    }
+
     void navigateToUrl(GURL gurl, boolean inIncognito, boolean createNewTab) {
         Context appContext = ContextUtils.getApplicationContext();
         if (mDelegate.isSeparateActivity()) {
-            appContext.startActivity(mDelegate.getOpenUrlIntent(gurl, inIncognito, createNewTab));
+            appContext.startActivity(
+                    mDelegate.getOpenUrlIntent(gurl, inIncognito, createNewTab, null));
             return;
         }
 

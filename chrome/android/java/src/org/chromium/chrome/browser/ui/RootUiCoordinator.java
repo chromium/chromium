@@ -161,6 +161,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.vr.VrModeObserver;
 import org.chromium.url.GURL;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -810,12 +811,16 @@ public class RootUiCoordinator
                 }
 
                 @Override
-                public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean inNewTab) {
+                public <SerializableList extends List<String> & Serializable> Intent
+                getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab,
+                        @Nullable SerializableList additionalUrls) {
+                    assert false;
                     return new Intent();
                 }
 
                 @Override
                 public ViewGroup getToggleView(ViewGroup parent) {
+                    assert false;
                     return null;
                 }
             };

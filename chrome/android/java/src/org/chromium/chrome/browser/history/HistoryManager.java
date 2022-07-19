@@ -33,6 +33,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.ClusterVisit;
@@ -62,6 +63,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.url.GURL;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -163,8 +165,16 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 }
 
                 @Override
-                public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean inNewTab) {
-                    return mContentManager.getOpenUrlIntent(gurl, inIncognito, inNewTab);
+                public <SerializableList extends List<String> & Serializable> Intent
+                getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab,
+                        @Nullable SerializableList additionalUrls) {
+                    Intent intent =
+                            mContentManager.getOpenUrlIntent(gurl, inIncognito, createNewTab);
+                    if (additionalUrls != null) {
+                        intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+                    }
+
+                    return intent;
                 }
 
                 @Override
@@ -549,9 +559,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
     private void openItemsInNewTabs(List<HistoryItem> items, boolean isIncognito) {
         recordUserActionWithOptionalSearch("OpenSelected" + (isIncognito ? "Incognito" : ""));
+        mContentManager.openItemsInNewTab(items, isIncognito);
 
         for (HistoryItem item : items) {
-            mContentManager.openUrl(item.getUrl(), isIncognito, true);
             recordOpenedItemMetrics(item);
         }
     }

@@ -8,7 +8,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -273,12 +272,11 @@ public class HistoryUITest {
         toggleItemSelection(3);
 
         performMenuAction(R.id.selection_mode_open_in_incognito);
-        Intent firstIntent = shadowOf(mActivity).getNextStartedActivity();
-        Intent secondIntent = shadowOf(mActivity).getNextStartedActivity();
+        Intent intent = shadowOf(mActivity).getNextStartedActivity();
 
-        Assert.assertThat(Arrays.asList(firstIntent, secondIntent),
-                hasItems(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())),
-                        allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem2.getUrl()))));
+        Assert.assertThat(intent, hasData(mItem1.getUrl()));
+        Assert.assertEquals(intent.getSerializableExtra(IntentHandler.EXTRA_ADDITIONAL_URLS),
+                Arrays.asList(mItem2.getUrl().getSpec()));
     }
 
     @Test

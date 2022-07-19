@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +18,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -90,6 +92,33 @@ public class LoadUrlParams {
         mBaseUrlForDataUrl = null;
         mVirtualUrlForDataUrl = null;
         mDataUrlAsString = null;
+    }
+
+    /** Creates a new LoadUrlParams that is a copy of {@code other}. */
+    public static LoadUrlParams copy(@NonNull LoadUrlParams other) {
+        LoadUrlParams copy = new LoadUrlParams(other.mUrl);
+        copy.mInitiatorOrigin = other.mInitiatorOrigin;
+        copy.mLoadUrlType = other.mLoadUrlType;
+        copy.mTransitionType = other.mTransitionType;
+        copy.mReferrer = other.mReferrer;
+        if (other.mExtraHeaders != null) {
+            copy.mExtraHeaders = new HashMap<>(other.mExtraHeaders);
+        }
+
+        copy.mVerbatimHeaders = other.mVerbatimHeaders;
+        copy.mUaOverrideOption = other.mUaOverrideOption;
+        copy.mPostData = other.mPostData;
+        copy.mBaseUrlForDataUrl = other.mBaseUrlForDataUrl;
+        copy.mVirtualUrlForDataUrl = other.mVirtualUrlForDataUrl;
+        copy.mDataUrlAsString = other.mDataUrlAsString;
+        copy.mCanLoadLocalResources = other.mCanLoadLocalResources;
+        copy.mIsRendererInitiated = other.mIsRendererInitiated;
+        copy.mShouldReplaceCurrentEntry = other.mShouldReplaceCurrentEntry;
+        copy.mIntentReceivedTimestamp = other.mIntentReceivedTimestamp;
+        copy.mInputStartTimestamp = other.mInputStartTimestamp;
+        copy.mHasUserGesture = other.mHasUserGesture;
+        copy.mShouldClearHistoryList = other.mShouldClearHistoryList;
+        return copy;
     }
 
     /**

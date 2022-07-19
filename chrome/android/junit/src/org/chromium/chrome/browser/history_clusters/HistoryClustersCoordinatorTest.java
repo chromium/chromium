@@ -59,6 +59,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.GURL;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -103,7 +104,9 @@ public class HistoryClustersCoordinatorTest {
 
         @Nullable
         @Override
-        public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab) {
+        public <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(
+                GURL gurl, boolean inIncognito, boolean createNewTab,
+                @Nullable SerializableList additionalUrls) {
             mOpenUrlIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mOpenUrlIntent.putExtra(INCOGNITO_EXTRA, inIncognito);
             mOpenUrlIntent.putExtra(NEW_TAB_EXTRA, createNewTab);

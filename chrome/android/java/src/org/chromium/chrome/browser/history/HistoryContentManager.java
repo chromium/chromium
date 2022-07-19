@@ -52,6 +52,9 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Displays and manages the content view / list UI for browsing history.
  */
@@ -347,6 +350,26 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     /**
+     * Opens the url of each of the visits in the provided list in a new tab.
+     */
+    public void openItemsInNewTab(List<HistoryItem> items, boolean isIncognito) {
+        if (mIsSeparateActivity && items.size() > 1) {
+            ArrayList<String> additionalUrls = new ArrayList<>(items.size() - 1);
+            for (int i = 1; i < items.size(); i++) {
+                additionalUrls.add(items.get(i).getUrl().getSpec());
+            }
+
+            Intent intent = getOpenUrlIntent(items.get(0).getUrl(), isIncognito, true);
+            intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+            IntentHandler.startActivityForTrustedIntent(intent);
+        } else {
+            for (HistoryItem item : items) {
+                openUrl(item.getUrl(), isIncognito, true);
+            }
+        }
+    }
+
+    /**
      * Open the provided url.
      * @param url The url to open.
      * @param isIncognito Whether to open the url in an incognito tab. If null, the tab
@@ -493,7 +516,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         viewIntent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, activity.getApplicationContext().getPackageName());
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
+        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
         // Determine component or class name.
         ComponentName component;
         if (activity instanceof HistoryActivity) { // phone
@@ -508,8 +531,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             viewIntent.setClass(activity, ChromeLauncherActivity.class);
         }
         IntentUtils.addTrustedIntentExtras(viewIntent);
-        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE,
-                HistoryContentManager.PAGE_TRANSITION_TYPE);
         return viewIntent;
     }
 

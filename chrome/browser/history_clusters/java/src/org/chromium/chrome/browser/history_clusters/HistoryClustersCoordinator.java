@@ -29,8 +29,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-import java.util.List;
-
 /**
  * Root component for the HistoryClusters UI component, which displays lists of related history
  * visits grouped into clusters.
@@ -226,11 +224,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             mActivity.finish();
             return true;
         } else if (menuItem.getItemId() == R.id.selection_mode_open_in_incognito) {
-            openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), true);
+            mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), true);
             mSelectionDelegate.clearSelection();
             return true;
         } else if (menuItem.getItemId() == R.id.selection_mode_open_in_new_tab) {
-            openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false);
+            mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false);
             mSelectionDelegate.clearSelection();
             return true;
         } else if (menuItem.getItemId() == R.id.info_menu_id) {
@@ -246,14 +244,6 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             return true;
         }
         return false;
-    }
-
-    private void openVisitsInNewTabs(List<ClusterVisit> visits, boolean isIncognito) {
-        for (ClusterVisit visit : visits) {
-            mMetricsLogger.recordVisitAction(
-                    HistoryClustersMetricsLogger.VisitAction.CLICKED, visit);
-            mMediator.navigateToUrl(visit.getNormalizedUrl(), isIncognito, true);
-        }
     }
 
     @VisibleForTesting

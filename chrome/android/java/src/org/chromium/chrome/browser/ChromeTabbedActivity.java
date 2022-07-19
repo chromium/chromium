@@ -1646,11 +1646,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                     TabLaunchType.FROM_CHROME_UI, intent, mIntentHandlingTimeMs);
                         }
                     } else {
-                        @TabLaunchType
-                        Integer launchType = IntentHandler.getTabLaunchType(intent);
-                        if (launchType == null) launchType = TabLaunchType.FROM_LINK;
-                        getTabCreator(true).launchUrl(
-                                url, launchType, intent, mIntentHandlingTimeMs);
+                        launchIntent(loadUrlParams, externalAppId, true, intent);
                     }
                     break;
                 default:
@@ -2447,15 +2443,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     /**
      * Launch a URL from an intent.
-     *
-     * @param url           The url from the intent.
-     * @param referer       Optional referer URL to be used.
-     * @param headers       Optional headers to be sent when opening the URL.
+     * @param loadUrlParams Parameters specifying the url to load.
      * @param externalAppId External app id.
      * @param forceNewTab   Whether to force the URL to be launched in a new tab or to fall
      *                      back to the default behavior for making that determination.
-     * @param isRendererInitiated Whether the intent is originally from browser renderer process.
-     * @param initiatorOrigin Origin that initiates the intent.
      * @param intent        The original intent.
      */
     private Tab launchIntent(
@@ -2486,7 +2477,28 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     launchType = TabLaunchType.FROM_LINK;
                 }
             }
-            return getTabCreator(isIncognito).createNewTab(loadUrlParams, launchType, null, intent);
+
+            ChromeTabCreator tabCreator = getTabCreator(isIncognito);
+            Tab firstTab = tabCreator.createNewTab(loadUrlParams, launchType, null, intent);
+
+            List<String> additionalUrls = IntentUtils.safeGetSerializableExtra(
+                    intent, IntentHandler.EXTRA_ADDITIONAL_URLS);
+            boolean openAdditionalUrlsInTabGroup = IntentUtils.safeGetBooleanExtra(
+                    intent, IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false);
+            if (additionalUrls != null) {
+                final Tab parent = openAdditionalUrlsInTabGroup ? firstTab : null;
+                for (int i = 0; i < additionalUrls.size(); i++) {
+                    // Tabs with a parent are always inserted at parent_index +1. In order for the
+                    // final order of tabs to reflect the order given in additionalUrls, we need to
+                    // iterate in reverse order.
+                    String url = parent == null ? additionalUrls.get(i)
+                                                : additionalUrls.get(additionalUrls.size() - i - 1);
+                    LoadUrlParams copy = LoadUrlParams.copy(loadUrlParams);
+                    copy.setUrl(url);
+                    tabCreator.createNewTab(copy, TabLaunchType.FROM_RESTORE, parent);
+                }
+            }
+            return firstTab;
         }
 
         // Check if the tab is being created from a Reader Mode navigation.

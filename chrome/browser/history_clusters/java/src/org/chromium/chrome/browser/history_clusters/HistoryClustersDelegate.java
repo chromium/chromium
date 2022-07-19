@@ -15,6 +15,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.url.GURL;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * Provider of functionality that the HistoryClusters component can't or shouldn't implement
  * internally.
@@ -34,9 +37,13 @@ public interface HistoryClustersDelegate {
     @Nullable
     Intent getHistoryActivityIntent();
 
-    /** Returns an intent that opens the given url in the correct main browsing activity. */
+    /**
+     * Returns an intent that opens the given url in the correct main browsing activity, optionally
+     * specifying a list of additional urls to open with the same options.
+     */
     @Nullable
-    Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab);
+    <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(GURL gurl,
+            boolean inIncognito, boolean createNewTab, @Nullable SerializableList additionalUrls);
 
     /** Returns a toggle view that swaps between the Journeys UI and the "normal" History UI. */
     @Nullable
