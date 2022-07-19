@@ -231,18 +231,12 @@ int TabStripScrollContainer::GetTabStripAvailableWidth() const {
 
 void TabStripScrollContainer::ScrollTowardsLeadingTab() {
   gfx::Rect visible_content = scroll_view_->GetVisibleRect();
-  gfx::Rect scroll(visible_content.x() - visible_content.width(),
-                   visible_content.y(), visible_content.width(),
-                   visible_content.height());
-  scroll_view_->contents()->ScrollRectToVisible(scroll);
+  tab_strip_->ScrollTowardsLeadingTabs(visible_content.width());
 }
 
 void TabStripScrollContainer::ScrollTowardsTrailingTab() {
   gfx::Rect visible_content = scroll_view_->GetVisibleRect();
-  gfx::Rect scroll(visible_content.x() + visible_content.width(),
-                   visible_content.y(), visible_content.width(),
-                   visible_content.height());
-  scroll_view_->contents()->ScrollRectToVisible(scroll);
+  tab_strip_->ScrollTowardsTrailingTabs(visible_content.width());
 }
 
 void TabStripScrollContainer::FrameColorsChanged() {

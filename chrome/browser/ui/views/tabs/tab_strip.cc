@@ -1283,6 +1283,14 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
   }
 }
 
+void TabStrip::ScrollTowardsTrailingTabs(int offset) {
+  tab_container_->ScrollTabContainerByOffset(offset);
+}
+
+void TabStrip::ScrollTowardsLeadingTabs(int offset) {
+  tab_container_->ScrollTabContainerByOffset(-offset);
+}
+
 void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
   if (active && selected_tabs_.active().has_value()) {
     // When the browser window is activated, fire a selection event on the

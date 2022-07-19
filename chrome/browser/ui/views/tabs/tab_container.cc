@@ -294,11 +294,10 @@ void TabContainer::StoppedDraggingView(TabSlotView* view) {
 }
 
 void TabContainer::ScrollTabToVisible(int model_index) {
-  views::ScrollView* scroll_container =
-      views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
-  if (!scroll_container) {
+  absl::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
+
+  if (!visible_content_rect.has_value())
     return;
-  }
 
   // If the tab strip won't be scrollable after the current tabstrip animations
   // complete, scroll animation wouldn't be meaningful.
@@ -306,46 +305,68 @@ void TabContainer::ScrollTabToVisible(int model_index) {
       GetAvailableWidthForTabContainer())
     return;
 
-  if (tab_scrolling_animation_)
-    tab_scrolling_animation_->Stop();
-
-  gfx::Rect visible_content_rect = scroll_container->GetVisibleRect();
   gfx::Rect active_tab_ideal_bounds =
       tabs_view_model_.ideal_bounds(model_index);
 
-  if ((active_tab_ideal_bounds.x() >= visible_content_rect.x()) &&
-      (active_tab_ideal_bounds.right() <= visible_content_rect.right())) {
+  if ((active_tab_ideal_bounds.x() >= visible_content_rect->x()) &&
+      (active_tab_ideal_bounds.right() <= visible_content_rect->right())) {
     return;
   }
 
-  bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect.x();
+  bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect->x();
   if (scroll_left) {
     // Scroll the left edge of |visible_content_rect| to show the left edge of
     // the tab at |model_index|. We can leave the width entirely up to the
     // ScrollView.
-    gfx::Rect start_left_edge(visible_content_rect.x(),
-                              visible_content_rect.y(), 0, 0);
-    gfx::Rect target_left_edge(active_tab_ideal_bounds.x(),
-                               visible_content_rect.y(), 0, 0);
-    tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-        scroll_contents_view_, bounds_animator().container(),
-        bounds_animator().GetAnimationDuration(), start_left_edge,
-        target_left_edge);
-    tab_scrolling_animation_->Start();
+    int start_left_edge(visible_content_rect->x());
+    int target_left_edge(active_tab_ideal_bounds.x());
+
+    AnimateScrollToShowXCoordinate(start_left_edge, target_left_edge);
   } else {
     // Scroll the right edge of |visible_content_rect| to show the right edge
     // of the tab at |model_index|. We can leave the width entirely up to the
     // ScrollView.
-    gfx::Rect start_right_edge(visible_content_rect.right(),
-                               visible_content_rect.y(), 0, 0);
-    gfx::Rect target_right_edge(active_tab_ideal_bounds.right(),
-                                visible_content_rect.y(), 0, 0);
-    tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-        scroll_contents_view_, bounds_animator().container(),
-        bounds_animator().GetAnimationDuration(), start_right_edge,
-        target_right_edge);
-    tab_scrolling_animation_->Start();
+    int start_right_edge(visible_content_rect->right());
+    int target_right_edge(active_tab_ideal_bounds.right());
+    AnimateScrollToShowXCoordinate(start_right_edge, target_right_edge);
   }
+}
+
+void TabContainer::ScrollTabContainerByOffset(int offset) {
+  absl::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
+  if (!visible_content_rect.has_value() || offset == 0)
+    return;
+
+  // If tabcontainer is scrolled towards trailing tab, the start edge should
+  // have the x coordinate of the right bound. If it is scrolled towards the
+  // leading tab it should have the x coordinate of the left bound.
+  int start_edge =
+      (offset > 0) ? visible_content_rect->right() : visible_content_rect->x();
+
+  AnimateScrollToShowXCoordinate(start_edge, start_edge + offset);
+}
+
+void TabContainer::AnimateScrollToShowXCoordinate(const int start_edge,
+                                                  const int target_edge) {
+  if (tab_scrolling_animation_)
+    tab_scrolling_animation_->Stop();
+
+  gfx::Rect start_rect(start_edge, 0, 0, 0);
+  gfx::Rect target_rect(target_edge, 0, 0, 0);
+
+  tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
+      scroll_contents_view_, bounds_animator().container(),
+      bounds_animator().GetAnimationDuration(), start_rect, target_rect);
+  tab_scrolling_animation_->Start();
+}
+
+absl::optional<gfx::Rect> TabContainer::GetVisibleContentRect() {
+  views::ScrollView* scroll_container =
+      views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
+  if (!scroll_container)
+    return absl::nullopt;
+
+  return scroll_container->GetVisibleRect();
 }
 
 void TabContainer::OnGroupCreated(const tab_groups::TabGroupId& group) {

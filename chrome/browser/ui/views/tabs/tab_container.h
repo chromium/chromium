@@ -57,6 +57,9 @@ class TabContainer : public views::View,
 
   void ScrollTabToVisible(int model_index);
 
+  // Animates and scrolls the tab container by an offset.
+  void ScrollTabContainerByOffset(int offset);
+
   void OnGroupCreated(const tab_groups::TabGroupId& group);
   // Opens the editor bubble for the tab |group| as a result of an explicit user
   // action to create the |group|.
@@ -208,6 +211,15 @@ class TabContainer : public views::View,
   // tab button. Note: Does not animate the tabs to those bounds so callers can
   // use this information for other purposes - see AnimateToIdealBounds.
   void UpdateIdealBounds();
+
+  // Private getter to retrieve the visible rect of the scroll container.
+  absl::optional<gfx::Rect> GetVisibleContentRect();
+
+  // Animates and scrolls the tab container from the start_edge to the
+  // target_edge. If the target_edge is beyond the tab strip it will be clamped
+  // bounds of the tabstrip.
+  void AnimateScrollToShowXCoordinate(const int start_edge,
+                                      const int target_edge);
 
   // Animates all the views to their ideal bounds.
   // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
