@@ -78,20 +78,25 @@ void ReadAnythingController::DidStopLoading() {
   DistillAXTree();
 }
 
+void ReadAnythingController::WebContentsDestroyed() {
+  active_contents_ = nullptr;
+}
+
 void ReadAnythingController::DistillAXTree() {
   DCHECK(browser_);
   if (!active_)
     return;
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents || active_contents_ == web_contents)
     return;
-  WebContentsObserver::Observe(web_contents);
+  active_contents_ = web_contents;
+  WebContentsObserver::Observe(active_contents_);
 
   // Read Anything just runs on the main frame and does not run on embedded
   // content.
   content::RenderFrameHost* render_frame_host =
-      web_contents->GetPrimaryMainFrame();
+      active_contents_->GetPrimaryMainFrame();
   if (!render_frame_host)
     return;
 
