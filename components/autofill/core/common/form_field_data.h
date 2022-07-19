@@ -70,7 +70,31 @@ struct FormFieldData {
   using RoleAttribute = mojom::FormFieldData_RoleAttribute;
   using LabelSource = mojom::FormFieldData_LabelSource;
 
-  // Returns true if all members of fields |a| and |b| are identical.
+  // Returns true if many members of fields |a| and |b| are identical.
+  //
+  // "Many" is intended to be "all", but currently the following members are not
+  // being compared:
+  //
+  // - FormFieldData::value,
+  // - FormFieldData::aria_label,
+  // - FormFieldData::aria_description,
+  // - FormFieldData::host_frame,
+  // - FormFieldData::host_form_id,
+  // - FormFieldData::host_form_signature,
+  // - FormFieldData::origin,
+  // - FormFieldData::force_override,
+  // - FormFieldData::form_control_ax_id,
+  // - FormFieldData::section,
+  // - FormFieldData::is_autofilled,
+  // - FormFieldData::properties_mask,
+  // - FormFieldData::is_enabled,
+  // - FormFieldData::is_readonly,
+  // - FormFieldData::user_input,
+  // - FormFieldData::options,
+  // - FormFieldData::label_source,
+  // - FormFieldData::bounds,
+  // - FormFieldData::datalist_values,
+  // - FormFieldData::datalist_labels.
   static bool DeepEqual(const FormFieldData& a, const FormFieldData& b);
 
   FormFieldData();

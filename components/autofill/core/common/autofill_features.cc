@@ -539,6 +539,7 @@ const base::Feature kAutofillSilentProfileUpdateForInsufficientImport{
 
 // Controls whether inferred label is considered for comparing in
 // FormFieldData.SimilarFieldAs.
+// TODO(crbug.com/1211834): The experiment seems dead; remove?
 const base::Feature kAutofillSkipComparingInferredLabels{
     "AutofillSkipComparingInferredLabels", base::FEATURE_DISABLED_BY_DEFAULT};
 

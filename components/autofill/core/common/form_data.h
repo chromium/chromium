@@ -134,7 +134,22 @@ struct FrameTokenWithPredecessor {
 // [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
 // clang-format on
 struct FormData {
-  // Returns true if all members of forms |a| and |b| are identical.
+  // Returns true if many members of forms |a| and |b| are identical.
+  //
+  // "Many" is intended to be "all", but currently the following members are not
+  // being compared:
+  //
+  // - FormData::button_titles,
+  // - FormData::full_url,
+  // - FormData::is_action_empty,
+  // - FormData::main_frame_origin,
+  // - FormData::host_frame,
+  // - FormData::version,
+  // - FormData::submission_event,
+  // - FormData::username_predictions,
+  // - FormData::is_gaia_with_skip_save_password_form,
+  // - FormData::frame_id,
+  // - some fields of FormFieldData (see FormFieldData::Equal()).
   static bool DeepEqual(const FormData& a, const FormData& b);
 
   FormData();

@@ -195,6 +195,7 @@ struct LabelInfo {
     // Feature |kAutofillSkipComparingInferredLabels| weakens equivalence of
     // labels: two labels are equivalent if they were inferred from the same
     // type of tag other than a LABEL tag.
+    // TODO(crbug.com/1211834): The experiment seems dead; remove?
     return base::FeatureList::IsEnabled(
                features::kAutofillSkipComparingInferredLabels) &&
            source != FormFieldData::LabelSource::kLabelTag &&
