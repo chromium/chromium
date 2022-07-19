@@ -334,7 +334,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // If no browser is created in BrowserMain(), then |browser_| will remain
   // nullptr unless SelectFirstBrowser() is called after the creation of the
   // first browser instance at a later time.
-  raw_ptr<Browser> browser_ = nullptr;
+  //
+  // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<Browser, DegradeToNoOpWhenMTE> browser_ = nullptr;
 
   // Used to run the process until the BrowserProcess signals the test to quit.
   std::unique_ptr<base::RunLoop> run_loop_;
