@@ -132,6 +132,13 @@ public class TileGroup implements MostVisitedSites.Observer {
          * @param clickRunnable The {@link Runnable} to be executed when tile is clicked.
          */
         void setOnClickRunnable(Runnable clickRunnable);
+
+        /**
+         * Set a runnable for remove events on the tile. Similarly to setOnClickRunnable, this is
+         * primarily used to track interaction with the tile used by feature engagement purposes.
+         * @param removeRunnable The {@link Runnable} to be executed when tile is removed.
+         */
+        void setOnRemoveRunnable(Runnable removeRunnable);
     }
 
     /**
@@ -505,6 +512,7 @@ public class TileGroup implements MostVisitedSites.Observer {
             implements TileInteractionDelegate, ContextMenuManager.Delegate {
         private final SiteSuggestion mSuggestion;
         private Runnable mOnClickRunnable;
+        private Runnable mOnRemoveRunnable;
 
         public TileInteractionDelegateImpl(SiteSuggestion suggestion) {
             mSuggestion = suggestion;
@@ -540,6 +548,8 @@ public class TileGroup implements MostVisitedSites.Observer {
         public void removeItem() {
             Tile tile = findTile(mSuggestion);
             if (tile == null) return;
+
+            if (mOnRemoveRunnable != null) mOnRemoveRunnable.run();
 
             // Note: This does not track all the removals, but will track the most recent one. If
             // that removal is committed, it's good enough for change detection.
@@ -584,6 +594,11 @@ public class TileGroup implements MostVisitedSites.Observer {
         @Override
         public void setOnClickRunnable(Runnable clickRunnable) {
             mOnClickRunnable = clickRunnable;
+        }
+
+        @Override
+        public void setOnRemoveRunnable(Runnable removeRunnable) {
+            mOnRemoveRunnable = removeRunnable;
         }
     }
 

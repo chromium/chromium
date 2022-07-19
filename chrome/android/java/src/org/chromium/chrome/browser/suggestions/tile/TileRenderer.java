@@ -22,12 +22,14 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesIPH;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -220,11 +222,39 @@ public class TileRenderer {
 
         TileGroup.TileInteractionDelegate delegate = setupDelegate.createInteractionDelegate(tile);
         if (tile.getSource() == TileSource.HOMEPAGE) {
-            delegate.setOnClickRunnable(
-                    () -> recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED));
+            delegate.setOnClickRunnable(() -> {
+                recordTileClickedForIPH(EventConstants.HOMEPAGE_TILE_CLICKED);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.OTHER,
+                        SuggestTileType.COUNT);
+            });
         } else if (tile.getSource() == TileSource.EXPLORE) {
-            delegate.setOnClickRunnable(
-                    () -> recordTileClickedForIPH(EventConstants.EXPLORE_SITES_TILE_TAPPED));
+            delegate.setOnClickRunnable(() -> {
+                recordTileClickedForIPH(EventConstants.EXPLORE_SITES_TILE_TAPPED);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.OTHER,
+                        SuggestTileType.COUNT);
+            });
+        } else if (isSearchTile(tile)) {
+            delegate.setOnClickRunnable(() -> {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.SEARCH,
+                        SuggestTileType.COUNT);
+            });
+            delegate.setOnRemoveRunnable(() -> {
+                RecordHistogram.recordEnumeratedHistogram("NewTabPage.SuggestTiles.DeletedTileType",
+                        SuggestTileType.SEARCH, SuggestTileType.COUNT);
+            });
+        } else {
+            delegate.setOnClickRunnable(() -> {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "NewTabPage.SuggestTiles.SelectedTileType", SuggestTileType.URL,
+                        SuggestTileType.COUNT);
+            });
+            delegate.setOnRemoveRunnable(() -> {
+                RecordHistogram.recordEnumeratedHistogram("NewTabPage.SuggestTiles.DeletedTileType",
+                        SuggestTileType.URL, SuggestTileType.COUNT);
+            });
         }
 
         tileView.setOnClickListener(delegate);

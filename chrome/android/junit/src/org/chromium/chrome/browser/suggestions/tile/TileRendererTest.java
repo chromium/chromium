@@ -95,6 +95,9 @@ public class TileRendererTest {
     private TileGroup.TileSetupDelegate mTileSetupDelegate;
 
     @Mock
+    private TileGroup.TileInteractionDelegate mTileInteractionDelegate;
+
+    @Mock
     private Runnable mTileSetupCallback;
 
     @Mock
@@ -141,6 +144,9 @@ public class TileRendererTest {
 
         // Set up mocks.
         doReturn(mTileSetupCallback).when(mTileSetupDelegate).createIconLoadCallback(any());
+        doReturn(mTileInteractionDelegate)
+                .when(mTileSetupDelegate)
+                .createInteractionDelegate(any());
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
     }
 

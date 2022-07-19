@@ -1743,6 +1743,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.SuggestTiles.DeletedTileType"
+    enum="SuggestTileType" expires_after="2023-01-14">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records the type of the SuggestTile that the user deleted. Most Visited URLs
+    record a URL, and Organic Repeatable Queries record a Search type.
+
+    Recorded every time the user initiates deletion of a suggest tile, that
+    results with tile removal. Not recorded if the user chooses to cancel the
+    action.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.SuggestTiles.SelectedTileType"
+    enum="SuggestTileType" expires_after="2023-01-14">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records the type of the SuggestTile that the user interacted with. Most
+    Visited URLs record a URL, and Organic Repeatable Queries record a Search
+    type.
+
+    Recorded every time the user selects the tile to initiate navigation, even
+    if the navigation could not be completed (eg. target site did not load).
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.TasksSurface.TimeSpentBeforeDismissLens" units="ms"
     expires_after="M97">
   <owner>yusuyoutube@google.com</owner>
