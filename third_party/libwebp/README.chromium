@@ -1,12 +1,12 @@
 Name: WebP image encoder/decoder
 Short Name: libwebp
-URL: http://developers.google.com/speed/webp
-Version: a8e366166ab57bb1b4aaf6739fc775515bc71b51
+URL: https://chromium.googlesource.com/webm/libwebp
+Version: v1.2.3
+Revision: a8e366166ab57bb1b4aaf6739fc775515bc71b51
 CPEPrefix: cpe:/a:webmproject:libwebp:1.2.3
 License: BSD
 License File: LICENSE
 Security Critical: Yes
-Source: https://chromium.googlesource.com/webm/libwebp
 
 Description:
 WebP is an image format that does both lossy and lossless compression of
