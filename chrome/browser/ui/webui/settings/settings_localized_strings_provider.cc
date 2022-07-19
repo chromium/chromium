@@ -741,9 +741,10 @@ void AddImportDataStrings(content::WebUIDataSource* html_source) {
 
 void AddLanguagesStrings(content::WebUIDataSource* html_source,
                          Profile* profile) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"languagesPageTitle", IDS_SETTINGS_LANGUAGES_PAGE_TITLE},
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    {"languagesCardTitle", IDS_SETTINGS_LANGUAGES_CARD_TITLE},
     {"searchLanguages", IDS_SETTINGS_LANGUAGE_SEARCH},
     {"languagesExpandA11yLabel",
      IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL},
@@ -802,15 +803,14 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
     {"languagesDictionaryDownloadErrorHelp",
      IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP},
 #endif
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddLocalizedString("languagesPageTitle",
-                                  IDS_SETTINGS_LANGUAGES_PAGE_TITLE);
-  html_source->AddLocalizedString(
-      "openChromeOSLanguagesSettingsLabel",
-      IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL);
+    {"openChromeOSLanguagesSettingsLabel",
+    IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL},
+#endif
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString(
       "chromeOSLanguagesSettingsPath",
       chromeos::settings::mojom::kLanguagesAndInputSectionPath);

@@ -1252,6 +1252,11 @@
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">
     Languages
   </message>
+  <if expr="not chromeos_ash">
+    <message name="IDS_SETTINGS_LANGUAGES_CARD_TITLE" desc="Name of the card which manages language preferences.">
+      Preferred languages
+    </message>
+  </if>
   <message name="IDS_SETTINGS_LANGUAGE_SEARCH" desc="Placeholder/label for the text input field that allows a user to filter languages.">
     Search languages
   </message>

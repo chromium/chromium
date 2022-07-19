@@ -122,7 +122,13 @@
                   language-helper="{{languageHelper}}">
               </settings-languages>
 </if>
-              <settings-section page-title="$i18n{languagesPageTitle}"
+              <settings-section
+<if expr="not chromeos_ash">
+                  page-title="$i18n{languagesCardTitle}"
+</if>
+<if expr="chromeos_ash">
+                  page-title="$i18n{languagesPageTitle}"
+</if>
                   section="languages">
 <if expr="chromeos_ash">
                 <cr-link-row id="openChromeOSLanguagesSettings"
