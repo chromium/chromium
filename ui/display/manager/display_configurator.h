@@ -404,6 +404,9 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Bitwise-or value of the |kSetDisplayPower*| flags defined above.
   int pending_power_flags_;
 
+  // Stores the requested refresh rate throttle state.
+  absl::optional<RefreshRateThrottleState> pending_refresh_rate_throttle_state_;
+
   // List of callbacks from callers waiting for the display configuration to
   // start/finish. Note these callbacks belong to the pending request, not a
   // request currently active.

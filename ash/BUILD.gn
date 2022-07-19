@@ -2563,6 +2563,7 @@ test("ash_unittests") {
     "display/persistent_window_controller_unittest.cc",
     "display/privacy_screen_controller_unittest.cc",
     "display/projecting_observer_unittest.cc",
+    "display/refresh_rate_throttle_controller_unittest.cc",
     "display/resolution_notification_controller_unittest.cc",
     "display/root_window_transformers_unittest.cc",
     "display/screen_ash_unittest.cc",

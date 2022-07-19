@@ -32,13 +32,15 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
       /*new_display_state=*/MultipleDisplayState,
       /*new_power_state=*/chromeos::DisplayPowerState)>;
 
-  UpdateDisplayConfigurationTask(NativeDisplayDelegate* delegate,
-                                 DisplayLayoutManager* layout_manager,
-                                 MultipleDisplayState new_display_state,
-                                 chromeos::DisplayPowerState new_power_state,
-                                 int power_flags,
-                                 bool force_configure,
-                                 ResponseCallback callback);
+  UpdateDisplayConfigurationTask(
+      NativeDisplayDelegate* delegate,
+      DisplayLayoutManager* layout_manager,
+      MultipleDisplayState new_display_state,
+      chromeos::DisplayPowerState new_power_state,
+      int power_flags,
+      RefreshRateThrottleState refresh_rate_throttle_state,
+      bool force_configure,
+      ResponseCallback callback);
 
   UpdateDisplayConfigurationTask(const UpdateDisplayConfigurationTask&) =
       delete;
@@ -95,6 +97,10 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // Bitwise-or-ed values for the kSetDisplayPower* values defined in
   // DisplayConfigurator.
   int power_flags_;
+
+  // Whether the configuration task should select a low refresh rate
+  // for the internal display.
+  RefreshRateThrottleState refresh_rate_throttle_state_;
 
   bool force_configure_;
 

@@ -43,6 +43,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
       const std::vector<DisplaySnapshot*>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
+      RefreshRateThrottleState new_throttle_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
   std::vector<DisplaySnapshot*> GetDisplayStates() const override;
   bool IsMirroring() const override;

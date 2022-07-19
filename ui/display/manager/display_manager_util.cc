@@ -34,6 +34,18 @@ std::string DisplayPowerStateToString(chromeos::DisplayPowerState state) {
   }
 }
 
+std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state) {
+  switch (state) {
+    case kRefreshRateThrottleEnabled:
+      return "THROTTLE_ENABLED";
+    case kRefreshRateThrottleDisabled:
+      return "THROTTLE_DISABLED";
+  }
+  NOTREACHED();
+  return "unknown refresh rate throttle state (" + base::NumberToString(state) +
+         ")";
+}
+
 int GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
                     chromeos::DisplayPowerState state,
                     std::vector<bool>* display_power) {
@@ -54,6 +66,36 @@ int GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
       num_on_displays++;
   }
   return num_on_displays;
+}
+
+std::vector<const DisplayMode*> GetSeamlessRefreshRateModes(
+    const DisplaySnapshot& display,
+    const DisplayMode& matching_mode) {
+  const float kMinRefreshRate = 60.f;
+  const float kEpsilon = 0.01f;
+
+  std::vector<const DisplayMode*> matching_modes;
+  for (const std::unique_ptr<const display::DisplayMode>& mode :
+       display.modes()) {
+    if (matching_mode.is_interlaced() != mode->is_interlaced())
+      continue;
+    // Filter out modes that are less than 60 Hz. Account for floating point
+    // inaccuracies so we don't filter out 59.997 mistakenly.
+    if (mode->refresh_rate() < (kMinRefreshRate - kEpsilon))
+      continue;
+
+    // Filter out modes whose refresh rate is quicker than the preferred mode.
+    if (display.native_mode()->refresh_rate() < mode->refresh_rate())
+      continue;
+
+    if (matching_mode.size() == mode->size())
+      matching_modes.push_back(mode.get());
+  }
+  auto refresh_lt = [](const DisplayMode* a, const DisplayMode* b) -> bool {
+    return a->refresh_rate() < b->refresh_rate();
+  };
+  std::sort(matching_modes.begin(), matching_modes.end(), refresh_lt);
+  return matching_modes;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
