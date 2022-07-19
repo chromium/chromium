@@ -6,6 +6,7 @@
  * @fileoverview Sends Braille commands to the Braille API.
  */
 import {ChromeVoxState} from '../chromevox_state.js';
+import {LogStore} from '../logging/log_store.js';
 
 import {BrailleDisplayManager} from './braille_display_manager.js';
 import {BrailleInputHandler} from './braille_input_handler.js';

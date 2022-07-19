@@ -13,6 +13,7 @@ import {Msgs} from '../../common/msgs.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {EventSourceState} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';
+import {LogStore} from '../logging/log_store.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';

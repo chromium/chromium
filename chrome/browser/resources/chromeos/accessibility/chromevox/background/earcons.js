@@ -9,6 +9,7 @@
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {EarconEngine} from './earcon_engine.js';
+import {LogStore} from './logging/log_store.js';
 
 export class Earcons extends AbstractEarcons {
   constructor() {

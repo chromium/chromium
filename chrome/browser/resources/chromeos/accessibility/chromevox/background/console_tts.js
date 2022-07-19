@@ -5,6 +5,7 @@
 /**
  * @fileoverview A TTS engine that writes to window.console.
  */
+import {LogStore} from './logging/log_store.js';
 import {ChromeVoxPrefs} from './prefs.js';
 
 /**

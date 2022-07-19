@@ -6,6 +6,8 @@
  * @fileoverview Creates event stream logger.
  */
 
+import {LogStore} from './log_store.js';
+
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;

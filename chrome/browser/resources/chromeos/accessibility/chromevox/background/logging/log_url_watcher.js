@@ -8,6 +8,8 @@
  */
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 
+import {LogStore} from './log_store.js';
+
 /** @implements {ChromeVoxStateObserver} */
 export class LogUrlWatcher {
   static create() {

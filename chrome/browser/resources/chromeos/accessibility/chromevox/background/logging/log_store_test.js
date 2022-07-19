@@ -8,8 +8,14 @@ GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
 /**
  * Test fixture for automation_util.js.
  */
-ChromeVoxLogStoreTest = class extends ChromeVoxNextE2ETest {};
-
+ChromeVoxLogStoreTest = class extends ChromeVoxNextE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'LogStore', '/chromevox/background/logging/log_store.js');
+  }
+};
 
 AX_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
   const logStore = new LogStore();

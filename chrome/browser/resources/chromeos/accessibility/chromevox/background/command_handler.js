@@ -28,6 +28,7 @@ import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TypingEcho} from './editing/editable_text_base.js';
 import {EventSourceState} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
+import {LogStore} from './logging/log_store.js';
 import {Output} from './output/output.js';
 import {OutputEventType} from './output/output_types.js';
 import {PhoneticData} from './phonetic_data.js';

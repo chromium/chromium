@@ -6,17 +6,7 @@
  * @fileoverview Store ChromeVox log.
  */
 
-goog.provide('LogStore');
-
-goog.require('TreeDumper');
-goog.require('BaseLog');
-goog.require('EventLog');
-goog.require('LogType');
-goog.require('SpeechLog');
-goog.require('TextLog');
-goog.require('TreeLog');
-
-LogStore = class {
+export class LogStore {
   constructor() {
     /**
      * Ring buffer of size this.LOG_LIMIT
@@ -145,7 +135,7 @@ LogStore = class {
     }
     return LogStore.instance;
   }
-};
+}
 
 /**
  * @const
