@@ -115,6 +115,10 @@ def clobber_caches(swarming_server,
     bots = [bot_id]
   else:
     bots = _get_bots(swarming_server, pool, cache)
+    if not bots:
+      print(f'There are no bots on swarming server {swarming_server}'
+            f' in pool {pool} that have cache {cache}')
+      return 0
 
   print('The following bots will be clobbered:')
   print()
