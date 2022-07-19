@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageUtils;
 import org.chromium.components.embedder_support.util.Origin;
 
 /**
@@ -38,10 +39,9 @@ public class OriginVerifierStatics {
         return OriginVerifier.wasPreviouslyVerified(packageName, origin, relation);
     }
 
-    /** Calls {@link PackageFingerprintCalculator#getCertificateSHA256FingerprintForPackage}. */
+    /** Calls {@link PackageUtils#getCertificateSHA256FingerprintForPackage}. */
     public static String getCertificateSHA256FingerprintForPackage(String packageName) {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        return PackageFingerprintCalculator.getCertificateSHA256FingerprintForPackage(
-                pm, packageName);
+        return PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName).get(0);
     }
 }

@@ -11,6 +11,7 @@ import androidx.browser.customtabs.CustomTabsService;
 
 import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.PackageUtils;
 import org.chromium.components.embedder_support.util.Origin;
 
 /**
@@ -28,7 +29,7 @@ public class OriginVerifierUnitTestSupport {
     /**
      * Registers the given package with Robolectric's ShadowPackageManager and provides it with a
      * valid signature, so calls to
-     * {@link PackageFingerprintCalculator#getCertificateSHA256FingerprintForPackage} will not
+     * {@link PackageUtils#getCertificateSHA256FingerprintForPackage} will not
      * crash.
      */
     public static void registerPackageWithSignature(

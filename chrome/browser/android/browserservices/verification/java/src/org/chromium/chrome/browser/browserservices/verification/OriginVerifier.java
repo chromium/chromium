@@ -22,6 +22,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -41,6 +42,7 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -138,10 +140,16 @@ public class OriginVerifier {
     public static boolean wasPreviouslyVerified(
             String packageName, Origin origin, @Relation int relation) {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        return wasPreviouslyVerified(packageName,
-                PackageFingerprintCalculator.getCertificateSHA256FingerprintForPackage(
-                        pm, packageName),
-                origin, relation);
+        List<String> fingerprints =
+                PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName);
+        
+        // Some tests rely on passing in a package name that doesn't exist on the device, so the
+        // fingerprints returned will be null. In this case, the package name will be overridden
+        // with a call to OriginVerifier.addVerificationOverride, which is dealt with in
+        // wasPreviouslyVerified.
+        String fingerprint = fingerprints == null ? null : fingerprints.get(0);
+
+        return wasPreviouslyVerified(packageName, fingerprint, origin, relation);
     }
 
     /**
@@ -195,9 +203,12 @@ public class OriginVerifier {
             VerificationResultStore verificationResultStore) {
         mPackageName = packageName;
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        mSignatureFingerprint =
-                PackageFingerprintCalculator.getCertificateSHA256FingerprintForPackage(
-                        pm, mPackageName);
+      
+        List<String> fingerprints =
+                PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName);
+        // See comment in wasPreviouslyVerified.
+        mSignatureFingerprint = fingerprints == null ? null : fingerprints.get(0);
+      
         mRelation = relation;
         mWebContents = webContents;
         mExternalAuthUtils = externalAuthUtils;
