@@ -1302,7 +1302,7 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
 void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   // If this is an HTMLFrameOwnerElement (such as an iframe), we may need
   // to embed the ID of the child frame.
-  if (!ui::IsChildTreeOwner(RoleValue())) {
+  if (!IsChildTreeOwner()) {
     // TODO(crbug.com/1342603) Determine why these are firing in the wild and,
     // once fixed, turn into a DCHECK.
     SANITIZER_CHECK(!IsFrame(GetNode()))
@@ -4285,7 +4285,7 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
 
 bool AXObject::IsDisabled() const {
   // <embed> or <object> with unsupported plugin, or more iframes than allowed.
-  if (ui::IsChildTreeOwner(RoleValue())) {
+  if (IsChildTreeOwner()) {
     auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
     return !html_frame_owner_element->ContentFrame();
   }

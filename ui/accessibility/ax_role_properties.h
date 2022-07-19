@@ -41,6 +41,8 @@ AX_BASE_EXPORT bool IsButton(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsCellOrTableHeader(const ax::mojom::Role role);
 
 // Returns true if the role is expected to be the parent of a child tree.
+// Can return false for a child tree owner if an ARIA role was used, e.g.
+// <iframe role="region">.
 AX_BASE_EXPORT bool IsChildTreeOwner(const ax::mojom::Role role);
 
 // Returns true if the provided role belongs to an object on which a click

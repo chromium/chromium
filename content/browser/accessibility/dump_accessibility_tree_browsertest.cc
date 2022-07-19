@@ -2207,6 +2207,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-invalid-children-added.html"));
 }
 
+// TODO(accessibility) Test fails on Android, even without expectations.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityIframeWithRegionRole \
+  DISABLED_AccessibilityIframeWithRegionRole
+#else
+#define MAYBE_AccessibilityIframeWithRegionRole \
+  AccessibilityIframeWithRegionRole
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityIframeWithRegionRole) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-with-region-role.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityImg) {
   RunHtmlTest(FILE_PATH_LITERAL("img.html"));
 }

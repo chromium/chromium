@@ -1282,6 +1282,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static bool IsARIAInput(ax::mojom::blink::Role);
   static bool IsFrame(const Node*);
   static bool HasARIAOwns(Element* element);
+  // Should this own a child tree (e.g. an iframe).
+  virtual bool IsChildTreeOwner() const { return false; }
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;
   static ax::mojom::blink::Role AriaRoleStringToRoleEnum(const String&);

@@ -1599,6 +1599,10 @@ bool AXNodeObject::IsNativeSpinButton() const {
   return false;
 }
 
+bool AXNodeObject::IsChildTreeOwner() const {
+  return ui::IsChildTreeOwner(native_role_);
+}
+
 bool AXNodeObject::IsClickable() const {
   // Determine whether the element is clickable either because there is a
   // mouse button handler or because it has a native element where click

@@ -47,13 +47,25 @@ namespace content {
 
 namespace {
 
+bool ShouldHaveChildTree(const ui::AXNode& node) {
+  const ui::AXNodeData& data = node.data();
+  if (data.GetRestriction() == ax::mojom::Restriction::kDisabled) {
+    DCHECK(!data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+    return false;  // A disabled child tree owner won't have a child tree.
+  }
+  // If has a child tree owner role or a child tree id, then expect some
+  // child tree content. In some cases IsChildTreeOwner(role) will be false,
+  // if an ARIA role was used, e.g. <iframe role="region">.
+  return ui::IsChildTreeOwner(node.GetRole()) ||
+         data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+}
+
 bool AccessibilityTreeContainsAllChildTrees(const ui::AXNode& node) {
   size_t num_children = node.GetChildCountCrossingTreeBoundary();
   if (!num_children) {
     // No children. All content is contained unless there is supposed to be
     // a child tree for this node.
-    return !ui::IsChildTreeOwner(node.GetRole()) ||
-           node.data().GetRestriction() == ax::mojom::Restriction::kDisabled;
+    return !ShouldHaveChildTree(node);
   }
 
   for (size_t i = 0; i < num_children; i++) {
