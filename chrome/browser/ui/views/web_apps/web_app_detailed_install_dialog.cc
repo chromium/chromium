@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -337,6 +339,7 @@ void ShowWebAppDetailedInstallDialog(
       std::move(dialog_model), ui::MODAL_TYPE_CHILD);
 
   constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallShown"));
 }
 
 }  // namespace chrome
@@ -374,6 +377,7 @@ WebAppDetailedInstallDialogDelegate::~WebAppDetailedInstallDialogDelegate() {
 }
 
 void WebAppDetailedInstallDialogDelegate::OnAccept() {
+  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallAccepted"));
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
     web_app::AppId app_id = web_app::GenerateAppId(install_info_->manifest_id,
                                                    install_info_->start_url);
@@ -385,6 +389,7 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
 }
 
 void WebAppDetailedInstallDialogDelegate::OnCancel() {
+  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
   if (iph_state_ == chrome::PwaInProductHelpState::kShown && install_info_) {
     web_app::AppId app_id = web_app::GenerateAppId(install_info_->manifest_id,
                                                    install_info_->start_url);

@@ -33167,6 +33167,57 @@ should be able to be added at any place in this file.
   <description>The user set a web app to open in an app window.</description>
 </action>
 
+<action name="WebAppDetailedInstallAccepted">
+  <owner>dmurph@gchromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user accepted an installation of a web app in the detailed installation
+    dialog (with screenshots, etc).
+  </description>
+</action>
+
+<action name="WebAppDetailedInstallCancelled">
+  <owner>dmurph@gchromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user cancelled an installation of a web app in the detailed installation
+    dialog (with screenshots, etc).
+  </description>
+</action>
+
+<action name="WebAppDetailedInstallShown">
+  <owner>dmurph@gchromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user was shown the detailed installation dialog for a web app (with
+    screenshots, etc).
+  </description>
+</action>
+
+<action name="WebAppInstallAccepted">
+  <owner>dmurph@gchromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user accepted an installation of a web app in the installation dialog.
+  </description>
+</action>
+
+<action name="WebAppInstallCancelled">
+  <owner>dmurph@gchromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user cancelled an installation of a web app in the installation dialog.
+  </description>
+</action>
+
+<action name="WebAppInstallShown">
+  <owner>dmurph@gchromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user was shown the installation dialog for a web app.
+  </description>
+</action>
+
 <action name="WebappMenuOpenInChrome">
   <owner>piotrs@chromium.org</owner>
   <description>
