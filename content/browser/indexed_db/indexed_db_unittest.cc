@@ -97,12 +97,19 @@ class IndexedDBTest : public testing::Test,
   storage::BucketLocator kInvertedSessionOnlyThirdPartyBucketLocator;
 
   IndexedDBTest()
-      : quota_manager_proxy_(
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        quota_manager_(base::MakeRefCounted<storage::MockQuotaManager>(
+            /*is_incognito=*/false,
+            CreateAndReturnTempDir(&temp_dir_),
+            base::ThreadTaskRunnerHandle::Get(),
+            special_storage_policy_)),
+        quota_manager_proxy_(
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-                nullptr,
+                quota_manager_.get(),
                 base::SequencedTaskRunnerHandle::Get())),
         context_(base::MakeRefCounted<IndexedDBContextImpl>(
-            CreateAndReturnTempDir(&temp_dir_),
+            temp_dir_.GetPath(),
             quota_manager_proxy_.get(),
             base::DefaultClock::GetInstance(),
             /*blob_storage_context=*/mojo::NullRemote(),
@@ -112,60 +119,39 @@ class IndexedDBTest : public testing::Test,
     scoped_feature_list_.InitWithFeatureState(
         blink::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());
+
     kNormalFirstPartyStorageKey =
         blink::StorageKey::CreateFromStringForTesting("http://normal/");
-    kNormalFirstPartyBucketLocator = storage::BucketLocator();
-    kNormalFirstPartyBucketLocator.id = storage::BucketId::FromUnsafeValue(1);
-    kNormalFirstPartyBucketLocator.storage_key = kNormalFirstPartyStorageKey;
-    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kNormalFirstPartyBucketLocator);
+    InitBucket(kNormalFirstPartyStorageKey, &kNormalFirstPartyBucketLocator);
+
     kSessionOnlyFirstPartyStorageKey =
         blink::StorageKey::CreateFromStringForTesting("http://session-only/");
-    kSessionOnlyFirstPartyBucketLocator = storage::BucketLocator();
-    kSessionOnlyFirstPartyBucketLocator.id =
-        storage::BucketId::FromUnsafeValue(2);
-    kSessionOnlyFirstPartyBucketLocator.storage_key =
-        kSessionOnlyFirstPartyStorageKey;
-    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kSessionOnlyFirstPartyBucketLocator);
+    InitBucket(kSessionOnlyFirstPartyStorageKey,
+               &kSessionOnlyFirstPartyBucketLocator);
+
     kNormalThirdPartyStorageKey =
         blink::StorageKey(url::Origin::Create(GURL("http://normal/")),
                           url::Origin::Create(GURL("http://rando/")));
-    kNormalThirdPartyBucketLocator = storage::BucketLocator();
-    kNormalThirdPartyBucketLocator.id = storage::BucketId::FromUnsafeValue(3);
-    kNormalThirdPartyBucketLocator.storage_key = kNormalThirdPartyStorageKey;
-    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kNormalThirdPartyBucketLocator);
+    InitBucket(kNormalThirdPartyStorageKey, &kNormalThirdPartyBucketLocator);
+
     kSessionOnlyThirdPartyStorageKey =
         blink::StorageKey(url::Origin::Create(GURL("http://session-only/")),
                           url::Origin::Create(GURL("http://rando/")));
-    kSessionOnlyThirdPartyBucketLocator = storage::BucketLocator();
-    kSessionOnlyThirdPartyBucketLocator.id =
-        storage::BucketId::FromUnsafeValue(4);
-    kSessionOnlyThirdPartyBucketLocator.storage_key =
-        kSessionOnlyThirdPartyStorageKey;
-    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kSessionOnlyThirdPartyBucketLocator);
+    InitBucket(kSessionOnlyThirdPartyStorageKey,
+               &kSessionOnlyThirdPartyBucketLocator);
+
     kInvertedNormalThirdPartyStorageKey =
         blink::StorageKey(url::Origin::Create(GURL("http://rando/")),
                           url::Origin::Create(GURL("http://normal/")));
-    kInvertedNormalThirdPartyBucketLocator = storage::BucketLocator();
-    kInvertedNormalThirdPartyBucketLocator.id =
-        storage::BucketId::FromUnsafeValue(3);
-    kInvertedNormalThirdPartyBucketLocator.storage_key =
-        kInvertedNormalThirdPartyStorageKey;
-    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kInvertedNormalThirdPartyBucketLocator);
+    InitBucket(kInvertedNormalThirdPartyStorageKey,
+               &kInvertedNormalThirdPartyBucketLocator);
+
     kInvertedSessionOnlyThirdPartyStorageKey =
         blink::StorageKey(url::Origin::Create(GURL("http://rando/")),
                           url::Origin::Create(GURL("http://session-only/")));
-    kInvertedSessionOnlyThirdPartyBucketLocator = storage::BucketLocator();
-    kInvertedSessionOnlyThirdPartyBucketLocator.id =
-        storage::BucketId::FromUnsafeValue(4);
-    kInvertedSessionOnlyThirdPartyBucketLocator.storage_key =
-        kInvertedSessionOnlyThirdPartyStorageKey;
-    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kInvertedSessionOnlyThirdPartyBucketLocator);
+    InitBucket(kInvertedSessionOnlyThirdPartyStorageKey,
+               &kInvertedSessionOnlyThirdPartyBucketLocator);
+
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
     policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
         kSessionOnlyFirstPartyStorageKey.origin(),
@@ -177,6 +163,18 @@ class IndexedDBTest : public testing::Test,
   IndexedDBTest& operator=(const IndexedDBTest&) = delete;
 
   ~IndexedDBTest() override = default;
+
+  void InitBucket(const blink::StorageKey& storage_key,
+                  storage::BucketLocator* result) {
+    quota_manager_->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(storage_key),
+        base::BindOnce(
+            [](storage::BucketLocator* locator,
+               storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
+              *locator = bucket_info->ToBucketLocator();
+            },
+            result));
+  }
 
   void RunPostedTasks() {
     base::RunLoop loop;
@@ -233,6 +231,8 @@ class IndexedDBTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
 };
@@ -281,8 +281,9 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   ASSERT_TRUE(base::CreateDirectory(inverted_normal_path_third_party));
   ASSERT_TRUE(base::CreateDirectory(inverted_session_only_path_third_party));
 
-  context()->ForceInitializeFromFilesForTesting(base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
+  run_loop.Run();
 
   context()->Shutdown();
   base::RunLoop().RunUntilIdle();
@@ -502,9 +503,7 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
   auto bucket_locator = storage::BucketLocator();
-  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
-  bucket_locator.storage_key = kTestStorageKey;
-  context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(bucket_locator);
+  InitBucket(kTestStorageKey, &bucket_locator);
 
   base::FilePath test_path = GetFilePathForTesting(bucket_locator);
   ASSERT_TRUE(base::CreateDirectory(test_path));
@@ -533,7 +532,7 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
-  context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(bucket_locator);
+  InitBucket(kTestStorageKey, &bucket_locator);
 
   base::FilePath test_path = GetFilePathForTesting(bucket_locator);
   ASSERT_TRUE(base::CreateDirectory(test_path));
