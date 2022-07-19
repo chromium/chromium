@@ -11,6 +11,7 @@
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "build/build_config.h"
+#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -22,12 +23,12 @@ ui::LinuxUi* g_linux_ui = nullptr;
 
 namespace ui {
 
+// static
 void LinuxUi::SetInstance(std::unique_ptr<LinuxUi> instance) {
   delete g_linux_ui;
   g_linux_ui = instance.release();
 
   SkiaFontDelegate::SetInstance(g_linux_ui);
-  ui::SetTextEditKeyBindingsDelegate(g_linux_ui);
   gfx::AnimationSettingsProviderLinux::SetInstance(g_linux_ui);
 
   // Do not set IME instance for ozone as we delegate creating the input method
@@ -35,6 +36,7 @@ void LinuxUi::SetInstance(std::unique_ptr<LinuxUi> instance) {
   // context factory.
 }
 
+// static
 LinuxUi* LinuxUi::instance() {
   return g_linux_ui;
 }

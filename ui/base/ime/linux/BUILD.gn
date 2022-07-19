@@ -12,8 +12,6 @@ component("linux") {
   sources = [
     "fake_input_method_context.cc",
     "fake_input_method_context.h",
-    "fake_input_method_context_factory.cc",
-    "fake_input_method_context_factory.h",
     "input_method_auralinux.cc",
     "input_method_auralinux.h",
     "linux_input_method_context.h",
@@ -39,7 +37,12 @@ component("linux") {
     ]
   }
 
-  # TODO(crbug.com/1199385): Remove this on unifying lacros and linux desktop
-  # behavior again.
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//ui/base",
+    "//ui/linux:linux_ui",
+
+    # TODO(crbug.com/1199385): Remove this on unifying lacros and linux desktop
+    # behavior again.
+    "//build:chromeos_buildflags",
+  ]
 }

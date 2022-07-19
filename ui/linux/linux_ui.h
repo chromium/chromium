@@ -18,8 +18,7 @@
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ime/linux/linux_input_method_context_factory.h"
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
+#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"  // nogncheck
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -49,6 +48,8 @@ namespace ui {
 
 class CursorThemeManagerObserver;
 class DeviceScaleFactorObserver;
+class LinuxInputMethodContext;
+class LinuxInputMethodContextDelegate;
 class NativeTheme;
 class NavButtonProvider;
 class SelectFileDialog;
@@ -59,8 +60,7 @@ class WindowFrameProvider;
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi
-    : public ui::LinuxInputMethodContextFactory,
-      public gfx::SkiaFontDelegate,
+    : public gfx::SkiaFontDelegate,
       public ui::TextEditKeyBindingsDelegateAuraLinux,
       public gfx::AnimationSettingsProviderLinux {
  public:
@@ -203,6 +203,10 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   // Returns the preferred size for cursor bitmaps.  A value of 64 indicates
   // that 64x64 px bitmaps are preferred.
   virtual int GetCursorThemeSize() = 0;
+
+  // Returns a platform specific input method context.
+  virtual std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
+      LinuxInputMethodContextDelegate* delegate) const = 0;
 
  protected:
   struct CmdLineArgs {

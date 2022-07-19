@@ -20,6 +20,7 @@
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
+#include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -38,9 +39,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_controller.h"
-#include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
+#include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -100,6 +102,7 @@ class OzonePlatformWayland : public OzonePlatform,
 
   ~OzonePlatformWayland() override {
     KeyEvent::SetSynthesizeKeyRepeatEnabled(old_synthesize_key_repeat_enabled_);
+    GetInputMethodContextFactoryForOzone() = LinuxInputMethodContextFactory();
   }
 
   // OzonePlatform
@@ -167,16 +170,6 @@ class OzonePlatformWayland : public OzonePlatform,
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) override {
-    // Instantiate and set LinuxInputMethodContextFactory unless it is already
-    // set (e.g: tests may have already set it).
-    if (!LinuxInputMethodContextFactory::instance() &&
-        !input_method_context_factory_) {
-      input_method_context_factory_ =
-          std::make_unique<WaylandInputMethodContextFactory>(connection_.get());
-      LinuxInputMethodContextFactory::SetInstance(
-          input_method_context_factory_.get());
-    }
-
     return std::make_unique<InputMethodAuraLinux>(delegate);
   }
 
@@ -247,6 +240,19 @@ class OzonePlatformWayland : public OzonePlatform,
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
     wayland_utils_ = std::make_unique<WaylandUtils>(connection_.get());
+
+    if (connection_->text_input_manager_v1()) {
+      GetInputMethodContextFactoryForOzone() = base::BindRepeating(
+          [](WaylandConnection* connection,
+             WaylandKeyboard::Delegate* key_delegate,
+             LinuxInputMethodContextDelegate* ime_delegate)
+              -> std::unique_ptr<LinuxInputMethodContext> {
+            return std::make_unique<WaylandInputMethodContext>(
+                connection, key_delegate, ime_delegate);
+          },
+          base::Unretained(connection_.get()),
+          base::Unretained(connection_->event_source()));
+    }
 
     return true;
   }
@@ -399,8 +405,6 @@ class OzonePlatformWayland : public OzonePlatform,
   std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
-  std::unique_ptr<WaylandInputMethodContextFactory>
-      input_method_context_factory_;
   std::unique_ptr<WaylandBufferManagerConnector> buffer_manager_connector_;
   std::unique_ptr<WaylandMenuUtils> menu_utils_;
   std::unique_ptr<WaylandUtils> wayland_utils_;

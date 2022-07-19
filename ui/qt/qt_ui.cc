@@ -179,6 +179,10 @@ bool QtUi::Initialize() {
   FontChanged();
   shell_dialog_linux::Initialize();
 
+  // TODO(thomasanderson): Merge TextEditKeyBindingsDelegateAuraLinux into
+  // LinuxUi and remove this.
+  ui::SetTextEditKeyBindingsDelegate(this);
+
   return true;
 }
 

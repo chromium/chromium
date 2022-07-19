@@ -31,7 +31,6 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
-  bool PreferGtkIme() override;
 
  private:
   GdkDisplay* GetDefaultGdkDisplay();

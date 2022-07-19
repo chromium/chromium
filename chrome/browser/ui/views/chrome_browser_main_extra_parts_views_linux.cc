@@ -10,7 +10,6 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/linux/fake_input_method_context_factory.h"
 #include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
@@ -51,20 +50,6 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
     // implementation). Start observing them once it's initialized.
     ui::CursorFactory::GetInstance()->ObserveThemeChanges();
-  } else {
-    // In case if the toolkit is not used, input method factory won't be set for
-    // X11 and Ozone/X11. Set a fake one instead to avoid crashing browser
-    // later.
-    DCHECK(!ui::LinuxInputMethodContextFactory::instance());
-    // Try to create input method through Ozone so that the backend has a chance
-    // to set factory by itself.
-    ui::OzonePlatform::GetInstance()->CreateInputMethod(
-        nullptr, gfx::kNullAcceleratedWidget);
-  }
-  // If factory is not set, set a fake instance.
-  if (!ui::LinuxInputMethodContextFactory::instance()) {
-    ui::LinuxInputMethodContextFactory::SetInstance(
-        new ui::FakeInputMethodContextFactory());
   }
 }
 

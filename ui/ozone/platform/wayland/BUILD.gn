@@ -126,8 +126,6 @@ source_set("wayland") {
     "host/wayland_input_controller.h",
     "host/wayland_input_method_context.cc",
     "host/wayland_input_method_context.h",
-    "host/wayland_input_method_context_factory.cc",
-    "host/wayland_input_method_context_factory.h",
     "host/wayland_keyboard.cc",
     "host/wayland_keyboard.h",
     "host/wayland_menu_utils.cc",

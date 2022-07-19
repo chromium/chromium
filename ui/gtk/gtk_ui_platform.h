@@ -52,9 +52,6 @@ class GtkUiPlatform {
   // Presents |window|, doing all the necessary platform-specific operations
   // needed, if any.
   virtual void ShowGtkWindow(GtkWindow* window) = 0;
-
-  // Reports whether InputMethodContextImplGtk is the preferred input method.
-  virtual bool PreferGtkIme() = 0;
 };
 
 }  // namespace gtk

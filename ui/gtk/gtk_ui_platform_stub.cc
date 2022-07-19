@@ -43,8 +43,4 @@ void GtkUiPlatformStub::ShowGtkWindow(GtkWindow* window) {
   gtk_window_present(window);
 }
 
-bool GtkUiPlatformStub::PreferGtkIme() {
-  return true;
-}
-
 }  // namespace gtk

@@ -145,8 +145,4 @@ void GtkUiPlatformWayland::OnHandleSetTransient(GtkWidget* widget,
   }
 }
 
-bool GtkUiPlatformWayland::PreferGtkIme() {
-  return gtk::GtkCheckVersion(4);
-}
-
 }  // namespace gtk

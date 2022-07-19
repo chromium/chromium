@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/linux/input_method_auralinux.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/linux/linux_ui.h"
 
 namespace ui {
 namespace {
@@ -187,22 +188,6 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool should_do_learning_;
 };
 
-class LinuxInputMethodContextFactoryForTesting
-    : public LinuxInputMethodContextFactory {
- public:
-  LinuxInputMethodContextFactoryForTesting() {}
-
-  LinuxInputMethodContextFactoryForTesting(
-      const LinuxInputMethodContextFactoryForTesting&) = delete;
-  LinuxInputMethodContextFactoryForTesting& operator=(
-      const LinuxInputMethodContextFactoryForTesting&) = delete;
-
-  std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-      LinuxInputMethodContextDelegate* delegate) const override {
-    return std::make_unique<LinuxInputMethodContextForTesting>(delegate);
-  }
-};
-
 class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
  public:
   InputMethodDelegateForTesting() {}
@@ -314,17 +299,18 @@ class InputMethodAuraLinuxTest : public testing::Test {
 
  protected:
   InputMethodAuraLinuxTest()
-      : factory_(nullptr),
-        input_method_auralinux_(nullptr),
+      : input_method_auralinux_(nullptr),
         delegate_(nullptr),
         context_(nullptr) {
-    factory_ = new LinuxInputMethodContextFactoryForTesting();
-    LinuxInputMethodContextFactory::SetInstance(factory_);
+    GetInputMethodContextFactoryForTest() =
+        base::BindRepeating([](LinuxInputMethodContextDelegate* delegate)
+                                -> std::unique_ptr<LinuxInputMethodContext> {
+          return std::make_unique<LinuxInputMethodContextForTesting>(delegate);
+        });
     test_result_ = TestResult::GetInstance();
   }
   ~InputMethodAuraLinuxTest() override {
-    delete factory_;
-    factory_ = nullptr;
+    ShutdownInputMethodForTesting();
     test_result_ = nullptr;
   }
 
@@ -347,7 +333,6 @@ class InputMethodAuraLinuxTest : public testing::Test {
     delegate_ = nullptr;
   }
 
-  raw_ptr<LinuxInputMethodContextFactoryForTesting> factory_;
   raw_ptr<InputMethodAuraLinux> input_method_auralinux_;
   raw_ptr<InputMethodDelegateForTesting> delegate_;
   raw_ptr<LinuxInputMethodContextForTesting> context_;

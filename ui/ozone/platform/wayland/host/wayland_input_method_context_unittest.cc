@@ -17,8 +17,8 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
-#include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
@@ -146,11 +146,9 @@ class WaylandInputMethodContextTest : public WaylandTest {
     input_method_context_delegate_ =
         std::make_unique<TestInputMethodContextDelegate>();
 
-    WaylandInputMethodContextFactory factory(connection_.get());
-    LinuxInputMethodContextFactory::SetInstance(&factory);
-
-    auto input_method_context =
-        factory.CreateInputMethodContext(input_method_context_delegate_.get());
+    auto input_method_context = std::make_unique<WaylandInputMethodContext>(
+        connection_.get(), connection_->event_source(),
+        input_method_context_delegate_.get());
     input_method_context_.reset(static_cast<WaylandInputMethodContext*>(
         input_method_context.release()));
     input_method_context_->Init(true);

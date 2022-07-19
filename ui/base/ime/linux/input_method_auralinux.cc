@@ -49,12 +49,7 @@ InputMethodAuraLinux::InputMethodAuraLinux(
       text_input_type_(TEXT_INPUT_TYPE_NONE),
       is_sync_mode_(false),
       composition_changed_(false) {
-  DCHECK(LinuxInputMethodContextFactory::instance())
-      << "Trying to initialize InputMethodAuraLinux, but "
-         "LinuxInputMethodContextFactory is not initialized yet.";
-  context_ =
-      LinuxInputMethodContextFactory::instance()->CreateInputMethodContext(
-          this);
+  context_ = CreateLinuxInputMethodContext(this);
 }
 
 InputMethodAuraLinux::~InputMethodAuraLinux() = default;

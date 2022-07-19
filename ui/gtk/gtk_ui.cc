@@ -30,7 +30,6 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
-#include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/linux/linux_input_method_context_wrapper.h"
 #include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/color/color_id.h"
@@ -63,6 +62,7 @@
 #include "ui/gtk/window_frame_provider_gtk.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_button_order_observer.h"
 #include "ui/native_theme/native_theme.h"
@@ -243,22 +243,16 @@ bool GtkUi::Initialize() {
   // so this must be done after to avoid the race condition.
   shell_dialog_linux::Initialize();
 
+  // TODO(thomasanderson): Merge TextEditKeyBindingsDelegateAuraLinux into
+  // LinuxUi and remove this.
+  ui::SetTextEditKeyBindingsDelegate(this);
+
   using Action = ui::LinuxUi::WindowFrameAction;
   using ActionSource = ui::LinuxUi::WindowFrameActionSource;
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
       {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
       {ActionSource::kRightClick, Action::kMenu}};
-  // Linux ozone platforms may want to set LinuxInputMethodContextFactory
-  // instance instead of using GtkUi context factory. This step is made upon
-  // CreateInputMethod call. If the factory is not set, use the GtkUi context
-  // factory.
-  if (GetPlatform()->PreferGtkIme() ||
-      !ui::OzonePlatform::GetInstance()->CreateInputMethod(
-          nullptr, gfx::kNullAcceleratedWidget)) {
-    if (!ui::LinuxInputMethodContextFactory::instance())
-      ui::LinuxInputMethodContextFactory::SetInstance(this);
-  }
 
   GtkSettings* settings = gtk_settings_get_default();
   g_signal_connect_after(settings, "notify::gtk-theme-name",

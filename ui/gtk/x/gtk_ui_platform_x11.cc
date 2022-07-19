@@ -114,8 +114,4 @@ void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
       static_cast<uint32_t>(ui::X11EventSource::GetInstance()->GetTimestamp()));
 }
 
-bool GtkUiPlatformX11::PreferGtkIme() {
-  return true;
-}
-
 }  // namespace gtk
