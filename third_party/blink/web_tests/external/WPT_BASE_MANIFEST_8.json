@@ -293392,6 +293392,30 @@
        "9945ef47114c2841a746c99a2fb1e93e050aac8b",
        []
       ],
+      "mixed-units-01.html": [
+       "6401cd9b4bda27871ac29f097e0e75962d6f7121",
+       []
+      ],
+      "mixed-units-02.html": [
+       "67088c64c59328d73bcb360a6152482ea8df22ac",
+       []
+      ],
+      "mixed-units-03.html": [
+       "3d614d395ac3e3a0a134475c1da66e2779918b10",
+       []
+      ],
+      "mixed-units-04.html": [
+       "b23c0e6a7fa3271d4a0eb61e486ccc40fe2e207d",
+       []
+      ],
+      "mixed-units-05.html": [
+       "e6196d3e31f5e986b28c98ddfe54978c3940b7e4",
+       []
+      ],
+      "mixed-units-06.html": [
+       "a4a614f8d2e0a7b2dcfc7152287013d8d15906ab",
+       []
+      ],
       "pattern-grg-rgr-grg.png": [
        "9b88fbd81149891234185f54f8b4a0431759f181",
        []
@@ -397411,6 +397435,13 @@
        {}
       ]
      ],
+     "calc-in-media-queries-with-mixed-units.html": [
+      "f94df62f284382ba694c81871f533e127e5b8fa4",
+      [
+       null,
+       {}
+      ]
+     ],
      "calc-infinity-nan-computed.html": [
       "81998c46ae0e73cf7df389a4b4386a97225f5a6f",
       [
@@ -397881,7 +397912,7 @@
       ]
      ],
      "sin-cos-tan-serialize.html": [
-      "ce673cb9d8b9c9313924e3bdc62efea2515de118",
+      "0e54fca11eadefaf60baf4702a7a8ebe2b27c2b4",
       [
        null,
        {}
