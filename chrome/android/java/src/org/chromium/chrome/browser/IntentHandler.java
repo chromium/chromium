@@ -66,8 +66,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
-
 /**
  * Handles all browser-related Intents.
  */
@@ -241,7 +239,7 @@ public class IntentHandler {
     @IntDef({ExternalAppId.OTHER, ExternalAppId.GMAIL, ExternalAppId.FACEBOOK, ExternalAppId.PLUS,
             ExternalAppId.TWITTER, ExternalAppId.CHROME, ExternalAppId.HANGOUTS,
             ExternalAppId.MESSENGER, ExternalAppId.NEWS, ExternalAppId.LINE, ExternalAppId.WHATSAPP,
-            ExternalAppId.GSA, ExternalAppId.WEBAPK, ExternalAppId.YAHOO_MAIL, ExternalAppId.VIBER,
+            ExternalAppId.GSA, ExternalAppId.YAHOO_MAIL, ExternalAppId.VIBER,
             ExternalAppId.YOUTUBE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ExternalAppId {
@@ -445,8 +443,6 @@ public class IntentHandler {
             return ExternalAppId.GSA;
         } else if (packageName.equals(ContextUtils.getApplicationContext().getPackageName())) {
             return ExternalAppId.CHROME;
-        } else if (packageName.startsWith(WEBAPK_PACKAGE_PREFIX)) {
-            return ExternalAppId.WEBAPK;
         } else if (packageName.equals(PACKAGE_YAHOO_MAIL)) {
             return ExternalAppId.YAHOO_MAIL;
         } else if (packageName.equals(PACKAGE_VIBER)) {

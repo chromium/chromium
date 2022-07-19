@@ -37,10 +37,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/webapps/browser/android/webapps_icon_utils.h"
-#endif
-
 namespace webapps {
 
 namespace {
@@ -79,43 +75,23 @@ const int kMinimumPrimaryIconSizeInPx = 144;
 const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 int GetIdealPrimaryIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
-#else
   return kMinimumPrimaryIconSizeInPx;
-#endif
 }
 
 int GetMinimumPrimaryIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
-#else
   return kMinimumPrimaryIconSizeInPx;
-#endif
 }
 
 int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
-#else
   return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
-#endif
 }
 
 int GetIdealSplashIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetIdealSplashImageSizeInPx();
-#else
   return kMinimumPrimaryIconSizeInPx;
-#endif
 }
 
 int GetMinimumSplashIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetMinimumSplashImageSizeInPx();
-#else
   return kMinimumPrimaryIconSizeInPx;
-#endif
 }
 
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;

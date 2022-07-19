@@ -20,7 +20,6 @@ import androidx.browser.customtabs.TrustedWebUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.tab.Tab;
@@ -119,12 +118,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         String url = IntentHandler.getUrlFromIntent(mIntent);
         if (url == null && tabId == Tab.INVALID_TAB_ID && !incognito
                 && intentHandler.handleWebSearchIntent(mIntent)) {
-            return Action.FINISH_ACTIVITY;
-        }
-
-        // Check if we should launch an Instant App to handle the intent.
-        if (InstantAppsHandler.getInstance().handleIncomingIntent(
-                    mActivity, mIntent, false, false)) {
             return Action.FINISH_ACTIVITY;
         }
 

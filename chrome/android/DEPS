@@ -52,8 +52,6 @@ include_rules = [
   "+components/user_prefs/android",
   "+components/version_info/android",
   "+components/viz/common/java",
-  "+components/webapk/android",
-  "+components/webapps/browser/android/java",
   "+components/webrtc/android",
   "+jni",
   "+media/base/android/java",

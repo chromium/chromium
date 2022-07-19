@@ -1615,10 +1615,6 @@ if (is_android) {
     ]
   }
 
-  java_cpp_enum("instant_apps_reasons_enum_javagen") {
-    sources = [ "browser/android/instantapps/instant_apps_settings.cc" ]
-  }
-
   java_cpp_enum("supervised_user_url_filter_enum_javagen") {
     sources = [ "browser/supervised_user/supervised_user_url_filter.h" ]
   }

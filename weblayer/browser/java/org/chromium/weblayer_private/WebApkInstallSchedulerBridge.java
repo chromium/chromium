@@ -10,7 +10,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.webapps.WebApkInstallResult;
 
 /**
  * Java counterpart to webapk_install_scheduler_bridge.
@@ -24,11 +23,6 @@ public class WebApkInstallSchedulerBridge {
     // destroys this object.
     private long mNativePointer;
 
-    /**
-     * This callback is passed via the {@link WebApkInstallSchedulerClient} to the Chrome
-     * {@link WebApkInstallCoordinatorService} and will be called from there with the result
-     * of the install. This result is passed along to the native side.
-     */
     Callback<Integer> mOnInstallCompleteCallback = (result) -> {
         if (mNativePointer != 0) {
             WebApkInstallSchedulerBridgeJni.get().onInstallFinished(
@@ -48,16 +42,11 @@ public class WebApkInstallSchedulerBridge {
     @CalledByNative
     public void scheduleInstall(
             byte[] apkProto, Bitmap primaryIcon, boolean isPrimaryIconMaskable) {
-        WebApkInstallSchedulerClient.scheduleInstall(
-                apkProto, primaryIcon, isPrimaryIconMaskable, mOnInstallCompleteCallback);
     }
 
-    /**
-     * Returns if the {@link WebApkInstallCoordinatorService} is available.
-     */
     @CalledByNative
     public static boolean isInstallServiceAvailable() {
-        return WebApkInstallSchedulerClient.isInstallServiceAvailable();
+        return false;
     }
 
     @CalledByNative
@@ -69,6 +58,6 @@ public class WebApkInstallSchedulerBridge {
     @NativeMethods
     interface Natives {
         void onInstallFinished(long nativeWebApkInstallSchedulerBridge,
-                WebApkInstallSchedulerBridge caller, @WebApkInstallResult int result);
+                WebApkInstallSchedulerBridge caller, int result);
     }
 }

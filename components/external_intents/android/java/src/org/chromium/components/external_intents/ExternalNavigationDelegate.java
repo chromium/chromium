@@ -48,22 +48,6 @@ public interface ExternalNavigationDelegate {
     boolean shouldDisableExternalIntentRequestsForUrl(GURL url);
 
     /**
-     * Returns whether the embedder has custom integration with InstantApps (most embedders will not
-     * have any such integration).
-     */
-    boolean handlesInstantAppLaunchingInternally();
-
-    /**
-     * Dispatches the intent through a proxy activity, so that startActivityForResult can be used
-     * and the intent recipient can verify the caller. Will be invoked only in flows where
-     * ExternalNavigationDelegate#isIntentForInstantApp() returns true for |intent|. In particular,
-     * if that method always returns false in the given embedder, then the embedder's implementation
-     * of this method will never be invoked and can just assert false.
-     * @param intent The bare intent we were going to send.
-     */
-    void dispatchAuthenticatedIntent(Intent intent);
-
-    /**
      * Loads a URL as specified by |loadUrlParams| if possible. May fail in exceptional conditions
      * (e.g., if there is no valid tab).
      * @param loadUrlParams parameters of the URL to be loaded
@@ -75,12 +59,6 @@ public interface ExternalNavigationDelegate {
 
     /** Records the pending referrer if desired. */
     void maybeSetPendingReferrer(Intent intent, GURL referrerUrl);
-
-    /**
-     * Adjusts any desired extras related to intents to instant apps based on the value of
-     * |insIntentToInstantApp}.
-     */
-    void maybeAdjustInstantAppExtras(Intent intent, boolean isIntentToInstantApp);
 
     /**
      * Invoked for intents with request metadata such as user gesture, whether request is renderer
@@ -99,18 +77,6 @@ public interface ExternalNavigationDelegate {
      * Determine if the application of the embedder is in the foreground.
      */
     boolean isApplicationInForeground();
-
-    /**
-     * Check if the URL should be handled by an instant app, or kick off an async request for an
-     * instant app banner.
-     * @param url The current URL.
-     * @param referrerUrl The referrer URL.
-     * @param isIncomingRedirect Whether we are handling an incoming redirect to an instant app.
-     * @param isSerpReferrer whether the referrer is the SERP.
-     * @return Whether we launched an instant app.
-     */
-    boolean maybeLaunchInstantApp(
-            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer);
 
     /**
      * @return The WindowAndroid instance associated with this delegate instance.
@@ -165,12 +131,6 @@ public interface ExternalNavigationDelegate {
      * @return Whether the Intent points to an app that we trust and that launched this app.
      */
     boolean isIntentForTrustedCallingApp(Intent intent);
-
-    /**
-     * @param intent The intent to launch.
-     * @return Whether the Intent points to an instant app.
-     */
-    boolean isIntentToInstantApp(Intent intent);
 
     /**
      * @param intent The intent to launch

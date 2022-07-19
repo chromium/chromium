@@ -3215,17 +3215,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 23): `addShortcutWithShortcutManager`"
-        errorLine1="            addShortcutWithShortcutManager(id, title, icon, isIconAdaptive, shortcutIntent);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
-            line="70"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 24 (current min is 23): `getAwSettings`"
         errorLine1="        return adapter.getAwSettings();"
         errorLine2="                       ~~~~~~~~~~~~~">

@@ -67,7 +67,6 @@ import org.chromium.components.version_info.VersionConstants;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.viz.common.VizSwitches;
 import org.chromium.components.viz.common.display.DeJellyUtils;
-import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -201,7 +200,6 @@ public class ProcessInitializationHandler {
     protected void handlePostNativeInitialization() {
         ChromeActivitySessionTracker.getInstance().initializeWithNative();
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
-        AppBannerManager.setAppDetailsDelegate(AppHooks.get().createAppDetailsDelegate());
         ChromeLifetimeController.initialize();
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();

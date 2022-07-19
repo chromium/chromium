@@ -60,21 +60,6 @@ public class IntentUtils {
     private static boolean sForceTrustedIntentForTesting;
 
     /**
-     * Whether the given ResolveInfo object refers to Instant Apps as a launcher.
-     * @param info The resolve info.
-     */
-    public static boolean isInstantAppResolveInfo(ResolveInfo info) {
-        if (info == null) return false;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return info.isInstantAppAvailable;
-        } else if (info.activityInfo != null) {
-            return EPHEMERAL_INSTALLER_CLASS.equals(info.activityInfo.name);
-        }
-
-        return false;
-    }
-    /**
      * Just like {@link Intent#hasExtra(String)} but doesn't throw exceptions.
      */
     public static boolean safeHasExtra(Intent intent, String name) {

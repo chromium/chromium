@@ -56,7 +56,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/sync/base/features.h"
-#include "components/webapps/browser/android/features.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
 #include "media/base/media_switches.h"
@@ -370,8 +369,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncAndroidPromosWithSingleButton,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
-    &webapps::features::kInstallableAmbientBadgeInfoBar,
-    &webapps::features::kInstallableAmbientBadgeMessage,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {

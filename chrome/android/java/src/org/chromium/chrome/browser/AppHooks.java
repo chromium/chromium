@@ -18,7 +18,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -31,7 +30,6 @@ import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.SystemAccountManagerDelegate;
-import org.chromium.components.webapps.AppDetailsDelegate;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,14 +68,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * @return An instance of AppDetailsDelegate that can be queried about app information for the
-     *         App Banner feature.  Will be null if one is unavailable.
-     */
-    public AppDetailsDelegate createAppDetailsDelegate() {
-        return null;
-    }
-
-    /**
      * Return a {@link AuthenticatorNavigationInterceptor} for the given {@link Tab}.
      * This can be null if there are no applicable interceptor to be built.
      */
@@ -91,10 +81,6 @@ public abstract class AppHooks {
      */
     public GSAHelper createGsaHelper() {
         return new GSAHelper();
-    }
-
-    public InstantAppsHandler createInstantAppsHandler() {
-        return new InstantAppsHandler();
     }
 
     /**

@@ -462,8 +462,6 @@ test("components_unittests") {
       "//components/spellcheck/browser/android:java",
       "//components/translate/content/android:unit_tests",
       "//components/variations/android:variations_java",
-      "//components/webapps/browser/android:java",
-      "//components/webapps/browser/android:unit_tests",
       "//content/public/android:content_java",
       "//content/public/browser",
       "//net",
@@ -1028,8 +1026,6 @@ if (is_android) {
       "//components/prefs/android:junit",
       "//components/subresource_filter/android:junit",
       "//components/variations/android:components_variations_junit_tests",
-      "//components/webapk/android/libs/client:junit",
-      "//components/webapps/browser/android:junit",
     ]
   }
 }

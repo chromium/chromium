@@ -133,8 +133,6 @@ public class SafeBrowsingReferringAppBridge {
                 return "whatsapp";
             case ExternalAppId.GSA:
                 return "google.search.app";
-            case ExternalAppId.WEBAPK:
-                return "webapk";
             case ExternalAppId.YAHOO_MAIL:
                 return "yahoo.mail";
             case ExternalAppId.VIBER:

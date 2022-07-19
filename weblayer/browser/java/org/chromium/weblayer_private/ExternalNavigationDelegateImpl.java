@@ -55,18 +55,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean handlesInstantAppLaunchingInternally() {
-        return false;
-    }
-
-    @Override
-    public void dispatchAuthenticatedIntent(Intent intent) {
-        // This method should never be invoked in WebLayer as this class always returns false for
-        // isIntentToInstantApp().
-        assert false;
-    }
-
-    @Override
     public boolean shouldAvoidDisambiguationDialog(Intent intent) {
         // Don't show the disambiguation dialog if WebLayer can handle the intent.
         return UrlUtilities.isAcceptedScheme(intent.toUri(0));
@@ -130,9 +118,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public void maybeAdjustInstantAppExtras(Intent intent, boolean isIntentToInstantApp) {}
-
-    @Override
     // This is relevant only if the intent ends up being handled by this app, which does not happen
     // for WebLayer.
     public void maybeSetRequestMetadata(Intent intent, boolean hasUserGesture,
@@ -147,12 +132,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     // This is relevant only if the intent ends up being handled by this app, which does not happen
     // for WebLayer.
     public void maybeSetPendingIncognitoUrl(Intent intent) {}
-
-    @Override
-    public boolean maybeLaunchInstantApp(
-            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
-        return false;
-    }
 
     @Override
     public WindowAndroid getWindowAndroid() {
@@ -177,11 +156,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean isIntentForTrustedCallingApp(Intent intent) {
-        return false;
-    }
-
-    @Override
-    public boolean isIntentToInstantApp(Intent intent) {
         return false;
     }
 

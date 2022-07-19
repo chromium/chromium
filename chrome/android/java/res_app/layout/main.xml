@@ -75,6 +75,14 @@
                 android:layout_height="match_parent"
                 android:clipChildren="false" />
 
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_gravity="start|bottom"
+                style="?android:attr/progressBarStyleHorizontal"
+                />
+
         </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
 
