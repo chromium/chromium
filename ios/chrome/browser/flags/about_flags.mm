@@ -336,6 +336,50 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
+// Feed Background Refresh Feature Params
+
+const FeatureEntry::FeatureParam kOneHourIntervalOnce[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
+    {kEnableRecurringBackgroundRefreshSchedule, "false"},
+    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
+const FeatureEntry::FeatureParam kFourHourIntervalOnce[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
+    {kEnableRecurringBackgroundRefreshSchedule, "false"},
+    {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
+const FeatureEntry::FeatureParam kOneHourIntervalRecurring[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
+    {kEnableRecurringBackgroundRefreshSchedule, "true"},
+    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
+const FeatureEntry::FeatureParam kFourHourIntervalRecurring[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
+    {kEnableRecurringBackgroundRefreshSchedule, "true"},
+    {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
+const FeatureEntry::FeatureParam kServerDrivenOnce[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
+    {kEnableRecurringBackgroundRefreshSchedule, "false"},
+    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
+const FeatureEntry::FeatureParam kServerDrivenRecurring[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
+    {kEnableRecurringBackgroundRefreshSchedule, "true"},
+    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
+
+// Feed Background Refresh Feature Variations
+
+const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
+    {"1hr Interval Once", kOneHourIntervalOnce, std::size(kOneHourIntervalOnce),
+     nullptr},
+    {"4hr Interval Once", kFourHourIntervalOnce,
+     std::size(kFourHourIntervalOnce), nullptr},
+    {"1hr Interval Recurring", kOneHourIntervalRecurring,
+     std::size(kOneHourIntervalRecurring), nullptr},
+    {"4hr Interval Recurring", kFourHourIntervalRecurring,
+     std::size(kFourHourIntervalRecurring), nullptr},
+    {"Server Driven Once", kServerDrivenOnce, std::size(kServerDrivenOnce),
+     nullptr},
+    {"Server Driven Recurring", kServerDrivenRecurring,
+     std::size(kServerDrivenRecurring), nullptr},
+};
+
 const FeatureEntry::FeatureParam kFREDefaultBrowserPromoDefaultDelay[] = {
     {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoDefaultDelayParam}};
 const FeatureEntry::FeatureParam kFREDefaultBrowserPromoFirstRunOnly[] = {
@@ -1040,7 +1084,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,
      flag_descriptions::kFeedBackgroundRefreshDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableFeedBackgroundRefresh)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFeedBackgroundRefresh,
+                                    kFeedBackgroundRefreshVariations,
+                                    "FeedBackgroundRefresh")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

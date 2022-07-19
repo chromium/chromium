@@ -30,9 +30,10 @@ source_set("ntp") {
 
 source_set("features") {
   sources = [
-    "features.cc",
     "features.h",
+    "features.mm",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [ "//base" ]
 }
 

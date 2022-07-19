@@ -18,10 +18,32 @@ extern const base::Feature kEnableFeedBackgroundRefresh;
 // Use IsWebChannelsEnabled() instead of this constant directly.
 extern const base::Feature kEnableWebChannels;
 
+// Feature param under `kEnableFeedBackgroundRefresh` to enable server driven
+// background refresh schedule.
+extern const char kEnableServerDrivenBackgroundRefreshSchedule[];
+
+// Feature param under `kEnableFeedBackgroundRefresh` to enable recurring
+// background refresh schedule.
+extern const char kEnableRecurringBackgroundRefreshSchedule[];
+
+// Feature param under `kEnableFeedBackgroundRefresh` for the background refresh
+// interval in seconds.
+extern const char kBackgroundRefreshIntervalInSeconds[];
+
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
 // Whether feed background refresh is enabled.
 bool IsFeedBackgroundRefreshEnabled();
+
+// Whether the background refresh schedule should be driven by server values.
+bool IsServerDrivenBackgroundRefreshScheduleEnabled();
+
+// Whether a new refresh should be scheduled after completion of a previous
+// background refresh.
+bool IsRecurringBackgroundRefreshScheduleEnabled();
+
+// The earliest interval to refresh if server value is not used.
+double GetBackgroundRefreshIntervalInSeconds();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_
