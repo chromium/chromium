@@ -37,28 +37,6 @@ namespace ash {
 class ProfileHelper
     : public user_manager::UserManager::UserSessionStateObserver {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    // Returns a profile object corresponding to the given path if fully
-    // initialized. Otherwise returns nullptr. If the system is not
-    // initialized, also returns nullptr (for unittests).
-    virtual Profile* GetProfileByPath(const base::FilePath& path) = 0;
-
-    // DEPRECATED. Please do not use this in the new code, and instead use
-    // GetProfileByPath().
-    // Similar to GetProfileByPath, but synchronously create a Profile instance
-    // if it is not initialized.
-    // If the system is not initialized, still returns nullptr (for unittests).
-    // TODO(crbug.com/1325210): Remove this later.
-    virtual Profile* DeprecatedGetProfile(const base::FilePath& path) = 0;
-
-    // Returns the path to the user data directory.
-    // If the system is not initialized, returns nullptr (for unittests).
-    virtual const base::FilePath* GetUserDataDir() = 0;
-  };
-
   ProfileHelper();
 
   ProfileHelper(const ProfileHelper&) = delete;
@@ -75,6 +53,8 @@ class ProfileHelper
   // knowledge in one place.
   static ProfileHelper* Get();
 
+  // DEPRECATED: Please use
+  // BrowserContextHelper::GetBrowserContextPathByUserIdHash() instead.
   // Returns profile path that corresponds to a given |user_id_hash|.
   static base::FilePath GetProfilePathByUserIdHash(
       const std::string& user_id_hash);

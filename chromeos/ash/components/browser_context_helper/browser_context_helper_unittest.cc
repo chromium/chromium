@@ -10,6 +10,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+namespace {
+
+class FakeBrowserContextHelperDelegate : public BrowserContextHelper::Delegate {
+ public:
+  content::BrowserContext* GetBrowserContextByPath(
+      const base::FilePath& path) override {
+    return nullptr;
+  }
+  content::BrowserContext* DeprecatedGetBrowserContext(
+      const base::FilePath& path) override {
+    return nullptr;
+  }
+
+  const base::FilePath* GetUserDataDir() override { return &user_data_dir_; }
+
+ private:
+  base::FilePath user_data_dir_{"user_data_dir"};
+};
 
 class BrowserContextHelperTest : public testing::Test {
  public:
@@ -20,6 +38,8 @@ class BrowserContextHelperTest : public testing::Test {
   // Sets up fake UI thread, required by TestBrowserContext.
   content::BrowserTaskEnvironment env_;
 };
+
+}  // namespace
 
 TEST_F(BrowserContextHelperTest, GetUserIdHashFromBrowserContext) {
   // If nullptr is passed, returns an error.
@@ -68,6 +88,19 @@ TEST_F(BrowserContextHelperTest, GetUserBrowserContextDirName) {
               BrowserContextHelper::GetUserBrowserContextDirName(
                   test_case.user_id_hash));
   }
+}
+
+TEST_F(BrowserContextHelperTest, GetBrowserContextPathByUserIdHash) {
+  BrowserContextHelper helper(
+      std::make_unique<FakeBrowserContextHelperDelegate>());
+  // u- prefix is expected. See GetUserBrowserContextDirName for details.
+  EXPECT_EQ(base::FilePath("user_data_dir/u-0123456789"),
+            helper.GetBrowserContextPathByUserIdHash("0123456789"));
+  // Special use name case.
+  EXPECT_EQ(base::FilePath("user_data_dir/user"),
+            helper.GetBrowserContextPathByUserIdHash("user"));
+  EXPECT_EQ(base::FilePath("user_data_dir/test-user"),
+            helper.GetBrowserContextPathByUserIdHash("test-user"));
 }
 
 }  // namespace ash

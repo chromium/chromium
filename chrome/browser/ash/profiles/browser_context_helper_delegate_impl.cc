@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/profiles/profile_helper_delegate_impl.h"
+#include "chrome/browser/ash/profiles/browser_context_helper_delegate_impl.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -10,10 +10,11 @@
 
 namespace ash {
 
-ProfileHelperDelegateImpl::ProfileHelperDelegateImpl() = default;
-ProfileHelperDelegateImpl::~ProfileHelperDelegateImpl() = default;
+BrowserContextHelperDelegateImpl::BrowserContextHelperDelegateImpl() = default;
+BrowserContextHelperDelegateImpl::~BrowserContextHelperDelegateImpl() = default;
 
-Profile* ProfileHelperDelegateImpl::GetProfileByPath(
+content::BrowserContext*
+BrowserContextHelperDelegateImpl::GetBrowserContextByPath(
     const base::FilePath& path) {
   // profile_manager can be null in unit tests.
   auto* profile_manager = g_browser_process->profile_manager();
@@ -22,7 +23,8 @@ Profile* ProfileHelperDelegateImpl::GetProfileByPath(
   return profile_manager->GetProfileByPath(path);
 }
 
-Profile* ProfileHelperDelegateImpl::DeprecatedGetProfile(
+content::BrowserContext*
+BrowserContextHelperDelegateImpl::DeprecatedGetBrowserContext(
     const base::FilePath& path) {
   // profile_manager can be null in unit tests.
   auto* profile_manager = g_browser_process->profile_manager();
@@ -31,7 +33,7 @@ Profile* ProfileHelperDelegateImpl::DeprecatedGetProfile(
   return profile_manager->GetProfile(path);
 }
 
-const base::FilePath* ProfileHelperDelegateImpl::GetUserDataDir() {
+const base::FilePath* BrowserContextHelperDelegateImpl::GetUserDataDir() {
   // profile_manager can be null in unit tests.
   auto* profile_manager = g_browser_process->profile_manager();
   if (!profile_manager)
