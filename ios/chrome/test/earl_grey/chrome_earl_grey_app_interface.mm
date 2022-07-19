@@ -805,6 +805,12 @@ NSString* SerializedValue(const base::Value* value) {
   chrome_test_util::AddTypedURLToFakeSyncServer(base::SysNSStringToUTF8(URL));
 }
 
++ (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
+               lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp {
+  chrome_test_util::AddDeviceInfoToFakeSyncServer(
+      base::SysNSStringToUTF8(deviceName), lastUpdatedTimestamp);
+}
+
 + (void)addHistoryServiceTypedURL:(NSString*)URL {
   chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)));
 }

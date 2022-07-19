@@ -14,15 +14,19 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"
 #include "components/sync/base/pref_names.h"
+#import "components/sync/base/time.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/nigori/nigori_test_utils.h"
+#import "components/sync/protocol/device_info_specifics.pb.h"
+#import "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
@@ -31,6 +35,7 @@
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
+#import "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -335,6 +340,28 @@ void AddTypedURLToFakeSyncServer(const std::string& url) {
           /*non_unique_name=*/std::string(), /*client_tag=*/url,
           entitySpecifics, 12345, 12345);
   gSyncFakeServer->InjectEntity(std::move(entity));
+}
+
+void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
+                                   base::Time last_updated_timestamp) {
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::DeviceInfoSpecifics& device_info = *specifics.mutable_device_info();
+  device_info.set_cache_guid("cache_guid_" + device_name);
+  device_info.set_client_name(device_name);
+  device_info.set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_PHONE);
+  device_info.set_sync_user_agent("UserAgent");
+  device_info.set_chrome_version("1.0");
+  device_info.set_signin_scoped_device_id("Id");
+  int64_t mtime = syncer::TimeToProtoTime(last_updated_timestamp);
+  device_info.set_last_updated_timestamp(mtime);
+  device_info.mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
+      true);
+
+  gSyncFakeServer->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          "non_unique_name",
+          syncer::DeviceInfoUtil::SpecificsToTag(device_info), specifics,
+          /*creation_time=*/mtime, mtime));
 }
 
 BOOL IsTypedUrlPresentOnClient(const GURL& url,

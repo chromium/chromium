@@ -405,6 +405,10 @@
 // Injects typed URL to sync FakeServer.
 + (void)addFakeSyncServerTypedURL:(NSString*)URL;
 
+// Injects device info to sync FakeServer.
++ (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
+               lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
+
 // Adds typed URL into HistoryService.
 + (void)addHistoryServiceTypedURL:(NSString*)URL;
 

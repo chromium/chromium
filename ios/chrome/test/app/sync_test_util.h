@@ -12,6 +12,10 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace chrome_test_util {
 
 // Whether or not the fake sync server has already been setup by
@@ -103,6 +107,10 @@ void AddTypedURLToClient(const GURL& url);
 
 // Injects a typed URL into the fake sync server.
 void AddTypedURLToFakeSyncServer(const std::string& url);
+
+// Injects a device info into the fake sync server.
+void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
+                                   base::Time last_updated_timestamp);
 
 // Returns YES if the provided |url| is present (or not) if |expected_present|
 // is YES (or NO).

@@ -811,6 +811,12 @@ UIWindow* GetAnyKeyWindow() {
                                                          title:title];
 }
 
+- (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
+               lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp {
+  [ChromeEarlGreyAppInterface addFakeSyncServerDeviceInfo:deviceName
+                                     lastUpdatedTimestamp:lastUpdatedTimestamp];
+}
+
 - (void)addFakeSyncServerLegacyBookmarkWithURL:(const GURL&)URL
                                          title:(const std::string&)UTF8Title
                      originator_client_item_id:

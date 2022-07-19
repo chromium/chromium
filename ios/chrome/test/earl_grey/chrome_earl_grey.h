@@ -227,6 +227,10 @@ UIWindow* GetAnyKeyWindow();
 // Injects typed URL to sync FakeServer.
 - (void)addFakeSyncServerTypedURL:(const GURL&)URL;
 
+// Injects device info to sync FakeServer.
+- (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
+               lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
+
 // Triggers a sync cycle for a |type|.
 - (void)triggerSyncCycleForType:(syncer::ModelType)type;
 
