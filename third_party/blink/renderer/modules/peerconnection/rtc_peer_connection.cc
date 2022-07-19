@@ -312,16 +312,6 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
       !RuntimeEnabledFeatures::RTCUnifiedPlanByDefaultEnabled()) {
     web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
   }
-  // Only on Fuchsia is it still possible to overwrite the default sdpSemantics
-  // value in JavaScript.
-  // TODO(https://crbug.com/1302249): Don't support Plan B on Fuchsia either,
-  // delete Plan B from all of Chromium.
-#if BUILDFLAG(IS_FUCHSIA)
-  if (configuration->hasSdpSemantics() &&
-      configuration->sdpSemantics() == "plan-b") {
-    web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
-  }
-#endif
   if (web_configuration.sdp_semantics == webrtc::SdpSemantics::kPlanB) {
     Deprecation::CountDeprecation(
         context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);

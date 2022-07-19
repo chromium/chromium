@@ -587,40 +587,6 @@ TEST_F(RTCPeerConnectionTest,
   EXPECT_FALSE(pc->GetTrackForTesting(track_component.Get()));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-
-TEST_F(RTCPeerConnectionTest,
-       CheckForComplexSdpWithSdpSemanticsPlanBOnFuchsia) {
-  V8TestingScope scope;
-  Persistent<RTCPeerConnection> pc = CreatePC(scope, "plan-b");
-  RTCSessionDescriptionInit* sdp = RTCSessionDescriptionInit::Create();
-  sdp->setType("offer");
-  sdp->setSdp(kOfferSdpUnifiedPlanMultipleAudioTracks);
-  ASSERT_TRUE(
-      pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)).has_value());
-  ASSERT_EQ(pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)),
-            ComplexSdpCategory::kUnifiedPlanExplicitSemantics);
-  sdp->setSdp(kOfferSdpPlanBMultipleAudioTracks);
-  ASSERT_TRUE(
-      pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)).has_value());
-  ASSERT_EQ(pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)),
-            ComplexSdpCategory::kPlanBExplicitSemantics);
-  sdp->setSdp("invalid sdp");
-  ASSERT_TRUE(
-      pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)).has_value());
-  ASSERT_EQ(pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)),
-            ComplexSdpCategory::kErrorExplicitSemantics);
-  // No Complex SDP is detected if only a single track per m= section is used.
-  sdp->setSdp(kOfferSdpUnifiedPlanSingleAudioSingleVideo);
-  ASSERT_FALSE(
-      pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)).has_value());
-  sdp->setSdp(kOfferSdpPlanBSingleAudioSingleVideo);
-  ASSERT_FALSE(
-      pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)).has_value());
-}
-
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 TEST_F(RTCPeerConnectionTest, CheckForComplexSdpWithSdpSemanticsUnifiedPlan) {
   V8TestingScope scope;
   Persistent<RTCPeerConnection> pc = CreatePC(scope, "unified-plan");
@@ -1075,36 +1041,6 @@ TEST_F(RTCPeerConnectionTest, SdpSemanticsUseCounters) {
     EXPECT_TRUE(scope.GetDocument().IsUseCounted(
         WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
   }
-#if BUILDFLAG(IS_FUCHSIA)
-  // Constructor with {sdpSemantics:"plan-b"}.
-  {
-    V8TestingScope scope;
-    RTCPeerConnection* pc = CreatePC(scope, "plan-b");
-    // Use counters reflect the constructor's sdpSemantics.
-    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
-        WebFeature::kRTCPeerConnectionConstructedWithPlanB));
-    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-        WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan));
-    // Setting simple Plan B SDP does not affect use counters.
-    pc->setRemoteDescription(
-        scope.GetScriptState(),
-        CreateSdp("offer", kOfferSdpPlanBSingleAudioSingleVideo),
-        scope.GetExceptionState());
-    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
-    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
-    // Setting complex Plan B SDP does affect use counters.
-    pc->setRemoteDescription(
-        scope.GetScriptState(),
-        CreateSdp("offer", kOfferSdpPlanBMultipleAudioTracks),
-        scope.GetExceptionState());
-    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
-        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
-    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
-  }
-#endif  // BUILDFLAG(IS_FUCHSIA)
   // Constructor with {sdpSemantics:"unified-plan"}.
   {
     V8TestingScope scope;
