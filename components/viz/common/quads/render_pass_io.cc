@@ -512,8 +512,8 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
     case cc::FilterOperation::DROP_SHADOW:
       dict.SetKey("drop_shadow_offset",
                   PointToDict(filter.drop_shadow_offset()));
-      dict.SetIntKey("drop_shadow_color",
-                     base::bit_cast<int>(filter.drop_shadow_color()));
+      dict.SetKey("drop_shadow_color",
+                  SkColor4fToDict(filter.drop_shadow_color()));
       break;
     case cc::FilterOperation::REFERENCE:
       dict.SetStringKey("image_filter",
@@ -548,7 +548,6 @@ bool FilterOperationFromDict(const base::Value& dict,
       dict.FindDoubleKey("outer_threshold");
   const base::Value* drop_shadow_offset =
       dict.FindDictKey("drop_shadow_offset");
-  absl::optional<int> drop_shadow_color = dict.FindIntKey("drop_shadow_color");
   const std::string* image_filter = dict.FindStringKey("image_filter");
   const base::Value* matrix = dict.FindListKey("matrix");
   absl::optional<int> zoom_inset = dict.FindIntKey("zoom_inset");
@@ -580,13 +579,16 @@ bool FilterOperationFromDict(const base::Value& dict,
     } break;
     case cc::FilterOperation::DROP_SHADOW: {
       gfx::Point offset;
-      if (!drop_shadow_offset || !drop_shadow_color ||
-          !PointFromDict(*drop_shadow_offset, &offset)) {
+      if (!drop_shadow_offset || !PointFromDict(*drop_shadow_offset, &offset)) {
         return false;
       }
       filter.set_drop_shadow_offset(offset);
-      filter.set_drop_shadow_color(
-          base::bit_cast<SkColor>(drop_shadow_color.value()));
+
+      SkColor4f t_drop_shadow_color;
+      if (!ColorFromDict(dict, "drop_shadow_color", &t_drop_shadow_color)) {
+        return false;
+      }
+      filter.set_drop_shadow_color(t_drop_shadow_color);
     } break;
     case cc::FilterOperation::REFERENCE:
       if (!image_filter)

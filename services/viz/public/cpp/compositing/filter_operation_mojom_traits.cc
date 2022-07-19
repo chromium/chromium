@@ -128,10 +128,12 @@ bool StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation>::
     case cc::FilterOperation::DROP_SHADOW: {
       out->set_amount(data.amount());
       gfx::Point offset;
-      if (!data.ReadDropShadowOffset(&offset))
+      SkColor4f drop_shadow_color;
+      if (!data.ReadDropShadowOffset(&offset) ||
+          !data.ReadDropShadowColor(&drop_shadow_color))
         return false;
       out->set_drop_shadow_offset(offset);
-      out->set_drop_shadow_color(data.drop_shadow_color());
+      out->set_drop_shadow_color(drop_shadow_color);
       return true;
     }
     case cc::FilterOperation::COLOR_MATRIX: {

@@ -898,7 +898,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
   child->SetTransform(transform);
   FilterOperations filters;
   filters.Append(FilterOperation::CreateDropShadowFilter(
-      gfx::Point(10.0f, 10.0f), 0.0f, SK_ColorBLACK));
+      gfx::Point(10.0f, 10.0f), 0.0f, SkColors::kBlack));
   child->SetFilters(filters);
 
   background->AddChild(child);

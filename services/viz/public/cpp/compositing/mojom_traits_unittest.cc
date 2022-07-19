@@ -187,7 +187,7 @@ TEST_F(StructTraitsTest, FilterOperationBlur) {
 
 TEST_F(StructTraitsTest, FilterOperationDropShadow) {
   cc::FilterOperation input = cc::FilterOperation::CreateDropShadowFilter(
-      gfx::Point(4, 4), 4.0f, SkColorSetARGB(255, 40, 0, 0));
+      gfx::Point(4, 4), 4.0f, SkColor4f{0.15f, 0.0f, 0.0f, 1.0f});
 
   cc::FilterOperation output;
   mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(input, output);

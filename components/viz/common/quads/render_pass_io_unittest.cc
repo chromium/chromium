@@ -55,7 +55,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     // Add three backdrop filters.
     cc::FilterOperation drop_shadow =
         cc::FilterOperation::CreateDropShadowFilter(gfx::Point(1.0f, 2.0f),
-                                                    0.8f, SK_ColorYELLOW);
+                                                    0.8f, SkColors::kYellow);
     render_pass0->backdrop_filters.Append(drop_shadow);
     cc::FilterOperation invert = cc::FilterOperation::CreateInvertFilter(0.64f);
     render_pass0->backdrop_filters.Append(invert);
@@ -88,7 +88,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     EXPECT_EQ(cc::FilterOperation::DROP_SHADOW,
               render_pass1->backdrop_filters.at(0).type());
     EXPECT_EQ(0.8f, render_pass1->backdrop_filters.at(0).amount());
-    EXPECT_EQ(SK_ColorYELLOW,
+    EXPECT_EQ(SkColors::kYellow,
               render_pass1->backdrop_filters.at(0).drop_shadow_color());
     EXPECT_EQ(gfx::Point(1.0f, 2.0f),
               render_pass1->backdrop_filters.at(0).drop_shadow_offset());

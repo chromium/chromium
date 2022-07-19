@@ -71,8 +71,9 @@ void CompositorFilterOperations::AppendDropShadowFilter(gfx::Point offset,
                                                         float std_deviation,
                                                         const Color& color) {
   gfx::Point gfx_offset(offset.x(), offset.y());
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   filter_operations_.Append(cc::FilterOperation::CreateDropShadowFilter(
-      gfx_offset, std_deviation, color.Rgb()));
+      gfx_offset, std_deviation, SkColor4f::FromColor(color.Rgb())));
 }
 
 void CompositorFilterOperations::AppendColorMatrixFilter(

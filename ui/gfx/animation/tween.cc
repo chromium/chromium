@@ -149,9 +149,41 @@ uint8_t BlendColorComponents(uint8_t start,
   return FloatToColorByte(blended_premultiplied / blended_alpha);
 }
 
+float BlendColorComponentsFloat(float start,
+                                float target,
+                                float start_alpha,
+                                float target_alpha,
+                                float blended_alpha,
+                                double progress) {
+  // Since progress can be outside [0, 1], blending can produce a value outside
+  // [0, 1].
+  float blended_premultiplied = Tween::FloatValueBetween(
+      progress, start * start_alpha, target * target_alpha);
+  return blended_premultiplied / blended_alpha;
+}
+
 }  // namespace
 
 // static
+SkColor4f Tween::ColorValueBetween(double value,
+                                   SkColor4f start,
+                                   SkColor4f target) {
+  float start_a = start.fA;
+  float target_a = target.fA;
+  float blended_a = FloatValueBetween(value, start_a, target_a);
+  if (blended_a <= 0.f)
+    return SkColors::kTransparent;
+  blended_a = std::min(blended_a, 1.f);
+
+  auto blended_r = BlendColorComponentsFloat(start.fR, target.fR, start_a,
+                                             target_a, blended_a, value);
+  auto blended_g = BlendColorComponentsFloat(start.fG, target.fG, start_a,
+                                             target_a, blended_a, value);
+  auto blended_b = BlendColorComponentsFloat(start.fB, target.fB, start_a,
+                                             target_a, blended_a, value);
+
+  return SkColor4f{blended_r, blended_g, blended_b, blended_a};
+}
 SkColor Tween::ColorValueBetween(double value, SkColor start, SkColor target) {
   float start_a = SkColorGetA(start) / 255.f;
   float target_a = SkColorGetA(target) / 255.f;

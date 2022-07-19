@@ -75,7 +75,7 @@ class CC_PAINT_EXPORT FilterOperation {
     return drop_shadow_offset_;
   }
 
-  SkColor drop_shadow_color() const {
+  SkColor4f drop_shadow_color() const {
     DCHECK_EQ(type_, DROP_SHADOW);
     return drop_shadow_color_;
   }
@@ -145,7 +145,7 @@ class CC_PAINT_EXPORT FilterOperation {
 
   static FilterOperation CreateDropShadowFilter(const gfx::Point& offset,
                                                 float std_deviation,
-                                                SkColor color) {
+                                                SkColor4f color) {
     return FilterOperation(DROP_SHADOW, offset, std_deviation, color);
   }
 
@@ -206,7 +206,7 @@ class CC_PAINT_EXPORT FilterOperation {
     drop_shadow_offset_ = offset;
   }
 
-  void set_drop_shadow_color(SkColor color) {
+  void set_drop_shadow_color(SkColor4f color) {
     DCHECK_EQ(type_, DROP_SHADOW);
     drop_shadow_color_ = color;
   }
@@ -265,7 +265,7 @@ class CC_PAINT_EXPORT FilterOperation {
   FilterOperation(FilterType type,
                   const gfx::Point& offset,
                   float stdDeviation,
-                  SkColor color);
+                  SkColor4f color);
 
   FilterOperation(FilterType, const Matrix& matrix);
 
@@ -284,7 +284,7 @@ class CC_PAINT_EXPORT FilterOperation {
   float amount_;
   float outer_threshold_;
   gfx::Point drop_shadow_offset_;
-  SkColor drop_shadow_color_;
+  SkColor4f drop_shadow_color_;
   sk_sp<PaintFilter> image_filter_;
   Matrix matrix_;
   int zoom_inset_;

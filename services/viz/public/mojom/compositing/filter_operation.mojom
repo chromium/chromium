@@ -6,6 +6,7 @@ module viz.mojom;
 
 import "services/viz/public/mojom/compositing/paint_filter.mojom";
 import "skia/public/mojom/tile_mode.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum FilterType {
@@ -34,7 +35,7 @@ struct FilterOperation {
   float amount;
   float outer_threshold;
   gfx.mojom.Point drop_shadow_offset;
-  uint32 drop_shadow_color;
+  skia.mojom.SkColor4f drop_shadow_color;
   PaintFilter image_filter;
   array<float, 20>? matrix;
   int32 zoom_inset;

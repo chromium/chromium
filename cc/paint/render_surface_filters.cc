@@ -198,12 +198,11 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
                                                    std::move(image_filter));
         break;
       case FilterOperation::DROP_SHADOW:
-        // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
         image_filter = sk_make_sp<DropShadowPaintFilter>(
             SkIntToScalar(op.drop_shadow_offset().x()),
             SkIntToScalar(op.drop_shadow_offset().y()),
             SkIntToScalar(op.amount()), SkIntToScalar(op.amount()),
-            SkColor4f::FromColor(op.drop_shadow_color()),
+            op.drop_shadow_color(),
             DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
             std::move(image_filter));
         break;

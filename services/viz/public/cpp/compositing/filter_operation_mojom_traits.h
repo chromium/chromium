@@ -10,8 +10,10 @@
 #include "cc/paint/paint_filter.h"
 #include "services/viz/public/cpp/compositing/paint_filter_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/filter_operation.mojom-shared.h"
+#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
@@ -42,9 +44,9 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
     return operation.drop_shadow_offset();
   }
 
-  static uint32_t drop_shadow_color(const cc::FilterOperation& operation) {
+  static SkColor4f drop_shadow_color(const cc::FilterOperation& operation) {
     if (operation.type() != cc::FilterOperation::DROP_SHADOW)
-      return 0;
+      return SkColors::kTransparent;
     return operation.drop_shadow_color();
   }
 

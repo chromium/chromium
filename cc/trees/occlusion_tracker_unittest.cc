@@ -1459,8 +1459,8 @@ class OcclusionTrackerTestPixelsNeededForDropShadowBackdropFilter
     scale_by_half.Scale(0.5, 0.5);
 
     FilterOperations filters;
-    filters.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(10, 10),
-                                                           5, SK_ColorBLACK));
+    filters.Append(FilterOperation::CreateDropShadowFilter(
+        gfx::Point(10, 10), 5, SkColors::kBlack));
 
     enum Direction {
       LEFT,

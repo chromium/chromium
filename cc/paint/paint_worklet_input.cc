@@ -55,7 +55,7 @@ PaintWorkletInput::PropertyValue::PropertyValue() = default;
 PaintWorkletInput::PropertyValue::PropertyValue(float value)
     : float_value(value) {}
 
-PaintWorkletInput::PropertyValue::PropertyValue(SkColor value)
+PaintWorkletInput::PropertyValue::PropertyValue(SkColor4f value)
     : color_value(value) {}
 
 PaintWorkletInput::PropertyValue::PropertyValue(const PropertyValue& other) =

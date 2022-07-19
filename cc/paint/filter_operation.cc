@@ -54,7 +54,7 @@ FilterOperation::FilterOperation(FilterType type, float amount)
       amount_(amount),
       outer_threshold_(0),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0) {
   DCHECK_NE(type_, DROP_SHADOW);
   DCHECK_NE(type_, COLOR_MATRIX);
@@ -69,7 +69,7 @@ FilterOperation::FilterOperation(FilterType type,
       amount_(amount),
       outer_threshold_(0),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0),
       blur_tile_mode_(tile_mode) {
   DCHECK_EQ(type_, BLUR);
@@ -79,7 +79,7 @@ FilterOperation::FilterOperation(FilterType type,
 FilterOperation::FilterOperation(FilterType type,
                                  const gfx::Point& offset,
                                  float stdDeviation,
-                                 SkColor color)
+                                 SkColor4f color)
     : type_(type),
       amount_(stdDeviation),
       outer_threshold_(0),
@@ -95,7 +95,7 @@ FilterOperation::FilterOperation(FilterType type, const Matrix& matrix)
       amount_(0),
       outer_threshold_(0),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0) {
   DCHECK_EQ(type_, COLOR_MATRIX);
   memcpy(matrix_, matrix, sizeof(matrix_));
@@ -106,7 +106,7 @@ FilterOperation::FilterOperation(FilterType type, float amount, int inset)
       amount_(amount),
       outer_threshold_(0),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(inset) {
   DCHECK_EQ(type_, ZOOM);
   memset(matrix_, 0, sizeof(matrix_));
@@ -119,7 +119,7 @@ FilterOperation::FilterOperation(FilterType type,
       amount_(amount),
       outer_threshold_(outer_threshold),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0) {
   DCHECK_EQ(type_, STRETCH);
   memset(matrix_, 0, sizeof(matrix_));
@@ -131,7 +131,7 @@ FilterOperation::FilterOperation(FilterType type,
       amount_(0),
       outer_threshold_(0),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       image_filter_(std::move(image_filter)),
       zoom_inset_(0) {
   DCHECK_EQ(type_, REFERENCE);
@@ -146,7 +146,7 @@ FilterOperation::FilterOperation(FilterType type,
       amount_(inner_threshold),
       outer_threshold_(outer_threshold),
       drop_shadow_offset_(0, 0),
-      drop_shadow_color_(0),
+      drop_shadow_color_(SkColors::kTransparent),
       zoom_inset_(0),
       shape_(shape) {
   DCHECK_EQ(type_, ALPHA_THRESHOLD);
@@ -190,7 +190,7 @@ static FilterOperation CreateNoOpFilter(FilterOperation::FilterType type) {
       return FilterOperation::CreateBlurFilter(0.f);
     case FilterOperation::DROP_SHADOW:
       return FilterOperation::CreateDropShadowFilter(gfx::Point(0, 0), 0.f,
-                                                     SK_ColorTRANSPARENT);
+                                                     SkColors::kTransparent);
     case FilterOperation::COLOR_MATRIX: {
       FilterOperation::Matrix matrix = {};
       matrix[0] = matrix[6] = matrix[12] = matrix[18] = 1.f;
@@ -318,7 +318,8 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
     case FilterOperation::DROP_SHADOW:
       value->SetDouble("std_deviation", amount_);
       MathUtil::AddToTracedValue("offset", drop_shadow_offset_, value);
-      value->SetInteger("color", drop_shadow_color_);
+      // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+      value->SetInteger("color", drop_shadow_color_.toSkColor());
       break;
     case FilterOperation::COLOR_MATRIX: {
       value->BeginArray("matrix");
