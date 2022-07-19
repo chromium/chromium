@@ -968,6 +968,13 @@ float DirectRenderer::CurrentFrameSDRWhiteLevel() const {
   return current_frame()->display_color_spaces.GetSDRMaxLuminanceNits();
 }
 
+bool DirectRenderer::ShouldApplyGradientMask(const DrawQuad* quad) const {
+  if (!quad->shared_quad_state->mask_filter_info.HasGradientMask())
+    return false;
+
+  return true;
+}
+
 gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {
   return current_frame()->display_color_spaces.GetOutputColorSpace(
       current_frame()->root_render_pass->content_color_usage,

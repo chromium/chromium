@@ -125,16 +125,20 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     ASSERT_TRUE(sqs1);
     gfx::Transform transform;
     transform.MakeIdentity();
+    gfx::LinearGradient gradient_mask(40);
+    gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
+    gradient_mask.AddStep(100, 255);
     sqs1->SetAll(
         transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),
-        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f)),
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f),
+                            gradient_mask),
         gfx::Rect(5, 20, 1000, 200), false, 0.5f, SkBlendMode::kDstOver, 101);
     sqs1->is_fast_rounded_corner = true;
     sqs1->de_jelly_delta_y = 0.7f;
   }
   base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
-  EXPECT_TRUE(render_pass1);
+  ASSERT_TRUE(render_pass1);
   {
     // Verify two SQS.
     EXPECT_EQ(2u, render_pass1->shared_quad_state_list.size());
@@ -145,6 +149,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(gfx::Rect(), sqs0->quad_layer_rect);
     EXPECT_EQ(gfx::Rect(), sqs0->visible_quad_layer_rect);
     EXPECT_FALSE(sqs0->mask_filter_info.HasRoundedCorners());
+    EXPECT_FALSE(sqs0->mask_filter_info.HasGradientMask());
     EXPECT_EQ(absl::nullopt, sqs0->clip_rect);
     EXPECT_TRUE(sqs0->are_contents_opaque);
     EXPECT_EQ(1.0f, sqs0->opacity);
@@ -163,6 +168,13 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
               sqs1->mask_filter_info.rounded_corner_bounds().GetType());
     EXPECT_EQ(1.5f,
               sqs1->mask_filter_info.rounded_corner_bounds().GetSimpleRadius());
+    ASSERT_TRUE(sqs1->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(40, sqs1->mask_filter_info.gradient_mask()->angle());
+    EXPECT_EQ(2u, sqs1->mask_filter_info.gradient_mask()->step_count());
+    EXPECT_EQ(gfx::LinearGradient::Step({0, 0}),
+              sqs1->mask_filter_info.gradient_mask()->steps()[0]);
+    EXPECT_EQ(gfx::LinearGradient::Step({100, 255}),
+              sqs1->mask_filter_info.gradient_mask()->steps()[1]);
     EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f), sqs1->mask_filter_info.bounds());
     EXPECT_EQ(gfx::Rect(5, 20, 1000, 200), sqs1->clip_rect);
     EXPECT_FALSE(sqs1->are_contents_opaque);

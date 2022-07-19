@@ -54,9 +54,9 @@ class GEOMETRY_SKIA_EXPORT LinearGradient {
 
   // Gets/Sets an angle (in degrees).
   int16_t angle() const { return angle_; }
-  void set_angle(int16_t degree) { angle_ = degree % 360; }
+  void set_angle(int16_t degree) { angle_ = degree; }
 
-  // Reverse the step 180 degree.
+  // Reverse the steps.
   void ReverseSteps();
 
   // Transform the angle.

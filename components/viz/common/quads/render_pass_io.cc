@@ -377,11 +377,62 @@ bool RRectFFromDict(const base::Value& dict, gfx::RRectF* out) {
   return true;
 }
 
-base::Value MaskFilterInfoToDict(const gfx::MaskFilterInfo& mask_filter_info) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("rounded_corner_bounds",
-              RRectFToDict(mask_filter_info.rounded_corner_bounds()));
+base::Value::Dict LinearGradientToDict(
+    const gfx::LinearGradient& gradient_mask) {
+  base::Value::Dict dict;
+  dict.Set("angle", static_cast<double>(gradient_mask.angle()));
+  dict.Set("step_count", static_cast<int>(gradient_mask.step_count()));
+
+  base::Value::List steps;
+  for (size_t i = 0; i < gradient_mask.step_count(); ++i) {
+    base::Value::Dict step_dict;
+    step_dict.Set("percent",
+                  static_cast<double>(gradient_mask.steps()[i].percent));
+    step_dict.Set("alpha", static_cast<int>(gradient_mask.steps()[i].alpha));
+    steps.Append(std::move(step_dict));
+  }
+  dict.Set("steps", std::move(steps));
+
   return dict;
+}
+
+bool LinearGradientFromDict(const base::Value::Dict& dict,
+                            gfx::LinearGradient* out) {
+  absl::optional<double> angle = dict.FindDouble("angle");
+  absl::optional<int> step_count = dict.FindInt("step_count");
+  if (!angle || !step_count)
+    return false;
+
+  gfx::LinearGradient gradient_mask = gfx::LinearGradient(*angle);
+  const base::Value::List* steps = dict.FindList("steps");
+  if (!steps)
+    return false;
+  for (const base::Value& v : *steps) {
+    const base::Value::Dict* step = v.GetIfDict();
+    if (!step)
+      return false;
+
+    absl::optional<double> percent = step->FindDouble("percent");
+    absl::optional<int> alpha = step->FindInt("alpha");
+    if (!percent || !alpha)
+      return false;
+
+    gradient_mask.AddStep(*percent, *alpha);
+  }
+
+  *out = gradient_mask;
+  return true;
+}
+
+base::Value MaskFilterInfoToDict(const gfx::MaskFilterInfo& mask_filter_info) {
+  base::Value::Dict dict;
+  dict.Set("rounded_corner_bounds",
+           RRectFToDict(mask_filter_info.rounded_corner_bounds()));
+  if (mask_filter_info.HasGradientMask()) {
+    dict.Set("gradient_mask",
+             LinearGradientToDict(*mask_filter_info.gradient_mask()));
+  }
+  return base::Value(std::move(dict));
 }
 
 bool MaskFilterInfoFromDict(const base::Value& dict, gfx::MaskFilterInfo* out) {
@@ -395,7 +446,19 @@ bool MaskFilterInfoFromDict(const base::Value& dict, gfx::MaskFilterInfo* out) {
   gfx::RRectF t_rounded_corner_bounds;
   if (!RRectFFromDict(*rounded_corner_bounds, &t_rounded_corner_bounds))
     return false;
-  *out = gfx::MaskFilterInfo(t_rounded_corner_bounds);
+
+  const base::Value::Dict* gradient_mask =
+      dict.FindDictKey("gradient_mask")->GetIfDict();
+  if (!gradient_mask) {
+    *out = gfx::MaskFilterInfo(t_rounded_corner_bounds);
+    return true;
+  }
+
+  gfx::LinearGradient t_gradient_mask;
+  if (!LinearGradientFromDict(*gradient_mask, &t_gradient_mask))
+    return false;
+
+  *out = gfx::MaskFilterInfo(t_rounded_corner_bounds, t_gradient_mask);
   return true;
 }
 

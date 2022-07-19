@@ -70,7 +70,9 @@
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_transform.h"
+#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -1158,6 +1160,9 @@ void SkiaRenderer::PrepareCanvas(
     current_canvas_->clipRRect(
         static_cast<SkRRect>(mask_filter_info->rounded_corner_bounds()),
         /*doAntiAlias=*/true);
+
+    if (mask_filter_info->HasGradientMask())
+      PrepareGradient(mask_filter_info);
   }
 
   if (cdt) {
@@ -1165,6 +1170,89 @@ void SkiaRenderer::PrepareCanvas(
     gfx::TransformToFlattenedSkMatrix(*cdt, &m);
     current_canvas_->concat(m);
   }
+}
+
+#define MaskColor(a) SkColorSetARGB(a, a, a, a);
+
+void SkiaRenderer::PrepareGradient(
+    const absl::optional<gfx::MaskFilterInfo>& mask_filter_info) {
+  if (!mask_filter_info || !mask_filter_info->HasGradientMask())
+    return;
+
+  const gfx::RectF rect = mask_filter_info->bounds();
+  const absl::optional<gfx::LinearGradient>& gradient_mask =
+      mask_filter_info->gradient_mask();
+  const int16_t angle = gradient_mask->angle() % 360;
+
+  // For positive angles, the start point is the bottom left rect point. For
+  // negative angles, the start point is the upper left rect point.
+  bool negative = angle < 0;
+  SkPoint start_end[2];
+  start_end[0] = {0, negative ? 0 : rect.height()};
+
+  // We explicitly specify the end point when cos(angle) = 0 and for axis
+  // aligned angles, where complex computation is not required to determine the
+  // end point.
+  switch (std::abs(angle)) {
+    case 0:
+      ABSL_FALLTHROUGH_INTENDED;
+    case 180:
+      ABSL_FALLTHROUGH_INTENDED;
+    case 360:
+      start_end[1] = {rect.width(), negative ? 0 : rect.height()};
+      break;
+    case 90:
+      ABSL_FALLTHROUGH_INTENDED;
+    case 270:
+      start_end[1] = {0, negative ? rect.height() : 0};
+      break;
+    // For non-axis aligned angles, the end point is the intersection of
+    // the gradient line and the normal line. The normal line is orthogonal to
+    // the gradient line and intersects the corner diagonal from the start
+    // point.
+    // Positive angle gradient line example:
+    //     +
+    //  +-/-------+
+    //  |/ )      |
+    //  +---------+
+    //
+    // Negative angle gradient line example:
+    //  +---------+
+    //  |\ )      |
+    //  +-\-------+
+    //     +
+    default: {
+      // TODO(crbug.com/1039003): add computation for angles >90 deg.
+      float rad_angle = gfx::DegToRad(static_cast<float>(angle));
+      float s = std::sin(rad_angle);
+      float c = std::cos(rad_angle);
+      float t = std::tan(rad_angle);
+
+      float a = rect.width() * t;
+      float b = rect.height() - a;
+      float cc = b * s;
+      float d = cc * c;
+      float e = cc * s;
+      float end_x = (rect.width() + d);
+      float end_y = negative ? (a + e) : (rect.height() - a - e);
+
+      start_end[1] = {end_x, end_y};
+    }
+  }
+
+  SkScalar positions[gfx::LinearGradient::kMaxStepSize];
+  SkColor gradient_colors[gfx::LinearGradient::kMaxStepSize];
+
+  size_t i = 0;
+  for (; i < gradient_mask->step_count(); ++i) {
+    positions[i] = gradient_mask->steps()[i].percent / 100.f;
+    gradient_colors[i] = MaskColor(gradient_mask->steps()[i].alpha);
+  }
+
+  SkPoint::Offset(start_end, /*count=*/2, rect.x(), rect.y());
+  sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
+      start_end, gradient_colors, positions, /*count=*/i, SkTileMode::kClamp);
+  current_canvas_->clipShader(std::move(gradient));
 }
 
 void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
@@ -1423,10 +1511,10 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
   // Determine final rounded rect clip geometry. We transform it from target
   // space to window space to make batching and canvas preparation easier
   // (otherwise we'd have to separate those two matrices in the CDT).
-  if (ShouldApplyRoundedCorner(quad)) {
+  if (ShouldApplyRoundedCorner(quad) || ShouldApplyGradientMask(quad)) {
     // Transform by the window and projection matrix to go from target to
     // device space, which should always be a scale+translate.
-    SkRRect corner_bounds = SkRRect(
+    SkRRect corner_bounds = static_cast<SkRRect>(
         quad->shared_quad_state->mask_filter_info.rounded_corner_bounds());
     SkMatrix to_device;
     gfx::TransformToFlattenedSkMatrix(target_to_device, &to_device);
@@ -1434,16 +1522,20 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
     // SkRRect::transform should always succeed here, since we know
     // corner_bounds is not empty and 'to_device' should just be scale+translate
     SkRRect device_bounds;
-    if (corner_bounds.transform(to_device, &device_bounds)) {
-      params.mask_filter_info.emplace(
-          gfx::MaskFilterInfo(gfx::RRectF(device_bounds)));
-    } else {
+    if (!corner_bounds.transform(to_device, &device_bounds)) {
       // TODO(crbug/1220004): We used to assert transform succeeded, but an
       // unreproduceable fuzzer test case could trip it. To be safe, and to
       // match the most likely scenario that the device transform has scale=0,
       // just force the clip to empty so we don't draw anything.
-      params.mask_filter_info.emplace(
-          gfx::MaskFilterInfo(gfx::RRectF(SkRRect::MakeEmpty())));
+      params.mask_filter_info.emplace(gfx::RRectF(SkRRect::MakeEmpty()));
+    } else {
+      if (ShouldApplyGradientMask(quad)) {
+        params.mask_filter_info.emplace(
+            gfx::RRectF(device_bounds),
+            quad->shared_quad_state->mask_filter_info.gradient_mask().value());
+      } else {
+        params.mask_filter_info.emplace(gfx::RRectF(device_bounds));
+      }
     }
   }
 
@@ -1623,6 +1715,9 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // bypass rrect separately and update PrepareCanvasForRDQP to apply the
   // additional clip.
   if (ShouldApplyRoundedCorner(quad))
+    return nullptr;
+
+  if (ShouldApplyGradientMask(quad))
     return nullptr;
 
   // The quad type knows how to apply RPDQ filters, and the quad settings can

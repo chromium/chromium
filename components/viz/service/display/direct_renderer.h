@@ -286,6 +286,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   }
 
   bool ShouldApplyRoundedCorner(const DrawQuad* quad) const;
+  bool ShouldApplyGradientMask(const DrawQuad* quad) const;
 
   float CurrentFrameSDRWhiteLevel() const;
   gfx::ColorSpace RootRenderPassColorSpace() const;

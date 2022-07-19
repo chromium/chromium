@@ -4411,7 +4411,7 @@ TEST_P(RendererPixelTest, RoundedCornerSimpleSolidDrawQuad) {
   gfx::RRectF rounded_corner_rrect(gfx::RectF(blue_rect), kCornerRadius);
   SharedQuadState* shared_state_rounded = CreateTestSharedQuadState(
       quad_to_target_transform, viewport_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_rrect, gfx::LinearGradient()));
+      gfx::MaskFilterInfo(rounded_corner_rrect));
 
   auto* blue = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   blue->SetNew(shared_state_rounded, blue_rect, blue_rect, SkColors::kBlue,
@@ -4450,7 +4450,7 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   gfx::RRectF rounded_corner_rrect(gfx::RectF(blue_rect), kCornerRadius);
   SharedQuadState* shared_state_rounded = CreateTestSharedQuadState(
       quad_to_target_transform, viewport_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_rrect, gfx::LinearGradient()));
+      gfx::MaskFilterInfo(rounded_corner_rrect));
 
   const uint8_t colors[] = {0, 0, 255, 255, 0, 0, 255, 255,
                             0, 0, 255, 255, 0, 0, 255, 255};
@@ -4518,7 +4518,7 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
   quad_to_target_transform.Translate(blue_offset_from_target);
   SharedQuadState* shared_state_with_rrect = CreateTestSharedQuadState(
       quad_to_target_transform, child_pass_local_rect, child_pass.get(),
-      gfx::MaskFilterInfo(blue_rrect, gfx::LinearGradient()));
+      gfx::MaskFilterInfo(blue_rrect));
   auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   blue->SetNew(shared_state_with_rrect, blue_rect, blue_rect, SkColors::kBlue,
                false);
@@ -4539,7 +4539,7 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
   gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
   SharedQuadState* pass_shared_state =
       CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
-                                gfx::MaskFilterInfo(rounded_corner_bounds, gfx::LinearGradient()));
+                                gfx::MaskFilterInfo(rounded_corner_bounds));
   CreateTestRenderPassDrawQuad(pass_shared_state, pass_rect, child_pass_id,
                                root_pass.get());
 
@@ -4551,6 +4551,125 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
   path = path.InsertBeforeExtensionASCII(this->renderer_str());
   EXPECT_TRUE(this->RunPixelTest(&pass_list, path,
                                  cc::FuzzyPixelOffByOneComparator(true)));
+}
+
+TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
+  gfx::Rect viewport_rect(this->device_viewport_size_);
+  constexpr int kCornerRadius = 20;
+
+  AggregatedRenderPassId root_pass_id{1};
+  auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+  AggregatedRenderPassId child_pass_id{2};
+  gfx::Rect pass_rect(this->device_viewport_size_);
+  gfx::Rect child_pass_local_rect = gfx::Rect(pass_rect.size());
+  gfx::Transform transform_to_root;
+  transform_to_root.Translate(pass_rect.OffsetFromOrigin());
+  auto child_pass = CreateTestRenderPass(child_pass_id, child_pass_local_rect,
+                                         transform_to_root);
+
+  gfx::Rect white_rect = child_pass_local_rect;
+  SharedQuadState* shared_state_without_rrect =
+      CreateTestSharedQuadState(gfx::Transform(), child_pass_local_rect,
+                                child_pass.get(), gfx::MaskFilterInfo());
+  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  white->SetNew(shared_state_without_rrect, white_rect, white_rect,
+                SkColors::kWhite, false);
+
+  gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
+  gfx::LinearGradient gradient_mask(90);
+  gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
+  gradient_mask.AddStep(50, 255);
+  gradient_mask.AddStep(100, 255);
+  SharedQuadState* pass_shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), pass_rect, root_pass.get(),
+      gfx::MaskFilterInfo(rounded_corner_bounds, gradient_mask));
+  CreateTestRenderPassDrawQuad(pass_shared_state, pass_rect, child_pass_id,
+                               root_pass.get());
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("linear_gradient_render_pass.png")),
+      cc::FuzzyPixelComparator(/*discard_alpha=*/true,
+                               /*error_pixels_percentage_limit=*/0.6f,
+                               /*small_error_pixels_percentage_limit=*/0.f,
+                               /*avg_abs_error_limit=*/255.f,
+                               /*max_abs_error_limit=*/255,
+                               /*small_error_threshold=*/0)));
+}
+
+TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
+  gfx::Rect viewport_rect(this->device_viewport_size_);
+  constexpr int kCornerRadius = 20;
+  constexpr int kInset = 20;
+  constexpr int kBlueCornerRadius = 10;
+
+  AggregatedRenderPassId root_pass_id{1};
+  auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+  AggregatedRenderPassId child_pass_id{2};
+  gfx::Rect pass_rect(this->device_viewport_size_);
+  pass_rect.Inset(kInset);
+  gfx::Rect child_pass_local_rect = gfx::Rect(pass_rect.size());
+  gfx::Transform transform_to_root;
+  transform_to_root.Translate(pass_rect.OffsetFromOrigin());
+  auto child_pass = CreateTestRenderPass(child_pass_id, child_pass_local_rect,
+                                         transform_to_root);
+
+  gfx::Rect blue_rect = child_pass_local_rect;
+  gfx::Vector2dF blue_offset_from_target(-30, 40);
+  gfx::RRectF blue_rrect(gfx::RectF(blue_rect), kBlueCornerRadius);
+  blue_rrect.Offset(blue_offset_from_target);
+  gfx::LinearGradient blue_gradient(0);
+  blue_gradient.AddStep(/*percent=*/0, /*alpha=*/255);
+  blue_gradient.AddStep(100, 0);
+
+  gfx::Transform quad_to_target_transform;
+  quad_to_target_transform.Translate(blue_offset_from_target);
+  SharedQuadState* shared_state_with_rrect = CreateTestSharedQuadState(
+      quad_to_target_transform, child_pass_local_rect, child_pass.get(),
+      gfx::MaskFilterInfo(blue_rrect, blue_gradient));
+  auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  blue->SetNew(shared_state_with_rrect, blue_rect, blue_rect, SkColors::kBlue,
+               false);
+
+  gfx::Rect white_rect = child_pass_local_rect;
+  SharedQuadState* shared_state_without_rrect =
+      CreateTestSharedQuadState(gfx::Transform(), child_pass_local_rect,
+                                child_pass.get(), gfx::MaskFilterInfo());
+  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  white->SetNew(shared_state_without_rrect, white_rect, white_rect,
+                SkColors::kWhite, false);
+
+  gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
+  gfx::LinearGradient gradient_mask(90);
+  gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
+  gradient_mask.AddStep(50, 255);
+  gradient_mask.AddStep(100, 255);
+  SharedQuadState* pass_shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), pass_rect, root_pass.get(),
+      gfx::MaskFilterInfo(rounded_corner_bounds, gradient_mask));
+  CreateTestRenderPassDrawQuad(pass_shared_state, pass_rect, child_pass_id,
+                               root_pass.get());
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(
+          FILE_PATH_LITERAL("multi_linear_gradient_render_pass.png")),
+      cc::FuzzyPixelComparator(/*discard_alpha=*/true,
+                               /*error_pixels_percentage_limit=*/0.6f,
+                               /*small_error_pixels_percentage_limit=*/0.f,
+                               /*avg_abs_error_limit=*/255.f,
+                               /*max_abs_error_limit=*/255,
+                               /*small_error_threshold=*/0)));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
@@ -4570,7 +4689,7 @@ TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
   gfx::Transform quad_to_target_transform;
   SharedQuadState* shared_state_normal = CreateTestSharedQuadState(
       quad_to_target_transform, pass_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_bounds, gfx::LinearGradient()));
+      gfx::MaskFilterInfo(rounded_corner_bounds));
   auto* blue = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   blue->SetNew(shared_state_normal, blue_rect, blue_rect, SkColors::kBlue,
                false);
@@ -4638,24 +4757,21 @@ TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
   ll_rect.set_width(ul_rect.width());
   ll_rect.set_height(lr_rect.height());
 
-  SharedQuadState* shared_state_normal_ul = CreateTestSharedQuadState(
-      gfx::Transform(), pass_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_bounds_ul, gfx::LinearGradient()));
+  SharedQuadState* shared_state_normal_ul =
+      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
+                                gfx::MaskFilterInfo(rounded_corner_bounds_ul));
 
-  SharedQuadState* shared_state_normal_ur = CreateTestSharedQuadState(
-      gfx::Transform(), pass_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_bounds_ur,
-      gfx::LinearGradient()));
+  SharedQuadState* shared_state_normal_ur =
+      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
+                                gfx::MaskFilterInfo(rounded_corner_bounds_ur));
 
-  SharedQuadState* shared_state_normal_lr = CreateTestSharedQuadState(
-      gfx::Transform(), pass_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_bounds_lr,
-      gfx::LinearGradient()));
+  SharedQuadState* shared_state_normal_lr =
+      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
+                                gfx::MaskFilterInfo(rounded_corner_bounds_lr));
 
-  SharedQuadState* shared_state_normal_ll = CreateTestSharedQuadState(
-      gfx::Transform(), pass_rect, root_pass.get(),
-      gfx::MaskFilterInfo(rounded_corner_bounds_ll,
-      gfx::LinearGradient()));
+  SharedQuadState* shared_state_normal_ll =
+      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
+                                gfx::MaskFilterInfo(rounded_corner_bounds_ll));
 
   auto* ul = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   auto* ur = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
