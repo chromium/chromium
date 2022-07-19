@@ -304,13 +304,18 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
   std::string map_key = GetBatteryMapKey(path);
   absl::optional<uint8_t> opt_level;
 
-  // 0-level charge events can come through when devices are created,
-  // usually on boot; for the stylus, convert the level to 'not present',
-  // as they are not informative.
+  // Discard: -1 level charge events, they, if they exist, are invalid.
+  //          0-level discharge events can come through when hid devices
+  //          are created by the screen, and are not informative.
+  // 0-level charging events are possible for peripheral wireless charging,
+  // and are valid.
   if (level == -1 ||
       (level == 0 &&
        (type == BatteryInfo::PeripheralType::kStylusViaScreen ||
-        type == BatteryInfo::PeripheralType::kStylusViaCharger))) {
+        type == BatteryInfo::PeripheralType::kStylusViaCharger) &&
+       pmc_charge_status !=
+           power_manager::
+               PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING)) {
     opt_level = absl::nullopt;
   } else {
     opt_level = level;
