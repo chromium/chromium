@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -122,7 +123,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_DisabledSchemesEmpty) {
   SetPolicy(key::kDisabledSchemes, base::Value(base::Value::Type::LIST));
   ApplyPolicies();
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(0U, out->GetListDeprecated().size());
@@ -137,7 +138,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   ApplyPolicies();
 
   // The element should be skipped.
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(0U, out->GetListDeprecated().size());
@@ -150,7 +151,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   SetPolicy(key::kDisabledSchemes, std::move(in_disabled_schemes));
   ApplyPolicies();
 
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(1U, out->GetListDeprecated().size());
@@ -170,7 +171,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
   SetPolicy(key::kURLBlocklist, std::move(in_url_blocklist));
   ApplyPolicies();
 
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   ASSERT_EQ(2U, out->GetListDeprecated().size());
@@ -209,7 +210,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
       base::NumberToString16(max_filters_per_policy));
   EXPECT_TRUE(error_str.find(expected_str) != std::wstring::npos);
 
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(max_filters_per_policy + 1, out->GetListDeprecated().size());
@@ -227,7 +228,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_URLBlocklistEmpty) {
   SetPolicy(key::kURLBlocklist, base::Value(base::Value::Type::LIST));
   ApplyPolicies();
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(0U, out->GetListDeprecated().size());
@@ -242,7 +243,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   ApplyPolicies();
 
   // The element should be skipped.
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(0U, out->GetListDeprecated().size());
@@ -255,7 +256,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   SetPolicy(key::kURLBlocklist, std::move(in_url_blocklist));
   ApplyPolicies();
 
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(1U, out->GetListDeprecated().size());
@@ -276,7 +277,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 
   ApplyPolicies();
 
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(max_filters_per_policy, out->GetListDeprecated().size());
@@ -302,7 +303,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
       base::NumberToString16(max_filters_per_policy));
   EXPECT_TRUE(error_str.find(expected_str) != std::wstring::npos);
 
-  base::Value* out;
+  base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
   EXPECT_EQ(max_filters_per_policy + 1, out->GetListDeprecated().size());
