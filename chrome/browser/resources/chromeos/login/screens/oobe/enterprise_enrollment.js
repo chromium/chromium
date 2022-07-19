@@ -385,6 +385,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
     this.isCancelDisabled = (step === OobeTypes.EnrollmentStep.SIGNIN &&
                              !this.isManualEnrollment_) ||
+        (step === OobeTypes.EnrollmentStep.ERROR && this.isForced_) ||
         step === OobeTypes.EnrollmentStep.AD_JOIN ||
         step === OobeTypes.EnrollmentStep.WORKING ||
         step === OobeTypes.EnrollmentStep.CHECKING ||

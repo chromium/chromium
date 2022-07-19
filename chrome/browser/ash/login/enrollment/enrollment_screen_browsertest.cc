@@ -212,15 +212,65 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentSuccess) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentError) {
-  enrollment_ui_.SetExitHandler();
-  policy::EnrollmentConfig enrollment_config;
-  enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+struct EnrollmentErrorScreenTestParams {
+  policy::EnrollmentConfig::Mode enrollment_mode;
+  policy::EnrollmentConfig::AuthMechanism enrollment_auth_mechanism;
+};
 
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_MANUAL);
+class EnrollmentErrorScreenTest
+    : public EnrollmentScreenTest,
+      public ::testing::WithParamInterface<EnrollmentErrorScreenTestParams> {
+ protected:
+  policy::EnrollmentConfig GetEnrollmentConfigParam() {
+    policy::EnrollmentConfig config;
+    config.mode = GetParam().enrollment_mode;
+    config.auth_mechanism = GetParam().enrollment_auth_mechanism;
+    return config;
+  }
+
+  // Replicates the logic of `EnrollmentModeToUIMode` categorizing enrollment
+  // modes into manual and not manual.
+  // TODO(b/238986105): Remove once once `EnrollmentModeToUIMode` is fixed.
+  bool IsManualEnrollmentMode(policy::EnrollmentConfig::Mode mode) const {
+    switch (mode) {
+      case policy::EnrollmentConfig::MODE_NONE:
+      case policy::EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
+      case policy::EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
+        break;
+      case policy::EnrollmentConfig::MODE_MANUAL:
+      case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
+      case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:
+      case policy::EnrollmentConfig::MODE_SERVER_ADVERTISED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION:
+        return true;
+      case policy::EnrollmentConfig::MODE_LOCAL_FORCED:
+      case policy::EnrollmentConfig::MODE_SERVER_FORCED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK:
+      case policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
+      case policy::EnrollmentConfig::MODE_RECOVERY:
+        return false;
+    }
+
+    NOTREACHED() << "Bad enrollment mode " << mode;
+    return true;
+  }
+};
+
+using ManualEnrollmentErrorScreenTest = EnrollmentErrorScreenTest;
+
+IN_PROC_BROWSER_TEST_P(ManualEnrollmentErrorScreenTest,
+                       ManualEnrollmentErrorAndScreenData) {
+  enrollment_ui_.SetExitHandler();
+  const policy::EnrollmentConfig enrollment_config = GetEnrollmentConfigParam();
+  ASSERT_TRUE(enrollment_config.is_mode_oauth());
+  ASSERT_FALSE(enrollment_config.is_mode_attestation());
+
+  enrollment_helper_.ExpectEnrollmentMode(enrollment_config.mode);
+  // The test expects the error screen to be shown. Avoid automatic fallback
   enrollment_helper_.ExpectOAuthEnrollmentError(
       policy::EnrollmentStatus::ForStatus(
           policy::EnrollmentStatus::REGISTRATION_FAILED));
@@ -232,35 +282,18 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentError) {
   enrollment_screen()->Show(&context);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
-  enrollment_screen()->OnLoginDone(
-      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
-      test::EnrollmentHelperMixin::kTestAuthCode);
 
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
-}
-
-// TODO(crbug/1342179) These checks (and some additional ones that are hard to
-// do from here) should be covered by a unit test for `EnrollmentScreenHandler`
-// instead of here.
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentScreenData) {
-  enrollment_ui_.SetExitHandler();
-  policy::EnrollmentConfig enrollment_config;
-  enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
-
-  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
-
-  WizardContext context;
-  enrollment_screen()->Show(&context);
-
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
-
-  EXPECT_TRUE(test::OobeJS().GetAttributeBool("isManualEnrollment_",
-                                              {"enterprise-enrollment"}));
-  EXPECT_FALSE(
-      test::OobeJS().GetAttributeBool("isForced_", {"enterprise-enrollment"}));
+  // TODO(crbug/1342179) These checks (and some additional ones that are hard to
+  // do from here) should be covered by a unit test for
+  // `EnrollmentScreenHandler` instead of here.
+  // TODO(b/238986105): change the expectation on `isManualEnrollment_` to
+  // EXPECT_TRUE once `EnrollmentModeToUIMode` is fixed.
+  EXPECT_EQ(test::OobeJS().GetAttributeBool("isManualEnrollment_",
+                                            {"enterprise-enrollment"}),
+            IsManualEnrollmentMode(enrollment_config.mode));
+  EXPECT_EQ(
+      test::OobeJS().GetAttributeBool("isForced_", {"enterprise-enrollment"}),
+      enrollment_config.is_forced());
   EXPECT_FALSE(test::OobeJS().GetAttributeBool("isAutoEnroll_",
                                                {"enterprise-enrollment"}));
   EXPECT_FALSE(test::OobeJS().GetAttributeBool("hasAccountCheck_",
@@ -268,7 +301,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentScreenData) {
   EXPECT_EQ(test::OobeJS().GetAttributeString("gaiaDialogButtonsType_",
                                               {"enterprise-enrollment"}),
             "enterprise-preferred");
-
   EXPECT_EQ(test::OobeJS().GetAttributeString("authenticator_.idpOrigin_",
                                               {"enterprise-enrollment"}),
             GaiaUrls::GetInstance()->gaia_url().spec());
@@ -282,25 +314,86 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentScreenData) {
 
   test::OobeJS().ExpectHasNoAttribute("licenseType_",
                                       {"enterprise-enrollment"});
+
+  enrollment_screen()->OnLoginDone(
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
+      test::EnrollmentHelperMixin::kTestAuthCode);
+
+  // Expect that the screen ends up on error screen.
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  if (enrollment_config.is_forced()) {
+    EXPECT_TRUE(test::OobeJS().GetAttributeBool("isForced_",
+                                                {"enterprise-enrollment"}));
+    EXPECT_TRUE(test::OobeJS().GetAttributeBool("isCancelDisabled",
+                                                {"enterprise-enrollment"}));
+  } else {
+    EXPECT_FALSE(test::OobeJS().GetAttributeBool("isForced_",
+                                                 {"enterprise-enrollment"}));
+    EXPECT_FALSE(test::OobeJS().GetAttributeBool("isCancelDisabled",
+                                                 {"enterprise-enrollment"}));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentScreenData) {
+INSTANTIATE_TEST_SUITE_P(
+    ForcedEnrollment,
+    ManualEnrollmentErrorScreenTest,
+    testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
+        {policy::EnrollmentConfig::MODE_LOCAL_FORCED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_SERVER_FORCED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_RECOVERY,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    NotForcedEnrollment,
+    ManualEnrollmentErrorScreenTest,
+    testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
+        {policy::EnrollmentConfig::MODE_MANUAL,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_SERVER_ADVERTISED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE}}));
+
+using AttestationEnrollmentErrorScreenTest = EnrollmentErrorScreenTest;
+
+IN_PROC_BROWSER_TEST_P(AttestationEnrollmentErrorScreenTest,
+                       AttestationEnrollmentErrorAndScreenData) {
   enrollment_ui_.SetExitHandler();
-  policy::EnrollmentConfig enrollment_config;
-  enrollment_config.mode =
-      policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+  const policy::EnrollmentConfig enrollment_config = GetEnrollmentConfigParam();
+  ASSERT_TRUE(enrollment_config.should_enroll_with_attestation());
+  ASSERT_TRUE(enrollment_config.is_mode_attestation());
+
+  // The test expects the error screen to be shown. Avoid automatic fallback
+  // to manual enrollment.
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_REQUEST_INVALID));
+  enrollment_helper_.SetupClearAuth();
+  enrollment_helper_.ExpectEnrollmentMode(enrollment_config.mode);
 
   enrollment_screen()->SetEnrollmentConfig(enrollment_config);
 
   WizardContext context;
   enrollment_screen()->Show(&context);
 
-  EXPECT_FALSE(test::OobeJS().GetAttributeBool("isManualEnrollment_",
-                                               {"enterprise-enrollment"}));
-  EXPECT_TRUE(
-      test::OobeJS().GetAttributeBool("isForced_", {"enterprise-enrollment"}));
+  // TODO(b/238986105): change the expectation on `isManualEnrollment_` to
+  // EXPECT_TRUE once `EnrollmentModeToUIMode` is fixed.
+  EXPECT_EQ(test::OobeJS().GetAttributeBool("isManualEnrollment_",
+                                            {"enterprise-enrollment"}),
+            IsManualEnrollmentMode(enrollment_config.mode));
+  EXPECT_EQ(
+      test::OobeJS().GetAttributeBool("isForced_", {"enterprise-enrollment"}),
+      enrollment_config.is_forced());
   EXPECT_TRUE(test::OobeJS().GetAttributeBool("isAutoEnroll_",
                                               {"enterprise-enrollment"}));
   EXPECT_FALSE(test::OobeJS().GetAttributeBool("hasAccountCheck_",
@@ -318,7 +411,41 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentScreenData) {
                                       {"enterprise-enrollment"});
   test::OobeJS().ExpectHasNoAttribute("licenseType_",
                                       {"enterprise-enrollment"});
+
+  // Expect that the screen ends up on error screen.
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  if (enrollment_config.is_forced()) {
+    EXPECT_TRUE(test::OobeJS().GetAttributeBool("isForced_",
+                                                {"enterprise-enrollment"}));
+    EXPECT_TRUE(test::OobeJS().GetAttributeBool("isCancelDisabled",
+                                                {"enterprise-enrollment"}));
+  } else {
+    EXPECT_FALSE(test::OobeJS().GetAttributeBool("isForced_",
+                                                 {"enterprise-enrollment"}));
+    EXPECT_FALSE(test::OobeJS().GetAttributeBool("isCancelDisabled",
+                                                 {"enterprise-enrollment"}));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ForcedEnrollment,
+    AttestationEnrollmentErrorScreenTest,
+    testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
+        {policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    NotForcedEnrollment,
+    AttestationEnrollmentErrorScreenTest,
+    testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
+        {policy::EnrollmentConfig::MODE_ATTESTATION,
+         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE}}));
 
 class EnrollmentScreenHandsOffTest : public EnrollmentScreenTest {
  public:
