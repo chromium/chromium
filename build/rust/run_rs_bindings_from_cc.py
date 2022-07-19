@@ -25,30 +25,6 @@ RUSTFMT_CONFIG_PATH = os.path.join(CHROMIUM_SRC_DIR, ".rustfmt.toml")
 RS_BINDINGS_FROM_CC_EXE_PATH = os.path.join(RUST_TOOLCHAIN_DIR, "bin",
                                             "rs_bindings_from_cc")
 
-# TODO(crbug.com/1329611): The instructions below can be moved (once
-# tools/rust/package_rust.py includes Crubit binaries) into a (new)
-# doc with a title like: "Developing Crubit in Chromium".
-
-# Instructions for manually building
-# //third_party/rust-toolchain/bin/rs_bindings_from_cc:
-#
-# 1. Run:
-#      $ tools/clang/scripts/build.py \
-#           --bootstrap --without-android --without-fuchsia
-#
-#    (needed to generate third_party/llvm-bootstrap-install where
-#     the next step will look for LLVM/Clang libs and headers)
-#
-# 2. Run:
-#      $ tools/rust/build_crubit.py
-#
-# 3. Run:
-#      $ cp \
-# third_party/crubit/src/bazel-bin/rs_bindings_from_cc/rs_bindings_from_cc_impl \
-# third_party/rust-toolchain/rs_bindings_from_cc
-#
-#    (note that the `_impl` suffix has been dropped from the binary name).
-
 
 def format_cmdline(args):
   def quote_arg(x):

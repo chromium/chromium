@@ -190,10 +190,11 @@ vars = {
   # qemu on linux-arm64 machines.
   'checkout_fuchsia_for_arm64_host': False,
 
-  # Revision of Crubit (trunk on 2022-07-13).  This should typically be the
+  # Revision of Crubit (trunk on 2022-07-14).  This should typically be the
   # same as the revision specified in CRUBIT_REVISION in
-  # tools/rust/update_rust.py.
-  'crubit_revision': '07b3390a62412543c80226db44eecc317bbfcee0',
+  # tools/rust/update_rust.py.  More details and roll instructions can be
+  # found in tools/rust/README.md.
+  'crubit_revision': 'd9b0ad4c09b46328dcc7a5ec28ce86cca56e0389',
 
   # Run 'vpython_common' hook if this is set.
   # TODO(crbug.com/1329052): remove this when we remove .vpython.
