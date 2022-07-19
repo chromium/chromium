@@ -1324,5 +1324,16 @@ bool IsCompressedTextureFormat(GLenum internal_format) {
   return false;
 }
 
+Texture* CreateGLES2TextureWithLightRef(GLuint service_id, GLenum target) {
+  Texture* texture = new Texture(service_id);
+  texture->SetLightweightRef();
+  texture->SetTarget(target, 1 /*max_levels=*/);
+  texture->set_min_filter(GL_LINEAR);
+  texture->set_mag_filter(GL_LINEAR);
+  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
+  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  return texture;
+}
+
 }  // namespace gles2
 }  // namespace gpu

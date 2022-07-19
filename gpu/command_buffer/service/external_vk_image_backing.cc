@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/external_vk_image_gl_representation.h"
 #include "gpu/command_buffer/service/external_vk_image_overlay_representation.h"
 #include "gpu/command_buffer/service/external_vk_image_skia_representation.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vma_wrapper.h"
@@ -713,13 +714,8 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     GLenum gl_format = viz::GLDataFormat(format());
     GLenum gl_type = viz::GLDataType(format());
 
-    texture_ = new gles2::Texture(texture_service_id);
-    texture_->SetLightweightRef();
-    texture_->SetTarget(GL_TEXTURE_2D, 1);
-    texture_->set_min_filter(GL_LINEAR);
-    texture_->set_mag_filter(GL_LINEAR);
-    texture_->set_wrap_t(GL_CLAMP_TO_EDGE);
-    texture_->set_wrap_s(GL_CLAMP_TO_EDGE);
+    texture_ = gles2::CreateGLES2TextureWithLightRef(texture_service_id,
+                                                     GL_TEXTURE_2D);
     // If the backing is already cleared, no need to clear it again.
     gfx::Rect cleared_rect;
     if (IsCleared())

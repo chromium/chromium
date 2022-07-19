@@ -7,6 +7,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_state.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -237,13 +238,7 @@ void SharedImageBackingGLCommon::MakeTextureAndSetParameters(
         base::MakeRefCounted<gles2::TexturePassthrough>(service_id, target);
   }
   if (texture) {
-    *texture = new gles2::Texture(service_id);
-    (*texture)->SetLightweightRef();
-    (*texture)->SetTarget(target, 1);
-    (*texture)->set_min_filter(GL_LINEAR);
-    (*texture)->set_mag_filter(GL_LINEAR);
-    (*texture)->set_wrap_s(GL_CLAMP_TO_EDGE);
-    (*texture)->set_wrap_t(GL_CLAMP_TO_EDGE);
+    *texture = gles2::CreateGLES2TextureWithLightRef(service_id, target);
   }
 }
 

@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
@@ -123,13 +124,8 @@ SharedImageRepresentationGLTextureOzone::Create(
     return nullptr;
   }
 
-  gles2::Texture* texture = new gles2::Texture(gl_texture_service_id);
-  texture->SetLightweightRef();
-  texture->SetTarget(target, 1 /*max_levels=*/);
-  texture->set_min_filter(GL_LINEAR);
-  texture->set_mag_filter(GL_LINEAR);
-  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
-  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  gles2::Texture* texture =
+      gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
 
   GLuint internal_format = np_gl_binding->GetInternalFormat();
   GLenum gl_format = np_gl_binding->GetDataFormat();

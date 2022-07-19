@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
 
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/native_image_buffer.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -465,13 +466,8 @@ SharedImageBackingEglImage::GenEGLImageSibling(
     return base::MakeRefCounted<TextureHolder>(std::move(texture_passthrough));
   }
 
-  auto* texture = new gles2::Texture(service_id);
-  texture->SetLightweightRef();
-  texture->SetTarget(GL_TEXTURE_2D, 1 /*max_levels*/);
-  texture->set_min_filter(GL_LINEAR);
-  texture->set_mag_filter(GL_LINEAR);
-  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
-  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  auto* texture =
+      gles2::CreateGLES2TextureWithLightRef(service_id, GL_TEXTURE_2D);
 
   // If the backing is already cleared, no need to clear it again.
   gfx::Rect cleared_rect;

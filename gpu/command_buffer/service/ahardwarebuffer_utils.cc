@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/vulkan/vulkan_image.h"
@@ -29,13 +30,7 @@ gles2::Texture* MakeGLTexture(
     scoped_refptr<gl::GLImageAHardwareBuffer> egl_image,
     const gfx::Size& size,
     const gfx::Rect& cleared_rect) {
-  auto* texture = new gles2::Texture(service_id);
-  texture->SetLightweightRef();
-  texture->SetTarget(target, 1);
-  texture->set_min_filter(GL_LINEAR);
-  texture->set_mag_filter(GL_LINEAR);
-  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
-  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  auto* texture = gles2::CreateGLES2TextureWithLightRef(service_id, target);
 
   texture->SetLevelInfo(target, 0, egl_image->GetInternalFormat(), size.width(),
                         size.height(), 1, 0, egl_image->GetDataFormat(),

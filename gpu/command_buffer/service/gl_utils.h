@@ -162,6 +162,8 @@ bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format);
 bool IsASTCFormat(GLenum internal_format);
 bool IsCompressedTextureFormat(GLenum internal_format);
 
+Texture* CreateGLES2TextureWithLightRef(GLuint service_id, GLenum target);
+
 }  // namespace gles2
 }  // namespace gpu
 
