@@ -11,8 +11,8 @@
 #include "base/component_export.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/tab_group_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -79,8 +79,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // Gets the window information.
   std::unique_ptr<WindowInfo> GetWindowInfo() const;
 
-  // Returns apps::mojom::WindowInfoPtr for app launch interfaces.
-  apps::mojom::WindowInfoPtr GetAppWindowInfo() const;
+  // Returns apps::WindowInfoPtr for app launch interfaces.
+  apps::WindowInfoPtr GetAppWindowInfo() const;
 
   // App launch parameters.
   // TODO(crbug.com/1326250): Remove optional wrappers around vector fields.

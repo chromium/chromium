@@ -44,7 +44,9 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/wm_helper.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -620,7 +622,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
 
   DCHECK(data_it->second->event_flag.has_value());
 
-  apps::mojom::WindowInfoPtr window_info =
+  apps::WindowInfoPtr window_info =
       full_restore::HandleArcWindowInfo(data_it->second->GetAppWindowInfo());
   const auto window_it = window_id_to_session_id_.find(window_id);
   if (window_it != window_id_to_session_id_.end()) {
@@ -639,11 +641,18 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
     proxy->LaunchAppWithIntent(
         app_id, data_it->second->event_flag.value(),
         apps::ConvertIntentToMojomIntent(data_it->second->intent),
-        apps::mojom::LaunchSource::kFromFullRestore, std::move(window_info));
+        apps::mojom::LaunchSource::kFromFullRestore,
+        ConvertWindowInfoToMojomWindowInfo(window_info));
   } else {
-    proxy->Launch(app_id, data_it->second->event_flag.value(),
-                  apps::mojom::LaunchSource::kFromFullRestore,
-                  std::move(window_info));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      proxy->Launch(app_id, data_it->second->event_flag.value(),
+                    apps::LaunchSource::kFromFullRestore,
+                    std::move(window_info));
+    } else {
+      proxy->Launch(app_id, data_it->second->event_flag.value(),
+                    apps::mojom::LaunchSource::kFromFullRestore,
+                    ConvertWindowInfoToMojomWindowInfo(window_info));
+    }
   }
 
   if (!HasRestoreData())

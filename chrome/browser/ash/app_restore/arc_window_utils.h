@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_UTILS_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_UTILS_H_
 
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -24,8 +24,7 @@ bool IsArcGhostWindowEnabled();
 //   1. The |display_id| still exists on system.
 //   2. Previous ARC app window bounds on display is recorded.
 // Otherwise returns null.
-apps::mojom::WindowInfoPtr HandleArcWindowInfo(
-    apps::mojom::WindowInfoPtr window_info);
+apps::WindowInfoPtr HandleArcWindowInfo(apps::WindowInfoPtr window_info);
 
 // Returns true if it is a valid theme color. In Android, any transparent color
 // cannot be a topic color.

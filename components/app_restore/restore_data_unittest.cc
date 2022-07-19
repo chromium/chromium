@@ -17,7 +17,6 @@
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -148,17 +147,6 @@ class RestoreDataTest : public testing::Test {
     return intent;
   }
 
-  // TODO(crbug.com/1253250): Remove and use the non mojom intent.
-  apps::mojom::IntentPtr CreateIntent(const std::string& action,
-                                      const std::string& mime_type,
-                                      const std::string& share_text) {
-    auto intent = apps::mojom::Intent::New();
-    intent->action = action;
-    intent->mime_type = mime_type;
-    intent->share_text = share_text;
-    return intent;
-  }
-
   void AddAppLaunchInfos() {
     std::unique_ptr<AppLaunchInfo> app_launch_info1 =
         std::make_unique<AppLaunchInfo>(
@@ -241,7 +229,7 @@ class RestoreDataTest : public testing::Test {
                             WindowOpenDisposition disposition,
                             int64_t display_id,
                             std::vector<base::FilePath> file_paths,
-                            apps::mojom::IntentPtr intent,
+                            apps::IntentPtr intent,
                             bool app_type_browser,
                             int32_t activation_index,
                             int32_t first_non_pinned_tab_index,
@@ -396,9 +384,9 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_WINDOW, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
-        CreateIntent(kIntentActionSend, kMimeType, kShareText1),
-        kAppTypeBrower1, kActivationIndex1, kFirstNonPinnedTabIndex, kDeskId1,
-        kCurrentBounds1, kWindowStateType1, kPreMinimizedWindowStateType1,
+        MakeIntent(kIntentActionSend, kMimeType, kShareText1), kAppTypeBrower1,
+        kActivationIndex1, kFirstNonPinnedTabIndex, kDeskId1, kCurrentBounds1,
+        kWindowStateType1, kPreMinimizedWindowStateType1,
         /*snap_percentage=*/0, kMaxSize1, kMinSize1, std::u16string(kTitle1),
         kBoundsInRoot1, kPrimaryColor1, kStatusBarColor1,
         /*tab_group_infos=*/{});
@@ -412,9 +400,9 @@ class RestoreDataTest : public testing::Test {
         apps::LaunchContainer::kLaunchContainerTab,
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-        CreateIntent(kIntentActionView, kMimeType, kShareText2),
-        kAppTypeBrower2, kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2,
-        kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
+        MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
+        kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kCurrentBounds2,
+        kWindowStateType2, kPreMinimizedWindowStateType2,
         /*snap_percentage=*/0, absl::nullopt, kMinSize2,
         std::u16string(kTitle2), kBoundsInRoot2, kPrimaryColor2,
         kStatusBarColor2, std::move(expected_tab_group_infos),
@@ -432,12 +420,11 @@ class RestoreDataTest : public testing::Test {
         apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_POPUP, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
-        CreateIntent(kIntentActionView, kMimeType, kShareText1),
-        kAppTypeBrower3, kActivationIndex3, kFirstNonPinnedTabIndex, kDeskId3,
-        kCurrentBounds3, kWindowStateType3, kPreMinimizedWindowStateType3,
-        kSnapPercentage, absl::nullopt, absl::nullopt, absl::nullopt,
-        absl::nullopt, 0, 0,
-        /*tab_group_infos=*/{});
+        MakeIntent(kIntentActionView, kMimeType, kShareText1), kAppTypeBrower3,
+        kActivationIndex3, kFirstNonPinnedTabIndex, kDeskId3, kCurrentBounds3,
+        kWindowStateType3, kPreMinimizedWindowStateType3, kSnapPercentage,
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt, 0, 0,
+        /*expected_tab_group_infos=*/{});
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -496,7 +483,7 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
       app_restore_data_it4->second, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-      CreateIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
+      MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
       kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kCurrentBounds2,
       kWindowStateType2, kPreMinimizedWindowStateType2, /*snap_percentage=*/0,
       absl::nullopt, kMinSize2, std::u16string(kTitle2), kBoundsInRoot2,
@@ -737,10 +724,10 @@ TEST_F(RestoreDataTest, GetAppWindowInfo) {
   EXPECT_EQ(static_cast<int32_t>(kWindowStateType3), app_window_info->state);
   EXPECT_EQ(kDisplayId1, app_window_info->display_id);
   EXPECT_TRUE(app_window_info->bounds);
-  EXPECT_EQ(kCurrentBounds3,
-            gfx::Rect(app_window_info->bounds->x, app_window_info->bounds->y,
-                      app_window_info->bounds->width,
-                      app_window_info->bounds->height));
+  EXPECT_EQ(kCurrentBounds3, gfx::Rect(app_window_info->bounds->x(),
+                                       app_window_info->bounds->y(),
+                                       app_window_info->bounds->width(),
+                                       app_window_info->bounds->height()));
 }
 
 TEST_F(RestoreDataTest, FetchRestoreWindowId) {

@@ -591,24 +591,20 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
   return window_info;
 }
 
-apps::mojom::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
-  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+apps::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
+  apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>();
 
   if (display_id.has_value())
     window_info->display_id = display_id.value();
 
   if (bounds_in_root.has_value()) {
-    window_info->bounds = apps::mojom::Rect::New();
-    window_info->bounds->x = bounds_in_root.value().x();
-    window_info->bounds->y = bounds_in_root.value().y();
-    window_info->bounds->width = bounds_in_root.value().width();
-    window_info->bounds->height = bounds_in_root.value().height();
+    window_info->bounds = gfx::Rect{
+        bounds_in_root.value().x(), bounds_in_root.value().y(),
+        bounds_in_root.value().width(), bounds_in_root.value().height()};
   } else if (current_bounds.has_value()) {
-    window_info->bounds = apps::mojom::Rect::New();
-    window_info->bounds->x = current_bounds.value().x();
-    window_info->bounds->y = current_bounds.value().y();
-    window_info->bounds->width = current_bounds.value().width();
-    window_info->bounds->height = current_bounds.value().height();
+    window_info->bounds = gfx::Rect{
+        current_bounds.value().x(), current_bounds.value().y(),
+        current_bounds.value().width(), current_bounds.value().height()};
   }
 
   if (window_state_type.has_value())
