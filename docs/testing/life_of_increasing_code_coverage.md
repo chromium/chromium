@@ -4,7 +4,7 @@ The goal of this doc is to provide guidance on how to write better tests using
 code coverage information rather than increase code coverage itself.
 
 1. Pay attention to **untested** code in both the
-[coverage dashboard](https://analysis.chromium.org/p/chromium/coverage) and
+[coverage dashboard](https://analysis.chromium.org/coverage/p/chromium) and
 [code coverage in Gerrit](code_coverage_in_gerrit.md) during code review.
 
 2. Is this dead code? If yes, draft a CL
