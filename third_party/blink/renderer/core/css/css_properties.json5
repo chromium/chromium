@@ -3512,7 +3512,6 @@
       default_value: "absl::nullopt",
       type_name: "absl::optional<StyleOverflowClipMargin>",
       converter: "ConvertOverflowClipMargin",
-      runtime_flag: "OverflowClip",
     },
     {
       name: "overflow-x",

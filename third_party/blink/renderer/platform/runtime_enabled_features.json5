@@ -1701,10 +1701,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "OverflowClip",
-      status: "stable",
-    },
-    {
       name: "OverscrollCustomization",
       settable_from_internals: true,
       status: "experimental",
