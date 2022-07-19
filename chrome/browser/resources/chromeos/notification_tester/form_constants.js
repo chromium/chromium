@@ -9,6 +9,17 @@
  */
 
 /*
+  Matches SystemNotificationWarningLevel in
+  ui/message_center/public/cpp/notification.h
+  @enum {number}
+*/
+export const SystemNotificationWarningLevel = {
+  NORMAL: 0,
+  WARNING: 1,
+  CRITICAL_WARNING: 2,
+};
+
+/*
   Matches NotificationPriority in
   ui/message_center/public/cpp/notification_types.h
   @enum {number}
@@ -134,7 +145,7 @@ export const FormSelectOptions = {
     {displayText: 'URL (Right-to-Left)', value: 'https://اختبار.النهاي'},
     {displayText: 'Empty', value: ''},
   ],
-  SOURCE_OPTIONS: [
+  DISPLAY_SOURCE_OPTIONS: [
     {
       displayText: 'Short Sentence (Left-to-Right)',
       value: 'Sample Display Source',
@@ -205,6 +216,14 @@ export const FormSelectOptions = {
     {displayText: 'Group A', value: 'group_a'},
     {displayText: 'Group B', value: 'group_b'},
     {displayText: 'Group C', value: 'group_c'},
+  ],
+  WARNING_LEVEL_OPTIONS: [
+    {displayText: 'Normal', value: SystemNotificationWarningLevel.NORMAL},
+    {displayText: 'Warning', value: SystemNotificationWarningLevel.WARNING},
+    {
+      displayText: 'Critical Warning',
+      value: SystemNotificationWarningLevel.CRITICAL_WARNING,
+    },
   ],
 };
 

@@ -72,6 +72,12 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
   DCHECK(origin_url_str);
   GURL origin_url(*origin_url_str);
 
+  absl::optional<int> warning_level_int = notifObj->FindInt("warningLevel");
+  DCHECK(warning_level_int);
+  auto warning_level =
+      static_cast<message_center::SystemNotificationWarningLevel>(
+          warning_level_int.value());
+
   absl::optional<int> notification_type_int =
       notifObj->FindInt("notificationType");
   DCHECK(notification_type_int);
@@ -108,6 +114,8 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
       base::UTF8ToUTF16(*message), notification_icon,
       base::UTF8ToUTF16(*display_source), origin_url, notifier_id,
       optional_fields, delegate);
+
+  notification->set_system_notification_warning_level(warning_level);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

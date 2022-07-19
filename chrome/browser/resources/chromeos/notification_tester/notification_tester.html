@@ -159,16 +159,20 @@
         select-elements="[[iconSelectList]]" selectid="icon"
         no-custom-input="true"></select-custom>
 
-      <template is="dom-if" if="[[showDisplaySource]]">
-        <select-custom select-value="{{notifMetadata.displaySource}}"
-          display-label="Source" select-elements="[[sourceSelectList]]"
-          selectid="source"></select-custom>
-      </template>
+      <select-custom select-value="{{notifMetadata.displaySource}}"
+        display-label="Display Source" 
+        select-elements="[[displaySourceSelectList]]" selectid="source">
+      </select-custom>
 
-      <template is="dom-if" if="[[showOriginURL]]">
-        <select-custom select-value="{{notifMetadata.originURL}}"
-          display-label="Origin URL" select-elements="[[originURLSelectList]]"
-          selectid="origin-url"></select-custom>
+      <select-custom select-value="{{notifMetadata.originURL}}"
+        display-label="Origin URL" select-elements="[[originURLSelectList]]"
+        selectid="origin-url"></select-custom>
+
+      <template is="dom-if" if="[[isSystemNotification]]">
+        <select-custom select-value="{{notifMetadata.warningLevel}}"
+          display-label="Warning Level"
+          select-elements="[[warningLevelSelectList]]" selectid="warning-level"
+          no-custom-input="true"></select-custom>
       </template>
     </div>
     <div class="config-form">

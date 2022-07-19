@@ -15,6 +15,7 @@
  *   originURL: string,
  *   notificationType: number,
  *   notifierType: number,
+ *   warningLevel: number,
  *   richDataImage: string,
  *   richDataSmallImage: string,
  *   richDataNeverTimeout: boolean,

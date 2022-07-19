@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FormSelectOptions, NOTIFICATION_VIEW_TYPES, NotificationPriority, NotificationType, NotifierType} from './form_constants.js';
+import {FormSelectOptions, NOTIFICATION_VIEW_TYPES, NotificationPriority, NotificationType, NotifierType, SystemNotificationWarningLevel} from './form_constants.js';
 import {Notification} from './types.js';
 
 // Web component housing the form for chrome://notification-tester.
@@ -61,11 +61,11 @@ export class NotificationTester extends PolymerElement {
       /*
       @type {boolean}
       */
-      showDisplaySource: {type: Boolean},
+      isSystemNotification: {type: Boolean},
       /*
       @type {boolean}
       */
-      showOriginURL: {type: Boolean},
+      isWebNotification: {type: Boolean},
       /*
       @type {boolean}
       */
@@ -120,9 +120,9 @@ export class NotificationTester extends PolymerElement {
       /*
        * @private
        */
-      sourceSelectList: {
+      displaySourceSelectList: {
         type: Array,
-        value: FormSelectOptions.SOURCE_OPTIONS,
+        value: FormSelectOptions.DISPLAY_SOURCE_OPTIONS,
       },
       /*
        * @private
@@ -158,6 +158,13 @@ export class NotificationTester extends PolymerElement {
       notificationIDSelectList: {
         type: Array,
         value: FormSelectOptions.NOTIFICATION_ID_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      warningLevelSelectList: {
+        type: Array,
+        value: FormSelectOptions.WARNING_LEVEL_OPTIONS,
       },
     };
   }
@@ -218,6 +225,8 @@ export class NotificationTester extends PolymerElement {
         'notifMetadata.notificationType',
         NotificationType.NOTIFICATION_TYPE_SIMPLE);
     this.set('notifMetadata.notifierType', 'System');
+    this.set(
+        'notifMetadata.warningLevel', SystemNotificationWarningLevel.NORMAL);
     this.set('notifMetadata.richDataImage', 'none');
     this.set('notifMetadata.richDataSmallImage', 'kProductIcon');
     this.set('notifMetadata.richDataNeverTimeout', false);
@@ -247,8 +256,8 @@ export class NotificationTester extends PolymerElement {
   // notifier as a string.
   notifierTypeChanged_(notifierType) {
     // notifierType is guaranteed to be 'System' or 'Web'.
-    this.showDisplaySource = notifierType == 'System';
-    this.showOriginURL = notifierType == 'Web';
+    this.isSystemNotification = notifierType == 'System';
+    this.isWebNotification = notifierType == 'Web';
     if (notifierType == 'System') {
       this.notifMetadata.notifierType = NotifierType.SYSTEM_COMPONENT;
       return;
