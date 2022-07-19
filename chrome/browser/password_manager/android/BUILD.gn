@@ -252,6 +252,8 @@ android_library("settings_interface_java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelperImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessor.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactoryImpl.java",
@@ -263,6 +265,7 @@ android_library("settings_interface_java") {
     "*/CredentialManagerLauncherFactoryImpl.class",
     "*/PasswordSettingsAccessorFactoryImpl.class",
     "*/PasswordCheckupClientHelperFactoryImpl.class",
+    "*/PasswordManagerBackendSupportHelperImpl.class",
   ]
 }
 
@@ -345,6 +348,7 @@ android_library("public_impl_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactoryImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelperImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactoryImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java",

@@ -31,16 +31,6 @@ public abstract class PasswordCheckupClientHelperFactory {
         return null;
     }
 
-    /**
-     * Returns whether the downstream implementation has the required versions of the
-     * dependency it relies on.
-     *
-     * @return True if the required dependency version is available, false otherwise.
-     */
-    public boolean isBackendVersionSupported() {
-        return false;
-    }
-
     @VisibleForTesting
     public static void setFactoryForTesting(
             PasswordCheckupClientHelperFactory passwordCheckupClientHelperFactory) {
