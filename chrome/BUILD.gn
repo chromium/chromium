@@ -113,6 +113,16 @@ group("assert_no_deps") {
   assert_no_deps = [ "//chrome/installer/util:strings" ]
 }
 
+config("disable_thinlto_cache_flags") {
+  if (is_linux && use_thin_lto) {
+    # This build target has so many inputs that LLD will run into the default
+    # vm.max_map_count limit of 65530 memory mappings when using the ThinLTO
+    # cache.
+    # TODO (crbug.com/1183211): Re-enable once the linker has been fixed.
+    ldflags = [ "-Wl,--thinlto-cache-dir=" ]
+  }
+}
+
 if (!is_android && !is_mac) {
   group("chrome") {
     public_deps = [ ":chrome_initial" ]
@@ -135,6 +145,11 @@ if (!is_android && !is_mac) {
   executable("chrome_initial") {
     configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
     configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
+    # TODO (crbug.com/1345158): Re-enable once the linker has been fixed or
+    # the limit on the bots raised.
+    configs += [ ":disable_thinlto_cache_flags" ]
+
     if (is_win) {
       output_name = "initialexe/chrome"
     } else {

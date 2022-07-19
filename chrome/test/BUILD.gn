@@ -1182,8 +1182,8 @@ if (!is_android) {
 
     configs += [ "//build/config:precompiled_headers" ]
     configs += [
-      ":disable_thinlto_cache_flags",
       ":pdb_larger_than_4gb",
+      "//chrome:disable_thinlto_cache_flags",
     ]
     defines = [
       "HAS_OUT_OF_PROC_TEST_RUNNER",
@@ -5023,16 +5023,6 @@ if (is_android) {
   }
 }
 
-config("disable_thinlto_cache_flags") {
-  if (is_linux && use_thin_lto) {
-    # This build target has so many inputs the LLD will run into the default
-    # vm.max_map_count limit of 65530 memory mappings when using the ThinLTO
-    # cache.
-    # TODO (crbug.com/1183211): Re-enable once the linker has been fixed.
-    ldflags = [ "-Wl,--thinlto-cache-dir=" ]
-  }
-}
-
 config("pdb_larger_than_4gb") {
   if (is_win && symbol_level == 2 && use_thin_lto) {
     # These binaries create PDBs larger than 4 GiB. Increasing the PDB page
@@ -5516,8 +5506,8 @@ test("unit_tests") {
 
   configs += [ "//build/config:precompiled_headers" ]
   configs += [
-    ":disable_thinlto_cache_flags",
     ":pdb_larger_than_4gb",
+    "//chrome:disable_thinlto_cache_flags",
   ]
 
   data_deps = [
