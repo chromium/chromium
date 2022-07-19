@@ -3793,18 +3793,25 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
   for (size_t i = 0; i < 12; i++) {
     SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(i);
 
-    // Verify item view is fully visible.
+    // Verify item view is highlighted and fully visible.
     SendKey(ui::VKEY_TAB);
     EXPECT_TRUE(item_view->IsViewHighlighted());
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
 
-    // Verify name view is fully visible.
+    // Verify name view is highlighted and fully visible.
     SendKey(ui::VKEY_TAB);
     EXPECT_TRUE(item_view->name_view()->IsViewHighlighted());
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
   }
+
+  // Verify feedback button is highlighted and fully visible.
+  FeedbackButton* feedback_button = GetSavedDeskFeedbackButton();
+  SendKey(ui::VKEY_TAB);
+  EXPECT_TRUE(feedback_button->IsViewHighlighted());
+  EXPECT_EQ(feedback_button->GetPreferredSize(),
+            feedback_button->GetVisibleBounds().size());
 }
 
 // Tests that the scroll bar works with the keyboard.

@@ -279,12 +279,13 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
     grid_views_.push_back(save_and_recall_grid_view_);
   }
 
-  feedback_button_ = scroll_contents->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(&SavedDeskLibraryView::OnFeedbackButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
-      PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+  feedback_button_ =
+      scroll_contents->AddChildView(std::make_unique<FeedbackButton>(
+          base::BindRepeating(&SavedDeskLibraryView::OnFeedbackButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
+          PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
   feedback_button_->SetBorder(std::make_unique<views::HighlightBorder>(
       feedback_button_->CalculatePreferredSize().height() / 2,
       views::HighlightBorder::Type::kHighlightBorder1,

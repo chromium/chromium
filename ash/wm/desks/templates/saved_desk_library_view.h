@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/wm/desks/templates/saved_desk_feedback_button.h"
 #include "base/guid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
@@ -22,7 +22,6 @@
 namespace ash {
 
 class DeskTemplate;
-class PillButton;
 class SavedDeskGridView;
 class SavedDeskItemView;
 class SavedDeskLibraryEventHandler;
@@ -47,6 +46,8 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
       aura::Window* root);
 
   const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
+
+  FeedbackButton* feedback_button() { return feedback_button_; }
 
   // Retrieve the item view for a given saved desk, or nullptr.
   SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
@@ -113,7 +114,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Owned by views hierarchy. Temporary button to help users give feedback.
   // TODO(crbug.com/1289880): Remove this button when it is no longer needed.
-  PillButton* feedback_button_ = nullptr;
+  FeedbackButton* feedback_button_ = nullptr;
 
   // Label that shows up when the library has no items.
   views::Label* no_items_label_ = nullptr;

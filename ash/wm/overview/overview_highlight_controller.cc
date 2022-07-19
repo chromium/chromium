@@ -240,6 +240,7 @@ OverviewHighlightController::GetTraversableViews() const {
             traversable_views.push_back(name_view);
         }
       }
+      traversable_views.push_back(desk_library_view->feedback_button());
     } else {
       for (auto& item : grid->window_list())
         traversable_views.push_back(item->overview_item_view());

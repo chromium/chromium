@@ -9,6 +9,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_feedback_button.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
@@ -216,6 +217,15 @@ views::Button* GetSavedDeskDialogAcceptButton() {
   if (!dialog_widget)
     return nullptr;
   return dialog_widget->widget_delegate()->AsDialogDelegate()->GetOkButton();
+}
+
+FeedbackButton* GetSavedDeskFeedbackButton() {
+  const auto* overview_grid = GetPrimaryOverviewGrid();
+  if (!overview_grid)
+    return nullptr;
+  auto* saved_desk_library_view = overview_grid->GetSavedDeskLibraryView();
+  return saved_desk_library_view ? saved_desk_library_view->feedback_button()
+                                 : nullptr;
 }
 
 void WaitForDesksTemplatesUI() {

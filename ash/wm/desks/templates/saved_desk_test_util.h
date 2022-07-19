@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/wm/desks/templates/saved_desk_feedback_button.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
@@ -165,6 +166,7 @@ views::Button* GetSaveDeskAsTemplateButton();
 views::Button* GetTemplateItemButton(int index);
 views::Button* GetTemplateItemDeleteButton(int index);
 views::Button* GetSavedDeskDialogAcceptButton();
+FeedbackButton* GetSavedDeskFeedbackButton();
 
 // A lot of the UI relies on calling into the local desk data manager to
 // update, which sends callbacks via posting tasks. Call
