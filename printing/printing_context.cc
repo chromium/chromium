@@ -91,6 +91,21 @@ mojom::ResultCode PrintingContext::OnError() {
   return result;
 }
 
+void PrintingContext::SetDefaultPrintableAreaForVirtualPrinters() {
+  gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
+  if (!settings_->requested_media().size_microns.IsEmpty()) {
+    float device_microns_per_device_unit = static_cast<float>(kMicronsPerInch) /
+                                           settings_->device_units_per_inch();
+    paper_size = gfx::Size(settings_->requested_media().size_microns.width() /
+                               device_microns_per_device_unit,
+                           settings_->requested_media().size_microns.height() /
+                               device_microns_per_device_unit);
+  }
+  gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
+  settings_->SetPrinterPrintableArea(paper_size, paper_rect,
+                                     /*landscape_needs_flip=*/true);
+}
+
 void PrintingContext::UsePdfSettings() {
   base::Value::Dict pdf_settings;
   pdf_settings.Set(kSettingHeaderFooterEnabled, false);
@@ -153,21 +168,11 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   if (!open_in_external_preview &&
       (printer_type == mojom::PrinterType::kPdf ||
        printer_type == mojom::PrinterType::kExtension)) {
-    gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
-    if (!settings_->requested_media().size_microns.IsEmpty()) {
-      float device_microns_per_device_unit =
-          static_cast<float>(kMicronsPerInch) /
-          settings_->device_units_per_inch();
-      paper_size =
-          gfx::Size(settings_->requested_media().size_microns.width() /
-                        device_microns_per_device_unit,
-                    settings_->requested_media().size_microns.height() /
-                        device_microns_per_device_unit);
-    }
-    gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
-    settings_->SetPrinterPrintableArea(paper_size, paper_rect, true);
+    SetDefaultPrintableAreaForVirtualPrinters();
     return mojom::ResultCode::kSuccess;
   }
+  DCHECK(open_in_external_preview ||
+         printer_type == mojom::PrinterType::kLocal);
 
   PrinterSettings printer_settings {
 #if BUILDFLAG(IS_MAC)
