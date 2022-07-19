@@ -237507,7 +237507,7 @@
       },
       "the-iframe-element": {
        "iframe-initially-empty-is-updated.html": [
-        "3ad5b0f9f14e9df53f3a9087a8087ed5b8767334",
+        "818ec0362ef0fa8f474fe0dde0829a1b846fb72d",
         [
          null,
          [
@@ -251423,7 +251423,7 @@
        []
       ],
       "accept-ch-test.js": [
-       "e8438829d8850eb9cb7fe777967d80d5517f5e8d",
+       "192fcc4c8b856da452e358af0f64c7b94d6ff343",
        []
       ],
       "accept-ch.html": [
@@ -251482,6 +251482,14 @@
        "27140bf36e4dbd22b8f7190587f42a570c9d12bd",
        []
       ],
+      "meta-equiv-delegate-ch.html": [
+       "7d7c4ccdf7d5e3f391d265c158c9bfdd7717dd63",
+       []
+      ],
+      "meta-equiv-delegate-ch.html.headers": [
+       "27140bf36e4dbd22b8f7190587f42a570c9d12bd",
+       []
+      ],
       "meta-name-accept-ch.html": [
        "525faaae0d5709542f924526efe697424ec545a8",
        []
@@ -251517,6 +251525,10 @@
      }
     },
     "http-equiv-accept-ch-merge.https.html.headers": [
+     "34edb7b82b9657e0beaf9b1669d0854d365770ed",
+     []
+    ],
+    "meta-equiv-delegate-ch-merge.https.html.headers": [
      "34edb7b82b9657e0beaf9b1669d0854d365770ed",
      []
     ],
@@ -361019,8 +361031,80 @@
        }
       ]
      ],
+     "meta-equiv-delegate-ch-cross-origin-iframe-with-hints.https.sub.html": [
+      "0a2c4897bc58325a5130311b3278f91bb29c37d3",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-equiv-delegate-ch-cross-origin-iframe-without-hints.https.sub.html": [
+      "b79a941237aec284ea66350989949f89c5c38aab",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-equiv-delegate-ch-cross-origin-subresource-with-hints.https.sub.html": [
+      "bd39cbaff421acceddfc9083b5064747553aa7c6",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-equiv-delegate-ch-cross-origin-subresource-without-hints.https.sub.html": [
+      "20a3357fb6736107615365441c4826919426eb6a",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-name-accept-ch-cross-origin-iframe-with-hints.https.sub.html": [
+      "6145f717c3dab86e0c86d7693d1eb7e699f0ca1f",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-name-accept-ch-cross-origin-iframe-without-hints.https.sub.html": [
+      "276c34ff2e863133e1c7292ab1c9399b6fa2d590",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-name-accept-ch-cross-origin-subresource-with-hints.https.sub.html": [
+      "bc93f005d4dadc1827e75c1c24fad7b08f0d40dc",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "meta-name-accept-ch-cross-origin-subresource-without-hints.https.sub.html": [
+      "7b121294d1e8ba5d295505883468c5b37e1d57de",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "meta-name-cross-origin-iframe-not-setting-other-origins.https.html": [
-      "9c263ee789d29184e90257bf07691eb5da22e8c5",
+      "2a4e3b1295213d9274f887d13549efd784aee6c1",
       [
        null,
        {
@@ -361029,25 +361113,7 @@
       ]
      ],
      "meta-name-cross-origin-iframe-not-setting-own-origin.https.html": [
-      "1e8d1b6a63102456e1c6baec33753bbd98f61601",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "meta-name-cross-origin-iframe-with-hints.https.sub.html": [
-      "f74e4f4c34bdfd3bae08dad2ee949637b1d1bca9",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "meta-name-cross-origin-iframe-without-hints.https.sub.html": [
-      "bb9ced2c8695e63dd286dbee48b8cba306ad9b5c",
+      "2c17fd47ff3bb4262546034c6ee86fb0347ba560",
       [
        null,
        {
@@ -361056,25 +361122,7 @@
       ]
      ],
      "meta-name-cross-origin-navigation.https.html": [
-      "d5a46ed2d11d330ceb5b26bdfce0b40340286878",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "meta-name-cross-origin-subresource-with-hints.https.sub.html": [
-      "67c0727eb79f09d92821223fbe54c568ea6a8bd6",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "meta-name-cross-origin-subresource-without-hints.https.sub.html": [
-      "a96ec4d794682c7eb74e24f9746789c3a610fe77",
+      "c7ab68e1e1544e9b80643da966ac37299b56ce35",
       [
        null,
        {
@@ -361083,7 +361131,7 @@
       ]
      ],
      "meta-name-cross-origin-subresource.https.html": [
-      "f29a4bec458f408ffae0067cd4d3b632f23c3a33",
+      "b2a4103f1a443e0e52312c727c321ef6f5ec3e89",
       [
        null,
        {
@@ -361092,14 +361140,14 @@
       ]
      ],
      "meta-name-same-origin-iframe.https.html": [
-      "73201072084dd181d97bc66cc302e9ff04335565",
+      "3f240c9c21e434dc4715656c63adbb190b6d577a",
       [
        null,
        {}
       ]
      ],
      "meta-name-same-origin-navigation.https.html": [
-      "6e9dc706fefc1d91ee6b8dbfa89a77b94ebf0044",
+      "4561553a8c267b9c07ed452b8c410a7e55e55494",
       [
        null,
        {
@@ -361108,7 +361156,7 @@
       ]
      ],
      "meta-name-same-origin-subresource.https.html": [
-      "98b41674e9f6f0b564b60bed8ec0667a9e0e070e",
+      "3c0447c94d7a6e46d1b65a9f135316e1077aa08a",
       [
        null,
        {
@@ -361331,6 +361379,41 @@
     ],
     "http-equiv-accept-ch-non-secure.http.html": [
      "58a55d44c3475ba48f0698664e97c28532e5493e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "meta-equiv-delegate-ch-iframe.https.html": [
+     "2ce9c63c18a6a9455e31bf96dba82097056ccbd2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "meta-equiv-delegate-ch-injection.https.html": [
+     "94c0f251a475ee430e9d9b0bdde40b5b9dc3d9a3",
+     [
+      null,
+      {}
+     ]
+    ],
+    "meta-equiv-delegate-ch-malformed-header.https.html": [
+     "a4b91fd99bc42a9942b7e3a6b57c1924e213feda",
+     [
+      null,
+      {}
+     ]
+    ],
+    "meta-equiv-delegate-ch-merge.https.html": [
+     "36fd44940411605ec30f2c4e0b72744d438e0fbd",
+     [
+      null,
+      {}
+     ]
+    ],
+    "meta-equiv-delegate-ch-non-secure.http.html": [
+     "1fbe62c281eb493bb92654ded75af973c4cf55ae",
      [
       null,
       {}
@@ -371015,7 +371098,7 @@
     },
     "path": {
      "default.html": [
-      "031bc748408baf209c9973235753782678772408",
+      "dbe99a7ee59ab05ae5663cf1cb53099e5012eecd",
       [
        null,
        {
@@ -371024,7 +371107,7 @@
       ]
      ],
      "match.html": [
-      "35402839fc1e3b8808bc5ca75ed266a07c0cb5da",
+      "d517836e4dd64d03c3b38886f812a65026d6d53a",
       [
        null,
        {
@@ -442997,7 +443080,7 @@
        ]
       ],
       "browsing-context.html": [
-       "b2900d367a4b310ab8b08e37aaae604152b58be1",
+       "59367b0428822c7218d62b7da277b53c22e40d54",
        [
         null,
         {}
