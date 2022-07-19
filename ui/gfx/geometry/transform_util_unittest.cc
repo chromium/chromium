@@ -336,7 +336,7 @@ TEST(TransformUtilTest, TransformBetweenRects) {
     EXPECT_EQ(dst_rect, dst_in_parent_coordinates);
   };
 
-  std::vector<const std::pair<const RectF, const RectF>> test_cases{
+  std::vector<std::pair<const RectF, const RectF>> test_cases{
       {RectF(0.f, 0.f, 2.f, 3.f), RectF(3.f, 5.f, 4.f, 9.f)},
       {RectF(10.f, 7.f, 2.f, 6.f), RectF(4.f, 2.f, 1.f, 12.f)},
       {RectF(0.f, 0.f, 3.f, 5.f), RectF(0.f, 0.f, 6.f, 2.5f)}};
