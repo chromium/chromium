@@ -2596,6 +2596,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION" desc="Text label to the Send Tab To Self action in the extension menu that sends the current tab to the user's other devices. [iOS only]">
         Send To Your Devices
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_PROMO_LABEL" desc = "Text in UI promoting send tab to self. Signed out users see this text and a sign-in button. Signed in users with no valid target device see just the text.">
+        You can send tabs between devices that are signed in with the same Google Account
+      </message>
       <message name="IDS_IOS_SHARE_PAGE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow for the current page. [iOS only]">
         Share Page...
       </message>

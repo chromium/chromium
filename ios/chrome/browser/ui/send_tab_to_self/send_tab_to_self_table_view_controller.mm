@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -46,6 +47,7 @@ NSString* const kSendTabToSelfModalSendButton =
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSend = kItemTypeEnumZero,
   ItemTypeDevice,
+  ItemTypeNoTargetDevice,
   ItemTypeManageDevices,
 };
 
@@ -120,42 +122,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:kSectionIdentifierEnumZero];
-  for (auto iter = _targetDeviceList.begin(); iter != _targetDeviceList.end();
-       ++iter) {
-    int daysSinceLastUpdate =
-        (base::Time::Now() - iter->last_updated_timestamp).InDays();
 
-    SendTabToSelfImageDetailTextItem* deviceItem =
-        [[SendTabToSelfImageDetailTextItem alloc] initWithType:ItemTypeDevice];
-    deviceItem.text = base::SysUTF8ToNSString(iter->device_name);
-    deviceItem.detailText =
-        [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
-    switch (iter->device_type) {
-      case sync_pb::SyncEnums::TYPE_TABLET:
-        deviceItem.iconImageName = @"send_tab_to_self_tablet";
-        break;
-      case sync_pb::SyncEnums::TYPE_PHONE:
-        deviceItem.iconImageName = @"send_tab_to_self_smartphone";
-        break;
-      case sync_pb::SyncEnums::TYPE_WIN:
-      case sync_pb::SyncEnums::TYPE_MAC:
-      case sync_pb::SyncEnums::TYPE_LINUX:
-      case sync_pb::SyncEnums::TYPE_CROS:
-        deviceItem.iconImageName = @"send_tab_to_self_laptop";
-        break;
-      default:
-        deviceItem.iconImageName = @"send_tab_to_self_devices";
-    }
-
-    if (iter == _targetDeviceList.begin()) {
-      deviceItem.selected = YES;
-      self.selectedItem = deviceItem;
-    }
-
-    deviceItem.cacheGuid = base::SysUTF8ToNSString(iter->cache_guid);
-
-    [model addItem:deviceItem
+  if (_targetDeviceList.empty()) {
+    TableViewTextItem* noTargetDeviceItem =
+        [[TableViewTextItem alloc] initWithType:ItemTypeNoTargetDevice];
+    noTargetDeviceItem.text =
+        l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_PROMO_LABEL);
+    noTargetDeviceItem.textAlignment = NSTextAlignmentCenter;
+    noTargetDeviceItem.textFont =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    [model addItem:noTargetDeviceItem
         toSectionWithIdentifier:kSectionIdentifierEnumZero];
+  } else {
+    [self addDeviceItems];
   }
 
   SendTabToSelfManageDevicesItem* manageDevicesItem =
@@ -166,6 +145,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   manageDevicesItem.delegate = self.delegate;
   [model addItem:manageDevicesItem
       toSectionWithIdentifier:kSectionIdentifierEnumZero];
+
+  if (_targetDeviceList.empty()) {
+    // No need for the send button if there are no devices.
+    return;
+  }
 
   self.sendToDevice =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSend];
@@ -252,6 +236,46 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::NumberToString16(days));
   }
   return active_time;
+}
+
+- (void)addDeviceItems {
+  for (auto iter = _targetDeviceList.begin(); iter != _targetDeviceList.end();
+       ++iter) {
+    int daysSinceLastUpdate =
+        (base::Time::Now() - iter->last_updated_timestamp).InDays();
+
+    SendTabToSelfImageDetailTextItem* deviceItem =
+        [[SendTabToSelfImageDetailTextItem alloc] initWithType:ItemTypeDevice];
+    deviceItem.text = base::SysUTF8ToNSString(iter->device_name);
+    deviceItem.detailText =
+        [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
+    switch (iter->device_type) {
+      case sync_pb::SyncEnums::TYPE_TABLET:
+        deviceItem.iconImageName = @"send_tab_to_self_tablet";
+        break;
+      case sync_pb::SyncEnums::TYPE_PHONE:
+        deviceItem.iconImageName = @"send_tab_to_self_smartphone";
+        break;
+      case sync_pb::SyncEnums::TYPE_WIN:
+      case sync_pb::SyncEnums::TYPE_MAC:
+      case sync_pb::SyncEnums::TYPE_LINUX:
+      case sync_pb::SyncEnums::TYPE_CROS:
+        deviceItem.iconImageName = @"send_tab_to_self_laptop";
+        break;
+      default:
+        deviceItem.iconImageName = @"send_tab_to_self_devices";
+    }
+
+    if (iter == _targetDeviceList.begin()) {
+      deviceItem.selected = YES;
+      self.selectedItem = deviceItem;
+    }
+
+    deviceItem.cacheGuid = base::SysUTF8ToNSString(iter->cache_guid);
+
+    [self.tableViewModel addItem:deviceItem
+         toSectionWithIdentifier:kSectionIdentifierEnumZero];
+  }
 }
 
 @end

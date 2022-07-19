@@ -176,9 +176,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // sheet shows ConsistencyPromoSigninMediatorErrorGeneric.
 }
 
-// TODO(crbug.com/1264471): For the moment this only tests the entry point is
-// shown. Implement the UI for this state and test it here.
-- (void)testShowButtonIfSignedInAndNoTargetDevice {
+- (void)testShowMessageIfSignedInAndNoTargetDevice {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]
                                 enableSync:NO];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -186,10 +184,14 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
-
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_SEND_TAB_TO_SELF_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

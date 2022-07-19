@@ -11,7 +11,6 @@
 #include "base/check.h"
 #import "base/ios/block_types.h"
 #include "base/mac/foundation_util.h"
-#import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -292,10 +291,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   DCHECK(displayReason);
 
   switch (*displayReason) {
-    case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice: {
-      NOTIMPLEMENTED();
-      break;
-    }
+    case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
       ChromeBrowserState* browserState = self.browser->GetBrowserState();
       send_tab_to_self::SendTabToSelfSyncService* syncService =
