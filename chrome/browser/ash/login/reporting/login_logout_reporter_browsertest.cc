@@ -20,7 +20,10 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/account_id/account_id.h"
@@ -29,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using chromeos::MissiveClient;
 using chromeos::MissiveClientTestObserver;
@@ -43,7 +47,11 @@ namespace ash::reporting {
 class LoginLogoutReporterBrowserTest
     : public policy::DevicePolicyCrosBrowserTest {
  public:
-  LoginLogoutReporterBrowserTest() = default;
+  LoginLogoutReporterBrowserTest() {
+    login_manager_.set_session_restore_enabled();
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        kReportDeviceLoginLogout, true);
+  }
 
   LoginLogoutReporterBrowserTest(const LoginLogoutReporterBrowserTest&) =
       delete;
@@ -54,6 +62,7 @@ class LoginLogoutReporterBrowserTest
 
   void SetUpOnMainThread() override {
     login_manager_.set_should_launch_browser(true);
+    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }
 
@@ -77,16 +86,6 @@ class LoginLogoutReporterBrowserTest
   }
 
  protected:
-  void SetIsReportLoginLogoutPolicyEnabled(bool enabled) {
-    policy_helper()
-        ->device_policy()
-        ->payload()
-        .mutable_device_reporting()
-        ->set_report_login_logout(enabled);
-    policy_helper()->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {ash::kReportDeviceLoginLogout});
-  }
-
   Record GetNextLoginLogoutRecord(MissiveClientTestObserver* observer) {
     std::tuple<Priority, Record> enqueued_record =
         observer->GetNextEnqueuedRecord();
@@ -97,17 +96,29 @@ class LoginLogoutReporterBrowserTest
     return record;
   }
 
+  absl::optional<Record> MaybeGetEnqueudLoginLogoutRecord() {
+    const std::vector<Record>& records =
+        MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
+            Priority::SECURITY);
+    for (const Record& record : records) {
+      if (record.destination() == Destination::LOGIN_LOGOUT_EVENTS) {
+        return record;
+      }
+    }
+    return absl::nullopt;
+  }
+
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId)};
 
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
+
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,
                        LoginSuccessfulThenLogout) {
-  SetIsReportLoginLogoutPolicyEnabled(true);
-
   MissiveClientTestObserver observer(Destination::LOGIN_LOGOUT_EVENTS);
   SetUpStubAuthenticatorAndAttemptLogin();
   test::WaitForPrimaryUserSessionStart();
@@ -123,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,
   ASSERT_TRUE(login_record_data.has_login_event());
   EXPECT_FALSE(login_record_data.login_event().has_failure());
 
-  ash::Shell::Get()->session_controller()->RequestSignOut();
+  Shell::Get()->session_controller()->RequestSignOut();
   Record logout_record = GetNextLoginLogoutRecord(&observer);
 
   LoginLogoutRecord logout_record_data;
@@ -135,8 +146,6 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginFailed) {
-  SetIsReportLoginLogoutPolicyEnabled(true);
-
   MissiveClientTestObserver observer(Destination::LOGIN_LOGOUT_EVENTS);
   SetUpStubAuthenticatorAndAttemptLogin(
       AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
@@ -153,6 +162,42 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, LoginFailed) {
   ASSERT_TRUE(failed_login_record_data.login_event().has_failure());
   EXPECT_THAT(failed_login_record_data.login_event().failure().reason(),
               LoginFailureReason::AUTHENTICATION_ERROR);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, PRE_GuestLogin) {
+  base::RunLoop restart_job_waiter;
+  FakeSessionManagerClient::Get()->set_restart_job_callback(
+      restart_job_waiter.QuitClosure());
+
+  ASSERT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
+
+  restart_job_waiter.Run();
+  EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, GuestLogin) {
+  MissiveClientTestObserver observer(Destination::LOGIN_LOGOUT_EVENTS);
+  test::WaitForPrimaryUserSessionStart();
+  base::RunLoop().RunUntilIdle();
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  ASSERT_TRUE(user_manager->IsLoggedInAsGuest());
+
+  absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
+
+  if (!login_record.has_value()) {
+    // Record is not enqueued yet, so wait for it.
+    login_record = GetNextLoginLogoutRecord(&observer);
+  }
+
+  LoginLogoutRecord login_record_data;
+  ASSERT_TRUE(login_record_data.ParseFromString(login_record->data()));
+  EXPECT_THAT(login_record_data.session_type(),
+              Eq(LoginLogoutSessionType::GUEST_SESSION));
+  EXPECT_FALSE(login_record_data.has_affiliated_user());
+  ASSERT_TRUE(login_record_data.has_login_event());
+  EXPECT_FALSE(login_record_data.login_event().has_failure());
 }
 
 }  // namespace ash::reporting
