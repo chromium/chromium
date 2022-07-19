@@ -350,47 +350,20 @@ public class RedirectHandler {
 
     /**
      * @param hasExternalProtocol whether the destination URI has an external protocol or not.
-     * @return whether we should stay in Chrome or not.
-     */
-    public boolean shouldStayInApp(boolean hasExternalProtocol) {
-        return shouldStayInApp(hasExternalProtocol, false);
-    }
-
-    /**
-     * @param hasExternalProtocol whether the destination URI has an external protocol or not.
      * @param isForTrustedCallingApp whether the app we would launch to is trusted and what launched
      *                               Chrome.
      * @return whether we should stay in Chrome or not.
      */
-    public boolean shouldStayInApp(boolean hasExternalProtocol, boolean isForTrustedCallingApp) {
+    /* package */ boolean shouldStayInApp(
+            boolean hasExternalProtocol, boolean isForTrustedCallingApp) {
+        assert !isRefactoringEnabled();
         // http://crbug/424029 : Need to stay in Chrome for an intent heading explicitly to Chrome.
         // http://crbug/881740 : Relax stay in Chrome restriction for Custom Tabs.
         return (mIntentState != null && mIntentState.mPreferToStayInChrome && !hasExternalProtocol)
                 || shouldNavigationTypeStayInApp(isForTrustedCallingApp);
     }
 
-    /**
-     * @return Whether the current navigation is of the type that should always stay in Chrome.
-     */
-    public boolean shouldNavigationTypeStayInApp() {
-        return shouldNavigationTypeStayInApp(false);
-    }
-
     private boolean shouldNavigationTypeStayInApp(boolean isForTrustedCallingApp) {
-        if (isRefactoringEnabled()) {
-            InitialNavigationState state = mNavigationChainState.getInitialNavigationState();
-            // http://crbug.com/162106: Never leave Chrome from a refresh.
-            if (state.isFromReload) return true;
-
-            // If the app we would navigate to is trusted and what launched Chrome, allow the
-            // navigation.
-            if (isForTrustedCallingApp) return false;
-
-            // Otherwise allow navigation out of the app only with a user gesture.
-            // TODO(https://crbug.com/839751): Remove gesture exception for form submits.
-            return state.isRendererInitiated && !state.hasUserGesture && !state.isFromFormSubmit;
-        }
-
         // http://crbug.com/162106: Never leave Chrome from a refresh.
         if (mNavigationChainState.getInitialNavigationType() == NAVIGATION_TYPE_FROM_RELOAD) {
             return true;
@@ -512,6 +485,10 @@ public class RedirectHandler {
 
     public InitialNavigationState getInitialNavigationState() {
         return mNavigationChainState.getInitialNavigationState();
+    }
+
+    public boolean intentPrefersToStayInChrome() {
+        return mIntentState != null && mIntentState.mPreferToStayInChrome;
     }
 
     public void maybeLogExternalRedirectBlockedWithMissingGesture() {

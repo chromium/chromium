@@ -211,8 +211,6 @@ public class InterceptNavigationDelegateTest {
 
         Assert.assertTrue(mNavParamHistory.get(2).isExternalProtocol());
         Assert.assertFalse(mNavParamHistory.get(2).isInPrimaryMainFrame());
-        Assert.assertTrue(
-                mExternalNavParamHistory.get(2).getRedirectHandler().shouldStayInApp(true, false));
     }
 
     @Test

@@ -10,7 +10,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
-import android.provider.Browser;
 import android.test.mock.MockPackageManager;
 
 import androidx.test.filters.SmallTest;
@@ -266,37 +265,6 @@ public class RedirectHandlerTest {
     @Test
     @SmallTest
     @Feature({"IntentHandling"})
-    public void testIntentFromChrome() {
-        RedirectHandler handler = RedirectHandler.create();
-        Intent fooIntent = new Intent(sFooIntent);
-        fooIntent.putExtra(Browser.EXTRA_APPLICATION_ID, TEST_PACKAGE_NAME);
-        handler.updateIntent(fooIntent, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-
-        handler.updateNewUrlLoading(
-                TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false, false);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-        handler.updateNewUrlLoading(PageTransition.LINK, false, false, 0, 1, false, true);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 2, false, true);
-        Assert.assertFalse(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
     public void testNavigationFromUserTyping() {
         RedirectHandler handler = RedirectHandler.create();
         handler.updateIntent(sYtIntent, false, false, false);
@@ -314,36 +282,6 @@ public class RedirectHandlerTest {
         handler.updateNewUrlLoading(
                 PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 2, false, true);
         Assert.assertFalse(handler.isNavigationFromUserTyping());
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
-    public void testIntentHavingChromePackageName() {
-        RedirectHandler handler = RedirectHandler.create();
-        Intent fooIntent = new Intent(sFooIntent);
-        fooIntent.setPackage(TEST_PACKAGE_NAME);
-        handler.updateIntent(fooIntent, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-
-        handler.updateNewUrlLoading(
-                TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false, false);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-        handler.updateNewUrlLoading(PageTransition.LINK, false, false, 0, 1, false, true);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-
-        handler.updateNewUrlLoading(PageTransition.LINK, false, true,
-                SystemClock.elapsedRealtime() + 1, 2, false, true);
-        Assert.assertFalse(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
 
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
@@ -395,113 +333,6 @@ public class RedirectHandlerTest {
     @Test
     @SmallTest
     @Feature({"IntentHandling"})
-    public void testNavigationFromLinkWithoutUserGesture() {
-        RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-
-        long lastUserInteractionTime = SystemClock.elapsedRealtime();
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, false, lastUserInteractionTime, 0, false, true);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertTrue(handler.shouldStayInApp(true));
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, false, lastUserInteractionTime, 1, false, true);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertTrue(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 2, false, true);
-        Assert.assertFalse(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
-    public void testNavigationFromReload() {
-        RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-
-        long lastUserInteractionTime = SystemClock.elapsedRealtime();
-        handler.updateNewUrlLoading(
-                PageTransition.RELOAD, false, false, lastUserInteractionTime, 0, false, false);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertTrue(handler.shouldStayInApp(true));
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, false, lastUserInteractionTime, 1, false, true);
-        Assert.assertTrue(handler.shouldStayInApp(false));
-        Assert.assertTrue(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(
-                PageTransition.LINK, false, true, SystemClock.elapsedRealtime(), 2, false, true);
-        Assert.assertFalse(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
-    public void testNavigationWithForwardBack() {
-        RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-
-        long lastUserInteractionTime = SystemClock.elapsedRealtime();
-        handler.updateNewUrlLoading(PageTransition.FORM_SUBMIT | PageTransition.FORWARD_BACK, false,
-                true, lastUserInteractionTime, 0, false, false);
-        if (RedirectHandler.isRefactoringEnabled()) {
-            Assert.assertTrue(handler.navigationChainUsedBackOrForward());
-        } else {
-            Assert.assertTrue(handler.shouldStayInApp(false));
-            Assert.assertTrue(handler.shouldStayInApp(true));
-        }
-        Assert.assertTrue(handler.hasUserStartedNonInitialNavigation());
-
-        handler.updateNewUrlLoading(PageTransition.LINK, false, false, lastUserInteractionTime, 1,
-                false /* isInitialNavigation */, true);
-        if (RedirectHandler.isRefactoringEnabled()) {
-            Assert.assertTrue(handler.navigationChainUsedBackOrForward());
-        } else {
-            Assert.assertTrue(handler.shouldStayInApp(false));
-            Assert.assertTrue(handler.shouldStayInApp(true));
-        }
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-        Assert.assertTrue(handler.hasUserStartedNonInitialNavigation());
-
-        handler.updateNewUrlLoading(PageTransition.LINK, false, true,
-                SystemClock.elapsedRealtime() + 1, 2, false /* isInitialNavigation */, true);
-        if (RedirectHandler.isRefactoringEnabled()) {
-            Assert.assertFalse(handler.navigationChainUsedBackOrForward());
-        }
-        Assert.assertFalse(handler.shouldStayInApp(false));
-        Assert.assertFalse(handler.shouldStayInApp(true));
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-        Assert.assertTrue(handler.hasUserStartedNonInitialNavigation());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
     public void testNavigationWithUninitializedUserInteractionTime() {
         // User interaction time could be uninitialized when a new document activity is opened after
         // clicking a link. In that case, the value is 0.
@@ -515,36 +346,6 @@ public class RedirectHandlerTest {
         Assert.assertTrue(handler.isOnNavigation());
         Assert.assertEquals(RedirectHandler.NO_COMMITTED_ENTRY_INDEX,
                 handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-        Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
-    }
-
-    /**
-     * Tests that a client side redirect without a user gesture to an external application does
-     * cause us to leave Chrome, unless the app it would be launching is trusted.
-     */
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
-    public void testClientRedirectWithoutUserGesture() {
-        RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sFooIntent, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-        Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
-
-        // Navigation to a page that will trigger a client redirect.
-        handler.updateNewUrlLoading(PageTransition.LINK, false /* isRedirect */,
-                false /* hasUserGesture */, 0, 0, true /* isInitialNavigation */,
-                true /* isRendererInitiated */);
-        Assert.assertTrue(handler.shouldStayInApp(true));
-        Assert.assertFalse(handler.shouldStayInApp(true, true));
-        Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
-
-        // Client redirect navigation.
-        handler.updateNewUrlLoading(PageTransition.LINK | PageTransition.CLIENT_REDIRECT,
-                false /* isRedirect */, false /* hasUserGesture */, 0, 0,
-                false /* isInitialNavigation */, true /* isRendererInitiated */);
-        Assert.assertTrue(handler.shouldStayInApp(true));
-        Assert.assertFalse(handler.shouldStayInApp(true, true));
         Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
     }
 

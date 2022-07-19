@@ -730,6 +730,8 @@ public class ExternalNavigationHandler {
     private boolean redirectShouldStayInApp(ExternalNavigationParams params,
             boolean isExternalProtocol, Intent targetIntent,
             QueryIntentActivitiesSupplier resolvingInfos) {
+        if (RedirectHandler.isRefactoringEnabled()) return false;
+
         RedirectHandler handler = params.getRedirectHandler();
         if (handler == null) return false;
         boolean shouldStayInApp = handler.shouldStayInApp(isExternalProtocol,
@@ -946,6 +948,7 @@ public class ExternalNavigationHandler {
      * page to redirect to an app.
      */
     private boolean isNavigationChainExpired(ExternalNavigationParams params) {
+        if (RedirectHandler.isRefactoringEnabled()) return false;
         if (params.getRedirectHandler() != null
                 && params.getRedirectHandler().isNavigationChainExpired()) {
             if (DEBUG) {
@@ -960,13 +963,68 @@ public class ExternalNavigationHandler {
     }
 
     /**
-     * If a navigation chain has used the history API to go back/forward external navigation is
-     * probably not expected or desirable.
+     * @return whether something along the navigation chain prevents the current navigation from
+     * leaving Chrome.
      */
-    private boolean navigationChainUsedBackOrForward(ExternalNavigationParams params) {
-        if (params.getRedirectHandler() != null
-                && params.getRedirectHandler().navigationChainUsedBackOrForward()) {
+    private boolean navigationChainBlocksExternalNavigation(ExternalNavigationParams params,
+            Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
+            boolean isExternalProtocol) {
+        if (!RedirectHandler.isRefactoringEnabled()) return false;
+
+        RedirectHandler handler = params.getRedirectHandler();
+        if (handler == null) return false;
+        RedirectHandler.InitialNavigationState initialState = handler.getInitialNavigationState();
+
+        // See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an
+        // unattended page to redirect to an app.
+        if (handler.isNavigationChainExpired()) {
+            if (DEBUG) {
+                Log.i(TAG,
+                        "Navigation chain expired "
+                                + "(a page waited more than %d seconds to redirect).",
+                        RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
+            }
+            return true;
+        }
+
+        // If a navigation chain has used the history API to go back/forward external navigation is
+        // probably not expected or desirable.
+        if (handler.navigationChainUsedBackOrForward()) {
             if (DEBUG) Log.i(TAG, "Navigation chain used back or forward.");
+            return true;
+        }
+
+        // Used to prevent things like chaining fallback URLs.
+        if (handler.shouldNotOverrideUrlLoading()) {
+            if (DEBUG) Log.i(TAG, "Navigation chain has blocked app launching.");
+            return true;
+        }
+
+        // Tab Restores should definitely not launch apps, and refreshes launching apps would
+        // probably not be expected or desirable.
+        if (initialState.isFromReload) {
+            if (DEBUG) Log.i(TAG, "Navigation chain is from a tab restore or refresh.");
+            return true;
+        }
+
+        // If the intent targets the calling app, we can bypass the gesture requirements and any
+        // signals from the initial intent that suggested the intent wanted to stay in Chrome.
+        if (mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos)) return false;
+
+        // If an intent targeted Chrome explicitly, we assume the app wanted to launch Chrome and
+        // not another app.
+        if (handler.intentPrefersToStayInChrome() && !isExternalProtocol) {
+            if (DEBUG) Log.i(TAG, "Launching intent explicitly targeted the browser.");
+            return true;
+        }
+
+        // Ensure the navigation was started with a user gesture so that inactive pages can't launch
+        // apps unexpectedly, unless we trust the calling app for a CCT/TWA.
+        // TODO(https://crbug.com/839751): Remove gesture exception for form submits.
+        if (initialState.isRendererInitiated && !initialState.hasUserGesture
+                && !initialState.isFromFormSubmit) {
+            if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
+            if (DEBUG) Log.i(TAG, "Navigation chain started without a gesture.");
             return true;
         }
         return false;
@@ -1510,9 +1568,6 @@ public class ExternalNavigationHandler {
         if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
 
         if (RedirectHandler.isRefactoringEnabled()) {
-            if (navigationChainUsedBackOrForward(params)) {
-                return OverrideUrlLoadingResult.forNoOverride();
-            }
             if (isDirectFormSubmit(params, isExternalProtocol)) {
                 return OverrideUrlLoadingResult.forNoOverride();
             }
@@ -1548,6 +1603,8 @@ public class ExternalNavigationHandler {
 
         boolean requiresPromptForExternalIntent = isNavigationChainExpired(params)
                 || redirectShouldStayInApp(params, isExternalProtocol, targetIntent, resolvingInfos)
+                || navigationChainBlocksExternalNavigation(
+                        params, targetIntent, resolvingInfos, isExternalProtocol)
                 || !preferToShowIntentPicker(params, isExternalProtocol, incomingIntentRedirect,
                         intentMatchesNonDefaultWebApk);
 

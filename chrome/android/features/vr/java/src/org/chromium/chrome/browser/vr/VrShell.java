@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -67,7 +66,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -98,7 +96,6 @@ public class VrShell extends GvrLayout
     private final VrCompositorSurfaceManager mVrCompositorSurfaceManager;
     private final VrShellDelegate mDelegate;
     private final VirtualDisplayAndroid mContentVirtualDisplay;
-    private final RedirectHandler mRedirectHandler;
     private final TabObserver mTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final View.OnTouchListener mTouchListener;
@@ -134,7 +131,6 @@ public class VrShell extends GvrLayout
 
     private boolean mReprojectedRendering;
 
-    private RedirectHandler mNonVrRedirectHandler;
     private UiWidgetFactory mNonVrUiWidgetFactory;
 
     private float mLastContentWidth;
@@ -268,13 +264,6 @@ public class VrShell extends GvrLayout
         // This has to happen after VrModalDialogManager is created.
         mNonVrUiWidgetFactory = UiWidgetFactory.getInstance();
         UiWidgetFactory.setInstance(new VrUiWidgetFactory(this, mModalDialogManagerSupplier.get()));
-
-        mRedirectHandler = new RedirectHandler() {
-            @Override
-            public boolean shouldStayInApp(boolean hasExternalProtocol) {
-                return !hasExternalProtocol;
-            }
-        };
 
         mTabObserver = new EmptyTabObserver() {
             @Override
@@ -548,16 +537,12 @@ public class VrShell extends GvrLayout
 
     private void initializeTabForVR() {
         if (mTab == null) return;
-        // Make sure we are not redirecting to another app, i.e. out of VR mode.
-        mNonVrRedirectHandler = RedirectHandlerTabHelper.swapHandlerFor(mTab, mRedirectHandler);
         assert mTab.getWindowAndroid() == mContentVrWindowAndroid;
         configWebContentsImeForVr(mTab.getWebContents());
     }
 
     private void restoreTabFromVR() {
         if (mTab == null) return;
-        RedirectHandlerTabHelper.swapHandlerFor(mTab, mNonVrRedirectHandler);
-        mNonVrRedirectHandler = null;
         restoreWebContentsImeFromVr(mTab.getWebContents());
     }
 

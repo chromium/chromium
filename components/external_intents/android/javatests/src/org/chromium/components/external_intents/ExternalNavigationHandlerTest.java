@@ -1866,8 +1866,7 @@ public class ExternalNavigationHandlerTest {
 
         RedirectHandler redirectHandler = RedirectHandler.create();
 
-        redirectHandler.updateNewUrlLoading(
-                PageTransition.RELOAD, false, false, 1, 0, false, false);
+        redirectHandler.updateNewUrlLoading(PageTransition.RELOAD, true, false, 1, 0, false, false);
         checkUrl(YOUTUBE_MOBILE_URL)
                 .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
@@ -1892,7 +1891,7 @@ public class ExternalNavigationHandlerTest {
         RedirectHandler redirectHandler = RedirectHandler.create();
 
         redirectHandler.updateNewUrlLoading(
-                PageTransition.FORM_SUBMIT | PageTransition.FORWARD_BACK, false, false, 1, 0, false,
+                PageTransition.FORM_SUBMIT | PageTransition.FORWARD_BACK, true, false, 1, 0, false,
                 false);
         checkUrl(YOUTUBE_MOBILE_URL)
                 .withRedirectHandler(redirectHandler)
@@ -2696,6 +2695,41 @@ public class ExternalNavigationHandlerTest {
                 .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
+    }
+
+    @Test
+    @SmallTest
+    public void testIntentFromChrome() throws Exception {
+        mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        Intent fooIntent = Intent.parseUri(YOUTUBE_URL, Intent.URI_INTENT_SCHEME);
+        // Set Chrome AppId for the Intent.
+        fooIntent.putExtra(Browser.EXTRA_APPLICATION_ID, SELF_PACKAGE_NAME);
+        redirectHandler.updateIntent(
+                fooIntent, !IS_CUSTOM_TAB_INTENT, !SEND_TO_EXTERNAL_APPS, !INTENT_STARTED_TASK);
+
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.LINK | PageTransition.FROM_API, false, false, 0, 0, false, false);
+        checkUrl(YOUTUBE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        // Redirects to URL with new handlers.
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.LINK | PageTransition.FROM_API, true, false, 0, 0, false, false);
+        checkUrl(YOUTUBE_MOBILE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        // User clicks link.
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true,
+                SystemClock.elapsedRealtime() + 1, 2, false, true);
+        checkUrl(YOUTUBE_MOBILE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+        Assert.assertEquals(
+                2, redirectHandler.getLastCommittedEntryIndexBeforeStartingNavigation());
     }
 
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
