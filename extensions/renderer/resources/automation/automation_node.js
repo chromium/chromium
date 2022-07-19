@@ -1035,7 +1035,7 @@ AutomationNodeImpl.prototype = {
         }
 
         return privates(tree).impl.get(nativePosition.anchorID);
-      }
+      },
     });
 
     return nativePosition;
@@ -1395,7 +1395,7 @@ AutomationNodeImpl.prototype = {
           treeID: this.rootImpl.treeID,
           automationNodeID: this.id,
           actionType: actionType,
-          requestID: requestID
+          requestID: requestID,
         },
         opt_args || {});
   },
@@ -1493,7 +1493,7 @@ AutomationNodeImpl.prototype = {
       }
     }
     return true;
-  }
+  },
 };
 
 const stringAttributes = [
@@ -1516,20 +1516,42 @@ const stringAttributes = [
   'placeholder',
   'roleDescription',
   'tooltip',
-  'url'
+  'url',
 ];
 
 const boolAttributes = [
-  'busy', 'clickable', 'containerLiveAtomic', 'containerLiveBusy',
-  'nonAtomicTextFieldRoot', 'liveAtomic', 'modal', 'notUserSelectableStyle',
-  'scrollable', 'selected', 'supportsTextLocation'
+  'busy',
+  'clickable',
+  'containerLiveAtomic',
+  'containerLiveBusy',
+  'nonAtomicTextFieldRoot',
+  'liveAtomic',
+  'modal',
+  'notUserSelectableStyle',
+  'scrollable',
+  'selected',
+  'supportsTextLocation',
 ];
 
 const intAttributes = [
-  'backgroundColor', 'color', 'colorValue', 'hierarchicalLevel', 'posInSet',
-  'scrollX', 'scrollXMax', 'scrollXMin', 'scrollY', 'scrollYMax', 'scrollYMin',
-  'setSize', 'tableCellColumnSpan', 'tableCellRowSpan', 'ariaColumnCount',
-  'ariaRowCount', 'textSelEnd', 'textSelStart'
+  'backgroundColor',
+  'color',
+  'colorValue',
+  'hierarchicalLevel',
+  'posInSet',
+  'scrollX',
+  'scrollXMax',
+  'scrollXMin',
+  'scrollY',
+  'scrollYMax',
+  'scrollYMin',
+  'setSize',
+  'tableCellColumnSpan',
+  'tableCellRowSpan',
+  'ariaColumnCount',
+  'ariaRowCount',
+  'textSelEnd',
+  'textSelStart',
 ];
 
 // Int attribute, relation property to expose, reverse relation to expose.
@@ -1537,12 +1559,13 @@ const nodeRefAttributes = [
   ['activedescendantId', 'activeDescendant', 'activeDescendantFor'],
   ['errormessageId', 'errorMessage', 'errorMessageFor'],
   ['inPageLinkTargetId', 'inPageLinkTarget', null],
-  ['nextFocusId', 'nextFocus', null], ['nextOnLineId', 'nextOnLine', null],
+  ['nextFocusId', 'nextFocus', null],
+  ['nextOnLineId', 'nextOnLine', null],
   ['previousFocusId', 'previousFocus', null],
   ['previousOnLineId', 'previousOnLine', null],
   ['tableColumnHeaderId', 'tableColumnHeader', null],
   ['tableHeaderId', 'tableHeader', null],
-  ['tableRowHeaderId', 'tableRowHeader', null]
+  ['tableRowHeaderId', 'tableRowHeader', null],
 ];
 
 const intListAttributes = ['wordEnds', 'wordStarts'];
@@ -1551,8 +1574,9 @@ const intListAttributes = ['wordEnds', 'wordStarts'];
 const nodeRefListAttributes = [
   ['controlsIds', 'controls', 'controlledBy'],
   ['describedbyIds', 'describedBy', 'descriptionFor'],
-  ['detailsIds', 'details', 'detailsFor'], ['flowtoIds', 'flowTo', 'flowFrom'],
-  ['labelledbyIds', 'labelledBy', 'labelFor']
+  ['detailsIds', 'details', 'detailsFor'],
+  ['flowtoIds', 'flowTo', 'flowFrom'],
+  ['labelledbyIds', 'labelledBy', 'labelFor'],
 ];
 
 const floatAttributes =
@@ -1568,7 +1592,7 @@ $Array.forEach(stringAttributes, function(attributeName) {
     __proto__: null,
     get: function() {
       return GetStringAttribute(this.treeID, this.id, attributeName);
-    }
+    },
   });
 });
 
@@ -1578,7 +1602,7 @@ $Array.forEach(boolAttributes, function(attributeName) {
     __proto__: null,
     get: function() {
       return GetBoolAttribute(this.treeID, this.id, attributeName);
-    }
+    },
   });
 });
 
@@ -1588,7 +1612,7 @@ $Array.forEach(intAttributes, function(attributeName) {
     __proto__: null,
     get: function() {
       return GetIntAttribute(this.treeID, this.id, attributeName);
-    }
+    },
   });
 });
 
@@ -1606,7 +1630,7 @@ $Array.forEach(nodeRefAttributes, function(params) {
       } else {
         return undefined;
       }
-    }
+    },
   });
   if (dstReverseAttributeName) {
     $Array.push(publicAttributes, dstReverseAttributeName);
@@ -1627,7 +1651,7 @@ $Array.forEach(nodeRefAttributes, function(params) {
               }
             }
             return result;
-          }
+          },
         });
   }
 });
@@ -1638,7 +1662,7 @@ $Array.forEach(intListAttributes, function(attributeName) {
     __proto__: null,
     get: function() {
       return GetIntListAttribute(this.treeID, this.id, attributeName);
-    }
+    },
   });
 });
 
@@ -1662,7 +1686,7 @@ $Array.forEach(nodeRefListAttributes, function(params) {
         }
       }
       return result;
-    }
+    },
   });
   if (dstReverseAttributeName) {
     $Array.push(publicAttributes, dstReverseAttributeName);
@@ -1683,7 +1707,7 @@ $Array.forEach(nodeRefListAttributes, function(params) {
               }
             }
             return result;
-          }
+          },
         });
   }
 });
@@ -1694,7 +1718,7 @@ $Array.forEach(floatAttributes, function(attributeName) {
     __proto__: null,
     get: function() {
       return GetFloatAttribute(this.treeID, this.id, attributeName);
-    }
+    },
   });
 });
 
@@ -1706,7 +1730,7 @@ $Array.forEach(htmlAttributes, function(params) {
     __proto__: null,
     get: function() {
       return GetHtmlAttribute(this.treeID, this.id, srcAttributeName);
-    }
+    },
   });
 });
 
@@ -1994,7 +2018,7 @@ AutomationRootNodeImpl.prototype = {
                                          .actionRequestCounter] = {
       actionType,
       opt_args,
-      callback
+      callback,
     };
     return AutomationRootNodeImpl.actionRequestCounter;
   },
@@ -2146,7 +2170,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
     'stopDuckingMedia',
     'suspendMedia',
     'toString',
-    'unclippedBoundsForRange'
+    'unclippedBoundsForRange',
   ],
   readonly: $Array.concat(
       publicAttributes,

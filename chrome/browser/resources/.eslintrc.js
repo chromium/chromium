@@ -8,7 +8,6 @@ module.exports = {
     'es6' : true,
   },
   'rules' : {
-    'comma-dangle' : ['error', 'always-multiline'],
     'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
   },
 };

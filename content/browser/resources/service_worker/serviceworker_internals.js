@@ -166,7 +166,7 @@ function initialize() {
           unregistered_registrations: unregisteredRegistrations,
           unregistered_versions: unregisteredVersions,
           partition_id: partition_id,
-          partition_path: partition_path
+          partition_path: partition_path,
         }),
         template);
     for (let i = 0; i < COMMANDS.length; ++i) {

@@ -15,6 +15,11 @@ module.exports = {
   'rules': {
     // Enabled checks.
     'brace-style': ['error', '1tbs'],
+
+    // https://google.github.io/styleguide/jsguide.html#features-arrays-trailing-comma
+    // https://google.github.io/styleguide/jsguide.html#features-objects-use-trailing-comma
+    'comma-dangle': ['error', 'always-multiline'],
+
     'curly': ['error', 'multi-line', 'consistent'],
     'new-parens': 'error',
     'no-array-constructor': 'error',

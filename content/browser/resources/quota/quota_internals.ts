@@ -175,7 +175,7 @@ async function renderUsageAndQuotaStats() {
     if (!(entry.storageKey in bucketTableEntriesByStorageKey)) {
       bucketTableEntriesByStorageKey[entry.storageKey] = {
         'bucketCount': 0,
-        'storageKeyEntries': {}
+        'storageKeyEntries': {},
       };
     }
     if (!(entry.type in bucketTableEntriesByStorageKey[entry.storageKey]

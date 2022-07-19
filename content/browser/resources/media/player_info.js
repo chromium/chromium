@@ -46,7 +46,7 @@ export class PlayerInfo {
     var recordValue = {
       time: timestamp - this.firstTimestamp_,
       key: key,
-      value: value
+      value: value,
     };
 
     this.allEvents.push(recordValue);

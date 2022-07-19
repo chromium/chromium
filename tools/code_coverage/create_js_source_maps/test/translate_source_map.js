@@ -16,7 +16,7 @@ import {SourceMapConsumer} from '../../../../third_party/js_code_coverage/node_m
 import {ArgumentParser} from '../../../../third_party/node/node_modules/argparse/index.js';
 
 const parser = new ArgumentParser({
-  description: 'Applies a JavaScript sourcemap to a line and column number'
+  description: 'Applies a JavaScript sourcemap to a line and column number',
 });
 
 parser.addArgument(
@@ -28,7 +28,7 @@ parser.addArgument(
 parser.addArgument('--column', {
   help: 'Column number in post-processed file',
   type: 'int',
-  required: true
+  required: true,
 });
 
 const argv = parser.parseArgs();

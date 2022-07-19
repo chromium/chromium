@@ -65,23 +65,25 @@ export class InfoViewElement extends CustomElement {
       this.setTable_('client-info', [
         {description: 'Data exported', value: (new Date()).toISOString()},
         {description: 'Chrome version', value: clientInfo.version},
-        {description: 'Operating system', value: clientInfo.operating_system}, {
+        {description: 'Operating system', value: clientInfo.operating_system},
+        {
           description: 'Software rendering list URL',
           value: createSourcePermalink(
               clientInfo.revision_identifier,
-              'gpu/config/software_rendering_list.json')
+              'gpu/config/software_rendering_list.json'),
         },
         {
           description: 'Driver bug list URL',
           value: createSourcePermalink(
               clientInfo.revision_identifier,
-              'gpu/config/gpu_driver_bug_list.json')
+              'gpu/config/gpu_driver_bug_list.json'),
         },
-        {description: 'ANGLE commit id', value: clientInfo.angle_commit_id}, {
+        {description: 'ANGLE commit id', value: clientInfo.angle_commit_id},
+        {
           description: '2D graphics backend',
-          value: clientInfo.graphics_backend
+          value: clientInfo.graphics_backend,
         },
-        {description: 'Command Line', value: clientInfo.command_line}
+        {description: 'Command Line', value: clientInfo.command_line},
       ]);
     } else {
       this.setText_('client-info', '... loading...');
@@ -230,7 +232,7 @@ export class InfoViewElement extends CustomElement {
         const data = [{
           'description': 'info',
           'value': vulkanInfo.toString(),
-          'id': 'vulkan-info-value'
+          'id': 'vulkan-info-value',
         }];
         this.setTable_('vulkan-info', data);
       } else {
@@ -295,23 +297,23 @@ export class InfoViewElement extends CustomElement {
     const statusMap = {
       'disabled_software': {
         'label': 'Software only. Hardware acceleration disabled',
-        'class': 'feature-yellow'
+        'class': 'feature-yellow',
       },
       'disabled_off': {'label': 'Disabled', 'class': 'feature-red'},
       'disabled_off_ok': {'label': 'Disabled', 'class': 'feature-yellow'},
       'unavailable_software': {
         'label': 'Software only, hardware acceleration unavailable',
-        'class': 'feature-yellow'
+        'class': 'feature-yellow',
       },
       'unavailable_off': {'label': 'Unavailable', 'class': 'feature-red'},
       'unavailable_off_ok': {'label': 'Unavailable', 'class': 'feature-yellow'},
       'enabled_readback': {
         'label': 'Hardware accelerated but at reduced performance',
-        'class': 'feature-yellow'
+        'class': 'feature-yellow',
       },
       'enabled_force': {
         'label': 'Hardware accelerated on all pages',
-        'class': 'feature-green'
+        'class': 'feature-green',
       },
       'enabled': {'label': 'Hardware accelerated', 'class': 'feature-green'},
       'enabled_on': {'label': 'Enabled', 'class': 'feature-green'},

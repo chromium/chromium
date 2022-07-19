@@ -93,7 +93,7 @@ function processOneFile(inputFileName, verbose) {
 function main() {
   const parser = new ArgumentParser({
     description:
-        'Creates source maps for files preprocessed by preprocess_if_expr'
+        'Creates source maps for files preprocessed by preprocess_if_expr',
   });
 
   parser.addArgument(

@@ -248,8 +248,14 @@ export class ClientRenderer {
       player.destructed = true;
     }
     if ([
-          'url', 'frame_url', 'frame_title', 'audio_codec_name',
-          'video_codec_name', 'width', 'height', 'event'
+          'url',
+          'frame_url',
+          'frame_title',
+          'audio_codec_name',
+          'video_codec_name',
+          'width',
+          'height',
+          'event',
         ].includes(key)) {
       this.redrawPlayerList_(players);
     }
