@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {QrCode, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -140,6 +140,11 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     this.getRsuChallengeAndHwid_();
     this.setRsuInstructionsText_();
     enableNextButton(this);
+
+    afterNextRender(this, () => {
+      const codeInput = this.shadowRoot.querySelector('#rsuCode');
+      codeInput.focus();
+    });
   }
 
   /** @private */
