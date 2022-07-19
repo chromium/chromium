@@ -193,8 +193,15 @@ std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
 
 query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
     AutocompleteInput input) {
-  if (OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled())
+  // TODO(yoangela): This might have to check whether we're in @bookmarks mode
+  // specifically, since we might still get bookmarks suggestions in
+  // non-bookmarks keyword mode.  This is enough of an edge case it makes sense
+  // to just stick with simplicity for now.
+  if (OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() ||
+      (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+       InKeywordMode(input))) {
     return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
+  }
 
   if (OmniboxFieldTrial::
           IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
