@@ -273,7 +273,6 @@ struct SameSizeAsLayoutObject : public GarbageCollected<SameSizeAsLayoutObject>,
   // Normally this field uses the gap between DisplayItemClient and
   // LayoutObject's other fields.
   uint8_t paint_invalidation_reason_;
-  uint8_t extra_bitfields_;
 #if DCHECK_IS_ON()
   unsigned debug_bitfields_;
 #endif
@@ -380,7 +379,6 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
 
 LayoutObject::LayoutObject(Node* node)
     : full_paint_invalidation_reason_(PaintInvalidationReason::kNone),
-      can_contain_absolute_position_objects_(false),
 #if DCHECK_IS_ON()
       has_ax_object_(false),
       set_needs_layout_forbidden_(false),
@@ -1647,14 +1645,6 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   if (IsA<LayoutView>(this) || IsSVGForeignObjectIncludingNG() ||
       IsTextControlIncludingNG())
     return true;
-
-  // crbug.com/1153042: If <fieldset> is a fixed container, its anonymous
-  // content box should be a fixed container.
-  if (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
-      Parent()->CanContainFixedPositionObjects()) {
-    return true;
-  }
-
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
 
   // For transform-style specifically, we want to consider the computed
@@ -1680,11 +1670,7 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
   if (!style)
     return false;
   return style->CanContainAbsolutePositionObjects() ||
-         ComputeIsFixedContainer(style) ||
-         // crbug.com/1153042: If <fieldset> is an absolute container, its
-         // anonymous content box should be an absolute container.
-         (IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset() &&
-          Parent()->StyleRef().CanContainAbsolutePositionObjects());
+         ComputeIsFixedContainer(style);
 }
 
 gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(

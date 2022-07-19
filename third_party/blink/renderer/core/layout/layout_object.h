@@ -2201,10 +2201,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetHasReflection(has_reflection);
   }
-  void SetCanContainAbsolutePositionObjects(bool can_contain) {
-    NOT_DESTROYED();
-    can_contain_absolute_position_objects_ = can_contain;
-  }
   void SetCanContainFixedPositionObjects(bool can_contain_fixed_position) {
     NOT_DESTROYED();
     bitfields_.SetCanContainFixedPositionObjects(can_contain_fixed_position);
@@ -2417,7 +2413,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool CanContainAbsolutePositionObjects() const {
     NOT_DESTROYED();
-    return can_contain_absolute_position_objects_;
+    return style_->CanContainAbsolutePositionObjects() ||
+           CanContainFixedPositionObjects();
   }
   bool CanContainFixedPositionObjects() const {
     NOT_DESTROYED();
@@ -3871,11 +3868,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // It's defined as the first field so that it can use the memory gap between
   // DisplayItemClient and LayoutObject's other fields.
   PaintInvalidationReason full_paint_invalidation_reason_;
-
-  // This boolean is used to know if this LayoutObject is a container for
-  // absolute position descendants.
-  // This is not in LayoutObjectBitfields to avoid to bump its size.
-  unsigned can_contain_absolute_position_objects_ : 1;
 
 #if DCHECK_IS_ON()
   unsigned has_ax_object_ : 1;
