@@ -555,7 +555,15 @@ async function createCartElement(): Promise<HTMLElement|null> {
     element.headerChipText = loadTimeData.getString('modulesNewTagLabel');
     element.headerDescriptionText =
         loadTimeData.getString('modulesCartWarmWelcome');
+  } else {
+    for (let i = 0; i < carts.length; i++) {
+      const images = carts[i].productImageUrls;
+      chrome.metricsPrivate.recordSmallCount(
+          'NewTabPage.Carts.CartImageCount',
+          images === undefined ? 0 : images.length);
+    }
   }
+
   element.cartItems = carts;
   element.showDiscountConsent = consentVisible;
   element.discountConsentVisible = consentVisible;

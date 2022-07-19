@@ -103,6 +103,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(4, cartItems.length);
       assertEquals(220, moduleElement.offsetHeight);
       assertEquals(1, metrics.count('NewTabPage.Carts.CartCount', 4));
+      assertEquals(1, metrics.count('NewTabPage.Carts.CartImageCount', 3));
+      assertEquals(1, metrics.count('NewTabPage.Carts.CartImageCount', 2));
+      assertEquals(1, metrics.count('NewTabPage.Carts.CartImageCount', 0));
+      assertEquals(1, metrics.count('NewTabPage.Carts.CartImageCount', 4));
 
       assertEquals('https://amazon.com/', cartItems[0]!.href);
       assertEquals(
@@ -193,6 +197,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           loadTimeData.getString('modulesCartWarmWelcome'),
           headerDescription!.innerText);
       assertEquals(227, moduleElement.offsetHeight);
+      assertEquals(0, metrics.count('NewTabPage.Carts.CartImageCount', 0));
     });
 
     test(

@@ -104,6 +104,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Carts.CartImageCount" units="count"
+    expires_after="2022-12-25">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when the cart module is created and is recorded once for every cart.
+    It records the number of product images in this cart (could be zero). This
+    is not logged when welcome surface is showing. Only logged on the 1P NTP.
+    Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Carts.ClickCart" units="index"
     expires_after="2022-11-20">
   <owner>wychen@chromium.org</owner>
