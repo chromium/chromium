@@ -644,6 +644,16 @@
     "args": ["--enable-blink-features=CSSModules", "--js-flags=--harmony-import-assertions"]
   },
   {
+    "prefix": "css-trigonometric-functions-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/css/css-values/sin-cos-tan-serialize.html",
+      "external/wpt/css/css-values/sin-cos-tan-computed.html",
+      "external/wpt/css/css-values/sin-cos-tan-invalid.html"
+    ],
+    "args": ["--disable-blink-features=CSSTrigonometricFunctions"]
+  },
+  {
     "prefix": "import-assertions",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/import-assertions"],

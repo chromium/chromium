@@ -8,54 +8,41 @@
 <script src="../support/serialize-testcommon.js"></script>
 <div id=target></div>
 <script>
-function test_serialization(t,s,c) {
-    test_specified_serialization('opacity', t, s);
-    test_specified_serialization('transform', `scale(${t})`, `scale(calc(${c}))`);
-    test_computed_serialization('opacity', t, c);
-    test_computed_serialization('transform', `scale(${t})`, `matrix(${c}, 0, 0, ${c}, 0, 0)`);
+function test_serialization(specified, expected, {prop="transform"}={}) {
+    test_specified_serialization(prop, specified, expected)
+}
+//TEST CASE                                            | EXPECTED
+var test_map = {
+    "cos(0)"                                           :"calc(1)",
+    "sin(0)"                                           :"calc(0)",
+    "tan(0)"                                           :"calc(0)",
+    "calc(sin(0) + 0.5)"                               :"calc(0.5)",
+    "calc(sin(0) + cos(0) + tan(0)"                    :"calc(1)",
+    "calc(cos(0) + 0.5)"                               :"calc(1.5)",
+    "calc(tan(0) + 0.5)"                               :"calc(0.5)",
+    "cos(0deg)"                                        :"calc(1)",
+    "sin(0deg)"                                        :"calc(0)",
+    "tan(0deg)"                                        :"calc(0)",
+    "sin(30deg)"                                       :"calc(0.5)",
+    "sin(0.523599)"                                    :"calc(0.5)",
+    "sin(0.523599rad)"                                 :"calc(0.5)",
+    "sin(33.333333grad)"                               :"calc(0.5)",
+    "sin(0.08333333turn)"                              :"calc(0.5)",
+    "cos(60deg)"                                       :"calc(0.5)",
+    "tan(45deg)"                                       :"calc(1)",
+    "tan(45deg)"                                       :"calc(1)",
+    "calc(sin(30deg) + cos(60deg) + tan(45deg)"        :"calc(2)",
+    "calc(sin(infinity))"                              :"calc(NaN)",
+    "calc(cos(infinity))"                              :"calc(NaN)",
+    "calc(tan(infinity))"                              :"calc(NaN)",
+    "calc(sin(-infinity))"                             :"calc(NaN)",
+    "calc(cos(-infinity))"                             :"calc(NaN)",
+    "calc(tan(-infinity))"                             :"calc(NaN)",
+};
+
+for (var exp in test_map) {
+    test_serialization(`scale(calc(${exp}))`, `scale(${test_map[exp]})`);
+    test_serialization(`scale(${exp})`, `scale(${test_map[exp]})`);
 }
 
-test_serialization(
-    'cos(0)',
-    'calc(1)',
-    '1');
-test_serialization(
-    'sin(0)',
-    'calc(0)',
-    '0');
-test_serialization(
-    'tan(0)',
-    'calc(0)',
-    '0');
-
-test_serialization(
-    'calc(sin(0) + cos(0) + tan(0))',
-    'calc(1)',
-    '1');
-
-test_serialization(
-    'calc(sin(0) + 0.5)',
-    'calc(0.5)',
-    '0.5');
-test_serialization(
-    'calc(cos(0) + 0.5)',
-    'calc(1.5)',
-    '1.5');
-test_serialization(
-    'calc(tan(0) + 0.5)',
-    'calc(0.5)',
-    '0.5');
-
-test_serialization(
-    'calc(sin(infinity))',
-    'calc(NaN)',
-    'NaN');
-test_serialization(
-    'calc(cos(infinity))',
-    'calc(NaN)',
-    'NaN');
-test_serialization(
-    'calc(tan(infinity))',
-    'calc(NaN)',
-    'NaN');
 </script>

@@ -759,6 +759,11 @@
       name: "CSSToggles",
       status: "test",
     },
+    {
+      // Explainer: https://github.com/DevSDK/css-trigonometric-functions
+      name: "CSSTrigonometricFunctions",
+      status: "test",
+    },
     // Support for registered custom properties with <image> syntax.
     {
       name: "CSSVariables2ImageValues",

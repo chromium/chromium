@@ -224,6 +224,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
   static CSSMathExpressionNode* CreateComparisonFunction(Operands&& operands,
                                                          CSSMathOperator op);
 
+  static CSSMathExpressionNode* CreateTrigonometricFunctionSimplified(
+      Operands&& operands,
+      CSSValueID function_id);
+
   static CSSMathExpressionNode* CreateArithmeticOperationSimplified(
       const CSSMathExpressionNode* left_side,
       const CSSMathExpressionNode* right_side,
