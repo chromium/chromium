@@ -361,10 +361,10 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
             AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyNotRequired);
   EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
                 /*is_system_clock_synchronized=*/true),
-            AutoEnrollmentTypeChecker::CheckType::kNone);
+            AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
   EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
                 /*is_system_clock_synchronized=*/false),
-            AutoEnrollmentTypeChecker::CheckType::kNone);
+            AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination);
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,

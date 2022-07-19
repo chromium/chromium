@@ -1729,7 +1729,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   fake_statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey,
                                                 "0");
 
-  DoInitialEnrollment(/*check_fre=*/false);
+  // TODO(igorcov): Change to /*check_fre=*/false when b/238592446 is fixed.
+  DoInitialEnrollment(/*check_fre=*/true);
 }
 
 // Tests that a server error occurs during the Initial Enrollment check.  The
