@@ -331,7 +331,7 @@ async def test_serialization_set(websocket, context_id):
 async def test_deserialization_serialization_bigint(websocket, context_id):
     await assertDeserializationAndSerialization(websocket, context_id, {
         "type": "bigint",
-        "value": "12345678901234567890n"})
+        "value": "12345678901234567890"})
 
 
 @pytest.mark.asyncio
@@ -378,10 +378,9 @@ async def test_deserialization_serialization_date(websocket, context_id):
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    # TODO(sadym): Add value check after date format is fixed.
-    # https://github.com/w3c/webdriver-bidi/issues/202
-    # assert result["value"] == "__some_specific_result__"
-    assert result["result"]["type"] == "date"
+    assert result["result"] == {
+        "type": "date",
+        "value": "2020-07-19T06:34:56.789Z"}
 
 
 @pytest.mark.asyncio

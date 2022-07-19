@@ -275,7 +275,7 @@ export class ScriptEvaluator {
       }
       case 'bigint': {
         return {
-          unserializableValue: `BigInt(${argumentValue.value})`,
+          unserializableValue: `BigInt(${JSON.stringify(argumentValue.value)})`,
         };
       }
 
