@@ -557,6 +557,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   if (!CanFireEvents()) {
     // TODO(accessibility) Change AXEventGenerator() to avoid doing any work
     // and avoid queuing any events when CanFireEvents() is false.
+    for (const ui::AXEvent& event : details.events)
+      if (event.event_type != ax::mojom::Event::kLoadComplete)
+        defer_load_complete_event_ = true;
     event_generator().ClearEvents();
     return true;
   }
@@ -593,6 +596,15 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // Allow derived classes to do event pre-processing.
   BeforeAccessibilityEvents();
 
+  bool received_load_complete_event = false;
+
+  // If an earlier load complete event was suppressed, fire it now.
+  if (defer_load_complete_event_) {
+    received_load_complete_event = true;
+    defer_load_complete_event_ = false;
+    FireBlinkEvent(ax::mojom::Event::kLoadComplete, GetRoot(), -1);
+  }
+
   // Fire any events related to changes to the tree that come from ancestors of
   // the currently-focused node. We do this so that screen readers are made
   // aware of changes in the tree which might be relevant to subsequent events
@@ -600,7 +612,6 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // reparented node or a newly-shown dialog box.
   BrowserAccessibility* focus = GetFocus();
   std::vector<ui::AXEventGenerator::TargetedEvent> deferred_events;
-  bool received_load_complete_event = false;
   for (const auto& targeted_event : event_generator()) {
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     if (!event_target)

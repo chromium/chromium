@@ -613,6 +613,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // If so we need to suppress any events.
   bool hidden_by_interstitial_page_ = false;
 
+  // If the load complete event is suppressed due to CanFireEvents() returning
+  // false, this is set to true and the event will be fired later.
+  bool defer_load_complete_event_ = false;
+
   BrowserAccessibilityFindInPageInfo find_in_page_info_;
 
   // These cache the AX tree ID, node ID, and global screen bounds of the
