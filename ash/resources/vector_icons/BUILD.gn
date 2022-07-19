@@ -250,6 +250,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "reorder_nudge_dark_tablet.icon",
     "reorder_nudge_light_clamshell.icon",
     "reorder_nudge_light_tablet.icon",
+    "request_feedback.icon",
     "resume.icon",
     "save_desk_as_template.icon",
     "save_desk_for_later.icon",

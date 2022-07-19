@@ -144,6 +144,9 @@ class ASH_EXPORT ShellDelegate {
 
   // Retrieves the release track on which the device resides.
   virtual version_info::Channel GetChannel() = 0;
+
+  // Retrieves the official Chrome version string e.g. 105.0.5178.0.
+  virtual std::string GetVersionString() = 0;
 };
 
 }  // namespace ash

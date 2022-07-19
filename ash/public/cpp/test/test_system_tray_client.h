@@ -66,6 +66,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
                          const base::Time& date,
                          bool& opened_pwa,
                          GURL& final_event_url) override;
+  void ShowChannelInfoAdditionalDetails() override;
+  void ShowChannelInfoGiveFeedback() override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;

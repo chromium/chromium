@@ -751,6 +751,15 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   opened_pwa = true;
 }
 
+void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {
+  ShowSettingsSubPageForActiveUser(
+      std::string(chromeos::settings::mojom::kDetailedBuildInfoSubpagePath));
+}
+
+void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
+  ash::NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+}
+
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
     : system_tray_(nullptr) {
   DCHECK(!g_system_tray_client_instance);
