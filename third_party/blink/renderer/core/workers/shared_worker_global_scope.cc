@@ -308,7 +308,7 @@ bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
 }
 
-bool SharedWorkerGlobalScope::DirectSocketCapability() const {
+bool SharedWorkerGlobalScope::IsolatedApplicationCapability() const {
   return Agent::IsIsolatedApplication();
 }
 

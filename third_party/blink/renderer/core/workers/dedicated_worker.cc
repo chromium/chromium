@@ -484,7 +484,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetAgentClusterID(), execution_context->UkmSourceID(),
       execution_context->GetExecutionContextToken(),
       execution_context->CrossOriginIsolatedCapability(),
-      execution_context->DirectSocketCapability());
+      execution_context->IsolatedApplicationCapability());
 }
 
 scoped_refptr<WebWorkerFetchContext>

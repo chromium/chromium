@@ -67,7 +67,7 @@ class CORE_EXPORT WorkletGlobalScope
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   FrameOrWorkerScheduler* GetScheduler() final;
   bool CrossOriginIsolatedCapability() const final;
-  bool DirectSocketCapability() const final;
+  bool IsolatedApplicationCapability() const final;
   ukm::UkmRecorder* UkmRecorder() final;
   ukm::SourceId UkmSourceID() const final;
 

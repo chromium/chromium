@@ -388,10 +388,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // https://html.spec.whatwg.org/C/webappapis.html#concept-settings-object-cross-origin-isolated-capability
   virtual bool CrossOriginIsolatedCapability() const = 0;
 
-  // Reflects the context's potential ability to use Direct Socket APIs.
+  // Returns true if scripts within this ExecutionContext are allowed to use
+  // APIs that require the page to be part of an isolated application.
+  // https://github.com/reillyeon/isolated-web-apps
   //
   // TODO(mkwst): We need a specification for the necessary restrictions.
-  virtual bool DirectSocketCapability() const = 0;
+  virtual bool IsolatedApplicationCapability() const = 0;
 
   // Returns true if SharedArrayBuffers can be transferred via PostMessage,
   // false otherwise. SharedArrayBuffer allows pages to craft high-precision

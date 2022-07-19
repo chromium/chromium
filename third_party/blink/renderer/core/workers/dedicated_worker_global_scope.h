@@ -161,7 +161,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   bool CrossOriginIsolatedCapability() const final {
     return cross_origin_isolated_capability_;
   }
-  bool DirectSocketCapability() const final {
+  bool IsolatedApplicationCapability() const final {
     return direct_socket_capability_;
   }
   ExecutionContextToken GetExecutionContextToken() const final {

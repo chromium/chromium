@@ -308,7 +308,7 @@ bool WorkletGlobalScope::CrossOriginIsolatedCapability() const {
   return parent_cross_origin_isolated_capability_;
 }
 
-bool WorkletGlobalScope::DirectSocketCapability() const {
+bool WorkletGlobalScope::IsolatedApplicationCapability() const {
   return parent_direct_socket_capability_;
 }
 

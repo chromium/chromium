@@ -2243,7 +2243,7 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
              mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated);
 }
 
-bool LocalDOMWindow::DirectSocketCapability() const {
+bool LocalDOMWindow::IsolatedApplicationCapability() const {
   return Agent::IsIsolatedApplication();
 }
 

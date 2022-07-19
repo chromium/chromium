@@ -791,7 +791,7 @@ bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
 }
 
-bool ServiceWorkerGlobalScope::DirectSocketCapability() const {
+bool ServiceWorkerGlobalScope::IsolatedApplicationCapability() const {
   // TODO(mkwst): Make a decision here, and spec it.
   return false;
 }
