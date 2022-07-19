@@ -4328,8 +4328,6 @@ static_library("browser") {
       "task_manager/task_manager_observer.h",
       "themes/browser_theme_pack.cc",
       "themes/custom_theme_supplier.cc",
-      "themes/increased_contrast_theme_supplier.cc",
-      "themes/increased_contrast_theme_supplier.h",
       "themes/theme_helper.cc",
       "themes/theme_helper.h",
       "themes/theme_properties.cc",

@@ -17,10 +17,6 @@ namespace theme_service_internal {
 class ThemeServiceTest;
 }
 
-namespace ui {
-class NativeTheme;
-}
-
 namespace gfx {
 class ImageSkia;
 class Image;
@@ -85,11 +81,6 @@ class ThemeHelper {
   // Implementation for ui::ThemeProvider.
   virtual bool ShouldUseNativeFrame(
       const CustomThemeSupplier* theme_supplier) const;
-
-  // Decides if the IncreasedContrastThemeSupplier should be used according
-  // to |native_theme|.
-  virtual bool ShouldUseIncreasedContrastThemeSupplier(
-      ui::NativeTheme* native_theme) const;
 
   void DCheckCalledOnValidSequence() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

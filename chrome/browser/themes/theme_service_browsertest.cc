@@ -19,6 +19,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/buildflags.h"
 #include "ui/color/color_provider.h"
+#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/linux/linux_ui.h"

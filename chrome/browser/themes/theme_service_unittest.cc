@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
-#include "chrome/browser/themes/increased_contrast_theme_supplier.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -638,28 +637,6 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
                               color_utils::kMinimumVisibleContrastRatio);
   }
 #endif
-}
-
-TEST_F(ThemeServiceTest, NativeIncreasedContrastChanged) {
-  theme_service_->UseDefaultTheme();
-
-  test_native_theme_.SetUserHasContrastPreference(true);
-  theme_service_->OnNativeThemeUpdated(&test_native_theme_);
-  EXPECT_TRUE(theme_service_->UsingDefaultTheme());
-  bool using_increased_contrast =
-      theme_service_->GetThemeSupplier() &&
-      theme_service_->GetThemeSupplier()->get_theme_type() ==
-          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
-              kIncreasedContrast;
-  bool expecting_increased_contrast =
-      theme_service_->theme_helper_for_testing()
-          .ShouldUseIncreasedContrastThemeSupplier(&test_native_theme_);
-  EXPECT_EQ(using_increased_contrast, expecting_increased_contrast);
-
-  test_native_theme_.SetUserHasContrastPreference(false);
-  theme_service_->OnNativeThemeUpdated(&test_native_theme_);
-  EXPECT_TRUE(theme_service_->UsingDefaultTheme());
-  EXPECT_EQ(theme_service_->GetThemeSupplier(), nullptr);
 }
 
 // Sets and unsets themes using the BrowserThemeColor policy.

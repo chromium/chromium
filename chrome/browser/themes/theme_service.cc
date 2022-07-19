@@ -38,7 +38,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
-#include "chrome/browser/themes/increased_contrast_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -66,6 +65,7 @@
 #include "ui/base/layout.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/scoped_observation.h"
@@ -263,11 +263,6 @@ ThemeService::~ThemeService() = default;
 void ThemeService::Init() {
   theme_helper_.DCheckCalledOnValidSequence();
 
-  // TODO(https://crbug.com/953978): Use GetNativeTheme() for all platforms.
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme)
-    native_theme_observation_.Observe(native_theme);
-
   InitFromPrefs();
 
   // ThemeObserver should be constructed before calling
@@ -312,22 +307,6 @@ void ThemeService::Shutdown() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   theme_observer_.reset();
 #endif
-  native_theme_observation_.Reset();
-}
-
-void ThemeService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  // If we're using the default theme, it means that we need to respond to
-  // changes in the HC state. Don't use SetCustomDefaultTheme because that
-  // kicks off theme changed events which conflict with the NativeThemeChanged
-  // events that are already processing.
-  if (UsingDefaultTheme()) {
-    scoped_refptr<CustomThemeSupplier> supplier;
-    if (theme_helper_.ShouldUseIncreasedContrastThemeSupplier(observed_theme)) {
-      supplier =
-          base::MakeRefCounted<IncreasedContrastThemeSupplier>(observed_theme);
-    }
-    SwapThemeSupplier(supplier);
-  }
 }
 
 CustomThemeSupplier* ThemeService::GetThemeSupplier() const {
@@ -385,15 +364,6 @@ void ThemeService::UseDefaultTheme() {
   if (ready_)
     base::RecordAction(base::UserMetricsAction("Themes_Reset"));
 
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (theme_helper_.ShouldUseIncreasedContrastThemeSupplier(native_theme)) {
-    SetCustomDefaultTheme(new IncreasedContrastThemeSupplier(native_theme));
-    // Early return here because SetCustomDefaultTheme does ClearAllThemeData
-    // and NotifyThemeChanged when it needs to. Without this return, the
-    // IncreasedContrastThemeSupplier would get immediately removed if this
-    // code runs after ready_ is set to true.
-    return;
-  }
   ClearAllThemeData();
   NotifyThemeChanged();
 }

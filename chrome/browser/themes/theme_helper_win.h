@@ -15,8 +15,6 @@ class ThemeHelperWin : public ThemeHelper {
   // ThemeService:
   bool ShouldUseNativeFrame(
       const CustomThemeSupplier* theme_supplier) const override;
-  bool ShouldUseIncreasedContrastThemeSupplier(
-      ui::NativeTheme* native_theme) const override;
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_HELPER_WIN_H_

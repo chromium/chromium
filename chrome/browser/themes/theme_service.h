@@ -21,8 +21,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/theme_provider.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
 
 class BrowserThemePack;
 class CustomThemeSupplier;
@@ -32,11 +30,15 @@ class ThemeSyncableService;
 
 namespace extensions {
 class Extension;
-}
+}  // namespace extensions
 
 namespace theme_service_internal {
 class ThemeServiceTest;
-}
+}  // namespace theme_service_internal
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 class BrowserThemeProviderDelegate {
  public:
@@ -45,9 +47,7 @@ class BrowserThemeProviderDelegate {
   virtual bool ShouldUseCustomFrame() const = 0;
 };
 
-class ThemeService : public KeyedService,
-                     public ui::NativeThemeObserver,
-                     public BrowserThemeProviderDelegate {
+class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
  public:
   // This class keeps track of the number of existing |ThemeReinstaller|
   // objects. When that number reaches 0 then unused themes will be deleted.
@@ -83,9 +83,6 @@ class ThemeService : public KeyedService,
 
   // KeyedService:
   void Shutdown() override;
-
-  // Overridden from ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // Overridden from BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
@@ -338,9 +335,6 @@ class ThemeService : public KeyedService,
   // We hold onto this just to be sure not to uninstall the extension view
   // RemoveUnusedThemes while it's still being built.
   std::string building_extension_id_;
-
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      native_theme_observation_{this};
 
   base::WeakPtrFactory<ThemeService> weak_ptr_factory_{this};
 };
