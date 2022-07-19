@@ -9,6 +9,5 @@ per-file chrome_file_manager*=file://ash/webui/file_manager/OWNERS
 per-file crosh*=file://chromeos/TERMINAL_OWNERS
 per-file diagnostics*=file://ash/webui/diagnostics_ui/OWNERS
 per-file file_manager*=file://ash/webui/file_manager/OWNERS
-per-file terminal*=calamity@chromium.org
 per-file terminal*=file://chromeos/TERMINAL_OWNERS
 per-file eche*=file://ash/webui/eche_app_ui/OWNERS

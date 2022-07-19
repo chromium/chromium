@@ -8,8 +8,6 @@ per-file devtools_ui*=caseq@chromium.org
 per-file inspect_ui*=dgozman@chromium.org
 per-file inspect_ui*=caseq@chromium.org
 
-per-file history_ui*=calamity@chromium.org
-
 per-file memory_internals_ui*=erikchen@chromium.org
 
 per-file net_export_ui.*=file://net/OWNERS
