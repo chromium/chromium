@@ -55,6 +55,8 @@
 @property(nonatomic, strong, readonly) ChromeIdentity* selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
+// The access point that triggered sign-in.
+@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -62,6 +64,19 @@
 @end
 
 @implementation ConsistencyPromoSigninCoordinator
+
+#pragma mark - Public
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:baseViewController browser:browser];
+  if (self) {
+    _accessPoint = accessPoint;
+  }
+  return self;
+}
 
 #pragma mark - SigninCoordinator
 
@@ -95,12 +110,14 @@
       initWithAccountManagerService:accountManagerService
               authenticationService:authenticationService
                     identityManager:identityManager
-                    userPrefService:browserState->GetPrefs()];
+                    userPrefService:browserState->GetPrefs()
+                        accessPoint:self.accessPoint];
   self.consistencyPromoSigninMediator.delegate = self;
   // Create ConsistencyDefaultAccountCoordinator.
   self.defaultAccountCoordinator = [[ConsistencyDefaultAccountCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                         browser:self.browser];
+                         browser:self.browser
+                     accessPoint:self.accessPoint];
   self.defaultAccountCoordinator.delegate = self;
   self.defaultAccountCoordinator.layoutDelegate = self;
   [self.defaultAccountCoordinator start];
@@ -213,8 +230,7 @@
   self.addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.navigationController
                                           browser:self.browser
-                                      accessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_WEB_SIGNIN];
+                                      accessPoint:self.accessPoint];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
   self.addAccountCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
@@ -237,9 +253,13 @@
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   PrefService* userPrefService = browserState->GetPrefs();
-  const int skipCounter =
-      userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) + 1;
-  userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, skipCounter);
+  if (self.accessPoint ==
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    const int skipCounter =
+        userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) + 1;
+    userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount,
+                                skipCounter);
+  }
   __weak __typeof(self) weakSelf = self;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];

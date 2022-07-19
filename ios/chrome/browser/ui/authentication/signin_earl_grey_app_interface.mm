@@ -120,8 +120,8 @@
       chrome_test_util::GetActiveViewController();
   SceneController* sceneController =
       chrome_test_util::GetForegroundActiveSceneController();
-  [sceneController showConsistencyPromoFromViewController:baseViewController
-                                                      URL:gURL];
+  [sceneController showWebSigninPromoFromViewController:baseViewController
+                                                    URL:gURL];
 }
 
 @end

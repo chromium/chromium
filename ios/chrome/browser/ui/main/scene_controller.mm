@@ -1563,7 +1563,9 @@ bool IsSigninForcedByPolicy() {
       self.signinCoordinator = [SigninCoordinator
           consistencyPromoSigninCoordinatorWithBaseViewController:
               baseViewController
-                                                          browser:mainBrowser];
+                                                          browser:mainBrowser
+                                                      accessPoint:
+                                                          command.accessPoint];
       break;
     case AuthenticationOperationAddAccount:
       self.signinCoordinator = [SigninCoordinator
@@ -1628,9 +1630,9 @@ bool IsSigninForcedByPolicy() {
                                        trigger:trigger];
 }
 
-- (void)showConsistencyPromoFromViewController:
+- (void)showWebSigninPromoFromViewController:
             (UIViewController*)baseViewController
-                                           URL:(const GURL&)url {
+                                         URL:(const GURL&)url {
   // Do not display the web sign-in promo if there is any UI on the screen.
   if (self.signinCoordinator || self.settingsNavigationController)
     return;
@@ -1643,7 +1645,10 @@ bool IsSigninForcedByPolicy() {
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
-                                                                  .browser];
+                                                                  .browser
+                                                  accessPoint:
+                                                      signin_metrics::AccessPoint::
+                                                          ACCESS_POINT_WEB_SIGNIN];
   if (!self.signinCoordinator)
     return;
   __weak SceneController* weakSelf = self;

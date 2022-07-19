@@ -7,6 +7,7 @@
 #import "base/cancelable_callback.h"
 #import "base/threading/thread_task_runner_handle.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -44,6 +45,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 @property(nonatomic, assign) PrefService* userPrefService;
+@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 // Identity for the sign-in in progress.
 @property(nonatomic, assign) ChromeIdentity* signingIdentity;
 // Duration before sign-in timeout. The property is overwritten in unittests.
@@ -58,13 +60,15 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
         (ChromeAccountManagerService*)accountManagerService
             authenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
-                  userPrefService:(PrefService*)userPrefService {
+                  userPrefService:(PrefService*)userPrefService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
     _userPrefService = userPrefService;
+    _accessPoint = accessPoint;
     _addedGaiaIDs = [[NSMutableSet alloc] init];
     _identityManagerObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(self.identityManager, self));
@@ -133,7 +137,10 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 - (void)signinWithIdentity:(ChromeIdentity*)identity {
   self.signingIdentity = identity;
   // Reset dismissal count if the user wants to sign-in.
-  self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
+  if (self.accessPoint ==
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
+  }
   self.authenticationService->SignIn(identity, nil);
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
   DCHECK(self.authenticationService->HasPrimaryIdentity(
@@ -218,7 +225,10 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
           signin::ConsentLevel::kSignin) &&
       accountsInCookieJarInfo.signed_in_accounts.size() > 0) {
     // Reset dismissal count.
-    self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
+    if (self.accessPoint ==
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+      self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
+    }
     DCHECK(self.signingIdentity);
     [self.delegate
         consistencyPromoSigninMediatorSignInDone:self

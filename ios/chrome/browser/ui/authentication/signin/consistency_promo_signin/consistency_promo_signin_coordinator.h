@@ -7,9 +7,23 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
+namespace signin_metrics {
+enum class AccessPoint : int;
+}
+
 // Coordinates various Identity options in Chrome including signing in
 // using accounts on the device, opening Incognito, and adding an account.
 @interface ConsistencyPromoSigninCoordinator : SigninCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)AccessPoint
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_PROMO_SIGNIN_COORDINATOR_H_

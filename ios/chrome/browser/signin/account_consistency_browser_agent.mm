@@ -94,8 +94,8 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   web::WebState* current_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (current_web_state == web_state) {
-    [handler_ showConsistencyPromoFromViewController:base_view_controller_
-                                                 URL:url];
+    [handler_ showWebSigninPromoFromViewController:base_view_controller_
+                                               URL:url];
   }
 }
 

@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -166,7 +167,10 @@ using signin_metrics::PromoAction;
 + (instancetype)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                    browser:(Browser*)browser {
+                                                    browser:(Browser*)browser
+                                                accessPoint:(signin_metrics::
+                                                                 AccessPoint)
+                                                                accessPoint {
   ChromeBrowserState* browserState = browser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
@@ -205,7 +209,8 @@ using signin_metrics::PromoAction;
   PrefService* userPrefService = browserState->GetPrefs();
   const int currentDismissalCount =
       userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount);
-  if (currentDismissalCount >= kDefaultWebSignInDismissalCount) {
+  if (accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
+      currentDismissalCount >= kDefaultWebSignInDismissalCount) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             SUPPRESSED_CONSECUTIVE_DISMISSALS);
@@ -213,7 +218,8 @@ using signin_metrics::PromoAction;
   }
   return [[ConsistencyPromoSigninCoordinator alloc]
       initWithBaseViewController:viewController
-                         browser:browser];
+                         browser:browser
+                     accessPoint:accessPoint];
 }
 
 - (void)dealloc {

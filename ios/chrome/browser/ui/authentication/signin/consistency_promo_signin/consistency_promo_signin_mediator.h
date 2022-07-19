@@ -21,6 +21,10 @@ namespace signin {
 class IdentityManager;
 }  // signin
 
+namespace signin_metrics {
+enum class AccessPoint : int;
+}
+
 // Sign-in error.
 typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
   // Time out error.
@@ -63,7 +67,8 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
         (ChromeAccountManagerService*)accountManagerService
             authenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
-                  userPrefService:(PrefService*)userPrefService;
+                  userPrefService:(PrefService*)userPrefService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 // Disconnects the mediator.
 - (void)disconnectWithResult:(SigninCoordinatorResult)signinResult;

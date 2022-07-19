@@ -27,9 +27,22 @@
 
 @property(nonatomic, strong) ConsistencyDefaultAccountMediator* mediator;
 
+@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
+
 @end
 
 @implementation ConsistencyDefaultAccountCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:baseViewController browser:browser];
+  if (self) {
+    _accessPoint = accessPoint;
+  }
+  return self;
+}
 
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -38,7 +51,8 @@
                                         GetForBrowserState(browserState)];
   self.mediator.delegate = self;
   self.defaultAccountViewController =
-      [[ConsistencyDefaultAccountViewController alloc] init];
+      [[ConsistencyDefaultAccountViewController alloc]
+          initWithAccessPoint:self.accessPoint];
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   PrefService* prefService = browserState->GetPrefs();

@@ -136,7 +136,10 @@ class PrefRegistrySyncable;
 + (instancetype)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                    browser:(Browser*)browser;
+                                                    browser:(Browser*)browser
+                                                accessPoint:(signin_metrics::
+                                                                 AccessPoint)
+                                                                accessPoint;
 
 // Interrupts the sign-in flow.
 // `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to

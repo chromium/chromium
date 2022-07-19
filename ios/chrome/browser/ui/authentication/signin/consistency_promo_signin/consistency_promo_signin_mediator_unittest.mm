@@ -95,7 +95,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
             initWithAccountManagerService:chromeAccountManagerService
                     authenticationService:GetAuthenticationService()
                           identityManager:GetIdentityManager()
-                          userPrefService:&pref_service_];
+                          userPrefService:&pref_service_
+                              accessPoint:signin_metrics::AccessPoint::
+                                              ACCESS_POINT_WEB_SIGNIN];
     mediator.delegate = mediator_delegate_mock_;
     return mediator;
   }

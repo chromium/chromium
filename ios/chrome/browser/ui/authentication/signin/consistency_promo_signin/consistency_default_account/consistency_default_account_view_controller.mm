@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
@@ -45,10 +46,20 @@ constexpr CGFloat kContentSpacing = 16.;
 @property(nonatomic, strong) NSString* continueAsTitle;
 // Activity indicator on top of `self.continueAsButton`.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
+// The access point that triggered sign-in.
+@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
 @end
 
 @implementation ConsistencyDefaultAccountViewController
+
+- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
+  self = [super init];
+  if (self) {
+    _accessPoint = accessPoint;
+  }
+  return self;
+}
 
 - (void)startSpinner {
   // Add spinner.
@@ -147,12 +158,18 @@ constexpr CGFloat kContentSpacing = 16.;
   ]];
   // Add the label.
   UILabel* label = [[UILabel alloc] init];
-  if (self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts) {
+  BOOL showRestrictionsText =
+      self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts;
+  if (self.accessPoint ==
+      signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
     label.text = l10n_util::GetNSString(
-        IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL);
+        showRestrictionsText ? IDS_SEND_TAB_TO_SELF_PROMO_LABEL_RESTRICTIONS
+                             : IDS_SEND_TAB_TO_SELF_PROMO_LABEL);
   } else {
-    label.text =
-        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+    label.text = l10n_util::GetNSString(
+        showRestrictionsText
+            ? IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL
+            : IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
   }
 
   label.textColor = [UIColor colorNamed:kGrey700Color];

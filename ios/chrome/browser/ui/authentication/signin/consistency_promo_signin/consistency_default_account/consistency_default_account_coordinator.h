@@ -11,6 +11,10 @@
 @class ConsistencyDefaultAccountCoordinator;
 @protocol ConsistencyLayoutDelegate;
 
+namespace signin_metrics {
+enum class AccessPoint : int;
+}  // namespace signin_metrics
+
 @protocol ConsistencyDefaultAccountCoordinatorDelegate <NSObject>
 
 // Called when the last identity has been removed (by another app).
@@ -34,6 +38,15 @@
 // This coordinator presents an entry point to the Chrome sign-in flow with the
 // default account available on the device.
 @interface ConsistencyDefaultAccountCoordinator : ChromeCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 @property(nonatomic, weak) id<ConsistencyDefaultAccountCoordinatorDelegate>

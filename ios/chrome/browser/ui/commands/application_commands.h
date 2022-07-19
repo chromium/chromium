@@ -186,9 +186,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.
 // Redirects to `url` when the sign-in flow is complete.
-- (void)showConsistencyPromoFromViewController:
+- (void)showWebSigninPromoFromViewController:
             (UIViewController*)baseViewController
-                                           URL:(const GURL&)url;
+                                         URL:(const GURL&)url;
 
 // Shows a notification with the signed-in user account.
 - (void)showSigninAccountNotificationFromViewController:
