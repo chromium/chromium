@@ -16,6 +16,23 @@ class WebContents;
 
 namespace web_app {
 
+// Result enum values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused. Update corresponding enums.xml
+// entry when making changes here.
+enum class WebAppUrlLoaderResult {
+  // The provided URL (matched using |UrlComparison|) was loaded.
+  kUrlLoaded = 0,
+  // The provided URL redirected to another URL (that did not match using
+  // |UrlComparison|) and the final URL was loaded.
+  kRedirectedUrlLoaded = 1,
+  kFailedUnknownReason = 2,
+  kFailedPageTookTooLong = 3,
+  kFailedWebContentsDestroyed = 4,
+  kFailedErrorPageLoaded = 5,
+
+  kMaxValue = kFailedErrorPageLoaded,
+};
+
 // Callback-based wrapper around NavigationController::LoadUrl.
 class WebAppUrlLoader {
  public:
@@ -27,22 +44,7 @@ class WebAppUrlLoader {
     kSameOrigin,
   };
 
-  // Result enum values are persisted to logs. Entries should not be renumbered
-  // and numeric values should never be reused. Update corresponding enums.xml
-  // entry when making changes here.
-  enum class Result {
-    // The provided URL (matched using |UrlComparison|) was loaded.
-    kUrlLoaded = 0,
-    // The provided URL redirected to another URL (that did not match using
-    // |UrlComparison|) and the final URL was loaded.
-    kRedirectedUrlLoaded = 1,
-    kFailedUnknownReason = 2,
-    kFailedPageTookTooLong = 3,
-    kFailedWebContentsDestroyed = 4,
-    kFailedErrorPageLoaded = 5,
-
-    kMaxValue = kFailedErrorPageLoaded,
-  };
+  using Result = WebAppUrlLoaderResult;
 
   using ResultCallback = base::OnceCallback<void(Result)>;
 
