@@ -22,6 +22,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -49,7 +51,6 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(11, 22, 333, 444);
     params.context = GetContext();
     widget_->Init(std::move(params));
@@ -73,7 +74,7 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  std::unique_ptr<Widget> widget_;
+  UniqueWidgetPtr widget_;
   raw_ptr<Label> label1_ = nullptr;         // Owned by views hierarchy.
   raw_ptr<Label> label2_ = nullptr;         // Owned by views hierarchy.
   raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
@@ -198,8 +199,13 @@ TEST_F(AXTreeSourceViewsDesktopWidgetTest, FocusedChildWindowDestroyed) {
   // GetFocus() reflects the focused child window.
   EXPECT_NE(nullptr, cache.GetFocus());
 
+  test::WidgetDestroyedWaiter waiter(widget_.get());
+
   // Close the widget to destroy the child.
   widget_.reset();
+
+  // Wait for the async widget close.
+  waiter.Wait();
 
   // GetFocus() should return null and no use-after-free to call it.
   EXPECT_EQ(nullptr, cache.GetFocus());
