@@ -102,8 +102,16 @@ TEST_F(AbortsPageLoadMetricsObserverTest,
       internal::kHistogramAbortNewNavigationBeforeCommit, 1);
 }
 
+// Disabled due to flakiness: https://crbug.com/1330000
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NewNavigationBeforeCommitNonTrackedPageLoad \
+  DISABLED_NewNavigationBeforeCommitNonTrackedPageLoad
+#else
+#define MAYBE_NewNavigationBeforeCommitNonTrackedPageLoad \
+  NewNavigationBeforeCommitNonTrackedPageLoad
+#endif
 TEST_F(AbortsPageLoadMetricsObserverTest,
-       NewNavigationBeforeCommitNonTrackedPageLoad) {
+       MAYBE_NewNavigationBeforeCommitNonTrackedPageLoad) {
   tester()->StartNavigation(GURL("https://www.google.com"));
   // Simulate the user performing another navigation before commit. Navigate to
   // an untracked URL, to verify that we still log abort metrics even if the new
