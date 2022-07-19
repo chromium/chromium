@@ -39,6 +39,8 @@ class VttCueLayoutAlgorithm {
 
   LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit max_dimension);
   static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
+  bool IsOutside(const gfx::Rect& title_area) const;
+  bool IsOverlapping(const gfx::Rect& controls_rect) const;
 
   VTTCueBox& cue_;
   float snap_to_lines_position_;

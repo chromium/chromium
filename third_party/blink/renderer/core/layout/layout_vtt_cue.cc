@@ -328,12 +328,17 @@ void LayoutVTTCue::RepositionCueSnapToLinesNotSet() {
 
 gfx::Rect LayoutVTTCue::ComputeControlsRect() const {
   NOT_DESTROYED();
+  return ComputeControlsRect(*Parent());
+}
+
+// static
+gfx::Rect LayoutVTTCue::ComputeControlsRect(const LayoutObject& container) {
   // Determine the area covered by the media controls, if any. For this, the
   // LayoutVTTCue will walk the tree up to the HTMLMediaElement, then ask for
   // the MediaControls.
-  DCHECK(Parent()->GetNode()->IsTextTrackContainer());
+  DCHECK(container.GetNode()->IsTextTrackContainer());
 
-  auto* media_element = To<HTMLMediaElement>(Parent()->Parent()->GetNode());
+  auto* media_element = To<HTMLMediaElement>(container.Parent()->GetNode());
   DCHECK(media_element);
 
   MediaControls* controls = media_element->GetMediaControls();

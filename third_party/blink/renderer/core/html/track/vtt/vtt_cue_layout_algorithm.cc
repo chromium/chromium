@@ -89,6 +89,22 @@ gfx::Rect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
   return ToEnclosingRect(border_box);
 }
 
+bool VttCueLayoutAlgorithm::IsOutside(const gfx::Rect& title_area) const {
+  return !title_area.Contains(CueBoundingBox(*cue_.GetLayoutBox()));
+}
+
+bool VttCueLayoutAlgorithm::IsOverlapping(
+    const gfx::Rect& controls_rect) const {
+  gfx::Rect cue_box_rect = CueBoundingBox(*cue_.GetLayoutBox());
+  for (LayoutBox* box = cue_.GetLayoutBox()->PreviousSiblingBox(); box;
+       box = box->PreviousSiblingBox()) {
+    if (IsA<VTTCueBox>(box->GetNode()) &&
+        cue_box_rect.Intersects(CueBoundingBox(*box)))
+      return true;
+  }
+  return cue_box_rect.Intersects(controls_rect);
+}
+
 void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // 9. If there are no line boxes in boxes, skip the remainder of these
   // substeps for cue. The cue is ignored.
@@ -173,7 +189,17 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
     title_area.Inset(gfx::Insets::VH(0, margin_.ToInt()));
   }
 
-  // TODO(crbug.com/1335309): Implement this.
+  // 13. Step loop: If none of the boxes in boxes would overlap any of the
+  // boxes in output, and all of the boxes in boxes are entirely within the
+  // title area box, then jump to the step labeled done positioning below.
+  //
+  // We also check overlapping with media controls.
+  const gfx::Rect controls_rect = LayoutVTTCue::ComputeControlsRect(container);
+  while (IsOutside(title_area) || IsOverlapping(controls_rect)) {
+    // TODO(crbug.com/1335309): Implement this.
+
+    // 21. Jump back to the step labeled step loop.
+  }
 }
 
 void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {

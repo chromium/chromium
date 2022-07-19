@@ -41,6 +41,8 @@ class LayoutVTTCue final : public LayoutBlockFlow {
     return snap_to_lines_position_;
   }
 
+  static gfx::Rect ComputeControlsRect(const LayoutObject& container);
+
  private:
   void UpdateLayout() override;
 
