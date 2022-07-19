@@ -1207,6 +1207,11 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 const base::Feature kMoreVideoCaptureBuffers{"MoreVideoCaptureBuffers",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables showing notification and status area indicators when an app is
+// using camera/microphone.
+const base::Feature kPrivacyIndicators{"PrivacyIndicators",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a bubble-based launcher in clamshell mode. Changes the suggestions
 // that appear in the launcher in both clamshell and tablet modes. Removes pages
 // from the apps grid. This feature was previously named "AppListBubble".
@@ -2200,6 +2205,10 @@ bool IsPipRoundedCornersEnabled() {
 
 bool IsPolyDevicePairingAllowed() {
   return base::FeatureList::IsEnabled(kAllowPolyDevicePairing);
+}
+
+bool IsPrivacyIndicatorsEnabled() {
+  return base::FeatureList::IsEnabled(kPrivacyIndicators);
 }
 
 bool IsProductivityLauncherEnabled() {

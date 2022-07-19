@@ -489,6 +489,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPipRoundedCorners;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kPrivacyIndicators;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProductivityLauncher;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -795,6 +797,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipRoundedCornersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPolyDevicePairingAllowed();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrivacyIndicatorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAllUserEnabled();
