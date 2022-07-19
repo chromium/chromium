@@ -1573,6 +1573,9 @@ const RunListCase kBasicsRunListCases[] = {
     {"multiline_newline1", u"\n\n", "[0][1]", true},
     {"multiline_newline2", u"\r\n\r\n", "[0->1][2->3]", true},
     {"multiline_newline3", u"\r\r\n", "[0][1->2]", true},
+    {"multiline_newline4", u"x\r\r", "[0][1][2]", true},
+    {"multiline_newline5", u"x\n\r\r", "[0][1][2][3]", true},
+    {"multiline_newline6", u"x\ny\rz\r\n", "[0][1][2][3][4][5->6]", true},
 };
 
 INSTANTIATE_TEST_SUITE_P(ItemizeTextToRunsBasics,
@@ -8545,5 +8548,15 @@ TEST_F(RenderTextTest, StringSizeUpdatedWhenDeviceScaleFactorChanges) {
   EXPECT_EQ(scaled_render_text->GetStringSizeF(), scaled_size);
 }
 #endif
+
+TEST_F(RenderTextTest, Clusterfuzz_Issue_1287804) {
+  RenderText* render_text = GetRenderText();
+  render_text->SetMaxLines(1);
+  render_text->SetText(u">\r\r");
+  render_text->SetMultiline(true);
+  render_text->SetDisplayRect(Rect(0, 0, 100, 24));
+  render_text->SetElideBehavior(ELIDE_TAIL);
+  EXPECT_EQ(RangeF(0, 0), render_text->GetCursorSpan(Range(0, 0)));
+}
 
 }  // namespace gfx
