@@ -26,17 +26,30 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
             sender: "ChromeOS Quick Answers"
             description:
               "ChromeOS requests quick answers based on the currently selected "
-              "text."
+              "text to look up a translation, dictionary definition, "
+              "or unit conversion."
             trigger:
               "Right click to trigger context menu."
+            data: "Currently selected text, device language and "
+                  "source language of the selected text "
+                  "is sent to Google API only for translation."
             destination: GOOGLE_OWNED_SERVICE
           }
           policy: {
             cookies_allowed: YES
+            cookies_store: "system"
             setting:
               "Quick Answers can be enabled/disabled in Chrome Settings and is "
               "subject to eligibility requirements. The user may also "
               "separately opt out of sharing screen context with Assistant."
+            chrome_policy {
+                QuickAnswersEnabled {
+                    QuickAnswersEnabled: false
+                }
+                QuickAnswersTranslationEnabled {
+                    QuickAnswersTranslationEnabled: true
+                }
+            }
           })");
 
 }  // namespace
