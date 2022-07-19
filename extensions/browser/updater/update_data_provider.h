@@ -67,6 +67,12 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
                           bool install_immediately,
                           UpdateClientCallback update_client_callback);
 
+  void InstallUpdateCallback(const std::string& extension_id,
+                             const std::string& public_key,
+                             const base::FilePath& unpacked_dir,
+                             bool install_immediately,
+                             UpdateClientCallback update_client_callback);
+
   raw_ptr<content::BrowserContext> browser_context_;
 };
 
