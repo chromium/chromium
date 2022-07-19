@@ -2657,12 +2657,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         style_->EffectiveZIndex() != new_style.EffectiveZIndex() ||
         IsStackingContext(*style_) != IsStackingContext(new_style)) {
       GetDocument().SetAnnotatedRegionsDirty(true);
-      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        if (GetNode())
-          cache->ChildrenChanged(GetNode()->parentNode());
-        else
-          cache->ChildrenChanged(Parent());
-      }
     }
 
     bool background_color_changed =
@@ -2691,8 +2685,13 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
       // tree.
       if (PaintLayer* layer = EnclosingLayer())
         layer->DirtyVisibleContentStatus();
-      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        if (GetNode())
+          cache->ChildrenChanged(GetNode()->parentNode());
+        else
+          cache->ChildrenChanged(Parent());
         cache->ChildrenChanged(this);
+      }
       GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
           *this);
     }
