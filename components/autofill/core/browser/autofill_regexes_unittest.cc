@@ -33,7 +33,7 @@ TEST_P(PositiveSampleTest, SampleRegexes) {
   EXPECT_TRUE(MatchesPattern(test_case.input, test_case.pattern));
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
+INSTANTIATE_TEST_SUITE_P(AutofillRegexesTest,
                          PositiveSampleTest,
                          testing::Values(
                              // Empty pattern
@@ -61,7 +61,7 @@ TEST_P(NegativeSampleTest, SampleRegexes) {
   EXPECT_FALSE(MatchesPattern(test_case.input, test_case.pattern));
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
+INSTANTIATE_TEST_SUITE_P(AutofillRegexesTest,
                          NegativeSampleTest,
                          testing::Values(
                              // Empty string
