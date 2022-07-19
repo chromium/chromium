@@ -31,6 +31,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -1084,8 +1085,12 @@ bool content::IsNSRange(id value) {
   // Hook back up to RenderWidgetHostViewCocoa.
   BrowserAccessibilityManagerMac* manager =
       _owner->manager()->GetRootManager()->ToBrowserAccessibilityManagerMac();
-  CHECK(manager);
-  DCHECK(manager->GetParentView());
+  if (!manager) {
+    // TODO(accessibility) Determine why this is happening.
+    SANITIZER_NOTREACHED();
+    return nil;
+  }
+  SANITIZER_CHECK(manager->GetParentView());
   return manager->GetParentView();
 }
 
