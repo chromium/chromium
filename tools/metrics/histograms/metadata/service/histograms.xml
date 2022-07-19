@@ -1019,7 +1019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.{operation}Time" units="ms"
-    expires_after="2022-08-24">
+    expires_after="2023-07-19">
   <owner>cduvall@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
