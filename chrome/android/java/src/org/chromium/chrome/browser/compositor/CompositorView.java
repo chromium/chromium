@@ -91,6 +91,7 @@ public class CompositorView
     class ScreenStateReceiverWorkaround extends BroadcastReceiver {
         // True indicates we should destroy and recreate the surface manager.
         private boolean mNeedsReset;
+        private Surface mLastDestroyedSurface;
 
         ScreenStateReceiverWorkaround() {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
@@ -118,6 +119,17 @@ public class CompositorView
                 mCompositorSurfaceManager.shutDown();
                 createCompositorSurfaceManager();
             }
+        }
+
+        public void surfaceDestroyed(Surface surface) {
+            mLastDestroyedSurface = surface;
+        }
+
+        public void surfaceCreated(Surface surface) {
+            // If surface is created successfully when screen is on again, don't
+            // reset CompositorSurfaceManager.
+            mNeedsReset = mNeedsReset && (mLastDestroyedSurface != surface);
+            mLastDestroyedSurface = null;
         }
     }
 
@@ -442,6 +454,7 @@ public class CompositorView
     public void surfaceCreated(Surface surface) {
         if (mNativeCompositorView == 0) return;
 
+        if (mScreenStateReceiver != null) mScreenStateReceiver.surfaceCreated(surface);
         mFramesUntilHideBackground = 2;
         mHaveSwappedFramesSinceSurfaceCreated = false;
         updateNeedsDidSwapBuffersCallback();
@@ -464,6 +477,7 @@ public class CompositorView
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView, CompositorView.this);
 
         if (mScreenStateReceiver != null) {
+            mScreenStateReceiver.surfaceDestroyed(surface);
             mScreenStateReceiver.maybeResetCompositorSurfaceManager();
         }
     }
