@@ -241,14 +241,13 @@ bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
   }
 }
 
-// Returns the last committed URL for `render_frame_host`. If the frame's URL is
-// about:blank, returns GetLastCommittedOrigin.
 // Due to dependency issues, this method is duplicated in
 // content/browser/permissions/permission_util.cc.
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
+#if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   // If `allow_universal_access_from_file_urls` flag is enabled, a file:/// can
@@ -260,6 +259,7 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
     return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   }
+#endif
 
   return render_frame_host->GetLastCommittedOrigin().GetURL();
 }

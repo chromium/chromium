@@ -804,12 +804,12 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ true);
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/true);
 
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/false);
 }
 
 // Permissions granted for a file should not leak to another file.
@@ -842,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ true);
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/true);
 
   GURL file2_url = CreateFileURL(FILE_PATH_LITERAL("title2.html"));
 
@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   // Permission is failed because it is another file.
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/false);
 }
 
 // Flaky - https://crbug.com/1289985
@@ -900,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ true);
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/true);
 
   content::EvalJsResult result = content::EvalJs(
       embedder_contents, "history.pushState({}, {}, 'https://chromium.org');");
@@ -909,7 +909,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_TRUE(main_rfh->GetLastCommittedOrigin().GetURL().SchemeIsFile());
 
   // `https://chromium.org` is used for permissions verification.
-  VerifyPermissionsAllowed(main_rfh);
+#if BUILDFLAG(IS_ANDROID)
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/false);
+#else
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/true);
+#endif
 }
 
 // Verifies that permissions are not supported for file:/// with changed URL to
@@ -941,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ true);
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/true);
 
   content::EvalJsResult result = content::EvalJs(
       embedder_contents, "history.pushState({}, {}, 'about:blank');");
@@ -949,7 +953,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_EQ("about:blank", main_rfh->GetLastCommittedURL().spec());
   EXPECT_TRUE(main_rfh->GetLastCommittedURL().IsAboutBlank());
 
-  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
+#if BUILDFLAG(IS_ANDROID)
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/false);
+#else
+  VerifyPermissionsForFile(main_rfh, /*expect_granted=*/true);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,

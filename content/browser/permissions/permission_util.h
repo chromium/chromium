@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PERMISSIONS_PERMISSION_UTIL_H_
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_UTIL_H_
 
+#include "content/common/content_export.h"
+
 class GURL;
 
 namespace content {
@@ -15,7 +17,7 @@ class PermissionUtil {
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `render_frame_host`.
   // TODO(crbug.com/1327384): Remove this method when possible.
-  static GURL GetLastCommittedOriginAsURL(
+  CONTENT_EXPORT static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
 };
 
