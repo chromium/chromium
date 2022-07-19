@@ -1991,11 +1991,6 @@
       name: "RTCRtpHeaderExtensionControl",
       status: "experimental",
     },
-    // Enables the use of |RTCRtpTransceiver::stop()|
-    {
-      name: "RTCRtpTransceiverStop",
-      status: "stable",
-    },
     {
       name: "RTCStatsRelativePacketArrivalDelay",
       origin_trial_feature_name: "RTCStatsRelativePacketArrivalDelay",
