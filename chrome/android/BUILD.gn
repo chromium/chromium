@@ -801,6 +801,7 @@ java_group("chrome_all_java") {
   deps = [
     ":chrome_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
+    "//chrome/browser/android/httpclient:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/content_creation/notes/internal/android:java",
     "//chrome/browser/content_creation/reactions/internal/android:java",
@@ -996,6 +997,7 @@ robolectric_binary("chrome_junit_tests") {
     "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/browserservices/verification:junit_test_support",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/android/httpclient:junit_tests",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/webapps/launchpad:junit_tests",
     "//chrome/browser/back_press/android:java",
@@ -1524,6 +1526,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/browserservices/verification:javatests",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/android/httpclient:javatests",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/metrics:ukm_java_test_support",
     "//chrome/browser/android/metrics:ukm_javatests",

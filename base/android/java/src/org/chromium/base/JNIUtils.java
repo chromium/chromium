@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.MainDex;
 
+import java.util.Map;
+
 /**
  * This class provides JNI-related methods to the native library.
  */
@@ -67,5 +69,20 @@ public class JNIUtils {
     public static void enableSelectiveJniRegistration() {
         assert sSelectiveJniRegistrationEnabled == null;
         sSelectiveJniRegistrationEnabled = true;
+    }
+
+    /**
+     * Helper to convert from java maps to two arrays for JNI.
+     */
+    public static <K, V> void splitMap(Map<K, V> map, K[] outKeys, V[] outValues) {
+        assert map.size() == outKeys.length;
+        assert outValues.length == outKeys.length;
+
+        int i = 0;
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            outKeys[i] = entry.getKey();
+            outValues[i] = entry.getValue();
+            i++;
+        }
     }
 }
