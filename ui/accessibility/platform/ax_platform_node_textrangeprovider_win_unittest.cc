@@ -5230,6 +5230,92 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderFindText) {
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       FindTextWithEmbeddedObjectCharacter) {
+  // ++1 kRootWebArea
+  // ++++2 kList
+  // ++++++3 kListItem
+  // ++++++++4 kStaticText
+  // ++++++++++5 kInlineTextBox
+  // ++++++6 kListItem
+  // ++++++++7 kStaticText
+  // ++++++++++8 kInlineTextBox
+  ui::AXNodeData root_1;
+  ui::AXNodeData list_2;
+  ui::AXNodeData list_item_3;
+  ui::AXNodeData static_text_4;
+  ui::AXNodeData inline_box_5;
+  ui::AXNodeData list_item_6;
+  ui::AXNodeData static_text_7;
+  ui::AXNodeData inline_box_8;
+
+  root_1.id = 1;
+  list_2.id = 2;
+  list_item_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+  list_item_6.id = 6;
+  static_text_7.id = 7;
+  inline_box_8.id = 8;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {list_2.id};
+
+  list_2.role = ax::mojom::Role::kList;
+  list_2.child_ids = {list_item_3.id, list_item_6.id};
+
+  list_item_3.role = ax::mojom::Role::kListItem;
+  list_item_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("foo");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("foo");
+
+  list_item_6.role = ax::mojom::Role::kListItem;
+  list_item_6.child_ids = {static_text_7.id};
+
+  static_text_7.role = ax::mojom::Role::kStaticText;
+  static_text_7.child_ids = {inline_box_8.id};
+  static_text_7.SetName("bar");
+
+  inline_box_8.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_8.SetName("bar");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1, list_2, list_item_3, static_text_4,
+                  inline_box_5, list_item_6, static_text_7, inline_box_8};
+
+  Init(update);
+
+  AXNode* root_node = GetRootAsAXNode();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  base::win::ScopedBstr find_string(L"oobar");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->FindText(find_string.Get(),
+                           false, false, &text_range_provider_found));
+  ASSERT_TRUE(text_range_provider_found.Get());
+  Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin>
+      text_range_provider_win;
+  text_range_provider_found->QueryInterface(
+      IID_PPV_ARGS(&text_range_provider_win));
+  ASSERT_TRUE(GetStart(text_range_provider_win.Get())->IsTextPosition());
+  EXPECT_EQ(5, GetStart(text_range_provider_win.Get())->anchor_id());
+  EXPECT_EQ(1, GetStart(text_range_provider_win.Get())->text_offset());
+  ASSERT_TRUE(GetEnd(text_range_provider_win.Get())->IsTextPosition());
+  EXPECT_EQ(8, GetEnd(text_range_provider_win.Get())->anchor_id());
+  EXPECT_EQ(3, GetEnd(text_range_provider_win.Get())->text_offset());
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderFindTextBackwards) {
   Init(BuildTextDocument({"text", "some", "text"},
                          false /* build_word_boundaries_offsets */,

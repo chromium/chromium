@@ -22,8 +22,6 @@ AXEmbeddedObjectBehavior g_ax_embedded_object_behavior =
     AXEmbeddedObjectBehavior::kSuppressCharacter;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 
-namespace testing {
-
 ScopedAXEmbeddedObjectBehaviorSetter::ScopedAXEmbeddedObjectBehaviorSetter(
     AXEmbeddedObjectBehavior behavior) {
   prev_behavior_ = g_ax_embedded_object_behavior;
@@ -33,8 +31,6 @@ ScopedAXEmbeddedObjectBehaviorSetter::ScopedAXEmbeddedObjectBehaviorSetter(
 ScopedAXEmbeddedObjectBehaviorSetter::~ScopedAXEmbeddedObjectBehaviorSetter() {
   g_ax_embedded_object_behavior = prev_behavior_;
 }
-
-}  // namespace testing
 
 std::string ToString(const AXPositionKind kind) {
   static constexpr auto kKindToString =

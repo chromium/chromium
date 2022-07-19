@@ -145,7 +145,7 @@ class AXRangeTest : public ::testing::Test, public TestAXTreeManager {
   AXNodeData empty_paragraph_;
 
  private:
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_;
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_;
 };
 
 // These tests use kSuppressCharacter behavior.

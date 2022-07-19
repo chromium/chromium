@@ -125,7 +125,7 @@ class AXPositionTest : public ::testing::Test, public TestAXTreeManager {
   AXNodeData inline_box2_;
 
  private:
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behaviour_;
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behaviour_;
   // Manages a minimalistic Views tree that is hosting the test webpage.
   TestAXTreeManager views_tree_manager_;
 };
@@ -3032,7 +3032,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithIgnoredNodes) {
 }
 
 TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithEmbeddedObjectCharacter) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // This test ensures that "At{Start|End}OfParagraph" work correctly when there
@@ -4131,7 +4131,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
 }
 
 TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmbeddedObject) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
@@ -4883,7 +4883,7 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithNullPosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), static_text1_.id, 1 /* child_index */);
@@ -4943,7 +4943,7 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTextPosition) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 2 /* text_offset */,
@@ -5020,7 +5020,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithNullPosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), button_.id, 0 /* child_index */);
@@ -5087,7 +5087,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), button_.id, 0 /* text_offset */,
@@ -5163,7 +5163,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndOnEmbeddedObject) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   // ++root_1
   // ++++heading_2
@@ -7772,7 +7772,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // This test only applies when "object replacement characters" are used in the
   // accessibility tree, e.g., in IAccessible2, UI Automation and Linux ATK
   // APIs.
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // This test ensures that "CreateParentPosition" (and by extension
@@ -8632,7 +8632,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
 }
 
 TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++kRootWebArea "<embedded>Hello<embedded>"
@@ -9653,7 +9653,7 @@ TEST_F(AXPositionTest, AsValidPosition) {
 }
 
 TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
@@ -10538,7 +10538,7 @@ TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetDifferentAnchorIdLeaf) {
 }
 
 TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
@@ -10603,7 +10603,7 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
 }
 
 TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
@@ -10705,7 +10705,7 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
 }
 
 TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
@@ -10839,7 +10839,7 @@ TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
 }
 
 TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
@@ -11765,7 +11765,7 @@ TEST_F(AXPositionTest, CreatePreviousWordPositionInList) {
 }
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
@@ -12100,7 +12100,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 }
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // Parent Tree
@@ -12152,7 +12152,7 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   // collapsed, the subtree of that combobox needs to be hidden and, when
   // expanded, it must be accessible in the tree. This test ensures we can't
   // navigate into the options of a collapsed menu list popup.
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
@@ -12314,7 +12314,7 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
 }
 
 TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
 
   AXNodeData root_data;

@@ -396,7 +396,7 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
 }
 
 TEST(AXNodeTest, GetValueForControlTextField) {
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kSuppressCharacter);
 
   // kRootWebArea

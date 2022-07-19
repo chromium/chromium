@@ -134,7 +134,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   std::unique_ptr<AXFragmentRootWin> ax_fragment_root_;
 
   std::unique_ptr<TestFragmentRootDelegate> test_fragment_root_delegate_;
-  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_;
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

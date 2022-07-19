@@ -267,7 +267,7 @@ TEST_F(AXComputedNodeDataTest, HasOrCanComputeAttribute) {
 TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
   // Embedded object behavior is dependant on platform. We manually set it to a
   // specific value so that test results are consistent across platforms.
-  testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
+  ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
       AXEmbeddedObjectBehavior::kSuppressCharacter);
 
   // Line breaks should be inserted between each paragraph to mirror how HTML's
@@ -449,7 +449,7 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
 TEST_F(AXComputedNodeDataTest, GetOrComputeTextContent) {
   // Embedded object behavior is dependant on platform. We manually set it to a
   // specific value so that test results are consistent across platforms.
-  testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
+  ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
       AXEmbeddedObjectBehavior::kSuppressCharacter);
 
   EXPECT_THAT(root_node_->GetComputedNodeData()

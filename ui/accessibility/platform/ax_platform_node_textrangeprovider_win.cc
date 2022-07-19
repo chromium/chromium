@@ -470,6 +470,28 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(string, result);
+  // On Windows, there's a dichotomy in the definition of a text offset in a
+  // text position between different APIs:
+  //   - on UIA, a text offset translates to the offset in the text itself
+  //   - on IA2, it translates to the offset in the hypertext
+  //
+  // All unignored non-text nodes are represented with an "embedded object
+  // character" in their parent's text representation on IA2, but aren't on UIA.
+  // This leads to different expected MaxTextOffset values for a same text
+  // position. If `string` is found in the text represented by the start/end
+  // endpoints, we'll create text positions in the least common ancestor, use
+  // the flat text representation's offsets of found string, then convert the
+  // positions to leaf. If 'embedded object characters' are considered, instead
+  // of the flat text representation, this falls apart.
+  //
+  // Whether we expose embedded object characters for nodes is managed by the
+  // |g_ax_embedded_object_behavior| global variable set in ax_node_position.cc.
+  // When on Windows, this variable is always set to kExposeCharacter... which
+  // is incorrect if we run UIA-specific code. To avoid problems caused by that,
+  // we use the following ScopedAXEmbeddedObjectBehaviorSetter to modify the
+  // value of the global variable to what is really expected on UIA.
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
 
   std::u16string search_string = base::WideToUTF16(string);
   if (search_string.length() <= 0)
