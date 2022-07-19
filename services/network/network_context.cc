@@ -1552,6 +1552,12 @@ void NetworkContext::MaybeEnqueueSCTReport(
                                              signed_certificate_timestamps);
 }
 
+void NetworkContext::SetCTLogListAlwaysTimelyForTesting() {
+  if (!ct_policy_enforcer_)
+    return;
+  ct_policy_enforcer_->SetCTLogListAlwaysTimelyForTesting(true);
+}
+
 void NetworkContext::SetSCTAuditingMode(mojom::SCTAuditingMode mode) {
   sct_auditing_handler()->SetMode(mode);
 }

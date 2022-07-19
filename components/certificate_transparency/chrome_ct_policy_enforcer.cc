@@ -202,6 +202,8 @@ bool ChromeCTPolicyEnforcer::IsLogOperatedByGoogle(
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDataTimely() const {
+  if (ct_log_list_always_timely_for_testing_)
+    return true;
   // We consider built-in information to be timely for 10 weeks.
   return (clock_->Now() - log_list_date_).InDays() < 70 /* 10 weeks */;
 }

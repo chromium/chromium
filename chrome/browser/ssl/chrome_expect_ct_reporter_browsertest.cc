@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/http/transport_security_state.h"
@@ -129,6 +130,10 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
 // Tests that an Expect-CT reporter is properly set up and used for violations
 // of Expect-CT HTTP headers.
 IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
+  content::StoragePartition* partition =
+      browser()->profile()->GetDefaultStoragePartition();
+  partition->GetNetworkContext()->SetCTLogListAlwaysTimelyForTesting();
+
   net::EmbeddedTestServer report_server;
   report_server.RegisterRequestHandler(base::BindRepeating(
       &ExpectCTBrowserTest::ReportRequestHandler, base::Unretained(this)));
@@ -171,6 +176,10 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
 // Tests that Expect-CT HTTP headers are processed correctly.
 IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest,
                        TestDynamicExpectCTHeaderProcessing) {
+  content::StoragePartition* partition =
+      browser()->profile()->GetDefaultStoragePartition();
+  partition->GetNetworkContext()->SetCTLogListAlwaysTimelyForTesting();
+
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.RegisterRequestHandler(
       base::BindRepeating(&ExpectCTBrowserTest::ExpectCTHeaderRequestHandler,

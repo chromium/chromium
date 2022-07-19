@@ -7,6 +7,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/safe_browsing_policy_test.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -14,6 +15,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -63,6 +65,11 @@ class CertificateTransparencyPolicyTest : public SafeBrowsingPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                        CertificateTransparencyEnforcementDisabledForUrls) {
+  auto* profile = Profile::FromBrowserContext(
+      chrome_test_utils::GetActiveWebContents(this)->GetBrowserContext());
+  content::StoragePartition* partition = profile->GetDefaultStoragePartition();
+  partition->GetNetworkContext()->SetCTLogListAlwaysTimelyForTesting();
+
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
@@ -116,6 +123,11 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                        CertificateTransparencyEnforcementDisabledForCas) {
+  auto* profile = Profile::FromBrowserContext(
+      chrome_test_utils::GetActiveWebContents(this)->GetBrowserContext());
+  content::StoragePartition* partition = profile->GetDefaultStoragePartition();
+  partition->GetNetworkContext()->SetCTLogListAlwaysTimelyForTesting();
+
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");

@@ -91,6 +91,10 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
     return log_operator_history_;
   }
 
+  void SetCTLogListAlwaysTimelyForTesting(bool always_timely) {
+    ct_log_list_always_timely_for_testing_ = always_timely;
+  }
+
   void SetOperatorHistoryForTesting(
       std::map<std::string, OperatorHistoryEntry> log_operator_history) {
     log_operator_history_ = std::move(log_operator_history);
@@ -144,6 +148,10 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // The time at which |disqualified_logs_| and |operated_by_google_logs_| were
   // generated.
   base::Time log_list_date_;
+
+  // If set, the CT log list will be considered timely regardless of its last
+  // update time.
+  bool ct_log_list_always_timely_for_testing_ = false;
 
   // If set, this log ID will be considered a valid, Google operated log.
   // Calling UpdateCTLogList clears this value if set.
