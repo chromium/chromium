@@ -394,6 +394,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If set, the widget was created in headless mode.
     bool headless_mode = false;
 
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    // Indicates whether the desktop native widget is required for the widget.
+    // This may enforce changing the type of the underlying platform window.
+    // See crbug.com/1280332
+    bool requires_accelerated_widget = false;
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(crbug.com/1327490): Rename restore info variables.
     // Only used by Wayland. Specifies the session id window key, the restore

@@ -48,6 +48,9 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
     return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
   }
 
+  if (params.requires_accelerated_widget)
+    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+
   return (params.parent &&
           params.type != views::Widget::InitParams::TYPE_MENU &&
           params.type != views::Widget::InitParams::TYPE_TOOLTIP)
