@@ -195,18 +195,18 @@ void ExternallyManagedAppManager::OnRegistrationFinished(
 
 void ExternallyManagedAppManager::InstallForSynchronizeCallback(
     ExternalInstallSource source,
-    const GURL& app_url,
+    const GURL& install_url,
     ExternallyManagedAppManager::InstallResult result) {
   if (!IsSuccess(result.code)) {
-    LOG(ERROR) << app_url << " from install source " << static_cast<int>(source)
-               << " failed to install with reason "
+    LOG(ERROR) << install_url << " from install source "
+               << static_cast<int>(source) << " failed to install with reason "
                << static_cast<int>(result.code);
   }
 
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
-  request.install_results[app_url] = std::move(result);
+  request.install_results[install_url] = std::move(result);
   --request.remaining_install_requests;
   DCHECK_GE(request.remaining_install_requests, 0);
 
@@ -215,12 +215,12 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
 
 void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
     ExternalInstallSource source,
-    const GURL& app_url,
+    const GURL& install_url,
     bool succeeded) {
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
-  request.uninstall_results[app_url] = succeeded;
+  request.uninstall_results[install_url] = succeeded;
   --request.remaining_uninstall_requests;
   DCHECK_GE(request.remaining_uninstall_requests, 0);
 

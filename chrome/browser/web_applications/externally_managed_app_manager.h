@@ -70,17 +70,18 @@ class ExternallyManagedAppManager {
   };
 
   using OnceInstallCallback =
-      base::OnceCallback<void(const GURL& app_url, InstallResult result)>;
+      base::OnceCallback<void(const GURL& install_url, InstallResult result)>;
   using RepeatingInstallCallback =
-      base::RepeatingCallback<void(const GURL& app_url, InstallResult result)>;
+      base::RepeatingCallback<void(const GURL& install_url,
+                                   InstallResult result)>;
   using RegistrationCallback =
       base::RepeatingCallback<void(const GURL& launch_url,
                                    RegistrationResultCode code)>;
   using UninstallCallback =
-      base::RepeatingCallback<void(const GURL& app_url, bool succeeded)>;
-  using SynchronizeCallback =
-      base::OnceCallback<void(std::map<GURL, InstallResult> install_results,
-                              std::map<GURL, bool> uninstall_results)>;
+      base::RepeatingCallback<void(const GURL& install_url, bool succeeded)>;
+  using SynchronizeCallback = base::OnceCallback<void(
+      std::map<GURL /*install_url*/, InstallResult> install_results,
+      std::map<GURL /*install_url*/, bool /*succeeded*/> uninstall_results)>;
 
   ExternallyManagedAppManager();
   ExternallyManagedAppManager(const ExternallyManagedAppManager&) = delete;
@@ -191,10 +192,10 @@ class ExternallyManagedAppManager {
 
   void InstallForSynchronizeCallback(
       ExternalInstallSource source,
-      const GURL& app_url,
+      const GURL& install_url,
       ExternallyManagedAppManager::InstallResult result);
   void UninstallForSynchronizeCallback(ExternalInstallSource source,
-                                       const GURL& app_url,
+                                       const GURL& install_url,
                                        bool succeeded);
   void ContinueOrCompleteSynchronization(ExternalInstallSource source);
 
