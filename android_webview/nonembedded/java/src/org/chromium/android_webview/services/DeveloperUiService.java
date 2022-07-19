@@ -106,6 +106,15 @@ public final class DeveloperUiService extends Service {
         }
     };
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        final int mode = super.onStartCommand(intent, flags, startId);
+        // Service is always expected to run in foreground, so mark as such when it is started.
+        // Subsequent calls will simply replace the foreground service notification.
+        markAsForegroundService();
+        return mode;
+    }
+
     /**
      * Static method to fetch the flag overrides. If this returns an empty map, this will
      * asynchronously restart the Service to disable developer mode.
@@ -287,7 +296,6 @@ public final class DeveloperUiService extends Service {
             } else {
                 startService(intent);
             }
-            markAsForegroundService();
 
             ComponentName developerModeState =
                     new ComponentName(this, DeveloperModeUtils.DEVELOPER_MODE_STATE_COMPONENT);

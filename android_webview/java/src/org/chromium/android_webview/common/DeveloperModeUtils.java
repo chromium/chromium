@@ -73,7 +73,7 @@ public final class DeveloperModeUtils {
 
     /**
      * Fetch the flag overrides from the developer mode ContentProvider. This should only be called
-     * if {@link #isDeveloperModeEnabled(String}} returns {@code true}, otherwise this may incur
+     * if {@link #isDeveloperModeEnabled(String)} returns {@code true}, otherwise this may incur
      * unnecessary IPC or start up processes unnecessarily.
      *
      * @param webViewPackageName the package name of the WebView implementation to fetch the flags
