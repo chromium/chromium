@@ -191,7 +191,9 @@ class TargetServices;
 
 // Contains the pointer to a target or broker service.
 struct SandboxInterfaceInfo {
-  raw_ptr<BrokerServices> broker_services;
+  // TODO(crbug.com/1298696): Chrome crashes with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<BrokerServices, DegradeToNoOpWhenMTE> broker_services;
   raw_ptr<TargetServices> target_services;
 };
 
