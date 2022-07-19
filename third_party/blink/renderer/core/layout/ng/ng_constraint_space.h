@@ -822,7 +822,7 @@ class CORE_EXPORT NGConstraintSpace final {
    public:
     // |RareData| unions different types of data which are mutually exclusive.
     // They fall into the following categories:
-    enum DataUnionType {
+    enum class DataUnionType {
       kNone,
       kBlockData,         // An inflow block which doesn't establish a new FC.
       kTableCellData,     // A table-cell (display: table-cell).
@@ -835,7 +835,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
     explicit RareData(const NGBfcOffset bfc_offset)
         : bfc_offset(bfc_offset),
-          data_union_type(static_cast<unsigned>(kNone)),
+          data_union_type(static_cast<unsigned>(DataUnionType::kNone)),
           is_line_clamp_context(false),
           is_restricted_block_size_table_cell(false),
           hide_table_cell_if_empty(false),
@@ -876,29 +876,29 @@ class CORE_EXPORT NGConstraintSpace final {
           propagate_child_break_values(other.propagate_child_break_values),
           is_at_fragmentainer_start(other.is_at_fragmentainer_start),
           is_repeatable(other.is_repeatable) {
-      switch (data_union_type) {
-        case kNone:
+      switch (GetDataUnionType()) {
+        case DataUnionType::kNone:
           break;
-        case kBlockData:
+        case DataUnionType::kBlockData:
           new (&block_data_) BlockData(other.block_data_);
           break;
-        case kTableCellData:
+        case DataUnionType::kTableCellData:
           new (&table_cell_data_) TableCellData(other.table_cell_data_);
           break;
-        case kTableRowData:
+        case DataUnionType::kTableRowData:
           new (&table_row_data_) TableRowData(other.table_row_data_);
           break;
-        case kTableSectionData:
+        case DataUnionType::kTableSectionData:
           new (&table_section_data_)
               TableSectionData(other.table_section_data_);
           break;
-        case kCustomData:
+        case DataUnionType::kCustomData:
           new (&custom_data_) CustomData(other.custom_data_);
           break;
-        case kStretchData:
+        case DataUnionType::kStretchData:
           new (&stretch_data_) StretchData(other.stretch_data_);
           break;
-        case kSubgridData:
+        case DataUnionType::kSubgridData:
           new (&subgrid_data_) SubgridData(other.subgrid_data_);
           break;
         default:
@@ -906,28 +906,28 @@ class CORE_EXPORT NGConstraintSpace final {
       }
     }
     ~RareData() {
-      switch (data_union_type) {
-        case kNone:
+      switch (GetDataUnionType()) {
+        case DataUnionType::kNone:
           break;
-        case kBlockData:
+        case DataUnionType::kBlockData:
           block_data_.~BlockData();
           break;
-        case kTableCellData:
+        case DataUnionType::kTableCellData:
           table_cell_data_.~TableCellData();
           break;
-        case kTableRowData:
+        case DataUnionType::kTableRowData:
           table_row_data_.~TableRowData();
           break;
-        case kTableSectionData:
+        case DataUnionType::kTableSectionData:
           table_section_data_.~TableSectionData();
           break;
-        case kCustomData:
+        case DataUnionType::kCustomData:
           custom_data_.~CustomData();
           break;
-        case kStretchData:
+        case DataUnionType::kStretchData:
           stretch_data_.~StretchData();
           break;
-        case kSubgridData:
+        case DataUnionType::kSubgridData:
           subgrid_data_.~SubgridData();
           break;
         default:
@@ -953,22 +953,22 @@ class CORE_EXPORT NGConstraintSpace final {
           is_repeatable != other.is_repeatable)
         return false;
 
-      switch (data_union_type) {
-        case kNone:
+      switch (GetDataUnionType()) {
+        case DataUnionType::kNone:
           return true;
-        case kBlockData:
+        case DataUnionType::kBlockData:
           return block_data_.MaySkipLayout(other.block_data_);
-        case kTableCellData:
+        case DataUnionType::kTableCellData:
           return table_cell_data_.MaySkipLayout(other.table_cell_data_);
-        case kTableRowData:
+        case DataUnionType::kTableRowData:
           return table_row_data_.MaySkipLayout(other.table_row_data_);
-        case kTableSectionData:
+        case DataUnionType::kTableSectionData:
           return table_section_data_.MaySkipLayout(other.table_section_data_);
-        case kCustomData:
+        case DataUnionType::kCustomData:
           return custom_data_.MaySkipLayout(other.custom_data_);
-        case kStretchData:
+        case DataUnionType::kStretchData:
           return stretch_data_.MaySkipLayout(other.stretch_data_);
-        case kSubgridData:
+        case DataUnionType::kSubgridData:
           return subgrid_data_.MaySkipLayout(other.subgrid_data_);
       }
       NOTREACHED();
@@ -988,22 +988,22 @@ class CORE_EXPORT NGConstraintSpace final {
           is_repeatable)
         return false;
 
-      switch (data_union_type) {
-        case kNone:
+      switch (GetDataUnionType()) {
+        case DataUnionType::kNone:
           return true;
-        case kBlockData:
+        case DataUnionType::kBlockData:
           return block_data_.IsInitialForMaySkipLayout();
-        case kTableCellData:
+        case DataUnionType::kTableCellData:
           return table_cell_data_.IsInitialForMaySkipLayout();
-        case kTableRowData:
+        case DataUnionType::kTableRowData:
           return table_row_data_.IsInitialForMaySkipLayout();
-        case kTableSectionData:
+        case DataUnionType::kTableSectionData:
           return table_section_data_.IsInitialForMaySkipLayout();
-        case kCustomData:
+        case DataUnionType::kCustomData:
           return custom_data_.IsInitialForMaySkipLayout();
-        case kStretchData:
+        case DataUnionType::kStretchData:
           return stretch_data_.IsInitialForMaySkipLayout();
-        case kSubgridData:
+        case DataUnionType::kSubgridData:
           return subgrid_data_.IsInitialForMaySkipLayout();
       }
       NOTREACHED();
@@ -1019,8 +1019,9 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     NGMarginStrut MarginStrut() const {
-      return data_union_type == kBlockData ? block_data_.margin_strut
-                                           : NGMarginStrut();
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.margin_strut
+                 : NGMarginStrut();
     }
 
     void SetMarginStrut(const NGMarginStrut& margin_strut) {
@@ -1028,7 +1029,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     absl::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
-      return data_union_type == kBlockData
+      return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.optimistic_bfc_block_offset
                  : absl::nullopt;
     }
@@ -1039,8 +1040,9 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     absl::optional<LayoutUnit> ForcedBfcBlockOffset() const {
-      return data_union_type == kBlockData ? block_data_.forced_bfc_block_offset
-                                           : absl::nullopt;
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.forced_bfc_block_offset
+                 : absl::nullopt;
     }
 
     void SetForcedBfcBlockOffset(LayoutUnit forced_bfc_block_offset) {
@@ -1048,8 +1050,9 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     LayoutUnit ClearanceOffset() const {
-      return data_union_type == kBlockData ? block_data_.clearance_offset
-                                           : LayoutUnit::Min();
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.clearance_offset
+                 : LayoutUnit::Min();
     }
 
     void SetClearanceOffset(LayoutUnit clearance_offset) {
@@ -1057,8 +1060,9 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     absl::optional<int> LinesUntilClamp() const {
-      return data_union_type == kBlockData ? block_data_.lines_until_clamp
-                                           : absl::nullopt;
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.lines_until_clamp
+                 : absl::nullopt;
     }
 
     void SetLinesUntilClamp(int value) {
@@ -1066,7 +1070,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     NGBoxStrut TableCellBorders() const {
-      return data_union_type == kTableCellData
+      return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_borders
                  : NGBoxStrut();
     }
@@ -1076,7 +1080,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     wtf_size_t TableCellColumnIndex() const {
-      return data_union_type == kTableCellData
+      return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_column_index
                  : 0;
     }
@@ -1086,7 +1090,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     absl::optional<LayoutUnit> TableCellAlignmentBaseline() const {
-      return data_union_type == kTableCellData
+      return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_alignment_baseline
                  : absl::nullopt;
     }
@@ -1098,7 +1102,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     bool IsTableCellHiddenForPaint() const {
-      return data_union_type == kTableCellData &&
+      return GetDataUnionType() == DataUnionType::kTableCellData &&
              table_cell_data_.is_hidden_for_paint;
     }
 
@@ -1107,7 +1111,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     bool IsTableCellWithCollapsedBorders() const {
-      return data_union_type == kTableCellData &&
+      return GetDataUnionType() == DataUnionType::kTableCellData &&
              table_cell_data_.has_collapsed_borders;
     }
 
@@ -1131,7 +1135,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
     void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
                              wtf_size_t row_index) {
-      DCHECK_EQ(data_union_type, kTableRowData);
+      DCHECK_EQ(GetDataUnionType(), DataUnionType::kTableRowData);
       DCHECK(
           table_data.IsTableSpecificDataEqual(*(table_row_data_.table_data)));
       DCHECK(table_data.MaySkipRowLayout(*table_row_data_.table_data, row_index,
@@ -1141,26 +1145,29 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     const NGTableConstraintSpaceData* TableData() {
-      if (data_union_type == kTableRowData)
+      if (GetDataUnionType() == DataUnionType::kTableRowData)
         return table_row_data_.table_data.get();
-      if (data_union_type == kTableSectionData)
+      if (GetDataUnionType() == DataUnionType::kTableSectionData)
         return table_section_data_.table_data.get();
       return nullptr;
     }
 
     wtf_size_t TableRowIndex() const {
-      return data_union_type == kTableRowData ? table_row_data_.row_index
-                                              : kNotFound;
+      return GetDataUnionType() == DataUnionType::kTableRowData
+                 ? table_row_data_.row_index
+                 : kNotFound;
     }
 
     wtf_size_t TableSectionIndex() const {
-      return data_union_type == kTableSectionData
+      return GetDataUnionType() == DataUnionType::kTableSectionData
                  ? table_section_data_.section_index
                  : kNotFound;
     }
 
     SerializedScriptValue* CustomLayoutData() const {
-      return data_union_type == kCustomData ? custom_data_.data.get() : nullptr;
+      return GetDataUnionType() == DataUnionType::kCustomData
+                 ? custom_data_.data.get()
+                 : nullptr;
     }
 
     void SetCustomLayoutData(
@@ -1169,7 +1176,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     LayoutUnit TargetStretchInlineSize() const {
-      return data_union_type == kStretchData
+      return GetDataUnionType() == DataUnionType::kStretchData
                  ? stretch_data_.target_stretch_inline_size
                  : kIndefiniteSize;
     }
@@ -1181,7 +1188,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
     absl::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes()
         const {
-      return data_union_type == kStretchData
+      return GetDataUnionType() == DataUnionType::kStretchData
                  ? stretch_data_.target_stretch_block_sizes
                  : absl::nullopt;
     }
@@ -1193,7 +1200,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     const NGGridLayoutTrackCollection* SubgriddedColumns() const {
-      return data_union_type == kSubgridData
+      return GetDataUnionType() == DataUnionType::kSubgridData
                  ? subgrid_data_.layout_data.columns.get()
                  : nullptr;
     }
@@ -1204,13 +1211,17 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     const NGGridLayoutTrackCollection* SubgriddedRows() const {
-      return data_union_type == kSubgridData
+      return GetDataUnionType() == DataUnionType::kSubgridData
                  ? subgrid_data_.layout_data.rows.get()
                  : nullptr;
     }
 
     void SetSubgriddedRows(std::unique_ptr<NGGridLayoutTrackCollection> rows) {
       EnsureSubgridData()->layout_data.rows = std::move(rows);
+    }
+
+    DataUnionType GetDataUnionType() const {
+      return static_cast<DataUnionType>(data_union_type);
     }
 
     LogicalSize percentage_resolution_size;
@@ -1361,63 +1372,71 @@ class CORE_EXPORT NGConstraintSpace final {
     };
 
     BlockData* EnsureBlockData() {
-      DCHECK(data_union_type == kNone || data_union_type == kBlockData);
-      if (data_union_type != kBlockData) {
-        data_union_type = kBlockData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kBlockData);
+      if (GetDataUnionType() != DataUnionType::kBlockData) {
+        data_union_type = static_cast<unsigned>(DataUnionType::kBlockData);
         new (&block_data_) BlockData();
       }
       return &block_data_;
     }
 
     TableCellData* EnsureTableCellData() {
-      DCHECK(data_union_type == kNone || data_union_type == kTableCellData);
-      if (data_union_type != kTableCellData) {
-        data_union_type = kTableCellData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kTableCellData);
+      if (GetDataUnionType() != DataUnionType::kTableCellData) {
+        data_union_type = static_cast<unsigned>(DataUnionType::kTableCellData);
         new (&table_cell_data_) TableCellData();
       }
       return &table_cell_data_;
     }
 
     TableRowData* EnsureTableRowData() {
-      DCHECK(data_union_type == kNone || data_union_type == kTableRowData);
-      if (data_union_type != kTableRowData) {
-        data_union_type = kTableRowData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kTableRowData);
+      if (GetDataUnionType() != DataUnionType::kTableRowData) {
+        data_union_type = static_cast<unsigned>(DataUnionType::kTableRowData);
         new (&table_row_data_) TableRowData();
       }
       return &table_row_data_;
     }
 
     TableSectionData* EnsureTableSectionData() {
-      DCHECK(data_union_type == kNone || data_union_type == kTableSectionData);
-      if (data_union_type != kTableSectionData) {
-        data_union_type = kTableSectionData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kTableSectionData);
+      if (GetDataUnionType() != DataUnionType::kTableSectionData) {
+        data_union_type =
+            static_cast<unsigned>(DataUnionType::kTableSectionData);
         new (&table_section_data_) TableSectionData();
       }
       return &table_section_data_;
     }
 
     CustomData* EnsureCustomData() {
-      DCHECK(data_union_type == kNone || data_union_type == kCustomData);
-      if (data_union_type != kCustomData) {
-        data_union_type = kCustomData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kCustomData);
+      if (GetDataUnionType() != DataUnionType::kCustomData) {
+        data_union_type = static_cast<unsigned>(DataUnionType::kCustomData);
         new (&custom_data_) CustomData();
       }
       return &custom_data_;
     }
 
     StretchData* EnsureStretchData() {
-      DCHECK(data_union_type == kNone || data_union_type == kStretchData);
-      if (data_union_type != kStretchData) {
-        data_union_type = kStretchData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kStretchData);
+      if (GetDataUnionType() != DataUnionType::kStretchData) {
+        data_union_type = static_cast<unsigned>(DataUnionType::kStretchData);
         new (&stretch_data_) StretchData();
       }
       return &stretch_data_;
     }
 
     SubgridData* EnsureSubgridData() {
-      DCHECK(data_union_type == kNone || data_union_type == kSubgridData);
-      if (data_union_type != kSubgridData) {
-        data_union_type = kSubgridData;
+      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
+             GetDataUnionType() == DataUnionType::kSubgridData);
+      if (GetDataUnionType() != DataUnionType::kSubgridData) {
+        data_union_type = static_cast<unsigned>(DataUnionType::kSubgridData);
         new (&subgrid_data_) SubgridData();
       }
       return &subgrid_data_;
