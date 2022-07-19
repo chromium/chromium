@@ -509,7 +509,10 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
   // If the setting is the same, no need to update.
   if (settings_->topic_source != topic_source) {
     settings_->topic_source = topic_source;
-    UpdateSettings();
+    if (IsAmbientModeEnabled()) {
+      // Only send update to server if ambient mode is currently enabled.
+      UpdateSettings();
+    }
   }
 
   OnTopicSourceChanged();

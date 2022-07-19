@@ -833,5 +833,17 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_TRUE(settings()->show_weather);
 }
 
+// b/236723933
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       DoesNotCrashWithEmptyGooglePhotosAlbums) {
+  SetEnabledPref(/*enabled=*/false);
+  FetchSettings();
+  // Reply with settings with |kGooglePhotos| but empty |selected_album_ids|.
+  ash::AmbientSettings settings;
+  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  ReplyFetchSettingsAndAlbums(/*success=*/true,
+                              /*settings=*/std::move(settings));
+}
+
 }  // namespace personalization_app
 }  // namespace ash

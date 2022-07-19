@@ -399,7 +399,10 @@ void AmbientModeHandler::UpdateSettings() {
   settings_->show_weather = true;
 
   settings_sent_for_update_ = settings_;
-  ash::AmbientBackendController::Get()->UpdateSettings(
+  auto* ambient_backend_controller = ash::AmbientBackendController::Get();
+  CHECK(ambient_backend_controller)
+      << "Ambient backend controller required to update settings";
+  ambient_backend_controller->UpdateSettings(
       *settings_, base::BindOnce(&AmbientModeHandler::OnUpdateSettings,
                                  backend_weak_factory_.GetWeakPtr()));
 }
@@ -572,7 +575,9 @@ void AmbientModeHandler::MaybeUpdateTopicSource(
     return;
 
   settings_->topic_source = topic_source;
-  UpdateSettings();
+  if (IsAmbientModeEnabled()) {
+    UpdateSettings();
+  }
   SendTopicSource();
 }
 

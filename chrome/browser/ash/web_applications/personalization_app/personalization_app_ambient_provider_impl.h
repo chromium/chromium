@@ -128,7 +128,7 @@ class PersonalizationAppAmbientProviderImpl
   net::BackoffEntry update_settings_retry_backoff_;
 
   // Local settings which may contain changes from WebUI but have not sent to
-  // server. Only one `UpdateSettgings()` at a time.
+  // server. Only one `UpdateSettings()` at a time.
   absl::optional<ash::AmbientSettings> settings_;
 
   // The cached settings from the server. Should be the same as the server side.
