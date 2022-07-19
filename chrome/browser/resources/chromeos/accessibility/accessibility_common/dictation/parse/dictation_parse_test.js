@@ -27,9 +27,9 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   assertNotNullNorUndefined(strategy);
   let macro = await strategy.parse('Hello world');
   assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('type delete the previous character');
+  macro = await strategy.parse('type delete');
   assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('delete the previous character');
+  macro = await strategy.parse('delete');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
   macro = await strategy.parse('move to the previous character');
   assertEquals('NAV_PREV_CHAR', macro.getMacroNameString());

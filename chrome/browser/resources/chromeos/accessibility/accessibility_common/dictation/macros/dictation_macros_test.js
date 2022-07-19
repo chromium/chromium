@@ -48,8 +48,7 @@ AX_TEST_F('DictationMacrosTest', 'InvalidInputTextViewMacro', async function() {
 
 AX_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
   // DELETE_PREV_CHAR is one of many RepeatableKeyPressMacros.
-  const macro = await this.getSimpleParseStrategy().parse(
-      'delete the previous character');
+  const macro = await this.getSimpleParseStrategy().parse('delete');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
   const checkContextResult = macro.checkContext();
   assertTrue(checkContextResult.canTryAction);

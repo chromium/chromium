@@ -92,7 +92,7 @@ const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
 const int kInputTextViewMetricValue = 1;
 
 static const char* kEnglishDictationCommands[] = {
-    "delete the previous character",
+    "delete",
     "move to the previous character",
     "move to the next character",
     "move to the previous line",
@@ -823,12 +823,10 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesNonCommands) {
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteCharacter) {
   SendFinalResultAndWaitForTextAreaValue("Vega", "Vega");
   // Capitalization and whitespace shouldn't matter.
-  SendFinalResultAndWaitForTextAreaValue(" Delete the previous character",
-                                         "Veg");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous character", "Ve");
-  SendFinalResultAndWaitForTextAreaValue("  delete the previous character",
-                                         "V");
-  SendFinalResultAndWaitForTextAreaValue("DELETE the previous character", "");
+  SendFinalResultAndWaitForTextAreaValue(" Delete", "Veg");
+  SendFinalResultAndWaitForTextAreaValue("delete", "Ve");
+  SendFinalResultAndWaitForTextAreaValue("  delete ", "V");
+  SendFinalResultAndWaitForTextAreaValue("DELETE", "");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByCharacter) {
@@ -866,7 +864,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectAllAndUnselect) {
   SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
   SendFinalResultAndWaitForSelectionChanged("Select all");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous character", "");
+  SendFinalResultAndWaitForTextAreaValue("delete", "");
   SendFinalResultAndWaitForTextAreaValue(
       "Vega is the fifth brightest star in the sky",
       "Vega is the fifth brightest star in the sky");

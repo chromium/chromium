@@ -70,6 +70,7 @@ class SimpleMacroFactory {
     const matchAnythingPattern = '(.*)';
     const args = [];
     switch (macroName) {
+      case MacroName.INPUT_TEXT_VIEW:
       case MacroName.SMART_DELETE_PHRASE:
         args.push(matchAnythingPattern);
         break;
@@ -81,7 +82,7 @@ class SimpleMacroFactory {
     }
     const message = chrome.i18n.getMessage(
         SimpleMacroFactory.getData_()[macroName].messageId, args);
-    const pattern = `^${message}`;
+    const pattern = `^${message}$`;
     this.commandRegex_ = new RegExp(pattern, 'i');
   }
 
@@ -278,11 +279,30 @@ export class SimpleParseStrategy extends ParseStrategy {
 
   /** @override */
   async parse(text) {
+    const macros = [];
     for (const [name, factory] of this.macroFactoryMap_) {
       const macro = factory.createMacro(text);
       if (macro) {
-        return macro;
+        macros.push(macro);
       }
+    }
+    if (macros.length === 1) {
+      return macros[0];
+    } else if (macros.length === 2) {
+      // Pick which macro to use from the list of matched macros.
+      // TODO(crbug.com/1288965): Turn this into a disambiguation class as we
+      // add more commands. Currently the only ambiguous macro is DELETE_PHRASE
+      // which conflicts with other deletion macros. For example, the phrase
+      // "Delete the previous word" should be parsed as a DELETE_PREV_WORD
+      // instead of SMART_DELETE_PHRASE with phrase "the previous word".
+      // Prioritize other deletion macros over SMART_DELETE_PHRASE.
+      return macros[0].getMacroName() === MacroName.SMART_DELETE_PHRASE ?
+          macros[1] :
+          macros[0];
+    } else if (macros.length > 2) {
+      // Unexpected, log a warning. This will cause tests to fail.
+      console.warn('Unexpected ambiguous macros found for text: ${text}.');
+      return macros[0];
     }
 
     // The command is simply to input the given text.

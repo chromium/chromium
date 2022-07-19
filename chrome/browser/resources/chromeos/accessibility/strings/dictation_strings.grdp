@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit-part>
   <message name="DICTATION_COMMAND_DELETE_PREV_CHAR" desc="A spoken text-editing command to delete one character." is_accessibility_with_no_ui="true">
-    delete the previous character
+    delete
   </message>
   <message name="DICTATION_COMMAND_NAV_PREV_CHAR" desc="A spoken text-editing command to move the cursor previous one character." is_accessibility_with_no_ui="true">
     move to the previous character
@@ -43,7 +43,7 @@
     new line
   </message>
   <message name="DICTATION_COMMAND_INPUT_TEXT_VIEW" desc="A spoken text-editing command to type another command's keyword. For example, 'type delete' is a command to type the word 'delete'." is_accessibility_with_no_ui="true">
-    type
+    type <ph name="phrase">$1<ex>delete</ex></ph>
   </message>
   <message name="DICTATION_COMMAND_STOP_LISTENING" desc="A spoken command to stop Dictation." is_accessibility_with_no_ui="true">
     cancel
