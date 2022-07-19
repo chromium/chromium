@@ -777,7 +777,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.SuspendedChild.KernelExecutionRecorded"
-    enum="BooleanRecorded" expires_after="2022-11-20">
+    enum="BooleanRecorded" expires_after="never">
+<!-- expires-never: For monitoring stability regressions. -->
+
   <owner>wfh@chromium.org</owner>
   <owner>chrome-stability-core@google.com</owner>
   <summary>
@@ -788,21 +790,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.SuspendedChild.NtStatus"
-    enum="NTSTATUS" expires_after="2022-09-01">
-  <owner>wfh@chromium.org</owner>
-  <owner>chrome-stability-core@google.com</owner>
-  <summary>
-    The result of calling base::win::GetLastNtStatus() when a failure was
-    obtained when trying to obtain the user and kernel execution times for a
-    suspended child renderer process. This is recorded after process creation
-    but before process resumption. It is only recorded for failures to obtain
-    the user and kernel execution times. This is only recorded on Windows.
-  </summary>
-</histogram>
-
 <histogram name="BrowserRenderProcessHost.SuspendedChild.UserExecutionRecorded"
-    enum="BooleanRecorded" expires_after="2022-09-01">
+    enum="BooleanRecorded" expires_after="never">
+<!-- expires-never: For monitoring stability regressions. -->
+
   <owner>wfh@chromium.org</owner>
   <owner>chrome-stability-core@google.com</owner>
   <summary>
@@ -810,19 +801,6 @@ chromium-metrics-reviews@google.com.
     process. This is recorded after process creation but before process
     resumption. This is recorded for every sandboxed Renderer process launched
     on Windows only.
-  </summary>
-</histogram>
-
-<histogram name="BrowserRenderProcessHost.SuspendedChild.Win32Error"
-    enum="WinGetLastError" expires_after="2022-09-01">
-  <owner>wfh@chromium.org</owner>
-  <owner>chrome-stability-core@google.com</owner>
-  <summary>
-    The result of calling GetLastError when a failure was obtained when trying
-    to obtain the user and kernel execution times for a suspended child renderer
-    process. This is recorded after process creation but before process
-    resumption. It is only recorded for failures to obtain the user and kernel
-    execution times. This is only recorded on Windows.
   </summary>
 </histogram>
 

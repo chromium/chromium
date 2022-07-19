@@ -1958,10 +1958,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ZeroExecutionTimes) {
   histogram_tester.ExpectUniqueSample(
       "BrowserRenderProcessHost.SuspendedChild.KernelExecutionRecorded", false,
       1);
-  histogram_tester.ExpectTotalCount(
-      "BrowserRenderProcessHost.SuspendedChild.Win32Error", 0);
-  histogram_tester.ExpectTotalCount(
-      "BrowserRenderProcessHost.SuspendedChild.NtStatus", 0);
   process->Cleanup();
 }
 #endif  // BUILDFLAG(IS_WIN)

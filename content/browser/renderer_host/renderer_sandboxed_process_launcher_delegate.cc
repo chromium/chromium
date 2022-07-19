@@ -125,12 +125,6 @@ void RendererSandboxedProcessLauncherDelegateWin::PostSpawnTarget(
   // as something external unsuspending the renderer process.
   if (!::GetProcessTimes(process, &creation_time, &exit_time, &kernel_time,
                          &user_time)) {
-    // If this fails, then Win32 ::GetLastError might be ambiguous, so obtain
-    // the NT status from the TEB.
-    base::UmaHistogramSparse(
-        "BrowserRenderProcessHost.SuspendedChild.Win32Error", ::GetLastError());
-    base::UmaHistogramSparse("BrowserRenderProcessHost.SuspendedChild.NtStatus",
-                             base::win::GetLastNtStatus());
     return;
   }
 
