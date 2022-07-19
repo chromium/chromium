@@ -250,6 +250,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                             mojom::PrintCompositor::Status status,
                             base::ReadOnlySharedMemoryRegion region);
 
+  WEB_UI_CONTROLLER_TYPE_DECL();
+
   base::TimeTicks initial_preview_start_time_;
 
   // The unique ID for this class instance. Stored here to avoid calling

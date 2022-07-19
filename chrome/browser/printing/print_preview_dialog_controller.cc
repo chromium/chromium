@@ -56,8 +56,7 @@ namespace {
 
 PrintPreviewUI* GetPrintPreviewUIForDialog(WebContents* dialog) {
   content::WebUI* web_ui = dialog->GetWebUI();
-  return web_ui ? static_cast<PrintPreviewUI*>(web_ui->GetController())
-                : nullptr;
+  return web_ui ? web_ui->GetController()->GetAs<PrintPreviewUI>() : nullptr;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
