@@ -408,14 +408,6 @@ crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUI
 # Vulkan Swiftshader WebGPU interop - missing source image
 crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
-# WebGPU canvas capture tests - missing source image
-crbug.com/1345560 [ win ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
-crbug.com/1345560 [ win ] Pixel_WebGPUCanvasDisableOneCopyCapture [ Failure ]
-crbug.com/1345560 [ mac ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
-crbug.com/1345560 [ mac ] Pixel_WebGPUCanvasDisableOneCopyCapture [ Failure ]
-crbug.com/1345560 [ linux ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
-crbug.com/1345560 [ linux ] Pixel_WebGPUCanvasDisableOneCopyCapture [ Failure ]
-
 # Flakes on Android
 crbug.com/1203317 [ android android-shield-android-tv no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 crbug.com/1203317 [ android android-pixel-2 no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]

@@ -261,15 +261,6 @@ bool GPUCanvasContext::CopyRenderingResultsFromDrawingBuffer(
       texture_->GetHandle(), swap_buffers_->Size(), resource_provider);
 }
 
-bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
-    WebGraphicsContext3DVideoFramePool* frame_pool,
-    SourceDrawingBuffer src_buffer,
-    const gfx::ColorSpace& dst_color_space,
-    VideoFrameCopyCompletedCallback callback) {
-  return swap_buffers_->CopyToVideoFrame(frame_pool, src_buffer,
-                                         dst_color_space, std::move(callback));
-}
-
 void GPUCanvasContext::SetFilterQuality(
     cc::PaintFlags::FilterQuality filter_quality) {
   if (filter_quality != filter_quality_) {

@@ -110,9 +110,6 @@ _PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME =\
 
 _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
 
-_HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME =\
-    'HTMLCanvasElement::NotifyListenersCanvasChanged'
-
 
 class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
@@ -192,16 +189,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               test_harness_script=basic_test_harness_script,
               finish_js_condition='domAutomationController._finished',
               success_eval_func='CheckMainSwapChainPath',
-              other_args=p.other_args)
-      ])
-    for p in namespace.WebGPUCanvasCapturePages('WebGPUTraceTest'):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category='blink',
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckWebGPUCanvasCapture',
               other_args=p.other_args)
       ])
 
@@ -551,31 +538,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Expected events with name %s of %s, got others' %
                 (_PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME,
                  'full damage' if expect_full_damage else 'partial damage'))
-
-  def _EvaluateSuccess_CheckWebGPUCanvasCapture(self, category: str,
-                                                event_iterator: typing.Iterator,
-                                                other_args: dict) -> None:
-    expected_one_copy = other_args.get('one_copy', False)
-    found_one_copy_event = False
-    # Verify expectations through captured trace events.
-    for event in event_iterator:
-      if event.category != category:
-        continue
-      if event.name != _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME:
-        continue
-      detected_one_copy = event.args.get('OneCopyCanvasCapture', None)
-      if detected_one_copy is None:
-        detected_one_copy = False
-      else:
-        found_one_copy_event = True
-
-      if expected_one_copy != detected_one_copy:
-        self.fail('OneCopyCanvasCapture mismatch, expected %s got %s' %
-                  (expected_one_copy, detected_one_copy))
-
-    if expected_one_copy and found_one_copy_event is False:
-      self.fail('%s events with OneCopyCanvasCapture were not found' %
-                _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME)
 
   @classmethod
   def ExpectationsFiles(cls) -> typing.List[str]:

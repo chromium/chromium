@@ -39,7 +39,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -423,7 +422,8 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
       return nullptr;
     SetNeedsUnbufferedInputEvents(true);
     frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
-        nullptr, surface_layer_bridge_->GetFrameSinkId().client_id(),
+        nullptr,
+        surface_layer_bridge_->GetFrameSinkId().client_id(),
         surface_layer_bridge_->GetFrameSinkId().sink_id(),
         CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, size_);
     // We don't actually need the begin frame signal when in low latency mode,
@@ -745,8 +745,6 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
                   SharedGpuContext::ContextProviderWrapper()),
               kBackBuffer, gfx::ColorSpace::CreateREC709(),
               std::move(split_callback.first))) {
-        TRACE_EVENT1("blink", "HTMLCanvasElement::NotifyListenersCanvasChanged",
-                     "OneCopyCanvasCapture", true);
         continue;
       }
     }
