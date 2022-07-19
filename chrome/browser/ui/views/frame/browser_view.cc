@@ -902,11 +902,20 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
-  right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
   right_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
+
   if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
+        prefs::kSidePanelHorizontalAlignment);
+    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+        this,
+        is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
+    left_aligned_side_panel_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
     side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
+  } else {
+    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -2082,6 +2091,14 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
   UpdateWindowControlsOverlayEnabled();
+}
+
+void BrowserView::UpdateSidePanelHorizontalAlignment() {
+  const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kSidePanelHorizontalAlignment);
+  right_aligned_side_panel_->SetHorizontalAlignment(
+      is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
+  GetBrowserViewLayout()->Layout(this);
 }
 
 void BrowserView::FocusBookmarksToolbar() {

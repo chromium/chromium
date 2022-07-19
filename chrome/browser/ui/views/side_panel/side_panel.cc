@@ -6,13 +6,18 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/common/pref_names.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -149,8 +154,22 @@ class BorderView : public views::View {
 
 }  // namespace
 
-SidePanel::SidePanel(BrowserView* browser_view)
-    : border_view_(AddChildView(std::make_unique<BorderView>(browser_view))) {
+SidePanel::SidePanel(BrowserView* browser_view,
+                     HorizontalAlignment horizontal_alignment)
+    : border_view_(AddChildView(std::make_unique<BorderView>(browser_view))),
+      browser_view_(browser_view),
+      horizontal_alignment_(horizontal_alignment) {
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
+
+    // base::Unretained is safe since the side panel must be attached to some
+    // BrowserView. Deleting BrowserView will also delete the SidePanel.
+    pref_change_registrar_.Add(
+        prefs::kSidePanelHorizontalAlignment,
+        base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
+                            base::Unretained(browser_view)));
+  }
+
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -171,6 +190,18 @@ SidePanel::~SidePanel() {
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
   SetPreferredSize(gfx::Size(width, 1));
+}
+
+void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
+  horizontal_alignment_ = alignment;
+}
+
+SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() {
+  return horizontal_alignment_;
+}
+
+bool SidePanel::IsRightAligned() {
+  return GetHorizontalAlignment() == kAlignRight;
 }
 
 void SidePanel::ChildVisibilityChanged(View* child) {

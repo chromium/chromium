@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -39,6 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
 
@@ -565,23 +568,34 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
   LayoutSidePanelView(side_search_side_panel_, contents_container_bounds);
   LayoutSidePanelView(lens_side_panel_, contents_container_bounds);
 
+  const bool side_search_visible =
+      side_search_side_panel_ && side_search_side_panel_->GetVisible();
+  const bool side_panel_visible =
+      right_aligned_side_panel_ && right_aligned_side_panel_->GetVisible();
+
   // TODO(pbos): If right-aligned side panels get merged into one View, move
   // separator visibility back into LayoutSidePanelView().
   if (left_aligned_side_panel_separator_) {
     const bool any_left_side_panel_visible =
-        !IsSideSearchRightAligned() && side_search_side_panel_ &&
-        side_search_side_panel_->GetVisible();
+        (side_search_visible && !IsSideSearchRightAligned()) ||
+        (side_panel_visible &&
+         !views::AsViewClass<SidePanel>(right_aligned_side_panel_)
+              ->IsRightAligned());
+
     SetViewVisibility(left_aligned_side_panel_separator_,
                       any_left_side_panel_visible);
   }
 
   if (right_aligned_side_panel_separator_) {
+    const bool lens_panel_visible =
+        lens_side_panel_ && lens_side_panel_->GetVisible();
     const bool any_right_side_panel_visible =
-        (right_aligned_side_panel_ &&
-         right_aligned_side_panel_->GetVisible()) ||
-        (lens_side_panel_ && lens_side_panel_->GetVisible()) ||
-        (IsSideSearchRightAligned() && side_search_side_panel_ &&
-         side_search_side_panel_->GetVisible());
+        lens_panel_visible ||
+        (side_search_visible && IsSideSearchRightAligned()) ||
+        (side_panel_visible &&
+         views::AsViewClass<SidePanel>(right_aligned_side_panel_)
+             ->IsRightAligned());
+
     SetViewVisibility(right_aligned_side_panel_separator_,
                       any_right_side_panel_visible);
   }
@@ -605,7 +619,8 @@ void BrowserViewLayout::LayoutSidePanelView(
          side_panel == side_search_side_panel_ ||
          side_panel == lens_side_panel_);
   bool is_right_aligned =
-      side_panel != side_search_side_panel_ || IsSideSearchRightAligned();
+      views::AsViewClass<SidePanel>(side_panel)->IsRightAligned();
+
   views::View* side_panel_separator =
       is_right_aligned ? right_aligned_side_panel_separator_.get()
                        : left_aligned_side_panel_separator_.get();
@@ -616,18 +631,25 @@ void BrowserViewLayout::LayoutSidePanelView(
       contents_container_bounds.width() - side_panel_bounds.width() -
       side_panel_separator->GetPreferredSize().width());
 
-  if (is_right_aligned) {
-    // Place the side panel to the right of contents, leaving space for the
-    // separator.
-    side_panel_bounds.set_x(contents_container_bounds.x() +
-                            contents_container_bounds.width() +
-                            side_panel_separator->GetPreferredSize().width());
-  } else {
-    // Adjust the `contents_container_bounds` to sit to the right of the left
-    // aligned side panel, leaving space for the separator.
+  // In LTR, the point (0,0) represents the top left of the browser.
+  // In RTL, the point (0,0) represents the top right of the browser.
+  const bool is_container_after_side_panel =
+      (base::i18n::IsRTL() && is_right_aligned) ||
+      (!base::i18n::IsRTL() && !is_right_aligned);
+
+  if (is_container_after_side_panel) {
+    // When the side panel should appear before the main content area relative
+    // to the ui direction, move `contents_container_bounds` after the side
+    // panel. Also leave space for the separator.
     contents_container_bounds.set_x(
         side_panel_bounds.width() +
         side_panel_separator->GetPreferredSize().width());
+  } else {
+    // When the side panel should appear after the main content area relative to
+    // the ui direction, move `side_panel_bounds` after the main content area.
+    // Also leave space for the separator.
+    side_panel_bounds.set_x(contents_container_bounds.right() +
+                            side_panel_separator->GetPreferredSize().width());
   }
 
   side_panel->SetBoundsRect(side_panel_bounds);
@@ -637,13 +659,14 @@ void BrowserViewLayout::LayoutSidePanelView(
   gfx::Rect side_panel_separator_bounds = side_panel_bounds;
   side_panel_separator_bounds.set_width(
       side_panel_separator->GetPreferredSize().width());
-  // If right aligned place it immediately to the right of the contents
-  // container. If left aligned place it immediately to the right of the side
-  // panel.
-  side_panel_separator_bounds.set_x(
-      is_right_aligned
-          ? contents_container_bounds.x() + contents_container_bounds.width()
-          : side_panel_bounds.x() + side_panel_bounds.width());
+
+  // If the side panel appears before `contents_container_bounds`, place the
+  // separator immediately after the side panel but before the container bounds.
+  // If the side panel appears after `contents_container_bounds`, place the
+  // separator immediately after the contents bounds but before the side panel.
+  side_panel_separator_bounds.set_x(is_container_after_side_panel
+                                        ? side_panel_bounds.right()
+                                        : contents_container_bounds.right());
 
   side_panel_separator->SetBoundsRect(side_panel_separator_bounds);
 }

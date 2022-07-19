@@ -393,6 +393,11 @@ class BrowserView : public BrowserWindow,
   // view of the update.
   void ToggleWindowControlsOverlayEnabled();
 
+  // Update the side panel's horizontal alignment when
+  // prefs::kSidePanelHorizontalAlignment is changed from the appearance
+  // settings page.
+  void UpdateSidePanelHorizontalAlignment();
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "chrome/common/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::_;
@@ -131,6 +133,42 @@ TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
 
   coordinator_->Toggle();
   EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+}
+
+TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, true);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->IsRightAligned());
+  EXPECT_EQ(
+      browser_view()->right_aligned_side_panel()->GetHorizontalAlignment(),
+      SidePanel::kAlignRight);
+
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->IsRightAligned());
+  EXPECT_EQ(
+      browser_view()->right_aligned_side_panel()->GetHorizontalAlignment(),
+      SidePanel::kAlignLeft);
+}
+
+// Verify that right and left alignment works the same as when in LTR mode.
+TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
+  // Forcing the language to hebrew causes the ui to enter RTL mode.
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
+
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, true);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->IsRightAligned());
+  EXPECT_EQ(
+      browser_view()->right_aligned_side_panel()->GetHorizontalAlignment(),
+      SidePanel::kAlignRight);
+
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->IsRightAligned());
+  EXPECT_EQ(
+      browser_view()->right_aligned_side_panel()->GetHorizontalAlignment(),
+      SidePanel::kAlignLeft);
 }
 
 TEST_F(SidePanelCoordinatorTest,
