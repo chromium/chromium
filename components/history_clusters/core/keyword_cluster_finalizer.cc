@@ -61,7 +61,7 @@ void KeepTopKeywords(
              left,
          const std::pair<std::u16string, const history::ClusterKeywordData*>&
              right) {
-        return std::fabs(left.second->score - right.second->type) >
+        return std::fabs(left.second->score - right.second->score) >
                        kScoreEpsilon
                    ? left.second->score > right.second->score
                    : left.second->type > right.second->type;
