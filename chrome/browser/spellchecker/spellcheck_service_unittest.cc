@@ -341,9 +341,18 @@ const std::vector<std::string> SpellcheckServiceHybridUnitTestBase::
                              // dictionaries.
 };
 
-class SpellcheckServiceHybridUnitTest
+class GetDictionariesHybridUnitTestNoDelayInit
     : public SpellcheckServiceHybridUnitTestBase,
-      public testing::WithParamInterface<TestCase> {};
+      public testing::WithParamInterface<TestCase> {
+ protected:
+  void InitFeatures() override {
+    // Disable kWinDelaySpellcheckServiceInit, as the case where it's enabled
+    // is tested in SpellcheckServiceWindowsDictionaryMappingUnitTestDelayInit.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
+        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+  }
+};
 
 static const TestCase kHybridGetDictionariesParams[] = {
     // Galician (gl) has only Windows support, no Hunspell dictionary. Croatian
@@ -398,10 +407,10 @@ static const TestCase kHybridGetDictionariesParams[] = {
 };
 
 INSTANTIATE_TEST_SUITE_P(TestCases,
-                         SpellcheckServiceHybridUnitTest,
+                         GetDictionariesHybridUnitTestNoDelayInit,
                          testing::ValuesIn(kHybridGetDictionariesParams));
 
-TEST_P(SpellcheckServiceHybridUnitTest, GetDictionaries) {
+TEST_P(GetDictionariesHybridUnitTestNoDelayInit, GetDictionaries) {
   RunGetDictionariesTest(GetParam().accept_languages,
                          GetParam().spellcheck_dictionaries,
                          GetParam().expected_dictionaries);
@@ -431,7 +440,16 @@ std::ostream& operator<<(std::ostream& out,
 
 class SpellcheckServiceWindowsDictionaryMappingUnitTest
     : public SpellcheckServiceHybridUnitTestBase,
-      public testing::WithParamInterface<DictionaryMappingTestCase> {};
+      public testing::WithParamInterface<DictionaryMappingTestCase> {
+ protected:
+  void InitFeatures() override {
+    // Disable kWinDelaySpellcheckServiceInit, as the case where it's enabled
+    // is tested in SpellcheckServiceWindowsDictionaryMappingUnitTestDelayInit.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
+        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+  }
+};
 
 static const DictionaryMappingTestCase kHybridDictionaryMappingsParams[] = {
     DictionaryMappingTestCase({"en-CA", "en-CA", "en-CA", "en", "en"}),

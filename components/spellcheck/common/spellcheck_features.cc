@@ -32,7 +32,7 @@ const base::Feature kWinUseBrowserSpellChecker{
     "WinUseBrowserSpellChecker", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kWinDelaySpellcheckServiceInit{
-    "WinDelaySpellcheckServiceInit", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WinDelaySpellcheckServiceInit", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kWinRetrieveSuggestionsOnlyOnDemand{
     "WinRetrieveSuggestionsOnlyOnDemand", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -302,7 +302,26 @@ TEST_F(LanguageSettingsPrivateApiTest, GetNeverTranslateLanguagesListTest) {
   }
 }
 
-TEST_F(LanguageSettingsPrivateApiTest, GetLanguageListTest) {
+class LanguageSettingsPrivateApiGetLanguageListTest
+    : public LanguageSettingsPrivateApiTest {
+ public:
+  LanguageSettingsPrivateApiGetLanguageListTest() = default;
+  ~LanguageSettingsPrivateApiGetLanguageListTest() override = default;
+
+ protected:
+  void InitFeatures() override {
+#if BUILDFLAG(IS_WIN)
+    // Force Windows hybrid spellcheck to be enabled, and disable the delayed
+    // init feature since that case is tested in
+    // LanguageSettingsPrivateApiTestDelayInit below.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker},
+        /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
+#endif  // BUILDFLAG(IS_WIN)
+  }
+};
+
+TEST_F(LanguageSettingsPrivateApiGetLanguageListTest, GetLanguageList) {
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
   RunGetLanguageListTest();
 }
