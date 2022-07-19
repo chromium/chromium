@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchResultStatus"
-    enum="HelpAppSearchHandlerSearchResultStatus" expires_after="2022-11-05">
+    enum="HelpAppSearchHandlerSearchResultStatus" expires_after="2023-01-15">
   <owner>zufeng@google.com</owner>
   <owner>showoff-eng@google.com</owner>
   <summary>

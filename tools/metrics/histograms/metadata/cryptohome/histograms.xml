@@ -796,7 +796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.UserSubdirHasCorrectGroup" enum="BooleanCorrect"
-    expires_after="2022-10-03">
+    expires_after="2023-01-15">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

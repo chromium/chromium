@@ -1399,7 +1399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2022-10-01">
+    enum="EnterpriseEnrollmentType" expires_after="2023-01-15">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1450,7 +1450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
-    expires_after="2022-11-06">
+    expires_after="2023-01-15">
   <owner>zmin@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

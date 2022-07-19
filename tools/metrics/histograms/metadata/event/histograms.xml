@@ -1520,7 +1520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.PageShow.Persisted" enum="EventPageShowPersisted"
-    expires_after="2022-12-25">
+    expires_after="2023-01-15">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
