@@ -791,6 +791,8 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    # TODO(crbug.com/1345687): Reduce back to 3 hours.
+    execution_timeout = 6 * time.hour,
 )
 
 # For Chromebox for meetings(CfM)
