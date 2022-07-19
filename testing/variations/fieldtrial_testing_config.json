@@ -2096,9 +2096,11 @@
             "platforms": [
                 "android",
                 "android_webview",
+                "android_weblayer",
                 "windows",
                 "mac",
-                "chromeos"
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
