@@ -914,7 +914,8 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
       PartitionDirectMapMetadata<ThreadSafe>::FromSlotSpan(slot_span);
   size_t padding_for_alignment =
       metadata->direct_map_extent.padding_for_alignment;
-  PA_DCHECK(padding_for_alignment == (page - first_page) * PartitionPageSize());
+  PA_DCHECK(padding_for_alignment ==
+            static_cast<size_t>(page - first_page) * PartitionPageSize());
   PA_DCHECK(slot_start ==
             reservation_start + PartitionPageSize() + padding_for_alignment);
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
@@ -987,7 +988,7 @@ PA_ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
   PA_DCHECK(root->brp_enabled());
 
   uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
-  uintptr_t new_address = address + delta_in_bytes;
+  uintptr_t new_address = address + static_cast<uintptr_t>(delta_in_bytes);
   return object_addr <= new_address &&
          // We use "greater than or equal" below because we want to include
          // pointers right past the end of an allocation.

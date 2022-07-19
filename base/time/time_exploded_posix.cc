@@ -187,7 +187,7 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
   timestruct.tm_zone = nullptr;  // not a POSIX field, so mktime/timegm ignore
 #endif
 
-  SysTime seconds;
+  int64_t seconds;
 
   // Certain exploded dates do not really exist due to daylight saving times,
   // and this causes mktime() to return implementation-defined values when

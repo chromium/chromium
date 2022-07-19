@@ -79,7 +79,8 @@ void ScopedCriticalAction::Core::EndBackgroundTask(scoped_refptr<Core> core) {
     if (core->background_task_id_ == UIBackgroundTaskInvalid) {
       return;
     }
-    task_id = core->background_task_id_;
+    task_id =
+        static_cast<UIBackgroundTaskIdentifier>(core->background_task_id_);
     core->background_task_id_ = UIBackgroundTaskInvalid;
   }
 

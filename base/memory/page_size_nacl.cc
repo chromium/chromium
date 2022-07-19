@@ -10,7 +10,7 @@
 namespace base {
 
 size_t GetPageSize() {
-  return getpagesize();
+  return static_cast<size_t>(getpagesize());
 }
 
 }  // namespace base

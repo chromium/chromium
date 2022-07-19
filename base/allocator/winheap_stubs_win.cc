@@ -17,6 +17,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 namespace allocator {
@@ -122,7 +123,7 @@ void* AlignAllocation(void* ptr, size_t alignment) {
   // Write the prefix.
   AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(address) - 1;
   prefix->original_allocation_offset =
-      address - reinterpret_cast<uintptr_t>(ptr);
+      checked_cast<unsigned int>(address - reinterpret_cast<uintptr_t>(ptr));
 #if DCHECK_IS_ON()
   prefix->magic = AlignedPrefix::kMagic;
 #endif  // DCHECK_IS_ON()

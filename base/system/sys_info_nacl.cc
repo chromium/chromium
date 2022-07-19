@@ -10,7 +10,7 @@ namespace base {
 
 // static
 size_t SysInfo::VMAllocationGranularity() {
-  return getpagesize();
+  return static_cast<size_t>(getpagesize());
 }
 
 }  // namespace base

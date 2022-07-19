@@ -188,7 +188,7 @@ void SymbolMap::Populate() {
           reinterpret_cast<const char*>(next_entry.addr) + phdr.p_vaddr;
       segment.relative_addr = phdr.p_vaddr;
       segment.size = phdr.p_memsz;
-      segment.permission_flags = phdr.p_flags;
+      segment.permission_flags = static_cast<int>(phdr.p_flags);
 
       next_entry.segments[next_entry.segment_count] = std::move(segment);
       ++next_entry.segment_count;

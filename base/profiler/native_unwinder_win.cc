@@ -58,7 +58,7 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
       return UnwindResult::kAborted;
     }
 
-    if (ContextPC(thread_context) == 0)
+    if (RegisterContextInstructionPointer(thread_context) == 0)
       return UnwindResult::kCompleted;
 
     // Exclusive range of expected stack pointer values after the unwind.
@@ -83,9 +83,9 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
     }
 
     // Record the frame to which we just unwound.
-    stack->emplace_back(
-        ContextPC(thread_context),
-        module_cache()->GetModuleForAddress(ContextPC(thread_context)));
+    stack->emplace_back(RegisterContextInstructionPointer(thread_context),
+                        module_cache()->GetModuleForAddress(
+                            RegisterContextInstructionPointer(thread_context)));
   }
 
   NOTREACHED();

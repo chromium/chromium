@@ -104,7 +104,7 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
 
 // static
 int SysInfo::NumberOfProcessors() {
-  return zx_system_get_num_cpus();
+  return static_cast<int>(zx_system_get_num_cpus());
 }
 
 // static
@@ -204,7 +204,7 @@ std::string SysInfo::CPUModelName() {
 
 // static
 size_t SysInfo::VMAllocationGranularity() {
-  return getpagesize();
+  return static_cast<size_t>(getpagesize());
 }
 
 SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {

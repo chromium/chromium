@@ -12,6 +12,7 @@
 
 #include "base/files/file.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -128,7 +129,7 @@ fuchsia::mem::Buffer MemBufferFromFile(File file) {
 
   fuchsia::mem::Buffer output;
   output.vmo = std::move(vmo);
-  output.size = file.GetLength();
+  output.size = checked_cast<uint64_t>(file.GetLength());
   return output;
 }
 

@@ -61,7 +61,7 @@ bool GetAppOutputInternal(const CommandLine& cmd_line,
     ssize_t bytes_read = read(pipe_fd[0], buffer, sizeof(buffer));
     if (bytes_read <= 0)
       break;
-    output->append(buffer, bytes_read);
+    output->append(buffer, static_cast<size_t>(bytes_read));
   }
   close(pipe_fd[0]);
 
@@ -114,7 +114,8 @@ uint32_t LaunchOptions::AddHandleToTransfer(
     zx_handle_t handle) {
   CHECK_LE(handles_to_transfer->size(), std::numeric_limits<uint16_t>::max())
       << "Number of handles to transfer exceeds total allowed";
-  uint32_t handle_id = PA_HND(PA_USER1, handles_to_transfer->size());
+  auto handle_id =
+      static_cast<uint32_t>(PA_HND(PA_USER1, handles_to_transfer->size()));
   handles_to_transfer->push_back({handle_id, handle});
   return handle_id;
 }

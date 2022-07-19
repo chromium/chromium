@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -169,7 +170,8 @@ std::string GetSaltedString(const std::string& in_string,
       dataUsingEncoding:NSUTF8StringEncoding];
 
   unsigned char hash[CC_SHA256_DIGEST_LENGTH];
-  CC_SHA256([hash_data bytes], [hash_data length], hash);
+  CC_SHA256([hash_data bytes], base::checked_cast<CC_LONG>([hash_data length]),
+            hash);
   CFUUIDBytes* uuid_bytes = reinterpret_cast<CFUUIDBytes*>(hash);
 
   base::ScopedCFTypeRef<CFUUIDRef> uuid_object(

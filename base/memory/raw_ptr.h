@@ -461,7 +461,7 @@ struct BackupRefPtrImpl {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address))
-      CHECK(IsValidDelta(address, delta_elems * sizeof(T)));
+      CHECK(IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T))));
 #endif
     T* new_wrapped_ptr = WrapRawPtr(wrapped_ptr + delta_elems);
     ReleaseWrappedPtr(wrapped_ptr);

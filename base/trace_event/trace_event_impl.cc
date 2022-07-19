@@ -56,12 +56,12 @@ namespace internal {
 
 void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
                           ::base::TimeTicks ticks) {
-  annotation->set_uint_value(ticks.since_origin().InMilliseconds());
+  annotation->set_int_value(ticks.since_origin().InMilliseconds());
 }
 
 void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
                           ::base::Time time) {
-  annotation->set_uint_value(time.since_origin().InMilliseconds());
+  annotation->set_int_value(time.since_origin().InMilliseconds());
 }
 
 }  // namespace internal

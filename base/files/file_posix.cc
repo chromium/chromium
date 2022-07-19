@@ -518,7 +518,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 
   static_assert(O_RDONLY == 0, "O_RDONLY must equal zero");
 
-  int mode = S_IRUSR | S_IWUSR;
+  mode_t mode = S_IRUSR | S_IWUSR;
 #if BUILDFLAG(IS_CHROMEOS)
   mode |= S_IRGRP | S_IROTH;
 #endif

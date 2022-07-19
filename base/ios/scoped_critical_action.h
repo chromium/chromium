@@ -61,10 +61,10 @@ class ScopedCriticalAction {
 
     // |UIBackgroundTaskIdentifier| returned by
     // |beginBackgroundTaskWithName:expirationHandler:| when marking the
-    // beginning of a long-running background task. It is defined as an
-    // |unsigned int| instead of a |UIBackgroundTaskIdentifier| so this class
-    // can be used in .cc files.
-    unsigned int background_task_id_ GUARDED_BY(background_task_id_lock_);
+    // beginning of a long-running background task. It is defined as a uint64_t
+    // instead of a |UIBackgroundTaskIdentifier| so this class can be used in
+    // .cc files.
+    uint64_t background_task_id_ GUARDED_BY(background_task_id_lock_);
     Lock background_task_id_lock_;
   };
 

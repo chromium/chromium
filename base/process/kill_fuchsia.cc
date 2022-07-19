@@ -33,7 +33,7 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
     return TERMINATION_STATUS_STILL_RUNNING;
   }
 
-  *exit_code = process_info.return_code;
+  *exit_code = static_cast<int>(process_info.return_code);
   switch (process_info.return_code) {
     case 0:
       return TERMINATION_STATUS_NORMAL_TERMINATION;

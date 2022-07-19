@@ -280,8 +280,9 @@ uint64_t TickCount() {
 #if BUILDFLAG(IS_WIN)
   return GetTickCount();
 #elif BUILDFLAG(IS_FUCHSIA)
-  return zx_clock_get_monotonic() /
-         static_cast<zx_time_t>(base::Time::kNanosecondsPerMicrosecond);
+  return static_cast<uint64_t>(
+      zx_clock_get_monotonic() /
+      static_cast<zx_time_t>(base::Time::kNanosecondsPerMicrosecond));
 #elif BUILDFLAG(IS_APPLE)
   return mach_absolute_time();
 #elif BUILDFLAG(IS_NACL)
@@ -819,7 +820,7 @@ LogMessage::~LogMessage() {
     // Skip the final character of |str_newline|, since LogMessage() will add
     // a newline.
     const auto message = base::StringPiece(str_newline).substr(message_start_);
-    GetScopedFxLogger().LogMessage(file_, line_,
+    GetScopedFxLogger().LogMessage(file_, static_cast<uint32_t>(line_),
                                    message.substr(0, message.size() - 1),
                                    LogSeverityToFuchsiaLogSeverity(severity_));
 #endif  // BUILDFLAG(IS_FUCHSIA)

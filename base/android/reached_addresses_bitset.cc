@@ -7,6 +7,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 namespace android {
@@ -56,8 +57,8 @@ void ReachedAddressesBitset::RecordAddress(uintptr_t address) {
   if (address < start_address_ || address >= end_address_)
     return;
 
-  uint32_t offset = address - start_address_;
-  uint32_t offset_index = offset / kBytesGranularity;
+  size_t offset = static_cast<size_t>(address - start_address_);
+  uint32_t offset_index = checked_cast<uint32_t>(offset / kBytesGranularity);
 
   // Atomically set the corresponding bit in the array.
   std::atomic<uint32_t>* element = reached_ + (offset_index / kBitsPerElement);
@@ -85,9 +86,9 @@ std::vector<uint32_t> ReachedAddressesBitset::GetReachedOffsets() const {
       if (!((element >> j) & 1))
         continue;
 
-      uint32_t offset_index = i * 32 + j;
-      uint32_t offset = offset_index * kBytesGranularity;
-      offsets.push_back(offset);
+      size_t offset_index = i * 32 + j;
+      size_t offset = offset_index * kBytesGranularity;
+      offsets.push_back(checked_cast<uint32_t>(offset));
     }
   }
 

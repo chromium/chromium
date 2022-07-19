@@ -37,8 +37,8 @@ NSError* ErrorWithAppendedUnderlyingError(NSError* original_error,
   DCHECK(underlying_error);
   NSArray* error_chain = GetFullErrorChainForError(original_error);
   NSError* current_error = underlying_error;
-  for (NSInteger idx = error_chain.count - 1; idx >= 0; --idx) {
-    NSError* error = error_chain[idx];
+  for (size_t idx = error_chain.count; idx > 0; --idx) {
+    NSError* error = error_chain[idx - 1];
     scoped_nsobject<NSMutableDictionary> user_info(
         [error.userInfo mutableCopy]);
     [user_info setObject:current_error forKey:NSUnderlyingErrorKey];

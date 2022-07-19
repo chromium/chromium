@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_local_storage.h"
 
 #include <linux/perf_event.h>
@@ -22,7 +23,7 @@ constexpr int kPerfFdOpenFailed = -1;
 
 ThreadLocalStorage::Slot& InstructionCounterFdSlot() {
   static NoDestructor<ThreadLocalStorage::Slot> fd_slot([](void* fd_ptr) {
-    int fd = reinterpret_cast<intptr_t>(fd_ptr);
+    int fd = checked_cast<int>(reinterpret_cast<intptr_t>(fd_ptr));
     if (fd > 0)
       close(fd);
   });
@@ -42,20 +43,20 @@ int OpenInstructionCounterFdForThread(int thread_id) {
   pe.exclude_kernel = 1;
   pe.exclude_hv = 1;
 
-  int fd = syscall(__NR_perf_event_open, &pe, thread_id, /* cpu */ -1,
-                   /* group_fd */ -1, /* flags */ 0);
+  long fd = syscall(__NR_perf_event_open, &pe, thread_id, /* cpu */ -1,
+                    /* group_fd */ -1, /* flags */ 0);
   if (fd < 0) {
     PLOG(ERROR) << "perf_event_open: omitting instruction counters";
     return kPerfFdOpenFailed;
   }
-  return fd;
+  return checked_cast<int>(fd);
 }
 
 // Retrieves the active perf counter FD for the current thread, performing
 // lazy-initialization if necessary.
 int InstructionCounterFdForCurrentThread() {
   auto& slot = InstructionCounterFdSlot();
-  int fd = reinterpret_cast<intptr_t>(slot.Get());
+  int fd = checked_cast<int>(reinterpret_cast<intptr_t>(slot.Get()));
   if (fd == 0) {
     fd = OpenInstructionCounterFdForThread(0);
     slot.Set(reinterpret_cast<void*>(fd));

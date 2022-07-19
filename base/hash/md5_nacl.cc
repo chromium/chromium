@@ -267,7 +267,7 @@ std::string MD5DigestToBase16(const MD5Digest& digest) {
   std::string ret;
   ret.resize(32);
 
-  for (int i = 0, j = 0; i < 16; i++, j += 2) {
+  for (size_t i = 0, j = 0; i < 16; i++, j += 2) {
     uint8_t a = digest.a[i];
     ret[j] = zEncode[(a >> 4) & 0xf];
     ret[j + 1] = zEncode[a & 0xf];

@@ -250,11 +250,11 @@ bool DoCopyDirectory(const FilePath& from_path,
     // use the base::File constructor. On Chrome OS, base::File uses a different
     // set of permissions than it does on other POSIX platforms.
 #if BUILDFLAG(IS_APPLE)
-    int mode = 0600 | (stat_at_use.st_mode & 0177);
+    mode_t mode = 0600 | (stat_at_use.st_mode & 0177);
 #elif BUILDFLAG(IS_CHROMEOS)
-    int mode = 0644;
+    mode_t mode = 0644;
 #else
-    int mode = 0600;
+    mode_t mode = 0600;
 #endif
     File outfile(open(target_path.value().c_str(), open_flags, mode));
     if (!outfile.IsValid()) {
@@ -962,7 +962,7 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   stat_wrapper_t statbuf;
   if (File::Fstat(file->GetPlatformFile(), &statbuf) == 0 &&
       statbuf.st_blksize > 0 && base::bits::IsPowerOfTwo(statbuf.st_blksize)) {
-    block_size = statbuf.st_blksize;
+    block_size = static_cast<blksize_t>(statbuf.st_blksize);
   }
 
   // Write starting at the next block boundary after the old file length.

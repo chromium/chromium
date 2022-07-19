@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"
@@ -1238,7 +1239,8 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
 #elif BUILDFLAG(IS_FUCHSIA)
   static bool startup_handle_taken = false;
   DCHECK(!startup_handle_taken) << "Shared memory region initialized twice";
-  zx::vmo scoped_handle(zx_take_startup_handle(field_trial_handle));
+  zx::vmo scoped_handle(
+      zx_take_startup_handle(checked_cast<uint32_t>(field_trial_handle)));
   startup_handle_taken = true;
   if (!scoped_handle.is_valid())
     return ReadOnlySharedMemoryRegion();

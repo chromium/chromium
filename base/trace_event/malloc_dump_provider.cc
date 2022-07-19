@@ -393,8 +393,8 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   // Still report waste, as on some platforms, PartitionAlloc doesn't capture
   // all of malloc()'s memory footprint.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  int64_t pa_waste = static_cast<int64_t>(pa_only_resident_size) -
-                     pa_only_allocated_objects_size;
+  int64_t pa_waste = static_cast<int64_t>(pa_only_resident_size -
+                                          pa_only_allocated_objects_size);
   waste -= pa_waste;
 #endif
 

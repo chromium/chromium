@@ -25,12 +25,12 @@ void SyncSocket::Close() {
 
 size_t SyncSocket::Send(const void* buffer, size_t length) {
   const ssize_t bytes_written = write(handle(), buffer, length);
-  return bytes_written > 0 ? bytes_written : 0;
+  return bytes_written > 0 ? static_cast<size_t>(bytes_written) : 0;
 }
 
 size_t SyncSocket::Receive(void* buffer, size_t length) {
   const ssize_t bytes_read = read(handle(), buffer, length);
-  return bytes_read > 0 ? bytes_read : 0;
+  return bytes_read > 0 ? static_cast<size_t>(bytes_read) : 0;
 }
 
 size_t SyncSocket::ReceiveWithTimeout(void* buffer, size_t length, TimeDelta) {

@@ -27,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -764,20 +765,23 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   info.arena = 0;  // Memory *not* allocated with mmap().
 
   // Memory allocated with mmap(), aka virtual size.
-  info.hblks = allocator_dumper.stats().total_mmapped_bytes +
-               aligned_allocator_dumper.stats().total_mmapped_bytes +
-               nonscannable_allocator_dumper.stats().total_mmapped_bytes +
-               nonquarantinable_allocator_dumper.stats().total_mmapped_bytes;
+  info.hblks = base::checked_cast<decltype(info.hblks)>(
+      allocator_dumper.stats().total_mmapped_bytes +
+      aligned_allocator_dumper.stats().total_mmapped_bytes +
+      nonscannable_allocator_dumper.stats().total_mmapped_bytes +
+      nonquarantinable_allocator_dumper.stats().total_mmapped_bytes);
   // Resident bytes.
-  info.hblkhd = allocator_dumper.stats().total_resident_bytes +
-                aligned_allocator_dumper.stats().total_resident_bytes +
-                nonscannable_allocator_dumper.stats().total_resident_bytes +
-                nonquarantinable_allocator_dumper.stats().total_resident_bytes;
+  info.hblkhd = base::checked_cast<decltype(info.hblkhd)>(
+      allocator_dumper.stats().total_resident_bytes +
+      aligned_allocator_dumper.stats().total_resident_bytes +
+      nonscannable_allocator_dumper.stats().total_resident_bytes +
+      nonquarantinable_allocator_dumper.stats().total_resident_bytes);
   // Allocated bytes.
-  info.uordblks = allocator_dumper.stats().total_active_bytes +
-                  aligned_allocator_dumper.stats().total_active_bytes +
-                  nonscannable_allocator_dumper.stats().total_active_bytes +
-                  nonquarantinable_allocator_dumper.stats().total_active_bytes;
+  info.uordblks = base::checked_cast<decltype(info.uordblks)>(
+      allocator_dumper.stats().total_active_bytes +
+      aligned_allocator_dumper.stats().total_active_bytes +
+      nonscannable_allocator_dumper.stats().total_active_bytes +
+      nonquarantinable_allocator_dumper.stats().total_active_bytes);
 
   return info;
 }

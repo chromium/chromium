@@ -18,6 +18,7 @@
 #endif
 
 #include "base/files/file.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 
@@ -25,8 +26,8 @@ extern "C" {
 // There is no futimes() avaiable in Bionic, so we provide our own
 // implementation until it is there.
 int futimes(int fd, const struct timeval tv[2]) {
-  if (tv == NULL)
-    return syscall(__NR_utimensat, fd, NULL, NULL, 0);
+  if (tv == nullptr)
+    return base::checked_cast<int>(syscall(__NR_utimensat, fd, NULL, NULL, 0));
 
   if (tv[0].tv_usec < 0 || tv[0].tv_usec >= 1000000 ||
       tv[1].tv_usec < 0 || tv[1].tv_usec >= 1000000) {
@@ -40,7 +41,7 @@ int futimes(int fd, const struct timeval tv[2]) {
   ts[0].tv_nsec = tv[0].tv_usec * 1000;
   ts[1].tv_sec = tv[1].tv_sec;
   ts[1].tv_nsec = tv[1].tv_usec * 1000;
-  return syscall(__NR_utimensat, fd, NULL, ts, 0);
+  return base::checked_cast<int>(syscall(__NR_utimensat, fd, NULL, ts, 0));
 }
 
 #if !defined(__LP64__)

@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 
@@ -42,15 +43,15 @@ namespace base {
 namespace {
 
 // See sys/timerfd.h
-int timerfd_create(int clockid, int flags) {
+long timerfd_create(int clockid, int flags) {
   return syscall(__NR_timerfd_create, clockid, flags);
 }
 
 // See sys/timerfd.h
-int timerfd_settime(int ufc,
-                    int flags,
-                    const struct itimerspec* utmr,
-                    struct itimerspec* otmr) {
+long timerfd_settime(int ufc,
+                     int flags,
+                     const struct itimerspec* utmr,
+                     struct itimerspec* otmr) {
   return syscall(__NR_timerfd_settime, ufc, flags, utmr, otmr);
 }
 
@@ -101,7 +102,8 @@ MessagePumpForUI::MessagePumpForUI()
   // include timerfd.h. See comments above on __NR_timerfd_create. It looks like
   // they're just aliases to O_NONBLOCK and O_CLOEXEC anyways, so this should be
   // fine.
-  delayed_fd_ = timerfd_create(CLOCK_MONOTONIC, O_NONBLOCK | O_CLOEXEC);
+  delayed_fd_ = checked_cast<int>(
+      timerfd_create(CLOCK_MONOTONIC, O_NONBLOCK | O_CLOEXEC));
   CHECK_NE(delayed_fd_, -1);
 
   looper_ = ALooper_prepare(0);
@@ -141,7 +143,7 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
 
   // Clear the fd.
   uint64_t value;
-  int ret = read(delayed_fd_, &value, sizeof(value));
+  long ret = read(delayed_fd_, &value, sizeof(value));
 
   // TODO(mthiesse): Figure out how it's possible to hit EAGAIN here.
   // According to http://man7.org/linux/man-pages/man2/timerfd_create.2.html
@@ -196,7 +198,7 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
   // should be greater than 0 since work having been scheduled is the reason
   // we're here. See http://man7.org/linux/man-pages/man2/eventfd.2.html
   uint64_t value = 0;
-  int ret = read(non_delayed_fd_, &value, sizeof(value));
+  long ret = read(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
   DCHECK_GT(value, 0U);
   bool do_idle_work = value == kTryNativeWorkBeforeIdleBit;
@@ -335,7 +337,7 @@ void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
   // work from being run and trigger another call to this method with
   // |do_idle_work| set to true.
   uint64_t value = do_idle_work ? kTryNativeWorkBeforeIdleBit : 1;
-  int ret = write(non_delayed_fd_, &value, sizeof(value));
+  long ret = write(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
 }
 
@@ -360,7 +362,7 @@ void MessagePumpForUI::ScheduleDelayedWork(
       static_cast<time_t>(nanos / TimeTicks::kNanosecondsPerSecond);
   ts.it_value.tv_nsec = nanos % TimeTicks::kNanosecondsPerSecond;
 
-  int ret = timerfd_settime(delayed_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);
+  long ret = timerfd_settime(delayed_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);
   DPCHECK(ret >= 0);
 }
 

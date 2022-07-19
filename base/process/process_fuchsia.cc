@@ -266,7 +266,7 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   }
 
   if (exit_code)
-    *exit_code = proc_info.return_code;
+    *exit_code = static_cast<int>(proc_info.return_code);
 
   return true;
 }

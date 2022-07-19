@@ -50,6 +50,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/tracing/perfetto_platform.h"
@@ -904,7 +905,7 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
   if (size_limit == 0)
     size_limit = 200 * 1024;
   auto* buffer_config = perfetto_config.add_buffers();
-  buffer_config->set_size_kb(size_limit);
+  buffer_config->set_size_kb(checked_cast<uint32_t>(size_limit));
   switch (trace_config.GetTraceRecordMode()) {
     case base::trace_event::RECORD_UNTIL_FULL:
     case base::trace_event::RECORD_AS_MUCH_AS_POSSIBLE:
