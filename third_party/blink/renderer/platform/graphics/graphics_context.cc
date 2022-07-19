@@ -752,7 +752,8 @@ void GraphicsContext::DrawImage(
     const gfx::RectF* src_ptr,
     SkBlendMode op,
     RespectImageOrientationEnum should_respect_image_orientation,
-    bool image_may_be_lcp_candidate) {
+    bool image_may_be_lcp_candidate,
+    Image::ImageClampingMode clamping_mode) {
   if (!image)
     return;
 
@@ -763,10 +764,10 @@ void GraphicsContext::DrawImage(
 
   SkSamplingOptions sampling = ComputeSamplingOptions(image, dest, src);
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
-  ImageDrawOptions draw_options(
-      dark_mode_filter, sampling, should_respect_image_orientation,
-      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled,
-      image_may_be_lcp_candidate);
+  ImageDrawOptions draw_options(dark_mode_filter, sampling,
+                                should_respect_image_orientation, clamping_mode,
+                                decode_mode, auto_dark_mode.enabled,
+                                image_may_be_lcp_candidate);
 
   image->Draw(canvas_, image_flags, dest, src, draw_options);
   paint_controller_.SetImagePainted();
@@ -780,13 +781,14 @@ void GraphicsContext::DrawImageRRect(
     const gfx::RectF& src_rect,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation,
-    bool image_may_be_lcp_candidate) {
+    bool image_may_be_lcp_candidate,
+    Image::ImageClampingMode clamping_mode) {
   if (!image)
     return;
 
   if (!dest.IsRounded()) {
     DrawImage(image, decode_mode, auto_dark_mode, dest.Rect(), &src_rect, op,
-              respect_orientation, image_may_be_lcp_candidate);
+              respect_orientation, image_may_be_lcp_candidate, clamping_mode);
     return;
   }
 
@@ -804,10 +806,9 @@ void GraphicsContext::DrawImageRRect(
   image_flags.setColor(SK_ColorBLACK);
 
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
-  ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
-                                Image::kClampImageToSourceRect, decode_mode,
-                                auto_dark_mode.enabled,
-                                image_may_be_lcp_candidate);
+  ImageDrawOptions draw_options(
+      dark_mode_filter, sampling, respect_orientation, clamping_mode,
+      decode_mode, auto_dark_mode.enabled, image_may_be_lcp_candidate);
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||

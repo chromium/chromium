@@ -277,4 +277,41 @@ TEST_P(BoxPainterTest, ScrollerUnderInlineTransform3DSceneLeafCrash) {
   // This should not crash.
 }
 
+size_t CountDrawImagesWithConstraint(const cc::PaintOpBuffer* buffer,
+                                     SkCanvas::SrcRectConstraint constraint) {
+  size_t count = 0;
+  for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
+    if (it->GetType() == cc::PaintOpType::DrawImageRect) {
+      auto* image_op = static_cast<cc::DrawImageRectOp*>(*it);
+      if (image_op->constraint == constraint)
+        ++count;
+    } else if (it->GetType() == cc::PaintOpType::DrawRecord) {
+      auto* record_op = static_cast<cc::DrawRecordOp*>(*it);
+      count +=
+          CountDrawImagesWithConstraint(record_op->record.get(), constraint);
+    }
+  }
+  return count;
+}
+
+TEST_P(BoxPainterTest, ImageClampingMode) {
+  SetBodyInnerHTML(R"HTML(
+    <!doctype html>
+    <style>
+      div#test {
+        height: 500px;
+        width: 353.743px;
+        background-image: url("data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    </style>
+    <div id="test"></div>
+  )HTML");
+
+  sk_sp<PaintRecord> record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(1U, CountDrawImagesWithConstraint(
+                    record.get(), SkCanvas::kFast_SrcRectConstraint));
+}
+
 }  // namespace blink

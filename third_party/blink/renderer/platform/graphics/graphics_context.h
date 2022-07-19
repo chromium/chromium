@@ -323,7 +323,9 @@ class PLATFORM_EXPORT GraphicsContext {
                  const gfx::RectF* src_rect = nullptr,
                  SkBlendMode = SkBlendMode::kSrcOver,
                  RespectImageOrientationEnum = kRespectImageOrientation,
-                 bool image_may_be_lcp_candidate = false);
+                 bool image_may_be_lcp_candidate = false,
+                 Image::ImageClampingMode clamping_mode =
+                     Image::ImageClampingMode::kClampImageToSourceRect);
   void DrawImageRRect(Image*,
                       Image::ImageDecodingMode,
                       const ImageAutoDarkMode& auto_dark_mode,
@@ -331,7 +333,9 @@ class PLATFORM_EXPORT GraphicsContext {
                       const gfx::RectF& src_rect,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation,
-                      bool image_may_be_lcp_candidate = false);
+                      bool image_may_be_lcp_candidate = false,
+                      Image::ImageClampingMode clamping_mode =
+                          Image::ImageClampingMode::kClampImageToSourceRect);
   void DrawImageTiled(Image* image,
                       const gfx::RectF& dest_rect,
                       const ImageTilingInfo& tiling_info,
