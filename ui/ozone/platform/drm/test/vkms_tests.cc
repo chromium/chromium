@@ -72,7 +72,8 @@ class VKMSTest : public testing::Test {
       EXPECT_TRUE(success) << "Unable to set up displays.";
       run_loop.Quit();
     });
-    drm_device_->ConfigureNativeDisplays(params, callback);
+    drm_device_->ConfigureNativeDisplays(
+        params, display::kTestModeset | display::kCommitModeset, callback);
     run_loop.Run();
 
     return RefreshDisplays();

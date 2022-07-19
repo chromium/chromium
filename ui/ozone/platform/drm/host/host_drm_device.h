@@ -68,7 +68,8 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   // Services needed by DrmDisplayHost
   void GpuConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ConfigureCallback callback) override;
+      display::ConfigureCallback callback,
+      uint32_t modeset_flag) override;
   bool GpuGetHDCPState(int64_t display_id) override;
   bool GpuSetHDCPState(
       int64_t display_id,

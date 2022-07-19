@@ -272,7 +272,8 @@ void ConfigureDisplaysTask::Run() {
 
   delegate_->Configure(
       config_requests,
-      base::BindOnce(on_configured, weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(on_configured, weak_ptr_factory_.GetWeakPtr()),
+      display::kTestModeset | display::kCommitModeset);
 }
 
 void ConfigureDisplaysTask::OnConfigurationChanged() {}

@@ -136,7 +136,8 @@ void DrmWindowTest::SetUp() {
   controllers_to_enable.emplace_back(
       1 /*display_id*/, drm_, kDefaultCrtc, kDefaultConnector, gfx::Point(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   drm_device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
 
@@ -296,7 +297,8 @@ TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
       2 /*display_id*/, drm, kDefaultCrtc, kDefaultConnector,
       gfx::Point(0, kDefaultMode.vdisplay),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   // Move window to the display on the new device.
   screen_manager_->GetWindow(kDefaultWidgetHandle)

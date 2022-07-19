@@ -390,10 +390,12 @@ void DrmThread::RefreshNativeDisplays(
 
 void DrmThread::ConfigureNativeDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
+    uint32_t modeset_flag,
     base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("drm", "DrmThread::ConfigureNativeDisplays");
 
-  bool config_success = display_manager_->ConfigureDisplays(config_requests);
+  bool config_success =
+      display_manager_->ConfigureDisplays(config_requests, modeset_flag);
   std::move(callback).Run(config_success);
 }
 

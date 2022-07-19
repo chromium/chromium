@@ -161,6 +161,7 @@ class DrmThread : public base::Thread,
   void RemoveGraphicsDevice(const base::FilePath& path) override;
   void ConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
+      uint32_t modeset_flag,
       ConfigureNativeDisplaysCallback callback) override;
   void GetHDCPState(int64_t display_id,
                     base::OnceCallback<void(int64_t,

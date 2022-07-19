@@ -236,7 +236,8 @@ void DrmOverlayValidatorTest::SetupControllers() {
   controllers_to_enable.emplace_back(
       1 /*display_id*/, drm_, kCrtcIdBase, kConnectorIdBase, gfx::Point(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   drm_device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
 

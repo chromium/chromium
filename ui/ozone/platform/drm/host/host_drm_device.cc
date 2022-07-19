@@ -129,10 +129,12 @@ bool HostDrmDevice::GpuRefreshNativeDisplays() {
 
 void HostDrmDevice::GpuConfigureNativeDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    display::ConfigureCallback callback) {
+    display::ConfigureCallback callback,
+    uint32_t modeset_flag) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   if (IsConnected()) {
-    drm_device_->ConfigureNativeDisplays(config_requests, std::move(callback));
+    drm_device_->ConfigureNativeDisplays(config_requests, modeset_flag,
+                                         std::move(callback));
   } else {
     // Post this task to protect the callstack from accumulating too many
     // recursive calls to ConfigureDisplaysTask::Run() in cases in which the GPU

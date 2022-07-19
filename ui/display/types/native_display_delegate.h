@@ -53,13 +53,14 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
   // Note the query operation may be expensive and take over 60 milliseconds.
   virtual void GetDisplays(GetDisplaysCallback callback) = 0;
 
-  // Configures the display represented by |output| to use |mode| and positions
-  // the display to |origin| in the framebuffer. |mode| can be NULL, which
-  // represents disabling the display. The callback will return the status of
-  // the operation.
+  // Configures the displays represented by |config_requests| to use |mode| and
+  // positions the display to |origin| in the framebuffer. The callback will
+  // return the status of the operation. Adjusts the behavior of the commit
+  // according to |modeset_flag| (see display::ModesetFlag).
   virtual void Configure(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      ConfigureCallback callback) = 0;
+      ConfigureCallback callback,
+      uint32_t modeset_flag) = 0;
 
   // Gets HDCP state of output.
   virtual void GetHDCPState(const DisplaySnapshot& output,

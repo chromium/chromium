@@ -108,7 +108,8 @@ void TestNativeDisplayDelegate::SaveCurrentConfigSystemBandwidth(
 
 void TestNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    ConfigureCallback callback) {
+    ConfigureCallback callback,
+    uint32_t modeset_flag) {
   bool config_success = true;
   for (const auto& config : config_requests)
     config_success &= Configure(config);

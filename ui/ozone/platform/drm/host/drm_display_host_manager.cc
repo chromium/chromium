@@ -311,7 +311,8 @@ void DrmDisplayHostManager::UpdateDisplays(
 
 void DrmDisplayHostManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    display::ConfigureCallback callback) {
+    display::ConfigureCallback callback,
+    uint32_t modeset_flag) {
   for (auto& config : config_requests) {
     if (GetDisplay(config.id)->is_dummy()) {
       std::move(callback).Run(true);
@@ -319,7 +320,8 @@ void DrmDisplayHostManager::ConfigureDisplays(
     }
   }
 
-  proxy_->GpuConfigureNativeDisplays(config_requests, std::move(callback));
+  proxy_->GpuConfigureNativeDisplays(config_requests, std::move(callback),
+                                     modeset_flag);
 }
 
 void DrmDisplayHostManager::OnDeviceEvent(const DeviceEvent& event) {

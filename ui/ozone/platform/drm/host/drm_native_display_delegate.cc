@@ -52,8 +52,10 @@ void DrmNativeDisplayDelegate::GetDisplays(
 
 void DrmNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    display::ConfigureCallback callback) {
-  display_manager_->ConfigureDisplays(config_requests, std::move(callback));
+    display::ConfigureCallback callback,
+    uint32_t modeset_flag) {
+  display_manager_->ConfigureDisplays(config_requests, std::move(callback),
+                                      modeset_flag);
 }
 
 void DrmNativeDisplayDelegate::GetHDCPState(

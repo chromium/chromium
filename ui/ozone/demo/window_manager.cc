@@ -96,7 +96,8 @@ void WindowManager::OnDisplaysAcquired(
         config_request,
         base::BindOnce(&WindowManager::OnDisplayConfigured,
                        base::Unretained(this), display->display_id(),
-                       gfx::Rect(origin, display->native_mode()->size())));
+                       gfx::Rect(origin, display->native_mode()->size())),
+        display::kTestModeset | display::kCommitModeset);
     origin.Offset(display->native_mode()->size().width(), 0);
   }
   is_configuring_ = false;

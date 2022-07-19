@@ -51,7 +51,8 @@ class GpuThreadAdapter {
   // Services needed by DrmDisplayHost
   virtual void GpuConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ConfigureCallback callback) = 0;
+      display::ConfigureCallback callback,
+      uint32_t modeset_flag) = 0;
   virtual bool GpuGetHDCPState(int64_t display_id) = 0;
   virtual bool GpuSetHDCPState(
       int64_t display_id,

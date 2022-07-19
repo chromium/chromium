@@ -72,9 +72,12 @@ class ScreenManager {
   // controllers are removed since they were disconnected.
   void RemoveDisplayControllers(const CrtcsWithDrmList& controllers_to_remove);
 
-  // Enables/Disables the display controller based on if a mode exists.
+  // Enables/Disables the display controller based on if a mode exists. Adjusts
+  // the behavior of the commit according to |modeset_flag| (see
+  // display::ModesetFlag).
   bool ConfigureDisplayControllers(
-      const ControllerConfigsList& controllers_params);
+      const ControllerConfigsList& controllers_params,
+      uint32_t modeset_flag);
 
   // Returns a reference to the display controller configured to display within
   // |bounds|. If the caller caches the controller it must also register as an

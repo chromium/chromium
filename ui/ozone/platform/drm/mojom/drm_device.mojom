@@ -59,9 +59,11 @@ interface DrmDevice {
       (bool should_trigger);
 
   // Configures (Enables/Disables) DRM displays, returns whether or not the
-  // configuration was successful.
+  // configuration was successful. Adjusts the behavior of the commit according
+  // to |modeset_flag| (see display::ModesetFlag).
   ConfigureNativeDisplays(
-      array<display.mojom.DisplayConfigurationParams> config_requests) =>
+      array<display.mojom.DisplayConfigurationParams> config_requests,
+      uint32 modeset_flag) =>
     (bool config_success);
 
   // Gets high-definition content protection (HDCP) (DRM as in

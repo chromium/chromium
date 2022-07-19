@@ -34,7 +34,8 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
   void GetDisplays(display::GetDisplaysCallback callback) override;
   void Configure(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ConfigureCallback callback) override;
+      display::ConfigureCallback callback,
+      uint32_t modeset_flag) override;
   void GetHDCPState(const display::DisplaySnapshot& output,
                     display::GetHDCPStateCallback callback) override;
   void SetHDCPState(const display::DisplaySnapshot& output,
