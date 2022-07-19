@@ -26,12 +26,16 @@ class JavascriptFrameworksUkmObserver
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                  int behavior_flag) override;
   void OnComplete(const page_load_metrics::mojom::PageLoadTiming&) override;
   JavascriptFrameworksUkmObserver::ObservePolicy
   FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming&) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   // Called towards the end of the page lifecycle to report metrics on the
@@ -41,6 +45,8 @@ class JavascriptFrameworksUkmObserver
   // Bitmap containing the blink::LoadingBehaviorFlag values corresponding to
   // frameworks that are detected.
   int32_t frameworks_detected_ = 0;
+
+  bool is_in_prerendered_page_ = false;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_JAVASCRIPT_FRAMEWORKS_UKM_OBSERVER_H_
