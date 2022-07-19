@@ -5673,10 +5673,6 @@ static_library("test_support") {
     "find_bar/find_bar_host_unittest_util.h",
     "login/login_handler_test_utils.cc",
     "login/login_handler_test_utils.h",
-    "toolbar/test_toolbar_action_view_controller.cc",
-    "toolbar/test_toolbar_action_view_controller.h",
-    "toolbar/test_toolbar_actions_bar_bubble_delegate.cc",
-    "toolbar/test_toolbar_actions_bar_bubble_delegate.h",
   ]
   public_deps = [ ":ui" ]
   deps = [
@@ -5827,6 +5823,12 @@ static_library("test_support") {
   }
 
   if (enable_extensions) {
+    sources += [
+      "toolbar/test_toolbar_action_view_controller.cc",
+      "toolbar/test_toolbar_action_view_controller.h",
+      "toolbar/test_toolbar_actions_bar_bubble_delegate.cc",
+      "toolbar/test_toolbar_actions_bar_bubble_delegate.h",
+    ]
     deps += [ "//extensions/browser" ]
   }
 }
