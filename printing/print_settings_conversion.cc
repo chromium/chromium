@@ -137,13 +137,14 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   absl::optional<int> color = job_settings.FindInt(kSettingColor);
   absl::optional<int> duplex_mode = job_settings.FindInt(kSettingDuplexMode);
   absl::optional<bool> landscape = job_settings.FindBool(kSettingLandscape);
+  const std::string* device_name = job_settings.FindString(kSettingDeviceName);
   absl::optional<int> scale_factor = job_settings.FindInt(kSettingScaleFactor);
   absl::optional<bool> rasterize_pdf =
       job_settings.FindBool(kSettingRasterizePdf);
   absl::optional<int> pages_per_sheet =
       job_settings.FindInt(kSettingPagesPerSheet);
   if (!collate.has_value() || !copies.has_value() || !color.has_value() ||
-      !duplex_mode.has_value() || !landscape.has_value() ||
+      !duplex_mode.has_value() || !landscape.has_value() || !device_name ||
       !scale_factor.has_value() || !rasterize_pdf.has_value() ||
       !pages_per_sheet.has_value()) {
     return nullptr;
@@ -151,8 +152,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_collate(collate.value());
   settings->set_copies(copies.value());
   settings->SetOrientation(landscape.value());
-  settings->set_device_name(
-      base::UTF8ToUTF16(*job_settings.FindString(kSettingDeviceName)));
+  settings->set_device_name(base::UTF8ToUTF16(*device_name));
   settings->set_duplex_mode(
       static_cast<mojom::DuplexMode>(duplex_mode.value()));
   settings->set_color(static_cast<mojom::ColorModel>(color.value()));

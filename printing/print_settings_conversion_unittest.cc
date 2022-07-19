@@ -56,7 +56,7 @@ TEST(PrintSettingsConversionTest, InvalidSettings) {
   EXPECT_FALSE(PrintSettingsFromJobSettings(value.GetDict()));
 }
 
-TEST(PrintSettingsConversionTest, ConversionTest) {
+TEST(PrintSettingsConversionTest, Conversion) {
   base::Value value = base::test::ParseJson(kPrinterSettings);
   ASSERT_TRUE(value.is_dict());
   auto& dict = value.GetDict();
@@ -69,15 +69,25 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
 #endif
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 300);
+
   dict.Set("dpiVertical", 600);
   settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->rasterize_pdf_dpi(), 150);
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 600);
+
   EXPECT_TRUE(dict.Remove("dpiVertical"));
   settings = PrintSettingsFromJobSettings(dict);
   EXPECT_FALSE(settings);
+}
+
+TEST(PrintSettingsConversionTest, MissingDeviceName) {
+  base::Value value = base::test::ParseJson(kPrinterSettings);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
+  dict.Remove("deviceName");
+  EXPECT_FALSE(PrintSettingsFromJobSettings(dict));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
