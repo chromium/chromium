@@ -89,20 +89,10 @@ test(function(t) {
   var equiv = create_animated_div(t, 'steps(5, jump-start)');
 
   assert_animations_equal_at(anim, equiv, 0);
-  // Spec doesn't specify which way these steps should be continuous,
-  // so just check on each side.
-  assert_animations_equal_at(anim, equiv, 199);
-  assert_animations_equal_at(anim, equiv, 201);
-
-  assert_animations_equal_at(anim, equiv, 399);
-  assert_animations_equal_at(anim, equiv, 401);
-
-  assert_animations_equal_at(anim, equiv, 599);
-  assert_animations_equal_at(anim, equiv, 601);
-
-  assert_animations_equal_at(anim, equiv, 799);
-  assert_animations_equal_at(anim, equiv, 801);
-
+  assert_animations_equal_at(anim, equiv, 200);
+  assert_animations_equal_at(anim, equiv, 400);
+  assert_animations_equal_at(anim, equiv, 600);
+  assert_animations_equal_at(anim, equiv, 800);
   assert_animations_equal_at(anim, equiv, 1000);
 }, 'linear function easing, steps equivalent');
 
