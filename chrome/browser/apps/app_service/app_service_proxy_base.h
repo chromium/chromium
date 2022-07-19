@@ -95,9 +95,6 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
-  // TODO(crbug.com/1333422): Remove this PreferredAppsImpl() function when
-  // proxy()->AddPreferredApp() can be called directly to add preferred apps.
-  apps::PreferredAppsImpl* PreferredAppsImpl();
   apps::PreferredAppsListHandle& PreferredAppsList();
 
   // Registers `publisher` with the App Service as exclusively publishing apps

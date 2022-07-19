@@ -67,27 +67,6 @@ bool ShouldObserveMediaRequests() {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Make |app_id| the preferred app for handling |url|, without needing the user
-// to choose the app through an intent picker. This function must be called
-// after the corresponding intent filter has already been registered.
-void AddDefaultPreferredApp(const std::string& app_id,
-                            const GURL& url,
-                            apps::AppServiceProxy* proxy) {
-  // TODO(crbug.com/1333422): Call proxy()->AddPreferredApp() directly.
-  if (proxy->PreferredAppsImpl()) {
-    proxy->PreferredAppsImpl()->AddPreferredApp(
-        GetWebAppType(), app_id, apps_util::MakeIntentFilterForUrlScope(url),
-        /*intent=*/nullptr, /*from_publisher=*/true);
-  } else {
-    proxy->AppService().get()->AddPreferredApp(
-        apps::ConvertAppTypeToMojomAppType(GetWebAppType()), app_id,
-        apps_util::CreateIntentFilterForUrlScope(url),
-        /*intent=*/nullptr, /*from_publisher=*/true);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 }  // namespace
 
 WebApps::WebApps(apps::AppServiceProxy* proxy)
@@ -242,15 +221,6 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
-  if (web_app) {
-    AddDefaultPreferredApp(ash::kChromeUITrustedProjectorSwaAppId,
-                           GURL(ash::kChromeUIUntrustedProjectorPwaUrl),
-                           proxy());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   if (apps.empty()) {
     return;
   }
@@ -281,6 +251,14 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
                        apps::ConvertAppTypeToMojomAppType(app_type()),
                        should_notify_initialized);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
+  if (web_app) {
+    proxy()->SetSupportedLinksPreference(
+        ash::kChromeUITrustedProjectorSwaAppId);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void WebApps::PublishWebApp(apps::AppPtr app) {
@@ -289,20 +267,23 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app->app_id == ash::kChromeUITrustedProjectorSwaAppId) {
-    // After OOBE, PublishWebApps() above could execute before the intent filter
-    // has been registered. Since we need to call AddDefaultPreferredApp() after
-    // the intent filter has been registered, we need this call for the OOBE
-    // case.
-    AddDefaultPreferredApp(ash::kChromeUITrustedProjectorSwaAppId,
-                           GURL(ash::kChromeUIUntrustedProjectorPwaUrl),
-                           proxy());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_projector = app->app_id == ash::kChromeUITrustedProjectorSwaAppId;
+#endif
 
   auto mojom_app = apps::ConvertAppToMojomApp(app);
   apps::AppPublisher::Publish(std::move(app));
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_projector) {
+    // After OOBE, PublishWebApps() above could execute before the Projector app
+    // has been registered. Since we need to call SetSupportedLinksPreference()
+    // after the intent filter has been registered, we need this call for the
+    // OOBE case.
+    proxy()->SetSupportedLinksPreference(
+        ash::kChromeUITrustedProjectorSwaAppId);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void WebApps::ModifyWebAppCapabilityAccess(
