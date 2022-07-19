@@ -36,6 +36,11 @@
     margin: 0 0 0 auto;
   }
 
+  #replaceFileInfo {
+    overflow: hidden;
+    padding-inline-end: 12px;
+  }
+
   #selectFileDialog {
     height: 0;
     opacity: 0;
@@ -85,8 +90,8 @@
     tabindex="-1">
 <div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
   <input type="checkbox" id="selectFileCheckbox">
-  <div>
-    <div id="selectedFileName"></div>
+  <div id="replaceFileInfo">
+    <div id="selectedFileName" class="overflow-text"></div>
     <button id="replaceFileLabel" class="file-input"
         on-click="handleOpenFileInputClick_">
       [[i18n('replaceFileLabel')]]
