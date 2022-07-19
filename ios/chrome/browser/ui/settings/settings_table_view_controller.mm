@@ -953,6 +953,18 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else {
     title = l10n_util::GetNSString(IDS_OPTIONS_ADVANCED_SECTION_TITLE_PRIVACY);
   }
+
+  if (UseSymbols()) {
+    return [self detailItemWithType:SettingsItemTypePrivacy
+                               text:title
+                         detailText:nil
+                         symbolView:ElevatedTableViewSymbolWithBackground(
+                                        DefaultSettingsRootSymbol(
+                                            kPrivacySecuritySymbol),
+                                        [UIColor colorNamed:kBlue500Color])
+            accessibilityIdentifier:kSettingsPrivacyCellId];
+  }
+
   return [self detailItemWithType:SettingsItemTypePrivacy
                              text:title
                        detailText:nil
@@ -970,6 +982,18 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)contentSettingsDetailItem {
+  if (UseSymbols()) {
+    return [self
+             detailItemWithType:SettingsItemTypeContentSettings
+                           text:l10n_util::GetNSString(
+                                    IDS_IOS_CONTENT_SETTINGS_TITLE)
+                     detailText:nil
+                     symbolView:ElevatedTableViewSymbolWithBackground(
+                                    DefaultSettingsRootSymbol(kGearShapeSymbol),
+                                    [UIColor colorNamed:kGrey500Color])
+        accessibilityIdentifier:kSettingsContentSettingsCellId];
+  }
+
   return [self detailItemWithType:SettingsItemTypeContentSettings
                              text:l10n_util::GetNSString(
                                       IDS_IOS_CONTENT_SETTINGS_TITLE)
@@ -988,6 +1012,17 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)aboutChromeDetailItem {
+  if (UseSymbols()) {
+    return [self detailItemWithType:SettingsItemTypeAboutChrome
+                               text:l10n_util::GetNSString(IDS_IOS_PRODUCT_NAME)
+                         detailText:nil
+                         symbolView:ElevatedTableViewSymbolWithBackground(
+                                        DefaultSettingsRootSymbol(
+                                            kInfoCircleSymbol),
+                                        [UIColor colorNamed:kGrey500Color])
+            accessibilityIdentifier:kSettingsAboutCellId];
+  }
+
   return [self detailItemWithType:SettingsItemTypeAboutChrome
                              text:l10n_util::GetNSString(IDS_IOS_PRODUCT_NAME)
                        detailText:nil

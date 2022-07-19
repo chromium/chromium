@@ -20,6 +20,7 @@ NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
+NSString* const kPrivacySecuritySymbol = @"checkerboard.shield";
 
 namespace {
 

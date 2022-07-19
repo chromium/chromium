@@ -14,6 +14,7 @@ extern NSString* const kSyncDisabledSymbol;
 extern NSString* const kSyncErrorSymbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
+extern NSString* const kPrivacySecuritySymbol;
 
 // The size of the symbol image displayed in the Settings root screen.
 extern NSInteger kSettingsRootSymbolImagePointSize;
