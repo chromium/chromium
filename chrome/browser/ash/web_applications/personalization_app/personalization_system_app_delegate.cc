@@ -92,7 +92,7 @@ gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
     Browser* browser) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  bounds.ClampToCenteredSize({826, 608});
+  bounds.ClampToCenteredSize({826, 745});
   return bounds;
 }
 
