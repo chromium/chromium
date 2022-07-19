@@ -17,8 +17,8 @@
 #include "dbus/property.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/url_util.h"
 

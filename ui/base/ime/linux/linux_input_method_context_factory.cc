@@ -6,8 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
-#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 namespace ui {
 

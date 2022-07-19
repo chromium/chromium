@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_LINUX_LINUX_UI_DELEGATE_H_
-#define UI_BASE_LINUX_LINUX_UI_DELEGATE_H_
+#ifndef UI_LINUX_LINUX_UI_DELEGATE_H_
+#define UI_LINUX_LINUX_UI_DELEGATE_H_
 
 #include <cstdint>
 #include <string>
@@ -20,7 +20,7 @@ enum class LinuxUiBackend {
   kWayland,
 };
 
-class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegate {
+class COMPONENT_EXPORT(LINUX_UI) LinuxUiDelegate {
  public:
   static LinuxUiDelegate* GetInstance();
 
@@ -51,4 +51,4 @@ class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegate {
 
 }  // namespace ui
 
-#endif  // UI_BASE_LINUX_LINUX_UI_DELEGATE_H_
+#endif  // UI_LINUX_LINUX_UI_DELEGATE_H_

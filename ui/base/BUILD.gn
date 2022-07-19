@@ -385,10 +385,6 @@ component("base") {
         "accelerators/menu_label_accelerator_util_linux.h",
         "linux/linux_desktop.cc",
         "linux/linux_desktop.h",
-        "linux/linux_ui_delegate.cc",
-        "linux/linux_ui_delegate.h",
-        "linux/linux_ui_delegate_stub.cc",
-        "linux/linux_ui_delegate_stub.h",
       ]
     }
 

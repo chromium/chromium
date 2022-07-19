@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "ui/base/linux/linux_ui_delegate.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"

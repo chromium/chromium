@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_LINUX_LINUX_UI_DELEGATE_STUB_H_
-#define UI_BASE_LINUX_LINUX_UI_DELEGATE_STUB_H_
+#ifndef UI_LINUX_LINUX_UI_DELEGATE_STUB_H_
+#define UI_LINUX_LINUX_UI_DELEGATE_STUB_H_
 
-#include "ui/base/linux/linux_ui_delegate.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 namespace ui {
 
-class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegateStub
+class COMPONENT_EXPORT(LINUX_UI) LinuxUiDelegateStub
     : public ui::LinuxUiDelegate {
  public:
   LinuxUiDelegateStub();
@@ -26,4 +26,4 @@ class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegateStub
 
 }  // namespace ui
 
-#endif  // UI_BASE_LINUX_LINUX_UI_DELEGATE_STUB_H_
+#endif  // UI_LINUX_LINUX_UI_DELEGATE_STUB_H_

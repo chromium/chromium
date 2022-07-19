@@ -11,6 +11,8 @@ component("linux_ui") {
     "cursor_theme_manager_observer.h",
     "device_scale_factor_observer.h",
     "linux_ui.h",
+    "linux_ui_delegate.h",
+    "linux_ui_delegate_stub.h",
     "nav_button_provider.h",
     "status_icon_linux.h",
     "window_button_order_observer.h",
@@ -18,16 +20,16 @@ component("linux_ui") {
   ]
   sources = [
     "linux_ui.cc",
+    "linux_ui_delegate.cc",
+    "linux_ui_delegate_stub.cc",
     "status_icon_linux.cc",
   ]
   deps = [
     "//base",
     "//build:chromecast_buildflags",
     "//ui/gfx",
+    "//ui/gfx/animation",
     "//ui/native_theme",
-
-    # TODO(thomasanderson): Move LinuxUiDelegate here and remove this dependency.
-    "//ui/base",
   ]
   public_deps = [
     "//printing/buildflags",

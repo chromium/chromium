@@ -10,9 +10,9 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "ui/base/glib/glib_cast.h"
-#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/events/event_utils.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 namespace gtk {
 

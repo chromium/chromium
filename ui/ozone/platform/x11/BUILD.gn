@@ -22,8 +22,6 @@ source_set("x11") {
     "gl_surface_egl_readback_x11.h",
     "hit_test_x11.cc",
     "hit_test_x11.h",
-    "linux_ui_delegate_x11.cc",
-    "linux_ui_delegate_x11.h",
     "native_pixmap_egl_x11_binding.cc",
     "native_pixmap_egl_x11_binding.h",
     "native_pixmap_glx_binding.cc",
@@ -97,6 +95,14 @@ source_set("x11") {
     "//ui/platform_window/common",
     "//ui/platform_window/wm",
   ]
+
+  if (is_linux) {
+    sources += [
+      "linux_ui_delegate_x11.cc",
+      "linux_ui_delegate_x11.h",
+    ]
+    deps += [ "//ui/linux:linux_ui" ]
+  }
 
   if (is_chromeos_ash) {
     deps += [ "//ui/base/ime/ash" ]

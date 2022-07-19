@@ -46,8 +46,10 @@ component("animation") {
   }
 
   if (is_linux || is_chromeos_lacros) {
+    sources += [ "animation_linux.cc" ]
+  }
+  if (is_linux || is_chromeos) {
     sources += [
-      "animation_linux.cc",
       "animation_settings_provider_linux.cc",
       "animation_settings_provider_linux.h",
     ]

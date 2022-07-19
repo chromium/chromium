@@ -10,8 +10,8 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/ozone/public/ozone_platform.h"
 

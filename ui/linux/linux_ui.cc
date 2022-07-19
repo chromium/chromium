@@ -11,8 +11,8 @@
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "build/build_config.h"
-#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {

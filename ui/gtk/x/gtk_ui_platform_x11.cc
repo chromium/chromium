@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/environment.h"
 #include "base/strings/stringprintf.h"
-#include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -21,6 +20,7 @@
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/x/gtk_event_loop_x11.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 namespace gtk {
 
