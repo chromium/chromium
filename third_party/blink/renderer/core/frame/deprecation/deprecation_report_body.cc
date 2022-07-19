@@ -40,8 +40,9 @@ void DeprecationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
       // Adding extra 'Z' here to ensure that the string gives the same result
       // as JSON.stringify(anticipatedRemoval) in javascript. Note here
       // anticipatedRemoval will become a Date object in javascript.
-      String iso8601_date =
-          anticipated_removal_date.ToString(DateComponents::kMillisecond) + "Z";
+      String iso8601_date = anticipated_removal_date.ToString(
+                                DateComponents::SecondFormat::kMillisecond) +
+                            "Z";
       builder.AddString("anticipatedRemoval", iso8601_date);
     }
   }

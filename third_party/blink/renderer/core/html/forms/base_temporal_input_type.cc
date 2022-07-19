@@ -164,10 +164,10 @@ String BaseTemporalInputType::SerializeWithComponents(
   if (!GetElement().GetAllowedValueStep(&step))
     return date.ToString();
   if (step.Remainder(kMsecPerMinute).IsZero())
-    return date.ToString(DateComponents::kNone);
+    return date.ToString(DateComponents::SecondFormat::kNone);
   if (step.Remainder(kMsecPerSecond).IsZero())
-    return date.ToString(DateComponents::kSecond);
-  return date.ToString(DateComponents::kMillisecond);
+    return date.ToString(DateComponents::SecondFormat::kSecond);
+  return date.ToString(DateComponents::SecondFormat::kMillisecond);
 }
 
 String BaseTemporalInputType::SerializeWithDate(

@@ -518,19 +518,19 @@ String DateComponents::ToStringForTime(SecondFormat format) const {
   DCHECK(type_ == kDateTimeLocal || type_ == kTime);
   SecondFormat effective_format = format;
   if (millisecond_)
-    effective_format = kMillisecond;
-  else if (format == kNone && second_)
-    effective_format = kSecond;
+    effective_format = SecondFormat::kMillisecond;
+  else if (format == SecondFormat::kNone && second_)
+    effective_format = SecondFormat::kSecond;
 
   switch (effective_format) {
     default:
       NOTREACHED();
       [[fallthrough]];
-    case kNone:
+    case SecondFormat::kNone:
       return String::Format("%02d:%02d", hour_, minute_);
-    case kSecond:
+    case SecondFormat::kSecond:
       return String::Format("%02d:%02d:%02d", hour_, minute_, second_);
-    case kMillisecond:
+    case SecondFormat::kMillisecond:
       return String::Format("%02d:%02d:%02d.%03d", hour_, minute_, second_,
                             millisecond_);
   }
