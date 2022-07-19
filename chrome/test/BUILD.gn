@@ -9371,6 +9371,7 @@ if (!is_android) {
         "../browser/ui/views/location_bar/location_icon_view_interactive_uitest.cc",
         "../browser/ui/views/location_bar/selected_keyword_view_interactive_uitest.cc",
         "../browser/ui/views/location_bar/star_view_interactive_uitest.cc",
+        "../browser/ui/views/media_router/media_router_ui_interactive_uitest.cc",
         "../browser/ui/views/menu_controller_interactive_uitest.cc",
         "../browser/ui/views/menu_interactive_uitest.cc",
         "../browser/ui/views/menu_item_view_interactive_uitest.cc",
