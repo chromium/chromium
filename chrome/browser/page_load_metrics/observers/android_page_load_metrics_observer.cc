@@ -42,11 +42,13 @@ AndroidPageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AndroidPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class uses the event OnLoadedResource, but only uses the one with
+  // network::mojom::RequestDestination::kDocument, which never occur in
+  // FencedFrames' navigation. So, we can use STOP_OBSERVING.
   return STOP_OBSERVING;
 }
 
