@@ -203,10 +203,10 @@ bool IsGtGe(MediaQueryOperator op) {
 MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
     CSSParserTokenRange& range) {
   if (ConsumeIfIdent(range, "not"))
-    return MediaQuery::kNot;
+    return MediaQuery::RestrictorType::kNot;
   if (ConsumeIfIdent(range, "only"))
-    return MediaQuery::kOnly;
-  return MediaQuery::kNone;
+    return MediaQuery::RestrictorType::kOnly;
+  return MediaQuery::RestrictorType::kNone;
 }
 
 String MediaQueryParser::ConsumeType(CSSParserTokenRange& range) {
@@ -508,7 +508,7 @@ MediaQuerySet* MediaQueryParser::ConsumeSingleCondition(
     queries.push_back(MediaQuery::CreateNotAll());
   } else {
     queries.push_back(MakeGarbageCollected<MediaQuery>(
-        MediaQuery::kNone, media_type_names::kAll, node));
+        MediaQuery::RestrictorType::kNone, media_type_names::kAll, node));
   }
 
   return MakeGarbageCollected<MediaQuerySet>(std::move(queries));
@@ -537,7 +537,7 @@ MediaQuery* MediaQueryParser::ConsumeQuery(CSSParserTokenRange& range) {
 
   // Otherwise, <media-condition>
   if (const MediaQueryExpNode* node = ConsumeCondition(range)) {
-    return MakeGarbageCollected<MediaQuery>(MediaQuery::kNone,
+    return MakeGarbageCollected<MediaQuery>(MediaQuery::RestrictorType::kNone,
                                             media_type_names::kAll, node);
   }
   return nullptr;

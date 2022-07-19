@@ -134,7 +134,7 @@ bool MediaQueryEvaluator::MediaTypeMatch(
 static bool ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
   if (value == KleeneValue::kUnknown)
     return false;
-  if (r == MediaQuery::kNot)
+  if (r == MediaQuery::RestrictorType::kNot)
     return value == KleeneValue::kFalse;
   return value == KleeneValue::kTrue;
 }

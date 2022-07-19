@@ -47,7 +47,7 @@ using ExpressionHeapVector = Vector<MediaQueryExp>;
 
 class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  public:
-  enum RestrictorType { kOnly, kNot, kNone };
+  enum class RestrictorType { kOnly, kNot, kNone };
 
   static MediaQuery* CreateNotAll();
 

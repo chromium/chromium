@@ -42,13 +42,13 @@ namespace blink {
 String MediaQuery::Serialize() const {
   StringBuilder result;
   switch (Restrictor()) {
-    case MediaQuery::kOnly:
+    case RestrictorType::kOnly:
       result.Append("only ");
       break;
-    case MediaQuery::kNot:
+    case RestrictorType::kNot:
       result.Append("not ");
       break;
-    case MediaQuery::kNone:
+    case RestrictorType::kNone:
       break;
   }
 
@@ -59,7 +59,8 @@ String MediaQuery::Serialize() const {
     return result.ReleaseString();
   }
 
-  if (MediaType() != media_type_names::kAll || Restrictor() != kNone) {
+  if (MediaType() != media_type_names::kAll ||
+      Restrictor() != RestrictorType::kNone) {
     result.Append(MediaType());
     result.Append(" and ");
   }
@@ -72,7 +73,7 @@ String MediaQuery::Serialize() const {
 
 MediaQuery* MediaQuery::CreateNotAll() {
   return MakeGarbageCollected<MediaQuery>(
-      MediaQuery::kNot, media_type_names::kAll, nullptr /* exp_node */);
+      RestrictorType::kNot, media_type_names::kAll, nullptr /* exp_node */);
 }
 
 MediaQuery::MediaQuery(RestrictorType restrictor,
@@ -98,7 +99,7 @@ void MediaQuery::Trace(Visitor* visitor) const {
 
 MediaQuery::RestrictorType MediaQuery::Restrictor() const {
   if (BehaveAsNotAll())
-    return MediaQuery::kNot;
+    return RestrictorType::kNot;
   return restrictor_;
 }
 
