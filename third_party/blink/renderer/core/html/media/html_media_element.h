@@ -138,10 +138,6 @@ class CORE_EXPORT HTMLMediaElement
 
   static bool IsHLSURL(const KURL&);
 
-  // If HTMLMediaElement is using MediaTracks (either placeholder or provided
-  // by the page).
-  static bool MediaTracksEnabledInternally();
-
   // Notify the HTMLMediaElement that the media controls settings have changed
   // for the given document.
   static void OnMediaControlsEnabledChange(Document*);

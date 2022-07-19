@@ -883,7 +883,6 @@ void MediaSource::OnTrackChanged(TrackBase* track) {
   // this method should only be called by an attachment.
   DCHECK(IsMainThread());
 
-  DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   SourceBuffer* source_buffer =
       SourceBufferTrackBaseSupplement::sourceBuffer(*track);
   if (!source_buffer)

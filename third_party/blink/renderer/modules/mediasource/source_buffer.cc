@@ -459,8 +459,6 @@ void SourceBuffer::SetTimestampOffset_Locked(
 }
 
 AudioTrackList& SourceBuffer::audioTracks() {
-  DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
-
   // TODO(https://crbug.com/878133): Complete the AudioVideoTracks function
   // necessary to enable successful experimental usage of it when MSE is in
   // worker. Note that if this is consulted as part of parent |source_|'s
@@ -471,8 +469,6 @@ AudioTrackList& SourceBuffer::audioTracks() {
 }
 
 VideoTrackList& SourceBuffer::videoTracks() {
-  DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
-
   // TODO(https://crbug.com/878133): Complete the AudioVideoTracks function
   // necessary to enable successful experimental usage of it when MSE is in
   // worker. Note that if this is consulted as part of parent |source_|'s
@@ -1196,10 +1192,8 @@ void SourceBuffer::RemovedFromMediaSource() {
     AbortIfUpdating();
   }
 
-  if (HTMLMediaElement::MediaTracksEnabledInternally()) {
-    DCHECK(source_);
-    RemoveMediaTracks();
-  }
+  DCHECK(source_);
+  RemoveMediaTracks();
 
   // Update the underlying demuxer except in the cross-thread attachment case
   // where detachment or element context destruction may have already begun.
@@ -1228,7 +1222,6 @@ double SourceBuffer::HighestPresentationTimestamp() {
 void SourceBuffer::RemoveMediaTracks() {
   // Spec:
   // http://w3c.github.io/media-source/#widl-MediaSource-removeSourceBuffer-void-SourceBuffer-sourceBuffer
-  DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   DCHECK(source_);
 
   auto [attachment, tracer] = source_->AttachmentAndTracer();
@@ -1525,21 +1518,10 @@ bool SourceBuffer::InitializationSegmentReceived(
 
   // Feature and execution-context conditioning may disable full population of
   // tracks in SourceBuffer (and maybe even in media element).
-  bool finish_early = false;
-
-  if (!HTMLMediaElement::MediaTracksEnabledInternally()) {
-    // Don't populate SourceBuffer tracks. Let the media element figure out
-    // internally any tracks it wants to populate (it may do placeholders).
-    finish_early = true;
-  } else if (GetExecutionContext()->IsDedicatedWorkerGlobalScope()) {
-    finish_early = true;
+  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope()) {
     if (!first_initialization_segment_received_) {
       AddPlaceholderCrossThreadTracks(new_tracks, attachment);
-    }
-  }
 
-  if (finish_early) {
-    if (!first_initialization_segment_received_) {
       source_->SetSourceBufferActive(this, true);
       first_initialization_segment_received_ = true;
     }
