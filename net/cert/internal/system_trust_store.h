@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/net_buildflags.h"
 
 namespace net {

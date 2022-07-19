@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "crypto/sha2.h"
-#include "net/cert/internal/crl.h"
+#include "net/cert/pki/crl.h"
 #include "net/der/input.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

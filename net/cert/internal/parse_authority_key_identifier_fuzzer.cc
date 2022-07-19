@@ -7,7 +7,7 @@
 
 #include <tuple>
 
-#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/der/input.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

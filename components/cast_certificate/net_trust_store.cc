@@ -10,12 +10,12 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/cast_certificate/net_parsed_certificate.h"
-#include "net/cert/internal/cert_issuer_source_static.h"
-#include "net/cert/internal/common_cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
-#include "net/cert/internal/path_builder.h"
-#include "net/cert/internal/simple_path_builder_delegate.h"
 #include "net/cert/pem.h"
+#include "net/cert/pki/cert_issuer_source_static.h"
+#include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/path_builder.h"
+#include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/x509_util.h"
 
 namespace {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cert/internal/revocation_util.h"
+#include "net/cert/pki/revocation_util.h"
 
 #include "base/time/time.h"
 #include "net/der/encode_values.h"

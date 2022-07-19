@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
-#include "net/cert/internal/extended_key_usage.h"
-#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/pki/extended_key_usage.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util_apple.h"
 #include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/client_cert_identity_test_util.h"

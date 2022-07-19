@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/pki/parsed_certificate.h"
 
 namespace net {
 

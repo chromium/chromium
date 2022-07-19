@@ -45,7 +45,7 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
-#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/x509_certificate_net_log_param.h"

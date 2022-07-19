@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cert/internal/cert_issuer_source_sync_unittest.h"
+#include "net/cert/pki/cert_issuer_source_sync_unittest.h"
 
 namespace net {
 

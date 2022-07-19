@@ -29,10 +29,10 @@
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/internal/name_constraints.h"
-#include "net/cert/internal/parse_name.h"
-#include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/known_roots.h"
+#include "net/cert/pki/name_constraints.h"
+#include "net/cert/pki/parse_name.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 

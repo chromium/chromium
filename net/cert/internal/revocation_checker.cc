@@ -10,12 +10,12 @@
 #include "base/strings/string_piece.h"
 #include "crypto/sha2.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "net/cert/internal/common_cert_errors.h"
-#include "net/cert/internal/crl.h"
-#include "net/cert/internal/ocsp.h"
-#include "net/cert/internal/parsed_certificate.h"
-#include "net/cert/internal/trust_store.h"
 #include "net/cert/ocsp_verify_result.h"
+#include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/crl.h"
+#include "net/cert/pki/ocsp.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/trust_store.h"
 #include "url/gurl.h"
 
 namespace net {

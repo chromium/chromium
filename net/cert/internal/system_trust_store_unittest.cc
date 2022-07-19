@@ -4,7 +4,7 @@
 
 #include "net/cert/internal/system_trust_store.h"
 
-#include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"

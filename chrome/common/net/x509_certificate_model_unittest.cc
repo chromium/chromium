@@ -4,7 +4,7 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
-#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"

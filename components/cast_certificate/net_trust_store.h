@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/check.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/trust_store_in_memory.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/x509_util.h"
 #include "third_party/openscreen/src/cast/common/public/trust_store.h"
 

@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "net/cert/internal/trust_store_in_memory.h"
+#include "net/cert/pki/trust_store_in_memory.h"
 
 namespace cast_certificate {
 namespace testing {

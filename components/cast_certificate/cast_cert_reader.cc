@@ -6,8 +6,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "net/cert/internal/common_cert_errors.h"
 #include "net/cert/pem.h"
+#include "net/cert/pki/common_cert_errors.h"
 #include "net/cert/x509_util.h"
 
 namespace cast_certificate {

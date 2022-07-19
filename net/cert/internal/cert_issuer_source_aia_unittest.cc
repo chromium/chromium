@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
-#include "net/cert/internal/test_helpers.h"
 #include "net/cert/mock_cert_net_fetcher.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/test_helpers.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/test_data_directory.h"

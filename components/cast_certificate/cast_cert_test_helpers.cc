@@ -10,8 +10,8 @@
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/cast_certificate/cast_cert_reader.h"
-#include "net/cert/internal/cert_errors.h"
 #include "net/cert/pem.h"
+#include "net/cert/pki/cert_errors.h"
 #include "net/cert/x509_util.h"
 
 namespace cast_certificate {

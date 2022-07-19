@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/trust_store_in_memory.h"
+#include "net/cert/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

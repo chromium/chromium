@@ -26,9 +26,9 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "net/cert/internal/parse_name.h"
-#include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/pki/parse_name.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif

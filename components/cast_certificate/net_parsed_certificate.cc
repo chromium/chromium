@@ -5,7 +5,7 @@
 #include "components/cast_certificate/net_parsed_certificate.h"
 
 #include "base/containers/contains.h"
-#include "net/cert/internal/parse_name.h"
+#include "net/cert/pki/parse_name.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"

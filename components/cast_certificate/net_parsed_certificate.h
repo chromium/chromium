@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
 #define COMPONENTS_CAST_CERTIFICATE_NET_PARSED_CERTIFICATE_H_
 
-#include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "third_party/openscreen/src/cast/common/public/parsed_certificate.h"
 
 namespace cast_certificate {

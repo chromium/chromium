@@ -17,7 +17,7 @@
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "crypto/random.h"
-#include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/der/parse_values.h"

@@ -10,7 +10,7 @@
 
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/trust_store.h"
+#include "net/cert/pki/trust_store.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {

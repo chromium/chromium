@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "net/cert/internal/parse_certificate.h"
-#include "net/cert/internal/parse_name.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/parse_name.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 

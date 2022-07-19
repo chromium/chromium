@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cert/internal/general_names.h"
+#include "net/cert/pki/general_names.h"
 
 #include "base/strings/string_util.h"
-#include "net/cert/internal/test_helpers.h"
+#include "net/cert/pki/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

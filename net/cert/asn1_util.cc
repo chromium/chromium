@@ -4,7 +4,7 @@
 
 #include "net/cert/asn1_util.h"
 
-#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

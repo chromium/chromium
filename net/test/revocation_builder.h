@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "net/cert/internal/ocsp.h"
 #include "net/cert/ocsp_revocation_status.h"
+#include "net/cert/pki/ocsp.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {

@@ -14,7 +14,7 @@
 #include "components/cast_certificate/cast_cert_test_helpers.h"
 #include "components/cast_certificate/cast_cert_validator.h"
 #include "components/cast_certificate/cast_crl.h"
-#include "net/cert/internal/trust_store_in_memory.h"
+#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/common/certificate/proto/test_suite.pb.h"

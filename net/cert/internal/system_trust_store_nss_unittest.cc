@@ -12,9 +12,9 @@
 
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/system_trust_store_nss.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"

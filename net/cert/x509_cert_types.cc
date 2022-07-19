@@ -4,7 +4,7 @@
 
 #include "net/cert/x509_cert_types.h"
 
-#include "net/cert/internal/parse_name.h"
+#include "net/cert/pki/parse_name.h"
 #include "net/der/input.h"
 
 namespace net {
