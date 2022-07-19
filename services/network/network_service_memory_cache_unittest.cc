@@ -413,6 +413,94 @@ TEST_F(NetworkServiceMemoryCacheTest, CreateWriter_ResponseNotCacheable) {
       WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CreateWriter_IfUnmodifiedSince) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("iF-unMOdified-since", "hello",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CreateWriter_IfMatch) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("IF-match", "foo",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CreateWriter_IfRange) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("if-rangE", "bar",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CreateWriter_IfModifiedSince) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("if-modified-since", "bar",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CreateWriter_IfNoneMatch) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("if-none-match", "bar",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CacheControlBogus) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("cache-control", "bogus",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_TRUE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CacheControlNoCache) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("cache-control", "no-cache",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, PragmaNoCatche) {
+  std::unique_ptr<net::URLRequest> url_request =
+      CreateURLRequest(test_server().GetURL("/cacheable"));
+  url_request->SetExtraRequestHeaderByName("pragma", "no-cache",
+                                           /*overwrite=*/true);
+
+  mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+  ASSERT_FALSE(
+      WriterWillBeCreatedToStoreResponse(url_request.get(), response_head));
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_Basic) {
   ResourceRequest request = CreateRequest("/cacheable");
   StoreResponseToMemoryCache(request);

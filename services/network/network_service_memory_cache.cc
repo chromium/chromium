@@ -42,6 +42,26 @@ namespace network {
 
 namespace {
 
+struct HeaderNameAndValue {
+  const char* name;
+  const char* value;
+};
+
+// Collected from kPassThroughHeaders, kValidationHeaders, kForceFetchHeaders,
+// kForceValidateHeaders, in //net/http/http_cache_transaction.cc. *If* we ship
+// the in-memory network memory cache, it'd be worthwhile to remove the
+// duplication.
+constexpr HeaderNameAndValue kSpecialHeaders[] = {
+    {"if-unmodified-since", nullptr},
+    {"if-match", nullptr},
+    {"if-range", nullptr},
+    {"if-modified-since", nullptr},
+    {"if-none-match", nullptr},
+    {"cache-control", "no-cache"},
+    {"pragma", "no-cache"},
+    {"cache-control", "max-age=0"},
+};
+
 // TODO(https://crbug.com/1339708): Adjust these parameters based on stats.
 const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxTotalSize{
     &features::kNetworkServiceMemoryCache, "max_total_size", 64 * 1024 * 1024};
@@ -260,6 +280,25 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
   if (load_flags & net::LOAD_BYPASS_CACHE ||
       load_flags & net::LOAD_DISABLE_CACHE) {
     return nullptr;
+  }
+
+  for (const auto& [name, value] : kSpecialHeaders) {
+    std::string header_value;
+    if (!url_request->extra_request_headers().GetHeader(name, &header_value)) {
+      continue;
+    }
+    if (value == nullptr) {
+      // `nullptr` is a wildcard symbol.
+      return nullptr;
+    }
+
+    net::HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(),
+                                    ',');
+    while (v.GetNext()) {
+      if (base::EqualsCaseInsensitiveASCII(v.value_piece(), value)) {
+        return nullptr;
+      }
+    }
   }
 
   if (response->content_length > static_cast<int>(max_per_entry_bytes_))
