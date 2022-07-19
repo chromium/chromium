@@ -81,12 +81,12 @@ AttributionFilterData::FromTriggerFilterValues(FilterValues&& filter_values) {
 
 // static
 absl::optional<AttributionFilterData> AttributionFilterData::FromSourceJSON(
-    base::Value* value) {
+    base::Value* input_value) {
   // TODO(johnidel): Consider logging registration JSON metrics here.
-  if (!value)
+  if (!input_value)
     return AttributionFilterData();
 
-  base::Value::Dict* dict = value->GetIfDict();
+  base::Value::Dict* dict = input_value->GetIfDict();
   if (!dict)
     return absl::nullopt;
 
@@ -115,8 +115,8 @@ absl::optional<AttributionFilterData> AttributionFilterData::FromSourceJSON(
     std::vector<std::string> values;
     values.reserve(num_values);
 
-    for (base::Value& value : *list) {
-      std::string* string = value.GetIfString();
+    for (base::Value& item : *list) {
+      std::string* string = item.GetIfString();
       if (!string)
         return absl::nullopt;
 

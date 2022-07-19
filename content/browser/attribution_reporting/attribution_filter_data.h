@@ -37,19 +37,20 @@ class CONTENT_EXPORT AttributionFilterData {
 
   // Source filter data is not allowed to contain a `source_type` filter.
   static absl::optional<AttributionFilterData> FromSourceFilterValues(
-      FilterValues&&);
+      FilterValues&& filter_values);
 
   // Trigger filter data is allowed to contain a `source_type` filter.
   static absl::optional<AttributionFilterData> FromTriggerFilterValues(
-      FilterValues&&);
+      FilterValues&& filter_values);
 
-  static absl::optional<AttributionFilterData> FromSourceJSON(base::Value*);
+  static absl::optional<AttributionFilterData> FromSourceJSON(
+      base::Value* input_value);
 
   // Returns filter data that matches only the given source type.
-  static AttributionFilterData ForSourceType(AttributionSourceType);
+  static AttributionFilterData ForSourceType(AttributionSourceType source_type);
 
   // Creates without validation.
-  static AttributionFilterData CreateForTesting(FilterValues);
+  static AttributionFilterData CreateForTesting(FilterValues filter_values);
 
   AttributionFilterData();
 
