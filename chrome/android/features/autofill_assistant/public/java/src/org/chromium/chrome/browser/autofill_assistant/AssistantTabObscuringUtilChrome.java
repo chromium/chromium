@@ -23,7 +23,7 @@ public class AssistantTabObscuringUtilChrome implements AssistantTabObscuringUti
     @Override
     public void obscureAllTabs() {
         if (mObscuringToken == TokenHolder.INVALID_TOKEN) {
-            mTabObscuringHandler.obscureAllTabs();
+            mObscuringToken = mTabObscuringHandler.obscureAllTabs();
         }
     }
 
