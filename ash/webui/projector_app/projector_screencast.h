@@ -17,7 +17,7 @@ namespace ash {
 struct ProjectorScreencastVideo {
   base::Value ToValue() const;
   // TODO(b/236857019): Add thumbnail link and video file id.
-  std::string srcUrl;
+  std::string src_url;
 };
 
 // Struct of screencast model.

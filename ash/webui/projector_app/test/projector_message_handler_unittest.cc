@@ -562,7 +562,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetScreencast) {
   ASSERT_TRUE(call_data.arg3()->is_dict());
   const base::Value::Dict& dict = std::move(call_data.arg3()->GetDict());
 
-  EXPECT_EQ(*(dict.FindString("container_folder_id")), container_folder_id);
+  EXPECT_EQ(*(dict.FindString("containerFolderId")), container_folder_id);
   // TODO(b/236857019) Updates the |name| value when getting screencast name by
   // using DriveFS service.
   EXPECT_EQ(*(dict.FindString("name")), "name");

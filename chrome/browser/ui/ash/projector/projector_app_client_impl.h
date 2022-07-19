@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "ash/webui/projector_app/projector_app_client.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
+#include "chrome/browser/ui/ash/projector/screencast_manager.h"
 
 namespace network {
 namespace mojom {
@@ -47,6 +47,9 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OnSodaInstallError() override;
   void OnSodaInstalled() override;
   void OpenFeedbackDialog() override;
+  void GetScreencast(
+      const std::string& screencast_id,
+      ash::ProjectorAppClient::OnGetScreencastCallback callback) override;
 
  private:
   void NotifyScreencastsPendingStatusChanged(
@@ -56,7 +59,11 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
 
   std::unique_ptr<ProjectorSodaInstallationController>
       soda_installation_controller_;
+
+  // TODO(b/239098953): This should be owned by `screencast_manager_`;
   PendingScreencastManager pending_screencast_manager_;
+
+  ash::ScreencastManager screencast_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

@@ -51,6 +51,9 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_METHOD0(OnSodaInstallError, void());
   MOCK_METHOD0(OnSodaInstalled, void());
   MOCK_METHOD0(OpenFeedbackDialog, void());
+  MOCK_METHOD2(GetScreencast,
+               void(const std::string&,
+                    ProjectorAppClient::OnGetScreencastCallback));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

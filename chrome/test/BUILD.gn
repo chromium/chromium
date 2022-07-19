@@ -7194,6 +7194,7 @@ test("unit_tests") {
       "../browser/ui/ash/projector/projector_client_impl_unittest.cc",
       "../browser/ui/ash/projector/projector_soda_installation_controller_unittest.cc",
       "../browser/ui/ash/projector/projector_utils_unittest.cc",
+      "../browser/ui/ash/projector/screencast_manager_unittest.cc",
       "../browser/ui/ash/session_controller_client_impl_unittest.cc",
       "../browser/ui/ash/sharesheet/sharesheet_bubble_view_unittest.cc",
       "../browser/ui/ash/shelf/arc_app_shelf_id_unittest.cc",
