@@ -50,11 +50,13 @@ ts_library("library") {
     in_files += [
       "ui/gfx/range/mojom/range.mojom-webui.js",
       "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
+      "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
       "chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
       "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js",
       "chromeos/services/network_health/public/mojom/network_health.mojom-webui.js",
     ]
     extra_deps += [
+      "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js__generator",
       "//chromeos/services/bluetooth_config/public/mojom:mojom_js__generator",
       "//chromeos/services/network_config/public/mojom:network_types_js__generator",
       "//chromeos/services/network_health/public/mojom:mojom_js__generator",

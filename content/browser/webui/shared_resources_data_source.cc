@@ -58,6 +58,7 @@ const std::set<int> GetContentResourceIds() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::set<int> GetChromeosMojoResourceIds() {
   return std::set<int>{
+      IDR_AUTH_FACTOR_CONFIG_MOJOM_WEBUI_JS,
       IDR_BLUETOOTH_CONFIG_MOJOM_WEBUI_JS,
       IDR_IP_ADDRESS_MOJOM_HTML,
       IDR_IP_ADDRESS_MOJOM_LITE_JS,

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -109,6 +110,12 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
           receiver);
+
+  // Binds to the cros authentication factor editing services.
+  void BindInterface(
+      mojo::PendingReceiver<ash::auth::mojom::AuthFactorConfig> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<ash::auth::mojom::RecoveryFactorEditor> receiver);
 
  private:
   base::TimeTicks time_when_opened_;

@@ -5171,6 +5171,7 @@ static_library("browser") {
       "//chromeos/ash/components/local_search_service/public/mojom",
       "//chromeos/ash/components/memory",
       "//chromeos/ash/services/assistant/public/cpp",
+      "//chromeos/ash/services/auth_factor_config",
       "//chromeos/ash/services/cros_healthd/public/cpp",
       "//chromeos/ash/services/cros_healthd/public/mojom",
       "//chromeos/components/onc",

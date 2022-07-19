@@ -272,6 +272,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
@@ -1003,6 +1004,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::CellularSetup,
       chromeos::settings::OSSettingsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::AuthFactorConfig,
+                                         chromeos::settings::OSSettingsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::RecoveryFactorEditor,
+                                         chromeos::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, chromeos::settings::OSSettingsUI,

@@ -7,7 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
-  closure_flags = os_settings_closure_flags
+  closure_flags = os_settings_closure_flags + mojom_js_args
   is_polymer3 = true
   deps = [
     ":account_manager",
@@ -88,6 +88,7 @@ js_library("lock_screen") {
     "..:route_observer_behavior",
     "../..:router",
     "../multidevice_page:multidevice_smartlock_item",
+    "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
     "//ui/webui/resources/js:assert.m",

@@ -4,6 +4,7 @@
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {AuthFactorConfig, RecoveryFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -62,6 +63,21 @@ export const LockStateBehaviorImpl = {
      * @type {QuickUnlockPrivate}
      */
     quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
+
+    /**
+     * Interface for calls to the ash AuthFactorConfig service. May be
+     * overridden by tests.
+     * @type {AuthFactorConfigInterface}
+     */
+    authFactorConfig: {type: Object, value: AuthFactorConfig.getRemote()},
+
+    /**
+     * Interface for calls to the ash RecoveryFactorEditor service.  May be
+     * overridden by tests.
+     * @type {RecoveryFactorEditorInterface}
+     */
+    recoveryFactorEditor:
+        {type: Object, value: RecoveryFactorEditor.getRemote()},
   },
 
   /** @override */

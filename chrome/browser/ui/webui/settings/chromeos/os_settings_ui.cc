@@ -34,6 +34,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chrome/grit/os_settings_resources_map.h"
+#include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -219,6 +220,16 @@ void OSSettingsUI::BindInterface(
         receiver) {
   DCHECK(features::IsBluetoothRevampEnabled());
   ash::GetBluetoothConfigService(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<ash::auth::mojom::AuthFactorConfig> receiver) {
+  ash::auth::BindToAuthFactorConfig(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<ash::auth::mojom::RecoveryFactorEditor> receiver) {
+  ash::auth::BindToRecoveryFactorEditor(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)
