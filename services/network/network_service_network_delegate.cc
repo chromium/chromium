@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/domain_reliability/monitor.h"
@@ -198,9 +199,8 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
            ->cookie_settings()
            .AnnotateAndMoveUserBlockedCookies(
                request.url(), request.site_for_cookies(),
-               request.isolation_info().top_frame_origin().has_value()
-                   ? &request.isolation_info().top_frame_origin().value()
-                   : nullptr,
+               base::OptionalOrNullptr(
+                   request.isolation_info().top_frame_origin()),
                maybe_included_cookies, excluded_cookies)) {
     // CookieSettings has already moved and annotated the cookies.
     return false;
