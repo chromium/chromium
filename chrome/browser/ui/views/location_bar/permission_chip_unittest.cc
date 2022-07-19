@@ -50,6 +50,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Ignore() override { requests_.clear(); }
   void SetManageClicked() override { requests_.clear(); }
   void SetLearnMoreClicked() override { requests_.clear(); }
+  bool RecreateView() override { return false; }
 
   bool WasCurrentRequestAlreadyDisplayed() override {
     return was_current_request_already_displayed_;

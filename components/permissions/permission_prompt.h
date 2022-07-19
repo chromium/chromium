@@ -101,6 +101,10 @@ class PermissionPrompt {
     virtual void SetLearnMoreClicked() = 0;
 
     virtual base::WeakPtr<Delegate> GetWeakPtr() = 0;
+
+    // Recreate the UI view because the UI flavor needs to change. Returns true
+    // iff successful.
+    virtual bool RecreateView() = 0;
   };
 
   typedef base::RepeatingCallback<

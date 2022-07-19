@@ -57,6 +57,10 @@ bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
 }
 
+bool TestPermissionBubbleViewDelegate::RecreateView() {
+  return false;
+}
+
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
 TestPermissionBubbleViewDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

@@ -581,6 +581,19 @@ PermissionRequestManager::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+bool PermissionRequestManager::RecreateView() {
+  view_ = view_factory_.Run(web_contents(), this);
+  if (!view_) {
+    current_request_prompt_disposition_ =
+        PermissionPromptDisposition::NONE_VISIBLE;
+    FinalizeCurrentRequests(PermissionAction::IGNORED);
+    return false;
+  }
+
+  current_request_prompt_disposition_ = view_->GetPromptDisposition();
+  return true;
+}
+
 PermissionRequestManager::PermissionRequestManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -697,15 +710,8 @@ void PermissionRequestManager::ShowBubble() {
   if (tab_is_hidden_)
     return;
 
-  view_ = view_factory_.Run(web_contents(), this);
-  if (!view_) {
-    current_request_prompt_disposition_ =
-        PermissionPromptDisposition::NONE_VISIBLE;
-    FinalizeCurrentRequests(PermissionAction::IGNORED);
+  if (!RecreateView())
     return;
-  }
-
-  current_request_prompt_disposition_ = view_->GetPromptDisposition();
 
   if (!current_request_already_displayed_) {
     PermissionUmaUtil::PermissionPromptShown(requests_);

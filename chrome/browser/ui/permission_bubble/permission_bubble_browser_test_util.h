@@ -60,6 +60,7 @@ class TestPermissionBubbleViewDelegate
   void SetDismissOnTabClose() override {}
   void SetBubbleShown() override {}
   void SetDecisionTime() override {}
+  bool RecreateView() override;
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override;
 

@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_desktop.h"
 #include "components/permissions/permission_request.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,8 +65,8 @@ void PermissionRequestManagerTestApi::AddSimpleRequest(
 }
 
 views::Widget* PermissionRequestManagerTestApi::GetPromptWindow() {
-  PermissionPromptImpl* prompt =
-      static_cast<PermissionPromptImpl*>(manager_->view_.get());
+  PermissionPromptDesktop* prompt =
+      static_cast<PermissionPromptDesktop*>(manager_->view_.get());
   return prompt ? prompt->GetPromptBubbleWidgetForTesting() : nullptr;
 }
 

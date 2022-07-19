@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"

@@ -65,6 +65,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void SetDismissOnTabClose() override {}
   void SetBubbleShown() override {}
   void SetDecisionTime() override {}
+  bool RecreateView() override { return false; }
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
