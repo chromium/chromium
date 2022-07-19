@@ -189,6 +189,13 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
     "OmniboxShortBookmarkSuggestionsByTotalInputLength",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, inputs may match bookmark paths. These path matches won't
+// contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
+// 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
+// containing 'planet.'
+const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If disabled, shortcuts to the same stripped destination URL are scored
 // independently, and only the highest scored shortcut is kept. If enabled,
 // duplicate shortcuts are given an aggregate score, as if they had been a
@@ -200,13 +207,6 @@ const base::Feature kAggregateShortcuts{"OmniboxAggregateShortcuts",
 // is expanded, if possible, to a complete word in the suggestion description.
 const base::Feature kShortcutExpanding{"OmniboxShortcutExpanding",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, inputs may match bookmark paths. These path matches won't
-// contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
-// 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
-// containing 'planet.'
-const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, the relevant AutocompleteProviders will store "title" data in
 // AutocompleteMatch::contents and "URL" data in AutocompleteMatch::description

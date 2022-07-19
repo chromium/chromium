@@ -469,6 +469,53 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // `FeatureParam`s
 
+// Local history zero-prefix (aka zero-suggest) and prefix suggestions.
+
+// Determines the relevance score for the local history zero-prefix suggestions.
+extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
+
+// Whether the same AutocompleteController instance used by the omnibox should
+// be used to prefetch zero-prefix suggestions. For this to be true,
+// omnibox::kZeroSuggestPrefetching must also be true.
+// This is only checked on Android which uses ZeroSuggestPrefetcher by default,
+// which spins off a new throw-away AutocompleteController instance.
+bool UseSharedInstanceForZeroSuggestPrefetching();
+
+// Whether duplicative visits should be ignored for local history zero-suggest.
+// A duplicative visit is a visit to the same search term in an interval smaller
+// than kAutocompleteDuplicateVisitIntervalThreshold.
+extern const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits;
+// Whether duplicative visits should be ignored for local history
+// prefix-suggest. A duplicative visit is a visit to the same search term in an
+// interval smaller than kAutocompleteDuplicateVisitIntervalThreshold.
+extern const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits;
+
+// Short bookmarks.
+// Determine whether bookmarks should look for exact matches only or prefix
+// matches as well when the input is short.
+bool IsShortBookmarkSuggestionsEnabled();
+bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled();
+// Returns the minimum input length to enable prefix matches.
+size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold();
+// If true, when applicable, the feature will be logged as triggered but won't
+// affect omnibox results.
+extern const base::FeatureParam<bool>
+    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual;
+extern const base::FeatureParam<int>
+    kShortBookmarkSuggestionsByTotalInputLengthThreshold;
+
+// Bookmark paths.
+// Parameter names used for bookmark path variations that determine whether
+// bookmark suggestion texts will contain the title, URL, and/or path.
+extern const base::FeatureParam<std::string> kBookmarkPathsCounterfactual;
+extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle;
+extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl;
+extern const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle;
+extern const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl;
+
+// Shortcut Expanding.
+bool IsShortcutExpandingEnabled();
+
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionShowAdditionalText();
@@ -492,56 +539,12 @@ extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompletePreferUrlsOverPrefixes;
 
-// Bookmark paths.
-// Parameter names used for bookmark path variations that determine whether
-// bookmark suggestion texts will contain the title, URL, and/or path.
-extern const base::FeatureParam<std::string> kBookmarkPathsCounterfactual;
-extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle;
-extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl;
-extern const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle;
-extern const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl;
-
-// Short bookmarks.
-// Determine whether bookmarks should look for exact matches only or prefix
-// matches as well when the input is short.
-bool IsShortBookmarkSuggestionsEnabled();
-bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled();
-// Returns the minimum input length to enable prefix matches.
-size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold();
-// If true, when applicable, the feature will be logged as triggered but won't
-// affect omnibox results.
-extern const base::FeatureParam<bool>
-    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual;
-extern const base::FeatureParam<int>
-    kShortBookmarkSuggestionsByTotalInputLengthThreshold;
-
-// Shortcut Expanding.
-bool IsShortcutExpandingEnabled();
-
-// Determines the relevance score for the local history zero-prefix suggestions.
-extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
-
-// Whether the same AutocompleteController instance used by the omnibox should
-// be used to prefetch zero-prefix suggestions. For this to be true,
-// omnibox::kZeroSuggestPrefetching must also be true.
-// This is only checked on Android which uses ZeroSuggestPrefetcher by default,
-// which spins off a new throw-away AutocompleteController instance.
-bool UseSharedInstanceForZeroSuggestPrefetching();
-
-// Whether duplicative visits should be ignored for local history zero-suggest.
-// A duplicative visit is a visit to the same search term in an interval smaller
-// than kAutocompleteDuplicateVisitIntervalThreshold.
-extern const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits;
-// Whether duplicative visits should be ignored for local history
-// prefix-suggest. A duplicative visit is a visit to the same search term in an
-// interval smaller than kAutocompleteDuplicateVisitIntervalThreshold.
-extern const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits;
-
 // Specifies the relevance scores for the Site Search Starter Pack ACMatches
 // (e.g. @bookmarks, @history) provided by the Builtin Provider.
 extern const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore;
 
-// New params should be inserted above this comment and formatted as:
+// New params should be inserted above this comment. They should be ordered
+// consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.
 // - Optional: `bool Is[FeatureName]Enabled();` helpers that check if the
 //   related features in `omnibox_features.h` are enabled.

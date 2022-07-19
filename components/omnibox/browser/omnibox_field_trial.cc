@@ -718,6 +718,110 @@ int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
 namespace OmniboxFieldTrial {
 
+// Local history zero-prefix (aka zero-suggest) and prefix suggestions:
+
+// The relevance score for remote zero-suggest ranges from 550-1400. A default
+// value of 500 places local history zero-suggest below the remote zero-suggest.
+const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore(
+    &omnibox::kAdjustLocalHistoryZeroSuggestRelevanceScore,
+    "LocalHistoryZeroSuggestRelevanceScore",
+    500);
+
+const base::Feature kUseSharedInstanceForZeroSuggestPrefetching{
+    "UseSharedInstanceForZeroSuggestPrefetching",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool UseSharedInstanceForZeroSuggestPrefetching() {
+  return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
+         base::FeatureList::IsEnabled(
+             kUseSharedInstanceForZeroSuggestPrefetching);
+}
+
+const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
+    &omnibox::kLocalHistorySuggestRevamp,
+    "ZeroSuggestIgnoreDuplicateVisits",
+    true);
+const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
+    &omnibox::kLocalHistorySuggestRevamp,
+    "PrefixSuggestIgnoreDuplicateVisits",
+    false);
+
+// Short bookmarks.
+
+bool IsShortBookmarkSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kShortBookmarkSuggestions);
+}
+
+bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled() {
+  return base::FeatureList::IsEnabled(
+             omnibox::kShortBookmarkSuggestionsByTotalInputLength) ||
+         (IsRichAutocompletionEnabled() &&
+          (kRichAutocompletionAutocompleteTitles.Get() ||
+           kRichAutocompletionAutocompleteNonPrefixAll.Get()));
+}
+
+size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
+  // The rich autocompletion feature requires this feature to be enabled. If
+  // short bookmarks is enabled transitively; i.e. rich autocompletion is
+  // enabled, but short bookmarks isn't explicitly enabled, then use the rich
+  // autocompletion min char limit.
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kShortBookmarkSuggestionsByTotalInputLength) &&
+      IsRichAutocompletionEnabled()) {
+    if (kRichAutocompletionAutocompleteTitles.Get() &&
+        kRichAutocompletionAutocompleteNonPrefixAll.Get()) {
+      return std::min(kRichAutocompletionAutocompleteTitlesMinChar.Get(),
+                      kRichAutocompletionAutocompleteNonPrefixMinChar.Get());
+    } else if (kRichAutocompletionAutocompleteTitles.Get())
+      return kRichAutocompletionAutocompleteTitlesMinChar.Get();
+    else if (kRichAutocompletionAutocompleteNonPrefixAll.Get())
+      return kRichAutocompletionAutocompleteNonPrefixMinChar.Get();
+  }
+
+  return kShortBookmarkSuggestionsByTotalInputLengthThreshold.Get();
+}
+
+const base::FeatureParam<bool>
+    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual(
+        &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        "ShortBookmarkSuggestionsByTotalInputLengthCounterfactual",
+        false);
+
+const base::FeatureParam<int>
+    kShortBookmarkSuggestionsByTotalInputLengthThreshold(
+        &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
+        3);
+
+// Bookmark paths.
+
+const base::FeatureParam<std::string> kBookmarkPathsCounterfactual(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsCounterfactual",
+    "");
+const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiReplaceTitle",
+    false);
+const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiReplaceUrl",
+    false);
+const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiAppendAfterTitle",
+    false);
+const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiDynamicReplaceUrl",
+    false);
+
+// Shortcut Expanding
+
+bool IsShortcutExpandingEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kShortcutExpanding);
+}
+
 // Rich autocompletion.
 
 bool IsRichAutocompletionEnabled() {
@@ -787,110 +891,6 @@ const base::FeatureParam<bool>
         &omnibox::kRichAutocompletion,
         "RichAutocompletionAutocompletePreferUrlsOverPrefixes",
         false);
-
-// Bookmark paths.
-
-const base::FeatureParam<std::string> kBookmarkPathsCounterfactual(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsCounterfactual",
-    "");
-const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiReplaceTitle",
-    false);
-const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiReplaceUrl",
-    false);
-const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiAppendAfterTitle",
-    false);
-const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiDynamicReplaceUrl",
-    false);
-
-// Short bookmarks.
-
-bool IsShortBookmarkSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kShortBookmarkSuggestions);
-}
-
-bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled() {
-  return base::FeatureList::IsEnabled(
-             omnibox::kShortBookmarkSuggestionsByTotalInputLength) ||
-         (IsRichAutocompletionEnabled() &&
-          (kRichAutocompletionAutocompleteTitles.Get() ||
-           kRichAutocompletionAutocompleteNonPrefixAll.Get()));
-}
-
-size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
-  // The rich autocompletion feature requires this feature to be enabled. If
-  // short bookmarks is enabled transitively; i.e. rich autocompletion is
-  // enabled, but short bookmarks isn't explicitly enabled, then use the rich
-  // autocompletion min char limit.
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kShortBookmarkSuggestionsByTotalInputLength) &&
-      IsRichAutocompletionEnabled()) {
-    if (kRichAutocompletionAutocompleteTitles.Get() &&
-        kRichAutocompletionAutocompleteNonPrefixAll.Get()) {
-      return std::min(kRichAutocompletionAutocompleteTitlesMinChar.Get(),
-                      kRichAutocompletionAutocompleteNonPrefixMinChar.Get());
-    } else if (kRichAutocompletionAutocompleteTitles.Get())
-      return kRichAutocompletionAutocompleteTitlesMinChar.Get();
-    else if (kRichAutocompletionAutocompleteNonPrefixAll.Get())
-      return kRichAutocompletionAutocompleteNonPrefixMinChar.Get();
-  }
-
-  return kShortBookmarkSuggestionsByTotalInputLengthThreshold.Get();
-}
-
-const base::FeatureParam<bool>
-    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual(
-        &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
-        "ShortBookmarkSuggestionsByTotalInputLengthCounterfactual",
-        false);
-
-const base::FeatureParam<int>
-    kShortBookmarkSuggestionsByTotalInputLengthThreshold(
-        &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
-        "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
-        3);
-
-// Shortcut Expanding
-
-bool IsShortcutExpandingEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kShortcutExpanding);
-}
-
-// Local history zero-prefix (aka zero-suggest) and prefix suggestions:
-
-// The relevance score for remote zero-suggest ranges from 550-1400. A default
-// value of 500 places local history zero-suggest below the remote zero-suggest.
-const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore(
-    &omnibox::kAdjustLocalHistoryZeroSuggestRelevanceScore,
-    "LocalHistoryZeroSuggestRelevanceScore",
-    500);
-
-const base::Feature kUseSharedInstanceForZeroSuggestPrefetching{
-    "UseSharedInstanceForZeroSuggestPrefetching",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool UseSharedInstanceForZeroSuggestPrefetching() {
-  return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
-         base::FeatureList::IsEnabled(
-             kUseSharedInstanceForZeroSuggestPrefetching);
-}
-
-const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
-    &omnibox::kLocalHistorySuggestRevamp,
-    "ZeroSuggestIgnoreDuplicateVisits",
-    true);
-const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
-    &omnibox::kLocalHistorySuggestRevamp,
-    "PrefixSuggestIgnoreDuplicateVisits",
-    false);
 
 const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
     &omnibox::kSiteSearchStarterPack,
