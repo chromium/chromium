@@ -4,16 +4,31 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/component_updater/fake_cros_component_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
 namespace {
+
+const char kAccountIdEmail[] = "public-session@test.com";
 
 void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
   PrefService* prefs = g_browser_process->local_state();
@@ -171,6 +186,131 @@ class DemoSessionActiveDirectoryDeviceTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(DemoSessionActiveDirectoryDeviceTest, NotDemoMode) {
   CheckNoDemoMode();
 }
+
+/* ============================ Demo Login Tests =============================*/
+
+// Extra parts for setting up the FakeCrOSComponentManager before the real one
+// has been initialized on the browser
+class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
+ public:
+  DemoLoginTestMainExtraParts() = default;
+  DemoLoginTestMainExtraParts(const DemoLoginTestMainExtraParts&) = delete;
+  DemoLoginTestMainExtraParts& operator=(const DemoLoginTestMainExtraParts&) =
+      delete;
+
+  void PostEarlyInitialization() override {
+    auto cros_component_manager =
+        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
+    cros_component_manager->set_supported_components({"demo-mode-app"});
+    cros_component_manager->ResetComponentState(
+        "demo-mode-app",
+        component_updater::FakeCrOSComponentManager::ComponentInfo(
+            component_updater::CrOSComponentManager::Error::NONE,
+            base::FilePath("/dev/null"),
+            base::FilePath("/run/imageloader/demo-mode-app")));
+
+    platform_part_test_api_ =
+        std::make_unique<BrowserProcessPlatformPartTestApi>(
+            g_browser_process->platform_part());
+    platform_part_test_api_->InitializeCrosComponentManager(
+        std::move(cros_component_manager));
+  }
+
+  void PostMainMessageLoopRun() override {
+    platform_part_test_api_->ShutdownCrosComponentManager();
+    platform_part_test_api_.reset();
+  }
+
+ private:
+  std::unique_ptr<BrowserProcessPlatformPartTestApi> platform_part_test_api_;
+};
+
+// Tests that involve asserting state about actual logged-in Demo sessions
+//
+// Currently this fixture enables the Demo SWA by default - consider extracting
+// this feature enablement into a subclass if non-SWA tests are needed
+class DemoSessionLoginTest : public LoginManagerTest,
+                             public LocalStateMixin::Delegate,
+                             public user_manager::UserManager::Observer {
+ public:
+  DemoSessionLoginTest() {
+    login_manager_mixin_.set_should_launch_browser(true);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kDemoModeSWA);
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+        ->AddParts(std::make_unique<DemoLoginTestMainExtraParts>());
+    LoginManagerTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+
+  void SetUpOnMainThread() override {
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_mixin_.RequestDevicePolicyUpdate();
+
+    enterprise_management::DeviceLocalAccountsProto* const
+        device_local_accounts = device_policy_update->policy_payload()
+                                    ->mutable_device_local_accounts();
+    enterprise_management::DeviceLocalAccountInfoProto* const account =
+        device_local_accounts->add_account();
+    account->set_account_id(kAccountIdEmail);
+    account->set_type(enterprise_management::DeviceLocalAccountInfoProto::
+                          ACCOUNT_TYPE_PUBLIC_SESSION);
+    device_local_accounts->set_auto_login_id(kAccountIdEmail);
+    device_policy_update.reset();
+
+    // Populate device_local_account policy cache with empty proto so policy
+    // isn't marked as missing for the user, which causes
+    // ExistingUserController::LoginAsPublicSession to wait endlessly on the
+    // policy to be available. In browsertests, the device_local_account_policy
+    // is never loaded again after initial device policy storage, likely because
+    // policy fetches fail.
+    std::unique_ptr<ScopedUserPolicyUpdate> device_local_account_policy_update =
+        device_state_mixin_.RequestDeviceLocalAccountPolicyUpdate(
+            kAccountIdEmail);
+    device_local_account_policy_update.reset();
+
+    LoginManagerTest::SetUpOnMainThread();
+  }
+
+ protected:
+  // LocalStateMixin::Delegate
+  void SetUpLocalState() override {
+    SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
+  }
+
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  DeviceStateMixin device_state_mixin_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  login_manager_mixin_.WaitForActiveSession();
+}
+
+// Demo SWA is currently only included for unofficial builds
+//
+// TODO(b/238771784): Change this check to IS_CHROME_BRANDING (and eventually
+// remove check entirely when we prepare to launch)
+#if !defined(OFFICIAL_BUILD)
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  login_manager_mixin_.WaitForActiveSession();
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  ash::FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Verify that the Demo SWA has been opened
+  Browser* demo_app_browser =
+      ash::FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
+  ASSERT_TRUE(demo_app_browser);
+}
+#endif  // !defined(OFFICIAL_BUILD)
 
 }  // namespace
 }  // namespace ash
