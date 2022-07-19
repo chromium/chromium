@@ -770,11 +770,18 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
   using file_manager::VolumeManager;
   VolumeManager* const volume_manager =
       VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
-  base::WeakPtr<Volume> volume =
-      volume_manager->FindVolumeById(params->volume_id);
-  if (!volume.get())
-    return RespondNow(Error("ConfigureVolume: volume with ID * not found.",
-                            params->volume_id));
+  DCHECK(volume_manager);
+
+  std::string volume_id = params->volume_id;
+  volume_manager->ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(&volume_id);
+
+  const base::WeakPtr<Volume> volume =
+      volume_manager->FindVolumeById(volume_id);
+  if (!volume) {
+    return RespondNow(
+        Error("ConfigureVolume: volume with ID * not found.", volume_id));
+  }
+
   if (!volume->configurable())
     return RespondNow(Error("Volume not configurable."));
 

@@ -408,6 +408,7 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
 
   volume->is_parent_ = true;
   volume->is_read_only_ = !file_system_info.writable();
+  volume->configurable_ = file_system_info.configurable();
   volume->icon_set_ = file_system_info.icon_set();
 
   // "fusebox" prefix the original FSP volume id.
