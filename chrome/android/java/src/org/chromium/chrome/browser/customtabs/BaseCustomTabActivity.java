@@ -160,7 +160,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 this::isInOverviewMode, this::isWarmOnResume, /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 () -> mToolbarCoordinator, () -> mNavigationController, () -> mIntentDataProvider,
-                () -> mDelegateFactory.getEphemeralTabCoordinator());
+                () -> mDelegateFactory.getEphemeralTabCoordinator(), mBackPressManager);
         // clang-format on
         return mBaseCustomTabRootUiCoordinator;
     }
@@ -408,7 +408,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean handleBackPressed() {
-        // TODO(1091411): Find a better mechanism for back-press handling for features.
         if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
             return true;
         }

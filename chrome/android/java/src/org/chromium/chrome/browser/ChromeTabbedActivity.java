@@ -2257,12 +2257,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public boolean handleBackPressed() {
         if (!mUIWithNativeInitialized) return false;
 
-        // TODO(1091411): Find a better mechanism for back-press handling for features.
-        if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
-            BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
-            return true;
-        }
-
         if (mTabModalHandler.onBackPressed()) {
             BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
             return true;
@@ -2354,13 +2348,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void initializeBackPressHandlers() {
-        BackPressHandler mBottomSheetBackPressHandler =
-                mRootUiCoordinator.getBottomSheetController().getBottomSheetBackPressHandler();
-        if (mBottomSheetBackPressHandler != null) {
-            mBackPressManager.addHandler(
-                    mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
-        }
-
         if (mReturnToChromeBackPressHandler == null) {
             mReturnToChromeBackPressHandler =
                     new ReturnToChromeBackPressHandler(mLayoutStateProviderSupplier,

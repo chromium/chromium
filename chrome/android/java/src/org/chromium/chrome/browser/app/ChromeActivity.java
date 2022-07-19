@@ -2250,6 +2250,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return;
         }
 
+        if (mRootUiCoordinator.getBottomSheetController() != null
+                && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
+            BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
+            return;
+        }
+
         handleBackPressed();
     }
 

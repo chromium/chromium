@@ -624,8 +624,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /**
      * Update the supplier to hold true when the sheet is in a valid state and holds sheet content,
      * and when there are no suppression tokens, false otherwise.
-     * TODO (crbug.com/1279941): Account for sheet content back press handling and #isSheetOpen
-     * after sheet content refactor.
      */
     private void updateBackPressStateChangedSupplier() {
         mBackPressStateChangedSupplier.set(mBottomSheet != null && !mSuppressionTokens.hasTokens()
