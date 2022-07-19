@@ -835,9 +835,16 @@ void AutocompleteController::UpdateResult(
   if (perform_tab_match)
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
 
-  // Sort the matches and trim to a small number of "best" matches.
+  // Sort the matches and trim to a small number of "best" matches. Do this only
+  // if preservation is enabled for sync/async updates, and this is a sync/async
+  // update.
   const AutocompleteMatch* preserve_default_match = nullptr;
-  if (!in_start_ && last_default_match) {
+  if ((in_start_
+           ? OmniboxFieldTrial::
+                 kAutocompleteStabilityPreserveDefaultForSyncUpdates.Get()
+           : OmniboxFieldTrial::
+                 kAutocompleteStabilityPreserveDefaultForAsyncUpdates.Get()) &&
+      last_default_match) {
     preserve_default_match = &last_default_match.value();
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
@@ -860,6 +867,13 @@ void AutocompleteController::UpdateResult(
     // StartExpireTimer.
     result_.TransferOldMatches(input_, &old_matches_to_reuse,
                                template_url_service_);
+    if (OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
+            .Get()) {
+      result_.SortAndCull(input_, template_url_service_,
+                          preserve_default_match);
+    } else {
+      result_.SortAndCull(input_, template_url_service_);
+    }
   }
 
   // Will log metrics for how many matches changed. Will also log timing metrics

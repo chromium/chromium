@@ -718,6 +718,24 @@ int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
 namespace OmniboxFieldTrial {
 
+// Autocomplete stability.
+
+const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultAfterTransfer(
+        &omnibox::kAutocompleteStability,
+        "AutocompleteStabilityPreserveDefaultAfterTransfer",
+        false);
+const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultForSyncUpdates(
+        &omnibox::kAutocompleteStability,
+        "AutocompleteStabilityPreserveDefaultForSyncUpdates",
+        false);
+const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultForAsyncUpdates(
+        &omnibox::kAutocompleteStability,
+        "AutocompleteStabilityPreserveDefaultForAsyncUpdates",
+        true);
+
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
 // The relevance score for remote zero-suggest ranges from 550-1400. A default

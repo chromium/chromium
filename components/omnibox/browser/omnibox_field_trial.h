@@ -23,7 +23,7 @@ namespace base {
 class Time;
 class TimeDelta;
 struct Feature;
-}
+}  // namespace base
 
 // The set of parameters customizing the HUP scoring.
 struct HUPScoringParams {
@@ -468,6 +468,23 @@ extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
 extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // `FeatureParam`s
+
+// Autocomplete stability.
+// When providers update their matches, the aggregated matches for the current
+// input are sorted, then merged with the matches from the previous input
+// (`TransferOldMatches()`), then resorted. If enabled, both sorts preserve the
+// default suggestion. Otherwise, only the first sort of the pre-merged matches
+// preserves the default.
+extern const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultAfterTransfer;
+// Whether to preserve the default suggestion during sync updates.
+extern const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultForSyncUpdates;
+// Whether to preserve the default suggestion during async updates. It doesn't
+// make too much sense to enable preservation for sync but not async
+// updates. True by default.
+extern const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultForAsyncUpdates;
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 

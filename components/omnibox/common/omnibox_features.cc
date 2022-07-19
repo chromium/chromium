@@ -55,6 +55,13 @@ const base::Feature kOmniboxRemoveSuggestionsFromClipboard{
 const base::Feature kAndroidAuxiliarySearch{"AndroidAuxiliarySearch",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables various tweaks to `AutocompleteController` autocompletion twiddling
+// that may improve autocompletion stability. Feature params control which
+// tweaks specifically are enabled. Enabling this feature without params is a
+// no-op.
+const base::Feature kAutocompleteStability{"OmniboxAutocompleteStability",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Demotes the relevance scores when comparing suggestions based on the
 // suggestion's |AutocompleteMatchType| and the user's |PageClassification|.
 // This feature's main job is to contain the DemoteByType parameter.

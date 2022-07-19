@@ -224,8 +224,6 @@ void AutocompleteResult::TransferOldMatches(
     if (input.prevent_inline_autocomplete() && m.from_previous)
       m.SetAllowedToBeDefault(input);
   }
-
-  SortAndCull(input, template_url_service);
 }
 
 void AutocompleteResult::AppendMatches(const ACMatches& matches) {

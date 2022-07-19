@@ -279,6 +279,7 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(
   current_result.SortAndCull(input, template_url_service_.get());
   current_result.TransferOldMatches(input, &last_result,
                                     template_url_service_.get());
+  current_result.SortAndCull(input, template_url_service_.get());
 
   AssertResultMatches(current_result, expected, expected_size);
 }
