@@ -1205,15 +1205,20 @@ class XDesktop(Desktop):
     subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL)
 
-    # Monitor for any automatic resolution changes from the desktop
-    # environment.
-    args = [SCRIPT_PATH, "--watch-resolution", str(initial_size[0]),
-            str(initial_size[1])]
+    if USE_XORG_ENV_VAR not in os.environ:
+      # Monitor for any automatic resolution changes from the desktop
+      # environment. This is needed only for Xvfb sessions because Xvfb sets
+      # the first mode to be the maximum supported resolution, and some
+      # desktop-environments would mistakenly set this as the preferred mode,
+      # leading to a huge desktop with tiny text. With Xorg, the modes are
+      # all reasonably sized, so the problem doesn't occur.
+      args = [SCRIPT_PATH, "--watch-resolution", str(initial_size[0]),
+              str(initial_size[1])]
 
-    # It is not necessary to wait() on the process here, as this script's main
-    # loop will reap the exit-codes of all child processes.
-    subprocess.Popen(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                     stderr=subprocess.DEVNULL)
+      # It is not necessary to wait() on the process here, as this script's main
+      # loop will reap the exit-codes of all child processes.
+      subprocess.Popen(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
 
   def launch_desktop_session(self):
     # Start desktop session.
