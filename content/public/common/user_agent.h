@@ -24,6 +24,7 @@ const char kAndroid[] =
     "Safari/537.36";
 const char kUnifiedPlatformAndroid[] = "Linux; Android 10; K";
 const char kUnifiedPlatformCrOS[] = "X11; CrOS x86_64 14541.0.0";
+const char kUnifiedPlatformFuchsia[] = "Fuchsia";
 const char kUnifiedPlatformLinux[] = "X11; Linux x86_64";
 const char kUnifiedPlatformMacOS[] = "Macintosh; Intel Mac OS X 10_15_7";
 const char kUnifiedPlatformWindows[] = "Windows NT 10.0; Win64; x64";

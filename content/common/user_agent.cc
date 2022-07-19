@@ -56,8 +56,12 @@ std::string GetUnifiedPlatform() {
   return frozen_user_agent_strings::kUnifiedPlatformMacOS;
 #elif BUILDFLAG(IS_WIN)
   return frozen_user_agent_strings::kUnifiedPlatformWindows;
-#else
+#elif BUILDFLAG(IS_FUCHSIA)
+  return frozen_user_agent_strings::kUnifiedPlatformFuchsia;
+#elif BUILDFLAG(IS_LINUX)
   return frozen_user_agent_strings::kUnifiedPlatformLinux;
+#else
+#error Unsupported platform
 #endif
 }
 
