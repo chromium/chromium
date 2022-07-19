@@ -515,7 +515,8 @@ bool VirtualFidoDevice::Sign(crypto::ECPrivateKey* private_key,
 
 absl::optional<std::vector<uint8_t>>
 VirtualFidoDevice::GenerateAttestationCertificate(
-    bool individual_attestation_requested) const {
+    bool individual_attestation_requested,
+    bool include_transports) const {
   std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
   constexpr uint32_t kAttestationCertSerialNumber = 1;
@@ -560,10 +561,13 @@ VirtualFidoDevice::GenerateAttestationCertificate(
       0x00,  // zero bytes long
   };
 
-  const std::vector<net::x509_util::Extension> extensions = {
-      {kTransportTypesOID, /*critical=*/false, kTransportTypesContents},
+  std::vector<net::x509_util::Extension> extensions = {
       {kBasicContraintsOID, /*critical=*/true, kBasicContraintsContents},
   };
+  if (include_transports) {
+    extensions.push_back(
+        {kTransportTypesOID, /*critical=*/false, kTransportTypesContents});
+  }
 
   // https://w3c.github.io/webauthn/#sctn-packed-attestation-cert-requirements
   // Make the certificate expire about 20 years from now.
