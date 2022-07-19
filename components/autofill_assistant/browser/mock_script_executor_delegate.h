@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill_assistant/browser/client_settings.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -16,7 +17,6 @@
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
-#include "components/autofill_assistant/browser/website_login_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"

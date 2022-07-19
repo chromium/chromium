@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/save_password_leak_detection_delegate.h"
+#include "components/autofill_assistant/browser/public/password_change/save_password_leak_detection_delegate.h"
 
 #include "base/bind.h"
 #include "base/timer/timer.h"
-#include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/public/password_change/features.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -30,7 +30,8 @@ void SavePasswordLeakDetectionDelegate::StartLeakCheck(
     Callback callback,
     base::TimeDelta timeout) {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword)) {
+          password_change::features::
+              kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword)) {
     std::move(callback).Run(
         LeakDetectionStatus(LeakDetectionStatusCode::DISABLED_FOR_APC), false);
     return;

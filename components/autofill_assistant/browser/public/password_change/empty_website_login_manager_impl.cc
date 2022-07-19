@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/empty_website_login_manager_impl.h"
+#include "components/autofill_assistant/browser/public/password_change/empty_website_login_manager_impl.h"
 
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

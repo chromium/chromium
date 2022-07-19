@@ -57,6 +57,7 @@ static_library("android") {
     "//components/autofill_assistant/browser:autofill_assistant_enums_java",
     "//components/autofill_assistant/browser:proto",
     "//components/autofill_assistant/browser/public",
+    "//components/autofill_assistant/browser/public:password_change",
     "//components/autofill_assistant/content/browser",
     "//components/image_fetcher:android",
     "//components/keyed_service/content",

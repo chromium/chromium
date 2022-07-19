@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/user_data.h"
-#include "components/autofill_assistant/browser/website_login_manager.h"
 
 namespace autofill_assistant {
 

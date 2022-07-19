@@ -903,6 +903,7 @@ if (!is_ios) {
         "//components/autofill_assistant/browser:proto",
         "//components/autofill_assistant/browser/devtools:devtools",
         "//components/autofill_assistant/browser/devtools:gen_devtools_client_api",
+        "//components/autofill_assistant/browser/public:password_change",
         "//components/autofill_assistant/browser/public:public",
         "//components/autofill_assistant/content/common",
         "//components/autofill_assistant/content/common:mojo_interfaces",

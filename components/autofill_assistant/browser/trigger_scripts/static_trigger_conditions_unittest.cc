@@ -5,7 +5,7 @@
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 
 #include "base/containers/flat_map.h"

@@ -8,8 +8,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill_assistant/browser/features.h"
-#include "components/autofill_assistant/browser/save_password_leak_detection_delegate.h"
+#include "components/autofill_assistant/browser/public/password_change/features.h"
+#include "components/autofill_assistant/browser/public/password_change/save_password_leak_detection_delegate.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
@@ -79,7 +79,9 @@ class SavePasswordLeakDetectionDelegateTest : public testing::Test {
  public:
   SavePasswordLeakDetectionDelegateTest() {
     features_.InitWithFeatures(
-        {features::kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword}, {});
+        {password_change::features::
+             kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword},
+        {});
 
     auto mock_factory =
         std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
@@ -159,7 +161,8 @@ TEST_F(SavePasswordLeakDetectionDelegateTest, SafeBrowsingOff) {
 TEST_F(SavePasswordLeakDetectionDelegateTest, APCLeakCheckDisabled) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitWithFeatures(
-      {}, {features::kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword});
+      {}, {password_change::features::
+               kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword});
   const PasswordForm form = CreateTestForm();
 
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();

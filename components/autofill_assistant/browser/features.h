@@ -15,8 +15,6 @@ namespace features {
 // All features in alphabetical order.
 extern const base::Feature kAutofillAssistant;
 extern const base::Feature kAutofillAssistantAnnotateDom;
-extern const base::Feature
-    kAutofillAssistantAPCLeakCheckOnSaveSubmittedPassword;
 extern const base::Feature kAutofillAssistantChromeEntry;
 extern const base::Feature kAutofillAssistantDesktop;
 extern const base::Feature kAutofillAssistantDialogOnboarding;

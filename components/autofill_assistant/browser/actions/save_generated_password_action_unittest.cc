@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"

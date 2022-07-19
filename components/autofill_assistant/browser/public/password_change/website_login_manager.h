@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEBSITE_LOGIN_MANAGER_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEBSITE_LOGIN_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_PASSWORD_CHANGE_WEBSITE_LOGIN_MANAGER_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_PASSWORD_CHANGE_WEBSITE_LOGIN_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/autofill_assistant/browser/save_password_leak_detection_delegate.h"
+#include "components/autofill_assistant/browser/public/password_change/save_password_leak_detection_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -125,4 +125,4 @@ class WebsiteLoginManager {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEBSITE_LOGIN_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_PASSWORD_CHANGE_WEBSITE_LOGIN_MANAGER_H_

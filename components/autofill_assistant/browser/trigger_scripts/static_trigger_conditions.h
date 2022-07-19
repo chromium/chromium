@@ -10,9 +10,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
-#include "components/autofill_assistant/browser/website_login_manager.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {

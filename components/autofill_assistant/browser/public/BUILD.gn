@@ -36,6 +36,31 @@ static_library("public") {
   ]
 }
 
+static_library("password_change") {
+  sources = [
+    "password_change/empty_website_login_manager_impl.cc",
+    "password_change/empty_website_login_manager_impl.h",
+    "password_change/features.cc",
+    "password_change/features.h",
+    "password_change/save_password_leak_detection_delegate.cc",
+    "password_change/save_password_leak_detection_delegate.h",
+    "password_change/website_login_manager.cc",
+    "password_change/website_login_manager.h",
+    "password_change/website_login_manager_impl.cc",
+    "password_change/website_login_manager_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/leak_detection:leak_detection",
+    "//components/version_info:channel",
+    "//content/public/browser",
+  ]
+}
+
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "external_action.proto" ]
@@ -66,13 +91,46 @@ static_library("unit_test_support") {
     "mock_headless_script_controller.h",
     "mock_runtime_manager.cc",
     "mock_runtime_manager.h",
+    "password_change/mock_website_login_manager.cc",
+    "password_change/mock_website_login_manager.h",
   ]
 
   deps = [
+    ":password_change",
     ":public",
     "//base",
+    "//components/password_manager/core/browser",
     "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "password_change/save_password_leak_detection_delegate_unittest.cc",
+    "password_change/website_login_manager_impl_unittest.cc",
+  ]
+  deps = [
+    ":password_change",
+    ":public",
+    ":unit_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill_assistant/browser/public:unit_test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/leak_detection:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/re2",
   ]
 }

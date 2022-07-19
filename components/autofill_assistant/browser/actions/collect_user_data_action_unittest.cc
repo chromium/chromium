@@ -26,7 +26,7 @@
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/ukm_test_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"

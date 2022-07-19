@@ -37,11 +37,11 @@ class WebContents;
 namespace autofill_assistant {
 
 class Service;
-class WebController;
-struct ClientSettings;
 class TriggerContext;
-class WebsiteLoginManager;
 class UserModel;
+class WebController;
+class WebsiteLoginManager;
+struct ClientSettings;
 
 class ScriptExecutorDelegate {
  public:
