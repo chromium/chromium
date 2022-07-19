@@ -127,10 +127,4 @@ const base::Feature kV8SlowHistogramsSparkplugAndroid{
 const base::Feature kV8SlowHistogramsScriptAblation{
     "V8SlowHistogramsScriptAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the experimental V8 sandbox. This is called V8VirtualMemoryCage
-// instead of V8Sandbox for historical reasons.
-// TODO(1218005) remove this once the finch trial has ended.
-const base::Feature kV8VirtualMemoryCage{"V8VirtualMemoryCage",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features

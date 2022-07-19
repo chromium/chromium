@@ -45,7 +45,6 @@ GIN_EXPORT extern const base::Feature kV8SparkplugNeedsShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
 GIN_EXPORT extern const base::Feature kV8Turboprop;
 GIN_EXPORT extern const base::Feature kV8UseMapSpace;
-GIN_EXPORT extern const base::Feature kV8VirtualMemoryCage;
 
 }  // namespace features
 

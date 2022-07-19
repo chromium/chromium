@@ -205,27 +205,15 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
   }
 };
 #endif  // V8_ENABLE_SANDBOX
-
-base::SharedMemoryMapper* CreateSharedMemoryMapperForArrayBuffers() {
-#if V8_ENABLE_SANDBOX
-  static ArrayBufferSharedMemoryMapper instance;
-  // Currently, it is still possible for the sandbox to be disabled at runtime
-  // (by not initializing it), in which case the default shared memory mapper
-  // must be used. In the future, this will no longer be allowed and this helper
-  // function can then be removed entirely.
-  // TODO(saelo) remove once sandbox initialization is mandatory.
-  if (v8::V8::GetSandboxSizeInBytes() > 0)
-    return &instance;
-  else
-#endif
-    return base::SharedMemoryMapper::GetDefaultInstance();
-}
 }  // namespace
 
 base::SharedMemoryMapper* GetSharedMemoryMapperForArrayBuffers() {
-  static base::SharedMemoryMapper* mapper =
-      CreateSharedMemoryMapperForArrayBuffers();
-  return mapper;
+#if V8_ENABLE_SANDBOX
+  static ArrayBufferSharedMemoryMapper instance;
+  return &instance;
+#else
+  return base::SharedMemoryMapper::GetDefaultInstance();
+#endif
 }
 
 }  // namespace gin
