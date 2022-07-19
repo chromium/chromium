@@ -182,6 +182,12 @@ RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
          ColorFloatToRGBAByte(g) << 8 | ColorFloatToRGBAByte(b);
 }
 
+SkColor4f Color::toSkColor4f() {
+  float r, g, b, a;
+  GetRGBA(r, g, b, a);
+  return SkColor4f{r, g, b, a};
+}
+
 // Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
 RGBA32 MakeRGBAFromHSLA(double hue,
                         double saturation,

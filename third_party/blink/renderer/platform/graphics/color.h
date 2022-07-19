@@ -30,11 +30,12 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-
-typedef uint32_t SkColor;
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
+// TODO(crbug.com/1308932): Blink classes should use SkColor4f directly,
+// ulitmately this class should be deleted.
 class Color;
 
 typedef unsigned RGBA32;  // RGBA quadruplet
@@ -95,6 +96,12 @@ class PLATFORM_EXPORT Color {
     RGBA32 color = a << 24 | r << 16 | g << 8 | b;
     return Color(color);
   }
+  // TODO(crbug.com/1308932): These two functions are just helpers for while
+  // we're converting platform/graphics to float color
+  static Color FromSkColor4f(SkColor4f fc) {
+    return MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA);
+  }
+  SkColor4f toSkColor4f();
 
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
