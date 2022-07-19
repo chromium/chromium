@@ -127,7 +127,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFact
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.media.PictureInPictureController;
+import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
@@ -317,8 +317,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // Observes when sync becomes ready to create the mContextReporter.
     private SyncService.SyncStateChangedListener mSyncStateChangedListener;
 
-    // The PictureInPictureController is initialized lazily https://crbug.com/729738.
-    private PictureInPictureController mPictureInPictureController;
+    // The FullscreenVideoPictureInPictureController is initialized lazily https://crbug.com/729738.
+    private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
 
     private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
             new ObservableSupplierImpl<>();
@@ -1157,20 +1157,21 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeSessionState.setDarkModeState(appIsInNightMode, systemIsInNightMode);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ensurePictureInPictureController();
+            ensureFullscreenVideoPictureInPictureController();
         }
-        if (mPictureInPictureController != null) {
-            mPictureInPictureController.onFrameworkExitedPictureInPicture();
+        if (mFullscreenVideoPictureInPictureController != null) {
+            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
         VrModuleProvider.getDelegate().maybeRegisterVrEntryHook(this);
 
         getManualFillingComponent().onResume();
     }
 
-    private void ensurePictureInPictureController() {
-        if (mPictureInPictureController == null) {
-            mPictureInPictureController = new PictureInPictureController(
-                    this, getActivityTabProvider(), getFullscreenManager());
+    private void ensureFullscreenVideoPictureInPictureController() {
+        if (mFullscreenVideoPictureInPictureController == null) {
+            mFullscreenVideoPictureInPictureController =
+                    new FullscreenVideoPictureInPictureController(
+                            this, getActivityTabProvider(), getFullscreenManager());
         }
     }
 
@@ -1183,8 +1184,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Can be in finishing state. No need to attempt PIP.
         if (isActivityFinishingOrDestroyed()) return;
 
-        ensurePictureInPictureController();
-        mPictureInPictureController.attemptPictureInPicture();
+        ensureFullscreenVideoPictureInPictureController();
+        mFullscreenVideoPictureInPictureController.attemptPictureInPicture();
         // The attempt might not be successful.  If it is, then `onPictureInPictureModeChanged` will
         // let us know later.  Note that the activity might report that it is in PictureInPicture
         // mode at any point after this, which might be before we finish setup after receiving
@@ -1200,12 +1201,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onPictureInPictureModeChanged(boolean inPicture, Configuration newConfig) {
         super.onPictureInPictureModeChanged(inPicture, newConfig);
         if (inPicture) {
-            ensurePictureInPictureController();
-            mPictureInPictureController.onEnteredPictureInPictureMode();
+            ensureFullscreenVideoPictureInPictureController();
+            mFullscreenVideoPictureInPictureController.onEnteredPictureInPictureMode();
             mLastPictureInPictureModeForTesting = true;
-        } else if (mPictureInPictureController != null) {
+        } else if (mFullscreenVideoPictureInPictureController != null) {
             mLastPictureInPictureModeForTesting = false;
-            mPictureInPictureController.onFrameworkExitedPictureInPicture();
+            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
     }
 
@@ -1258,8 +1259,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void onNewIntentWithNative(Intent intent) {
-        if (mPictureInPictureController != null) {
-            mPictureInPictureController.onFrameworkExitedPictureInPicture();
+        if (mFullscreenVideoPictureInPictureController != null) {
+            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
 
         super.onNewIntentWithNative(intent);

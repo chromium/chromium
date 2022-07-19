@@ -44,7 +44,7 @@ import java.util.List;
  * Do not inline to prevent class verification errors on pre-O runtimes.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-public class PictureInPictureController {
+public class FullscreenVideoPictureInPictureController {
     private static final String TAG = "VideoPersist";
 
     // Metrics
@@ -126,8 +126,8 @@ public class PictureInPictureController {
     /** Should we notify the framework if Picture in Picture should be allowed? */
     private final boolean mListenForAutoEnterability;
 
-    public PictureInPictureController(Activity activity, ActivityTabProvider activityTabProvider,
-            FullscreenManager fullscreenManager) {
+    public FullscreenVideoPictureInPictureController(Activity activity,
+            ActivityTabProvider activityTabProvider, FullscreenManager fullscreenManager) {
         mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
@@ -251,8 +251,8 @@ public class PictureInPictureController {
         try {
             if (!mActivity.enterPictureInPictureMode(builder.build())) return;
         } catch (IllegalStateException | IllegalArgumentException e) {
-            Log.e(TAG, "Error entering PiP with bounds (%d, %d): %s",
-                    bounds.width(), bounds.height(), e);
+            Log.e(TAG, "Error entering PiP with bounds (%d, %d): %s", bounds.width(),
+                    bounds.height(), e);
             return;
         }
     }
@@ -295,8 +295,8 @@ public class PictureInPictureController {
         Rect rect = webContents.getFullscreenVideoSize();
         if (rect == null || rect.width() == 0 || rect.height() == 0) return null;
 
-        float videoAspectRatio = MathUtils.clamp(rect.width() / (float) rect.height(),
-                MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
+        float videoAspectRatio = MathUtils.clamp(
+                rect.width() / (float) rect.height(), MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
 
         int windowWidth = activity.getWindow().getDecorView().getWidth();
         int windowHeight = activity.getWindow().getDecorView().getHeight();

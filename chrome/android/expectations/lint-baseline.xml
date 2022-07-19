@@ -466,7 +466,7 @@
     <issue
         id="NewApi"
         message="Call requires API level 26 (current min is 23): `onFrameworkExitedPictureInPicture`"
-        errorLine1="            mPictureInPictureController.onFrameworkExitedPictureInPicture();"
+        errorLine1="            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
@@ -476,8 +476,8 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 23): `PictureInPictureController`"
-        errorLine1="            mPictureInPictureController = new PictureInPictureController("
+        message="Call requires API level 26 (current min is 23): `FullscreenVideoPictureInPictureController`"
+        errorLine1="            mFullscreenVideoPictureInPictureController = new FullscreenVideoPictureInPictureController("
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
@@ -488,7 +488,7 @@
     <issue
         id="NewApi"
         message="Call requires API level 26 (current min is 23): `attemptPictureInPicture`"
-        errorLine1="        mPictureInPictureController.attemptPictureInPicture();"
+        errorLine1="        mFullscreenVideoPictureInPictureController.attemptPictureInPicture();"
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
@@ -499,7 +499,7 @@
     <issue
         id="NewApi"
         message="Call requires API level 26 (current min is 23): `onFrameworkExitedPictureInPicture`"
-        errorLine1="            mPictureInPictureController.onFrameworkExitedPictureInPicture();"
+        errorLine1="            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
@@ -1679,7 +1679,7 @@
         errorLine1="            ApiHelperForS.setAutoEnterEnabled(builder, true);"
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/media/PictureInPictureController.java"
+            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
             line="426"
             column="27"/>
     </issue>
@@ -1690,7 +1690,7 @@
         errorLine1="            ApiHelperForS.setAutoEnterEnabled(builder, false);"
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/media/PictureInPictureController.java"
+            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
             line="428"
             column="27"/>
     </issue>

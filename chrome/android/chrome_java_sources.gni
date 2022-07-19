@@ -726,7 +726,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java",
   "java/src/org/chromium/chrome/browser/media/PictureInPicture.java",
   "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
-  "java/src/org/chromium/chrome/browser/media/PictureInPictureController.java",
+  "java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java",
   "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerDelegate.java",
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationManager.java",

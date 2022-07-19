@@ -82,7 +82,7 @@
 -org.chromium.chrome.browser.banners.AppBannerManagerTest.testModalNativeAppBannerCanBeTriggeredMultipleTimesCustomTab
 
 # crbug.com/1063971
--org.chromium.chrome.browser.media.ui.PictureInPictureControllerTest.testExitPipOnNavigation
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitPipOnNavigation
 
 # crbug.com/1036545
 -org.chromium.chrome.browser.suggestions.tile.TileGroupTest.testDismissTileUndo

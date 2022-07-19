@@ -38,13 +38,13 @@ import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /**
- * Tests for PictureInPictureController and related methods.
+ * Tests for FullscreenVideoPictureInPictureController and related methods.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
 @RequiresApi(Build.VERSION_CODES.O)
-public class PictureInPictureControllerTest {
+public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";
     private static final String VIDEO_ID = "video";
@@ -104,8 +104,9 @@ public class PictureInPictureControllerTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @FlakyTest(message = "https://crbug.com/1211930/#c10")
     public void testExitPipOnNavigation() throws Throwable {
-        testExitOn(() -> JavaScriptUtils.executeJavaScript(getWebContents(),
-                "window.location.href = 'https://www.example.com/';"));
+        testExitOn(()
+                           -> JavaScriptUtils.executeJavaScript(getWebContents(),
+                                   "window.location.href = 'https://www.example.com/';"));
     }
 
     @Test
