@@ -1416,6 +1416,7 @@ crbug.com/1164474 external/wpt/css/css-sizing/aspect-ratio/table-element-001.htm
 
 ### external/wpt/css/css-tables/
 crbug.com/613753 external/wpt/css/css-tables/border-spacing-included-in-sizes-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-tables/collapsed-scroll-overflow.html [ Failure ]
 crbug.com/1108224 external/wpt/css/css-tables/min-max-size-table-content-box.html [ Failure ]
 crbug.com/377847 external/wpt/css/css-tables/subpixel-collapsed-borders-003.html [ Failure ]
 crbug.com/377847 external/wpt/css/css-tables/subpixel-table-cell-height-001.html [ Failure ]
