@@ -291,6 +291,10 @@ TEST_F(CaptureControllerTest, UpdateCaptureDestroysOldCaptureWindow) {
   ScopedCaptureClient::TestApi(second_capture_client_.get())
       .SetDelegate(&delegate2);
 
+  // Since delegate iteration order is not deterministic, use this to assert
+  // that the two scenarios below have opposite order.
+  aura::Window* first_old_capture = nullptr;
+
   {
     // Create a window inside the WindowEventDispatcher.
     std::unique_ptr<aura::Window> capture_window(
@@ -305,7 +309,7 @@ TEST_F(CaptureControllerTest, UpdateCaptureDestroysOldCaptureWindow) {
     aura::WindowTracker tracker({capture_window.get()});
     CaptureController::Get()->SetCapture(nullptr);
     EXPECT_EQ(delegate.old_capture(), capture_window.get());
-    EXPECT_EQ(delegate2.old_capture(), nullptr);
+    first_old_capture = delegate2.old_capture();
     EXPECT_FALSE(tracker.Contains(capture_window.get()));
     if (!tracker.Contains(capture_window.get()))
       capture_window.release();
@@ -325,7 +329,7 @@ TEST_F(CaptureControllerTest, UpdateCaptureDestroysOldCaptureWindow) {
 
     aura::WindowTracker tracker({capture_window.get()});
     CaptureController::Get()->SetCapture(nullptr);
-    EXPECT_EQ(delegate.old_capture(), capture_window.get());
+    EXPECT_NE(delegate.old_capture(), first_old_capture);
     EXPECT_EQ(delegate2.old_capture(), capture_window.get());
     EXPECT_FALSE(tracker.Contains(capture_window.get()));
     if (!tracker.Contains(capture_window.get()))
