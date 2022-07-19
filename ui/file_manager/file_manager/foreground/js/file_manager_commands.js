@@ -711,17 +711,6 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
         CommandUtil.getElementVolumeInfo(event.target, fileManager);
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
 
-    if (volumeInfo) {
-      // Disable the unmount aka "Close" context menu in the directory tree for
-      // fusebox FSP volumes in the Lacros file picker. TODO(crbug.com/1292825)
-      // consider adding unmount support for fusebox FSP volumes.
-      if (volumeInfo.volumeId.startsWith('fuseboxprovided:')) {
-        event.command.setHidden(true);
-        event.canExecute = false;
-        return;
-      }
-    }
-
     let volumeType;
     if (entry && entry instanceof EntryList) {
       volumeType = entry.rootType;
