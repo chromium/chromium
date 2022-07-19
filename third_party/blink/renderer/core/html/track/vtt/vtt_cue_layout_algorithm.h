@@ -41,6 +41,9 @@ class VttCueLayoutAlgorithm {
   static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
   bool IsOutside(const gfx::Rect& title_area) const;
   bool IsOverlapping(const gfx::Rect& controls_rect) const;
+  bool ShouldSwitchDirection(LayoutUnit cue_block_position,
+                             LayoutUnit cue_block_size,
+                             LayoutUnit full_dimension) const;
 
   VTTCueBox& cue_;
   float snap_to_lines_position_;

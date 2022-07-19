@@ -105,6 +105,23 @@ bool VttCueLayoutAlgorithm::IsOverlapping(
   return cue_box_rect.Intersects(controls_rect);
 }
 
+bool VttCueLayoutAlgorithm::ShouldSwitchDirection(
+    LayoutUnit cue_block_position,
+    LayoutUnit cue_block_size,
+    LayoutUnit full_dimension) const {
+  // 14. Horizontal: If step is negative and the top of the first line box in
+  // boxes is now above the top of the title area, or if step is positive and
+  // the bottom of the first line box in boxes is now below the bottom of the
+  // title area, jump to the step labeled switch direction.
+  //     Vertical: If step is negative and the left edge of ...
+  if (step_ < 0 && cue_block_position < margin_)
+    return true;
+  if (step_ > 0 &&
+      cue_block_position + cue_block_size + margin_ > full_dimension)
+    return true;
+  return false;
+}
+
 void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // 9. If there are no line boxes in boxes, skip the remainder of these
   // substeps for cue. The cue is ignored.
@@ -196,6 +213,18 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // We also check overlapping with media controls.
   const gfx::Rect controls_rect = LayoutVTTCue::ComputeControlsRect(container);
   while (IsOutside(title_area) || IsOverlapping(controls_rect)) {
+    // Step 14
+    if (!ShouldSwitchDirection(adjusted_position, cue_box.LogicalHeight(),
+                               full_dimension)) {
+      // 15. Horizontal: Move all the boxes in boxes down by the distance
+      // given by step.
+      //     Vertical: Move all the boxes in boxes right ...
+      adjusted_position += step_;
+
+      // 16. Jump back to the step labeled step loop.
+      continue;
+    }
+
     // TODO(crbug.com/1335309): Implement this.
 
     // 21. Jump back to the step labeled step loop.
