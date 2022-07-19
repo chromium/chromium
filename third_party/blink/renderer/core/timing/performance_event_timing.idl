@@ -9,7 +9,7 @@ interface PerformanceEventTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp processingEnd;
     readonly attribute boolean cancelable;
     readonly attribute Node? target;
-    [RuntimeEnabled=InteractionId, MeasureAs=EventTimingInteractionId] readonly attribute unsigned long interactionId;
+    [MeasureAs=EventTimingInteractionId] readonly attribute unsigned long interactionId;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

@@ -1261,10 +1261,6 @@
       status: "stable",
     },
     {
-      name: "InteractionId",
-      status: "stable",
-    },
-    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
     },
