@@ -700,12 +700,6 @@ extern const char kTrendingQueriesModuleName[] = "Show Trending Queries module";
 extern const char kTrendingQueriesModuleDescription[] =
     "When enabled, the trending queries module will be shown in the NTP";
 
-extern const char kUIViewWindowObservingName[] =
-    "Support KVO on UIView's window property.";
-extern const char kUIViewWindowObservingDescription[] =
-    "When enabled, all instances of UIView can be observed with KVO on thei "
-    "`window` property.";
-
 const char kUpdateHistoryEntryPointsInIncognitoName[] =
     "Update history entry points in Incognito.";
 const char kUpdateHistoryEntryPointsInIncognitoDescription[] =

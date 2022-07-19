@@ -84,7 +84,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/features.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -894,9 +893,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"download-calendar", flag_descriptions::kDownloadCalendarName,
      flag_descriptions::kDownloadCalendarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadCalendar)},
-    {"uiview-window-observing", flag_descriptions::kUIViewWindowObservingName,
-     flag_descriptions::kUIViewWindowObservingDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kUIViewWindowObserving)},
     {"autofill-upstream-allow-additional-email-domains",
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,

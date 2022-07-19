@@ -6172,11 +6172,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "uiview-window-observing",
-    "owners": [ "lpromero", "bling-flags@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "unified-password-manager-desktop",
     "owners": [ "johntlee", "mamir" ],
     "expiry_milestone": 107

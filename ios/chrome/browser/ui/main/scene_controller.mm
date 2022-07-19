@@ -7,7 +7,6 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
@@ -121,10 +120,8 @@
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/features.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -823,14 +820,6 @@ bool IsSigninForcedByPolicy() {
   DCHECK(!self.browserViewWrangler);
   DCHECK(self.sceneURLLoadingService);
   DCHECK(self.sceneState.appState.mainBrowserState);
-
-  // Turn on KVO support on UIView window if enabled.
-  // TODO(crbug.com/1318016): Remove this call once it can be unconditionally
-  // enabled.
-  UIView.cr_supportsWindowObserving =
-      base::FeatureList::IsEnabled(kUIViewWindowObserving);
-  DCHECK_EQ(UIView.cr_supportsWindowObserving,
-            base::FeatureList::IsEnabled(kUIViewWindowObserving));
 
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
              initWithBrowserState:self.sceneState.appState.mainBrowserState
