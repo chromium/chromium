@@ -466,12 +466,15 @@ TEST_P(AudioProcessorDefaultOutputFormatTest, GetDefaultOutputFormat) {
   AudioParameters output_params =
       AudioProcessor::GetDefaultOutputFormat(input_params, settings);
 
+  // TODO(crbug.com/1336055): Investigate why chromecast devices need special
+  // logic here. See https://crrev.com/c/1572807 and
+  // https://crrev.com/c/3621456/comments/2e73cc96_0e9773cd for details.
   const int expected_sample_rate =
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
       std::min(sample_rate, media::kAudioProcessingSampleRateHz);
 #else
       media::kAudioProcessingSampleRateHz;
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif
   const int expected_output_channels =
       settings.multi_channel_capture_processing ? input_params.channels() : 1;
 

@@ -17,8 +17,9 @@
 #include "base/test/test_timeouts.h"
 #endif
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !BUILDFLAG(IS_CHROMECAST)
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #include "ui/views/test/test_desktop_screen_ozone.h"
 #endif
 
@@ -139,15 +140,15 @@ DesktopWidgetTestInteractive::~DesktopWidgetTestInteractive() = default;
 
 void DesktopWidgetTestInteractive::SetUp() {
   SetUpForInteractiveTests();
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !BUILDFLAG(IS_CHROMECAST)
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
   screen_ = views::test::TestDesktopScreenOzone::Create();
 #endif
   DesktopWidgetTest::SetUp();
 }
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !BUILDFLAG(IS_CHROMECAST)
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 void DesktopWidgetTestInteractive::TearDown() {
   DesktopWidgetTest::TearDown();
   screen_.reset();
