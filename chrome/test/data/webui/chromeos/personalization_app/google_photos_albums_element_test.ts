@@ -29,9 +29,9 @@ suite('GooglePhotosAlbumsTest', function() {
     return matches ? [...matches] : null;
   }
 
-  /** Scrolls the specified |element| to the bottom. */
-  async function scrollToBottom(element: HTMLElement) {
-    element.scrollTop = element.scrollHeight;
+  /** Scrolls the window to the bottom. */
+  async function scrollToBottom() {
+    window.scroll({top: document.body.scrollHeight, behavior: 'smooth'});
     await waitAfterNextRender(googlePhotosAlbumsElement!);
   }
 
@@ -297,8 +297,7 @@ suite('GooglePhotosAlbumsTest', function() {
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
     // Scroll to the bottom of the grid.
-    const gridScrollThreshold = googlePhotosAlbumsElement.$.gridScrollThreshold;
-    scrollToBottom(gridScrollThreshold);
+    scrollToBottom();
 
     // Wait for and verify that the next batch of albums has been
     // requested.
@@ -311,7 +310,7 @@ suite('GooglePhotosAlbumsTest', function() {
     wallpaperProvider.resetResolver('fetchGooglePhotosAlbums');
 
     // Scroll to the bottom of the grid.
-    scrollToBottom(gridScrollThreshold);
+    scrollToBottom();
 
     // Verify that no next batch of albums has been requested.
     assertEquals(wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);

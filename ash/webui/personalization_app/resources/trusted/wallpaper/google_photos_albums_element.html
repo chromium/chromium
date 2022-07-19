@@ -5,16 +5,18 @@
 
   iron-scroll-threshold,
   iron-list {
-    height: 100%;
     width: 100%;
   }
 </style>
-<iron-scroll-threshold id="gridScrollThreshold"
-  on-lower-threshold="onGridScrollThresholdReached_">
-  <iron-list id="grid" items="[[albumsForDisplay_]]" as="album" grid
-    scroll-target="gridScrollThreshold"
-    aria-setsize$="[[albumsForDisplay_.length]]"
-    role="list">
+<iron-scroll-threshold id="gridScrollThreshold" scroll-target="document"
+    on-lower-threshold="onGridScrollThresholdReached_">
+  <iron-list id="grid"
+      items="[[albumsForDisplay_]]"
+      as="album"
+      grid
+      scroll-target="document"
+      aria-setsize$="[[albumsForDisplay_.length]]"
+      role="list">
     <template>
       <wallpaper-grid-item
         aria-label$="[[getAlbumAriaLabel_(album)]]"

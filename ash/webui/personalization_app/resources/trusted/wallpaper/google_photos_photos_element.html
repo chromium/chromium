@@ -5,7 +5,6 @@
 
   iron-scroll-threshold,
   iron-list {
-    height: 100%;
     width: 100%;
   }
 
@@ -47,11 +46,11 @@
   }
 </style>
 <iron-scroll-threshold id="gridScrollThreshold"
-  on-lower-threshold="onGridScrollThresholdReached_">
+    on-lower-threshold="onGridScrollThresholdReached_" scroll-target="document">
   <iron-list id="grid" items="[[photosByRow_]]" as="row"
-    scroll-target="gridScrollThreshold"
-    aria-setsize$="[[getPhotosAriaSetSize_(photos_, photosByRow_)]]"
-    role="listbox">
+      scroll-target="document"
+      aria-setsize$="[[getPhotosAriaSetSize_(photos_, photosByRow_)]]"
+      role="listbox">
     <template>
       <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
         on-focus="onGridRowFocused_" on-keydown="onGridRowKeyDown_">

@@ -5,15 +5,14 @@
 
   iron-scroll-threshold,
   iron-list {
-    height: 100%;
     width: 100%;
   }
 </style>
 <iron-scroll-threshold id="gridScrollThreshold"
-  on-lower-threshold="onGridScrollThresholdReached_">
+    on-lower-threshold="onGridScrollThresholdReached_" scroll-target="document">
   <iron-list id="grid" items="[[album_]]" as="photo" grid
-    scroll-target="gridScrollThreshold" aria-setsize$="[[album_.length]]"
-    role="listbox">
+      scroll-target="document" aria-setsize$="[[album_.length]]"
+      role="listbox">
     <template>
       <wallpaper-grid-item
         aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
