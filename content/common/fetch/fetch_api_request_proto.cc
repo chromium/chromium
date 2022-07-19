@@ -31,6 +31,8 @@ std::string SerializeFetchRequestToString(
     request_proto.set_integrity(request.integrity.value());
   request_proto.set_keepalive(request.keepalive);
   request_proto.set_is_history_navigation(request.is_history_navigation);
+  request_proto.set_target_address_space(
+      static_cast<int>(request.target_address_space));
   return request_proto.SerializeAsString();
 }
 
@@ -65,6 +67,9 @@ blink::mojom::FetchAPIRequestPtr DeserializeFetchRequestFromString(
     request_ptr->integrity = request_proto.integrity();
   request_ptr->keepalive = request_proto.keepalive();
   request_ptr->is_history_navigation = request_proto.is_history_navigation();
+  request_ptr->target_address_space =
+      static_cast<network::mojom::IPAddressSpace>(
+          request_proto.target_address_space());
   return request_ptr;
 }
 

@@ -144,6 +144,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool skip_service_worker = false;
   bool corb_detachable = false;
   mojom::RequestMode mode = mojom::RequestMode::kNoCors;
+  mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   std::string fetch_integrity;

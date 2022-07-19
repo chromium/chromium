@@ -178,7 +178,7 @@ FetchRequestData* FetchRequestData::Create(
     request->SetReferrerPolicy(fetch_api_request->referrer->policy);
   }
   request->SetMode(fetch_api_request->mode);
-  request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
+  request->SetTargetAddressSpace(fetch_api_request->target_address_space);
   request->SetCredentials(fetch_api_request->credentials_mode);
   request->SetCacheMode(fetch_api_request->cache_mode);
   request->SetRedirect(fetch_api_request->redirect_mode);

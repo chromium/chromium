@@ -313,6 +313,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
   network::mojom::RequestMode GetMode() const { return mode_; }
   void SetMode(network::mojom::RequestMode mode) { mode_ = mode; }
 
+  network::mojom::IPAddressSpace GetTargetAddressSpace() const {
+    return target_address_space_;
+  }
+  void SetTargetAddressSpace(
+      network::mojom::IPAddressSpace target_address_space) {
+    target_address_space_ = target_address_space;
+  }
+
   // A resource request's fetch_priority_hint_ is a developer-set priority
   // hint that differs from priority_. It is used in
   // ResourceFetcher::ComputeLoadPriority to possibly influence the resolved
@@ -584,6 +592,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;
   absl::optional<RedirectInfo> redirect_info_;
   absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
+  network::mojom::IPAddressSpace target_address_space_;
 
   absl::optional<String> suggested_filename_;
 

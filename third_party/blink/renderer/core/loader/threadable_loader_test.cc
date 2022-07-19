@@ -191,6 +191,7 @@ class ThreadableLoaderTest : public testing::Test {
     ResourceRequest request(url);
     request.SetRequestContext(mojom::blink::RequestContextType::OBJECT);
     request.SetMode(request_mode);
+    request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
     helper_->StartLoader(std::move(request));
   }

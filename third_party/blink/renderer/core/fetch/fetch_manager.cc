@@ -765,6 +765,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetFetchWindowId(fetch_request_data_->WindowId());
   request.SetTrustTokenParams(fetch_request_data_->TrustTokenParams());
   request.SetMode(fetch_request_data_->Mode());
+  request.SetTargetAddressSpace(fetch_request_data_->TargetAddressSpace());
 
   request.SetCredentialsMode(fetch_request_data_->Credentials());
   for (const auto& header : fetch_request_data_->HeaderList()->List()) {

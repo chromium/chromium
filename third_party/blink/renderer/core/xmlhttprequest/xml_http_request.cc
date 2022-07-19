@@ -1054,6 +1054,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   request.SetMode(upload_events
                       ? network::mojom::RequestMode::kCorsWithForcedPreflight
                       : network::mojom::RequestMode::kCors);
+  request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
   request.SetCredentialsMode(
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);

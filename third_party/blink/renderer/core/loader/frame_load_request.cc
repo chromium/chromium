@@ -50,6 +50,8 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
   resource_request_.CopyHeadFrom(resource_request);
   resource_request_.SetHttpBody(resource_request.HttpBody());
   resource_request_.SetMode(network::mojom::RequestMode::kNavigate);
+  resource_request_.SetTargetAddressSpace(
+      network::mojom::IPAddressSpace::kUnknown);
   resource_request_.SetCredentialsMode(
       network::mojom::CredentialsMode::kInclude);
   resource_request_.SetRedirectMode(network::mojom::RedirectMode::kManual);

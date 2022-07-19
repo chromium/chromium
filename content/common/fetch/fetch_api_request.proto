@@ -40,4 +40,5 @@ message FetchAPIRequest {
   reserved 14;  // Obsolete: this used to be client_id. It was removed.
   reserved 15;  // for is_reload_navigation
   optional bool is_history_navigation = 16;
+  optional int32 target_address_space = 17;  // network::mojom::IPAddressSpace.
 }

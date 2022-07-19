@@ -38,6 +38,7 @@ WebBundleLoader::WebBundleLoader(
   // Spec:
   // https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md#requests-mode-and-credentials-mode
   request.SetMode(network::mojom::blink::RequestMode::kCors);
+  request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
   request.SetCredentialsMode(credentials_mode);
 
   request.SetRequestDestination(network::mojom::RequestDestination::kWebBundle);

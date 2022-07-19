@@ -198,6 +198,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetUseStreamOnResponse(UseStreamOnResponse());
   request->SetRequestContext(GetRequestContext());
   request->SetMode(GetMode());
+  request->SetTargetAddressSpace(GetTargetAddressSpace());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());
   request->SetPriority(Priority());

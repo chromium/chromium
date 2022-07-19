@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/request_priority.mojom";
@@ -206,4 +207,6 @@ struct FetchAPIRequest {
 
   // Specifies a Trust Token protocol operation if the request has one.
   network.mojom.TrustTokenParams? trust_token_params;
+
+  network.mojom.IPAddressSpace target_address_space = network.mojom.IPAddressSpace.kUnknown;
 };

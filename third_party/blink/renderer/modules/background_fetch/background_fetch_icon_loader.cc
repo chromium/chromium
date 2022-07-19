@@ -76,6 +76,8 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
   resource_request.SetPriority(ResourceLoadPriority::kMedium);
   resource_request.SetKeepalive(true);
   resource_request.SetMode(network::mojom::RequestMode::kNoCors);
+  resource_request.SetTargetAddressSpace(
+      network::mojom::IPAddressSpace::kUnknown);
   resource_request.SetCredentialsMode(
       network::mojom::CredentialsMode::kInclude);
   resource_request.SetSkipServiceWorker(true);

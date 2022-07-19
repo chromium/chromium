@@ -27,6 +27,7 @@ void ManifestFetcher::Start(LocalDOMWindow& window,
   request.SetRequestContext(mojom::blink::RequestContextType::MANIFEST);
   request.SetRequestDestination(network::mojom::RequestDestination::kManifest);
   request.SetMode(network::mojom::RequestMode::kCors);
+  request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
   // See https://w3c.github.io/manifest/. Use "include" when use_credentials is
   // true, and "omit" otherwise.
   request.SetCredentialsMode(use_credentials

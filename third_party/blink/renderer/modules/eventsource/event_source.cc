@@ -150,6 +150,7 @@ void EventSource::Connect() {
   request.SetRequestContext(mojom::blink::RequestContextType::EVENT_SOURCE);
   request.SetFetchLikeAPI(true);
   request.SetMode(network::mojom::RequestMode::kCors);
+  request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
   request.SetCredentialsMode(
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);
