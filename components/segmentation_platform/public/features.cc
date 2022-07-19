@@ -26,7 +26,7 @@ const base::Feature kSegmentationPlatformLowEngagementFeature{
 
 const base::Feature kSegmentationPlatformFeedSegmentFeature{
   "SegmentationPlatformFeedSegmentFeature",
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 };
 #else
