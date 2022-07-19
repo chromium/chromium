@@ -156,7 +156,7 @@ class HistogramCache {
   }
 };
 
-LazyInstance<HistogramCache>::Leaky g_histograms;
+LazyInstance<HistogramCache>::Leaky g_histograms = LAZY_INSTANCE_INITIALIZER;
 
 struct ActionCallbackWrapper {
   base::ActionCallback action_callback;

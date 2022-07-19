@@ -32,7 +32,7 @@ bool HistogramNameLesser(const base::HistogramBase* a,
 }  // namespace
 
 // static
-LazyInstance<Lock>::Leaky StatisticsRecorder::lock_;
+LazyInstance<Lock>::Leaky StatisticsRecorder::lock_ = LAZY_INSTANCE_INITIALIZER;
 
 // static
 StatisticsRecorder* StatisticsRecorder::top_ = nullptr;

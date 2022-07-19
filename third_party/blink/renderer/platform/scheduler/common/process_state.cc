@@ -12,7 +12,8 @@ namespace internal {
 
 namespace {
 
-base::LazyInstance<ProcessState>::Leaky g_process_state;
+base::LazyInstance<ProcessState>::Leaky g_process_state =
+    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 

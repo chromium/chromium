@@ -26,7 +26,8 @@ void (*g_java_exception_callback)(const char*);
 using JavaExceptionFilter =
     base::RepeatingCallback<bool(const JavaRef<jthrowable>&)>;
 
-LazyInstance<JavaExceptionFilter>::Leaky g_java_exception_filter;
+LazyInstance<JavaExceptionFilter>::Leaky g_java_exception_filter =
+    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 

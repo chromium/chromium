@@ -148,7 +148,8 @@ const char kModifiedSdpMessage[] =
     "The SDP does not match the previously generated SDP for this type";
 
 base::LazyInstance<RTCPeerConnection::RtcPeerConnectionHandlerFactoryCallback>::
-    Leaky g_create_rpc_peer_connection_handler_callback_;
+    Leaky g_create_rpc_peer_connection_handler_callback_ =
+        LAZY_INSTANCE_INITIALIZER;
 
 // The maximum number of PeerConnections that can exist simultaneously.
 const int64_t kMaxPeerConnections = 500;
