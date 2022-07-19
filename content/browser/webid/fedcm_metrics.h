@@ -53,6 +53,18 @@ enum class FedCmRequestIdTokenStatus {
   kMaxValue = kUserInterfaceTimedOut
 };
 
+// This enum describes whether user sign-in states between IDP and browser
+// match.
+enum class FedCmSignInStateMatchStatus {
+  // Don't change the meaning or the order of these values because they are
+  // being recorded in metrics and in sync with the counterpart in enums.xml.
+  kMatch,
+  kIdpClaimedSignIn,
+  kBrowserObservedSignIn,
+
+  kMaxValue = kBrowserObservedSignIn
+};
+
 class FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider, const ukm::SourceId page_source_id);
@@ -79,6 +91,9 @@ class FedCmMetrics {
 
   // Records the status of the |RequestToken| call.
   void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status);
+
+  // Records whether user sign-in states between IDP and browser match.
+  void RecordSignInStateMatchStatus(FedCmSignInStateMatchStatus status);
 
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;

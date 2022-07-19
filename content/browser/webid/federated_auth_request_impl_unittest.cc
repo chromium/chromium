@@ -56,6 +56,7 @@ using TokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
+using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -788,6 +789,24 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     SUCCEED();
   }
 
+  void ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus status) {
+    auto entries = ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName);
+
+    if (entries.empty())
+      FAIL() << "No SignInStateMatchStatus was recorded";
+
+    // There are multiple types of metrics under the same FedCM UKM. We need to
+    // make sure that the metric only includes the expected one.
+    for (const auto* const entry : entries) {
+      const int64_t* metric =
+          ukm_recorder()->GetEntryMetric(entry, "Status_SignInStateMatch");
+      if (metric && *metric != static_cast<int>(status))
+        FAIL() << "Unexpected status was recorded";
+    }
+
+    SUCCEED();
+  }
+
  protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
@@ -1509,6 +1528,119 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
                                        TokenStatus::kDisabledInFlags, 1);
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+}
+
+// Test that sign-in states match if IDP claims that user is signed in and
+// browser also observes that user is signed in.
+TEST_F(BasicFederatedAuthRequestImplTest,
+       MetricsForSignedInOnBothIdpAndBrowser) {
+  // Set browser observes user is signed in.
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   kAccountId))
+      .WillOnce(Return(true));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  // Set IDP claims user is signed in.
+  MockConfiguration configuration = kConfigurationValid;
+  AccountList displayed_accounts =
+      AccountList(kAccounts.begin(), kAccounts.end());
+  displayed_accounts[0].login_state = LoginState::kSignIn;
+  configuration.accounts = displayed_accounts;
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+
+  ukm_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.SignInStateMatch",
+                                       SignInStateMatchStatus::kMatch, 1);
+  ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus::kMatch);
+}
+
+// Test that sign-in states match if IDP claims that user is not signed in and
+// browser also observes that user is not signed in.
+TEST_F(BasicFederatedAuthRequestImplTest,
+       MetricsForNotSignedInOnBothIdpAndBrowser) {
+  // Set browser observes user is not signed in.
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   kAccountId))
+      .WillOnce(Return(false));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  // By default, IDP claims user is not signed in.
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ukm_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.SignInStateMatch",
+                                       SignInStateMatchStatus::kMatch, 1);
+  ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus::kMatch);
+}
+
+// Test that sign-in states mismatch if IDP claims that user is signed in but
+// browser observes that user is not signed in.
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
+  // Set browser observes user is not signed in.
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   kAccountId))
+      .WillOnce(Return(false));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  // Set IDP claims user is signed in.
+  MockConfiguration configuration = kConfigurationValid;
+  AccountList displayed_accounts =
+      AccountList(kAccounts.begin(), kAccounts.end());
+  displayed_accounts[0].login_state = LoginState::kSignIn;
+  configuration.accounts = displayed_accounts;
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+
+  ukm_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Status.SignInStateMatch",
+      SignInStateMatchStatus::kIdpClaimedSignIn, 1);
+  ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus::kIdpClaimedSignIn);
+}
+
+// Test that sign-in states mismatch if IDP claims that user is not signed in
+// but browser observes that user is signed in.
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
+  // Set browser observes user is signed in.
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
+                                   kAccountId))
+      .WillOnce(Return(true));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  // By default, IDP claims user is not signed in.
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ukm_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Status.SignInStateMatch",
+      SignInStateMatchStatus::kBrowserObservedSignIn, 1);
+  ExpectSignInStateMatchStatusUKM(
+      SignInStateMatchStatus::kBrowserObservedSignIn);
 }
 
 // Test that embargo is requested if the

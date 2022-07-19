@@ -919,6 +919,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records the status of a revoke call to the FedCM API.</summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Status.SignInStateMatch"
+    enum="FedCmSignInStateMatchStatus" expires_after="M110">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records whether user sign-in states between IDP and browser match. Records a
+    sample after browser receives an account list from IDP prior to showing UI.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.CancelOnDialog" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>

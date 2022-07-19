@@ -99,6 +99,18 @@ void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.RequestIdToken", status);
 }
 
+void FedCmMetrics::RecordSignInStateMatchStatus(
+    FedCmSignInStateMatchStatus status) {
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetStatus_SignInStateMatch(static_cast<int>(status));
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.SignInStateMatch", status);
+}
+
 void RecordIsSignInUser(bool is_sign_in) {
   UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IsSignInUser", is_sign_in);
 }

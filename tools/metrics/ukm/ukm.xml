@@ -3157,6 +3157,12 @@ be describing additional metrics about the same event.
       Records the status of a request id token call to the FedCM API.
     </summary>
   </metric>
+  <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">
+    <summary>
+      Records whether user sign-in states between IDP and browser match after
+      browser receives an account list from IDP prior to showing UI.
+    </summary>
+  </metric>
   <metric name="Timing.CancelOnDialog">
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown

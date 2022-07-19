@@ -36,6 +36,7 @@ using blink::mojom::RequestTokenStatus;
 using FederatedApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
+using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 
@@ -692,6 +693,24 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       // Populate the accounts login state.
       for (auto& account : accounts) {
+        // Record when IDP and browser have different user sign-in states.
+        bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
+        bool browser_observed_sign_in =
+            GetSharingPermissionContext() &&
+            GetSharingPermissionContext()->HasSharingPermission(
+                origin(), url::Origin::Create(provider_), account.id);
+
+        if (idp_claimed_sign_in == browser_observed_sign_in) {
+          fedcm_metrics_->RecordSignInStateMatchStatus(
+              SignInStateMatchStatus::kMatch);
+        } else if (idp_claimed_sign_in) {
+          fedcm_metrics_->RecordSignInStateMatchStatus(
+              SignInStateMatchStatus::kIdpClaimedSignIn);
+        } else {
+          fedcm_metrics_->RecordSignInStateMatchStatus(
+              SignInStateMatchStatus::kBrowserObservedSignIn);
+        }
+
         // We set the login state based on the IDP response if it sends
         // back an approved_clients list. If it does not, we need to set
         // it here based on browser state.
@@ -700,9 +719,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         LoginState login_state = LoginState::kSignUp;
         // Consider this a sign-in if we have seen a successful sign-up for
         // this account before.
-        if (GetSharingPermissionContext() &&
-            GetSharingPermissionContext()->HasSharingPermission(
-                origin(), url::Origin::Create(provider_), account.id)) {
+        if (browser_observed_sign_in) {
           login_state = LoginState::kSignIn;
         }
         account.login_state = login_state;

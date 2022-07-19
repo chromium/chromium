@@ -41049,6 +41049,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="ThirdPartyCookiesBlocked"/>
 </enum>
 
+<enum name="FedCmSignInStateMatchStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="IdpClaimedSignIn"/>
+  <int value="2" label="BrowserObservedSignIn"/>
+</enum>
+
 <enum name="FeedAutoplayEvent">
   <obsolete>
     Removed as of 05/2021. Replaced by FeedVideoPlayEvent.
