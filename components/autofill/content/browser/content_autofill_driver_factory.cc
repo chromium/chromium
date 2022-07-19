@@ -221,26 +221,4 @@ void ContentAutofillDriverFactory::OnVisibilityChanged(
     client_->HideAutofillPopup(PopupHidingReason::kTabGone);
 }
 
-void ContentAutofillDriverFactory::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  content::RenderFrameHost* render_frame_host =
-      navigation_handle->GetRenderFrameHost();
-  content::GlobalRenderFrameHostId render_frame_host_id(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
-  // No need to report the metrics here if navigating to a different
-  // RenderFrameHost. It will be reported in |RenderFrameDeleted|.
-  // TODO(crbug.com/936696): Remove this logic when RenderDocument is enabled
-  // everywhere.
-  if (render_frame_host_id !=
-      navigation_handle->GetPreviousRenderFrameHostId()) {
-    return;
-  }
-  // Do not report metrics if prerendering.
-  if (render_frame_host->GetLifecycleState() ==
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
-    return;
-  }
-}
-
 }  // namespace autofill
