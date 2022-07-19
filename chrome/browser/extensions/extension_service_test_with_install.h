@@ -128,6 +128,8 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
   void TerminateExtension(const std::string& id);
 
+  void BlockAllExtensions();
+
   void ClearLoadedExtensions();
 
   const ExtensionList& loaded_extensions() const { return loaded_extensions_; }

@@ -370,6 +370,10 @@ void ExtensionServiceTestWithInstall::TerminateExtension(
   service()->TerminateExtension(id);
 }
 
+void ExtensionServiceTestWithInstall::BlockAllExtensions() {
+  service()->BlockAllExtensions();
+}
+
 void ExtensionServiceTestWithInstall::ClearLoadedExtensions() {
   loaded_extensions_.clear();
 }

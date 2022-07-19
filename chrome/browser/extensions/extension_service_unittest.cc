@@ -4935,6 +4935,29 @@ TEST_F(ExtensionServiceTest, UninstallTerminatedExtension) {
   EXPECT_EQ(UnloadedExtensionReason::TERMINATE, unloaded_reason());
 }
 
+TEST_F(ExtensionServiceTest, UninstallBlockedExtension) {
+  InitializeEmptyExtensionService();
+
+  MockExtensionRegistryObserver observer;
+  registry()->AddObserver(&observer);
+
+  ASSERT_TRUE(observer.last_extension_installed.empty());
+  InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
+  ASSERT_EQ(good_crx, observer.last_extension_installed);
+  EXPECT_EQ(1u, registry()->enabled_extensions().size());
+
+  BlockAllExtensions();
+  EXPECT_EQ(UnloadedExtensionReason::LOCK_ALL, unloaded_reason());
+  EXPECT_EQ(1u, registry()->blocked_extensions().size());
+
+  ASSERT_TRUE(observer.last_extension_uninstalled.empty());
+  UninstallExtension(good_crx);
+  ASSERT_EQ(good_crx, observer.last_extension_uninstalled);
+  EXPECT_EQ(0u, registry()->blocked_extensions().size());
+
+  registry()->RemoveObserver(&observer);
+}
+
 // An extension disabled because of unsupported requirements should re-enabled
 // if updated to a version with supported requirements as long as there are no
 // other disable reasons.
