@@ -294,7 +294,7 @@ void WontCompile() {
       BindRepeating(&VoidPolymorphic1<int>);
 }
 
-#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<\(lambda at (\.\./)+base/bind_unittest.nc:[0-9]+:[0-9]+\)>'"]
+#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"static_assert failed due to requirement 'FunctorTraits<\(lambda at [^)]+\), void>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
 
 void WontCompile() {
   int i = 0, j = 0;
@@ -362,7 +362,7 @@ void WontCompile() {
   BindRepeating(&TakesMoveOnly, std::move(x));
 }
 
-#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<base::NonEmptyFunctor>'"]
+#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"static_assert failed due to requirement 'FunctorTraits<base::NonEmptyFunctor, void>::is_stateless': Capturing lambdas and stateful lambdas are intentionally not supported\."]
 
 void WontCompile() {
   BindRepeating(NonEmptyFunctor());
