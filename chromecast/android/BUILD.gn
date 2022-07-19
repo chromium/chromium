@@ -47,12 +47,14 @@ group("common_apk_deps") {
   }
 }
 
-cast_shared_library("libcast_shell_android") {
+shared_library("libcast_shell_android") {
   # TODO: Remove the ldflags after migrating away from protobuf_lite to
   # protobuf_full.
   ldflags = [ "-Wl,-z,muldefs" ]
 
   sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
+  configs += [ "//chromecast:cast_config" ]
+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
 
   deps = [
     ":common_apk_deps",
@@ -60,12 +62,14 @@ cast_shared_library("libcast_shell_android") {
   ]
 }
 
-cast_shared_library("libcast_browser_android") {
+shared_library("libcast_browser_android") {
   # TODO: Remove the ldflags after migrating away from protobuf_lite to
   # protobuf_full.
   ldflags = [ "-Wl,-z,muldefs" ]
 
   sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
+  configs += [ "//chromecast:cast_config" ]
+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
 
   deps = [
     ":common_apk_deps",

@@ -145,6 +145,11 @@ declare_args() {
 
   # device specific string to append to User string.
   device_user_agent_suffix = ""
+
+  # link vendor-supplied functionality as shared libraries. When true,
+  # cast_shared_library targets are normal shared libraries. When false,
+  # they become source_sets.
+  use_vendor_shlibs = !is_android
 }
 
 declare_args() {
@@ -196,16 +201,30 @@ declare_args() {
 foreach(target_type,
         [
           "executable",
-          "shared_library",
           "loadable_module",
           "source_set",
         ]) {
   template("cast_${target_type}") {
     target(target_type, target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, [ "testonly" ])
 
       configs += [ "//chromecast:cast_config" ]
     }
+  }
+}
+
+template("cast_shared_library") {
+  if (use_vendor_shlibs) {
+    target_type = "shared_library"
+  } else {
+    target_type = "source_set"
+  }
+  target(target_type, target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, [ "testonly" ])
+
+    configs += [ "//chromecast:cast_config" ]
   }
 }
 
