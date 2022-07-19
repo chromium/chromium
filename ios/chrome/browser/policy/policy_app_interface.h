@@ -21,6 +21,9 @@
 // Clear all policy values.
 + (void)clearPolicies;
 
+// Clear the policies from all providers.
++ (void)clearAllPoliciesInMemory;
+
 // Returns YES if the given |URL| is blocked by the URLBlocklist and
 // URLAllowlist policies.
 + (BOOL)isURLBlocked:(NSString*)URL;
@@ -30,6 +33,16 @@
 
 // Sets the user cloud policy data with a domain.
 + (void)setUserCloudPolicyDataWithDomain:(NSString*)domain;
+
+// Removes the whole directory where the device management token file is stored.
++ (void)clearDMTokenDirectory;
+
+// Returns YES if the cloud policy client is registered.
++ (BOOL)isCloudPolicyClientRegistered;
+
+// Removes the whole directory where the Chrome Browser Cloud Management (CBCM)
+// stores data.
++ (void)clearCloudPolicyDirectory;
 
 @end
 

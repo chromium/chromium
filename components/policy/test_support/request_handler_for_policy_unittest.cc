@@ -27,10 +27,10 @@ constexpr char kDeviceToken[] = "fake_device_token";
 constexpr char kMachineName[] = "machine_name";
 constexpr char kPolicyInvalidationTopic[] = "policy_invalidation_topic";
 constexpr char kUsername[] = "user-for-policy@example.com";
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 constexpr char kPublicAccountEntityId[] = "test_user";
 constexpr char kExtensionId[] = "extension_id";
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -290,7 +290,7 @@ TEST_F(RequestHandlerForPolicyTest,
   EXPECT_FALSE(fetch_response.new_public_key_signature().empty());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(RequestHandlerForPolicyTest, HandleRequest_Success_ExtensionPolicies) {
   ClientStorage::ClientInfo client_info;
   client_info.device_token = kDeviceToken;
@@ -430,6 +430,6 @@ TEST_F(RequestHandlerForPolicyTest,
       public_account_fetch_response.policy_data());
   EXPECT_EQ(public_account_policy_data.username(), kPublicAccountEntityId);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace policy

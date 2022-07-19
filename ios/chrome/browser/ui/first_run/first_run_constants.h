@@ -36,6 +36,9 @@ extern NSString* const kTermsOfServiceURL;
 // URL for the metric reporting text.
 extern NSString* const kMetricReportingURL;
 
+// Accessibility identifier of the enterprise loading screen.
+extern NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier;
+
 }  // first_run
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_CONSTANTS_H_

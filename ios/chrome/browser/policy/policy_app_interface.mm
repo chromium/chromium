@@ -6,11 +6,18 @@
 
 #import <memory>
 
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/json/json_string_value_serializer.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/task_runner_util.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "base/values.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/cloud/device_management_service.h"
@@ -18,6 +25,7 @@
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/configuration_policy_provider.h"
 #import "components/policy/core/common/policy_bundle.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/policy_namespace.h"
 #import "components/policy/core/common/policy_types.h"
@@ -25,6 +33,7 @@
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
@@ -36,6 +45,15 @@
 #endif
 
 namespace {
+
+// Directory where device management token is stored. This value is from
+// "ios/chrome/browser/policy/browser_dm_token_storage_ios.mm"
+const char kDmTokenBaseDir[] =
+    FILE_PATH_LITERAL("Google/Chrome Cloud Enrollment");
+
+// Directory where cloud policy are stored. This value is from
+// "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.cc"
+const base::FilePath::CharType kPolicyDir[] = FILE_PATH_LITERAL("Policy");
 
 // Returns a JSON-encoded string representing the given |base::Value|. If
 // |value| is nullptr, returns a string representing a |base::Value| of type
@@ -70,7 +88,7 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   return value ? absl::make_optional<base::Value>(std::move(*value))
                : absl::nullopt;
 }
-}
+}  // namespace
 
 @implementation PolicyAppInterface
 
@@ -110,6 +128,11 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
 }
 
++ (void)clearAllPoliciesInMemory {
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+}
+
 + (BOOL)isURLBlocked:(NSString*)URL {
   GURL gurl = GURL(base::SysNSStringToUTF8(URL));
   PolicyBlocklistService* service =
@@ -145,6 +168,39 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   auto policy_data = std::make_unique<enterprise_management::PolicyData>();
   policy_data->set_managed_by(base::SysNSStringToUTF8(domain));
   store->set_policy_data_for_testing(std::move(policy_data));
+}
+
++ (void)clearDMTokenDirectory {
+  base::FilePath app_data_dir_path;
+  base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path);
+  base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(^{
+        base::DeletePathRecursively(dm_token_dir_path);
+      }));
+}
+
++ (BOOL)isCloudPolicyClientRegistered {
+  return GetApplicationContext()
+      ->GetBrowserPolicyConnector()
+      ->machine_level_user_cloud_policy_manager()
+      ->core()
+      ->client()
+      ->is_registered();
+}
+
++ (void)clearCloudPolicyDirectory {
+  base::FilePath user_data_dir;
+  base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
+  base::FilePath policy_dir = user_data_dir.Append(kPolicyDir);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(^{
+        base::DeletePathRecursively(policy_dir);
+      }));
 }
 
 @end

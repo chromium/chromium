@@ -66,43 +66,43 @@ static_library("test_support") {
   ]
 }
 
-if (!is_ios) {
-  source_set("unittests") {
-    testonly = true
+source_set("unittests") {
+  testonly = true
 
-    sources = [
-      "client_storage_unittest.cc",
-      "embedded_policy_test_server_test_base.cc",
-      "embedded_policy_test_server_test_base.h",
-      "embedded_policy_test_server_unittest.cc",
-      "failing_request_handler_unittest.cc",
-      "policy_storage_unittest.cc",
-      "request_handler_for_api_authorization_unittest.cc",
-      "request_handler_for_auto_enrollment_unittest.cc",
-      "request_handler_for_check_android_management_unittest.cc",
-      "request_handler_for_chrome_desktop_report_unittest.cc",
-      "request_handler_for_device_attribute_update_permission_unittest.cc",
-      "request_handler_for_device_attribute_update_unittest.cc",
-      "request_handler_for_device_initial_enrollment_state_unittest.cc",
-      "request_handler_for_device_state_retrieval_unittest.cc",
-      "request_handler_for_policy_unittest.cc",
-      "request_handler_for_psm_auto_enrollment_unittest.cc",
-      "request_handler_for_register_browser_unittest.cc",
-      "request_handler_for_register_cert_based_unittest.cc",
-      "request_handler_for_register_device_and_user_unittest.cc",
-      "request_handler_for_remote_commands_unittest.cc",
-      "request_handler_for_status_upload_unittest.cc",
-      "request_handler_for_unregister_unittest.cc",
-      "signature_provider_unittest.cc",
-    ]
+  sources = [
+    "client_storage_unittest.cc",
+    "embedded_policy_test_server_test_base.cc",
+    "embedded_policy_test_server_test_base.h",
+    "embedded_policy_test_server_unittest.cc",
+    "failing_request_handler_unittest.cc",
+    "policy_storage_unittest.cc",
+    "request_handler_for_api_authorization_unittest.cc",
+    "request_handler_for_auto_enrollment_unittest.cc",
+    "request_handler_for_check_android_management_unittest.cc",
+    "request_handler_for_chrome_desktop_report_unittest.cc",
+    "request_handler_for_device_attribute_update_permission_unittest.cc",
+    "request_handler_for_device_attribute_update_unittest.cc",
+    "request_handler_for_device_initial_enrollment_state_unittest.cc",
+    "request_handler_for_device_state_retrieval_unittest.cc",
+    "request_handler_for_policy_unittest.cc",
+    "request_handler_for_psm_auto_enrollment_unittest.cc",
+    "request_handler_for_register_browser_unittest.cc",
+    "request_handler_for_register_cert_based_unittest.cc",
+    "request_handler_for_register_device_and_user_unittest.cc",
+    "request_handler_for_remote_commands_unittest.cc",
+    "request_handler_for_status_upload_unittest.cc",
+    "request_handler_for_unregister_unittest.cc",
+    "signature_provider_unittest.cc",
+  ]
 
-    deps = [
-      ":test_support",
-      "//chrome/test:test_support",
-      "//services/network:test_support",
-      "//services/network/public/cpp",
-      "//services/network/public/mojom",
-      "//third_party/abseil-cpp:absl",
-    ]
-  }
+  deps = [
+    ":test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
+  ]
 }

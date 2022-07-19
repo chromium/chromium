@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -40,6 +41,8 @@ constexpr CGFloat kPaddingHeight = 50;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.accessibilityIdentifier =
+      first_run::kEnterpriseLoadingScreenAccessibilityIdentifier;
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 

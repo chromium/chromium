@@ -43,6 +43,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
       dm_protocol::kChromeExtensionPolicyType,
       dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType,
+      dm_protocol::kChromeMachineLevelUserCloudPolicyIOSType,
       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
       dm_protocol::kChromePublicAccountPolicyType,
       dm_protocol::kChromeSigninExtensionPolicyType,

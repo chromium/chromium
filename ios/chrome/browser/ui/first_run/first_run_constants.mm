@@ -34,4 +34,7 @@ NSString* const kTermsOfServiceURL = @"internal://terms-of-service";
 // URL for the metric reporting text.
 NSString* const kMetricReportingURL = @"internal://metric-reporting";
 
+NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier =
+    @"enterpriseLoadingScreenAccessibilityIdentifier";
+
 }  // first_run
