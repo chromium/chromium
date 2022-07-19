@@ -26,6 +26,7 @@
 #include "media/base/video_codecs.h"
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -68,21 +69,23 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
     return supported_codecs_;
   }
 
-  media::EmeConfigRule GetRobustnessConfigRule(
+  absl::optional<media::EmeConfigRule> GetRobustnessConfigRule(
       const std::string& /*key_system*/,
       media::EmeMediaType /*media_type*/,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
     // Only empty robustness string is currently supported.
     if (requested_robustness.empty()) {
-      return media::EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+      return media::EmeConfigRule{.hw_secure_codecs =
+                                      media::EmeConfigRuleState::kRequired};
     }
 
-    return media::EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
-  media::EmeConfigRule GetPersistentLicenseSessionSupport() const override {
-    return media::EmeConfigRule::NOT_SUPPORTED;
+  absl::optional<media::EmeConfigRule> GetPersistentLicenseSessionSupport()
+      const override {
+    return absl::nullopt;
   }
 
   media::EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -93,13 +96,13 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
     return media::EmeFeatureSupport::ALWAYS_ENABLED;
   }
 
-  media::EmeConfigRule GetEncryptionSchemeConfigRule(
+  absl::optional<media::EmeConfigRule> GetEncryptionSchemeConfigRule(
       media::EncryptionScheme encryption_mode) const override {
     if (encryption_mode == ::media::EncryptionScheme::kCenc) {
-      return media::EmeConfigRule::SUPPORTED;
+      return media::EmeConfigRule();
     }
 
-    return media::EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
  private:

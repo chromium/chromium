@@ -16,6 +16,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_properties.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -24,6 +25,7 @@
 
 using ::media::CdmSessionType;
 using ::media::EmeConfigRule;
+using ::media::EmeConfigRuleState;
 using ::media::EmeFeatureSupport;
 using ::media::EmeInitDataType;
 using ::media::EmeMediaType;
@@ -65,7 +67,7 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  EmeConfigRule GetRobustnessConfigRule(
+  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
@@ -77,20 +79,24 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     // in KeySystemConfigSelector: crbug.com/1204284
     if (requested_robustness.empty()) {
 #if BUILDFLAG(IS_ANDROID)
-      return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
 #else
-      return EmeConfigRule::SUPPORTED;
+      return EmeConfigRule();
 #endif  // BUILDFLAG(IS_ANDROID)
     }
 
     // Cast-specific PlayReady implementation does not currently recognize or
     // support non-empty robustness strings.
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
-  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
-    return persistent_license_support_ ? EmeConfigRule::SUPPORTED
-                                       : EmeConfigRule::NOT_SUPPORTED;
+  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
+      const override {
+    if (persistent_license_support_) {
+      return EmeConfigRule();
+    } else {
+      return absl::nullopt;
+    }
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -100,11 +106,13 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     return EmeFeatureSupport::ALWAYS_ENABLED;
   }
 
-  EmeConfigRule GetEncryptionSchemeConfigRule(
+  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
-    if (encryption_scheme == EncryptionScheme::kCenc)
-      return EmeConfigRule::SUPPORTED;
-    return EmeConfigRule::NOT_SUPPORTED;
+    if (encryption_scheme == EncryptionScheme::kCenc) {
+      return EmeConfigRule();
+    } else {
+      return absl::nullopt;
+    }
   }
 
  private:

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/cdm_config.h"
+#include "media/base/eme_constants.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/logging_override_if_enabled.h"
@@ -33,27 +34,28 @@ namespace blink {
 namespace {
 
 using ::media::EmeConfigRule;
+using ::media::EmeConfigRuleState;
 using ::media::EmeFeatureSupport;
 using ::media::EmeMediaType;
 using ::media::EncryptionScheme;
 using EmeFeatureRequirement = WebMediaKeySystemConfiguration::Requirement;
 using EmeEncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
 
-EmeConfigRule GetDistinctiveIdentifierConfigRule(
+absl::optional<EmeConfigRule> GetDistinctiveIdentifierConfigRule(
     EmeFeatureSupport support,
     EmeFeatureRequirement requirement) {
   if (support == EmeFeatureSupport::INVALID) {
     NOTREACHED();
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
-  // For NOT_ALLOWED and REQUIRED, the result is as expected. For OPTIONAL, we
-  // return the most restrictive rule that is not more restrictive than for
-  // NOT_ALLOWED or REQUIRED. Those values will be checked individually when
+  // For kNotAllowed and kRequired, the result is as expected. For kRecommended,
+  // we return the most restrictive rule that is not more restrictive than for
+  // kNotAllowed or kRequired. Those values will be checked individually when
   // the option is resolved.
   //
   //                  |---------------Requirement-------------------
-  //   Support        | NOT_ALLOWED   | OPTIONAL      | REQUIRED
+  //   Support        | kNotAllowed   | kRecommended  | kRequired
   //    NOT_SUPPORTED | I_NOT_ALLOWED | I_NOT_ALLOWED | NOT_SUPPORTED
   //      REQUESTABLE | I_NOT_ALLOWED | SUPPORTED     | I_REQUIRED
   //   ALWAYS_ENABLED | NOT_SUPPORTED | I_REQUIRED    | I_REQUIRED
@@ -67,36 +69,37 @@ EmeConfigRule GetDistinctiveIdentifierConfigRule(
        requirement == EmeFeatureRequirement::kRequired) ||
       (support == EmeFeatureSupport::ALWAYS_ENABLED &&
        requirement == EmeFeatureRequirement::kNotAllowed)) {
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
   if (support == EmeFeatureSupport::REQUESTABLE &&
       requirement == EmeFeatureRequirement::kOptional) {
-    return EmeConfigRule::SUPPORTED;
+    return EmeConfigRule();
   }
   if (support == EmeFeatureSupport::NOT_SUPPORTED ||
       requirement == EmeFeatureRequirement::kNotAllowed) {
-    return EmeConfigRule::IDENTIFIER_NOT_ALLOWED;
+    return EmeConfigRule{.identifier = EmeConfigRuleState::kNotAllowed};
   }
-  return EmeConfigRule::IDENTIFIER_REQUIRED;
+  return EmeConfigRule{.identifier = EmeConfigRuleState::kRequired};
 }
 
-EmeConfigRule GetPersistentStateConfigRule(EmeFeatureSupport support,
-                                           EmeFeatureRequirement requirement) {
+absl::optional<EmeConfigRule> GetPersistentStateConfigRule(
+    EmeFeatureSupport support,
+    EmeFeatureRequirement requirement) {
   if (support == EmeFeatureSupport::INVALID) {
     NOTREACHED();
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
-  // For NOT_ALLOWED and REQUIRED, the result is as expected. For OPTIONAL, we
-  // return the most restrictive rule that is not more restrictive than for
-  // NOT_ALLOWED or REQUIRED. Those values will be checked individually when
+  // For kNotAllowed and kRequired, the result is as expected. For kRecommended,
+  // we return the most restrictive rule that is not more restrictive than for
+  // kNotAllowed or kRequired. Those values will be checked individually when
   // the option is resolved.
   //
   // Note that even though a distinctive identifier can not be required for
   // persistent state, it may still be required for persistent sessions.
   //
   //                  |---------------Requirement-------------------
-  //   Support        | NOT_ALLOWED   | OPTIONAL      | REQUIRED
+  //   Support        | kNotAllowed   | kRecommended      | kRequired
   //    NOT_SUPPORTED | P_NOT_ALLOWED | P_NOT_ALLOWED | NOT_SUPPORTED
   //      REQUESTABLE | P_NOT_ALLOWED | SUPPORTED     | P_REQUIRED
   //   ALWAYS_ENABLED | NOT_SUPPORTED | P_REQUIRED    | P_REQUIRED
@@ -110,17 +113,17 @@ EmeConfigRule GetPersistentStateConfigRule(EmeFeatureSupport support,
        requirement == EmeFeatureRequirement::kRequired) ||
       (support == EmeFeatureSupport::ALWAYS_ENABLED &&
        requirement == EmeFeatureRequirement::kNotAllowed)) {
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
   if (support == EmeFeatureSupport::REQUESTABLE &&
       requirement == EmeFeatureRequirement::kOptional) {
-    return EmeConfigRule::SUPPORTED;
+    return EmeConfigRule();
   }
   if (support == EmeFeatureSupport::NOT_SUPPORTED ||
       requirement == EmeFeatureRequirement::kNotAllowed) {
-    return EmeConfigRule::PERSISTENCE_NOT_ALLOWED;
+    return EmeConfigRule{.persistence = EmeConfigRuleState::kNotAllowed};
   }
-  return EmeConfigRule::PERSISTENCE_REQUIRED;
+  return EmeConfigRule{.persistence = EmeConfigRuleState::kRequired};
 }
 
 bool IsPersistentSessionType(WebEncryptedMediaSessionType sessionType) {
@@ -197,101 +200,130 @@ class KeySystemConfigSelector::ConfigState {
     return is_permission_granted_ || !was_permission_requested_;
   }
 
-  bool IsIdentifierRequired() const { return is_identifier_required_; }
+  bool IsIdentifierRequired() const {
+    return rules.identifier == EmeConfigRuleState::kRequired;
+  }
 
-  bool IsIdentifierRecommended() const { return is_identifier_recommended_; }
+  bool IsIdentifierRecommended() const {
+    return rules.identifier == EmeConfigRuleState::kRecommended;
+  }
 
   bool AreHwSecureCodecsRequired() const {
-    return are_hw_secure_codecs_required_;
+    return rules.hw_secure_codecs == EmeConfigRuleState::kRequired;
   }
 
   bool AreHwSecureCodesNotAllowed() const {
-    return are_hw_secure_codecs_not_allowed_;
+    return rules.hw_secure_codecs == EmeConfigRuleState::kNotAllowed;
   }
 
   // Checks whether a rule is compatible with all previously added rules.
-  bool IsRuleSupported(EmeConfigRule rule) const {
-    switch (rule) {
-      case EmeConfigRule::NOT_SUPPORTED:
-        return false;
-      case EmeConfigRule::IDENTIFIER_NOT_ALLOWED:
-        return !is_identifier_required_;
-      case EmeConfigRule::IDENTIFIER_REQUIRED:
-        // TODO(sandersd): Confirm if we should be refusing these rules when
-        // permission has been denied (as the spec currently says).
-        return !is_identifier_not_allowed_ && IsPermissionPossible();
-      case EmeConfigRule::IDENTIFIER_RECOMMENDED:
-        return true;
-      case EmeConfigRule::PERSISTENCE_NOT_ALLOWED:
-        return !is_persistence_required_;
-      case EmeConfigRule::PERSISTENCE_REQUIRED:
-        return !is_persistence_not_allowed_;
-      case EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED:
-        return !is_identifier_not_allowed_ && IsPermissionPossible() &&
-               !is_persistence_not_allowed_;
-      case EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED:
-        return !are_hw_secure_codecs_required_;
-      case EmeConfigRule::HW_SECURE_CODECS_REQUIRED:
-        return !are_hw_secure_codecs_not_allowed_;
-      case EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED:
-        return !is_identifier_not_allowed_ && IsPermissionPossible() &&
-               !are_hw_secure_codecs_not_allowed_;
-      case EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED:
-        return !is_identifier_not_allowed_ && IsPermissionPossible() &&
-               !is_persistence_not_allowed_ &&
-               !are_hw_secure_codecs_not_allowed_;
-      case EmeConfigRule::SUPPORTED:
-        return true;
+  bool IsRuleSupported(absl::optional<EmeConfigRule> rule) const {
+    bool result = true;
+
+    // NOT_SUPPORTED
+    if (!rule.has_value()) {
+      return false;
     }
-    NOTREACHED();
-    return false;
+
+    // SUPPORTED
+    if (rule->hw_secure_codecs == EmeConfigRuleState::kUnset &&
+        rule->persistence == EmeConfigRuleState::kUnset &&
+        rule->identifier == EmeConfigRuleState::kUnset) {
+      return true;
+    }
+
+    // For identifier, if the rule we are evaluating is kNotAllowed,
+    // as long as our rules does not have a rule in place already
+    // that says identifier = kRequired, then we can proceed
+    // to evaluating the other rules.
+
+    // If the rule we are evaluating is kRequired, then we have to
+    // evaluate whether our rules does not have a rule in place already
+    //  that says identifier = kNotAllowed and we have to make sure
+    //  permission is possible. Then we can proceed to evaluating the
+    //  other rules.
+    if (rule->identifier == EmeConfigRuleState::kNotAllowed) {
+      result = result && rules.identifier != EmeConfigRuleState::kRequired;
+    } else if (rule->identifier == EmeConfigRuleState::kRequired) {
+      result = result && rules.identifier != EmeConfigRuleState::kNotAllowed &&
+               IsPermissionPossible();
+    }
+
+    // For persistence, if the rule we are evaluating is kNotAllowed,
+    // as long as our rules does not have a rule in place already
+    // that says persistence = kRequired, then we can proceed
+    // to evaluating the other rules.
+
+    /// If the rule we are evaluating is kRequired, then we have to
+    // evaluate whether our rules does not have a rule in place already
+    //  that says persistence = kNotAllowed. Then we can proceed to
+    //  evaluating the other rules.
+    if (rule->persistence == EmeConfigRuleState::kNotAllowed) {
+      result = result && rules.persistence != EmeConfigRuleState::kRequired;
+    } else if (rule->persistence == EmeConfigRuleState::kRequired) {
+      result = result && rules.persistence != EmeConfigRuleState::kNotAllowed;
+    }
+
+    // For hw_secure_codecs, if the rule we are evaluating is kNotAllowed,
+    // as long as our rules does not have a rule in place already
+    // that says hw_secure_codecs = kRequired, then we can proceed
+    // to evaluating the other rules.
+
+    /// If the rule we are evaluating is kRequired, then we have to
+    // evaluate whether our rules does not have a rule in place already
+    //  that says hw_secure_codecs = kNotAllowed. Then we can proceed to
+    //  evaluating the other rules.
+    if (rule->hw_secure_codecs == EmeConfigRuleState::kNotAllowed) {
+      result =
+          result && rules.hw_secure_codecs != EmeConfigRuleState::kRequired;
+    } else if (rule->hw_secure_codecs == EmeConfigRuleState::kRequired) {
+      result =
+          result && rules.hw_secure_codecs != EmeConfigRuleState::kNotAllowed;
+    }
+    return result;
   }
 
   // Add a rule to the accumulated configuration state.
-  void AddRule(EmeConfigRule rule) {
+  void AddRule(absl::optional<EmeConfigRule> rule) {
     DCHECK(IsRuleSupported(rule));
-    switch (rule) {
-      case EmeConfigRule::NOT_SUPPORTED:
-        NOTREACHED();
-        return;
-      case EmeConfigRule::IDENTIFIER_NOT_ALLOWED:
-        is_identifier_not_allowed_ = true;
-        return;
-      case EmeConfigRule::IDENTIFIER_REQUIRED:
-        is_identifier_required_ = true;
-        return;
-      case EmeConfigRule::IDENTIFIER_RECOMMENDED:
-        is_identifier_recommended_ = true;
-        return;
-      case EmeConfigRule::PERSISTENCE_NOT_ALLOWED:
-        is_persistence_not_allowed_ = true;
-        return;
-      case EmeConfigRule::PERSISTENCE_REQUIRED:
-        is_persistence_required_ = true;
-        return;
-      case EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED:
-        is_identifier_required_ = true;
-        is_persistence_required_ = true;
-        return;
-      case EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED:
-        are_hw_secure_codecs_not_allowed_ = true;
-        return;
-      case EmeConfigRule::HW_SECURE_CODECS_REQUIRED:
-        are_hw_secure_codecs_required_ = true;
-        return;
-      case EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED:
-        is_identifier_required_ = true;
-        are_hw_secure_codecs_required_ = true;
-        return;
-      case EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED:
-        is_identifier_required_ = true;
-        is_persistence_required_ = true;
-        are_hw_secure_codecs_required_ = true;
-        return;
-      case EmeConfigRule::SUPPORTED:
-        return;
+
+    // No rule specified, this should not happen
+    if (!rule.has_value()) {
+      NOTREACHED();
+      return;
     }
-    NOTREACHED();
+
+    // Rule does not require or prohibit anything, so can be skipped.
+    if (rule->hw_secure_codecs == EmeConfigRuleState::kUnset &&
+        rule->persistence == EmeConfigRuleState::kUnset &&
+        rule->identifier == EmeConfigRuleState::kUnset) {
+      return;
+    }
+
+    // In the three statements below, we first check if the rule is
+    // not specified. Then, as long as the rule we are adding to our rules
+    // does not override a kNotAllowed or kRequired, or if the
+    // collection of rules does not have anything associated, we should
+    // change the value to the incoming rule. Else, we ignore.
+    if (rule->identifier != EmeConfigRuleState::kUnset) {
+      if (rule->identifier != EmeConfigRuleState::kRecommended ||
+          rules.identifier == EmeConfigRuleState::kUnset) {
+        rules.identifier = rule->identifier;
+      }
+    }
+    if (rule->persistence != EmeConfigRuleState::kUnset) {
+      if (rule->persistence != EmeConfigRuleState::kRecommended ||
+          rules.persistence == EmeConfigRuleState::kUnset) {
+        rules.persistence = rule->persistence;
+      }
+    }
+    if (rule->hw_secure_codecs != EmeConfigRuleState::kUnset) {
+      if (rule->hw_secure_codecs != EmeConfigRuleState::kRecommended &&
+          rules.hw_secure_codecs == EmeConfigRuleState::kUnset) {
+        rules.hw_secure_codecs = rule->hw_secure_codecs;
+      }
+    }
+    return;
   }
 
  private:
@@ -304,22 +336,7 @@ class KeySystemConfigSelector::ConfigState {
   // (Not changed by adding rules.)
   bool is_permission_granted_;
 
-  // Whether a rule has been added that requires or blocks a distinctive
-  // identifier.
-  bool is_identifier_required_ = false;
-  bool is_identifier_not_allowed_ = false;
-
-  // Whether a rule has been added that recommends a distinctive identifier.
-  bool is_identifier_recommended_ = false;
-
-  // Whether a rule has been added that requires or blocks persistent state.
-  bool is_persistence_required_ = false;
-  bool is_persistence_not_allowed_ = false;
-
-  // Whether a rule has been added that requires or blocks hardware-secure
-  // codecs.
-  bool are_hw_secure_codecs_required_ = false;
-  bool are_hw_secure_codecs_not_allowed_ = false;
+  EmeConfigRule rules = EmeConfigRule();
 };
 
 KeySystemConfigSelector::KeySystemConfigSelector(
@@ -377,8 +394,9 @@ bool KeySystemConfigSelector::IsSupportedContentType(
   media::SplitCodecs(codecs, &codec_vector);
 
   // Check that |container_lower| and |codec_vector| are supported by the CDM.
-  EmeConfigRule codecs_rule = key_systems_->GetContentTypeConfigRule(
-      key_system, media_type, container_lower, codec_vector);
+  absl::optional<EmeConfigRule> codecs_rule =
+      key_systems_->GetContentTypeConfigRule(key_system, media_type,
+                                             container_lower, codec_vector);
   if (!config_state->IsRuleSupported(codecs_rule)) {
     DVLOG(3) << "Container mime type and codecs are not supported by CDM";
     return false;
@@ -388,7 +406,8 @@ bool KeySystemConfigSelector::IsSupportedContentType(
   return true;
 }
 
-EmeConfigRule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
+absl::optional<EmeConfigRule>
+KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
     const std::string& key_system,
     const EmeEncryptionScheme encryption_scheme) {
   switch (encryption_scheme) {
@@ -415,11 +434,11 @@ EmeConfigRule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
       // supported by implementation, continue to the next iteration."
       // The value provided was an empty string or some other value that is
       // not recognized, so treat it as a scheme that is not supported.
-      return EmeConfigRule::NOT_SUPPORTED;
+      return absl::nullopt;
   }
 
   NOTREACHED();
-  return EmeConfigRule::NOT_SUPPORTED;
+  return absl::nullopt;
 }
 
 bool KeySystemConfigSelector::GetSupportedCapabilities(
@@ -488,9 +507,10 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
       hw_secure_requirement = false;
     else
       hw_secure_requirement_ptr = nullptr;
-    EmeConfigRule robustness_rule = key_systems_->GetRobustnessConfigRule(
-        key_system, media_type, requested_robustness_ascii,
-        hw_secure_requirement_ptr);
+    absl::optional<EmeConfigRule> robustness_rule =
+        key_systems_->GetRobustnessConfigRule(key_system, media_type,
+                                              requested_robustness_ascii,
+                                              hw_secure_requirement_ptr);
 
     // 3.13. If the user agent and implementation definitely support playback of
     //       encrypted media data for the combination of container, media types,
@@ -504,7 +524,7 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
 
     // Check for encryption scheme support.
     // https://github.com/WICG/encrypted-media-encryption-scheme/blob/master/explainer.md.
-    EmeConfigRule encryption_scheme_rule =
+    absl::optional<EmeConfigRule> encryption_scheme_rule =
         GetEncryptionSchemeConfigRule(key_system, capability.encryption_scheme);
     if (!proposed_config_state.IsRuleSupported(encryption_scheme_rule)) {
       DVLOG(3) << "The current encryption scheme rule is not supported.";
@@ -599,8 +619,11 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // 5. If distinctive identifier requirement is "optional" and Distinctive
   //    Identifiers are not allowed according to restrictions, set distinctive
   //    identifier requirement to "not-allowed".
+
+  absl::optional<EmeConfigRule> identifier_required =
+      EmeConfigRule{.identifier = EmeConfigRuleState::kRequired};
   if (distinctive_identifier == EmeFeatureRequirement::kOptional &&
-      !config_state->IsRuleSupported(EmeConfigRule::IDENTIFIER_REQUIRED)) {
+      !config_state->IsRuleSupported(identifier_required)) {
     distinctive_identifier = EmeFeatureRequirement::kNotAllowed;
   }
 
@@ -630,7 +653,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  EmeConfigRule di_rule = GetDistinctiveIdentifierConfigRule(
+  absl::optional<EmeConfigRule> di_rule = GetDistinctiveIdentifierConfigRule(
       distinctive_identifier_support, distinctive_identifier);
   if (!config_state->IsRuleSupported(di_rule)) {
     DVLOG(2) << "Rejecting requested configuration because "
@@ -650,8 +673,10 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // 9. If persistent state requirement is "optional" and persisting state is
   //    not allowed according to restrictions, set persistent state requirement
   //    to "not-allowed".
+  absl::optional<EmeConfigRule> persistence_required =
+      EmeConfigRule{.persistence = EmeConfigRuleState::kRequired};
   if (persistent_state == EmeFeatureRequirement::kOptional &&
-      !config_state->IsRuleSupported(EmeConfigRule::PERSISTENCE_REQUIRED)) {
+      !config_state->IsRuleSupported(persistence_required)) {
     persistent_state = EmeFeatureRequirement::kNotAllowed;
   }
 
@@ -674,7 +699,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
       return CONFIGURATION_NOT_SUPPORTED;
     persistent_state_support = EmeFeatureSupport::NOT_SUPPORTED;
   }
-  EmeConfigRule ps_rule =
+  absl::optional<EmeConfigRule> ps_rule =
       GetPersistentStateConfigRule(persistent_state_support, persistent_state);
   if (!config_state->IsRuleSupported(ps_rule)) {
     DVLOG(2) << "Rejecting requested configuration because "
@@ -720,13 +745,13 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     // 13.3. If the implementation does not support session type in combination
     //       with accumulated configuration and restrictions for other reasons,
     //       return NotSupported.
-    EmeConfigRule session_type_rule = EmeConfigRule::NOT_SUPPORTED;
+    absl::optional<EmeConfigRule> session_type_rule = absl::nullopt;
     switch (session_type) {
       case WebEncryptedMediaSessionType::kUnknown:
         NOTREACHED();
         return CONFIGURATION_NOT_SUPPORTED;
       case WebEncryptedMediaSessionType::kTemporary:
-        session_type_rule = EmeConfigRule::SUPPORTED;
+        session_type_rule = EmeConfigRule();
         break;
       case WebEncryptedMediaSessionType::kPersistentLicense:
         session_type_rule =
@@ -829,12 +854,14 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //         distinctiveIdentifier value to "not-allowed".
   if (accumulated_configuration->distinctive_identifier ==
       EmeFeatureRequirement::kOptional) {
-    EmeConfigRule not_allowed_rule = GetDistinctiveIdentifierConfigRule(
-        key_systems_->GetDistinctiveIdentifierSupport(key_system),
-        EmeFeatureRequirement::kNotAllowed);
-    EmeConfigRule required_rule = GetDistinctiveIdentifierConfigRule(
-        key_systems_->GetDistinctiveIdentifierSupport(key_system),
-        EmeFeatureRequirement::kRequired);
+    absl::optional<EmeConfigRule> not_allowed_rule =
+        GetDistinctiveIdentifierConfigRule(
+            key_systems_->GetDistinctiveIdentifierSupport(key_system),
+            EmeFeatureRequirement::kNotAllowed);
+    absl::optional<EmeConfigRule> required_rule =
+        GetDistinctiveIdentifierConfigRule(
+            key_systems_->GetDistinctiveIdentifierSupport(key_system),
+            EmeFeatureRequirement::kRequired);
     bool not_allowed_supported =
         config_state->IsRuleSupported(not_allowed_rule);
     bool required_supported = config_state->IsRuleSupported(required_rule);
@@ -869,17 +896,18 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //         value to "not-allowed".
   if (accumulated_configuration->persistent_state ==
       EmeFeatureRequirement::kOptional) {
-    EmeConfigRule not_allowed_rule = GetPersistentStateConfigRule(
-        key_systems_->GetPersistentStateSupport(key_system),
-        EmeFeatureRequirement::kNotAllowed);
-    EmeConfigRule required_rule = GetPersistentStateConfigRule(
+    absl::optional<EmeConfigRule> not_allowed_rule =
+        GetPersistentStateConfigRule(
+            key_systems_->GetPersistentStateSupport(key_system),
+            EmeFeatureRequirement::kNotAllowed);
+    absl::optional<EmeConfigRule> required_rule = GetPersistentStateConfigRule(
         key_systems_->GetPersistentStateSupport(key_system),
         EmeFeatureRequirement::kRequired);
     // |persistent_state| should not be affected after it is decided.
-    DCHECK(not_allowed_rule == EmeConfigRule::NOT_SUPPORTED ||
-           not_allowed_rule == EmeConfigRule::PERSISTENCE_NOT_ALLOWED);
-    DCHECK(required_rule == EmeConfigRule::NOT_SUPPORTED ||
-           required_rule == EmeConfigRule::PERSISTENCE_REQUIRED);
+    DCHECK(!not_allowed_rule.has_value() ||
+           not_allowed_rule->persistence == EmeConfigRuleState::kNotAllowed);
+    DCHECK(!required_rule.has_value() ||
+           required_rule->persistence == EmeConfigRuleState::kRequired);
     bool not_allowed_supported =
         config_state->IsRuleSupported(not_allowed_rule);
     bool required_supported = config_state->IsRuleSupported(required_rule);

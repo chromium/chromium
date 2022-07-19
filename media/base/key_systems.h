@@ -55,13 +55,13 @@ class MEDIA_EXPORT KeySystems {
       EmeInitDataType init_data_type) const = 0;
 
   // Returns the configuration rule for supporting |encryption_scheme|.
-  virtual EmeConfigRule GetEncryptionSchemeConfigRule(
+  virtual absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       EncryptionScheme encryption_scheme) const = 0;
 
   // Returns the configuration rule for supporting a container and a list of
   // codecs.
-  virtual EmeConfigRule GetContentTypeConfigRule(
+  virtual absl::optional<EmeConfigRule> GetContentTypeConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& container_mime_type,
@@ -75,14 +75,14 @@ class MEDIA_EXPORT KeySystems {
   // must be applied.
   // TODO(crbug.com/1204284): Refactor this and remove the
   // `hw_secure_requirement` argument.
-  virtual EmeConfigRule GetRobustnessConfigRule(
+  virtual absl::optional<EmeConfigRule> GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const = 0;
 
   // Returns the support |key_system| provides for persistent-license sessions.
-  virtual EmeConfigRule GetPersistentLicenseSessionSupport(
+  virtual absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport(
       const std::string& key_system) const = 0;
 
   // Returns the support |key_system| provides for persistent state.

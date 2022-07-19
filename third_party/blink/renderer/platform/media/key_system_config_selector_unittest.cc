@@ -16,6 +16,7 @@
 #include "media/base/media_permission.h"
 #include "media/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
@@ -25,6 +26,7 @@ namespace blink {
 namespace {
 
 using ::media::EmeConfigRule;
+using ::media::EmeConfigRuleState;
 using ::media::EmeFeatureSupport;
 using ::media::EmeInitDataType;
 using ::media::EmeMediaType;
@@ -242,32 +244,33 @@ class FakeKeySystems : public media::KeySystems {
     return false;
   }
 
-  EmeConfigRule GetEncryptionSchemeConfigRule(
+  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       media::EncryptionScheme encryption_scheme) const override {
     if (encryption_scheme ==
         ConvertEncryptionScheme(kSupportedEncryptionScheme)) {
-      return EmeConfigRule::SUPPORTED;
+      return EmeConfigRule();
     }
 
     if (encryption_scheme ==
         ConvertEncryptionScheme(kDisallowHwSecureCodecEncryptionScheme)) {
-      return EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
+      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
     }
 
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
-  EmeConfigRule GetContentTypeConfigRule(
+  absl::optional<EmeConfigRule> GetContentTypeConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& container_mime_type,
       const std::vector<std::string>& codecs) const override {
     DCHECK(IsValidContainerMimeType(container_mime_type))
         << "Invalid container mime type should not be passed in";
+
     if (container_mime_type == kUnsupportedContainer ||
         !IsCompatibleWithEmeMediaType(media_type, container_mime_type)) {
-      return EmeConfigRule::NOT_SUPPORTED;
+      return absl::nullopt;
     }
 
     bool hw_secure_codec_required_ = false;
@@ -278,7 +281,7 @@ class FakeKeySystems : public media::KeySystems {
 
       if (codec == kUnsupportedCodec ||
           !IsCompatibleWithEmeMediaType(media_type, codec)) {
-        return EmeConfigRule::NOT_SUPPORTED;
+        return absl::nullopt;
       } else if (codec == kRequireHwSecureCodec) {
         hw_secure_codec_required_ = true;
       } else if (codec == kDisallowHwSecureCodec) {
@@ -287,19 +290,21 @@ class FakeKeySystems : public media::KeySystems {
     }
 
     if (hw_secure_codec_required_) {
-      if (hw_secure_codec_not_allowed_)
-        return EmeConfigRule::NOT_SUPPORTED;
-      else
-        return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+      if (hw_secure_codec_not_allowed_) {
+        return absl::nullopt;
+      } else {
+        return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
+      }
     }
 
-    if (hw_secure_codec_not_allowed_)
-      return EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
+    if (hw_secure_codec_not_allowed_) {
+      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+    }
 
-    return EmeConfigRule::SUPPORTED;
+    return EmeConfigRule();
   }
 
-  EmeConfigRule GetRobustnessConfigRule(
+  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
@@ -309,35 +314,43 @@ class FakeKeySystems : public media::KeySystems {
     // done. We are only testing the explicit thing it is fixing here.
     if (hw_secure_requirement && *hw_secure_requirement &&
         distinctive_identifier == EmeFeatureSupport::NOT_SUPPORTED) {
-      return EmeConfigRule::NOT_SUPPORTED;
+      return absl::nullopt;
     }
-    if (requested_robustness.empty())
-      return EmeConfigRule::SUPPORTED;
-    if (requested_robustness == kSupportedRobustness)
-      return EmeConfigRule::SUPPORTED;
-    if (requested_robustness == kRequireIdentifierRobustness)
-      return EmeConfigRule::IDENTIFIER_REQUIRED;
-    if (requested_robustness == kRecommendIdentifierRobustness)
-      return EmeConfigRule::IDENTIFIER_RECOMMENDED;
-    if (requested_robustness == kDisallowHwSecureCodecRobustness)
-      return EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
-    if (requested_robustness == kRequireHwSecureCodecRobustness)
-      return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
-    if (requested_robustness == kRequireIdentifierAndHwSecureCodecRobustness)
-      return EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED;
+    if (requested_robustness.empty() ||
+        requested_robustness == kSupportedRobustness) {
+      return EmeConfigRule();
+    }
+    if (requested_robustness == kRequireIdentifierRobustness) {
+      return EmeConfigRule{.identifier = EmeConfigRuleState::kRequired};
+    }
+    if (requested_robustness == kRecommendIdentifierRobustness) {
+      return EmeConfigRule{.identifier = EmeConfigRuleState::kRecommended};
+    }
+    if (requested_robustness == kDisallowHwSecureCodecRobustness) {
+      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+    }
+    if (requested_robustness == kRequireHwSecureCodecRobustness) {
+      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
+    }
+    if (requested_robustness == kRequireIdentifierAndHwSecureCodecRobustness) {
+      return EmeConfigRule{.identifier = EmeConfigRuleState::kRequired,
+                           .hw_secure_codecs = EmeConfigRuleState::kRequired};
+    }
     if (requested_robustness ==
         kRequireIdentifierPersistenceAndHwSecureCodecRobustness) {
-      return EmeConfigRule::
-          IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED;
+      return EmeConfigRule{.identifier = EmeConfigRuleState::kRequired,
+                           .persistence = EmeConfigRuleState::kRequired,
+                           .hw_secure_codecs = EmeConfigRuleState::kRequired};
     }
-    if (requested_robustness == kUnsupportedRobustness)
-      return EmeConfigRule::NOT_SUPPORTED;
+    if (requested_robustness == kUnsupportedRobustness) {
+      return absl::nullopt;
+    }
 
     NOTREACHED();
-    return EmeConfigRule::NOT_SUPPORTED;
+    return absl::nullopt;
   }
 
-  EmeConfigRule GetPersistentLicenseSessionSupport(
+  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport(
       const std::string& key_system) const override {
     return persistent_license;
   }
@@ -356,8 +369,7 @@ class FakeKeySystems : public media::KeySystems {
   bool init_data_type_cenc_supported_ = false;
   bool init_data_type_keyids_supported_ = false;
 
-  // INVALID so that they must be set in any test that needs them.
-  EmeConfigRule persistent_license = EmeConfigRule::NOT_SUPPORTED;
+  absl::optional<EmeConfigRule> persistent_license = absl::nullopt;
 
   // Every test implicitly requires these, so they must be set. They are set to
   // values that are likely to cause tests to fail if they are accidentally
@@ -876,7 +888,7 @@ TEST_F(KeySystemConfigSelectorTest, SessionTypes_Empty) {
 TEST_F(KeySystemConfigSelectorTest, SessionTypes_SubsetSupported) {
   // Allow persistent state, as it would be required to be successful.
   key_systems_->persistent_state = EmeFeatureSupport::REQUESTABLE;
-  key_systems_->persistent_license = EmeConfigRule::NOT_SUPPORTED;
+  key_systems_->persistent_license = absl::nullopt;
 
   std::vector<WebEncryptedMediaSessionType> session_types;
   session_types.push_back(WebEncryptedMediaSessionType::kTemporary);
@@ -892,7 +904,7 @@ TEST_F(KeySystemConfigSelectorTest, SessionTypes_SubsetSupported) {
 TEST_F(KeySystemConfigSelectorTest, SessionTypes_AllSupported) {
   // Allow persistent state, and expect it to be required.
   key_systems_->persistent_state = EmeFeatureSupport::REQUESTABLE;
-  key_systems_->persistent_license = EmeConfigRule::SUPPORTED;
+  key_systems_->persistent_license = EmeConfigRule();
 
   std::vector<WebEncryptedMediaSessionType> session_types;
   session_types.push_back(WebEncryptedMediaSessionType::kTemporary);
@@ -916,7 +928,8 @@ TEST_F(KeySystemConfigSelectorTest, SessionTypes_PermissionCanBeRequired) {
   key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
   key_systems_->persistent_state = EmeFeatureSupport::REQUESTABLE;
   key_systems_->persistent_license =
-      EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED;
+      EmeConfigRule{.identifier = EmeConfigRuleState::kRequired,
+                    .persistence = EmeConfigRuleState::kRequired};
 
   std::vector<WebEncryptedMediaSessionType> session_types;
   session_types.push_back(WebEncryptedMediaSessionType::kPersistentLicense);

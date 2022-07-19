@@ -16,11 +16,13 @@
 #include "media/media_buildflags.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #include "components/cdm/renderer/widevine_key_system_properties.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 using media::CdmSessionType;
 using media::EmeConfigRule;
+using media::EmeConfigRuleState;
 using media::EmeFeatureSupport;
 using media::EmeInitDataType;
 using media::EncryptionScheme;
@@ -62,18 +64,20 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
     return false;
   }
 
-  EmeConfigRule GetEncryptionSchemeConfigRule(
+  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
-    return encryption_scheme == EncryptionScheme::kCenc
-               ? EmeConfigRule::SUPPORTED
-               : EmeConfigRule::NOT_SUPPORTED;
+    if (encryption_scheme == EncryptionScheme::kCenc) {
+      return EmeConfigRule();
+    } else {
+      return absl::nullopt;
+    }
   }
 
   SupportedCodecs GetSupportedCodecs() const override {
     return supported_codecs_;
   }
 
-  EmeConfigRule GetRobustnessConfigRule(
+  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
       const std::string& key_system,
       media::EmeMediaType media_type,
       const std::string& requested_robustness,
@@ -83,12 +87,16 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
     // not need to account for it here because if it does introduce an
     // incompatibility at this point, it will still be caught by the rule logic
     // in KeySystemConfigSelector: crbug.com/1204284
-    return requested_robustness.empty() ? EmeConfigRule::SUPPORTED
-                                        : EmeConfigRule::NOT_SUPPORTED;
+    if (requested_robustness.empty()) {
+      return EmeConfigRule();
+    } else {
+      return absl::nullopt;
+    }
   }
 
-  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
-    return EmeConfigRule::NOT_SUPPORTED;
+  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
+      const override {
+    return absl::nullopt;
   }
   EmeFeatureSupport GetPersistentStateSupport() const override {
     return EmeFeatureSupport::ALWAYS_ENABLED;

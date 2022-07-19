@@ -12,6 +12,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -38,7 +39,7 @@ class MEDIA_EXPORT KeySystemProperties {
       EmeInitDataType init_data_type) const = 0;
 
   // Returns the configuration rule for supporting |encryption_scheme|.
-  virtual EmeConfigRule GetEncryptionSchemeConfigRule(
+  virtual absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const = 0;
 
   // Returns the codecs supported by this key system.
@@ -58,7 +59,7 @@ class MEDIA_EXPORT KeySystemProperties {
   // must be applied.
   // TODO(crbug.com/1204284): Refactor this and remove the
   // `hw_secure_requirement` argument.
-  virtual EmeConfigRule GetRobustnessConfigRule(
+  virtual absl::optional<EmeConfigRule> GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
@@ -71,7 +72,8 @@ class MEDIA_EXPORT KeySystemProperties {
   // explicitly.
   // TODO(crbug.com/1324262): Refactor `EmeConfigRule` to make it easier to
   // express combinations of requirements.
-  virtual EmeConfigRule GetPersistentLicenseSessionSupport() const = 0;
+  virtual absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
+      const = 0;
 
   // Returns the support this key system provides for persistent state.
   virtual EmeFeatureSupport GetPersistentStateSupport() const = 0;

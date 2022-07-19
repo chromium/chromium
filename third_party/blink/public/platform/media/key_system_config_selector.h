@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_media_capability.h"
@@ -129,7 +130,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
                               const std::string& codecs,
                               ConfigState* config_state);
 
-  media::EmeConfigRule GetEncryptionSchemeConfigRule(
+  absl::optional<media::EmeConfigRule> GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       const WebMediaKeySystemMediaCapability::EncryptionScheme
           encryption_scheme);
