@@ -294,6 +294,14 @@ void NetworkServiceMemoryCache::StoreResponse(
   if (status.error_code != net::OK || data.size() == 0)
     return;
 
+  net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
+      response_head->headers->GetFreshnessLifetimes(
+          response_head->response_time);
+  if (lifetimes.freshness.is_zero()) {
+    // The corresponding URLRequest was cancelled.
+    return;
+  }
+
   base::UmaHistogramCustomCounts(
       base::StrCat(
           {"NetworkService.MemoryCache.ContentLength.",
@@ -303,10 +311,6 @@ void NetworkServiceMemoryCache::StoreResponse(
       /*buckets=*/50);
 
   // Record fresness of the response in seconds.
-  net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
-      response_head->headers->GetFreshnessLifetimes(
-          response_head->response_time);
-  DCHECK(!lifetimes.freshness.is_zero());
   const int64_t freshness_in_seconds = lifetimes.freshness.InSeconds();
   constexpr int kMinSeconds = 1;
   constexpr int kMaxSeconds = 60 * 60 * 24 * 10;  // 10 days.
