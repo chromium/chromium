@@ -5,11 +5,16 @@
 #ifndef ASH_COMPONENTS_LOGIN_AUTH_AUTH_SESSION_AUTHENTICATOR_H_
 #define ASH_COMPONENTS_LOGIN_AUTH_AUTH_SESSION_AUTHENTICATOR_H_
 
+#include <memory>
+#include <string>
+
 #include "ash/components/login/auth/auth_factor_editor.h"
 #include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/mount_performer.h"
+#include "ash/components/login/auth/public/cryptohome_error.h"
 #include "ash/components/login/auth/safe_mode_delegate.h"
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -85,6 +90,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   ~AuthSessionAuthenticator() override;
 
  private:
+  using StartAuthSessionCallback =
+      base::OnceCallback<void(bool user_exists,
+                              std::unique_ptr<UserContext> context,
+                              absl::optional<CryptohomeError> error)>;
+
   // Callbacks that handles auth session started for particular login flows.
   // |user_exists| indicates if cryptohome actually exists on the disk,
   // |context| at this point would contain authsession and meta info describing
@@ -108,6 +118,30 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   void LoginAsKioskImpl(const AccountId& app_account_id,
                         user_manager::UserType user_type,
                         bool force_dircrypto);
+
+  // Helpers for starting the auth session and cleaning stale data during that.
+  void StartAuthSessionWithChecks(std::unique_ptr<UserContext> context,
+                                  bool ephemeral,
+                                  StartAuthSessionCallback callback);
+  void OnStartAuthSession(std::unique_ptr<UserContext> original_context,
+                          bool ephemeral,
+                          StartAuthSessionCallback callback,
+                          bool user_exists,
+                          std::unique_ptr<UserContext> context,
+                          absl::optional<CryptohomeError> error);
+  void RemoveStaleUserForEphemeral(
+      const std::string& auth_session_id,
+      std::unique_ptr<UserContext> original_context,
+      StartAuthSessionCallback callback);
+  void OnRemoveStaleUserForEphemeral(
+      std::unique_ptr<UserContext> original_context,
+      StartAuthSessionCallback callback,
+      absl::optional<user_data_auth::RemoveReply> reply);
+  void OnStartAuthSessionAfterStaleRemoval(
+      StartAuthSessionCallback callback,
+      bool user_exists,
+      std::unique_ptr<UserContext> context,
+      absl::optional<CryptohomeError> error);
 
   void PrepareForNewAttempt(const std::string& method_id,
                             const std::string& long_desc);
