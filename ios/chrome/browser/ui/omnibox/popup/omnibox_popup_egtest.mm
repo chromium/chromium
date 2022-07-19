@@ -61,22 +61,7 @@ void TapSwitchToTabButton(const GURL& url) {
 
 void ScrollToSwitchToTabElement(const GURL& url) {
   if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-
-    XCUIElement* popup =
-        app.tables[kOmniboxPopupTableViewAccessibilityIdentifier];
-
-    NSInteger swipeCount = 0;
-    GREYAssert([app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier]
-                   waitForExistenceWithTimeout:5],
-               @"Switch to tab element not found");
-    while (swipeCount < 10 &&
-           !app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier]
-                .isHittable) {
-      [popup swipeUp];
-      ++swipeCount;
-    }
-    GREYAssert(swipeCount < 10, @"Couldn't find the switch to tab element");
+    // No need to scroll, tapping works without scrolling.
   } else {
     [[[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
                                                     grey_interactable(), nil)]
@@ -160,6 +145,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }
 #endif
+
+  if (@available(iOS 15, *)) {
+    // Run the test.
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
+  }
+
   // Open the first page.
   GURL firstPageURL = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:firstPageURL];
@@ -306,6 +298,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad.");
   }
 
+  if (@available(iOS 15, *)) {
+    // Run the test.
+  } else {
+    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
+  }
+
   // Open the first page.
   GURL URL1 = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:URL1];
@@ -373,13 +371,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that switching to closed tab opens the tab in foreground, except if it
 // is from NTP without history.
-- (void)testSwitchToClosedTab {
-// TODO(crbug.com/1067817): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
+// TODO(crbug.com/1067817): Test broken in many configurations.
+- (void)DISABLED_testSwitchToClosedTab {
   GURL URL1 = self.testServer->GetURL(kPage1URL);
 
   // Open the first page.
@@ -591,14 +584,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return config;
 }
 
-- (void)testCloseNTPWhenSwitching {
-  if (@available(iOS 15, *)) {
-    [super testCloseNTPWhenSwitching];
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
-  }
-}
-
 // TODO(crbug.com/1322120): Reenable this test.
 - (void)DISABLED_testNotSwitchButtonOnCurrentTab {
   if (@available(iOS 15, *)) {
@@ -606,16 +591,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   } else {
     EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
   }
-}
-
-- (void)testSwitchToClosedTab {
-  // TODO(crbug.com/1315304): Reenable this test
-  EARL_GREY_TEST_SKIPPED(@"Test disabled with SwiftUI.")
-}
-
-- (void)testSwitchToOpenTab {
-  // TODO(crbug.com/1315304): Reenable this test
-  EARL_GREY_TEST_SKIPPED(@"Test disabled with SwiftUI.")
 }
 
 @end
