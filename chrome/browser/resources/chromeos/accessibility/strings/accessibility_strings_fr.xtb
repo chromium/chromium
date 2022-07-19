@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{deux-points}one{# deux-points}other{# deux-points}}</translation>
 <translation id="6444046323172968959">Boîte de dialogue d'alerte</translation>
 <translation id="6452403590345320472">Sommaire</translation>
-<translation id="6457542714329819968">saisir</translation>
 <translation id="6468049171101508116">Bouton suivant</translation>
 <translation id="646954774886932461">Index</translation>
 <translation id="6475604559827479857">Couleur pour la mise en surbrillance des mots :</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="6910969481785184048">Activer, désactiver et arrêter</translation>
 <translation id="6919104639734799681">Afficher la liste des tableaux</translation>
+<translation id="692135145298539227">supprimer</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6949846980769640811">Aigue-marine moyen</translation>
 <translation id="6951482098621102657">Aucun titre de niveau 5 suivant</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Détails de la liste de descriptions</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{esperluette}one{# esperluette}other{# esperluettes}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">supprimer le caractère précédent</translation>
 <translation id="738899727977260036">Bleu ardoise</translation>
 <translation id="7393979322571982935">Sons et paramètres</translation>
 <translation id="739763518212184081">Ligne précédente</translation>

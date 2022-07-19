@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">今日</translation>
 <translation id="2163152940313951844">「<ph name="CHARACTER_NAME" />」は無効な文字です。</translation>
 <translation id="2184934335987813305">ポルトガル語（US インターナショナル PC）キーボード</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> 使用</translation>
 <translation id="2198315389084035571">中国語（簡体字）</translation>
 <translation id="22085916256174561">韓国語</translation>
 <translation id="2208919847696382164">Linux でのインストール</translation>
@@ -184,6 +185,7 @@
 <translation id="2544853746127077729">認証証明書がネットワークによって拒否されました</translation>
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2563185590376525700">カエル</translation>
+<translation id="2570012981255377263">最近使用したファイルがここに表示されます</translation>
 <translation id="2578394532502990878">タミル語（表音）</translation>
 <translation id="2579959351793446050">オディア語</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
@@ -201,6 +203,7 @@
 <translation id="2724954091494693138">トルコ語（F）キーボード</translation>
 <translation id="2732839045120506979">ベトナム語（VNI）</translation>
 <translation id="2735623501230989521">Parallels Desktop に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
+<translation id="2764206540577097904">個人用の Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2781645665747935084">ベルギー語</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
@@ -221,6 +224,7 @@
 <translation id="2943503720238418293">もう少し短い名前にしてください</translation>
 <translation id="2949781154072577687">「<ph name="DRIVE_NAME" />」をフォーマットしています...</translation>
 <translation id="2951236788251446349">クラゲ</translation>
+<translation id="2958458230122209142"><ph name="TOTAL_SPACE" /> の個人用ストレージは残り <ph name="REMAINING_PERCENTAGE" />% と少なくなっています。</translation>
 <translation id="2977940621473452797">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
 <translation id="2984337792991268709">今日 <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> 個のアイテムを復元しています…</translation>
@@ -544,6 +548,7 @@
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
 <translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
 <translation id="5649768706273821470">聴く</translation>
+<translation id="5665074015635552640">最近の動画がここに表示されます</translation>
 <translation id="5669691691057771421">新しい PIN を入力</translation>
 <translation id="5678784840044122290">Linux アプリケーションはお使いのデバイスでご利用いただけるようになります。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />アーカイブまたは仮想ディスクから切断できません<ph name="END_BOLD" />
@@ -669,6 +674,7 @@
 <translation id="6823166707458800069">このフォルダに保存されているすべてのファイルが自動的にオンラインにバックアップされます。</translation>
 <translation id="6825883775269213504">ロシア語</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> を選択範囲から削除しました。</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> の Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="6861394552169064235">ペルシャ語</translation>
 <translation id="6862635236584086457">このフォルダに保存されているすべてのファイルが自動的にオンラインにバックアップされます。</translation>
@@ -687,6 +693,7 @@
     <ph name="FILE_COUNT" />が見つかりました</translation>
 <translation id="6935521024859866267">逆さま</translation>
 <translation id="6943836128787782965">HTTP を取得できませんでした</translation>
+<translation id="6945604978460872381">最近使用したドキュメントがここに表示されます</translation>
 <translation id="6949408524333579394">セルビア語（文字変換）</translation>
 <translation id="6954309393500027528">この場所への貼り付けは管理者によってブロックされています</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
@@ -700,6 +707,7 @@
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> 個のフォルダを選択しました</translation>
+<translation id="7008426324576352165">アップロードを完了するには、組織で追加のストレージが必要です。</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />（<ph name="ROOT_SUMMARY" />）</translation>
 <translation id="7014174261166285193">インストールできませんでした。</translation>
 <translation id="7031639531908619281">トルコ語</translation>
@@ -733,6 +741,7 @@
 <translation id="7295662345261934369">他のユーザーと共有</translation>
 <translation id="7297443947353982503">ユーザー名/パスワードが正しくないか、EAP 認証に失敗しました</translation>
 <translation id="7309413087278791451">ドイツ語（ベルギー）</translation>
+<translation id="7313374447885864533">最近使用した音声ファイルがここに表示されます</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7343393116438664539">ベトナム語（テレックス）</translation>
 <translation id="7357762654218998920">このファイル形式はサポートされていません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
@@ -866,6 +875,7 @@
 <translation id="8342318071240498787">同じ名前のファイルまたはディレクトリが既に存在しています。</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
+<translation id="8384716930968677505">最近の画像がここに表示されます</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> を抽出しました。</translation>
 <translation id="8395901698320285466">サイズ</translation>
@@ -933,11 +943,13 @@
 <translation id="8919081441417203123">デンマーク語</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
+<translation id="8998871447376656508">Google ドライブに十分な空き容量がないため、アップロードを完了できません。</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
 <translation id="9017798300203431059">ロシア語（表音）</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9035012421917565900">この操作は元に戻せません（これらのアイテムを「<ph name="DESTINATION_NAME" />」に戻すことはできません）。</translation>
 <translation id="9035689366572880647">現在の PIN を入力</translation>
+<translation id="9037777873893411148">*組織のストレージの空き容量がなくなりました</translation>
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>

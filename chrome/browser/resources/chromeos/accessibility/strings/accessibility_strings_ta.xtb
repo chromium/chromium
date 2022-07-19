@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{முக்காற்புள்ளி}other{# முக்காற்புள்ளிகள்}}</translation>
 <translation id="6444046323172968959">விழிப்பூட்டல் செய்தி</translation>
 <translation id="6452403590345320472">உள்ளடக்க அட்டவணை</translation>
-<translation id="6457542714329819968">வகை</translation>
 <translation id="6468049171101508116">அடுத்த பட்டன்</translation>
 <translation id="646954774886932461">பொருளடக்கம்</translation>
 <translation id="6475604559827479857">சொல்லைத் தனிப்படுத்திக் காட்டுவதற்கான வண்ணம்:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">நீக்கப்பட்டது</translation>
 <translation id="6910969481785184048">இயக்கம், முடக்கம் மற்றும் நிறுத்தம்</translation>
 <translation id="6919104639734799681">அட்டவணைகள் பட்டியலைக் காட்டு</translation>
+<translation id="692135145298539227">நீக்கு</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6949846980769640811">மீடியம் அக்வா மரைன்</translation>
 <translation id="6951482098621102657">அடுத்த 5ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">விளக்கப் பட்டியல் விவரம்</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{உம்மைக்குறி}other{# உம்மைக்குறிகள்}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">முந்தைய எழுத்தை நீக்கு</translation>
 <translation id="738899727977260036">ஸ்லேட் புளூ</translation>
 <translation id="7393979322571982935">ஒலிகளும் அமைப்புகளும்</translation>
 <translation id="739763518212184081">முந்தைய வரி</translation>

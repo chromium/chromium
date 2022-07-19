@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{dos puntos}other{# signos dos puntos}}</translation>
 <translation id="6444046323172968959">Cuadro de diálogo de alerta</translation>
 <translation id="6452403590345320472">Índice</translation>
-<translation id="6457542714329819968">escribe</translation>
 <translation id="6468049171101508116">Botón siguiente</translation>
 <translation id="646954774886932461">Índice</translation>
 <translation id="6475604559827479857">Color para destacar palabras:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6910969481785184048">Activar, desactivar y detener</translation>
 <translation id="6919104639734799681">Muestra la lista de tablas</translation>
+<translation id="692135145298539227">eliminar</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6949846980769640811">Aguamarina medio</translation>
 <translation id="6951482098621102657">No hay ningún encabezado de nivel 5 posterior</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Detalle de lista de descripciones</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et}other{# símbolos et}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">eliminar el carácter anterior</translation>
 <translation id="738899727977260036">Azul pizarra</translation>
 <translation id="7393979322571982935">Sonidos y ajustes</translation>
 <translation id="739763518212184081">Línea anterior</translation>

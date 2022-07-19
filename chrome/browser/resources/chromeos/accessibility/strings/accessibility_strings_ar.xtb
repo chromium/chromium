@@ -803,7 +803,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{علامة نقطتين واحدة}zero{# colons}two{علامتا نقطتين (#)}few{# علامات نقطتين}many{# علامة نقطتين}other{# من علامات النقطتين}}</translation>
 <translation id="6444046323172968959">مربع حوار للتنبيه</translation>
 <translation id="6452403590345320472">الفهرس</translation>
-<translation id="6457542714329819968">كتابة</translation>
 <translation id="6468049171101508116">الزر التالي</translation>
 <translation id="646954774886932461">فهرس</translation>
 <translation id="6475604559827479857">لون لتمييز الكلمة:</translation>
@@ -861,6 +860,7 @@
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="6910969481785184048">تشغيل، إيقاف، إيقاف</translation>
 <translation id="6919104639734799681">عرض قائمة الجداول</translation>
+<translation id="692135145298539227">حذف</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6949846980769640811">أزرق مخضر متوسط</translation>
 <translation id="6951482098621102657">ليس هناك عنوان تالٍ من المستوى الخامس.</translation>
@@ -928,7 +928,6 @@
 <translation id="7356610683936413584">تفاصيل قائمة الوصف</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{علامة عطف واحدة}zero{# ampersands}two{علامتا عطف (#)}few{# علامات عطف}many{# علامة عطف}other{# من علامات العطف}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">حذف الحرف السابق</translation>
 <translation id="738899727977260036">أزرق مائل إلى الرمادي</translation>
 <translation id="7393979322571982935">الأصوات والإعدادات</translation>
 <translation id="739763518212184081">السطر السابق</translation>

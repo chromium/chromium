@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">ਪ੍ਰਮਾਣੀਕਰਨ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਨੈੱਟਵਰਕ ਵੱਲੋਂ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="255937426064304553">ਅਮਰੀਕਾ ਅੰਤਰਰਾਸ਼ਟਰੀ</translation>
 <translation id="2563185590376525700">ਡੱਡੂ</translation>
+<translation id="2570012981255377263">ਤੁਹਾਡੀਆਂ ਹਾਲੀਆ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਸਣਗੀਆਂ</translation>
 <translation id="2578394532502990878">ਤਮਿਲ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="2579959351793446050">ਉੜੀਆ</translation>
 <translation id="2602810353103180630">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ, ਵੇਰਵੇ</translation>
@@ -546,6 +547,7 @@
 <translation id="5625294776298156701">ਤਮਿਲ99 ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤਮਿਲ</translation>
 <translation id="5633226425545095130">ਇਸ ਆਈਟਮ ਦੀ ਜਗ੍ਹਾ ਬਦਲਣ ਨਾਲ ਇਸਨੂੰ ਹਰ ਉਸ ਵਿਅਕਤੀ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ ਜੋ ਸਾਂਝਾ ਕੀਤੇ ਫੋਲਡਰ '<ph name="DESTINATION_NAME" />' ਨੂੰ ਦੇਖ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5649768706273821470">ਸੁਣਿਆ</translation>
+<translation id="5665074015635552640">ਤੁਹਾਡੇ ਹਾਲੀਆ ਵੀਡੀਓ ਇੱਥੇ ਦਿਸਣਗੇ</translation>
 <translation id="5669691691057771421">ਨਵਾਂ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5678784840044122290">Linux ਐਪਲੀਕੇਸ਼ਨ ਤੁਹਾਡੇ ਟਰਮੀਨਲ ਵਿੱਚ ਉਪਲਬਧ ਹੋਵੇਗੀ ਅਤੇ ਸ਼ਾਇਦ ਇਹ ਤੁਹਾਡੇ ਲਾਂਚਰ ਵਿੱਚ ਕੋਈ ਪ੍ਰਤੀਕ ਵੀ ਦਿਖਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ਕਿਸੇ ਪੁਰਾਲੇਖ ਜਾਂ ਵਰਚੁਅਲ ਡਿਸਕ ਤੋਂ ਡਿਸਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ<ph name="END_BOLD" />
@@ -690,6 +692,7 @@
     <ph name="FILE_COUNT" /> ਮਿਲੀਆਂ</translation>
 <translation id="6935521024859866267">ਉਲਟਾ</translation>
 <translation id="6943836128787782965">HTTP ਅਸਫ਼ਲ ਹੋ ਗਿਆ</translation>
+<translation id="6945604978460872381">ਤੁਹਾਡੇ ਹਾਲੀਆ ਦਸਤਾਵੇਜ਼ ਇੱਥੇ ਦਿਸਣਗੇ</translation>
 <translation id="6949408524333579394">ਸਰਬੀਆਈ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="6954309393500027528">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ 'ਤੇ ਪੇਸਟ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6960565108681981554">ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -737,6 +740,7 @@
 <translation id="7295662345261934369">ਹੋਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7297443947353982503">ਵਰਤੋਂਕਾਰ ਨਾਮ/ਪਾਸਵਰਡ ਗਲਤ ਹੈ ਜਾਂ EAP-ਪ੍ਰਮਾਣਿਕਤਾ ਅਸਫ਼ਲ ਹੋ ਗਈ</translation>
 <translation id="7309413087278791451">ਜਰਮਨ (ਬੈਲਜੀਅਮ)</translation>
+<translation id="7313374447885864533">ਤੁਹਾਡੀਆਂ ਹਾਲੀਆ ਆਡੀਓ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਸਣਗੀਆਂ</translation>
 <translation id="7339898014177206373">ਨਵੀਂ window</translation>
 <translation id="7343393116438664539">ਵੀਅਤਨਾਮੀ ਟੈਲੈਕਸ</translation>
 <translation id="7357762654218998920">ਇਹ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ChromeOS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />।</translation>
@@ -870,6 +874,7 @@
 <translation id="8342318071240498787">ਸਮਾਨ ਨਾਮ ਵਾਲੀ ਇੱਕ ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ।</translation>
 <translation id="8372369524088641025">ਘਟੀਆ WEP ਕੁੰਜੀ</translation>
 <translation id="8372852072747894550">ਯੂਨਾਨੀ</translation>
+<translation id="8384716930968677505">ਤੁਹਾਡੇ ਹਾਲੀਆ ਚਿੱਤਰ ਇੱਥੇ ਦਿਸਣਗੇ</translation>
 <translation id="8386903983509584791">ਸਕੈਨ ਪੂਰਾ ਹੋਈ</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="8395901698320285466">ਮਾਪ</translation>

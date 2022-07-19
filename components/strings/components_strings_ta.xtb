@@ -1055,6 +1055,7 @@
 <translation id="3807873520724684969">தீங்கிழைக்கும் உள்ளடக்கம் தடுக்கப்பட்டது.</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3816482573645936981">மதிப்பு (மாற்றியமைக்கப்பட்டது)</translation>
+<translation id="3823402221513322552">உங்கள் உலாவியை <ph name="BROWSER_DOMAIN" /> நிர்வகிக்கிறது. உங்கள் சுயவிவரத்தை <ph name="PROFILE_DOMAIN" /> நிர்வகிக்கிறது</translation>
 <translation id="382518646247711829">நீங்கள் பிராக்சி சர்வரைப் பயன்படுத்தினால்....</translation>
 <translation id="3826050100957962900">மூன்றாம் தரப்பு உள்நுழைவு</translation>
 <translation id="3827112369919217609">துல்லியமானது</translation>
@@ -1552,6 +1553,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> இல் இல்லையா? இந்தப் பிழையை தெரிவிக்கவும்</translation>
 <translation id="518639307526414276">செல்லப்பிராணி உணவு &amp; பராமரிப்புப் பொருட்கள்</translation>
 <translation id="5190835502935405962">புக்மார்க் பட்டி</translation>
+<translation id="5191315092027169558">உங்கள் சுயவிவரத்தை <ph name="DOMAIN" /> நிர்வகிக்கிறது</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> பல ஃபைல்களைப் பதிவிறக்க விரும்புகிறது</translation>
 <translation id="519422657042045905">விரிவுரை இல்லை</translation>
 <translation id="5201306358585911203">இந்தப் பக்கத்திலுள்ள உட்பொதிக்கப்பட்ட பக்கம் தெரிவிப்பது:</translation>
@@ -2754,6 +2756,7 @@
 <translation id="8623885649813806493">பொருந்தும் கடவுச்சொற்கள் எதுவுமில்லை. சேமித்த எல்லாக் கடவுச்சொற்களையும் பார்க்கவும்.</translation>
 <translation id="8624354461147303341">தள்ளுபடிகளைக் கண்டறி</translation>
 <translation id="8625384913736129811">இந்தச் சாதனத்தில் கார்டைச் சேமி</translation>
+<translation id="8637577059508742477">உங்கள் சுயவிவரத்தையும் உலாவியையும் <ph name="DOMAIN" /> நிர்வகிக்கிறது</translation>
 <translation id="865032292777205197">மோஷன் சென்சார்கள்</translation>
 <translation id="8663226718884576429">ஆர்டர் சுருக்கம், <ph name="TOTAL_LABEL" />, மேலும் விவரங்கள்</translation>
 <translation id="8666678546361132282">ஆங்கிலம்</translation>

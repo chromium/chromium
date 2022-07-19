@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{dos punts}other{# dos punts}}</translation>
 <translation id="6444046323172968959">Diàleg d'alerta</translation>
 <translation id="6452403590345320472">Taula de continguts</translation>
-<translation id="6457542714329819968">escriu</translation>
 <translation id="6468049171101508116">Botó següent</translation>
 <translation id="646954774886932461">Índex</translation>
 <translation id="6475604559827479857">Color d'èmfasi paraules:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Suprimit</translation>
 <translation id="6910969481785184048">Activar, desactivar i aturar ChromeVox</translation>
 <translation id="6919104639734799681">Mostra la llista de taules</translation>
+<translation id="692135145298539227">suprimeix</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6949846980769640811">Aiguamarina mitjà</translation>
 <translation id="6951482098621102657">No hi ha cap encapçalament més de nivell 5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Detall de la llista de descripció</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{signe &amp;}other{# signes &amp;}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">suprimeix el caràcter anterior</translation>
 <translation id="738899727977260036">Blau pissarra</translation>
 <translation id="7393979322571982935">Sons i configuració</translation>
 <translation id="739763518212184081">Línia anterior</translation>

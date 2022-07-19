@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{נקודתיים}two{# סימני נקודתיים}many{# סימני נקודתיים}other{# סימני נקודתיים}}</translation>
 <translation id="6444046323172968959">תיבת דו-שיח של התראה</translation>
 <translation id="6452403590345320472">תוכן העניינים</translation>
-<translation id="6457542714329819968">סוג</translation>
 <translation id="6468049171101508116">הלחצן הבא</translation>
 <translation id="646954774886932461">אינדקס</translation>
 <translation id="6475604559827479857">הצבע של הדגשת המילים:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">נמחק</translation>
 <translation id="6910969481785184048">הפעלה, כיבוי והפסקה</translation>
 <translation id="6919104639734799681">הצגת רשימת הטבלאות</translation>
+<translation id="692135145298539227">מחק</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6949846980769640811">ירוק כחלחל בינוני</translation>
 <translation id="6951482098621102657">אין עוד כותרות מרמה 5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">פרטי רשימת תיאורים</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{אמפרסנד (&amp;)}two{# סימני אמפרסנד (&amp;)}many{# סימני אמפרסנד (&amp;)}other{# סימני אמפרסנד (&amp;)}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">delete the previous character</translation>
 <translation id="738899727977260036">כחול סגלגל</translation>
 <translation id="7393979322571982935">צלילים והגדרות</translation>
 <translation id="739763518212184081">השורה הקודמת</translation>

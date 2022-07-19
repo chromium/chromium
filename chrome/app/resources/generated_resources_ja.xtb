@@ -1002,8 +1002,10 @@
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> をインストールしています</translation>
 <translation id="1932098463447129402">開始時刻</translation>
 <translation id="1935303383381416800">位置情報の取得を許可するサイト</translation>
+<translation id="1936157145127842922">フォルダで表示</translation>
 <translation id="1936931585862840749">印刷部数を数値（1～<ph name="MAX_COPIES" />）で指定してください。</translation>
 <translation id="1937774647013465102">このデバイス（<ph name="ARCHITECTURE_DEVICE" />）でコンテナのアーキテクチャ タイプ <ph name="ARCHITECTURE_CONTAINER" /> をインポートできません。このコンテナを別のデバイスに復元できるかお試しださい。または、ファイルアプリを開いて、このコンテナ イメージ内のファイルにアクセスすることも可能です。</translation>
+<translation id="1938240902511979591">高コントラスト モード、拡大鏡、表示設定</translation>
 <translation id="1938320257168860255">エラーが発生しました。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="1938351510777341717">外部コマンド</translation>
 <translation id="1940546824932169984">接続済みのデバイス</translation>
@@ -1421,6 +1423,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Tab キー、Shift キー、Ctrl キー、Esc キー、CapsLock キー、音量キーは使用できません</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
+<translation id="2310923358723722542">表示と拡大</translation>
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
@@ -3200,6 +3203,7 @@
 <translation id="402211067068791756">表示中のサイトにより保存された <ph name="TOTAL_USAGE" /> のデータが削除されます</translation>
 <translation id="4022426551683927403">辞書に追加(&amp;A)</translation>
 <translation id="4025039777635956441">選択したサイトをミュート</translation>
+<translation id="4027958407426528157"><ph name="DEVICE_TYPE" /> にインストールされたアプリでウェブサイトが表示されます</translation>
 <translation id="4028467762035011525">入力方法を追加</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ページから戻る</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
@@ -4149,6 +4153,7 @@
 <translation id="496446150016900060">Wi-Fi ネットワークをスマートフォンと同期する</translation>
 <translation id="4965808351167763748">このデバイスでハングアウト Meet を実行するように設定してもよろしいですか？</translation>
 <translation id="4966972803217407697">シークレット モード使用中</translation>
+<translation id="4967227914555989138">メモを追加</translation>
 <translation id="496742804571665842">eSIM プロファイルを無効にする</translation>
 <translation id="4971412780836297815">完了後に開く</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
@@ -4395,6 +4400,7 @@
 <translation id="5233231016133573565">プロセス ID</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5233736638227740678">貼り付け(&amp;P)</translation>
+<translation id="5233794855520048159">モノラル音声、起動時のサウンド、字幕</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5235050375939235066">アプリをアンインストールしますか？</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
@@ -4499,6 +4505,7 @@
 <translation id="5333896723098573627">アプリを削除するには、まず [設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。</translation>
 <translation id="5334142896108694079">スクリプト キャッシュ</translation>
 <translation id="5336688142483283574">このページは履歴と <ph name="SEARCH_ENGINE" /> アクティビティからも削除されます。</translation>
+<translation id="5336689872433667741">カーソルとタッチパッド</translation>
 <translation id="5337771866151525739">第三者によってインストールされました。</translation>
 <translation id="5337926771328966926">現在のデバイス名は <ph name="DEVICE_NAME" /> です</translation>
 <translation id="5338338064218053691">シークレット ウィンドウを使って、シークレット モードで閲覧できます</translation>
@@ -4509,6 +4516,7 @@
 <translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で設定してください</translation>
 <translation id="5344036115151554031">Linux を復元しています</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
+<translation id="534449933710420173">名前のないフォルダ</translation>
 <translation id="5345916423802287046">ログイン時にアプリを開く</translation>
 <translation id="5350293332385664455">Google アシスタントをオフにする</translation>
 <translation id="535123479159372765">他のデバイスからテキストがコピーされました</translation>
@@ -5131,6 +5139,7 @@
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="595959584676692139">この拡張機能を使用するにはページを再読み込みします</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />（最大 <ph name="NUM_KILOBYTES_LIVE" />）</translation>
+<translation id="5963620791620013026">固定キー、画面キーボード、音声入力、スイッチ アクセス、強調ハイライト表示</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5965661248935608907">この拡張機能では、ホーム ボタンのクリック時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
@@ -5937,6 +5946,7 @@
 <translation id="6770602306803890733">すべてのウェブユーザーの安全性を高めます</translation>
 <translation id="6771503742377376720">認証局である</translation>
 <translation id="6775163072363532304">利用可能なデバイスはここに表示されます。</translation>
+<translation id="677646486571529447">メモを追加</translation>
 <translation id="6776729248872343918">ファスト ペアリングを有効にする</translation>
 <translation id="6777817260680419853">リダイレクトがブロックされました</translation>
 <translation id="6778737459546443941">保護者がまだサイトを開くことを許可していません</translation>
@@ -6084,6 +6094,7 @@
 <translation id="6900654715912436255">この検索エンジンを削除してもよろしいですか？</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">プレビューする音声</translation>
+<translation id="6902219595840841518">自動クリック、カーソルのサイズ、カーソルの色、カーソルのハイライト表示</translation>
 <translation id="6902336033320348843">セクションがサポートされていません: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">デバイスをドメインに追加しましょう</translation>
 <translation id="6903022061658753260">このアカウントで同期をオンにしたすべての Chrome ブラウザでデータが同期されます。Chrome OS の同期オプションについては、<ph name="LINK_BEGIN" />Chrome OS の設定<ph name="LINK_END" />をご覧ください。</translation>
@@ -6539,6 +6550,7 @@
 <translation id="7377481913241237033">コードを使用して接続</translation>
 <translation id="7378611153938412599">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。<ph name="BEGIN_LINK" />セキュリティに関する他のヒントを見る<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome ウェブストアを開きます</translation>
+<translation id="737938816678769289">近くのファスト ペアリング デバイスと簡単に接続して設定できます</translation>
 <translation id="7380459290951585794">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください</translation>
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>
 <translation id="7380768571499464492">更新: <ph name="PRINTER_NAME" /></translation>
@@ -6860,6 +6872,7 @@
 <translation id="7681095912841365527">サイトに Bluetooth の使用が許可されています</translation>
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
 <translation id="7683373461016844951">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、<ph name="DOMAIN" /> のメールアドレス用の新しいプロフィールを作成してください。</translation>
+<translation id="7683834360226457448">ロービジョン表示ツール</translation>
 <translation id="7684212569183643648">管理者によりインストールされています</translation>
 <translation id="7684559058815332124">キャプティブ ポータルのログインページにアクセス</translation>
 <translation id="7684718995427157417">アプリを作成してテストするには、Android Debug Bridge（ADB）を有効にします。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>

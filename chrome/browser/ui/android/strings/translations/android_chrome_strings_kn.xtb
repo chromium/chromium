@@ -108,6 +108,7 @@
 <translation id="1488775391433859242">ಈ QR ಕೋಡ್ ಅನ್ನು ಪ್ರದರ್ಶಿಸುವ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು ಈ ಫೋನ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1492417797159476138">ಈ ಸೈಟ್‌ಗಾಗಿ ನೀವು ಈಗಾಗಲೇ ಈ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಉಳಿಸಿದ್ದೀರಿ</translation>
 <translation id="1493287004536771723">ನೀವು <ph name="SITE_NAME" /> ಅನ್ನು ಅನುಸರಿಸುತ್ತಿದ್ದೀರಿ</translation>
+<translation id="1502010315804028179">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="1513352483775369820">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಇತಿಹಾಸ</translation>
 <translation id="1513814250881909472">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ</translation>
@@ -220,7 +221,6 @@
 <translation id="2149973817440762519">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2155214902713132423">ಈ ಸಾಧನಕ್ಕೆ ಈ ದೃಢೀಕರಣ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ ಬೇರೊಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ.</translation>
 <translation id="2158408438301413340">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
-<translation id="2169830938017475061">ಈಗ</translation>
 <translation id="2172688499998841696">ಚಿತ್ರ ವಿವರಣೆಗಳು ಆಫ್ ಆಗಿವೆ</translation>
 <translation id="2172905120685242547">ವಿಂಡೋವನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
@@ -298,7 +298,6 @@
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="2625189173221582860">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2642087927315268160">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್ ಮುಚ್ಚಿದೆ.</translation>
-<translation id="2645657967708199252">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿಮ್ಮ <ph name="CONNECTION_TYPE" /> ಕನೆಕ್ಷನ್ ನಿಧಾನಗೊಳಿಸಬಹುದು</translation>
 <translation id="2647434099613338025">ಭಾಷೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2649068648233607930">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="2650348088770008516">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿ ವಿವರಣೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -317,7 +316,6 @@
 <translation id="2722945394406572875">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="2723001399770238859">ಆಡಿಯೋ</translation>
 <translation id="2732063072010454421">ಉತ್ತಮ ಧ್ವನಿ ಅನುಭವವನ್ನು ಪಡೆಯಿರಿ</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">ನಿಮ್ಮ ಸಾಧನದ ಡಾರ್ಕ್ ಥೀಮ್ ಅಥವಾ ಬ್ಯಾಟರಿ ಸೇವರ್ ಆನ್ ಆಗಿರುವಾಗ, ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -346,7 +344,6 @@
 <translation id="2886836735871983413">ನೀವು ವೆಬ್ ಅನ್ನು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿದ್ದಂತೆ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿ ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="2888126860611144412">Chrome ಕುರಿತು</translation>
 <translation id="2891154217021530873">ಪುಟ ಲೋಡ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
-<translation id="2892647708214602204">ಈ ಫೈಲ್ ಸಿದ್ದವಾದಾಗ, ನೀವು ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡುತ್ತೀರಿ</translation>
 <translation id="2893180576842394309">ಹುಡುಕಾಟ ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು.</translation>
 <translation id="2900528713135656174">ಈವೆಂಟ್ ರಚಿಸು</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ಗಾಗಿ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -490,6 +487,7 @@
 <translation id="3622349720008044802">ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="363596933471559332">ಸಂಗ್ರಹಿಸಲಾದ ರುಜುವಾತುಗಳನ್ನು ಬಳಸಿಕೊಳ್ಳುವ ಮೂಲಕ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. ವೈಶಿಷ್ಟ್ಯವು ಆಫ್ ಆಗಿರುವಾಗ, ವೆಬ್‌ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವ ಮೊದಲು ಪ್ರತಿ ಬಾರಿಯೂ ನಿಮಗೆ ಪರಿಶೀಲನೆ ಮಾಡಲು ಕೇಳಲಾಗುವುದು.</translation>
+<translation id="3636940436873918441">ಆದ್ಯತೆಯ ಭಾಷೆಗಳು</translation>
 <translation id="3677911431265050325">ಮೊಬೈಲ್ ಸೈಟ್‌ಗಾಗಿ ವಿನಂತಿಸಿ</translation>
 <translation id="3687645719033307815">ಈ ಪುಟದ ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ನೀವು ನೋಡುತ್ತಿರುವಿರಿ</translation>
 <translation id="3690369331356918524">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯ ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗವಾದರೆ, ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
@@ -591,7 +589,6 @@
 <translation id="4263656433980196874">Assistant ಧ್ವನಿ ಹುಡುಕಾಟ ಸಮ್ಮತಿಯ UI ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="4266054596873078491">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಮೂಲಕ ಈ ಸೈಟ್ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
-<translation id="4290281343757112331">ಬದಲಿಗೆ ನಂತರ ಡೌನ್‌ಲೋಡ್ ಮಾಡುವುದೇ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_TOS_LINK" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_TOS_LINK" />, ಹಾಗೂ <ph name="BEGIN_ATOS_LINK" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_ATOS_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_PRIVACY_LINK" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_PRIVACY_LINK" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="4296252229500326964">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
@@ -845,7 +842,6 @@
 <translation id="5686790454216892815">ಫೈಲ್‌ನ ಹೆಸರು ತುಂಬಾ ಉದ್ದವಾಗಿದೆ</translation>
 <translation id="569536719314091526">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಬಟನ್ ಮೂಲಕ ಈ ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗಾದರೂ ಅನುವಾದಿಸಿ</translation>
 <translation id="5696597120588531049">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು, ಸುರಕ್ಷಿತವಲ್ಲದ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು Chrome ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
-<translation id="5697688514913266141">ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. <ph name="BEGIN_LINK2" />ಎಡಿಟ್ ಮಾಡಿ<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">ಟ್ಯಾಬ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="572328651809341494">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="5726692708398506830">ಪುಟದಲ್ಲಿರುವ ಪ್ರತಿಯೊಂದನ್ನೂ ದೊಡ್ಡದಾಗಿಸಿ</translation>
@@ -1106,7 +1102,6 @@
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
 <translation id="6987047470128880212">ಈ ಸಾಧನದಲ್ಲಿ ಅಜ್ಞಾತ ಮೋಡ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6995899638241819463">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಿಂದಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡಲಾಗುತ್ತದೆ</translation>
-<translation id="7001056293070445572">ಈ ಫೈಲ್ ದೊಡ್ಡದಾಗಿದೆ (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655"><ph name="BEGIN_NEW" />ಹೊಸ<ph name="END_NEW" /> ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="7022756207310403729">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
@@ -1238,7 +1233,6 @@
 <translation id="7709918231054955894">ನಿಮ್ಮ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7725024127233776428">ನೀವು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ಮೂಲಕ ಪಠ್ಯವನ್ನು ಹಂಚಲಾಗಿದೆ</translation>
-<translation id="7761849928583394409">ದಿನಾಂಕ ಮತ್ತು ಸಮಯವನ್ನು ಆರಿಸಿ</translation>
 <translation id="7762668264895820836">ಎಸ್‌ಡಿ ಕಾರ್ಡ್ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">ಹೆಚ್ಚುವರಿ ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಗಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
@@ -1279,6 +1273,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ನ ಅವಧಿ ಮುಗಿದಿದೆ.</translation>
 <translation id="7944772052836377867">ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಿಂಕ್‌ಗೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7947953824732555851">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
+<translation id="7957413488482743710">ಸಂಭವನೀಯ ವಂಚನೆಯಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ನಿಮ್ಮ ನಿಜವಾದ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">ಎಂದಿಗೂ ಇಲ್ಲ</translation>
 <translation id="7961926449547174351">ನೀವು ಸಂಗ್ರಹಣೆಯ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೀರಿ, ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="7963646190083259054">ಮಾರಾಟಗಾರ:</translation>
@@ -1405,7 +1400,6 @@
 <translation id="8540136935098276800">ಸರಿಯಾಗಿ ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲಾದ URL ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="854522910157234410">ಈ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8551513938758868521">ನೀವು Chrome ಅನ್ನು ತೊರೆದಾಗ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಿ</translation>
-<translation id="8555836665334561807">ವೈ-ಫೈನಲ್ಲಿ</translation>
 <translation id="8559990750235505898">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
 <translation id="8560560256644480257">GIF ರಚಿಸಲಾಗುತ್ತಿದೆ <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Bookmarks ನಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
@@ -1443,7 +1437,6 @@
 <translation id="8699120352855309748">ಈ ಭಾಷೆಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8746155870861185046">ಹೈಲೈಟ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8748850008226585750">ವಿಷಯಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>

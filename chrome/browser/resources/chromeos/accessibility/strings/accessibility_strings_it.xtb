@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{due punti}other{# segni di due punti}}</translation>
 <translation id="6444046323172968959">Finestra di avviso</translation>
 <translation id="6452403590345320472">Sommario</translation>
-<translation id="6457542714329819968">digita</translation>
 <translation id="6468049171101508116">Pulsante Avanti</translation>
 <translation id="646954774886932461">Indice</translation>
 <translation id="6475604559827479857">Colore di evidenziazione delle parole</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6910969481785184048">Attivare, disattivare e interrompere</translation>
 <translation id="6919104639734799681">Mostra elenco tabelle</translation>
+<translation id="692135145298539227">elimina</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6949846980769640811">Acquamarina medio</translation>
 <translation id="6951482098621102657">Nessuna intestazione di livello 5 successiva</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Dettaglio dell'elenco di descrizioni</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{e commerciale}other{# simboli di e commerciale}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">elimina il carattere precedente</translation>
 <translation id="738899727977260036">Blu ardesia</translation>
 <translation id="7393979322571982935">Suoni e impostazioni</translation>
 <translation id="739763518212184081">Riga precedente</translation>

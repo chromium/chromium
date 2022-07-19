@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Idag</translation>
 <translation id="2163152940313951844">Ogiltigt tecken: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugisiska med internationellt PC-tangentbord för USA</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> används</translation>
 <translation id="2198315389084035571">kinesiska (förenklad)</translation>
 <translation id="22085916256174561">koreanska</translation>
 <translation id="2208919847696382164">Installera med Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">turkiskt tangentbord (F)</translation>
 <translation id="2732839045120506979">vietnamesiska (VNI)</translation>
 <translation id="2735623501230989521">Ge Parallels Desktop behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Du har använt hela ditt individuella lagringsutrymme i Google Workspace.</translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgiska</translation>
 <translation id="2782104745158847185">Ett fel uppstod när Linux-programmet skulle installeras</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Ange ett kortare namn</translation>
 <translation id="2949781154072577687">Formaterar <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Manet</translation>
+<translation id="2958458230122209142">Ont om lagringsutrymme – <ph name="REMAINING_PERCENTAGE" /> % kvar av ditt individuella lagringsutrymme på <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Den här filen är avsedd för en dator med programvara från Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="2984337792991268709">Idag kl. <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Återställer <ph name="COUNT" /> objekt …</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Alla filer som sparas i den här mappen säkerhetskopieras online automatiskt.</translation>
 <translation id="6825883775269213504">ryska</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> har avmarkerats.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> har använt hela lagringsutrymmet i Google Workspace.</translation>
 <translation id="6856459657722366306">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="6861394552169064235">persiska</translation>
 <translation id="6862635236584086457">Alla filer som sparas i den här mappen säkerhetskopieras online automatiskt</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">svenska</translation>
 <translation id="6990081529015358884">Du har slut på utrymme</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mappar har valts</translation>
+<translation id="7008426324576352165">Organisationen behöver mer lagringsutrymme för att slutföra uppladdningen.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installationen misslyckades.</translation>
 <translation id="7031639531908619281">turkiska</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">danska</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
 <translation id="8997962250644902079">traditionell kinesiska (pinyin)</translation>
+<translation id="8998871447376656508">Det finns inte tillräckligt mycket ledigt utrymme på Google Drive för att slutföra uppladdningen.</translation>
 <translation id="9003940392834790328">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="9017798300203431059">Ryska (fonetiskt)</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Eftersom det inte går att flytta tillbaka objekten till <ph name="DESTINATION_NAME" /> går det inte att ångra åtgärden.</translation>
 <translation id="9035689366572880647">Ange den nuvarande pinkoden</translation>
+<translation id="9037777873893411148">*Organisationens lagringsutrymme är fullt</translation>
 <translation id="9038620279323455325">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Välj ett annat namn.</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>

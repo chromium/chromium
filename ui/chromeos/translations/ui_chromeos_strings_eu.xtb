@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugaldarra, nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> erabili dira</translation>
 <translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
 <translation id="22085916256174561">Korearra</translation>
 <translation id="2208919847696382164">Instalatu Linux-ekin</translation>
@@ -184,6 +185,7 @@
 <translation id="2544853746127077729">Sareak autentifikazio-ziurtagiria baztertu du</translation>
 <translation id="255937426064304553">AEBko nazioarteko teklatu-diseinua</translation>
 <translation id="2563185590376525700">Igela</translation>
+<translation id="2570012981255377263">Azken fitxategiak hemen agertuko dira</translation>
 <translation id="2578394532502990878">Tamildar fonetikoa</translation>
 <translation id="2579959351793446050">Odiarra</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
@@ -201,6 +203,7 @@
 <translation id="2724954091494693138">Turkiarra (F teklatua)</translation>
 <translation id="2732839045120506979">Vietnamdarra (VNI)</translation>
 <translation id="2735623501230989521">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak atzitzeko baimena Parallels Desktop-i</translation>
+<translation id="2764206540577097904">Google Workspace-ko banako biltegi osoa erabili duzu.</translation>
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2781645665747935084">Belgikarra</translation>
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
@@ -221,6 +224,7 @@
 <translation id="2943503720238418293">Erabili izen laburrago bat</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formateatzen…</translation>
 <translation id="2951236788251446349">Marmoka</translation>
+<translation id="2958458230122209142">Biltegiratze gutxi gelditzen da: % <ph name="REMAINING_PERCENTAGE" />gelditzen zaizu <ph name="TOTAL_SPACE" />-ko banako biltegian.</translation>
 <translation id="2977940621473452797">macOS sistema eragilea darabilen ordenagailu baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. Bilatu ordezko aplikazio egoki bat Chrome Web Store-n.</translation>
 <translation id="2984337792991268709">Gaur, <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> elementu leheneratzen…</translation>
@@ -543,6 +547,7 @@
 <translation id="5625294776298156701">Tamildarra, Tamil99 teklatuarekin</translation>
 <translation id="5633226425545095130">Elementu hau mugituz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
 <translation id="5649768706273821470">Entzun</translation>
+<translation id="5665074015635552640">Azken bideoak hemen agertuko dira</translation>
 <translation id="5669691691057771421">Idatzi PIN berria</translation>
 <translation id="5678784840044122290">Linux aplikazioa erabilgarri egongo da zure terminalean eta baliteke haren ikonoa abiarazlean agertzea.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ezin da deskonektatu artxibotik edo disko birtualetik<ph name="END_BOLD" />
@@ -668,6 +673,7 @@
 <translation id="6823166707458800069">Automatikoki egingo da karpeta honetan gordetako fitxategi guztien babeskopia.</translation>
 <translation id="6825883775269213504">Errusiarra</translation>
 <translation id="6847101934483209767">Kendu da <ph name="ENTRY_NAME" /> hautapenetik.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> erakundeak Google Workspace-ko biltegi osoa erabili du.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="NETWORK_PROVIDER_NAME" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="6861394552169064235">Persiarra</translation>
 <translation id="6862635236584086457">Automatikoki egingo da karpeta honetan gordetako fitxategi guztien babeskopia</translation>
@@ -686,6 +692,7 @@
     <ph name="FILE_COUNT" /> aurkitu dira</translation>
 <translation id="6935521024859866267">Buruz gora</translation>
 <translation id="6943836128787782965">Ezin izan da HTTP protokoloa eskuratu</translation>
+<translation id="6945604978460872381">Azken dokumentuak hemen agertuko dira</translation>
 <translation id="6949408524333579394">Serbieraren transliterazioa</translation>
 <translation id="6954309393500027528">Administratzaileak blokeatuta dauka fitxategi hau itsasteko aukera</translation>
 <translation id="6960565108681981554">Ez dago aktibatuta. Jarri operadorearekin harremanetan.</translation>
@@ -699,6 +706,7 @@
 <translation id="6989942356279143254">Suediarra</translation>
 <translation id="6990081529015358884">Biltegiratze-espazioa agortu zaizu</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> karpeta hautatu dira</translation>
+<translation id="7008426324576352165">Erakundeak biltegiratze gehiago behar du kargatzen amaitzeko.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Ezin izan da instalatu.</translation>
 <translation id="7031639531908619281">Turkiarra</translation>
@@ -732,6 +740,7 @@
 <translation id="7295662345261934369">Partekatu jendearekin</translation>
 <translation id="7297443947353982503">Erabiltzailea edo pasahitza ez da zuzena edo EAP autentifikazioak huts egin du</translation>
 <translation id="7309413087278791451">Alemana (Belgika)</translation>
+<translation id="7313374447885864533">Azken audio-fitxategiak hemen agertuko dira</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7343393116438664539">Vietnamdarra (telex)</translation>
 <translation id="7357762654218998920">Fitxategi mota hau ez da bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
@@ -865,6 +874,7 @@
 <translation id="8342318071240498787">Badago lehendik ere izen hori duen fitxategi edo direktorio bat.</translation>
 <translation id="8372369524088641025">WEP gako okerra</translation>
 <translation id="8372852072747894550">Greziarra</translation>
+<translation id="8384716930968677505">Azken irudiak hemen agertuko dira</translation>
 <translation id="8386903983509584791">Amaitu da bilaketa</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> atera da.</translation>
 <translation id="8395901698320285466">Dimentsioak</translation>
@@ -932,11 +942,13 @@
 <translation id="8919081441417203123">Daniarra</translation>
 <translation id="8965697826696209160">Ez dago memoria nahikorik.</translation>
 <translation id="8997962250644902079">Txinatarra (tradizionala, pinyin)</translation>
+<translation id="8998871447376656508">Ez dago kargatzen amaitzeko behar adina toki librerik Google Drive-n.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="9017798300203431059">Fonetika errusiarra</translation>
 <translation id="9034924485347205037">Linux fitxategiak</translation>
 <translation id="9035012421917565900">Ezin dira eraman berriro elementuak "<ph name="DESTINATION_NAME" />" unitatera; beraz, ezin izango duzu desegin ekintza.</translation>
 <translation id="9035689366572880647">Idatzi oraingo PINa</translation>
+<translation id="9037777873893411148">*Erakundearen biltegia beteta dago</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="9065512565307033593">Egiaztapena gauzatzen ez baduzu, desgaitu egingo da sarerako sarbidea.</translation>

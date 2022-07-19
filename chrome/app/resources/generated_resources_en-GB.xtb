@@ -1018,6 +1018,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1931410639376954712">Installing <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Not Before</translation>
 <translation id="1935303383381416800">Allowed to see your location</translation>
+<translation id="1936157145127842922">Show in Folder</translation>
 <translation id="1936931585862840749">Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER" /> with this device which is <ph name="ARCHITECTURE_DEVICE" />. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.</translation>
 <translation id="1938240902511979591">High-contrast mode, magnifier and display settings</translation>
@@ -4123,6 +4124,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4900392736118574277">Your start-up page was changed to <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
 <translation id="4900652253009739885">Can’t remove the only switch assigned to 'Select'. Press any key to <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Expand recently closed</translation>
 <translation id="4901309472892185668">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment.</translation>
 <translation id="49027928311173603">The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Set up or manage network file shares. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -7010,6 +7012,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> will be able to view files in <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Change</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
+<translation id="7769748505895274502">Collapse recently closed</translation>
 <translation id="7770406201819593386">Run Chrome OS Flex diagnostic tests.</translation>
 <translation id="7770450735129978837">Right mouse click</translation>
 <translation id="7770612696274572992">Image copied from other device</translation>

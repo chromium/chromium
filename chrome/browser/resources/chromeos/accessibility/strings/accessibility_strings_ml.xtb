@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{കോളൻ}other{# കോളനുകൾ}}</translation>
 <translation id="6444046323172968959">മുന്നറിയിപ്പ് ഡയലോഗ്</translation>
 <translation id="6452403590345320472">ഉള്ളടക്ക പട്ടിക</translation>
-<translation id="6457542714329819968">ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="6468049171101508116">അടുത്ത ബട്ടൺ</translation>
 <translation id="646954774886932461">സൂചിക</translation>
 <translation id="6475604559827479857">പദ ഹൈലൈറ്റുകളുടെ നിറം:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">ഇല്ലാതാക്കി</translation>
 <translation id="6910969481785184048">ഓണാക്കുകയും ഓഫാക്കുകയും നിർത്തുകയും ചെയ്യുക</translation>
 <translation id="6919104639734799681">പട്ടിക ലിസ്റ്റ് കാണിക്കുക</translation>
+<translation id="692135145298539227">ഇല്ലാതാക്കൂ</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6949846980769640811">മീഡിയം അക്വാ മറീൻ</translation>
 <translation id="6951482098621102657">അടുത്ത നില 5 ശീർഷകം ഒന്നുമില്ല</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">വിവരണ ലിസ്റ്റിന്റെ വിശദംശങ്ങൾ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{സമുച്ചയം}other{# സമുച്ചയങ്ങൾ}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">മുമ്പത്തെ പ്രതീകം ഇല്ലാതാക്കുക</translation>
 <translation id="738899727977260036">സ്ലേറ്റ് ബ്ലൂ</translation>
 <translation id="7393979322571982935">ശബ്‌ദങ്ങളും ക്രമീകരണവും</translation>
 <translation id="739763518212184081">മുമ്പത്തെ വരി</translation>

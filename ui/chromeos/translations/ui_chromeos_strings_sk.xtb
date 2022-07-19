@@ -185,8 +185,10 @@
 <translation id="2544853746127077729">Certifikát na overenie totožnosti bol zamietnutý sieťou</translation>
 <translation id="255937426064304553">Americká klávesnica s medzinárodným rozložením klávesov</translation>
 <translation id="2563185590376525700">Žaba</translation>
+<translation id="2570012981255377263">Tu sa budú zobrazovať vaše nedávne súbory</translation>
 <translation id="2578394532502990878">Tamilská fonetická klávesnica</translation>
 <translation id="2579959351793446050">Uríjska klávesnica</translation>
+<translation id="2593644851255584939">Správca vyžaduje, aby ste deaktivovali zámku SIM karty.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, zablokoval váš správca, podrobnosti</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM karta je uzamknutá</translation>
@@ -547,6 +549,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5625294776298156701">Tamilská klávesnica s rozložením Tamil99</translation>
 <translation id="5633226425545095130">Ak presuniete túto položku, budete ju zdieľať so všetkými používateľmi, ktorí vidia zdieľaný priečinok <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Počúvať</translation>
+<translation id="5665074015635552640">Tu sa budú zobrazovať vaše nedávne videá</translation>
 <translation id="5669691691057771421">Zadanie nového kódu PIN</translation>
 <translation id="5678784840044122290">Aplikácia Linux bude k dispozícii v termináli a jej ikona sa môže tiež zobraziť v Spúšťači.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nedá sa odpojiť od archívu či virtuálneho disku<ph name="END_BOLD" />
@@ -691,6 +694,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
     Počet nájdených súborov: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Hore nohami</translation>
 <translation id="6943836128787782965">Príkaz get protokolu HTTP zlyhal</translation>
+<translation id="6945604978460872381">Tu sa budú zobrazovať vaše nedávne dokumenty</translation>
 <translation id="6949408524333579394">Srbská klávesnica (prepis)</translation>
 <translation id="6954309393500027528">Prilepenie tohto súboru blokuje váš správca</translation>
 <translation id="6960565108681981554">Neaktivované. Kontaktujte operátora.</translation>
@@ -738,6 +742,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7295662345261934369">Zdieľať s ostatnými</translation>
 <translation id="7297443947353982503">Používateľské meno alebo heslo je nesprávne alebo zlyhalo overenie EAP-auth</translation>
 <translation id="7309413087278791451">Nemecká (Belgicko) klávesnica</translation>
+<translation id="7313374447885864533">Tu sa budú zobrazovať vaše nedávne zvukové súbory</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7343393116438664539">Vietnamská klávesnica s rozložením Telex</translation>
 <translation id="7357762654218998920">Tento typ súboru nie je podporovaný. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>
@@ -871,6 +876,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8342318071240498787">Súbor alebo priečinok s daným názvom už existuje.</translation>
 <translation id="8372369524088641025">Zlý kľúč WEP</translation>
 <translation id="8372852072747894550">Grécka klávesnica</translation>
+<translation id="8384716930968677505">Tu sa budú zobrazovať vaše nedávne obrázky</translation>
 <translation id="8386903983509584791">Vyhľadávanie bolo dokončené</translation>
 <translation id="8387733224523483503">Bol extrahovaný súbor <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Rozmery</translation>

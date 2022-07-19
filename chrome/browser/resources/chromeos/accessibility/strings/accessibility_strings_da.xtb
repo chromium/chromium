@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{kolon}one{# koloner}other{# koloner}}</translation>
 <translation id="6444046323172968959">Underretningsdialogboks</translation>
 <translation id="6452403590345320472">Indholdsfortegnelse</translation>
-<translation id="6457542714329819968">skriv</translation>
 <translation id="6468049171101508116">Knappen Næste</translation>
 <translation id="646954774886932461">Indeks</translation>
 <translation id="6475604559827479857">Farve til markering af ord:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6910969481785184048">Til, Fra, og Afbryd</translation>
 <translation id="6919104639734799681">Vis tabelliste</translation>
+<translation id="692135145298539227">slet</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6949846980769640811">Akvamarinblå</translation>
 <translation id="6951482098621102657">Der er ikke flere niveau 5-overskrifter</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Oplysning i beskrivelsesliste</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{og-tegn}one{# og-tegn}other{# og-tegn}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">slet det forrige tegn</translation>
 <translation id="738899727977260036">Skiferblå</translation>
 <translation id="7393979322571982935">Lyde og indstillinger</translation>
 <translation id="739763518212184081">Forrige linje</translation>

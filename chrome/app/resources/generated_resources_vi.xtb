@@ -1018,8 +1018,10 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1931410639376954712">Đang cài đặt <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Không được Trước</translation>
 <translation id="1935303383381416800">Được phép xem vị trí của bạn</translation>
+<translation id="1936157145127842922">Hiển thị trong Thư mục</translation>
 <translation id="1936931585862840749">Hãy dùng số để biểu thị số lượng bản cần in (1 đến <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Không thể nhập loại kiến trúc vùng chứa <ph name="ARCHITECTURE_CONTAINER" /> bằng thiết bị thuộc loại <ph name="ARCHITECTURE_DEVICE" /> này. Bạn có thể thử khôi phục vùng chứa này vào một thiết bị khác hoặc truy cập vào các tệp bên trong hình ảnh vùng chứa này bằng cách mở trong ứng dụng Files.</translation>
+<translation id="1938240902511979591">Chế độ tương phản cao, tính năng phóng to và chế độ cài đặt màn hình</translation>
 <translation id="1938320257168860255">Đã xảy ra lỗi. Hãy đảm bảo điện thoại của bạn đang ở gần, đã mở khoá và đã bật Bluetooth và Wi-Fi.</translation>
 <translation id="1938351510777341717">Lệnh bên ngoài</translation>
 <translation id="1940546824932169984">Thiết bị đã kết nối</translation>
@@ -1442,6 +1444,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Các phím sau không được hỗ trợ: Tab, Shift, Control, Escape, Caps lock, Âm lượng</translation>
 <translation id="2309620859903500144">Trang web này đã bị chặn sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
+<translation id="2310923358723722542">Màn hình và phóng to</translation>
 <translation id="2312219318583366810">URL của trang</translation>
 <translation id="2314165183524574721">Tùy chọn hiển thị hiện tại là ẩn</translation>
 <translation id="2314774579020744484">Ngôn ngữ được dùng khi dịch trang</translation>
@@ -4183,6 +4186,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="496446150016900060">Đồng bộ hóa các mạng Wi-Fi với điện thoại của bạn</translation>
 <translation id="4965808351167763748">Bạn có chắc chắn muốn thiết lập thiết bị này để chạy Hangouts Meet không?</translation>
 <translation id="4966972803217407697">Bạn đang ở chế độ Ẩn danh</translation>
+<translation id="4967227914555989138">Thêm ghi chú</translation>
 <translation id="496742804571665842">Vô hiệu hoá hồ sơ eSIM</translation>
 <translation id="4971412780836297815">Mở khi hoàn tất</translation>
 <translation id="4971735654804503942">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Cảnh báo bạn những mật khẩu đã bị lộ. Yêu cầu gửi dữ liệu duyệt web cho Google.</translation>
@@ -4430,6 +4434,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5233231016133573565">ID Tiến trình</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
 <translation id="5233736638227740678">&amp;Dán</translation>
+<translation id="5233794855520048159">Âm thanh đơn âm, âm thanh khi khởi động và phụ đề</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5235050375939235066">Gỡ cài đặt ứng dụng?</translation>
 <translation id="523505283826916779">Hỗ trợ tiếp cận</translation>
@@ -4534,6 +4539,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5333896723098573627">Để xoá ứng dụng, hãy chuyển đến phần Cài đặt &gt; Cửa hàng Google Play &gt; Quản lý tuỳ chọn Android &gt; Ứng dụng hoặc Trình quản lý ứng dụng. Tiếp theo, nhấn vào ứng dụng mà bạn muốn gỡ cài đặt (bạn có thể phải vuốt sang phải hoặc trái để tìm ứng dụng đó). Sau đó, nhấn vào Gỡ cài đặt hoặc Tắt.</translation>
 <translation id="5334142896108694079">Bộ nhớ đệm tập lệnh</translation>
 <translation id="5336688142483283574">Trang này cũng sẽ bị xóa khỏi phần hoạt động trên <ph name="SEARCH_ENGINE" /> và lịch sử của bạn.</translation>
+<translation id="5336689872433667741">Con trỏ và bàn di chuột</translation>
 <translation id="5337771866151525739">Được cài đặt bởi bên thứ ba.</translation>
 <translation id="5337926771328966926">Thiết bị hiện có tên là <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Bạn có thể duyệt web ở chế độ riêng tư qua một cửa sổ Ẩn danh</translation>
@@ -4544,6 +4550,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5342091991439452114">Mã PIN phải có ít nhất <ph name="MINIMUM" /> chữ số</translation>
 <translation id="5344036115151554031">Đang khôi phục Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Phải)</translation>
+<translation id="534449933710420173">Thư mục chưa đặt tên</translation>
 <translation id="5345916423802287046">Mở ứng dụng khi bạn đăng nhập</translation>
 <translation id="5350293332385664455">Tắt Trợ lý Google</translation>
 <translation id="535123479159372765">Văn bản được sao chép từ thiết bị khác</translation>
@@ -5167,6 +5174,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5959471481388474538">Không có mạng</translation>
 <translation id="595959584676692139">Tải lại trang để sử dụng tiện ích này</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (tối đa <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">Phím cố định, bàn phím ảo, tính năng nhập bằng giọng nói, tiếp cận bằng công tắc và đánh dấu nâng cao</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
 <translation id="5965661248935608907">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn nhấp vào nút Trang chủ hoặc tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="5968022600320704045">Không có kết quả tìm kiếm nào</translation>
@@ -5977,6 +5985,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6770602306803890733">Tăng cường bảo mật cho bạn và mọi người trên web</translation>
 <translation id="6771503742377376720">Là Tổ chức phát hành chứng chỉ</translation>
 <translation id="6775163072363532304">Các thiết bị hiện có sẽ xuất hiện ở đây.</translation>
+<translation id="677646486571529447">Thêm ghi chú</translation>
 <translation id="6776729248872343918">Bật tính năng Ghép nối nhanh</translation>
 <translation id="6777817260680419853">Đã chặn chuyển hướng</translation>
 <translation id="6778737459546443941">Cha mẹ của bạn chưa phê duyệt trang web</translation>
@@ -6125,6 +6134,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6900654715912436255">Bạn có chắc chắn muốn xoá công cụ tìm kiếm này không?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Giọng nói để nghe trước</translation>
+<translation id="6902219595840841518">Tự động nhấp, kích thước con trỏ, màu con trỏ và đánh dấu con trỏ</translation>
 <translation id="6902336033320348843">Không hỗ trợ phần: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Để thiết bị tham gia vào miền</translation>
 <translation id="6903022061658753260">Dữ liệu của bạn sẽ được đồng bộ hoá trên mọi trình duyệt Chrome nơi bạn đã bật tính năng đồng bộ hoá cho tài khoản này. Để xem các chế độ đồng bộ hoá trên ChromeOS, hãy chuyển đến phần <ph name="LINK_BEGIN" />cài đặt ChromeOS<ph name="LINK_END" />.</translation>
@@ -6904,6 +6914,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7681095912841365527">Trang web có thể sử dụng Bluetooth</translation>
 <translation id="7681597159868843240">Các trang web thường sử dụng cảm biến chuyển động của thiết bị cho các tính năng như thực tế ảo hoặc theo dõi hoạt động thể dục</translation>
 <translation id="7683373461016844951">Để tiếp tục, hãy nhấp vào OK, sau đó nhấp vào Thêm người để tạo hồ sơ mới cho địa chỉ email <ph name="DOMAIN" /> của bạn.</translation>
+<translation id="7683834360226457448">Công cụ hiển thị dành cho người có thị lực kém</translation>
 <translation id="7684212569183643648">Do quản trị viên của bạn cài đặt</translation>
 <translation id="7684559058815332124">Truy cập trang đăng nhập cổng bị khóa</translation>
 <translation id="7684718995427157417">Để tạo và thử nghiệm ứng dụng của bạn, hãy bật Cầu gỡ lỗi Android (Android Debug Bridge – ADB). Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>

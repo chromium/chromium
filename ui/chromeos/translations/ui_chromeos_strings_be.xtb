@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2163152940313951844">Недапушчальны сімвал: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Партугальская з міжнароднай клавіятурай ЗША для ПК</translation>
+<translation id="2193661397560634290">Выкарыстоўваецца <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Кітайская (спрошчаная)</translation>
 <translation id="22085916256174561">Карэйская</translation>
 <translation id="2208919847696382164">Усталюйце пакет Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Турэцкая (раскладка Turkish F)</translation>
 <translation id="2732839045120506979">В'етнамская (раскладка VNI)</translation>
 <translation id="2735623501230989521">Даць Parallels Desktop доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
+<translation id="2764206540577097904">Вы выкарысталі ўвесь даступны вам аб'ём індывідуальнага сховішча Google Workspace.</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгійская</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Выкарыстайце карацейшую назву</translation>
 <translation id="2949781154072577687">Фармаціруецца дыск "<ph name="DRIVE_NAME" />"...</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2958458230122209142">У вашым індывідуальным сховішчы мала месца. Застаецца <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
 <translation id="2984337792991268709">Сёння <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Ідзе аднаўленне элементаў (<ph name="COUNT" />)…</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">Для ўсіх файлаў, захаваных у гэтай папцы, аўтаматычна ствараюцца рэзервовыя копіі ў інтэрнэце.</translation>
 <translation id="6825883775269213504">Руская</translation>
 <translation id="6847101934483209767">Выдалена з выбранага: <ph name="ENTRY_NAME" />.</translation>
+<translation id="6848194403851638089">Месца ў сховішчы Google Workspace, якое належыць арганізацыі "<ph name="ORGANIZATION_NAME" />", скончылася.</translation>
 <translation id="6856459657722366306">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="6861394552169064235">Персідская</translation>
 <translation id="6862635236584086457">Для ўсіх файлаў, захаваных у гэтай папцы, аўтаматычна ствараюцца рэзервовыя копіі ў інтэрнэце</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">Шведская</translation>
 <translation id="6990081529015358884">У вас скончылася месца</translation>
 <translation id="6998711733709403587">Выбрана папак: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">Не ўдалося завяршыць запампоўванне: у вашай арганізацыі недастаткова месца ў сховішчы.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Памылка ўсталявання.</translation>
 <translation id="7031639531908619281">Турэцкая</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">Дацкая</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
+<translation id="8998871447376656508">Не ўдалося завяршыць запампоўванне: на Google Дыску недастаткова свабоднага месца.</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="9017798300203431059">Руская фанетычная</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9035012421917565900">Немагчыма перамясціць элементы назад у "<ph name="DESTINATION_NAME" />", таму вы не зможаце адрабіць гэта дзеянне.</translation>
 <translation id="9035689366572880647">Увядзіце бягучы PIN-код</translation>
+<translation id="9037777873893411148">* Сховішча арганізацыі запоўнена</translation>
 <translation id="9038620279323455325">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Выберыце іншую назву.</translation>
 <translation id="9046895021617826162">Збой падключэння</translation>
 <translation id="9065512565307033593">Калі вы ўведзяце няправільны PUK-код, доступ да сеткі будзе адключаны.</translation>

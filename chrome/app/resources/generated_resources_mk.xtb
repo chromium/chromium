@@ -1019,6 +1019,7 @@
 <translation id="1931410639376954712">Се инсталира <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не пред</translation>
 <translation id="1935303383381416800">Дозволено им е да ја гледаат локацијата</translation>
+<translation id="1936157145127842922">Покажи во папка</translation>
 <translation id="1936931585862840749">Употребете број за да назначите колку примероци да се испечатат (од 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не може да се увезе тип архитектура на контејнер <ph name="ARCHITECTURE_CONTAINER" /> со уред којшто е <ph name="ARCHITECTURE_DEVICE" />. Може да се обидете да го вратите овој контејнер во различен уред или може да пристапите до датотеките во оваа слика на контејнер, така што ќе ја отворите апликацијата Files.</translation>
 <translation id="1938240902511979591">Режим на висок контраст, лупа и поставки за екран</translation>
@@ -4125,6 +4126,7 @@
 <translation id="4900392736118574277">Вашата страница на стартување е променета во <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - испреплетен приказ</translation>
 <translation id="4900652253009739885">Не може да се отстрани единствениот прекинувач доделен за „Избери“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Проширете ги неодамна затворените</translation>
 <translation id="4901309472892185668">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Правилото преземено од серверот е неважечко: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Поставете ги или управувајте со мрежните споделувања. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -7015,6 +7017,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> ќе може да ги прегледува датотеките во <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Промени</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
+<translation id="7769748505895274502">Соберете ги неодамна затворените</translation>
 <translation id="7770406201819593386">Извршете дијагностички тестови за ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Десен клик со глувче</translation>
 <translation id="7770612696274572992">Слика копирана од друг уред</translation>

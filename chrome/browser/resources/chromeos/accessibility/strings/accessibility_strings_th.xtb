@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{เครื่องหมายทวิภาค}other{# เครื่องหมายทวิภาค}}</translation>
 <translation id="6444046323172968959">ช่องโต้ตอบการแจ้งเตือน</translation>
 <translation id="6452403590345320472">สารบัญ</translation>
-<translation id="6457542714329819968">พิมพ์</translation>
 <translation id="6468049171101508116">ปุ่มถัดไป</translation>
 <translation id="646954774886932461">ดัชนี</translation>
 <translation id="6475604559827479857">สีสำหรับการไฮไลต์คำ:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">ลบแล้ว</translation>
 <translation id="6910969481785184048">เปิด ปิด และหยุด</translation>
 <translation id="6919104639734799681">แสดงรายการตาราง</translation>
+<translation id="692135145298539227">นำออก</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6949846980769640811">สีเขียวอะความารีนปานกลาง</translation>
 <translation id="6951482098621102657">ไม่มีส่วนหัวระดับ 5 ถัดไป</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">รายละเอียดรายการคำอธิบาย</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{เครื่องหมายแอมเปอร์แซนด์}other{# เครื่องหมายแอมเปอร์แซนด์}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ลบอักขระก่อนหน้า</translation>
 <translation id="738899727977260036">สีน้ำเงินอมเทา</translation>
 <translation id="7393979322571982935">เสียงและการตั้งค่า</translation>
 <translation id="739763518212184081">บรรทัดก่อนหน้า</translation>

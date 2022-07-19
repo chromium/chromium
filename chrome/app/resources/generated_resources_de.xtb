@@ -1002,8 +1002,10 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> wird installiert</translation>
 <translation id="1932098463447129402">Nicht vor</translation>
 <translation id="1935303383381416800">Dürfen meine Standortdaten abrufen</translation>
+<translation id="1936157145127842922">In Ordner anzeigen</translation>
 <translation id="1936931585862840749">Gib eine Zahl ein, um die Anzahl der zu druckenden Exemplare festzulegen (1 bis <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Der Containerarchitekturtyp <ph name="ARCHITECTURE_CONTAINER" /> kann bei diesem Gerät nicht importiert werden, weil es sich um ein <ph name="ARCHITECTURE_DEVICE" />-Gerät handelt. Du kannst probieren, diesen Container auf einem anderen Gerät wiederherzustellen oder das Containerimage in der App "Dateien" öffnen und dort auf die enthaltenen Dateien zugreifen.</translation>
+<translation id="1938240902511979591">Modus mit hohem Kontrast, Lupe und Anzeigeeinstellungen</translation>
 <translation id="1938320257168860255">Es gab ein Problem. Dein Smartphone muss sich in der Nähe befinden und entsperrt sein. Außerdem müssen Bluetooth und WLAN aktiviert sein.</translation>
 <translation id="1938351510777341717">Externer Befehl</translation>
 <translation id="1940546824932169984">Verbundene Geräte</translation>
@@ -1423,6 +1425,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Folgende Tasten werden nicht unterstützt: Tabulatortaste, Umschalttaste, Steuerungtaste, Esc-Taste, Feststelltaste, Lautstärketaste</translation>
 <translation id="2309620859903500144">Diese Website darf nicht auf meine Bewegungs- oder Lichtsensoren zugreifen.</translation>
+<translation id="2310923358723722542">Anzeige und Vergrößerung</translation>
 <translation id="2312219318583366810">Seiten-URL</translation>
 <translation id="2314165183524574721">Die aktuelle Sichtbarkeitseinstellung ist "Verborgen"</translation>
 <translation id="2314774579020744484">Sprache, in die Seiten übersetzt werden sollen</translation>
@@ -4158,6 +4161,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="496446150016900060">WLAN-Netzwerke mit Smartphone synchronisieren</translation>
 <translation id="4965808351167763748">Möchtest du dieses Gerät wirklich für Hangouts Meet einrichten?</translation>
 <translation id="4966972803217407697">Inkognitomodus ist aktiviert</translation>
+<translation id="4967227914555989138">Notiz hinzufügen</translation>
 <translation id="496742804571665842">eSIM-Profile deaktivieren</translation>
 <translation id="4971412780836297815">Nach abgeschlossenem Download öffnen</translation>
 <translation id="4971735654804503942">Schnellerer und dynamischerer Schutz gegen schädliche Websites, Downloads und Erweiterungen. Warnt dich im Fall von Datenpannen, bei denen Passwörter preisgegeben werden. Hierfür müssen Browserdaten an Google gesendet werden.</translation>
@@ -4405,6 +4409,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5233231016133573565">Prozess-ID</translation>
 <translation id="5233638681132016545">Neuer Tab</translation>
 <translation id="5233736638227740678">&amp;Einfügen</translation>
+<translation id="5233794855520048159">Mono-Audio, Ton beim Start und Untertitel</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5235050375939235066">App deinstallieren?</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
@@ -4509,6 +4514,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5333896723098573627">Wenn du eine App entfernen möchtest, gehe zu den Einstellungen &gt; „Apps“ &gt; „Google Play Store“ &gt; „Android-Einstellungen verwalten“ &gt; „Apps“ oder rufe den Anwendungsmanager auf. Tippe dann auf die App, die du deinstallieren möchtest, und wähle „Deinstallieren“ oder „Deaktivieren“ aus. Möglicherweise musst du nach rechts oder links wischen, um die App zu finden.</translation>
 <translation id="5334142896108694079">Skript-Cache</translation>
 <translation id="5336688142483283574">Diese Seite wird auch aus dem Verlauf und deinen <ph name="SEARCH_ENGINE" />-Aktivitäten entfernt.</translation>
+<translation id="5336689872433667741">Cursor und Touchpad</translation>
 <translation id="5337771866151525739">Von einem Drittanbieter installiert</translation>
 <translation id="5337926771328966926">Der aktuelle Gerätename ist <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">In einem Inkognitofenster kannst du privat surfen</translation>
@@ -4519,6 +4525,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5342091991439452114">PIN muss mindestens <ph name="MINIMUM" /> Ziffern umfassen</translation>
 <translation id="5344036115151554031">Linux wird wiederhergestellt</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
+<translation id="534449933710420173">Unbenannter Ordner</translation>
 <translation id="5345916423802287046">App beim Anmelden starten</translation>
 <translation id="5350293332385664455">Google Assistant deaktivieren</translation>
 <translation id="535123479159372765">Text wurde von einem anderen Gerät kopiert</translation>
@@ -5139,6 +5146,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5959471481388474538">Netzwerk nicht verfügbar</translation>
 <translation id="595959584676692139">Seite neu laden, um diese Erweiterung zu nutzen</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (Spitzenwert <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">Einfingerbedienung, Bildschirmtastatur, Spracheingabe, Schalterzugriff und optimiertes Hervorheben</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="5965661248935608907">Die Erweiterung legt auch fest, welche Seite bei der Suche über die Omnibox angezeigt wird oder wenn du auf die Schaltfläche „Startseite“ klickst.</translation>
 <translation id="5968022600320704045">Keine Suchergebnisse</translation>
@@ -5949,6 +5957,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6770602306803890733">Verbessert die Sicherheit für dich und alle im Internet</translation>
 <translation id="6771503742377376720">Ist eine Zertifizierungsstelle</translation>
 <translation id="6775163072363532304">Verfügbare Geräte werden hier angezeigt.</translation>
+<translation id="677646486571529447">Notiz hinzufügen</translation>
 <translation id="6776729248872343918">Schnelles Pairing aktivieren</translation>
 <translation id="6777817260680419853">Weiterleitung blockiert</translation>
 <translation id="6778737459546443941">Dein Elternteil hat die Berechtigung noch nicht erteilt</translation>
@@ -6097,6 +6106,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6900654715912436255">Möchtest du diese Suchmaschine wirklich löschen?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Stimme zum Anhören</translation>
+<translation id="6902219595840841518">Automatischer Klick, Cursorgröße, Cursorfarbe und Cursor hervorheben</translation>
 <translation id="6902336033320348843">Abschnitt nicht unterstützt: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Gerät bei Domain registrieren</translation>
 <translation id="6903022061658753260">Deine Daten werden mit allen Chrome-Browsern synchronisiert, in denen du die Synchronisierung für dieses Konto aktiviert hast. Synchronisierungsoptionen für Chrome OS findest du in den <ph name="LINK_BEGIN" />Chrome OS-Einstellungen<ph name="LINK_END" />.</translation>
@@ -6874,6 +6884,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7681095912841365527">Website kann Bluetooth verwenden</translation>
 <translation id="7681597159868843240">Websites verwenden die Bewegungssensoren deines Geräts normalerweise für Funktionen wie Virtual Reality oder Fitnesstracking</translation>
 <translation id="7683373461016844951">Um fortzufahren, klicke auf Ok. Klicke dann auf "Person hinzufügen", um ein neues Profil für deine E-Mail-Adresse bei <ph name="DOMAIN" /> zu erstellen.</translation>
+<translation id="7683834360226457448">Tools für Menschen mit eingeschränktem Sehvermögen</translation>
 <translation id="7684212569183643648">Von deinem Administrator installiert</translation>
 <translation id="7684559058815332124">Captive Portal-Anmeldeseite besuchen</translation>
 <translation id="7684718995427157417">Aktiviere zum Erstellen und Testen deiner Apps Android Debug Bridge (ADB). Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>

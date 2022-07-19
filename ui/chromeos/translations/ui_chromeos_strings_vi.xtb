@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Chứng chỉ xác thực bị mạng từ chối</translation>
 <translation id="255937426064304553">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="2563185590376525700">Ếch</translation>
+<translation id="2570012981255377263">Các tệp gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="2578394532502990878">Tiếng Tamil (phiên âm)</translation>
 <translation id="2579959351793446050">Tiếng Odia</translation>
 <translation id="2593644851255584939">Quản trị viên của bạn yêu cầu bạn tắt chế độ Khoá SIM.</translation>
@@ -548,6 +549,7 @@
 <translation id="5625294776298156701">Tiếng Tamil bằng bàn phím Tamil99</translation>
 <translation id="5633226425545095130">Khi bạn di chuyển mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Nghe</translation>
+<translation id="5665074015635552640">Các video gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="5669691691057771421">Nhập mã PIN mới</translation>
 <translation id="5678784840044122290">Ứng dụng Linux sẽ có trong Thiết bị của bạn và cũng có thể hiển thị một biểu tượng trong Trình chạy.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Không thể ngắt kết nối khỏi vùng lưu trữ hoặc ổ đĩa ảo<ph name="END_BOLD" />
@@ -692,6 +694,7 @@
     Đã tìm thấy <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Lộn ngược</translation>
 <translation id="6943836128787782965">HTTP gặp lỗi</translation>
+<translation id="6945604978460872381">Các tài liệu gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="6949408524333579394">Tiếng Serbia (chuyển tự)</translation>
 <translation id="6954309393500027528">Quản trị viên của bạn đã chặn thao tác dán tệp này</translation>
 <translation id="6960565108681981554">Chưa kích hoạt. Hãy liên hệ với nhà mạng của bạn.</translation>
@@ -739,6 +742,7 @@
 <translation id="7295662345261934369">Chia sẻ với những người khác</translation>
 <translation id="7297443947353982503">Tên người dùng/mật khẩu không đúng hoặc xác thực EAP không thành công</translation>
 <translation id="7309413087278791451">Tiếng Đức (Bỉ)</translation>
+<translation id="7313374447885864533">Các tệp âm thanh gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7343393116438664539">Tiếng Việt (Telex)</translation>
 <translation id="7357762654218998920">Loại tệp này không được hỗ trợ. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
@@ -872,6 +876,7 @@
 <translation id="8342318071240498787">Tệp hoặc thư mục có cùng tên đã tồn tại.</translation>
 <translation id="8372369524088641025">Khóa WEP sai</translation>
 <translation id="8372852072747894550">Tiếng Hy Lạp</translation>
+<translation id="8384716930968677505">Các hình ảnh gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="8386903983509584791">Đã quét xong</translation>
 <translation id="8387733224523483503">Đã giải nén <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Kích thước</translation>

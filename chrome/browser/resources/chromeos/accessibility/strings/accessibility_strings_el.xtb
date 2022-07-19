@@ -803,7 +803,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{άνω κάτω τελεία}other{# άνω κάτω τελείες}}</translation>
 <translation id="6444046323172968959">Παράθυρο διαλόγου ειδοποιήσεων</translation>
 <translation id="6452403590345320472">Πίνακας περιεχομένων</translation>
-<translation id="6457542714329819968">τύπος</translation>
 <translation id="6468049171101508116">Επόμενο κουμπί</translation>
 <translation id="646954774886932461">Ευρετήριο</translation>
 <translation id="6475604559827479857">Χρώμα επισήμανσης λέξεων:</translation>
@@ -861,6 +860,7 @@
 <translation id="6910211073230771657">Διαγράφηκε</translation>
 <translation id="6910969481785184048">Ενεργοποίηση, απενεργοποίηση και διακοπή</translation>
 <translation id="6919104639734799681">Εμφάνιση λίστας πινάκων</translation>
+<translation id="692135145298539227">διαγραφή</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6949846980769640811">Μεσαίο ακουαμαρίν</translation>
 <translation id="6951482098621102657">Δεν υπάρχει επόμενη κεφαλίδα επιπέδου 5.</translation>
@@ -928,7 +928,6 @@
 <translation id="7356610683936413584">Λεπτομέρεια λίστας περιγραφής</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{συμπλεκτικό σύμβολο}other{# συμπλεκτικά σύμβολα}}</translation>
 <translation id="737396357417333429">στοιχείο με δυνατότητα κλικ</translation>
-<translation id="7388656272362719103">διαγραφή προηγούμενου χαρακτήρα</translation>
 <translation id="738899727977260036">Μπλε γκρι</translation>
 <translation id="7393979322571982935">Ήχοι και ρυθμίσεις</translation>
 <translation id="739763518212184081">Προηγούμενη γραμμή</translation>

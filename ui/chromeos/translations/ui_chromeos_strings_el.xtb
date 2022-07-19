@@ -140,6 +140,7 @@
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2163152940313951844">Μη έγκυρος χαρακτήρας: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Πορτογαλικά με πληκτρολόγιο υπολογιστή Διεθνές ΗΠΑ</translation>
+<translation id="2193661397560634290">Χρησιμοποιούνται <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Απλοποιημένα Κινεζικά</translation>
 <translation id="22085916256174561">Κορεατικά</translation>
 <translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
@@ -186,6 +187,7 @@
 <translation id="2544853746127077729">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε από το δίκτυο</translation>
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
+<translation id="2570012981255377263">Τα πρόσφατα αρχεία σας θα εμφανίζονται εδώ</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
 <translation id="2579959351793446050">Όντια</translation>
 <translation id="2602810353103180630">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
@@ -203,6 +205,7 @@
 <translation id="2724954091494693138">Τουρκικά με πληκτρολόγιο F</translation>
 <translation id="2732839045120506979">Βιετναμικά VNI</translation>
 <translation id="2735623501230989521">Δώστε άδεια στο Parallels Desktop για πρόσβαση σε αρχεία στον φάκελο <ph name="FOLDER_NAME" />.</translation>
+<translation id="2764206540577097904">Χρησιμοποιήσατε ολόκληρο τον προσωπικό αποθηκευτικό χώρο σας στο Google Workspace.</translation>
 <translation id="2771816809568414714">Τυρί</translation>
 <translation id="2781645665747935084">Βελγικά</translation>
 <translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
@@ -225,6 +228,7 @@
 <translation id="2943503720238418293">Χρησιμοποιήστε πιο σύντομο όνομα</translation>
 <translation id="2949781154072577687">Μορφοποίηση <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Μέδουσα</translation>
+<translation id="2958458230122209142">Περιορισμένος αποθηκευτικός χώρος. Απομένει το <ph name="REMAINING_PERCENTAGE" />% από τα <ph name="TOTAL_SPACE" /> του προσωπικού αποθηκευτικού χώρου.</translation>
 <translation id="2977940621473452797">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. Αναζητήστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
 <translation id="2984337792991268709">Σήμερα <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Επαναφορά <ph name="COUNT" /> στοιχείων…</translation>
@@ -557,6 +561,7 @@
 <translation id="5625294776298156701">Ταμίλ με πληκτρολόγιο Tamil99</translation>
 <translation id="5633226425545095130">Με τη μετακίνηση αυτού του στοιχείου, αυτό θα κοινοποιηθεί σε όλους τους χρήστες που μπορούν να δουν τον κοινόχρηστο φάκελο "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ακρόαση</translation>
+<translation id="5665074015635552640">Τα πρόσφατα βίντεό σας θα εμφανίζονται εδώ</translation>
 <translation id="5669691691057771421">Εισαγωγή νέου κωδικού PIN</translation>
 <translation id="5678784840044122290">Η εφαρμογή Linux θα είναι διαθέσιμη στο τερματικό σας και μπορεί επίσης να εμφανίζει ένα εικονίδιο στην Εφαρμογή εκκίνησης.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Δεν είναι δυνατή η αποσύνδεση από κάποιο αρχείο ή εικονικό δίσκο<ph name="END_BOLD" />
@@ -683,6 +688,7 @@
 <translation id="6825883775269213504">Ρωσικά
 </translation>
 <translation id="6847101934483209767">Το <ph name="ENTRY_NAME" /> καταργήθηκε από την επιλογή.</translation>
+<translation id="6848194403851638089">Ο οργανισμός <ph name="ORGANIZATION_NAME" /> χρησιμοποίησε ολόκληρο τον αποθηκευτικό χώρο του στο Google Workspace.</translation>
 <translation id="6856459657722366306">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="6861394552169064235">Περσικά</translation>
 <translation id="6862635236584086457">Για όλα τα αρχεία που αποθηκεύονται σε αυτόν το φάκελο δημιουργούνται αυτόματα αντίγραφα ασφαλείας στο διαδίκτυο</translation>
@@ -701,6 +707,7 @@
     Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία</translation>
 <translation id="6935521024859866267">Ανάποδα</translation>
 <translation id="6943836128787782965">Η λήψη HTTP απέτυχε</translation>
+<translation id="6945604978460872381">Τα πρόσφατα έγγραφά σας θα εμφανίζονται εδώ</translation>
 <translation id="6949408524333579394">Μεταγραφή σε Σερβικά</translation>
 <translation id="6954309393500027528">Η επικόλληση αυτού του αρχείου αποκλείστηκε από τον διαχειριστή σας</translation>
 <translation id="6960565108681981554">Δεν έχει ενεργοποιηθεί. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε.</translation>
@@ -714,6 +721,7 @@
 <translation id="6989942356279143254">Σουηδικά</translation>
 <translation id="6990081529015358884">Δεν υπάρχει ελεύθερος χώρος</translation>
 <translation id="6998711733709403587">Έχουν επιλεγεί <ph name="SELCTED_FOLDERS_COUNT" /> φάκελοι</translation>
+<translation id="7008426324576352165">Ο οργανισμός σας χρειάζεται περισσότερο αποθηκευτικό χώρο για να ολοκληρώσει τη μεταφόρτωση.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Η εγκατάσταση απέτυχε.</translation>
 <translation id="7031639531908619281">Τουρκικά</translation>
@@ -747,6 +755,7 @@
 <translation id="7295662345261934369">Κοινοποίηση σε άλλα άτομα</translation>
 <translation id="7297443947353982503">Εσφαλμένο όνομα χρήστη/κωδικός πρόσβασης ή αποτυχία EAP-auth</translation>
 <translation id="7309413087278791451">Γερμανικά (Βέλγιο)</translation>
+<translation id="7313374447885864533">Τα πρόσφατα αρχεία ήχου σας θα εμφανίζονται εδώ</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7343393116438664539">Βιετναμικά Telex</translation>
 <translation id="7357762654218998920">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
@@ -885,6 +894,7 @@
 <translation id="8342318071240498787">Υπάρχει ήδη αρχείο ή κατάλογος με το ίδιο όνομα.</translation>
 <translation id="8372369524088641025">Εσφαλμένο κλειδί WEP</translation>
 <translation id="8372852072747894550">Ελληνικά</translation>
+<translation id="8384716930968677505">Οι πρόσφατες εικόνες σας θα εμφανίζονται εδώ</translation>
 <translation id="8386903983509584791">Η σάρωση ολοκληρώθηκε</translation>
 <translation id="8387733224523483503">Έγινε εξαγωγή του στοιχείου <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Διαστάσεις</translation>
@@ -956,11 +966,13 @@
 </translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
 <translation id="8997962250644902079">Κινεζικά (Παραδοσιακά) Pinyin</translation>
+<translation id="8998871447376656508">Ο ελεύθερος χώρος στο Google Drive δεν επαρκεί για την ολοκλήρωση της μεταφόρτωσης.</translation>
 <translation id="9003940392834790328">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή, Λεπτομέρειες</translation>
 <translation id="9017798300203431059">Φωνητικό Ρωσικά</translation>
 <translation id="9034924485347205037">Αρχεία Linux</translation>
 <translation id="9035012421917565900">Τα στοιχεία δεν είναι δυνατό να επιστρέψουν στο "<ph name="DESTINATION_NAME" />", επομένως δεν θα μπορείτε να αναιρέσετε αυτήν την ενέργεια.</translation>
 <translation id="9035689366572880647">Εισαγάγετε τρέχον PIN</translation>
+<translation id="9037777873893411148">*Ο αποθηκευτικός χώρος του οργανισμού είναι πλήρης</translation>
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>

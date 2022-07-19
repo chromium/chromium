@@ -108,6 +108,7 @@
 <translation id="1488775391433859242">بااستفاده از این تلفن می‌توانید در رایانه‌ای که این رمزینه پاسخ‌سریع را نمایش می‌دهد به سیستم وارد شوید.</translation>
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> را دنبال می‌کنید</translation>
+<translation id="1502010315804028179">‏برای مدیریت گذرواژه‌هایتان، «خدمات Google Play» را به‌روزرسانی کنید</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
 <translation id="1513352483775369820">نشانک‌ها و سابقه وب</translation>
 <translation id="1513814250881909472">برای دریافت برگه‌هایتان از دستگاه‌های دیگر، همگام‌سازی کنید</translation>
@@ -220,7 +221,6 @@
 <translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2155214902713132423">این روشِ به‌تأیید رساندن برای این دستگاه دردسترس نیست. گزینه دیگری را در دستگاه دیگرتان انتخاب کنید.</translation>
 <translation id="2158408438301413340">‏Chrome نتوانست همه گذرواژه‌هایتان را بررسی کند</translation>
-<translation id="2169830938017475061">اکنون</translation>
 <translation id="2172688499998841696">توضیحات تصویر خاموش است</translation>
 <translation id="2172905120685242547">پنجره بسته شود؟</translation>
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
@@ -298,7 +298,6 @@
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2642087927315268160">برگ زیرین ورود به سیستم بسته شده است.</translation>
-<translation id="2645657967708199252">اتصال <ph name="CONNECTION_TYPE" /> ممکن است سرعت بارگیری شما را کاهش دهد</translation>
 <translation id="2647434099613338025">افزودن زبان</translation>
 <translation id="2649068648233607930">مرورگرتان توسط <ph name="DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="2650348088770008516">شرح «راهنمای حریم خصوصی» بسته شده است</translation>
@@ -317,7 +316,6 @@
 <translation id="2722945394406572875">درخواست «جعبه ایمنی حریم خصوصی» بسته شد</translation>
 <translation id="2723001399770238859">صدا</translation>
 <translation id="2732063072010454421">صدای بهتری را تجربه کنید</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">روشن شدن زمینه تیره وقتی زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
@@ -346,7 +344,6 @@
 <translation id="2886836735871983413">همان‌طور که وب را مرور می‌کنید، فهرستی از سایت‌ها در اینجا نشان داده خواهد شد</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2891154217021530873">توقف بارگیری صفحه</translation>
-<translation id="2892647708214602204">هنگامی که این فایل آماده باشد اعلانی را می‌بینید</translation>
 <translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
 <translation id="2900528713135656174">ایجاد رویداد</translation>
 <translation id="2901411048554510387">درحال نمایش پیشنهادهای مربوط به <ph name="WEBSITE_TITLE" /></translation>
@@ -592,7 +589,6 @@
 <translation id="4263656433980196874">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
 <translation id="4266054596873078491">‏با «حساب Google» به سیستم این سایت و Chrome وارد می‌شوید.</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
-<translation id="4290281343757112331">بعداً بارگیری شود؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏درصورت استفاده از Chrome، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات Google<ph name="END_TOS_LINK" /> و <ph name="BEGIN_ATOS_LINK" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_ATOS_LINK" /> موافقت می‌کنید. <ph name="BEGIN_PRIVACY_LINK" />خط‌مشی رازداری<ph name="END_PRIVACY_LINK" /> نیز اعمال می‌شود.</translation>
 <translation id="4296252229500326964">برگه ناشناس جدید</translation>
@@ -847,7 +843,6 @@
 <translation id="5686790454216892815">نام فایل خیلی طولانی است</translation>
 <translation id="569536719314091526">با استفاده از دکمه «گزینه‌های بیشتر»، این صفحه را به زبان‌های دیگر ترجمه کنید</translation>
 <translation id="5696597120588531049">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های غیرایمن، و موارد دیگر کمک کند</translation>
-<translation id="5697688514913266141">فایلتان در <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> ذخیره خواهد شد. <ph name="BEGIN_LINK2" />ویرایش<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">رفتن به برگه</translation>
 <translation id="572328651809341494">برگه‌های اخیر</translation>
 <translation id="5726692708398506830">بزرگ‌تر کردن همه‌چیز در صفحه</translation>
@@ -1108,7 +1103,6 @@
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6987047470128880212">«حالت ناشناس» در این دستگاه دردسترس نیست</translation>
 <translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
-<translation id="7001056293070445572">این فایل بزرگ است (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">افزودن به فهرست خواندن <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">بازکردن در مرورگر</translation>
 <translation id="7027549951530753705">تاریخ بازیابی <ph name="ITEM_TITLE" /></translation>
@@ -1240,7 +1234,6 @@
 <translation id="7709918231054955894">همه برگه‌هایتان را مشاهده کنید</translation>
 <translation id="7725024127233776428">صفحاتی را که نشانک‌گذاری می‌کنید، در اینجا نشان داده می‌شوند</translation>
 <translation id="7757787379047923882">نوشتار هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
-<translation id="7761849928583394409">انتخاب تاریخ و زمان</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">‏برای بهره‌مندی از ویژگی‌های بیشتر و قدرتمندترین ابزارهای امنیتی Chrome به سیستم وارد شوید</translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
@@ -1408,7 +1401,6 @@
 <translation id="8540136935098276800">نشانی وبی وارد کنید که به‌درستی قالب‌بندی شده باشد</translation>
 <translation id="854522910157234410">باز کردن این صفحه</translation>
 <translation id="8551513938758868521">‏قفل شدن برگه‌های ناشناس هنگام خروج از Chrome</translation>
-<translation id="8555836665334561807">‏ازطریق Wi-Fi</translation>
 <translation id="8559990750235505898">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
 <translation id="8560560256644480257">‏درحال ایجاد GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">‏فهرست خواندن را در Bookmarks پیدا کنید</translation>
@@ -1446,7 +1438,6 @@
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
-<translation id="8730621377337864115">تمام</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>

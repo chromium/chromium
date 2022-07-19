@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2163152940313951844">Carattere non valido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portoghese con tastiera PC internazionale USA</translation>
+<translation id="2193661397560634290">Spazio utilizzato: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Cinese semplificato</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Installa con Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turco con tastiera F</translation>
 <translation id="2732839045120506979">Vietnamita VNI</translation>
 <translation id="2735623501230989521">Concedi a Parallels Desktop l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Hai esaurito il tuo spazio di archiviazione Google Workspace individuale.</translation>
 <translation id="2771816809568414714">Formaggio</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Utilizza un nome più corto</translation>
 <translation id="2949781154072577687">Formattazione di <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
+<translation id="2958458230122209142">Spazio di archiviazione in esaurimento: <ph name="REMAINING_PERCENTAGE" />% del tuo spazio di archiviazione individuale (<ph name="TOTAL_SPACE" />) ancora disponibile.</translation>
 <translation id="2977940621473452797">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo che esegue Chrome OS. Cerca sul Chrome Web Store un'app sostitutiva adatta.</translation>
 <translation id="2984337792991268709">Oggi alle <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Ripristino di <ph name="COUNT" /> elementi in corso…</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">Viene effettuato automaticamente il backup online di tutti i file salvati in questa cartella.</translation>
 <translation id="6825883775269213504">Russo</translation>
 <translation id="6847101934483209767">L'elemento <ph name="ENTRY_NAME" /> è stato rimosso dalla selezione.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ha esaurito il proprio spazio di archiviazione Google Workspace.</translation>
 <translation id="6856459657722366306">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="6861394552169064235">Persiano</translation>
 <translation id="6862635236584086457">Per tutti i file salvati in questa cartella viene effettuato automaticamente il backup online</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">Svedese</translation>
 <translation id="6990081529015358884">Spazio disponibile esaurito</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> cartelle selezionate</translation>
+<translation id="7008426324576352165">La tua organizzazione richiede più spazio di archiviazione per completare il caricamento.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installazione non riuscita.</translation>
 <translation id="7031639531908619281">Turco</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">Danese</translation>
 <translation id="8965697826696209160">Spazio insufficiente.</translation>
 <translation id="8997962250644902079">Cinese (tradizionale) Pinyin</translation>
+<translation id="8998871447376656508">Spazio libero su Google Drive non sufficiente per completare il caricamento.</translation>
 <translation id="9003940392834790328">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
 <translation id="9017798300203431059">Fonetica russa</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9035012421917565900">Non è possibile spostare di nuovo gli elementi in "<ph name="DESTINATION_NAME" />", quindi non potrai annullare questa azione.</translation>
 <translation id="9035689366572880647">Inserisci il PIN attuale</translation>
+<translation id="9037777873893411148">* Spazio di archiviazione dell'organizzazione esaurito</translation>
 <translation id="9038620279323455325">Esiste già un file chiamato "<ph name="FILE_NAME" />". Scegli un altro nome.</translation>
 <translation id="9046895021617826162">Connessione non riuscita</translation>
 <translation id="9065512565307033593">Se non superi la verifica, l'accesso alla rete verrà disattivato.</translation>

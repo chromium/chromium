@@ -441,6 +441,7 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd cysoni. Rhowch eich cyfriny
 <translation id="4751645464639803239">Tab Anhysbys Newydd</translation>
 <translation id="4775879719735953715">Porwr Diofyn</translation>
 <translation id="4778644898150334464">Defnyddiwch gyfrinair arall</translation>
+<translation id="478808905805139173">Agor yn y Modd Anhysbys?</translation>
 <translation id="4802417911091824046">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau gan Google Pay.
 
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9055772144595778347">Methu â mewngofnodi</translation>
 <translation id="9057972802061533987">Methu â dilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="9065203028668620118">Golygu</translation>
+<translation id="9068336935206019333">Agor yn y modd Anhysbys Chrome</translation>
 <translation id="9079935439869366234">Marcio pob un fel heb ei ddarllen</translation>
 <translation id="9081058212938299310">Diweddaru'r cyfrinair ar gyfer <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 eitem</translation>

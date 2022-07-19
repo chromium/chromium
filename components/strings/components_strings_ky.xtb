@@ -1058,6 +1058,7 @@
 <translation id="3807873520724684969">Зыянкеч мазмун бөгөттөлдү.</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="3816482573645936981">Маани (алмаштырылган)</translation>
+<translation id="3823402221513322552">Серепчиңиз <ph name="BROWSER_DOMAIN" /> жана профилиңиз <ph name="PROFILE_DOMAIN" /> тарабынан тескелет</translation>
 <translation id="382518646247711829">Эгер прокси сервериңизди колдонсоңуз…</translation>
 <translation id="3826050100957962900">Үчүнчү тараптын кирүү аракети</translation>
 <translation id="3827112369919217609">Абсолют</translation>
@@ -1555,6 +1556,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тилинде эмеспи? Бул ката тууралуу кабарлаңыз</translation>
 <translation id="518639307526414276">Үй жаныбарлары үчүн тамак-аш жана кам көрүү</translation>
 <translation id="5190835502935405962">Кыстармалар тилкеси</translation>
+<translation id="5191315092027169558">Профилиңиз <ph name="DOMAIN" /> тарабынан тескелет</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> бир нече файлды жүктөп алганы жатат</translation>
 <translation id="519422657042045905">Аннотация жеткиликсиз</translation>
 <translation id="5201306358585911203">Бул веб баракчада кыстарылган барак мындай дейт:</translation>
@@ -2758,6 +2760,7 @@
 <translation id="8623885649813806493">Дал келген сырсөздөр жок. Бардык сакталган сырсөздөрдү көрсөтүү.</translation>
 <translation id="8624354461147303341">Арзандатууларга ээ болуу</translation>
 <translation id="8625384913736129811">Бул карточка ушул түзмөктө сакталсын</translation>
+<translation id="8637577059508742477">Профилиңиз жана серепчиңиз <ph name="DOMAIN" /> тарабынан тескелет</translation>
 <translation id="865032292777205197">кыймыл сенсорлору</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
 <translation id="8666678546361132282">Англисче</translation>

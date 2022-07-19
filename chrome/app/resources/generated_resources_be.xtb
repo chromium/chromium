@@ -1008,6 +1008,7 @@
 <translation id="1931410639376954712">Ідзе ўсталяванне <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не раней</translation>
 <translation id="1935303383381416800">Дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
+<translation id="1936157145127842922">Паказаць у папцы</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
 <translation id="1938320257168860255">Нешта пайшло не так. Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і што на ім уключаны Bluetooth і Wi-Fi.</translation>
@@ -3211,6 +3212,7 @@
 <translation id="402211067068791756">Будуць выдалены даныя (<ph name="TOTAL_USAGE" />), захаваныя паказанымі сайтамі</translation>
 <translation id="4022426551683927403">&amp;Дадаць у слоўнік</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
+<translation id="4027958407426528157">Адкрываць вэб-сайты ў праграмах, усталяваных на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4029556917477724407">Вярнуцца назад са старонкі "<ph name="PAGE_TITLE" />"</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
@@ -6567,6 +6569,7 @@
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
 <translation id="7378611153938412599">Ненадзейныя паролі лёгка адгадаць. Выкарыстоўвайце толькі надзейныя паролі. <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
+<translation id="737938816678769289">З лёгкасцю падключайцеся да прылад паблізу і наладжвайце Хуткае падключэнне</translation>
 <translation id="7380459290951585794">Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi</translation>
 <translation id="7380622428988553498">Назва прылады змяшчае недапушчальныя сімвалы</translation>
 <translation id="7380768571499464492">Прынтар "<ph name="PRINTER_NAME" />" абноўлены</translation>

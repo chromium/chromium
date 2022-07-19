@@ -803,7 +803,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="641759969622533235">{COUNT,plural, =1{کولن}other{# کولنز}}</translation>
 <translation id="6444046323172968959">الرٹ ڈائیلاگ</translation>
 <translation id="6452403590345320472">فہرست مشمولات</translation>
-<translation id="6457542714329819968">قسم</translation>
 <translation id="6468049171101508116">اگلا بٹن</translation>
 <translation id="646954774886932461">فہرست مضامین</translation>
 <translation id="6475604559827479857">لفظ کی نمائش کا رنگ:</translation>
@@ -861,6 +860,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6910211073230771657">حذف کردہ</translation>
 <translation id="6910969481785184048">آن، آف کرنا اور روکنا</translation>
 <translation id="6919104639734799681">ٹیبلز کی فہرست دکھائیں</translation>
+<translation id="692135145298539227">حذف کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6949846980769640811">میڈیم نیلگوں سبز</translation>
 <translation id="6951482098621102657">اگلی سطح 5 کی کوئی ہیڈنگ نہیں ہے</translation>
@@ -928,7 +928,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="7356610683936413584">وضاحت کی فہرست کی تفصیل</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ایمپرسینڈ}other{# ایمپرسینڈز}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">پچھلے حرف کو حذف کریں</translation>
 <translation id="738899727977260036">سلیٹی نیلا</translation>
 <translation id="7393979322571982935">آوازیں اور ترتیبات</translation>
 <translation id="739763518212184081">پچھلی لکیر</translation>

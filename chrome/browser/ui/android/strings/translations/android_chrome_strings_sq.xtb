@@ -220,7 +220,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2155214902713132423">Kjo mënyrë verifikimi nuk ofrohet për këtë pajisje. Zgjidh një opsion tjetër në pajisjen tjetër.</translation>
 <translation id="2158408438301413340">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet</translation>
-<translation id="2169830938017475061">Tani</translation>
 <translation id="2172688499998841696">Përshkrimet e imazheve janë joaktive</translation>
 <translation id="2172905120685242547">Të mbyllet dritarja?</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
@@ -298,7 +297,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="2625189173221582860">Fjalëkalimi u kopjua</translation>
 <translation id="2642087927315268160">Fleta e poshtme e identifikimit u mbyll.</translation>
-<translation id="2645657967708199252">Lidhja jote <ph name="CONNECTION_TYPE" /> mund ta ngadalësojë shkarkimin tënd</translation>
 <translation id="2647434099613338025">Shto gjuhën</translation>
 <translation id="2649068648233607930">Shfletuesi yt menaxhohet nga <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Shpjegimi i udhëzuesit të privatësisë u mbyll</translation>
@@ -317,7 +315,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2722945394406572875">Kërkesa e Privacy Sandbox u mbyll</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Merr një përvojë më të mirë zanore</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">Aktivizo temën e errët kur tema e errët ose "Kursyesi i baterisë" i pajisjes është aktiv</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
 <translation id="276969039800130567">I identifikuar si <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -346,7 +343,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2886836735871983413">Një listë sajtesh do të shfaqet këtu ndërsa shfleton uebin</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
 <translation id="2891154217021530873">Ndalo ngarkimin e faqes</translation>
-<translation id="2892647708214602204">Do të shikosh një njoftim kur ky skedar të jetë gati</translation>
 <translation id="2893180576842394309">Google mund ta përdorë historikun tënd për të personalizuar "Kërko me Google" dhe shërbime të tjera të Google</translation>
 <translation id="2900528713135656174">Krijo ngjarje</translation>
 <translation id="2901411048554510387">Po shfaq sugjerimet për <ph name="WEBSITE_TITLE" /></translation>
@@ -490,6 +486,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një sajt uebi.</translation>
+<translation id="3636940436873918441">Gjuhët e preferuara</translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
 <translation id="3690369331356918524">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
@@ -591,7 +588,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="4263656433980196874">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit" e hapur në lartësi të plotë</translation>
 <translation id="4266054596873078491">Identifikohu në këtë sajt dhe në Chrome me "Llogarinë tënde të Google".</translation>
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
-<translation id="4290281343757112331">Të shkarkohet më vonë më mirë?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivizo kyçjen e ekranit te cilësimet e Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Duke përdorur Chrome, ti pranon <ph name="BEGIN_TOS_LINK" />"Kushtet e shërbimit" të Google<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_ATOS_LINK" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_ATOS_LINK" />. Zbatohet gjithashtu <ph name="BEGIN_PRIVACY_LINK" />Politika e privatësisë<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Skedë e re "e fshehtë"</translation>
@@ -846,7 +842,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5686790454216892815">Emri i skedarit është tepër i gjatë</translation>
 <translation id="569536719314091526">Përktheje këtë faqe në çdo gjuhë nga butoni "Më shumë opsione"</translation>
 <translation id="5696597120588531049">Chrome mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
-<translation id="5697688514913266141">Skedari yt do të ruhet te <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Modifiko<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Kalo te skeda</translation>
 <translation id="572328651809341494">Skedat e fundit</translation>
 <translation id="5726692708398506830">Bëje më të madhe gjithçka në faqe</translation>
@@ -1107,7 +1102,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6987047470128880212">"I fshehtë" nuk ofrohet në këtë pajisje</translation>
 <translation id="6995899638241819463">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
-<translation id="7001056293070445572">Ky skedar është i madh (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Shto te lista e leximit <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Hape në shfletues</translation>
 <translation id="7027549951530753705">Restauruar në datën <ph name="ITEM_TITLE" /></translation>
@@ -1239,7 +1233,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="7709918231054955894">Merr të gjitha skedat e tua</translation>
 <translation id="7725024127233776428">Faqet që shënon shfaqen këtu</translation>
 <translation id="7757787379047923882">Teksti u nda nga <ph name="DEVICE_NAME" /></translation>
-<translation id="7761849928583394409">Zgjidh datën dhe orën</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">Identifikohu për veçori të tjera dhe për sigurinë më të fortë të Chrome</translation>
 <translation id="7764225426217299476">Shto adresë</translation>
@@ -1280,6 +1273,7 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="7947953824732555851">Pranoje dhe identifikohu</translation>
+<translation id="7957413488482743710">Një kartë virtuale fsheh kartën tënde aktuale për të të mbrojtur nga mashtrimi i mundshëm. <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7961926449547174351">Ke çaktivizuar qasjen te "Hapësira ruajtëse". Shko te "Cilësimet" për ta aktivizuar atë.</translation>
 <translation id="7963646190083259054">Shitësi:</translation>
@@ -1406,7 +1400,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="8540136935098276800">Fut një URL të formatuar saktë</translation>
 <translation id="854522910157234410">Hape këtë faqe</translation>
 <translation id="8551513938758868521">Kyçi skedat "e fshehta" kur të largohesh nga Chrome</translation>
-<translation id="8555836665334561807">Në Wi-Fi</translation>
 <translation id="8559990750235505898">Ofro që t'i përkthesh faqet në gjuhë të tjera</translation>
 <translation id="8560560256644480257">Po krijohet GIF: <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Gjej listën tënd të leximit te "Faqeshënuesit"</translation>
@@ -1444,7 +1437,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
-<translation id="8730621377337864115">U krye</translation>
 <translation id="8746155870861185046">Shpërndaj theksimin</translation>
 <translation id="8748850008226585750">Përmbajtjet janë të fshehura</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>

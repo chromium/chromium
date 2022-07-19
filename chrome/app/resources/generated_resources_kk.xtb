@@ -1002,6 +1002,7 @@
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> орнатылуда</translation>
 <translation id="1932098463447129402">Келесіден алдын емес</translation>
 <translation id="1935303383381416800">Геодеректеріңізді көруге рұқсаты барлар</translation>
+<translation id="1936157145127842922">Қалтада көрсету</translation>
 <translation id="1936931585862840749">Басып шығарылатын көшірмелер санын көрсетіңіз (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> контейнер архитектурасы түрін бұл құрылғымен (<ph name="ARCHITECTURE_DEVICE" />) импорттау мүмкін емес. Бұл контейнерді басқа құрылғыда қалпына келтіріп көруіңізге болады немесе файлдарға контейнер кескінін Files қолданбасынан ашу арқылы кіре аласыз.</translation>
 <translation id="1938320257168860255">Бірдеңе дұрыс болмады. Телефоныңыз жақын тұрғанын, оның құлпы ашық және Bluetooth, Wi-Fi функциясы қосулы екеніне көз жеткізіңіз.</translation>
@@ -3205,6 +3206,7 @@
 <translation id="402211067068791756">Көрсетілген сайттарда сақталған <ph name="TOTAL_USAGE" /> дерек өшіріледі.</translation>
 <translation id="4022426551683927403">&amp;Сөздікке қосу</translation>
 <translation id="4025039777635956441">Таңдалған сайттағы дыбысты өшіру</translation>
+<translation id="4027958407426528157"><ph name="DEVICE_TYPE" /> құрылғысында орнатылған қолданбаларда веб-сайттарды ашу</translation>
 <translation id="4028467762035011525">Енгізу әдісін қосу</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> бетінен артқа қайту</translation>
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
@@ -6552,6 +6554,7 @@
 <translation id="7377481913241237033">Код арқылы қосылу</translation>
 <translation id="7378611153938412599">Құпия сөзіңіз оңай болса, оны табу да оңай. Күрделі құпия сөз орнатыңыз. <ph name="BEGIN_LINK" />Қауіпсіздікке қатысты басқа кеңестерді де көріңіз.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store қызметін ашу</translation>
+<translation id="737938816678769289">Жақын орналасқан Fast Pair құрылғыларын оңай қосып, реттеуге болады.</translation>
 <translation id="7380459290951585794">Телефоныңыз жаныңызда, құлпы ашық және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="7380622428988553498">Құрылғы атауында жарамсыз таңбалар бар.</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> жаңартылды.</translation>

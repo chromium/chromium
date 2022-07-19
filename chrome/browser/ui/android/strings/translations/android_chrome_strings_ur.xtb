@@ -220,7 +220,6 @@
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2155214902713132423">توثیق کا یہ طریقہ اس آلے کے لیے دستیاب نہیں ہے۔ اپنے دوسرے آلے پر ایک مختلف اختیار منتخب کریں۔</translation>
 <translation id="2158408438301413340">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا</translation>
-<translation id="2169830938017475061">ابھی</translation>
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
 <translation id="2172905120685242547">ونڈو کو بند کر دیں؟</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
@@ -298,7 +297,6 @@
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2625189173221582860">پاس ورڈ کاپی ہو گیا</translation>
 <translation id="2642087927315268160">سائن ان کرنے کے لیے نیچے کی شیٹ بند ہے۔</translation>
-<translation id="2645657967708199252">آپ کے <ph name="CONNECTION_TYPE" /> کنکشن سے آپ کا ڈاؤن لوڈ سست ہو سکتا ہے</translation>
 <translation id="2647434099613338025">زبان شامل کریں</translation>
 <translation id="2649068648233607930">آپ کا براؤزر <ph name="DOMAIN" /> کے زیر انتظام ہے</translation>
 <translation id="2650348088770008516">رازداری کی گائیڈ کی وضاحت بند ہے</translation>
@@ -317,7 +315,6 @@
 <translation id="2722945394406572875">رازداری سینڈ باکس پرامٹ بند ہے</translation>
 <translation id="2723001399770238859">آڈیو</translation>
 <translation id="2732063072010454421">ایک بہتر صوتی تجربہ حاصل کریں</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">اپنے آلہ کے بیٹری سیور یا گہری تھیم کے آن ہونے پر گہری تھیم آن کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
@@ -346,7 +343,6 @@
 <translation id="2886836735871983413">آپ کے ویب براؤز کرتے ہی سائٹس کی ایک فہرست یہاں ظاہر ہوگی</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
 <translation id="2891154217021530873">صفحہ لوڈ کرنا بند کریں</translation>
-<translation id="2892647708214602204">فائل تیار ہونے پر آپ کو اطلاع دکھائی دے گی</translation>
 <translation id="2893180576842394309">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کے لیے Google آپ کی سرگزشت کا استعمال کر سکتا ہے</translation>
 <translation id="2900528713135656174">ایونٹ تخلیق کریں</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> کیلئے تجاویز دکھائی جا رہی ہیں</translation>
@@ -592,7 +588,6 @@
 <translation id="4263656433980196874">‏اسسٹنٹ صوتی تلاش رضامندی ui پوری اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="4266054596873078491">‏اپنے Google اکاؤنٹ سے اس سائٹ اور Chrome میں سائن ان کریں۔</translation>
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
-<translation id="4290281343757112331">اس کے بجائے آپ بعد میں ڈاؤن لوڈ کریں؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />Android کی ترتیبات میں اسکرین لاک کو آن کریں<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_TOS_LINK" />Google کی سروس کی شرائط<ph name="END_TOS_LINK" /> اور <ph name="BEGIN_ATOS_LINK" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_ATOS_LINK" /> سے اتفاق کرتے ہیں۔ <ph name="BEGIN_PRIVACY_LINK" />رازداری کی پالیسی<ph name="END_PRIVACY_LINK" /> بھی لاگو ہوتی ہے۔</translation>
 <translation id="4296252229500326964">نیا پوشیدگی ٹیب</translation>
@@ -847,7 +842,6 @@
 <translation id="5686790454216892815">فائل کا نام کافی بڑا ہے</translation>
 <translation id="569536719314091526">مزید اختیارات کے بٹن سے کسی بھی زبان میں اس صفحہ کا ترجمہ کریں</translation>
 <translation id="5696597120588531049">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
-<translation id="5697688514913266141">آپ کی فائل <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> میں محفوظ کر دی جائے گی۔ <ph name="BEGIN_LINK2" />ترمیم کریں<ph name="END_LINK2" />۔</translation>
 <translation id="570347048394355941">ٹیب پر سوئچ کریں</translation>
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
 <translation id="5726692708398506830">صفحہ پر موجود ہر چیز کو اور بڑا کریں</translation>
@@ -1108,7 +1102,6 @@
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6987047470128880212">اس آلے پر پوشیدگی دستیاب نہیں ہے</translation>
 <translation id="6995899638241819463">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
-<translation id="7001056293070445572">یہ فائل بڑی ہے (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">پڑھنے کی فہرست میں شامل کریں<ph name="BEGIN_NEW" />نئی<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">براؤزر میں کھولیں</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> کو بحال کیا گیا</translation>
@@ -1240,7 +1233,6 @@
 <translation id="7709918231054955894">اپنے تمام ٹیبز حاصل کریں</translation>
 <translation id="7725024127233776428">آپ کے بُک مارک کیے ہوئے صفحات یہاں دکھائی دیتے ہیں</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کا اشتراک کیا گیا ہے</translation>
-<translation id="7761849928583394409">تاریخ اور وقت منتخب کریں</translation>
 <translation id="7762668264895820836">‏SD کارڈ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">‏اضافی خصوصیات اور Chrome کی مضبوط ترین سیکیورٹی کے لیے سائن ان کریں</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
@@ -1408,7 +1400,6 @@
 <translation id="8540136935098276800">‏صحیح طور پر فارمیٹ کیا ہوا URL درج کریں</translation>
 <translation id="854522910157234410">یہ صفحہ کھولیں</translation>
 <translation id="8551513938758868521">‏جب آپ Chrome کو چھوڑتے ہیں تب پوشیدگی ٹیبز کو مقفل کریں</translation>
-<translation id="8555836665334561807">‏Wi-Fi پر</translation>
 <translation id="8559990750235505898">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="8560560256644480257">‏GIF تخلیق کیا جا رہا ہے <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">‏Bookmarks میں اپنی پڑھنے کی فہرست پائيں</translation>
@@ -1446,7 +1437,6 @@
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
-<translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8746155870861185046">ہائی لائٹ کا اشتراک کریں</translation>
 <translation id="8748850008226585750">مواد مخفی ہیں</translation>
 <translation id="8756969031206844760">پاس ورڈ کو اپ ڈیٹ کریں؟</translation>

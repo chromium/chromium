@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{dvojbodka}few{# dvojbodky}many{# colons}other{# dvojbodiek}}</translation>
 <translation id="6444046323172968959">Dialógové okno s upozornením</translation>
 <translation id="6452403590345320472">Obsah</translation>
-<translation id="6457542714329819968">typ</translation>
 <translation id="6468049171101508116">Ďalšie tlačidlo</translation>
 <translation id="646954774886932461">Index</translation>
 <translation id="6475604559827479857">Farba zvýrazňovania slov:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Odstránené</translation>
 <translation id="6910969481785184048">Zapnutie, vypnutie a zastavenie</translation>
 <translation id="6919104639734799681">Zobraziť zoznam tabuliek</translation>
+<translation id="692135145298539227">odstrániť</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6949846980769640811">Stredne sýta akvamarínová</translation>
 <translation id="6951482098621102657">Žiadny ďalší nadpis piatej úrovne</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Údaj zoznamu popisov</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}few{# ampersandy}many{# ampersands}other{# ampersandov}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">odstráň predchádzajúci znak</translation>
 <translation id="738899727977260036">Bridlicovomodrá</translation>
 <translation id="7393979322571982935">Zvuky a nastavenia</translation>
 <translation id="739763518212184081">Predchádzajúci riadok</translation>

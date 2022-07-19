@@ -441,6 +441,7 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
+<translation id="478808905805139173">Ouvrir en mode de navigation privée?</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9055772144595778347">Connexion impossible</translation>
 <translation id="9057972802061533987">L'abonnement a échoué. Un problème est survenu.</translation>
 <translation id="9065203028668620118">Modifier</translation>
+<translation id="9068336935206019333">Ouvrir dans Chrome en navigation privée</translation>
 <translation id="9079935439869366234">Tout marquer comme non lu</translation>
 <translation id="9081058212938299310">Mettre à jour le mot de passe pour <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 élément</translation>

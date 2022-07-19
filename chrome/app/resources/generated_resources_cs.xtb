@@ -1008,8 +1008,10 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1931410639376954712">Instalace aplikace <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Nikoli před</translation>
 <translation id="1935303383381416800">Povolení k přístupu k vaší poloze</translation>
+<translation id="1936157145127842922">Zobrazit ve složce</translation>
 <translation id="1936931585862840749">Počet kopií, které chcete vytisknout, je třeba zadat jako číslo (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Typ architektury kontejneru <ph name="ARCHITECTURE_CONTAINER" /> do tohoto zařízení s architekturou <ph name="ARCHITECTURE_DEVICE" /> nelze importovat. Můžete tento kontejner zkusit obnovit do jiného zařízení nebo soubory v obrazu kontejneru otevřít v aplikaci Soubory.</translation>
+<translation id="1938240902511979591">Nastavení režimu kontrastu, lupy a zobrazení</translation>
 <translation id="1938320257168860255">Došlo k chybě. Ujistěte se, že je telefon blízko, že je odemknutý a že jsou zapnuté Bluetooth a Wi-Fi.</translation>
 <translation id="1938351510777341717">Externí příkaz</translation>
 <translation id="1940546824932169984">Připojená zařízení</translation>
@@ -1429,6 +1431,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Následující klávesy nejsou podporovány: Tab, Shift, Control, Escape, Caps Lock, Hlasitost</translation>
 <translation id="2309620859903500144">Tomuto webu byl zablokován přístup k senzorům pohybu nebo osvětlení.</translation>
+<translation id="2310923358723722542">Zobrazení a zvětšení</translation>
 <translation id="2312219318583366810">Adresa URL stránky</translation>
 <translation id="2314165183524574721">Aktuální nastavení viditelnosti je Skryto.</translation>
 <translation id="2314774579020744484">Jazyky použité k překladu stránek</translation>
@@ -4106,6 +4109,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4900392736118574277">Počáteční stránka byla změněna na <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – s prokládáním</translation>
 <translation id="4900652253009739885">Jediný přepínač přiřazený k funkci výběru nelze odstranit. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
+<translation id="4901154724271753917">Rozbalit nedávno zavřené</translation>
 <translation id="4901309472892185668">Vyberte stav experimentální funkce <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Zásada stažená ze serveru je neplatná: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Nastavit nebo spravovat sdílená úložiště na síti. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -4167,6 +4171,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="496446150016900060">Synchronizovat sítě Wi-Fi s vaším telefonem</translation>
 <translation id="4965808351167763748">Opravdu toto zařízení chcete nastavit pro službu Hangouts Meet?</translation>
 <translation id="4966972803217407697">Jste v anonymním režimu</translation>
+<translation id="4967227914555989138">Přidat poznámku</translation>
 <translation id="496742804571665842">Deaktivování profilů eSIM karty</translation>
 <translation id="4971412780836297815">Po dokončení otevřít</translation>
 <translation id="4971735654804503942">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními. Upozorňuje vás na úniky hesel. Vyžaduje odesílání údajů o prohlížení do Googlu.</translation>
@@ -4414,6 +4419,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5233231016133573565">ID procesu</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5233736638227740678">&amp;Vložit</translation>
+<translation id="5233794855520048159">Zvuk mono, zvuky při spuštění a titulky</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5235050375939235066">Odinstalovat aplikaci?</translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
@@ -4518,6 +4524,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5333896723098573627">Pokud nějaké aplikace chcete odstranit, přejděte do Nastavení &gt; Obchod Google Play &gt; Spravovat nastavení aplikací Android &gt; Aplikace nebo Správce aplikací. Poté klepněte na aplikaci, kterou chcete odinstalovat (možná bude třeba aplikacemi listovat doprava či doleva). Poté klepněte na Odinstalovat nebo Deaktivovat.</translation>
 <translation id="5334142896108694079">Mezipaměť skriptů</translation>
 <translation id="5336688142483283574">Tato stránka také bude odstraněna z vaší historie a aktivity ve vyhledávači <ph name="SEARCH_ENGINE" />.</translation>
+<translation id="5336689872433667741">Kurzor a touchpad</translation>
 <translation id="5337771866151525739">Nainstalováno třetí stranou.</translation>
 <translation id="5337926771328966926">Aktuální název zařízení je <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">V anonymním okně můžete web procházet v soukromí</translation>
@@ -4528,6 +4535,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5342091991439452114">Minimální počet číslic v kódu PIN: <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Obnovení Linuxu</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (vpravo)</translation>
+<translation id="534449933710420173">Nepojmenovaná složka</translation>
 <translation id="5345916423802287046">Spustit aplikaci při přihlášení</translation>
 <translation id="5350293332385664455">Vypnout Asistenta Google</translation>
 <translation id="535123479159372765">Text zkopírovaný z jiného zařízení</translation>
@@ -5148,6 +5156,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5959471481388474538">Síť není k dispozici</translation>
 <translation id="595959584676692139">Chcete-li použít toto rozšíření, znovu načtěte stránku</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maximum: <ph name="NUM_KILOBYTES_LIVE" />)</translation>
+<translation id="5963620791620013026">Funkce Jedním prstem, softwarová klávesnice, diktování, přístup pomocí přepínačů a vylepšené zvýraznění</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otevřít vše v &amp;novém okně}=1{Otevřít v &amp;novém okně}few{Otevřít vše ({COUNT}) v &amp;novém okně}many{Otevřít vše ({COUNT}) v &amp;novém okně}other{Otevřít vše ({COUNT}) v &amp;novém okně}}</translation>
 <translation id="5965661248935608907">Také řídí, která stránka se zobrazí, když kliknete na tlačítko Domovská stránka nebo budete vyhledávat v omniboxu.</translation>
 <translation id="5968022600320704045">Žádné výsledky hledání</translation>
@@ -5962,6 +5971,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6770602306803890733">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu</translation>
 <translation id="6771503742377376720">Je certifikační autorita</translation>
 <translation id="6775163072363532304">Zde se budou zobrazovat dostupná zařízení.</translation>
+<translation id="677646486571529447">Přidat poznámku</translation>
 <translation id="6776729248872343918">Aktivovat Rychlé párování</translation>
 <translation id="6777817260680419853">Bylo zablokováno přesměrování</translation>
 <translation id="6778737459546443941">Rodič ti přístup na web dosud neschválil.</translation>
@@ -6110,6 +6120,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6900654715912436255">Opravdu chcete tento vyhledávač smazat?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Hlas k náhledu</translation>
+<translation id="6902219595840841518">Automatické kliknutí, velikost kurzoru, barva kurzoru a zvýraznění kurzoru</translation>
 <translation id="6902336033320348843">Sekce není podporována: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Přidat zařízení do domény</translation>
 <translation id="6903022061658753260">Vaše data budou synchronizována ve všech prohlížečích Chrome, ve kterých jste pro tento účet zapnuli synchronizaci. Možnosti synchronizace systému ChromeOS najdete v <ph name="LINK_BEGIN" />nastavení ChromeOS<ph name="LINK_END" />.</translation>
@@ -6889,6 +6900,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7681095912841365527">Web může použít Bluetooth</translation>
 <translation id="7681597159868843240">Weby obvykle používají senzory pohybu na zařízení kvůli funkcím, jako je virtuální realita nebo sledování fitness aktivit</translation>
 <translation id="7683373461016844951">Chcete-li pokračovat, klikněte na OK a poté kliknutím na Přidat uživatele vytvořte nový profil pro svou novou e-mailovou adresu v doméně <ph name="DOMAIN" />.</translation>
+<translation id="7683834360226457448">Zobrazovací nástroje pro slabozraké</translation>
 <translation id="7684212569183643648">Nainstaloval váš administrátor</translation>
 <translation id="7684559058815332124">Navštívit přihlašovací stránku captive portálu</translation>
 <translation id="7684718995427157417">Chcete-li vytvořit a otestovat aplikace, zapněte Android Debug Bridge (ADB). Upozorňujeme, že tato akce povoluje instalaci aplikací pro Android, které Google neověřil, a že je k její deaktivaci potřeba obnovení továrního nastavení.</translation>
@@ -6987,6 +6999,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7768526219335215384"><ph name="ORIGIN" /> bude moci zobrazit soubory ve složce <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Změnit</translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
+<translation id="7769748505895274502">Sbalit nedávno zavřené</translation>
 <translation id="7770406201819593386">Spouštět diagnostické testy systému ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Pravé kliknutí myši</translation>
 <translation id="7770612696274572992">Obrázek zkopírovaný z jiného zařízení</translation>

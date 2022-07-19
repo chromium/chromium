@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2163152940313951844">ଅବୈଧ ବର୍ଣ୍ଣ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ପର୍ତ୍ତୁଗୀଜ୍</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> ବ୍ୟବହାର କରାଯାଇଛି</translation>
 <translation id="2198315389084035571">ସରଳୀକୃତ ଚାଇନିଜ୍</translation>
 <translation id="22085916256174561">କୋରୀୟ</translation>
 <translation id="2208919847696382164">Linux ସହିତ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
@@ -184,6 +185,7 @@
 <translation id="2544853746127077729">ନେଟ୍‌ୱର୍କ ଦ୍ବାରା ପ୍ରମାଣିକିକରଣ ସର୍ଟିଫିକେଟ୍‌ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="255937426064304553">US ଆନ୍ତର୍ଜାତିକ</translation>
 <translation id="2563185590376525700">ବେଙ୍ଗ</translation>
+<translation id="2570012981255377263">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="2578394532502990878">ତାମିଲ ଫୋନେଟିକ୍</translation>
 <translation id="2579959351793446050">ଓଡ଼ିଆ</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
@@ -201,6 +203,7 @@
 <translation id="2724954091494693138">ତୁର୍କିଶ୍ F-କୀବୋର୍ଡ</translation>
 <translation id="2732839045120506979">ଭିଏତନାମିଜ୍ VNI</translation>
 <translation id="2735623501230989521">Parallels Desktopକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="2764206540577097904">ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ବ୍ୟକ୍ତିଗତ Google Workspace ଷ୍ଟୋରେଜକୁ ବ୍ୟବହାର କରିସାରିଛନ୍ତି।</translation>
 <translation id="2771816809568414714">ଚିଜ୍</translation>
 <translation id="2781645665747935084">ବେଲ୍‍ଜିଆନ୍</translation>
 <translation id="2782104745158847185">Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାରେ ତ୍ରୁଟି</translation>
@@ -221,6 +224,7 @@
 <translation id="2943503720238418293">ଟିକେ ଛୋଟ ନାମର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଉଛି...</translation>
 <translation id="2951236788251446349">ଜେଲିଫିସ୍</translation>
+<translation id="2958458230122209142">ଷ୍ଟୋରେଜ କମ୍ ଅଛି, ଆପଣଙ୍କର <ph name="TOTAL_SPACE" /> ବ୍ୟକ୍ତିଗତ ଷ୍ଟୋରେଜରୁ <ph name="REMAINING_PERCENTAGE" />% ବାକି ଅଛି।</translation>
 <translation id="2977940621473452797">Macintosh ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ କମ୍ପ୍ୟୁଟର ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ଦୟାକରି ଗୋଟିଏ ଉପଯୁକ୍ତ ରିପ୍ଲେସମେଣ୍ଟ ଆପ ପାଇଁ Chrome ୱେବ ଷ୍ଟୋରରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="2984337792991268709">ଆଜି <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" />ଟି ଆଇଟମକୁ ରିଷ୍ଟୋର କରାଯାଉଛି...</translation>
@@ -538,6 +542,7 @@
 <translation id="5625294776298156701">ତାମିଲ99 କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="5633226425545095130">ଏହି ଆଇଟମକୁ ମୁଭ୍ କରିବା ଫଳରେ, ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍ '<ph name="DESTINATION_NAME" />'କୁ ଦେଖିପାରୁଥିବା ସମସ୍ତ ଲୋକଙ୍କ ସହିତ ଏହା ସେୟାର୍ ହେବ।</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
+<translation id="5665074015635552640">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଭିଡିଓଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="5669691691057771421">ନୂଆ ପିନ୍‍ ଲେଖନ୍ତୁ</translation>
 <translation id="5678784840044122290">Linux ଆପ୍ଲିକେସନ୍‌ଟି ଆପଣଙ୍କର ଟର୍ମିନାଲ୍ ଭିତରେ ଉପଲବ୍ଧ ହେବ ଏବଂ ଆପଣଙ୍କର ଲଞ୍ଚର୍‌ରେ ହୁଏତ ଏକ ଆଇକନ୍ ମଧ୍ୟ ଦେଖାଇବ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ଏକ ଆର୍କାଇଭ୍‍ କିମ୍ବା ଭର୍ଚୁଆଲ୍‌ ଡିକ୍ସରୁ ବିଚ୍ଛିନ୍ନ କରାଯାଇପାରିବ ନାହିଁ<ph name="END_BOLD" />
@@ -663,6 +668,7 @@
 <translation id="6823166707458800069">ଏହି ଫୋଲ୍ଡରରେ ସେଭ୍ କରାଯାଇଥିବା ସମସ୍ତ ଫାଇଲର ସ୍ୱଚାଳିତରୂପେ ଅନଲାଇନରେ ବ୍ୟାକଅପ୍ ନିଆଯାଏ।</translation>
 <translation id="6825883775269213504">ଋଷିଆନ୍</translation>
 <translation id="6847101934483209767">ଚୟନରୁ <ph name="ENTRY_NAME" /> କାଢ଼ି ଦିଆଯାଇଛି।</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ଏହାର ସମସ୍ତ Google Workspace ଷ୍ଟୋରେଜକୁ ବ୍ୟବହାର କରିସାରିଛି।</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="6861394552169064235">ପାର୍ସି</translation>
 <translation id="6862635236584086457">ଏହି ଫୋଲ୍ଡର୍‌ରେ ସେଭ୍ ହୋଇଥିବା ସମସ୍ତ ଫାଇଲ୍‌ଗୁଡ଼ିକ ସ୍ୱଚାଳିତରୂପେ ଅନ୍‌ଲାଇନ୍‌ରେ ବ୍ୟାକ୍‌ଅପ୍ ନିଆଯାଏ</translation>
@@ -681,6 +687,7 @@
     <ph name="FILE_COUNT" />ଟି ମିଳିଲା</translation>
 <translation id="6935521024859866267">ଓଲଟା</translation>
 <translation id="6943836128787782965">HTTP ବିଫଳ ହୋଇଛି</translation>
+<translation id="6945604978460872381">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଡକ୍ୟୁମେଣ୍ଟଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="6949408524333579394">ସର୍ବିଆନ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="6954309393500027528">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଏହି ଫାଇଲକୁ ପେଷ୍ଟ କରିବା ସୁବିଧାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="6960565108681981554">ସକ୍ରିୟ କରାଯାଇନାହିଁ। ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
@@ -694,6 +701,7 @@
 <translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
 <translation id="6990081529015358884">ଆପଣଙ୍କ ପାଖରେ ଥିବା ଜାଗା ସରିଯାଇଛି</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ ବଛାଯାଇଛି</translation>
+<translation id="7008426324576352165">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଅଧିକ ଷ୍ଟୋରେଜ ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="7031639531908619281">ତୁର୍କିଶ୍</translation>
@@ -727,6 +735,7 @@
 <translation id="7295662345261934369">ଅନ୍ୟମାନଙ୍କ ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="7297443947353982503">ଉପଯୋଗକର୍ତ୍ତାନାମ /ପାସ୍‌ୱର୍ଡ ଭୁଲ ଅଛି କିମ୍ବା EAP-ପ୍ରାମାଣିକରଣ ବିଫଳ ହେଲା</translation>
 <translation id="7309413087278791451">ଜର୍ମାନ (ବେଲଜିୟମ୍)</translation>
+<translation id="7313374447885864533">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="7343393116438664539">ଭିଏତନାମିଜ୍ ଟେଲେକ୍ସ</translation>
 <translation id="7357762654218998920">ଏହି ଫାଇଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
@@ -860,6 +869,7 @@
 <translation id="8342318071240498787">ସମାନ ନାମ ଥିବା ଗୋଟିଏ ଫାଇଲ୍ କିମ୍ବା ଡିରେକ୍ଟୋରୀ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି।</translation>
 <translation id="8372369524088641025">ଖରାପ WEP କୀ</translation>
 <translation id="8372852072747894550">ଗ୍ରୀକ୍</translation>
+<translation id="8384716930968677505">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଇମେଜଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="8386903983509584791">ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେଲା</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" />କୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
@@ -927,11 +937,13 @@
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
 <translation id="8965697826696209160">ଯଥେଷ୍ଟ ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="8997962250644902079">ଚାଇନିଜ୍ (ପାରମ୍ପାରିକ) ପିନୟିନ୍</translation>
+<translation id="8998871447376656508">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କ Google Driveରେ ଯଥେଷ୍ଟ ଖାଲି ସ୍ପେସ ନାହିଁ।</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="9017798300203431059">ରସିଆନ୍ (ଫୋନେଟିକ୍)</translation>
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="9035012421917565900">ଆଇଟମ୍‌କୁ <ph name="DESTINATION_NAME" />'କୁ ଫେରାଇ ନିଆଯାଇପାରିଲା ନାହିଁ, ତେଣୁ ଏହି କାର୍ଯ୍ୟକୁ ଆପଣ ପୂର୍ବବତ୍‍ କରିପାରିବେ ନାହିଁ।</translation>
 <translation id="9035689366572880647">ବର୍ତ୍ତମାନର PIN ଲେଖନ୍ତୁ</translation>
+<translation id="9037777873893411148">*ସଂସ୍ଥାର ଷ୍ଟୋରେଜ ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ଫାଇଲ୍ ନାମ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଏକ ଭିନ୍ନ ନାମ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9046895021617826162">ସଂଯୋଗ ବିଫଳ ହେଲା</translation>
 <translation id="9065512565307033593">ଯଦି ଆପଣ ଯାଞ୍ଚ କରିବାକୁ ବିଫଳ ହୁଅନ୍ତି, ତେବେ ଆପଣଙ୍କ ନେଟୱାର୍କ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଦିଆଯିବ।</translation>

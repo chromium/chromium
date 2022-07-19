@@ -1005,6 +1005,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1931410639376954712">Installazione di <ph name="DEVICE_OS" /> in corso…</translation>
 <translation id="1932098463447129402">Non prima</translation>
 <translation id="1935303383381416800">Possono accedere alla tua posizione</translation>
+<translation id="1936157145127842922">Mostra nella cartella</translation>
 <translation id="1936931585862840749">Specifica un numero per indicare la quantità di copie da stampare (da 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossibile importare il tipo di architettura del contenitore <ph name="ARCHITECTURE_CONTAINER" /> con questo dispositivo che invece è <ph name="ARCHITECTURE_DEVICE" />. Puoi provare a ripristinare questo contenitore in un diverso dispositivo oppure puoi accedere ai file all'interno dell'immagine del contenitore aprendoli nell'app File.</translation>
 <translation id="1938320257168860255">Si è verificato un errore. Assicurati che il telefono sia nelle vicinanze e sbloccato, nonché che il Bluetooth e il Wi-Fi siano attivi.</translation>
@@ -3209,6 +3210,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="402211067068791756">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti visualizzati</translation>
 <translation id="4022426551683927403">&amp;Aggiungi al dizionario</translation>
 <translation id="4025039777635956441">Disattiva l'audio del sito selezionato</translation>
+<translation id="4027958407426528157">Apri i siti web nelle app installate su <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Aggiungi metodi di immissione</translation>
 <translation id="4029556917477724407">Indietro dalla pagina <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
@@ -6556,6 +6558,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7377481913241237033">Connessione tramite codice</translation>
 <translation id="7378611153938412599">Le password inefficaci sono facili da indovinare. Assicurati di creare password efficaci. <ph name="BEGIN_LINK" />Leggi altri suggerimenti per la sicurezza.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Apri Chrome Web Store</translation>
+<translation id="737938816678769289">Connetti e configura facilmente i dispositivi con Accoppiamento rapido nelle vicinanze</translation>
 <translation id="7380459290951585794">Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> è stata aggiornata</translation>

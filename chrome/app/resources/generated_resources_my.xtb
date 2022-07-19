@@ -1016,6 +1016,7 @@
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> ကို ထည့်သွင်းနေသည်</translation>
 <translation id="1932098463447129402">မတိုင်မှီမဟုတ်</translation>
 <translation id="1935303383381416800">သင့်တည်နေရာကို ကြည့်ရန် ခွင့်ပြုထားသည်</translation>
+<translation id="1936157145127842922">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="1936931585862840749">မိတ္တူမည်မျှ ပုံနှိပ်ထုတ်ယူလိုကြောင်း ဖော်ပြရန် နံပါတ်ကို အသုံးပြုပါ (၁ မှ <ph name="MAX_COPIES" />)။</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ဖြစ်သော ဤစက်ပစ္စည်းဖြင့်<ph name="ARCHITECTURE_CONTAINER" /> ကွန်တိန်နာ ဖွဲ့စည်းပုံ အမျိုးအစားကို ထည့်သွင်း၍ မရပါ။ ဤကွန်တိန်နာကို အခြားစက်ပစ္စည်းတစ်ခုတွင် ပြန်ယူကြည့်နိုင်သည် သို့မဟုတ် Files အက်ပ်တွင် ဖွင့်ခြင်းဖြင့် ဤကွန်တိန်နာ ကွန်ပျူတာစနစ်မိတ္တူအတွင်းရှိ ဖိုင်များကို ဝင်သုံးနိုင်သည်။</translation>
 <translation id="1938240902511979591">ခြားနားမှုမြင့်သည့်မုဒ်၊ ချဲ့သည့်စနစ်နှင့် ပြသမှုဆက်တင်များ</translation>
@@ -4121,6 +4122,7 @@
 <translation id="4900392736118574277">သင်၏  စဖွင့်စာမျက်နှာကို <ph name="URL" /> သို့ ပြောင်းထားပါသည်။</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - တစ်ခုနှင့်တစ်ခု ထပ်ထားသည်</translation>
 <translation id="4900652253009739885">“ရွေးရန်” အတွက် သတ်မှတ်ထားသည့် တစ်ခုတည်းသော အသွင်တူခလုတ်ကို ဖယ်ရှား၍မရပါ။ <ph name="RESPONSE" /> အတွက် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
+<translation id="4901154724271753917">လတ်တလောပိတ်ထားသည်များကို ဖြန့်ရန်</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။</translation>
 <translation id="49027928311173603">ဆာဗာမှ ဒေါင်းလုပ်လုပ်ထားသည့် ပေါ်လစီသည် မမှန်ကန်ပါ: <ph name="VALIDATION_ERROR" />။</translation>
 <translation id="4906490889887219338">ကွန်ရက် ဖိုင်မျှဝေမှုများကို စနစ်သတ်မှတ်ရန် သို့မဟုတ် စီမံရန်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -7007,6 +7009,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> သည် <ph name="FOLDERNAME" /> ရှိ ဖိုင်များကို ကြည့်နိုင်ပါမည်</translation>
 <translation id="7768770796815395237">ပြောင်းရန်</translation>
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
+<translation id="7769748505895274502">လတ်တလောပိတ်ထားသည်များကို ခေါက်ရန်</translation>
 <translation id="7770406201819593386">ChromeOS Flex အမှားရှာဖွေမှုဆိုင်ရာ စမ်းသပ်မှုများ လုပ်ဆောင်နိုင်သည်။</translation>
 <translation id="7770450735129978837">မောက်စ်ညာကလစ်</translation>
 <translation id="7770612696274572992">အခြားစက်မှ မိတ္တူကူးထားသည့် ပုံ</translation>

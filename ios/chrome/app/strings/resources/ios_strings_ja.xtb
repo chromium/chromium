@@ -441,6 +441,7 @@
 <translation id="4751645464639803239">新しいシークレット タブ</translation>
 <translation id="4775879719735953715">既定のブラウザ</translation>
 <translation id="4778644898150334464">他のパスワードを使用</translation>
+<translation id="478808905805139173">シークレット モードで開きますか？</translation>
 <translation id="4802417911091824046">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。
 
 この設定を変更する場合は<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />してください</translation>
@@ -961,6 +962,7 @@
 <translation id="9055772144595778347">ログインできない</translation>
 <translation id="9057972802061533987">フォローできません。エラーが発生しました。</translation>
 <translation id="9065203028668620118">編集</translation>
+<translation id="9068336935206019333">シークレット モードの Chrome で開く</translation>
 <translation id="9079935439869366234">すべて未読にする</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
 <translation id="9083392325882095631">1個のアイテム</translation>

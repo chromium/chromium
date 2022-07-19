@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{қос нүкте}other{# қос нүкте}}</translation>
 <translation id="6444046323172968959">Ескерту диалогтік терезесі</translation>
 <translation id="6452403590345320472">Мазмұны</translation>
-<translation id="6457542714329819968">теру</translation>
 <translation id="6468049171101508116">"Келесі" түймесі</translation>
 <translation id="646954774886932461">Индекс</translation>
 <translation id="6475604559827479857">Сөзді ерекшелеп көрсететін түс:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Жойылды</translation>
 <translation id="6910969481785184048">Қосу, өшіру және тоқтату</translation>
 <translation id="6919104639734799681">Кестелер тізімін көрсету</translation>
+<translation id="692135145298539227">жой</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6949846980769640811">Орташа теңіз түстес көк</translation>
 <translation id="6951482098621102657">Келесі 5-деңгей тақырыбы жоқ.</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Сипаттамалар тізімінің мәліметі</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{амперсанд}other{# амперсанд}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">алдыңғы таңбаны өшіру</translation>
 <translation id="738899727977260036">Сұрқай көк</translation>
 <translation id="7393979322571982935">Дыбыстар және параметрлер</translation>
 <translation id="739763518212184081">Алдыңғы жол</translation>

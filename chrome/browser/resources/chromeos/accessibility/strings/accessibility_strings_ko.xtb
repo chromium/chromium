@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{콜론}other{콜론 #개}}</translation>
 <translation id="6444046323172968959">알림 대화상자</translation>
 <translation id="6452403590345320472">목차</translation>
-<translation id="6457542714329819968">입력</translation>
 <translation id="6468049171101508116">다음 버튼</translation>
 <translation id="646954774886932461">색인</translation>
 <translation id="6475604559827479857">단어 강조표시 색상:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">삭제됨</translation>
 <translation id="6910969481785184048">사용, 사용 중지 및 중지</translation>
 <translation id="6919104639734799681">표 목록 표시</translation>
+<translation id="692135145298539227">삭제</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6949846980769640811">미디엄 아쿠아 마린</translation>
 <translation id="6951482098621102657">다음 수준 5 제목이 없습니다</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">설명 목록 세부정보</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{앰퍼샌드}other{앰퍼샌드 #개}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">이전 문자 삭제</translation>
 <translation id="738899727977260036">슬레이트 블루</translation>
 <translation id="7393979322571982935">소리 및 설정</translation>
 <translation id="739763518212184081">이전 행</translation>

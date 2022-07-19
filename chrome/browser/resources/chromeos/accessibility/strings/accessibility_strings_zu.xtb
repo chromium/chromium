@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ikholoni}one{# amakholoni}other{# amakholoni}}</translation>
 <translation id="6444046323172968959">Ingxoxo yesexwayiso</translation>
 <translation id="6452403590345320472">Ithebula yokuqukethwe</translation>
-<translation id="6457542714329819968">uhlobo</translation>
 <translation id="6468049171101508116">Inkinobho yokulandelayo</translation>
 <translation id="646954774886932461">Inkomba</translation>
 <translation id="6475604559827479857">Umbala wokugqamisa igama:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Kususiwe</translation>
 <translation id="6910969481785184048">Vula, Vala, uphinde Umise</translation>
 <translation id="6919104639734799681">Bonisa uhlu lwamathebula</translation>
+<translation id="692135145298539227">sula</translation>
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6949846980769640811">I-Aqua Marine emaphakathi</translation>
 <translation id="6951482098621102657">Asikho isihloko esilandelayo seleveli engu-5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Umniningwane wohlu lwencazelo</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{i-ampersand}one{# ama-ampersand}other{# ama-ampersand}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">sula uhlamvu lwangaphambilini</translation>
 <translation id="738899727977260036">Okuluhlaza Okwesibhakabhaka Kwesleyithi</translation>
 <translation id="7393979322571982935">Imisindo Namasethingi</translation>
 <translation id="739763518212184081">Umugqa odlule</translation>

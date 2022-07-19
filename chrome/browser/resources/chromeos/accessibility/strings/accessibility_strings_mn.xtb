@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ тодорхойлох цэг}other{ # тодорхойлох цэг}}</translation>
 <translation id="6444046323172968959">Анхааруулах мэдэгдэл</translation>
 <translation id="6452403590345320472">Агуулга</translation>
-<translation id="6457542714329819968">төрөл</translation>
 <translation id="6468049171101508116">Дараагийн товч</translation>
 <translation id="646954774886932461">Индекс</translation>
 <translation id="6475604559827479857">Үгийн тодруулгын өнгө:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Устгасан</translation>
 <translation id="6910969481785184048">Асаалттай, Унтраалтай, Зогсоох</translation>
 <translation id="6919104639734799681">Хүснэгтийг жагсаалтаар харуулах</translation>
+<translation id="692135145298539227">устгах</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6949846980769640811">Бүдэг номин ногоон</translation>
 <translation id="6951482098621102657">Дараагийн 5-р түвшний гарчиг алга байна</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Тайлбарын жагсаалтын дэлгэрэнгүй мэдээлэл</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{&amp; тэмдэг}other{# &amp; тэмдэгүүд}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">өмнөх тэмдэгтийг устга</translation>
 <translation id="738899727977260036">Үнсэн хөх</translation>
 <translation id="7393979322571982935">Дуу чимээ болон тохиргоо</translation>
 <translation id="739763518212184081">Өмнөх шугам</translation>

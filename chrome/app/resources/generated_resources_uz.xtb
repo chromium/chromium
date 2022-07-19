@@ -1005,6 +1005,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> oʻrnatilmoqda</translation>
 <translation id="1932098463447129402">Erta bo‘lmasin</translation>
 <translation id="1935303383381416800">Joylashuvingizni koʻrishga ruxsat berilgan</translation>
+<translation id="1936157145127842922">Jildda ko‘rsatish</translation>
 <translation id="1936931585862840749">Chop etish uchun nusxalar sonini kiriting (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> protsessorli qurilmangizga <ph name="ARCHITECTURE_CONTAINER" /> turidagi zaxiraviy nusxasi tiklanmaydi. Arxivni boshqa turdagi protsessorli qurilmada tiklash yoki Fayllar ilovasi orqali tarkibidagi zaxiralangan fayllarini ochish mumkin.</translation>
 <translation id="1938240902511979591">Yuqori kontrastli rejim, lupa va ekran sozlamalari</translation>
@@ -4111,6 +4112,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4900392736118574277">Boshlang‘ich sahifa <ph name="URL" /> manziliga o‘zgartirildi.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – maydalangan</translation>
 <translation id="4900652253009739885">“Tanlash” uchun tayinlangan kalit tugma bekor qilinmadi. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
+<translation id="4901154724271753917">Yaqinda yopilganlarni yoyish</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang.</translation>
 <translation id="49027928311173603">Serverdan yaroqsiz siyosat yuklab olindi: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4906490889887219338">Tarmoqdagi fayl ulashuvlarini sozlash yoki boshqarish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -6999,6 +7001,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7768526219335215384"><ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi fayllarni ocha oladi</translation>
 <translation id="7768770796815395237">Oʻzgartirish</translation>
 <translation id="7768784765476638775">Teginib tinglash</translation>
+<translation id="7769748505895274502">Yaqinda yopilganlarni yigʻish</translation>
 <translation id="7770406201819593386">ChromeOS Flex diagnostika testlarini ishga tushirish.</translation>
 <translation id="7770450735129978837">Sichqonchadagi oʻng klik</translation>
 <translation id="7770612696274572992">Rasm boshqa qurilmadan nusxalandi</translation>

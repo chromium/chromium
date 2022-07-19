@@ -1684,7 +1684,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="270582584528242502">Jangan tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
-<translation id="2709516037105925701">Isi-Otomatis</translation>
+<translation id="2709516037105925701">Isi otomatis</translation>
 <translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
 
       Jika kebijakan disetel ke Nonaktif saat koneksi UDP keluar difilter oleh firewall, perangkat hanya akan mengizinkan koneksi dari perangkat klien dalam jaringan lokal.</translation>
@@ -2579,6 +2579,19 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3660562134618097814">Transfer cookie SAML IdP saat proses masuk.</translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3674010627788940405">Jangan dukung header permintaan non-karakter pengganti CORS.</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) biasa digunakan untuk menguraikan tugas JavaScript panjang.
+          Jika kebijakan disetel ke Aktif, setTimeout dan setInterval dengan interval yang lebih kecil dari 4 md tidak akan dibatasi dengan sangat cepat.
+          Hal ini meningkatkan performa jangka pendek. Namun, situs yang menyalahgunakan API pada akhirnya akan memiliki setTimeout terbatas.
+
+          Jika kebijakan ini disetel ke Nonaktif, setTimeout dan setInterval dengan interval yang lebih kecil dari 4 md akan dibatasi.
+
+          Hal ini dapat mengubah urutan tugas di suatu halaman web, yang menyebabkan perilaku tak terduga di situs yang bergantung pada urutan tertentu dengan cara tertentu pula.
+          Kebijakan ini juga dapat memengaruhi situs yang menggunakan banyak setTimeout() dengan waktu tunggu 0 md, misalnya penambahan beban CPU.
+
+          Bagi pengguna yang tidak menyetel kebijakan ini, <ph name="PRODUCT_NAME" /> akan meluncurkan perubahan secara bertahap pada saluran Stabil.
+
+          Kebijakan ini bersifat sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> 107. Batas waktu ini dapat diperpanjang jika diperlukan di antara perusahaan.
+          </translation>
 <translation id="3685979383016152590">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> yang akan tersedia bagi pengguna.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (nilai 0) menggunakan <ph name="PRINTERS_BULK_BLOCKLIST" /> untuk membatasi akses ke printer yang ditentukan
@@ -5706,6 +5719,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7101550508196914704">Jangan tampilkan pintasan aplikasi di kolom bookmark</translation>
 <translation id="7109384070286741861">Nonaktifkan CECPQ2</translation>
 <translation id="7114169791477667553">Nonaktifkan penyedia penelusuran default</translation>
+<translation id="7121046543122812054">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
+
+      Mengizinkan pengguna login ke <ph name="PRODUCT_NAME" />.
+
+      Jika kebijakan ini disetel ke Aktif, pengguna akan dapat login ke <ph name="PRODUCT_NAME" />.
+      Jika kebijakan ini disetel ke Nonaktif, pengguna tidak akan dapat login. Kebijakan ini juga memblokir aplikasi dan ekstensi yang menggunakan chrome.identity API agar tidak berfungsi. Sebagai gantinya, gunakan <ph name="SYNC_DISABLED_POLICY_NAME" />.
+      </translation>
 <translation id="7122626777103192518">Jika kebijakan disetel ke Benar (True), berbagi teks/file dari aplikasi Android ke Aplikasi Web yang didukung akan diizinkan, menggunakan sistem berbagi Android bawaan.
       Jika diaktifkan, kebijakan ini akan mengirimkan metadata untuk Aplikasi Web terinstal ke Google guna membuat dan menginstal aplikasi Android stub.
       Jika kebijakan disetel ke Salah (False), fungsi ini akan dinonaktifkan.</translation>

@@ -801,7 +801,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{コロン}other{# 個のコロン}}</translation>
 <translation id="6444046323172968959">アラート ダイアログ</translation>
 <translation id="6452403590345320472">目次</translation>
-<translation id="6457542714329819968">タイプ</translation>
 <translation id="6468049171101508116">次のボタン</translation>
 <translation id="646954774886932461">索引</translation>
 <translation id="6475604559827479857">次の色で単語をハイライト表示:</translation>
@@ -859,6 +858,7 @@
 <translation id="6910211073230771657">削除済み</translation>
 <translation id="6910969481785184048">オン、オフ、停止</translation>
 <translation id="6919104639734799681">表リストを表示</translation>
+<translation id="692135145298539227">削除</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6949846980769640811">ミディアム アクアマリン</translation>
 <translation id="6951482098621102657">次のレベル 5 の見出しはありません</translation>
@@ -926,7 +926,6 @@
 <translation id="7356610683936413584">説明リストの詳細</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{アンパサンド}other{# 個のアンパサンド}}</translation>
 <translation id="737396357417333429">クリック可能</translation>
-<translation id="7388656272362719103">前の文字を削除</translation>
 <translation id="738899727977260036">スレートブルー</translation>
 <translation id="7393979322571982935">音声と設定</translation>
 <translation id="739763518212184081">前の行</translation>

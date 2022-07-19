@@ -1059,6 +1059,7 @@
 <translation id="3807873520724684969">有害なコンテンツがブロックされました。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3816482573645936981">値（優先）</translation>
+<translation id="3823402221513322552">お使いのブラウザは <ph name="BROWSER_DOMAIN" /> によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="382518646247711829">プロキシ サーバーを使用している場合...</translation>
 <translation id="3826050100957962900">サードパーティのログイン</translation>
 <translation id="3827112369919217609">絶対的</translation>
@@ -1556,6 +1557,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
 <translation id="518639307526414276">ペットフード、ペットケア用品</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
+<translation id="5191315092027169558">お使いのプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> で複数のファイルがダウンロードされようとしています</translation>
 <translation id="519422657042045905">注釈は使用できません</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
@@ -2760,6 +2762,7 @@
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8625384913736129811">このカード情報をこのデバイスに保存する</translation>
+<translation id="8637577059508742477">お使いのプロフィールとブラウザは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="865032292777205197">モーション センサー</translation>
 <translation id="8663226718884576429">ご注文の概要、<ph name="TOTAL_LABEL" />、その他の詳細</translation>
 <translation id="8666678546361132282">英語</translation>

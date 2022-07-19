@@ -1059,6 +1059,7 @@
 <translation id="3807873520724684969">유해한 콘텐츠 차단됨</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3816482573645936981">값(대체됨)</translation>
+<translation id="3823402221513322552">내 브라우저는 <ph name="BROWSER_DOMAIN" />에서, 프로필은 <ph name="PROFILE_DOMAIN" />에서 관리합니다</translation>
 <translation id="382518646247711829">프록시 서버를 사용하는 경우</translation>
 <translation id="3826050100957962900">서드 파티 로그인</translation>
 <translation id="3827112369919217609">독립</translation>
@@ -1556,6 +1557,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />가 아닙니까? 오류 신고</translation>
 <translation id="518639307526414276">반려동물 사료 및 관리 용품</translation>
 <translation id="5190835502935405962">북마크바</translation>
+<translation id="5191315092027169558">내 프로필은 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />에서 여러 파일을 다운로드하려고 합니다.</translation>
 <translation id="519422657042045905">주석을 사용할 수 없음</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
@@ -2758,6 +2760,7 @@
 <translation id="8623885649813806493">일치하는 비밀번호가 없습니다. 저장된 비밀번호를 모두 표시합니다.</translation>
 <translation id="8624354461147303341">할인받기</translation>
 <translation id="8625384913736129811">이 기기에 카드 저장</translation>
+<translation id="8637577059508742477">내 프로필과 브라우저는 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="865032292777205197">움직임 감지 센서</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="8666678546361132282">영어</translation>

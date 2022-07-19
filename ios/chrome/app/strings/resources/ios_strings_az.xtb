@@ -441,6 +441,7 @@ Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başl
 <translation id="4751645464639803239">Yeni Anonim Tab</translation>
 <translation id="4775879719735953715">Defolt Brauzer</translation>
 <translation id="4778644898150334464">Digər paroldan istifadə edin</translation>
+<translation id="478808905805139173">Anonim rejimində açılsın?</translation>
 <translation id="4802417911091824046">Google Pay'dəki ödəniş metodları və ünvanlar parol şifrələməsinə daxil deyil.
 
 Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlayın<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9055772144595778347">Daxil ola bilmir</translation>
 <translation id="9057972802061533987">İzləmək olmur. Xəta oldu.</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>
+<translation id="9068336935206019333">Chrome Anonim rejimində açın</translation>
 <translation id="9079935439869366234">Hamısını Oxunmamış kimi Qeyd Edin</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> üçün parollar yenilənsin?</translation>
 <translation id="9083392325882095631">1 element</translation>

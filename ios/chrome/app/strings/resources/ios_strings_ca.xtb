@@ -441,6 +441,7 @@ Les teves dades estan encriptades amb la teva frase de contrasenya de sincronitz
 <translation id="4751645464639803239">Pestanya d'incògnit nova</translation>
 <translation id="4775879719735953715">Navegador predeterminat</translation>
 <translation id="4778644898150334464">Utilitza una altra contrasenya</translation>
+<translation id="478808905805139173">Vols obrir-ho en mode d'incògnit?</translation>
 <translation id="4802417911091824046">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
 
 Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" />.</translation>
@@ -961,6 +962,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9055772144595778347">No es pot iniciar la sessió</translation>
 <translation id="9057972802061533987">No es pot seguir. S'ha produït un error.</translation>
 <translation id="9065203028668620118">Edita</translation>
+<translation id="9068336935206019333">Obre en mode d'incògnit a Chrome</translation>
 <translation id="9079935439869366234">Marca-ho tot com a no llegit</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 element</translation>

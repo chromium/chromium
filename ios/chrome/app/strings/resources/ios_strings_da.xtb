@@ -441,6 +441,7 @@ Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4778644898150334464">Brug en anden adgangskode</translation>
+<translation id="478808905805139173">Vil du åbne i inkognitotilstand?</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9055772144595778347">Kan ikke logge ind</translation>
 <translation id="9057972802061533987">Indholdet kan ikke følges. Der gik noget galt.</translation>
 <translation id="9065203028668620118">Rediger</translation>
+<translation id="9068336935206019333">Åbn i inkognitotilstand i Chrome</translation>
 <translation id="9079935439869366234">Markér alle som ulæste</translation>
 <translation id="9081058212938299310">Vil du opdatere adgangskoden til <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 element</translation>

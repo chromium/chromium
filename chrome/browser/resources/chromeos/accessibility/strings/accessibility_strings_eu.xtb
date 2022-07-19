@@ -802,7 +802,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{bi puntu}other{# bi puntu}}</translation>
 <translation id="6444046323172968959">Alerta-leihoa</translation>
 <translation id="6452403590345320472">Aurkibidea</translation>
-<translation id="6457542714329819968">idatzi</translation>
 <translation id="6468049171101508116">Hurrengo botoia</translation>
 <translation id="646954774886932461">Indizea</translation>
 <translation id="6475604559827479857">Hitzak nabarmentzeko kolorea:</translation>
@@ -860,6 +859,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6910211073230771657">Ezabatu egin da</translation>
 <translation id="6910969481785184048">Aktibatu, desaktibatu eta gelditu</translation>
 <translation id="6919104639734799681">Erakutsi taulen zerrenda</translation>
+<translation id="692135145298539227">ezabatu</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6949846980769640811">Bizitasun ertaineko urdin berdexka</translation>
 <translation id="6951482098621102657">Ez dago bosgarren mailako beste goibururik honen ondoren</translation>
@@ -927,7 +927,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7356610683936413584">Azalpenen zerrendaren xehetasunak</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et ikur}other{# et ikur}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ezabatu aurreko karakterea</translation>
 <translation id="738899727977260036">Arbel-urdina</translation>
 <translation id="7393979322571982935">Soinuak eta ezarpenak</translation>
 <translation id="739763518212184081">Aurreko lerroa</translation>

@@ -454,6 +454,14 @@
 
       请注意：此政策也适用于组件扩展程序，例如 Hangout Services 扩展程序。</translation>
 <translation id="148194404518916594">允许用户使用“轻触搜索”功能</translation>
+<translation id="1482155585027825793">控制外部扩展程序的安装。
+
+      如果此政策已启用，系统会阻止安装外部扩展程序。
+
+      如果此政策已停用或未设置，系统会允许安装外部扩展程序。
+
+      如需查看外部扩展程序及其安装方法，请参阅 https://developer.chrome.com/apps/external_extensions 上的文档。
+      </translation>
 <translation id="1486021504508098388">报告背光信息</translation>
 <translation id="1487916040416013623">通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
 
@@ -1042,6 +1050,10 @@
 <translation id="2076158466157390917">控制登录期间的自动清理</translation>
 <translation id="2077129598763517140">使用硬件加速模式（如果可用）</translation>
 <translation id="2077273864382355561">使用电源供电时的屏幕关闭延迟时间</translation>
+<translation id="2081969239334697268">
+        如果此政策已停用，系统将禁止在会话期间更新自助服务终端 Chrome 应用（此类更新使用扩展程序清单中的更新网址），仅保留 CRX 预提取作为更新机制。
+        如果此政策已启用或未设置，系统将允许在会话期间更新自助服务终端 Chrome 应用。
+        </translation>
 <translation id="2082205219176343977">为设备配置允许使用的最低 Chrome 版本。</translation>
 <translation id="208566302163036794">禁用已停用的功能</translation>
 <translation id="208623333578980446">允许使用屏幕唤醒锁定以便进行电源管理</translation>

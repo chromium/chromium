@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{دونقطه}one{# دونقطه}other{# دونقطه}}</translation>
 <translation id="6444046323172968959">گفتگوی هشدار</translation>
 <translation id="6452403590345320472">فهرست مطالب</translation>
-<translation id="6457542714329819968">نوع</translation>
 <translation id="6468049171101508116">دکمه بعدی</translation>
 <translation id="646954774886932461">فهرست موضوعی</translation>
 <translation id="6475604559827479857">رنگ برای برجسته کردن کلمه‌:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">حذف شد</translation>
 <translation id="6910969481785184048">روشن/خاموش کردن و متوقف کردن</translation>
 <translation id="6919104639734799681">نمایش فهرست جدول‌ها</translation>
+<translation id="692135145298539227">حذف</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6949846980769640811">سبز دریایی</translation>
 <translation id="6951482098621102657">عنوان سطح ۵ بعدی وجود ندارد</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">جزئیات فهرست شرح</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{امپرسند}one{# امپرسند}other{# امپرسند}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">نویسه قبلی را حذف کن</translation>
 <translation id="738899727977260036">آبی کربنی</translation>
 <translation id="7393979322571982935">صداها و تنظیمات</translation>
 <translation id="739763518212184081">خط قبلی</translation>

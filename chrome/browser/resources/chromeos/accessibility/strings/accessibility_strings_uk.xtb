@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{двокрапка}one{# двокрапка}few{# двокрапки}many{# двокрапок}other{# colons}}</translation>
 <translation id="6444046323172968959">Діалогове вікно сповіщень</translation>
 <translation id="6452403590345320472">Зміст</translation>
-<translation id="6457542714329819968">ввести</translation>
 <translation id="6468049171101508116">Наступна кнопка</translation>
 <translation id="646954774886932461">Покажчик</translation>
 <translation id="6475604559827479857">Колір виділеного слова:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Видалено</translation>
 <translation id="6910969481785184048">Як увімкнути, вимкнути чи припинити роботу ChromeVox</translation>
 <translation id="6919104639734799681">Показати список таблиць</translation>
+<translation id="692135145298539227">видалити</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6949846980769640811">Помірний аквамарин</translation>
 <translation id="6951482098621102657">Немає наступного заголовка рівня 5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Деталі списку описів</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{амперсанд}one{# амперсанд}few{# амперсанди}many{# амперсандів}other{# ampersands}}</translation>
 <translation id="737396357417333429">інтерактивний елемент</translation>
-<translation id="7388656272362719103">видалити попередній символ</translation>
 <translation id="738899727977260036">Грифельно-синій</translation>
 <translation id="7393979322571982935">Звуки й налаштування</translation>
 <translation id="739763518212184081">Попередній рядок</translation>

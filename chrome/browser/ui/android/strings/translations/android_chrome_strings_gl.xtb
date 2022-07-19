@@ -220,7 +220,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155214902713132423">Este método de verificación non está dispoñible para este dispositivo. Escolle unha opción distinta no outro dispositivo.</translation>
 <translation id="2158408438301413340">Chrome non puido comprobar todos os contrasinais</translation>
-<translation id="2169830938017475061">Agora</translation>
 <translation id="2172688499998841696">As descricións das imaxes están desactivadas</translation>
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -298,7 +297,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2642087927315268160">Panel inferior de inicio de sesión pechado.</translation>
-<translation id="2645657967708199252">A túa conexión (<ph name="CONNECTION_TYPE" />) podería reducir a velocidade da descarga</translation>
 <translation id="2647434099613338025">Engadir idioma</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> xestiona o teu navegador</translation>
 <translation id="2650348088770008516">A explicación da Guía de privacidade está pechada</translation>
@@ -317,7 +315,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2722945394406572875">Pechouse a solicitude de Privacy Sandbox</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Desfruta dunha experiencia de voz mellorada</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="276969039800130567">Sesión iniciada como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -346,7 +343,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2886836735871983413">A medida que navegues pola Web, aquí aparecerá unha lista de sitios</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2891154217021530873">Detén a carga da páxina</translation>
-<translation id="2892647708214602204">Cando este ficheiro estea listo, verás unha notificación</translation>
 <translation id="2893180576842394309">Google pode utilizar o teu historial para personalizar a Busca e outros servizos de Google</translation>
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2901411048554510387">Mostrando suxestións para <ph name="WEBSITE_TITLE" /></translation>
@@ -592,7 +588,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="4263656433980196874">A interface de consentimento para a busca por voz a través do Asistente está aberta a pantalla completa</translation>
 <translation id="4266054596873078491">Inicia sesión coa túa Conta de Google neste sitio e en Chrome.</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
-<translation id="4290281343757112331">Prefires realizar a descarga máis tarde?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa o bloqueo de pantalla na configuración de Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Ao utilizar Chrome, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo de Google<ph name="END_TOS_LINK" /> e as <ph name="BEGIN_ATOS_LINK" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />. Tamén é aplicable a <ph name="BEGIN_PRIVACY_LINK" />Política de privacidade<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nova pestana de incógnito</translation>
@@ -847,7 +842,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5686790454216892815">O nome do ficheiro é demasiado longo</translation>
 <translation id="569536719314091526">Traduce esta páxina a calquera idioma desde o botón Máis opcións</translation>
 <translation id="5696597120588531049">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis</translation>
-<translation id="5697688514913266141">O teu ficheiro gardarase en <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Editar<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Cambiar á pestana</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5726692708398506830">Facer máis grande todo o contido da páxina</translation>
@@ -1108,7 +1102,6 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="6979737339423435258">Desde sempre</translation>
 <translation id="6987047470128880212">O modo de incógnito non está dispoñible neste dispositivo</translation>
 <translation id="6995899638241819463">Avisarte se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
-<translation id="7001056293070445572">Este ficheiro é grande (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Engadir á lista lectura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="7027549951530753705">Restaurouse <ph name="ITEM_TITLE" /></translation>
@@ -1240,7 +1233,6 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
 <translation id="7725024127233776428">As páxinas que engadas aos marcadores aparecerán aquí</translation>
 <translation id="7757787379047923882">O texto compartiuse desde <ph name="DEVICE_NAME" /></translation>
-<translation id="7761849928583394409">Seleccionar data e hora</translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">Inicia sesión para gozar de máis funcións e da máxima seguranza de Chrome</translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
@@ -1408,7 +1400,6 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="8540136935098276800">Pon un URL que teña un formato correcto</translation>
 <translation id="854522910157234410">Abrir esta páxina</translation>
 <translation id="8551513938758868521">Bloquear pestanas do modo de incógnito ao saír de Chrome</translation>
-<translation id="8555836665334561807">Por wifi</translation>
 <translation id="8559990750235505898">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="8560560256644480257">Creando GIF (<ph name="PERCENT" /> %%)</translation>
 <translation id="8560602726703398413">Para acceder á lista de lectura, vai a Marcadores</translation>
@@ -1446,7 +1437,6 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
-<translation id="8730621377337864115">Feito</translation>
 <translation id="8746155870861185046">Compartir texto destacado</translation>
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>

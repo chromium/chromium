@@ -441,6 +441,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4751645464639803239">Thẻ ẩn danh mới</translation>
 <translation id="4775879719735953715">Trình duyệt mặc định</translation>
 <translation id="4778644898150334464">Dùng mật khẩu khác</translation>
+<translation id="478808905805139173">Mở trong chế độ ẩn danh?</translation>
 <translation id="4802417911091824046">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay.
 
 Để thay đổi tùy chọn cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại tính năng đồng bộ hóa<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9055772144595778347">Không thể đăng nhập</translation>
 <translation id="9057972802061533987">Không theo dõi được. Đã xảy ra lỗi.</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
+<translation id="9068336935206019333">Mở trong chế độ ẩn danh của Chrome</translation>
 <translation id="9079935439869366234">Đánh dấu tất cả là chưa đọc</translation>
 <translation id="9081058212938299310">Bạn có muốn cập nhật mật khẩu cho <ph name="USERNAME" /> không?</translation>
 <translation id="9083392325882095631">1 mục</translation>

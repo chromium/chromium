@@ -1014,6 +1014,7 @@
 <translation id="1931410639376954712"><ph name="DEVICE_OS" />-г суулгаж байна</translation>
 <translation id="1932098463447129402">Өмнө нь биш</translation>
 <translation id="1935303383381416800">Таны байршлыг харахыг зөвшөөрсөн</translation>
+<translation id="1936157145127842922">Хавтсан дотор харуулах</translation>
 <translation id="1936931585862840749">Тоо ашиглан хэдэн хувь хэвлэхийг заана уу (1-ээс <ph name="MAX_COPIES" /> хүртэл).</translation>
 <translation id="1937774647013465102">Контейнерын архитектурын төрөл болох<ph name="ARCHITECTURE_CONTAINER" />-г энэ төхөөрөмж буюу <ph name="ARCHITECTURE_DEVICE" />-р импорт хийх боломжгүй байна. Та энэ контейнерыг өөр төхөөрөмжид сэргээхээр оролдох эсвэл Файлс аппыг нээж, энэ контейнерын зураг дахь файлд хандах боломжтой.</translation>
 <translation id="1938240902511979591">Өндөр нягтралтай горим, томруулагч болон дэлгэцийн тохиргоо</translation>
@@ -4119,6 +4120,7 @@
 <translation id="4900392736118574277">Таны эхлүүлэх хуудсыг <ph name="URL" /> болгож өөрчилсөн.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц - сүлжилдсэн</translation>
 <translation id="4900652253009739885">“Сонгох” үйлдэлд оноосон цорын ганц сэлгүүрийг хасах боломжгүй. <ph name="RESPONSE" />-н тулд дурын товч дээр дарна уу.</translation>
+<translation id="4901154724271753917">Саяхан хаагдсан табуудыг дэлгэх</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу.</translation>
 <translation id="49027928311173603">Серверээс татсан бодлого хүчин төгөлдөр бус байна: <ph name="VALIDATION_ERROR" /> .</translation>
 <translation id="4906490889887219338">Сүлжээний файл хуваалцахыг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -7007,6 +7009,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> дахь файлуудыг үзэх боломжтой болно</translation>
 <translation id="7768770796815395237">Өөрчлөх</translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
+<translation id="7769748505895274502">Саяхан хаагдсан табуудыг хураах</translation>
 <translation id="7770406201819593386">ChromeOS Flex-н оношилгооны туршилтыг ажиллуулах</translation>
 <translation id="7770450735129978837">Хулганын баруун талыг товших</translation>
 <translation id="7770612696274572992">Өөр төхөөрөмжөөс хуулсан зураг</translation>

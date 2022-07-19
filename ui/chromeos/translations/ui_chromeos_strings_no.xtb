@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Autentiseringssertifikatet ble avvist av nettverket</translation>
 <translation id="255937426064304553">USA internasjonalt</translation>
 <translation id="2563185590376525700">Frosk</translation>
+<translation id="2570012981255377263">De nylige filene dine vises her</translation>
 <translation id="2578394532502990878">Tamil, fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2593644851255584939">Administratoren din krever at du slår av SIM-låsen.</translation>
@@ -548,6 +549,7 @@
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
 <translation id="5649768706273821470">Lytt</translation>
+<translation id="5665074015635552640">De nylige videoene dine vises her</translation>
 <translation id="5669691691057771421">Skriv inn en ny PIN-kode</translation>
 <translation id="5678784840044122290">Linux-appen blir tilgjengelig i terminalen din og kan også vise et ikon i appoversikten.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan ikke koble fra et arkiv eller en virtuell disk<ph name="END_BOLD" />
@@ -692,6 +694,7 @@
     <ph name="FILE_COUNT" /> ble funnet</translation>
 <translation id="6935521024859866267">Opp-ned</translation>
 <translation id="6943836128787782965">Henting av HTTP mislyktes</translation>
+<translation id="6945604978460872381">De nylige dokumentene dine vises her</translation>
 <translation id="6949408524333579394">Serbisk, translitterasjon</translation>
 <translation id="6954309393500027528">Administratoren din har blokkert innliming av denne filen</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
@@ -739,6 +742,7 @@
 <translation id="7295662345261934369">Del med andre</translation>
 <translation id="7297443947353982503">Brukernavn/passord er galt, eller så mislyktes EAP-autorisasjonen</translation>
 <translation id="7309413087278791451">Tysk (Belgia)</translation>
+<translation id="7313374447885864533">De nylige lydfilene dine vises her</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
 <translation id="7357762654218998920">Denne filtypen støttes ikke. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i ChromeOS.</translation>
@@ -872,6 +876,7 @@
 <translation id="8342318071240498787">Det finnes allerede en fil eller en katalog med det samme navnet.</translation>
 <translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8372852072747894550">Gresk</translation>
+<translation id="8384716930968677505">De nylige bildene dine vises her</translation>
 <translation id="8386903983509584791">Skanningen er fullført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ut.</translation>
 <translation id="8395901698320285466">Dimensjoner</translation>

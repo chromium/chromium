@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{សញ្ញាចុចពីរ}other{# សញ្ញាចុចពីរ}}</translation>
 <translation id="6444046323172968959">ប្រអប់ដាស់តឿន</translation>
 <translation id="6452403590345320472">តារាង​ខ្លឹមសារ</translation>
-<translation id="6457542714329819968">វាយបញ្ចូល</translation>
 <translation id="6468049171101508116">ប៊ូតុងបន្ទាប់</translation>
 <translation id="646954774886932461">សន្ទស្សន៍</translation>
 <translation id="6475604559827479857">ពណ៌​សម្រាប់​ការ​រំលេចពាក្យ៖</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">បានលុប</translation>
 <translation id="6910969481785184048">បើក បិទ និងឈប់</translation>
 <translation id="6919104639734799681">បង្ហាញបញ្ជីតារាង</translation>
+<translation id="692135145298539227">លុប</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6949846980769640811">បៃតងស្រាល</translation>
 <translation id="6951482098621102657">គ្មានផ្នែកក្បាលកម្រិតទី 5 បន្ទាប់ទេ</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">ព័ត៌មានលម្អិត​អំពីបញ្ជីពណ៌នា</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{សញ្ញានឹង}other{# សញ្ញានឹង}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">លុប​តួអក្សរ​មុន</translation>
 <translation id="738899727977260036">ប្រផេះចាស់</translation>
 <translation id="7393979322571982935">សំឡេង និង​ការកំណត់</translation>
 <translation id="739763518212184081">បន្ទាត់ពីមុន</translation>

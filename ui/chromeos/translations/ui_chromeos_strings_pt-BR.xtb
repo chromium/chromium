@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2163152940313951844">Caractere inválido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Português com teclado internacional de PC dos EUA</translation>
+<translation id="2193661397560634290">Uso: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Chinês simplificado</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar com o Linux</translation>
@@ -187,6 +188,7 @@
 <translation id="2570012981255377263">Seus arquivos recentes vão aparecer aqui</translation>
 <translation id="2578394532502990878">Tâmil (fonético)</translation>
 <translation id="2579959351793446050">Oriá</translation>
+<translation id="2593644851255584939">O administrador exige que você desative o bloqueio do chip.</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
 <translation id="2614589611416690597">Vídeo de <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">O chip está bloqueado</translation>
@@ -202,6 +204,7 @@
 <translation id="2724954091494693138">Turco com teclado padrão F</translation>
 <translation id="2732839045120506979">Vietnamita (VNI)</translation>
 <translation id="2735623501230989521">Conceder ao Parallels Desktop permissão para acessar arquivos na pasta <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Você usou todo o armazenamento individual do Google Workspace.</translation>
 <translation id="2771816809568414714">Queijo</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Erro ao instalar o aplicativo Linux</translation>
@@ -222,6 +225,7 @@
 <translation id="2943503720238418293">Use um nome mais curto</translation>
 <translation id="2949781154072577687">Formatando <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Água-viva</translation>
+<translation id="2958458230122209142">Pouco armazenamento, <ph name="REMAINING_PERCENTAGE" />% restante do seu armazenamento individual de <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Esse arquivo foi criado para um computador que utilize o software Macintosh. Ele não é compatível com seu dispositivo, que roda o ChromeOS. Procure na Chrome Web Store por um app substituto adequado.</translation>
 <translation id="2984337792991268709">Hoje <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Restaurando <ph name="COUNT" /> itens…</translation>
@@ -671,6 +675,7 @@
 <translation id="6823166707458800069">Todos os arquivos salvos nessa pasta são salvos em backup on-line automaticamente.</translation>
 <translation id="6825883775269213504">Russo</translation>
 <translation id="6847101934483209767">Removido da seleção: <ph name="ENTRY_NAME" />.</translation>
+<translation id="6848194403851638089">A organização "<ph name="ORGANIZATION_NAME" />" usou todo o armazenamento do Google Workspace.</translation>
 <translation id="6856459657722366306">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="6861394552169064235">Persa</translation>
 <translation id="6862635236584086457">Todos os arquivos salvos nessa pasta são salvos em backup on-line automaticamente</translation>
@@ -703,6 +708,7 @@
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Não há espaço suficiente</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> pastas selecionadas</translation>
+<translation id="7008426324576352165">Sua organização precisa de mais armazenamento para concluir o upload.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
 <translation id="7031639531908619281">Turco</translation>
@@ -938,11 +944,13 @@
 <translation id="8919081441417203123">Dinamarquês</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
 <translation id="8997962250644902079">Chinês (tradicional, pinyin)</translation>
+<translation id="8998871447376656508">Não há espaço livre suficiente no seu Google Drive para concluir o upload.</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
 <translation id="9017798300203431059">Russo fonético</translation>
 <translation id="9034924485347205037">Arquivos do Linux</translation>
 <translation id="9035012421917565900">Os itens não poderão retornar para '<ph name="DESTINATION_NAME" />', portanto, você não poderá desfazer esta ação.</translation>
 <translation id="9035689366572880647">Digite o PIN atual</translation>
+<translation id="9037777873893411148">*Armazenamento da organização cheio</translation>
 <translation id="9038620279323455325">O arquivo chamado "<ph name="FILE_NAME" />" já existe. Escolha outro nome.</translation>
 <translation id="9046895021617826162">Falha na conexão</translation>
 <translation id="9065512565307033593">Se você não conseguir fazer a verificação, o acesso à rede será desativado.</translation>

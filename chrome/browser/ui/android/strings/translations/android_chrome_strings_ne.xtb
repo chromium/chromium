@@ -108,6 +108,7 @@
 <translation id="1488775391433859242">तपाईं यो QR कोड देखिइरहेको कम्प्युटरमा साइन इन गर्न यो फोन प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
 <translation id="1493287004536771723">तपाईं <ph name="SITE_NAME" /> फलो गर्दै हुनुहुन्छ</translation>
+<translation id="1502010315804028179">तपाईं आफ्ना पासवर्डहरू व्यवस्थापन गर्न चाहनुहुन्छ भने Google Play services अपडेट गर्नुहोस्</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
 <translation id="1513814250881909472">तपाईं आफूले चलाउने अन्य डिभाइसमार्फत आफ्ना ट्याबहरू प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
@@ -220,7 +221,6 @@
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="2155214902713132423">यस डिभाइसमा पुष्टि गर्ने यो विधि उपलब्ध छैन। आफ्नो अर्को डिभाइसमा उपलब्ध भएको कुनै अर्को विकल्प छनौट गर्नुहोस्।</translation>
 <translation id="2158408438301413340">Chrome ले सबै पासवर्डहरू जाँच्न सकेन</translation>
-<translation id="2169830938017475061">अहिले</translation>
 <translation id="2172688499998841696">'फोटोको वर्णन' सुविधा अफ छ</translation>
 <translation id="2172905120685242547">विन्डो बन्द गर्ने हो?</translation>
 <translation id="2175927920773552910">QR कोड</translation>
@@ -298,7 +298,6 @@
 <translation id="2612676031748830579">कार्ड नम्बर</translation>
 <translation id="2625189173221582860">पासवर्ड प्रतिलिपि गरियो</translation>
 <translation id="2642087927315268160">साइन इन गर्ने पुछारको पाना बन्द गरिएको छ।</translation>
-<translation id="2645657967708199252">तपाईंले अहिले <ph name="CONNECTION_TYPE" /> नेटवर्क चलाइरहनुभएको हुनाले डाउनलोडको गति सुस्त हुन सक्छ</translation>
 <translation id="2647434099613338025">भाषा हाल्नुहोस्</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> ले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
 <translation id="2650348088770008516">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन बन्द गरिएको छ</translation>
@@ -317,7 +316,6 @@
 <translation id="2722945394406572875">प्राइभेसी स्यान्डबक्ससम्बन्धी प्रोम्प्ट बन्द छ</translation>
 <translation id="2723001399770238859">अडियो</translation>
 <translation id="2732063072010454421">भ्वाइस सर्चबाट अझ राम्रो अनुभव पाउनुहोस्</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">तपाईंको डिभाइसमा अँध्यारो थिम वा ब्याट्री सेभर मोड अन हुँदा अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> को रूपमा साइन इन गरिएको।</translation>
@@ -346,7 +344,6 @@
 <translation id="2886836735871983413">तपाईंले वेब ब्राउज गर्दै जाँदा साइटहरूको सूची यहाँ देखिने छ</translation>
 <translation id="2888126860611144412">Chrome को बारेमा</translation>
 <translation id="2891154217021530873">पृष्ठ लोड गर्न रोक्नुहोस्</translation>
-<translation id="2892647708214602204">यो फाइल तयार भएपछि तपाईंले सूचना प्राप्त गर्नु हुने छ</translation>
 <translation id="2893180576842394309">Google ले खोज र Google का अन्य सेवाहरूलाई पर्सनलाइज गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="2900528713135656174">कार्यक्रम सिर्जना गर्नुहोस्</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> सम्बन्धी सुझावहरू देखाइँदै</translation>
@@ -592,7 +589,6 @@
 <translation id="4263656433980196874">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI पूर्ण उचाइमा खोलिएको छ</translation>
 <translation id="4266054596873078491">आफ्नो Google खाता प्रयोग गरी यो साइट र Chrome मा साइन इन गर्नुहोस्।</translation>
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
-<translation id="4290281343757112331">बरु पछि डाउनलोड गर्ने हो?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android का सेटिङमा गई स्क्रिन लक अन गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_LINK" /> पनि लागू हुन्छ।</translation>
 <translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
@@ -846,7 +842,6 @@
 <translation id="5686790454216892815">फाइलको नाम ज्यादै लामो छ</translation>
 <translation id="569536719314091526">थप विकल्पहरू नामक बटनबाट यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5696597120588531049">Chrome ले तपाईंलाई डेटा चोरीका घटना, असुरक्षित वेबसाइटहरू र थप समस्याहरूबाट जोगिन मद्दत गर्न सक्छ</translation>
-<translation id="5697688514913266141">तपाईंका फाइलहरू <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> मा सुरक्षित गरिने छन्। <ph name="BEGIN_LINK2" />सुरक्षित गरिने स्थान सम्पादन गर्नुहोस्<ph name="END_LINK2" />।</translation>
 <translation id="570347048394355941">ट्याब प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="572328651809341494">हालका ट्याबहरू</translation>
 <translation id="5726692708398506830">पृष्ठमा रहेको सबै कुरालाई अझ ठुलो बनाउनुहोस्</translation>
@@ -1107,7 +1102,6 @@
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6987047470128880212">यो डिभाइसमा इन्कोग्निटो मोड उपलब्ध छैन</translation>
 <translation id="6995899638241819463">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिइन्छ</translation>
-<translation id="7001056293070445572">यो फाइल ठुलो (<ph name="FILE_SIZE" />) छ</translation>
 <translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउजरमा खाेल्नुहाेस्</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोर गरियो</translation>
@@ -1239,7 +1233,6 @@
 <translation id="7709918231054955894">डिभाइसमा खोलिएका सबै ट्याबहरू हेर्नुहोस्</translation>
 <translation id="7725024127233776428">तपाईंले पुस्तक चिन्ह लगाउनुभएका पृष्ठहरू यहाँ देखिन्छन्</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>
-<translation id="7761849928583394409">मिति र समय रोज्नुहोस्</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">थप सुविधा र Chrome को सबैभन्दा भरपर्दो सुरक्षा प्राप्त गर्न साइन इन गर्नु…</translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
@@ -1407,7 +1400,6 @@
 <translation id="8540136935098276800">सही ढाँचा भएको URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="854522910157234410">यो पृष्ठ खोल्नुहोस्:</translation>
 <translation id="8551513938758868521">Chrome बाट बाहिरिएपछि इन्कोग्निटो ट्याब लक गरियोस्</translation>
-<translation id="8555836665334561807">Wi-Fi प्रयोग गरेका बेला</translation>
 <translation id="8559990750235505898">अन्य भाषाहरूमा पृष्ठहरूको अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="8560560256644480257">GIF बनाउने कार्य <ph name="PERCENT" />%% पूरा भयो</translation>
 <translation id="8560602726703398413">आफ्नो अध्ययन सूची बुकमार्कहरूमा फेला पार्नुहोस्</translation>
@@ -1445,7 +1437,6 @@
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
-<translation id="8730621377337864115">गरियो</translation>
 <translation id="8746155870861185046">हाइलाइट गरिएको टेक्स्ट सेयर गर्नुहोस्</translation>
 <translation id="8748850008226585750">सामग्रीहरू लुकाइएका छन्</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>

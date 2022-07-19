@@ -455,6 +455,14 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 
       Hinweis: Diese Richtlinie gilt auch für Komponentenerweiterungen, zum Beispiel die Hangout Services-Erweiterung.</translation>
 <translation id="148194404518916594">Zulassen, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
+<translation id="1482155585027825793">Hiermit kann die Installation externer Erweiterungen verwaltet werden.
+
+      Wenn diese Richtlinie aktiviert ist, können externe Erweiterungen nicht installiert werden.
+
+      Ist sie deaktiviert oder nicht konfiguriert, können externe Erweiterungen installiert werden.
+
+      Informationen zu externen Erweiterungen und ihrer Installation sind unter https://developer.chrome.com/apps/external_extensions verfügbar.
+      </translation>
 <translation id="1486021504508098388">Informationen zur Hintergrundbeleuchtung ausgeben</translation>
 <translation id="1487916040416013623">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche Server für die integrierte Authentifizierung zulässig sind. Die integrierte Authentifizierung wird nur dann aktiviert, wenn <ph name="PRODUCT_NAME" /> eine Authentifizierungsaufforderung von einem Proxy oder einem Server erhält, der sich in dieser Liste zulässiger Programme befindet.
 
@@ -1059,6 +1067,10 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2076158466157390917">Automatische Bereinigung während der Anmeldung steuern</translation>
 <translation id="2077129598763517140">Hardwarebeschleunigung verwenden, falls verfügbar</translation>
 <translation id="2077273864382355561">Verzögerung für die Bildschirmabschaltung im Akkubetrieb</translation>
+<translation id="2081969239334697268">
+        Durch die Deaktivierung der Richtlinie wird die Aktualisierung von Kiosk-Chrome-Apps innerhalb der Sitzung deaktiviert (wofür die Update-URL aus dem Erweiterungsmanifest zum Einsatz kommt), wodurch nur noch der CRX-Vorabruf als Aktualisierungsmechanismus übrig bleibt.
+        Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Kiosk-Chrome-Apps innerhalb der Sitzung aktualisiert werden.
+        </translation>
 <translation id="2082205219176343977">Konfiguriere die für das Gerät erforderliche Mindestversion von Chrome.</translation>
 <translation id="208566302163036794">Deaktivierte Funktionen sperren</translation>
 <translation id="208623333578980446">Bildschirm-Wakelocks für die Energieverwaltung zulassen</translation>
@@ -2539,6 +2551,19 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3660562134618097814">SAML-IdP-Cookies bei der Anmeldung übertragen</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3674010627788940405">CORS-Anfrageheader ohne Platzhalter nicht unterstützen.</translation>
+<translation id="3675303748198647471">„setTimeout(…, 0)“ wird häufig verwendet, um lange JavaScript-Aufgaben aufzuteilen.
+          Wenn die Richtlinie aktiviert ist, werden die JavaScript-Funktionen „setTimeouts“ und „setIntervals“ mit einem kleineren Intervall als 4 ms weniger aggressiv verzögert.
+          So wird die Leistung kurzfristig verbessert, aber für Websites, die die API missbrauchen, wird „setTimeouts“ trotzdem verzögert.
+
+          Ist die Richtlinie deaktiviert, werden die JavaScript-Funktionen „setTimeouts“ und „setIntervals“ mit einem kleineren Intervall als 4 ms verzögert.
+
+          Dies kann die Aufgabenreihenfolge auf einer Webseite verändern und unerwartetes Verhalten auf Websites bewirken, die auf eine bestimmte Reihenfolge angewiesen sind.
+          Außerdem kann dies Auswirkungen auf Websites haben, für die bei der Funktion „setTimeout()“ häufig ein Zeitlimit von 0 ms verwendet wird, etwa in Form einer erhöhten CPU-Auslastung.
+
+          Für Nutzer, für die diese Richtlinie nicht konfiguriert ist, wird diese Änderung schrittweise in der stabilen Version von <ph name="PRODUCT_NAME" /> eingeführt.
+
+          Diese Richtlinie kommt nur vorübergehend zum Einsatz und wird voraussichtlich in <ph name="PRODUCT_NAME" /> 107 entfernt. Die Frist kann verlängert werden, sofern bei Unternehmen Bedarf besteht.
+          </translation>
 <translation id="3685979383016152590">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (Wert 0) verwendet <ph name="PRINTERS_BULK_BLOCKLIST" />, um den Zugriff auf die angegebenen Drucker einzuschränken
@@ -5606,6 +5631,13 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7101550508196914704">App-Verknüpfung nicht in der Lesezeichenleiste anzeigen</translation>
 <translation id="7109384070286741861">CECPQ2 deaktivieren</translation>
 <translation id="7114169791477667553">Standardsuchmaschine deaktivieren</translation>
+<translation id="7121046543122812054">Diese Richtlinie ist veraltet. Du kannst stattdessen <ph name="BROWSER_SIGNIN_POLICY_NAME" /> verwenden.
+
+      Die Richtlinie erlaubt dem Nutzer die Anmeldung in <ph name="PRODUCT_NAME" />.
+
+      Wenn diese Richtlinie aktiviert ist, können sich Nutzer in <ph name="PRODUCT_NAME" /> anmelden.
+      Ist sie deaktiviert, können sich Nutzer nicht anmelden. Außerdem funktionieren dann Apps und Erweiterungen, die die chrome.identity API verwenden, nicht mehr. Wenn du das vermeiden möchtest, verwende <ph name="SYNC_DISABLED_POLICY_NAME" />.
+      </translation>
 <translation id="7122626777103192518">Wenn die Richtlinie auf „True“ gesetzt ist, können Text und Dateien aus Android-Apps über die integrierte Android-Freigabefunktion mit unterstützten Webanwendungen geteilt werden.
       Ist die Richtlinie aktiviert, werden Metadaten zu installierten Webanwendungen an Google gesendet, um eine Shim-Android-App zu erstellen und zu installieren.
       Ist die Richtlinie auf „Disabled“ gesetzt, wird diese Funktion deaktiviert.</translation>

@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ವಿವರಣೆ ಚಿಹ್ನೆ}one{# ವಿವರಣೆ ಚಿಹ್ನೆಗಳು}other{# ವಿವರಣೆ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="6444046323172968959">ಎಚ್ಚರಿಕೆ ಸಂವಾದ</translation>
 <translation id="6452403590345320472">ಪರಿವಿಡಿ</translation>
-<translation id="6457542714329819968">ಪ್ರಕಾರ</translation>
 <translation id="6468049171101508116">ಮುಂದಿನ ಬಟನ್</translation>
 <translation id="646954774886932461">ಸೂಚಿಕೆ</translation>
 <translation id="6475604559827479857">ಪದಗಳ ಹೈಲೈಟ್‌ಗಳಿಗಾಗಿ ಬಣ್ಣ:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6910969481785184048">ಆನ್, ಆಫ್ ಮತ್ತು ನಿಲ್ಲಿಸುವಿಕೆ</translation>
 <translation id="6919104639734799681">ಕೋಷ್ಟಕಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
+<translation id="692135145298539227">ಅಳಿಸಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6949846980769640811">ಮಧ್ಯಮ ಅಕ್ವಾ ಮರೈನ್</translation>
 <translation id="6951482098621102657">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 5 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">ವಿವರಣೆ ಪಟ್ಟಿ ವಿವರ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ಮತ್ತು}one{# ಮತ್ತು ಚಿಹ್ನೆಗಳು}other{# ಮತ್ತು ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ಹಿಂದಿನ ಅಕ್ಷರವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="738899727977260036">ಸ್ಲೇಟ್ ನೀಲಿ</translation>
 <translation id="7393979322571982935">ಧ್ವನಿಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="739763518212184081">ಹಿಂದಿನ ಸಾಲು</translation>

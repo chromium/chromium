@@ -1005,6 +1005,7 @@
 <translation id="1931410639376954712">Инсталира се <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не пре</translation>
 <translation id="1935303383381416800">Дозвољено им је да виде вашу локацију</translation>
+<translation id="1936157145127842922">Прикажи у директоријуму</translation>
 <translation id="1936931585862840749">Наведите број примерака за штампање (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не можете да увезете тип архитектуре контејнера <ph name="ARCHITECTURE_CONTAINER" /> помоћу овог уређаја, који је <ph name="ARCHITECTURE_DEVICE" />. Можете да пробате да вратите овај контејнер на други уређај или да отворите апликацију Датотеке да бисте приступили датотекама у слици овог контејнера.</translation>
 <translation id="1938240902511979591">Подешавања високог контраста, лупе и приказа</translation>

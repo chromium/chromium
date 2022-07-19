@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ ສອງຈໍ້າ​}other{# ສອງຈໍ້າ}}</translation>
 <translation id="6444046323172968959">ກ່ອງການເຕືອນ</translation>
 <translation id="6452403590345320472">ສາລະບານ</translation>
-<translation id="6457542714329819968">ພິມ</translation>
 <translation id="6468049171101508116">ປຸ່ມ​ຕໍ່​ໄປ</translation>
 <translation id="646954774886932461">ດັດຊະນີ</translation>
 <translation id="6475604559827479857">ສີສຳລັບການໝາຍຄຳ:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">ລຶບແລ້ວ</translation>
 <translation id="6910969481785184048">ເປີດ, ປິດ ແລະ ຢຸດ</translation>
 <translation id="6919104639734799681">ສະ​ແດງລາາຍຊື່​ຕາ​ຕະ​ລາງ</translation>
+<translation id="692135145298539227">ລຶບ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6949846980769640811">ສີຂຽວອະຄົວມາຣີນປານກາງ</translation>
 <translation id="6951482098621102657">ບໍ່ມີຫົວຂໍ້ລະດັບ 5 ຖັດໄປ</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">ລາຍລະອຽດລາຍການຄຳອະທິບາຍ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ ເຄື່ອງໝາຍ &amp;}other{ # ເຄື່ອງໝາຍ &amp;}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ລຶບຕົວອັກສອນກ່ອນໜ້າ</translation>
 <translation id="738899727977260036">ສີຟ້າອົມເທົາ</translation>
 <translation id="7393979322571982935">ສຽງ ແລະ ການຕັ້ງຄ່າ</translation>
 <translation id="739763518212184081">ແຖວຜ່ານ​ມາ</translation>

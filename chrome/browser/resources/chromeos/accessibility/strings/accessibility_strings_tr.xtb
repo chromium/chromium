@@ -802,7 +802,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="641759969622533235">{COUNT,plural, =1{iki nokta}other{# iki nokta}}</translation>
 <translation id="6444046323172968959">Uyarı iletişim kutusu</translation>
 <translation id="6452403590345320472">İçindekiler</translation>
-<translation id="6457542714329819968">type</translation>
 <translation id="6468049171101508116">Sonraki düğmesi</translation>
 <translation id="646954774886932461">Dizin</translation>
 <translation id="6475604559827479857">Kelime vurgulama rengi:</translation>
@@ -860,6 +859,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6910211073230771657">Silindi</translation>
 <translation id="6910969481785184048">Açma, Kapatma ve Durdurma</translation>
 <translation id="6919104639734799681">Tablo listesini göster</translation>
+<translation id="692135145298539227">sil</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6949846980769640811">Orta Ton Mavimsi Yeşil</translation>
 <translation id="6951482098621102657">Sonraki 5. düzey başlık yok</translation>
@@ -927,7 +927,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7356610683936413584">Açıklama listesi ayrıntısı</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ve işareti}other{# ve işareti}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">önceki karakteri sil</translation>
 <translation id="738899727977260036">Kurşun Mavisi</translation>
 <translation id="7393979322571982935">Sesler ve ayarlar</translation>
 <translation id="739763518212184081">Önceki Satır</translation>

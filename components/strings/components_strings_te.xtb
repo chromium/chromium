@@ -1061,6 +1061,7 @@
 <translation id="3807873520724684969">హానికర కంటెంట్ బ్లాక్ చేయబడింది.</translation>
 <translation id="3810973564298564668">నిర్వహించు</translation>
 <translation id="3816482573645936981">విలువ (అధిగమించబడింది)</translation>
+<translation id="3823402221513322552">మీ బ్రౌజర్‌ను <ph name="BROWSER_DOMAIN" /> మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="382518646247711829">మీరు ప్రాక్సీ సర్వర్‌ను ఉపయోగిస్తే...</translation>
 <translation id="3826050100957962900">థర్డ్-పార్టీ సైన్ ఇన్</translation>
 <translation id="3827112369919217609">అబ్సల్యూట్</translation>
@@ -1558,6 +1559,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />లో లేదా? ఈ ఎర్రర్‌ను రిపోర్ట్ చేయండి</translation>
 <translation id="518639307526414276">పెంపుడు జంతువుల ఆహారం &amp; సంరక్షణ వస్తువులు</translation>
 <translation id="5190835502935405962">బుక్‌మార్క్‌ల బార్</translation>
+<translation id="5191315092027169558">మీ ప్రొఫైల్‌ను <ph name="DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> పలు ఫైళ్లను డౌన్‌లోడ్ చేయాలనుకుంటోంది</translation>
 <translation id="519422657042045905">అదనపు గమనిక అందుబాటులో లేదు</translation>
 <translation id="5201306358585911203">ఈ పేజీలోని పొందుపరిచిన పేజీ ఇలా చెబుతోంది</translation>
@@ -2761,6 +2763,7 @@
 <translation id="8623885649813806493">పాస్‌వర్డ్‌లు ఏవీ మ్యాచ్ అవ్వలేదు. సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపు.</translation>
 <translation id="8624354461147303341">డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="8625384913736129811">ఈ కార్డ్‌ను ఈ పరికరానికి సేవ్ చేయి</translation>
+<translation id="8637577059508742477">మీ ప్రొఫైల్, బ్రౌజర్‌ను <ph name="DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="865032292777205197">మోషన్ సెన్సార్‌లు</translation>
 <translation id="8663226718884576429">ఆర్డర్ సారాంశం, <ph name="TOTAL_LABEL" />, మరిన్ని వివరాలు</translation>
 <translation id="8666678546361132282">ఇంగ్లీష్</translation>

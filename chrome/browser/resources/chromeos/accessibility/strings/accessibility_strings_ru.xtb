@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{двоеточие}one{# двоеточие}few{# двоеточия}many{# двоеточий}other{# colons}}</translation>
 <translation id="6444046323172968959">Диалоговое окно оповещения</translation>
 <translation id="6452403590345320472">Содержание</translation>
-<translation id="6457542714329819968">ввести</translation>
 <translation id="6468049171101508116">Перейти к следующей кнопке</translation>
 <translation id="646954774886932461">Указатель</translation>
 <translation id="6475604559827479857">Цвет, которым будут выделяться слова:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Удалено</translation>
 <translation id="6910969481785184048">Включение и отключение ChromeVox, а также отключение звука</translation>
 <translation id="6919104639734799681">Показать список таблиц</translation>
+<translation id="692135145298539227">удалить</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6949846980769640811">Умеренный аквамариновый</translation>
 <translation id="6951482098621102657">Следующего заголовка пятого уровня нет</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Описание списка определений</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{амперсанд}one{# амперсанд}few{# амперсанда}many{# амперсандов}other{# ampersands}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">удалить предыдущий символ</translation>
 <translation id="738899727977260036">Аспидно-синий</translation>
 <translation id="7393979322571982935">Звуки и настройки</translation>
 <translation id="739763518212184081">Перейти к предыдущей строке</translation>

@@ -1006,6 +1006,7 @@
 <translation id="1931410639376954712">正在安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">此日期之後：</translation>
 <translation id="1935303383381416800">可以查看你的位置資訊</translation>
+<translation id="1936157145127842922">在資料夾中顯示</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" />)。</translation>
 <translation id="1937774647013465102">這個裝置使用 <ph name="ARCHITECTURE_DEVICE" />，因此無法匯入容器架構類型 <ph name="ARCHITECTURE_CONTAINER" />。你可以嘗試將這個容器還原至其他裝置，或透過 Files 應用程式開啟這個容器映像檔，以存取其中的檔案。</translation>
 <translation id="1938240902511979591">高對比模式、放大鏡及顯示設定</translation>

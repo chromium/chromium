@@ -1002,6 +1002,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">No antes</translation>
 <translation id="1935303383381416800">Puede ver tu ubicación</translation>
+<translation id="1936157145127842922">Mostrar en carpeta</translation>
 <translation id="1936931585862840749">Usa un número para indicar la cantidad de copias que deseas imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">No se puede importar el tipo de arquitectura de contenedores <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo porque es <ph name="ARCHITECTURE_DEVICE" />. Puedes intentar restablecer este contenedor en otro dispositivo o acceder a los archivos en su interior con la app de Archivos.</translation>
 <translation id="1938320257168860255">Se produjo un error. Asegúrate de que el teléfono esté cerca y desbloqueado, y que el Bluetooth y el Wi-Fi estén encendidos.</translation>
@@ -3206,6 +3207,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="402211067068791756">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por los sitios que se muestran.</translation>
 <translation id="4022426551683927403">&amp;Agregar a diccionario</translation>
 <translation id="4025039777635956441">Silenciar el sitio seleccionado</translation>
+<translation id="4027958407426528157">Abrir sitios web en las apps que estén instaladas en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
 <translation id="4029556917477724407">Regresar de la página <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
@@ -3568,7 +3570,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores más</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> controla la configuración de Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el archivo de configuración</translation>
-<translation id="4393713825278446281">Los dispositivos de Vinculación rápida se guardaron en <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4393713825278446281">Los dispositivos de Vinculación rápida se guardaron en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Abrir todo}=1{&amp;Abrir favorito}other{&amp;Abrir todo ({COUNT})}}</translation>
 <translation id="4397372003838952832">No es necesario que recuerdes esta contraseña. Se guardará en <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
@@ -6556,6 +6558,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7377481913241237033">Conéctate con un código</translation>
 <translation id="7378611153938412599">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
+<translation id="737938816678769289">Conéctate a dispositivos cercanos con Vinculación rápida y configúralos fácilmente.</translation>
 <translation id="7380459290951585794">Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas</translation>
 <translation id="7380622428988553498">El nombre del dispositivo incluye caracteres no válidos</translation>
 <translation id="7380768571499464492">Se actualizó <ph name="PRINTER_NAME" /></translation>

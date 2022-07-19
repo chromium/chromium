@@ -454,6 +454,14 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Observação: essa política também se aplica a extensões de componentes, como a extensão do Hangout Services.</translation>
 <translation id="148194404518916594">Permitir que os usuários usem o recurso Pesquisa por toque</translation>
+<translation id="1482155585027825793">Controla a instalação de extensões externas.
+
+      Se a política for ativada, as extensões externas não poderão ser instaladas.
+
+      Se ela for desativada ou for deixada sem definição, extensões externas poderão ser instaladas.
+
+      As extensões externas e a instalação estão documentadas em https://developer.chrome.com/apps/external_extensions.
+      </translation>
 <translation id="1486021504508098388">Enviar informações sobre as luzes de fundo</translation>
 <translation id="1487916040416013623">Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
 
@@ -1078,6 +1086,10 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2076158466157390917">Controlar a limpeza automática durante o login</translation>
 <translation id="2077129598763517140">Usar aceleração de hardware quando disponível</translation>
 <translation id="2077273864382355561">Intervalo de desligamento da tela no funcionamento com energia da bateria</translation>
+<translation id="2081969239334697268">
+        Se a política for definida como desativada, a atualização de apps do Chrome para quiosque, que usa o URL de atualização do manifesto de extensão, será desativada durante a sessão e o único mecanismo de atualização será a pré-busca de CRX.
+        Se a política for ativada ou deixada sem definição, a atualização de apps do Chrome para quiosque na sessão será feita.
+        </translation>
 <translation id="2082205219176343977">Configurar a versão mínima permitida do Chrome para o dispositivo.</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>

@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{dwukropek}few{# dwukropki}many{# dwukropków}other{# colons}}</translation>
 <translation id="6444046323172968959">Okno dialogowe alertu</translation>
 <translation id="6452403590345320472">Spis treści</translation>
-<translation id="6457542714329819968">wpisz</translation>
 <translation id="6468049171101508116">Następny przycisk</translation>
 <translation id="646954774886932461">Indeks</translation>
 <translation id="6475604559827479857">Kolor zaznaczenia słów:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Usunięto</translation>
 <translation id="6910969481785184048">Włączanie, wyłączanie i wstrzymywanie</translation>
 <translation id="6919104639734799681">Pokaż listę tabel.</translation>
+<translation id="692135145298539227">usuń</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6949846980769640811">Średnia akwamaryna</translation>
 <translation id="6951482098621102657">Nie ma następnego nagłówka poziomu 5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Szczegół z listy opisu</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{et}few{# znaki et}many{# znaków et}other{# ampersands}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">Usuń poprzedni znak</translation>
 <translation id="738899727977260036">Szaroniebieski</translation>
 <translation id="7393979322571982935">Dźwięki i ustawienia</translation>
 <translation id="739763518212184081">Poprzedni wiersz</translation>

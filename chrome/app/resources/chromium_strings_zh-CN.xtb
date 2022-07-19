@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
+<translation id="1385859895174722837">Chromium 中的 Google 助理</translation>
 <translation id="1396446129537741364">Chromium 正尝试显示密码。</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
 <translation id="1524282610922162960">共享 Chromium 标签页</translation>
@@ -101,6 +102,7 @@
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可用于切换 Chromium 个人资料</translation>
 <translation id="3509308970982693815">请关闭所有 Chromium 窗口并重试。</translation>
+<translation id="3518180795744733843">Chromium 中的 Google 助理可帮您在各网站上完成所需操作</translation>
 <translation id="3533435340678213462">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chromium 考虑范围的兴趣。</translation>
 <translation id="3567254597502212821">您的浏览记录，即您在此设备上使用 Chromium 访问过的网站的记录。</translation>
 <translation id="3575459661164320785">您的计算机上存在有害软件。Chromium 可以移除该软件、恢复您的设置并停用扩展程序，以确保您的浏览器能够重新正常运行。</translation>

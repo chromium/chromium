@@ -1060,6 +1060,7 @@
 <translation id="3807873520724684969">ক্ষতিকর কন্টেন্ট ব্লক করা হয়েছে।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="3816482573645936981">মান (পুরনো মানের জায়গাতে নতুন মান প্রয়োগ করা হয়েছে)</translation>
+<translation id="3823402221513322552">আপনার ব্রাউজার <ph name="BROWSER_DOMAIN" /> ম্যানেজ করে এবং আপনার প্রোফাইল <ph name="PROFILE_DOMAIN" /> ম্যানেজ করে</translation>
 <translation id="382518646247711829">যদি আপনি একটি প্রক্সি সার্ভার ব্যবহার করেন...</translation>
 <translation id="3826050100957962900">থার্ড-পার্টির সাইন-ইন</translation>
 <translation id="3827112369919217609">অ্যাবসোলিউট</translation>
@@ -1557,6 +1558,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />-এ নেই? এই ত্রুটি রিপোর্ট করুন</translation>
 <translation id="518639307526414276">পোষা খাদ্য এবং পোষা যত্ন সরবরাহ</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
+<translation id="5191315092027169558"><ph name="DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> একাধিক ফাইল ডাউনলোড করতে চায়</translation>
 <translation id="519422657042045905">ব্যাখ্যা নেই</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠার এম্বেডেড করা একটি পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
@@ -2759,6 +2761,7 @@
 <translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
 <translation id="8624354461147303341">ছাড় পান</translation>
 <translation id="8625384913736129811">এই ডিভাইসে এই কার্ডটি সেভ করুন</translation>
+<translation id="8637577059508742477"><ph name="DOMAIN" /> আপনার প্রোফাইল এবং ব্রাউজার ম্যানেজ করে</translation>
 <translation id="865032292777205197">মোশন সেন্সর</translation>
 <translation id="8663226718884576429">অর্ডারের সারসংক্ষেপ, <ph name="TOTAL_LABEL" />, আরও বিবরণ</translation>
 <translation id="8666678546361132282">ইংরাজি</translation>

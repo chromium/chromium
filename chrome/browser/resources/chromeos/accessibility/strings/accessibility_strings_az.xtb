@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{iki nöqtə}other{# iki nöqtə}}</translation>
 <translation id="6444046323172968959">Siqnal dialoqu</translation>
 <translation id="6452403590345320472">Mündəricat</translation>
-<translation id="6457542714329819968">yazın</translation>
 <translation id="6468049171101508116">Növbəti düymə</translation>
 <translation id="646954774886932461">İndeks</translation>
 <translation id="6475604559827479857">Sözləri vurğulamaq üçün rənglər:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Silinib</translation>
 <translation id="6910969481785184048">Yandırın, Söndürün və Dayandırın</translation>
 <translation id="6919104639734799681">Cədvəllərin siyahısını göstərin</translation>
+<translation id="692135145298539227">silin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6949846980769640811">Orta Göyümtül Yaşıl</translation>
 <translation id="6951482098621102657">Sonrakı 5-ci səviyyə başlığı yoxdur</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Təsvir siyahısı təfsilatı</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}other{# ampersand}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">əvvəlki simvolu silin</translation>
 <translation id="738899727977260036">Barıt Mavisi</translation>
 <translation id="7393979322571982935">Səslər və parametrlər</translation>
 <translation id="739763518212184081">Öncəki Xətt</translation>

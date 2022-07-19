@@ -441,6 +441,7 @@ Deine Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Gib dies
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4778644898150334464">Anderes Passwort verwenden</translation>
+<translation id="478808905805139173">Im Inkognitomodus öffnen?</translation>
 <translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
 
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die Synchronisierung zurück<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9055772144595778347">Anmeldefehler</translation>
 <translation id="9057972802061533987">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
+<translation id="9068336935206019333">Im Inkognitomodus von Chrome öffnen</translation>
 <translation id="9079935439869366234">Alle als ungelesen markieren</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083392325882095631">1 Element</translation>

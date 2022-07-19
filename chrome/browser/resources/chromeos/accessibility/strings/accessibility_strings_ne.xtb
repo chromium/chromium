@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ कोलोन}other{# कोलोनहरू}}</translation>
 <translation id="6444046323172968959">चेतावनी संवाद</translation>
 <translation id="6452403590345320472">विषय सूची</translation>
-<translation id="6457542714329819968">टाइप गर</translation>
 <translation id="6468049171101508116">अर्को बटन</translation>
 <translation id="646954774886932461">अनुक्रमणिका</translation>
 <translation id="6475604559827479857">शब्द हाइलाइट गर्ने रङ्ग:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">मेटाइएको</translation>
 <translation id="6910969481785184048">सक्रिय गर्ने, निष्क्रिय गर्ने र रोक्ने</translation>
 <translation id="6919104639734799681">तालिकाहरूको सूची देखाउनुहोस्</translation>
+<translation id="692135145298539227">मेटाइयोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6949846980769640811">मिडियम अक्वा म्यारिन</translation>
 <translation id="6951482098621102657">अर्को कुनै लेभल ५ शीर्षक छैन</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">विवरणको सूचीको विस्तार</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ एम्परसेण्ड}other{ # एम्परसेण्ड्स}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">अघिल्लो वर्ण मेटाऊ</translation>
 <translation id="738899727977260036">स्लेट मिश्रित निलो</translation>
 <translation id="7393979322571982935">ध्वनि तथा सेटिङ</translation>
 <translation id="739763518212184081">अघिल्लो रेखा</translation>

@@ -220,7 +220,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2155214902713132423">Den här verifieringsmetoden är inte tillgänglig för den här enheten. Välj ett annat alternativ på den andra enheten.</translation>
 <translation id="2158408438301413340">Chrome kunde inte kontrollera alla lösenord</translation>
-<translation id="2169830938017475061">Nu</translation>
 <translation id="2172688499998841696">Bildbeskrivningar har inaktiverats</translation>
 <translation id="2172905120685242547">Vill du stänga fönstret?</translation>
 <translation id="2175927920773552910">QR-kod</translation>
@@ -298,7 +297,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Lösenordet har kopierats</translation>
 <translation id="2642087927315268160">Arket för inloggning på nedre delen av skärmen har stängts.</translation>
-<translation id="2645657967708199252">Nedladdningen kan gå långsammare på grund av <ph name="CONNECTION_TYPE" />-anslutningen</translation>
 <translation id="2647434099613338025">Lägg till språk</translation>
 <translation id="2649068648233607930">Webbläsaren hanteras av <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Förklaringen till integritetsguiden har stängts</translation>
@@ -317,7 +315,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2722945394406572875">Meddelandet för Privacy Sandbox har stängts</translation>
 <translation id="2723001399770238859">ljud</translation>
 <translation id="2732063072010454421">Få en bättre upplevelse vid sökning med rösten</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">Aktivera mörkt tema när batterisparläget eller mörkt tema aktiveras på enheten</translation>
 <translation id="2762000892062317888">nyss</translation>
 <translation id="276969039800130567">Inloggad som <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -346,7 +343,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2886836735871983413">En lista över webbplatser visas här allt eftersom du surfar på webben</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Avbryt inläsningen av sidan</translation>
-<translation id="2892647708214602204">Du ser en avisering när filen är klar</translation>
 <translation id="2893180576842394309">Google kan anpassa Sök och andra Google-tjänster utifrån historiken</translation>
 <translation id="2900528713135656174">Skapa händelse</translation>
 <translation id="2901411048554510387">Visar förslag för <ph name="WEBSITE_TITLE" /></translation>
@@ -490,6 +486,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3622349720008044802">Hantera fönster</translation>
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
+<translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3677911431265050325">Begär mobilversion</translation>
 <translation id="3687645719033307815">Du tittar på en förhandsgranskning av den här sidan</translation>
 <translation id="3690369331356918524">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
@@ -592,7 +589,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4263656433980196874">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över hela skärmen</translation>
 <translation id="4266054596873078491">Logga in på den här webbplatsen och i Chrome med ditt Google-konto.</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
-<translation id="4290281343757112331">Vill du ladda ned senare i stället?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivera skärmlåset i Android-inställningar<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Integritetspolicyn<ph name="END_PRIVACY_LINK" /> gäller också.</translation>
 <translation id="4296252229500326964">Ny inkognitoflik</translation>
@@ -847,7 +843,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5686790454216892815">Filnamnet är för långt</translation>
 <translation id="569536719314091526">Översätt den här sidan till vilket språk som helst via knappen Fler alternativ</translation>
 <translation id="5696597120588531049">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera</translation>
-<translation id="5697688514913266141">Filen sparas i <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />Redigera<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Byt till flik</translation>
 <translation id="572328651809341494">Senaste flikarna</translation>
 <translation id="5726692708398506830">Gör allt på sidan större</translation>
@@ -1108,7 +1103,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6987047470128880212">Inkognito är inte tillgängligt på den här enheten</translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
-<translation id="7001056293070445572">Filen är stor (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Lägg till i läslistan <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
@@ -1240,7 +1234,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="7709918231054955894">Få alla dina flikar</translation>
 <translation id="7725024127233776428">Sidor som infogats som bokmärke visas här</translation>
 <translation id="7757787379047923882">Texten delades från <ph name="DEVICE_NAME" /></translation>
-<translation id="7761849928583394409">Välj datum och tid</translation>
 <translation id="7762668264895820836">SD-kort <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">Logga in för fler funktioner och Chromes starkaste skydd</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
@@ -1281,6 +1274,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> är inaktuell.</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>
+<translation id="7957413488482743710">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7961926449547174351">Du har inaktiverat åtkomst till lagringsutrymmet. Återaktivera i inställningarna.</translation>
 <translation id="7963646190083259054">Leverantör:</translation>
@@ -1407,7 +1401,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>
 <translation id="854522910157234410">Öppna sidan</translation>
 <translation id="8551513938758868521">Lås inkognitoflikar när du stänger Chrome</translation>
-<translation id="8555836665334561807">På wifi</translation>
 <translation id="8559990750235505898">Erbjud översättning av sidor till andra språk</translation>
 <translation id="8560560256644480257">Skapar GIF <ph name="PERCENT" /> %%</translation>
 <translation id="8560602726703398413">Du hittar läslistan under Bokmärken</translation>
@@ -1445,7 +1438,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8725066075913043281">Försök igen</translation>
-<translation id="8730621377337864115">Klart</translation>
 <translation id="8746155870861185046">Dela markering</translation>
 <translation id="8748850008226585750">Innehållet har dolts</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>

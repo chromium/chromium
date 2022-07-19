@@ -362,6 +362,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1347256498747320987">Instalar atualizações e apps. Ao continuar, você aceita que este dispositivo também pode fazer automaticamente o download e a instalação de atualizações e apps do Google, da operadora e do fabricante do dispositivo, possivelmente usando dados da rede celular. Alguns desses apps podem oferecer compras dentro deles. <ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Armazenamento no Linux</translation>
 <translation id="1347975661240122359">A atualização é iniciada quando a bateria chega a <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1348966090521113558">Configurações de acessibilidade do mouse</translation>
 <translation id="1353275871123211385">Para usar o controle dos pais, como a aprovação de apps e os limites de tempo de uso, é necessário que a criança tenha uma Conta do Google gerenciada por um pai/mãe. Uma conta escolar pode ser adicionada mais tarde para o uso de ferramentas como o Google Sala de Aula.</translation>
 <translation id="135389172849514421">Funciona off-line</translation>
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Verifique se seu Chromebook está on-line e tente novamente.</translation>
@@ -1018,6 +1019,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1931410639376954712">Instalando o <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Não antes</translation>
 <translation id="1935303383381416800">Permitir o acesso à localização</translation>
+<translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Use um número para indicar quantas cópias serão impressas (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contêiner <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo, que é <ph name="ARCHITECTURE_DEVICE" />. Tente restaurar esse contêiner em um dispositivo diferente ou acesse os arquivos que estão dentro desta imagem do contêiner abrindo-os no app Arquivos.</translation>
 <translation id="1938240902511979591">Configurações de exibição, lupa e modo de alto contraste</translation>
@@ -1799,6 +1801,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="265390580714150011">Valor do campo</translation>
 <translation id="2654553774144920065">Solicitação de impressão</translation>
+<translation id="2657612187216250073">Configurações de acessibilidade do ponteiro</translation>
 <translation id="2658941648214598230">Mostrar conteúdo original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Os recursos variam de acordo com o dispositivo</translation>
 <translation id="2659971421398561408">Redimensionamento de disco do Crostini</translation>
@@ -1963,6 +1966,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2801954693771979815">Tamanho da tela</translation>
 <translation id="2802557211515765772">Não há impressoras gerenciadas.</translation>
 <translation id="2803313416453193357">Abrir pasta</translation>
+<translation id="2803719750464280163">Confirme se <ph name="PASSKEY" /> é a senha mostrada no dispositivo Bluetooth <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">Não foi possível abrir o navegador alternativo</translation>
 <translation id="2804667941345577550">Sua conta será desconectada desse site, inclusive nas guias abertas</translation>
 <translation id="2804680522274557040">Câmera desativada</translation>
@@ -2879,6 +2883,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="370649949373421643">Ativar Wi-Fi</translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3707163604290651814">Você fez login como <ph name="NAME" /></translation>
+<translation id="3708295717182051206">Legendas</translation>
 <translation id="3708684582558000260">Não permitir que os sites fechados terminem de enviar ou receber dados</translation>
 <translation id="3709244229496787112">O navegador foi fechado antes do término do download.</translation>
 <translation id="371174301504454251">Para proteger sua privacidade, excluímos automaticamente sites que estão na lista há mais de quatro semanas. Se você visitar um site de novo, ele poderá voltar a aparecer na lista. Também é possível remover um site se não quiser que ele defina interesses para você.</translation>
@@ -3228,6 +3233,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="402211067068791756">Essa ação vai apagar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites mostrados</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao dicionário</translation>
 <translation id="4025039777635956441">Desativar som do site selecionado</translation>
+<translation id="4027958407426528157">Abrir sites em apps instalados no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Adicionar métodos de entrada</translation>
 <translation id="4029556917477724407">Voltar da página <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
@@ -3961,6 +3967,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="475088594373173692">Primeiro usuário</translation>
 <translation id="4756378406049221019">Parar/Recarregar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
+<translation id="4756671452988984333">Texto para áudio</translation>
 <translation id="4759202969060787081">Não abrir</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Usar microfone</translation>
@@ -6589,6 +6596,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7377481913241237033">Conectar com um código</translation>
 <translation id="7378611153938412599">Senhas fracas são fáceis de adivinhar. Crie senhas fortes. <ph name="BEGIN_LINK" />Veja mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Abrir a Chrome Web Store</translation>
+<translation id="737938816678769289">Configure e se conecte facilmente a dispositivos próximos com Pareamento rápido</translation>
 <translation id="7380459290951585794">Confira se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém caracteres inválidos</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> atualizada</translation>
@@ -6897,6 +6905,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7668423670802040666">No Gerenciador de senhas do Google da conta <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN incorreto. Você tem apenas uma tentativa restante.}one{PIN incorreto. Você tem apenas # tentativa restante.}other{PIN incorreto. Você tem apenas # tentativas restantes.}}</translation>
 <translation id="7670434942695515800">Para ter o melhor desempenho, faça upgrade para a versão mais recente. O backup dos arquivos é recomendado quando não é possível concluir o upgrade. O Linux será desligado quando o upgrade começar. Salve os arquivos abertos antes de continuar. <ph name="LINK_START" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">Legendas</translation>
 <translation id="7671130400130574146">Usar barra de título e bordas do sistema</translation>
 <translation id="767127784612208024">Toque para confirmar a redefinição</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, neste site: <ph name="PAGE_TITLE" />.</translation>
@@ -7984,6 +7993,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8724859055372736596">&amp;Mostrar na pasta</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8725178340343806893">Favoritos</translation>
+<translation id="87254326763805752">Confirmar senha de acesso</translation>
 <translation id="8726206820263995930">Erro ao obter as configurações da política a partir do servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">Suas permissões selecionadas serão redefinidas</translation>
 <translation id="8729133765463465108">Usar a câmera para ler um código QR</translation>

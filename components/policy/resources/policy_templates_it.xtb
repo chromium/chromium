@@ -462,6 +462,14 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Nota: questo criterio si applica inoltre a estensioni di componenti come l'estensione Hangout Services.</translation>
 <translation id="148194404518916594">Consenti agli utenti di usare la funzionalità Tocca per cercare</translation>
+<translation id="1482155585027825793">Consente di controllare l'installazione delle estensioni esterne.
+
+      Se questo criterio viene impostato su Enabled, le estensioni esterne non possono essere installate.
+
+      Se questo criterio viene impostato su Disabled o se non viene configurato, le estensioni esterne possono essere installate.
+
+      Le estensioni esterne e la relativa installazione sono illustrate all'indirizzo https://developer.chrome.com/apps/external_extensions.
+      </translation>
 <translation id="1486021504508098388">Segnala informazioni sulla retroilluminazione</translation>
 <translation id="1487916040416013623">La configurazione del criterio consente di specificare i server consentiti per l'autenticazione integrata. L'autenticazione integrata viene attivata soltanto quando <ph name="PRODUCT_NAME" /> riceve una richiesta di autenticazione da un proxy o da un server presente nell'elenco dei server consentiti.
 
@@ -1080,6 +1088,10 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2076158466157390917">Controlla la pulizia automatica durante l'accesso</translation>
 <translation id="2077129598763517140">Usa accelerazione hardware quando disponibile</translation>
 <translation id="2077273864382355561">Ritardo disattivazione schermo in caso di utilizzo della batteria</translation>
+<translation id="2081969239334697268">
+        Se il criterio viene impostato su Disabled, l'aggiornamento delle app kiosk di Chrome all'interno della sessione (per cui viene usato l'URL di aggiornamento indicato nel file manifest dell'estensione) verrà disattivato e rimarrà soltanto il precaricamento CRX come meccanismo di aggiornamento.
+        Se il criterio viene impostato su Enabled o se non viene configurato, l'aggiornamento delle app kiosk di Chrome all'interno della sessione sarà consentito.
+        </translation>
 <translation id="2082205219176343977">Configura la versione minima di Chrome consentita per il dispositivo.</translation>
 <translation id="208566302163036794">Blocca le funzionalità disattivate</translation>
 <translation id="208623333578980446">Consenti wakelock schermo per la gestione dell'alimentazione</translation>

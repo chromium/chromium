@@ -220,7 +220,6 @@
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2155214902713132423">שיטת האימות הזו לא זמינה במכשיר הזה. עליך לבחור באפשרות אחרת במכשיר השני.</translation>
 <translation id="2158408438301413340">‏Chrome לא הצליח לבדוק את כל הסיסמאות</translation>
-<translation id="2169830938017475061">עכשיו</translation>
 <translation id="2172688499998841696">התכונה 'תיאורי תמונות' מושבתת</translation>
 <translation id="2172905120685242547">לסגור את החלון?</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
@@ -298,7 +297,6 @@
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
 <translation id="2642087927315268160">הגיליון התחתון של הכניסה סגור.</translation>
-<translation id="2645657967708199252">חיבור ה-<ph name="CONNECTION_TYPE" /> עשוי להאט את ההורדה</translation>
 <translation id="2647434099613338025">להוספת שפה</translation>
 <translation id="2649068648233607930">הדפדפן שלך מנוהל על ידי <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">ההסבר על המדריך בנושא פרטיות נסגר</translation>
@@ -317,7 +315,6 @@
 <translation id="2722945394406572875">ההודעה לגבי ארגז החול לפרטיות נסגרה</translation>
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2732063072010454421">אפשר ליהנות מחוויה טובה יותר בחיפוש קולי</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="276969039800130567">מחובר באמצעות חשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -346,7 +343,6 @@
 <translation id="2886836735871983413">רשימה של אתרים תופיע כאן בזמן הגלישה באינטרנט</translation>
 <translation id="2888126860611144412">‏מידע כללי על Chrome</translation>
 <translation id="2891154217021530873">הפסקת טעינת הדף</translation>
-<translation id="2892647708214602204">כשהקובץ הזה יהיה מוכן תופיע הודעה</translation>
 <translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
 <translation id="2900528713135656174">יצירת אירוע</translation>
 <translation id="2901411048554510387">מוצגות הצעות הקשורות לדף <ph name="WEBSITE_TITLE" /></translation>
@@ -591,7 +587,6 @@
 <translation id="4263656433980196874">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בגובה מלא</translation>
 <translation id="4266054596873078491">‏יש להיכנס לאתר הזה ול-Chrome באמצעות חשבון Google שלך.</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
-<translation id="4290281343757112331">להוריד מאוחר יותר במקום זאת?</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏השימוש ב-Chrome מבטא הסכמה <ph name="BEGIN_TOS_LINK" />לתנאים ולהגבלות של Google<ph name="END_TOS_LINK" /> ו<ph name="BEGIN_ATOS_LINK" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_ATOS_LINK" />. גם <ph name="BEGIN_PRIVACY_LINK" />מדיניות הפרטיות<ph name="END_PRIVACY_LINK" /> חלה.</translation>
 <translation id="4296252229500326964">כרטיסיית מצב אנונימי חדשה</translation>
@@ -846,7 +841,6 @@
 <translation id="5686790454216892815">שם הקובץ ארוך מדי</translation>
 <translation id="569536719314091526">דרך לחצן האפשרויות הנוספות אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="5696597120588531049">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
-<translation id="5697688514913266141">הקובץ יישמר בספרייה <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK2" />לעריכה<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">מעבר לכרטיסייה</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5726692708398506830">הגדלת כל מה שמופיע בדף</translation>
@@ -1107,7 +1101,6 @@
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6987047470128880212">מצב אנונימי לא זמין במכשיר הזה</translation>
 <translation id="6995899638241819463">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע</translation>
-<translation id="7001056293070445572">הקובץ הזה גדול (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">הוספה לרשימת הקריאה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">פתיחה בדפדפן</translation>
 <translation id="7027549951530753705">בוצע שחזור של <ph name="ITEM_TITLE" /></translation>
@@ -1239,7 +1232,6 @@
 <translation id="7709918231054955894">הצגת כל הכרטיסיות</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
-<translation id="7761849928583394409">בחירת תאריך ושעה</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">‏כדי לקבל תכונות נוספות ואת האבטחה החזקה ביותר של Chrome, עליך להיכנס לחשבון</translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
@@ -1406,7 +1398,6 @@
 <translation id="8540136935098276800">‏יש להזין כתובת URL בפורמט חוקי</translation>
 <translation id="854522910157234410">פתיחת דף זה</translation>
 <translation id="8551513938758868521">‏כרטיסיות במצב אנונימי יינעלו כש-Chrome ייסגר</translation>
-<translation id="8555836665334561807">‏ב-Wi-Fi</translation>
 <translation id="8559990750235505898">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="8560560256644480257">‏בתהליך של יצירת GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">ניתן למצוא את רשימת הקריאה בקטע 'סימניות'</translation>
@@ -1444,7 +1435,6 @@
 <translation id="8699120352855309748">אין להציג את ההצעה לתרגם את השפות האלה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
-<translation id="8730621377337864115">בוצע</translation>
 <translation id="8746155870861185046">שיתוף של הטקסט המודגש</translation>
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>

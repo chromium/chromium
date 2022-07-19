@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{dvojtečka}few{# dvojtečky}many{# colons}other{# dvojteček}}</translation>
 <translation id="6444046323172968959">Dialog upozornění</translation>
 <translation id="6452403590345320472">Obsah</translation>
-<translation id="6457542714329819968">napiš</translation>
 <translation id="6468049171101508116">Další tlačítko</translation>
 <translation id="646954774886932461">Rejstřík</translation>
 <translation id="6475604559827479857">Barva zvýraznění slov:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Smazáno</translation>
 <translation id="6910969481785184048">Zapnutí, vypnutí a zastavení</translation>
 <translation id="6919104639734799681">Zobrazit seznam tabulek</translation>
+<translation id="692135145298539227">smazat</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6949846980769640811">Střední akvamarínová</translation>
 <translation id="6951482098621102657">Žádný další nadpis 5. úrovně není</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Podrobnosti v seznamu popisů</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}few{# ampersandy}many{# ampersands}other{# ampersandů}}</translation>
 <translation id="737396357417333429">klikatelné</translation>
-<translation id="7388656272362719103">smazat předchozí znak</translation>
 <translation id="738899727977260036">Břidlicová modrá</translation>
 <translation id="7393979322571982935">Zvuky a nastavení</translation>
 <translation id="739763518212184081">Předchozí řádek</translation>

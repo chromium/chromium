@@ -802,7 +802,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{kolon}other{# kolontegn}}</translation>
 <translation id="6444046323172968959">Varseldialog</translation>
 <translation id="6452403590345320472">Innhold</translation>
-<translation id="6457542714329819968">type</translation>
 <translation id="6468049171101508116">Neste-knappen</translation>
 <translation id="646954774886932461">Stikkordregister</translation>
 <translation id="6475604559827479857">Farge for fremheving av ord:</translation>
@@ -860,6 +859,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6910969481785184048">På, av og stopp</translation>
 <translation id="6919104639734799681">Vis tabellisten</translation>
+<translation id="692135145298539227">slett</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6949846980769640811">Middels havblå</translation>
 <translation id="6951482098621102657">Det finnes ingen flere overskrifter på nivå 5</translation>
@@ -927,7 +927,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7356610683936413584">Detalj i beskrivelsesliste</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{og-tegn}other{# og-tegn}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">slett forrige tegn</translation>
 <translation id="738899727977260036">Skiferblå</translation>
 <translation id="7393979322571982935">Lyder og innstillinger</translation>
 <translation id="739763518212184081">Forrige linje</translation>

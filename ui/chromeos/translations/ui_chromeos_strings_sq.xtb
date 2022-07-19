@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2163152940313951844">Karakter i pavlefshëm: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalisht me tastierë amerikane ndërkombëtare për PC</translation>
+<translation id="2193661397560634290">Të përdorura: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Kinezishte e thjeshtuar</translation>
 <translation id="22085916256174561">Koreanisht</translation>
 <translation id="2208919847696382164">Instalo me Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turqisht me tastierën F</translation>
 <translation id="2732839045120506979">Vietnamisht VNI</translation>
 <translation id="2735623501230989521">Jepi leje Parallels Desktop që të qaset në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">E ke përdorur të gjithë hapësirën tënde ruajtëse individuale të Google Workspace.</translation>
 <translation id="2771816809568414714">Djathë</translation>
 <translation id="2781645665747935084">belge</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Përdor një emër më të shkurtër</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> po formatohet...</translation>
 <translation id="2951236788251446349">Kandili i detit</translation>
+<translation id="2958458230122209142">Hapësira ruajtëse në nivel të ulët: <ph name="REMAINING_PERCENTAGE" />% e mbetur nga hapësira jote ruajtëse individuale prej <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="2984337792991268709">Sot <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> artikuj po restaurohen...</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">Të gjithë skedarët e ruajtur në këtë dosje rezervohen automatikisht në linjë.</translation>
 <translation id="6825883775269213504">Rusisht</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> u hoq nga zgjedhja.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ka përdorur të gjithë hapësirën e vet ruajtëse të Google Workspace.</translation>
 <translation id="6856459657722366306">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="6861394552169064235">Persisht</translation>
 <translation id="6862635236584086457">Të gjithë skedarët e ruajtur në këtë dosje janë ruajtur në linjë automatikisht</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">Suedisht</translation>
 <translation id="6990081529015358884">Nuk ke më hapësirë të lirë</translation>
 <translation id="6998711733709403587">U zgjodhën <ph name="SELCTED_FOLDERS_COUNT" /> dosje</translation>
+<translation id="7008426324576352165">Organizata jote ka nevojë për më shumë hapësirë ruajtëse për ta përfunduar ngarkimin.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalimi dështoi.</translation>
 <translation id="7031639531908619281">Turqisht</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">Danisht</translation>
 <translation id="8965697826696209160">Nuk ka hapësirë të mjaftueshme</translation>
 <translation id="8997962250644902079">Kinezisht (tradicionale) Pinyin</translation>
+<translation id="8998871447376656508">Nuk ka hapësirë të lirë të mjaftueshme në "Diskun e Google" për ta përfunduar ngarkimin.</translation>
 <translation id="9003940392834790328">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, detaje</translation>
 <translation id="9017798300203431059">Fonetikë ruse</translation>
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9035012421917565900">Artikujt nuk mund të zhvendosen sërish te "<ph name="DESTINATION_NAME" />", prandaj nuk do të jesh në gjendje ta zhbësh këtë veprim.</translation>
 <translation id="9035689366572880647">Fut kodin aktual PIN</translation>
+<translation id="9037777873893411148">*Hapësira ruajtëse e organizatës është plot</translation>
 <translation id="9038620279323455325">Skedari me emrin "<ph name="FILE_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
 <translation id="9046895021617826162">Lidhja dështoi</translation>
 <translation id="9065512565307033593">Nëse nuk e verifikon, qasja jote në rrjet do të çaktivizohet.</translation>

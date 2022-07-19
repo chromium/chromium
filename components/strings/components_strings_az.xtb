@@ -1055,6 +1055,7 @@
 <translation id="3807873520724684969">Zərərli kontent blok edildi.</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="3816482573645936981">Dəyər (əvəz edilib)</translation>
+<translation id="3823402221513322552">Brauzeriniz <ph name="BROWSER_DOMAIN" /> tərəfindən, profiliniz isə <ph name="PROFILE_DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="382518646247711829">Əgər proksi server istifadə edirsinizsə...</translation>
 <translation id="3826050100957962900">Üçüncü tərəfin girişi</translation>
 <translation id="3827112369919217609">Mütləq</translation>
@@ -1552,6 +1553,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> deyil? Bu xətanı xəbər verin</translation>
 <translation id="518639307526414276">Heyvan yemi və ev heyvanlarına qulluq ləvazimatları</translation>
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
+<translation id="5191315092027169558">Profiliniz <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> bir neçə faylı endirmək istəyir</translation>
 <translation id="519422657042045905">Annotasiya əlçatan deyil</translation>
 <translation id="5201306358585911203">Bu səhifə daxilində yerləşdirilmiş səhifə deyir:</translation>
@@ -2755,6 +2757,7 @@
 <translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
 <translation id="8625384913736129811">Bu Kartı Bu Cihazda yadda saxlayın</translation>
+<translation id="8637577059508742477">Profiliniz və brauzeriniz <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="865032292777205197">hərəkət sensorları</translation>
 <translation id="8663226718884576429">Sifarişin Yekunu, <ph name="TOTAL_LABEL" />, Daha Çox Məlumat</translation>
 <translation id="8666678546361132282">Ingilis</translation>

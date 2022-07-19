@@ -441,6 +441,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4751645464639803239">Nov anonimni zavihek</translation>
 <translation id="4775879719735953715">Privzeti brskalnik</translation>
 <translation id="4778644898150334464">Uporaba drugega gesla</translation>
+<translation id="478808905805139173">Želite odpreti v anonimnem načinu?</translation>
 <translation id="4802417911091824046">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay.
 
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9055772144595778347">Prijava ni mogoča</translation>
 <translation id="9057972802061533987">Ni mogoče spremljati. Prišlo je do napake.</translation>
 <translation id="9065203028668620118">Uredi</translation>
+<translation id="9068336935206019333">Odpri v anonimnem oknu v Chromu</translation>
 <translation id="9079935439869366234">Označi vse kot neprebrano</translation>
 <translation id="9081058212938299310">Želite posodobiti geslo za <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 element</translation>

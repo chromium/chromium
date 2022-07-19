@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{двукроп'е}one{# двукроп'е}few{# двукроп'і}many{# двукроп'яў}other{# двукроп'я}}</translation>
 <translation id="6444046323172968959">Дыялогавае акно абвесткі</translation>
 <translation id="6452403590345320472">Змест</translation>
-<translation id="6457542714329819968">увядзіце</translation>
 <translation id="6468049171101508116">Кнопка "Далей"</translation>
 <translation id="646954774886932461">Індэкс</translation>
 <translation id="6475604559827479857">Колер вылучэння слоў:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Выдалена</translation>
 <translation id="6910969481785184048">Уключыць, выключыць і спыніць</translation>
 <translation id="6919104639734799681">Паказваць спіс табліц</translation>
+<translation id="692135145298539227">выдаліць</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6949846980769640811">Умераны аквамарынавы</translation>
 <translation id="6951482098621102657">Няма наступнага загалоўка ўзроўню 5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Падрабязныя звесткі пра спіс апісанняў</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{амперсанд}one{# амперсанд}few{# амперсанды}many{# амперсандаў}other{# амперсанда}}</translation>
 <translation id="737396357417333429">нцс</translation>
-<translation id="7388656272362719103">выдаліць папярэдні сімвал</translation>
 <translation id="738899727977260036">Шыферна-блакітны</translation>
 <translation id="7393979322571982935">Гукі і налады</translation>
 <translation id="739763518212184081">Папярэдні радок</translation>

@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ক'লন}one{#টা ক’লন}other{#টা ক’লন}}</translation>
 <translation id="6444046323172968959">সতৰ্কতা সম্পৰ্কীয় ডায়ল'গ</translation>
 <translation id="6452403590345320472">সূচীপত্ৰ</translation>
-<translation id="6457542714329819968">প্ৰকাৰ</translation>
 <translation id="6468049171101508116">পৰৱর্তী বুটাম</translation>
 <translation id="646954774886932461">সূচক</translation>
 <translation id="6475604559827479857">শব্দ হাইলাইট কৰা ৰং:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">মচা হ’ল</translation>
 <translation id="6910969481785184048">অন কৰা, অফ কৰা আৰু বন্ধ কৰা</translation>
 <translation id="6919104639734799681">তালিকাৰ সূচী দেখুৱাওক</translation>
+<translation id="692135145298539227">মচক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6949846980769640811">মধ্যম একুৱা মেৰিণ</translation>
 <translation id="6951482098621102657">কোনো পৰৱর্তী স্তৰ ৫ৰ শিৰোনাম নাই</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">বিৱৰণ সূচীৰ সবিশেষ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{এম্পাৰছেণ্ড}one{#টা এম্পাৰছেণ্ড}other{#টা এম্পাৰছেণ্ড}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">পূৰ্বৱৰ্তী বৰ্ণটো মচক</translation>
 <translation id="738899727977260036">স্লে'ট ব্লু</translation>
 <translation id="7393979322571982935">ধ্বনি আৰু ছেটিং</translation>
 <translation id="739763518212184081">আগৰ শাৰী</translation>

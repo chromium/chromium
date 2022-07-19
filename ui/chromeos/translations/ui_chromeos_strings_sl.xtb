@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Omrežje je zavrnilo potrdilo za preverjanje pristnosti</translation>
 <translation id="255937426064304553">Združene države – mednarodna</translation>
 <translation id="2563185590376525700">Žaba</translation>
+<translation id="2570012981255377263">Vaše nedavne datoteke bodo prikazane tukaj</translation>
 <translation id="2578394532502990878">tamilščina (fonetična)</translation>
 <translation id="2579959351793446050">odijščina</translation>
 <translation id="2602810353103180630">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, blokiral skrbnik, podrobnosti</translation>
@@ -547,6 +548,7 @@
 <translation id="5625294776298156701">tamilščina s tipkovnico Tamil99</translation>
 <translation id="5633226425545095130">Če boste premaknili ta element, bo deljen z vsemi osebami, ki jim je vidna deljena mapa »<ph name="DESTINATION_NAME" />«.</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
+<translation id="5665074015635552640">Vaši nedavni videoposnetki bodo prikazani tukaj</translation>
 <translation id="5669691691057771421">Vnos nove kode PIN</translation>
 <translation id="5678784840044122290">Aplikacija za Linux bo na voljo v terminalu in morda bo zanjo tudi prikazana ikona v zaganjalniku.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ni mogoče prekiniti povezave z arhivom ali navideznim diskom<ph name="END_BOLD" />
@@ -691,6 +693,7 @@
     Št. najdenih: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Obrnjeno</translation>
 <translation id="6943836128787782965">Ukaz HTTP get ni uspel</translation>
+<translation id="6945604978460872381">Vaši nedavni dokumenti bodo prikazani tukaj</translation>
 <translation id="6949408524333579394">srbščina (transkripcija)</translation>
 <translation id="6954309393500027528">Lepljenje te datoteke je blokiral skrbnik.</translation>
 <translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
@@ -738,6 +741,7 @@
 <translation id="7295662345261934369">Deljenje z drugimi</translation>
 <translation id="7297443947353982503">Napačno uporabniško ime/geslo ali preverjanje pristnosti EAP ni uspelo</translation>
 <translation id="7309413087278791451">nemščina (Belgija)</translation>
+<translation id="7313374447885864533">Vaše nedavne zvočne datoteke bodo prikazane tukaj</translation>
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="7343393116438664539">vietnamščina (Telex)</translation>
 <translation id="7357762654218998920">Ta vrsta datoteke ni podprta. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
@@ -871,6 +875,7 @@
 <translation id="8342318071240498787">Datoteka ali imenik s tem imenom že obstaja.</translation>
 <translation id="8372369524088641025">Napačen ključ WEP</translation>
 <translation id="8372852072747894550">grščina</translation>
+<translation id="8384716930968677505">Vaše nedavne slike bodo prikazane tukaj</translation>
 <translation id="8386903983509584791">Iskanje je končano</translation>
 <translation id="8387733224523483503">Razširjeno: <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Mere</translation>

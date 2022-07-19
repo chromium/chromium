@@ -221,7 +221,6 @@
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
 <translation id="2155214902713132423">ဤစိစစ်မှုနည်းလမ်းကို ယခုစက်အတွက် မရနိုင်ပါ။ သင်၏အခြားစက်တွင် နည်းလမ်းနောက်တစ်ခု ရွေးနိုင်သည်။</translation>
 <translation id="2158408438301413340">Chrome က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ</translation>
-<translation id="2169830938017475061">ယခု</translation>
 <translation id="2172688499998841696">ပုံအကြောင်းအရာများကို ပိတ်ထားသည်</translation>
 <translation id="2172905120685242547">ဝင်ဒိုး ပိတ်မလား။</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
@@ -299,7 +298,6 @@
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2625189173221582860">စကားဝှက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="2642087927315268160">လက်မှတ်ထိုးဝင်သည့် အောက်ခြေအပိုဆောင်း စာမျက်နှာ ပိတ်ထားသည်။</translation>
-<translation id="2645657967708199252">သင်၏ <ph name="CONNECTION_TYPE" /> ချိတ်ဆက်မှုက ဒေါင်းလုဒ်ကို နှေးကွေးစေနိုင်သည်</translation>
 <translation id="2647434099613338025">ဘာသာစကား ထည့်ရန်</translation>
 <translation id="2649068648233607930">သင်၏ဘရောင်ဇာကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="2650348088770008516">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန် ရှင်းလင်းချက် ပိတ်ပြီးပြီ</translation>
@@ -318,7 +316,6 @@
 <translation id="2722945394406572875">Privacy Sandbox အတည်ပြုစနစ် ပိတ်ထားသည်</translation>
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="2732063072010454421">ပိုမိုကောင်းမွန်သော အသံစမ်းသပ်မှုကို ရယူပါ</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">သင့်စက်၏ မှောင်သည့်အပြင်အဆင် သို့မဟုတ် ဘက်ထရီအားထိန်းကို ဖွင့်ထားသည့်အခါ မှောင်သည့် အပြင်အဆင်ကို ဖွင့်ပါ</translation>
 <translation id="2762000892062317888">ယခုလေးတင်</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> သုံး၍ ၐင်ပါ။</translation>
@@ -347,7 +344,6 @@
 <translation id="2886836735871983413">ဝဘ်ကြည့်ရှုတိုင်း ဤနေရာတွင် ဝဘ်ဆိုက်စာရင်း ပေါ်လာမည်</translation>
 <translation id="2888126860611144412">Chrome အကြောင်း</translation>
 <translation id="2891154217021530873">စာမျက်နှာ တင်ပေးမှု ရပ်ရန်</translation>
-<translation id="2892647708214602204">ဤဖိုင်အသင့်ဖြစ်သည့်အခါ အကြောင်းကြားချက်ကို တွေ့ရပါမည်</translation>
 <translation id="2893180576842394309">Search နှင့် အခြား Google ဝန်ဆောင်မှုများအား ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Google က သင့်မှတ်တမ်းကို သုံးနိုင်သည်</translation>
 <translation id="2900528713135656174">ဖြစ်ရပ် ဖန်တီးပါ</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> အတွက် အကြံပြုချက်များ ပြထားသည်</translation>
@@ -593,7 +589,6 @@
 <translation id="4263656433980196874">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="4266054596873078491">သင်၏ Google Account ဖြင့် ဤဝဘ်ဆိုက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
-<translation id="4290281343757112331">ထိုအစား နောက်မှ ဒေါင်းလုဒ်လုပ်မလား။</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ဆက်တင်များတွင် ဖန်သားပြင်လော့ခ်ဖွင့်ရန်<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> နှင့် <ph name="BEGIN_ATOS_LINK" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_ATOS_LINK" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_PRIVACY_LINK" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_PRIVACY_LINK" /> အတွက်လည်း အကျုံးဝင်သည်။</translation>
 <translation id="4296252229500326964">ရုပ်ဖျက်တဘ် အသစ်</translation>
@@ -848,7 +843,6 @@
 <translation id="5686790454216892815">ဖိုင်အမည် ရှည်လွန်းသည်</translation>
 <translation id="569536719314091526">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ရန် 'နောက်ထပ်ရွေးချယ်စရာများ' ခလုတ်ကို ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="5696597120588531049">ဒေတာပေါက်ကြားမှု၊ မလုံခြုံသော ဝဘ်ဆိုက်များနှင့် အခြားအန္တရာယ်များမှ သင့်ကိုလုံခြုံအောင် Chrome က ကူညီပေးနိုင်သည်</translation>
-<translation id="5697688514913266141">သင်၏ဖိုင်ကို <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> သို့ သိမ်းလိုက်ပါမည်။ <ph name="BEGIN_LINK2" />တည်းဖြတ်ရန်<ph name="END_LINK2" />။</translation>
 <translation id="570347048394355941">တဘ်ပြောင်းရန်</translation>
 <translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>
 <translation id="5726692708398506830">စာမျက်နှာပေါ်ရှိ အရာအားလုံးကို ပိုကြီးအောင်လုပ်ရန်</translation>
@@ -1108,7 +1102,6 @@
 <translation id="6979737339423435258">အားလုံး</translation>
 <translation id="6987047470128880212">ရုပ်ဖျက်တဘ်ကို ဤစက်ပစ္စည်းတွင် အသုံးမပြုနိုင်ပါ။</translation>
 <translation id="6995899638241819463">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက်များ ဖော်ထုတ်ခံရသည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
-<translation id="7001056293070445572">ဤဖိုင်သည် ကြီးမားသည် (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">ဖတ်ရန် စာရင်းသို့ ထည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ဘရောက်ဇာတွင် ဖွင့်ပါ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ကို ပြန်ယူပြီးပြီ</translation>
@@ -1240,7 +1233,6 @@
 <translation id="7709918231054955894">သင့်တဘ်အားလုံး ရယူခြင်း</translation>
 <translation id="7725024127233776428">သင်သိမ်းဆည်းထားသည့် လိပ်စာ၏ စာမျက်နှာများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာသား</translation>
-<translation id="7761849928583394409">ရက်စွဲနှင့် အချိန်ရွေးရန်</translation>
 <translation id="7762668264895820836">SD ကတ် <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">ထပ်ဆောင်းဖြည့်ဝန်ဆောင်မှုများနှင့် Chrome ၏ အားအကောင်းဆုံး လုံခြုံရေးရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7764225426217299476">လိပ်စာများ ထည့်သွင်းပါ</translation>
@@ -1408,7 +1400,6 @@
 <translation id="8540136935098276800">မှန်ကန်စွာ ဖော်မက်ချထားသည့် URL ကို ထည့်ပါ</translation>
 <translation id="854522910157234410">ဤစာမျက်နှာအား ဖွင့်ပါ</translation>
 <translation id="8551513938758868521">Chrome မှ ထွက်သည့်အခါ ရုပ်ဖျက်တဘ်များကို လော့ခ်ချရန်</translation>
-<translation id="8555836665334561807">Wi-Fi တွင်</translation>
 <translation id="8559990750235505898">အခြားဘာသာစကားများဖြင့် စာမျက်နှာများကို ဘာသာပြန်ပေးရန် ပေးအပ်ချက်</translation>
 <translation id="8560560256644480257">GIF (ပုံနှင့်ဆိုင်သော ဖိုင်အမျိုးအစားတစ်ခု) ဖန်တီးနေသည် <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">'လိပ်စာများ' တွင် သင်၏ဖတ်ရန်စာရင်းကို ရှာပါ</translation>
@@ -1446,7 +1437,6 @@
 <translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
-<translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8746155870861185046">မြင်သာအောင်လုပ်ထားသည်ကို မျှဝေရန်</translation>
 <translation id="8748850008226585750">အကြောင်းအရာများကို ဝှက်ထားသည်</translation>
 <translation id="8756969031206844760">စကားဝှက်ကို အပ်ဒိတ်လုပ်လိုပါသလား။</translation>

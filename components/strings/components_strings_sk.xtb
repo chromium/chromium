@@ -1055,6 +1055,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3807873520724684969">Škodlivý obsah bol zablokovaný.</translation>
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="3816482573645936981">Hodnota (nahradená)</translation>
+<translation id="3823402221513322552">Váš prehliadač spravuje <ph name="BROWSER_DOMAIN" />. Váš profil spravuje <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="382518646247711829">Ak používate server proxy...</translation>
 <translation id="3826050100957962900">Prihlásenie tretej strany</translation>
 <translation id="3827112369919217609">Absolútne</translation>
@@ -1552,6 +1553,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5179510805599951267">Text sa nezobrazil v jazyku <ph name="ORIGINAL_LANGUAGE" />? Nahláste túto chybu</translation>
 <translation id="518639307526414276">Potrava a doplnky na starostlivosť o domácich miláčikov</translation>
 <translation id="5190835502935405962">Panel so záložkami</translation>
+<translation id="5191315092027169558">Váš profil spravuje <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> chce stiahnuť viacero súborov</translation>
 <translation id="519422657042045905">Anotácia nie je k dispozícii</translation>
 <translation id="5201306358585911203">Vložená stránka na tejto stránke hovorí</translation>
@@ -2755,6 +2757,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8623885649813806493">Žiadne zhodujúce sa heslá. Zobrazte si všetky uložené heslá.</translation>
 <translation id="8624354461147303341">Získať zľavy</translation>
 <translation id="8625384913736129811">Uložiť túto kartu do tohto zariadenia</translation>
+<translation id="8637577059508742477">Váš profil a prehliadač spravuje <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">senzory pohybu</translation>
 <translation id="8663226718884576429">Súhrn objednávky, <ph name="TOTAL_LABEL" />, ďalšie podrobnosti</translation>
 <translation id="8666678546361132282">Angličtina</translation>

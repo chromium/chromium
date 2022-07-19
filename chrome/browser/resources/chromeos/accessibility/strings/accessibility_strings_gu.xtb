@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{મહાવિરામ}one{# મહાવિરામ}other{# મહાવિરામ}}</translation>
 <translation id="6444046323172968959">ચેતવણી સંવાદ</translation>
 <translation id="6452403590345320472">અનુક્રમણિકા</translation>
-<translation id="6457542714329819968">પ્રકાર</translation>
 <translation id="6468049171101508116">આગલું બટન</translation>
 <translation id="646954774886932461">અનુક્રમણિકા</translation>
 <translation id="6475604559827479857">શબ્દ હાઇલાઇટ કરવા માટેનો રંગ:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">કાઢી નાખ્યું</translation>
 <translation id="6910969481785184048">ચાલુ કરો, બંધ કરો અને રોકો</translation>
 <translation id="6919104639734799681">કોષ્ટકોની સૂચિ બતાવો</translation>
+<translation id="692135145298539227">કાઢી નાખો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6949846980769640811">મધ્યમ વાદળી લીલો</translation>
 <translation id="6951482098621102657">કોઈ આગલું 'લેવલ 5' મથાળું નથી</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">વર્ણનની સૂચિની વિગત</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{એમ્પરસેંડ}one{# એમ્પરસેંડ્સ}other{# એમ્પરસેંડ્સ}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">પાછલો અક્ષર ડિલીટ કરો</translation>
 <translation id="738899727977260036">સ્લેટ ભૂરો</translation>
 <translation id="7393979322571982935">સાઉન્ડ અને સેટિંગ</translation>
 <translation id="739763518212184081">પાછલી રેખા</translation>

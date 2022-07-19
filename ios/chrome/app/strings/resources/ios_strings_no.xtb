@@ -441,6 +441,7 @@ Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4775879719735953715">Standardnettleser</translation>
 <translation id="4778644898150334464">Bruk et annet passord</translation>
+<translation id="478808905805139173">Vil du åpne linken i Inkognito?</translation>
 <translation id="4802417911091824046">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkroniseringen<ph name="END_LINK" /></translation>
@@ -961,6 +962,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9055772144595778347">Kan ikke logge på</translation>
 <translation id="9057972802061533987">Kan ikke følge. Noe gikk galt.</translation>
 <translation id="9065203028668620118">Endre</translation>
+<translation id="9068336935206019333">Åpne i Chrome Inkognito</translation>
 <translation id="9079935439869366234">Merk alle som ulest</translation>
 <translation id="9081058212938299310">Vil du oppdatere passordet for <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 element</translation>

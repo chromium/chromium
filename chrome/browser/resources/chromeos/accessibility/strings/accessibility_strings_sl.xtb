@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{dvopičje}one{# dvopičje}two{# dvopičji}few{# dvopičja}other{# dvopičij}}</translation>
 <translation id="6444046323172968959">Pogovorno okno z opozorilom</translation>
 <translation id="6452403590345320472">Kazalo</translation>
-<translation id="6457542714329819968">vnesi</translation>
 <translation id="6468049171101508116">Gumb Naprej</translation>
 <translation id="646954774886932461">Kazalo</translation>
 <translation id="6475604559827479857">Barva za označevanje besed:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6910969481785184048">Vklop, izklop in ustavitev</translation>
 <translation id="6919104639734799681">Prikaz seznama tabel</translation>
+<translation id="692135145298539227">izbriši</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6949846980769640811">Srednje močan akvamarin</translation>
 <translation id="6951482098621102657">Ni naslednjega naslova na ravni 5</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Podrobnosti seznama opisov</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{znak &amp;}one{# znak &amp;}two{# znaka &amp;}few{# znaki &amp;}other{# znakov &amp;}}</translation>
 <translation id="737396357417333429">klk</translation>
-<translation id="7388656272362719103">brisanje prejšnjega znaka</translation>
 <translation id="738899727977260036">Skrilasto modra</translation>
 <translation id="7393979322571982935">Zvoki in nastavitve</translation>
 <translation id="739763518212184081">Prejšnja vrstica</translation>

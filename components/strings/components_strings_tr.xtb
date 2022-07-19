@@ -1059,6 +1059,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3807873520724684969">Zararlı içerik engellendi.</translation>
 <translation id="3810973564298564668">Yönet</translation>
 <translation id="3816482573645936981">Değer (geçersiz kılındı)</translation>
+<translation id="3823402221513322552">Tarayıcınız <ph name="BROWSER_DOMAIN" /> tarafından, profiliniz ise <ph name="PROFILE_DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="382518646247711829">Proxy sunucu kullanıyorsanız...</translation>
 <translation id="3826050100957962900">Üçüncü taraf oturum açma</translation>
 <translation id="3827112369919217609">Mutlak</translation>
@@ -1556,6 +1557,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> dilinde değil mi? Bu hatayı bildirin</translation>
 <translation id="518639307526414276">Evcil hayvan mama ve bakım malzemeleri</translation>
 <translation id="5190835502935405962">Yer İşareti Çubuğu</translation>
+<translation id="5191315092027169558">Profiliniz <ph name="DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> birden fazla dosya indirmek istiyor</translation>
 <translation id="519422657042045905">Ek açıklama kullanılamıyor</translation>
 <translation id="5201306358585911203">Bu sayfadaki yerleşik bir sayfanın mesajı</translation>
@@ -2760,6 +2762,7 @@ Ek ayrıntılar:
 <translation id="8623885649813806493">Eşleşen şifre yok. Tüm kayıtlı şifreleri göster.</translation>
 <translation id="8624354461147303341">İndirim alın</translation>
 <translation id="8625384913736129811">Bu Kartı Bu Cihaza Kaydet</translation>
+<translation id="8637577059508742477">Profiliniz ve tarayıcınız <ph name="DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="865032292777205197">hareket sensörleri</translation>
 <translation id="8663226718884576429">Sipariş Özeti, <ph name="TOTAL_LABEL" />, Daha Fazla Ayrıntı</translation>
 <translation id="8666678546361132282">İngilizce</translation>

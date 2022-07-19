@@ -441,6 +441,7 @@ Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li
 <translation id="4751645464639803239">Nová anonymní karta</translation>
 <translation id="4775879719735953715">Výchozí prohlížeč</translation>
 <translation id="4778644898150334464">Použít jiné heslo</translation>
+<translation id="478808905805139173">Otevřít v anonymním okně?</translation>
 <translation id="4802417911091824046">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay.
 
 Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<ph name="END_LINK" />.</translation>
@@ -961,6 +962,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9055772144595778347">Přihlášení se nezdařilo</translation>
 <translation id="9057972802061533987">Sledování nelze zapnout. Něco se pokazilo.</translation>
 <translation id="9065203028668620118">Upravit</translation>
+<translation id="9068336935206019333">Otevřít v Chromu v anonymním režimu</translation>
 <translation id="9079935439869366234">Označit vše jako nepřečtené</translation>
 <translation id="9081058212938299310">Aktualizovat heslo uživatele <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 položka</translation>

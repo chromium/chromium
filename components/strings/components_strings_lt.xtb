@@ -1060,6 +1060,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3807873520724684969">Žalingas turinys užblokuotas.</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3816482573645936981">Vertė (pakeista)</translation>
+<translation id="3823402221513322552">Jūsų naršyklę tvarko <ph name="BROWSER_DOMAIN" />, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Jei naudojate tarpinį serverį…</translation>
 <translation id="3826050100957962900">Trečiosios šalies prisijungimas</translation>
 <translation id="3827112369919217609">Absoliutus</translation>
@@ -1557,6 +1558,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5179510805599951267">Ne <ph name="ORIGINAL_LANGUAGE" /> k.? Pranešti apie šią klaidą</translation>
 <translation id="518639307526414276">Gyvūnų maistas ir priežiūros priemonės</translation>
 <translation id="5190835502935405962">Žymių juosta</translation>
+<translation id="5191315092027169558">Jūsų profilį tvarko <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> nori atsisiųsti kelis failus</translation>
 <translation id="519422657042045905">Komentaras nepasiekiamas</translation>
 <translation id="5201306358585911203">Šiame puslapyje įterptame puslapyje nurodyta:</translation>
@@ -2761,6 +2763,7 @@ Papildoma išsami informacija:
 <translation id="8623885649813806493">Nėra jokių atitinkančių slaptažodžių. Rodyti visus išsaugotus slaptažodžius.</translation>
 <translation id="8624354461147303341">Gauti nuolaidų</translation>
 <translation id="8625384913736129811">Išsaugoti šią kortelę šiame įrenginyje</translation>
+<translation id="8637577059508742477">Jūsų profilį ir naršyklę tvarko <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">judesio jutikliai</translation>
 <translation id="8663226718884576429">Užsakymo suvestinė, <ph name="TOTAL_LABEL" />, daugiau informacijos</translation>
 <translation id="8666678546361132282">Anglų</translation>

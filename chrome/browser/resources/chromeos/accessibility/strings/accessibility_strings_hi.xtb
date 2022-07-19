@@ -802,7 +802,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="641759969622533235">{COUNT,plural, =1{विरामचिह्न}one{# विरामचिह्न}other{# विरामचिह्न}}</translation>
 <translation id="6444046323172968959">सूचना डॉयलॉग</translation>
 <translation id="6452403590345320472">विषय सूची</translation>
-<translation id="6457542714329819968">टाइप करें</translation>
 <translation id="6468049171101508116">अगला बटन</translation>
 <translation id="646954774886932461">इंडेक्स</translation>
 <translation id="6475604559827479857">शब्द हाइलाइट करने का रंग:</translation>
@@ -860,6 +859,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6910211073230771657">हटाया गया</translation>
 <translation id="6910969481785184048">चालू करें, बंद करें और रोकें</translation>
 <translation id="6919104639734799681">तालिकाओं की सूची दिखाएं</translation>
+<translation id="692135145298539227">मिटाएं</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6949846980769640811">मध्यम समुद्री हरा</translation>
 <translation id="6951482098621102657">आगे कोई लेवल 5 शीर्षक नहीं है</translation>
@@ -927,7 +927,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7356610683936413584">जानकारी वाली सूची का ब्यौरा</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ऐम्परसेंड}one{# ऐम्परसेंड}other{# ऐम्परसेंड}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">पिछला वर्ण मिटाएं</translation>
 <translation id="738899727977260036">स्लेटी नीला</translation>
 <translation id="7393979322571982935">आवाज़ और सेटिंग</translation>
 <translation id="739763518212184081">पिछली लाइन</translation>

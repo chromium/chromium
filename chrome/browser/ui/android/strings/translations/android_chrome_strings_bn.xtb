@@ -108,6 +108,7 @@
 <translation id="1488775391433859242">যে কম্পিউটারে এই QR কোড দেখানো হচ্ছে তাতে সাইন-ইন করার জন্য আপনি এই ফোনটি ব্যবহার করতে পারবেন।</translation>
 <translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
 <translation id="1493287004536771723">আপনি <ph name="SITE_NAME" /> ফলো করছেন</translation>
+<translation id="1502010315804028179">আপনার পাসওয়ার্ড ম্যানেজ করার জন্য, Google Play পরিষেবা আপডেট করুন</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1513352483775369820">বুকমার্কগুলি এবং ওয়েব ইতিহাস</translation>
 <translation id="1513814250881909472">আপনার অন্যান্য ডিভাইস থেকে ট্যাব পেতে সিঙ্ক করুন</translation>
@@ -220,7 +221,6 @@
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2155214902713132423">এই ডিভাইসের জন্য যাচাইকরণের এই পদ্ধতি উপলভ্য নেই। আপনার অন্য ডিভাইসে অন্য একটি বিকল্প বেছে নিন।</translation>
 <translation id="2158408438301413340">Chrome সব পাসওয়ার্ড চেক করতে পারেনি</translation>
-<translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">ছবির বিবরণ বন্ধ করা আছে</translation>
 <translation id="2172905120685242547">উইন্ডো বন্ধ করবেন?</translation>
 <translation id="2175927920773552910">QR কোড</translation>
@@ -298,7 +298,6 @@
 <translation id="2612676031748830579">কার্ড নম্বর</translation>
 <translation id="2625189173221582860">পাসওয়ার্ড কপি করা হয়েছে</translation>
 <translation id="2642087927315268160">স্ক্রিনের নিচে অ্যাটাচ করা শিটে সাইন-ইন করার সুবিধা বন্ধ করা হয়েছে।</translation>
-<translation id="2645657967708199252">আপনার <ph name="CONNECTION_TYPE" /> কানেকশনের ফলে ডাউনলোডের স্পিড কম হতে পারে</translation>
 <translation id="2647434099613338025">ভাষা যুক্ত করুন</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> আপনার ব্রাউজার ম্যানেজ করে</translation>
 <translation id="2650348088770008516">গোপনীয়তা সংক্রান্ত গাইডের বিবরণ বন্ধ করে দেওয়া হয়েছে</translation>
@@ -317,7 +316,6 @@
 <translation id="2722945394406572875">প্রাইভেসি স্যান্ডবক্স প্রম্পট বন্ধ করা হয়েছে</translation>
 <translation id="2723001399770238859">অডিও</translation>
 <translation id="2732063072010454421">একটি উন্নত ভয়েস অভিজ্ঞতা পান</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">আপনার ডিভাইসে গাঢ় থিম বা ব্যাটারি সেভার চালু থাকলে, গাঢ় থিম চালু করুন</translation>
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> রূপে প্রবেশ করেছেন৷</translation>
@@ -346,7 +344,6 @@
 <translation id="2886836735871983413">আপনি ওয়েবে ব্রাউজ করলে সাইটের একটি তালিকা এখানে দেখা যাবে</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা লোড করা বন্ধ করুন</translation>
-<translation id="2892647708214602204">এই ফাইলটি ডাউনলোড করার জন্য তৈরি হয়ে গেলে আপনি একটি বিজ্ঞপ্তি পাবেন</translation>
 <translation id="2893180576842394309">সার্চ এবং অন্যান্য Google পরিষেবাকে আপনার মতো করে সাজিয়ে নিতে Google আপনার ইতিহাস ব্যবহার করতে পারে</translation>
 <translation id="2900528713135656174">ইভেন্ট তৈরি করুন</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" />-এর জন্য সাজেশন দেখানো হচ্ছে</translation>
@@ -594,7 +591,6 @@
 <translation id="4263656433980196874">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="4266054596873078491">আপনার Google অ্যাকাউন্ট দিয়ে এই সাইট ও Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
-<translation id="4290281343757112331">এর বদলে পরে ডাউনলোড করতে চান?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android সেটিংসে স্ক্রিন লক চালু করুন<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_TOS_LINK" />Google পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" /> এবং <ph name="BEGIN_ATOS_LINK" />Google Chrome ও ChromeOS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_ATOS_LINK" /> মেনে নিচ্ছেন। এছাড়াও <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_LINK" /> প্রযোজ্য।</translation>
 <translation id="4296252229500326964">নতুন ছদ্মবেশী ট্যাব</translation>
@@ -849,7 +845,6 @@
 <translation id="5686790454216892815">ফাইলের নামটি খুব বড়</translation>
 <translation id="569536719314091526">আরও বিকল্প বোতাম থেকে এই পৃষ্ঠাটিকে যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="5696597120588531049">Chrome আপনাকে ডেটার নিরাপত্তা লঙ্ঘন, ক্ষতিকর ওয়েবসাইট ও আরও অনেক কিছু থেকে সুরক্ষিত থাকতে সাহায্য করে</translation>
-<translation id="5697688514913266141">আপনার ফাইল <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> ডিরেক্টরিতে সেভ করা হবে। <ph name="BEGIN_LINK2" />এডিট করুন<ph name="END_LINK2" />।</translation>
 <translation id="570347048394355941">বদল করে ট্যাবে যান</translation>
 <translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="5726692708398506830">পৃষ্ঠাতে থাকা সবকিছুকে বড় করুন</translation>
@@ -1110,7 +1105,6 @@
 <translation id="6979737339423435258">শুরু থেকে</translation>
 <translation id="6987047470128880212">এই ডিভাইসে ছদ্মবেশী ট্যাব উপলভ্য নেই</translation>
 <translation id="6995899638241819463">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
-<translation id="7001056293070445572">এই ফাইলটি বড় (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">পড়ার তালিকায় যোগ করুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ব্রাউজারে খুলুন</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ফিরিয়ে আনা হয়েছে</translation>
@@ -1242,7 +1236,6 @@
 <translation id="7709918231054955894">আপনার সব ট্যাব পান</translation>
 <translation id="7725024127233776428">আপনার বুকমার্ক করা পৃষ্ঠা এখানে দেখানো হয়</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
-<translation id="7761849928583394409">তারিখ ও সময় বেছে নিন</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" /> টি এসডি কার্ড</translation>
 <translation id="7762928140712606393">অতিরিক্ত ফিচার এবং Chrome-এ সবচেয়ে বেশি সুরক্ষা পাওয়ার জন্য সাইন-ইন করুন</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
@@ -1410,7 +1403,6 @@
 <translation id="8540136935098276800">সঠিকভাবে ফর্ম্যাট করা একটি ইউআরএল লিখুন</translation>
 <translation id="854522910157234410">এই পৃষ্ঠাটি খুলুন</translation>
 <translation id="8551513938758868521">আপনি Chrome ছেড়ে বেরিয়ে আসার সময়, 'ছদ্মবেশী' ট্যাব লক করুন</translation>
-<translation id="8555836665334561807">ওয়াই-ফাই নেটওয়ার্কে কানেক্ট থাকলে</translation>
 <translation id="8559990750235505898">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="8560560256644480257">GIF তৈরি করা হচ্ছে <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Bookmarks থেকে আপনার পড়ার তালিকা খুঁজে নিন</translation>
@@ -1448,7 +1440,6 @@
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
-<translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8746155870861185046">হাইলাইট শেয়ার করুন</translation>
 <translation id="8748850008226585750">সামগ্রী লুকানো আছে</translation>
 <translation id="8756969031206844760">পাসওয়ার্ড আপডেট করবেন?</translation>

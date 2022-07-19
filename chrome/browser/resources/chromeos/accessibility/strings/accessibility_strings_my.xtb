@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{ကော်လန်}other{# ကော်လန်များ}}</translation>
 <translation id="6444046323172968959">သတိပေး စကား</translation>
 <translation id="6452403590345320472">မာတိကာ</translation>
-<translation id="6457542714329819968">စာရိုက်ရန်</translation>
 <translation id="6468049171101508116">နောက် ခလုတ်</translation>
 <translation id="646954774886932461">အ​ညွှန်း​</translation>
 <translation id="6475604559827479857">ထင်သာအောင် လုပ်ထားသော စကားလုံးအတွက် အရောင်−</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">ဖျက်ပြီး</translation>
 <translation id="6910969481785184048">အဖွင့်၊ အပိတ်နှင့် ရပ်ခြင်း</translation>
 <translation id="6919104639734799681">ဇယားကွက် စာရင်းပြရန်</translation>
+<translation id="692135145298539227">ဖျက်ရန်</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6949846980769640811">မြပြာ မနုမရင့်</translation>
 <translation id="6951482098621102657">နောက်ထပ် အဆင့် ၅ ခေါင်စီး မရှိပါ</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">အကြောင်းအရာ စာရင်း အသေးစိတ်</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ampersand}other{# ampersandများ}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ယခင်အက္ခရာကို ဖျက်ပါ</translation>
 <translation id="738899727977260036">မီးခိုးပြာ</translation>
 <translation id="7393979322571982935">အသံနှင့် ဆက်တင်များ</translation>
 <translation id="739763518212184081">ယခင်လိုင်း</translation>

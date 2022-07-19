@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="2163152940313951844">Жарамсыз таңба: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Португал (АҚШ), халықаралық дербес компьютер пернетақтасымен</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> пайдаланылды</translation>
 <translation id="2198315389084035571">Жеңілдетілген қытай тілі</translation>
 <translation id="22085916256174561">Корей</translation>
 <translation id="2208919847696382164">Linux арқылы ойнату</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Түрік (F пернетақтасымен)</translation>
 <translation id="2732839045120506979">Вьетнам (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop үшін <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат берілсін.</translation>
+<translation id="2764206540577097904">Жеке Google Workspace жадын толық пайдаландыңыз.</translation>
 <translation id="2771816809568414714">Ірімшік</translation>
 <translation id="2781645665747935084">Бельгиялық</translation>
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Қысқарақ атау енгізіңіз</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> форматталуда...</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2958458230122209142">Орын аз, <ph name="TOTAL_SPACE" /> жеке жадтың <ph name="REMAINING_PERCENTAGE" /> %-ы ғана қалды.</translation>
 <translation id="2977940621473452797">Бұл файл Macintosh бағдарламалық құралын пайдаланатын компьютерге арналған. Ол ChromeOS жүйесімен жұмыс істейтін құрылғымен үйлесімді емес. Chrome Web Store дүкенінен сәйкес келетін балама қолданбаны іздеңіз.</translation>
 <translation id="2984337792991268709">Бүгін <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> элемент қалпына келтірілуде…</translation>
@@ -668,6 +671,7 @@
 <translation id="6823166707458800069">Осы қалтада сақталған барлық файлдардың автоматты түрде онлайн сақтық көшірмесі жасалады.</translation>
 <translation id="6825883775269213504">орыс</translation>
 <translation id="6847101934483209767">Таңдалғандар арасынан <ph name="ENTRY_NAME" /> өшірілді.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ұйымы өзінің Google Workspace жадын толық пайдаланды.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="6861394552169064235">Парсы</translation>
 <translation id="6862635236584086457">Осы қалтада сақталған барлық файлдардың автоматты түрде онлайн сақтық көшірмесі жасалады</translation>
@@ -699,6 +703,7 @@
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Бос орын жоқ</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> қалта таңдалған</translation>
+<translation id="7008426324576352165">Жүктеп салуды аяқтау үшін ұйымға көбірек жад қажет.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Орнату сәтсіз аяқталды.</translation>
 <translation id="7031639531908619281">Түрік</translation>
@@ -932,11 +937,13 @@
 <translation id="8919081441417203123">дат</translation>
 <translation id="8965697826696209160">Бос орын жеткіліксіз.</translation>
 <translation id="8997962250644902079">Қытай (дәстүрлі, пиньинь)</translation>
+<translation id="8998871447376656508">Жүктеп салуды аяқтау үшін Google Drive-та орын жеткіліксіз.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="9017798300203431059">Орыс фонетикалық</translation>
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Файлдар "<ph name="DESTINATION_NAME" />" қалтасына қайта көшірілмейді, сондықтан бұл қадамды кері қайтару мүмкін емес.</translation>
 <translation id="9035689366572880647">Ағымдағы PIN кодын енгізіңіз</translation>
+<translation id="9037777873893411148">* Ұйым жады толы.</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Басқа атау таңдаңыз.</translation>
 <translation id="9046895021617826162">Қосылмады</translation>
 <translation id="9065512565307033593">Растай алмасаңыз, желіге кіру мүмкіндігі өшіріледі.</translation>

@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{միջակետ}one{# միջակետ}other{# միջակետ}}</translation>
 <translation id="6444046323172968959">Ծանուցման երկխոսություն</translation>
 <translation id="6452403590345320472">Բովանդակություն</translation>
-<translation id="6457542714329819968">մուտքագրել</translation>
 <translation id="6468049171101508116">Հաջորդ կոճակը</translation>
 <translation id="646954774886932461">Այբբենական ցանկ</translation>
 <translation id="6475604559827479857">Բառերի գունանշման գույն՝</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">Ջնջված</translation>
 <translation id="6910969481785184048">ChromeVox-ի միացում, անջատում և ձայնի անջատում</translation>
 <translation id="6919104639734799681">Ցույց տալ աղյուսակների ցանկը</translation>
+<translation id="692135145298539227">ջնջել</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6949846980769640811">Միջին ակվամարին</translation>
 <translation id="6951482098621102657">5-րդ մակարդակի հաջորդ վերնագիր չկա</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">Նկարագրությունների ցանկի մանրամասներ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ամպերսանդ}one{# ամպերսանդ}other{# ամպերսանդ}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ջնջել նախորդ նիշը</translation>
 <translation id="738899727977260036">Մոխրակապույտ</translation>
 <translation id="7393979322571982935">Ձայներ և կարգավորումներ</translation>
 <translation id="739763518212184081">Նախորդ տողը</translation>

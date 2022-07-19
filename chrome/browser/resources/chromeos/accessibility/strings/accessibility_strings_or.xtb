@@ -802,7 +802,6 @@
 <translation id="641759969622533235">{COUNT,plural, =1{କୋଲନ୍}other{#ଟି କୋଲନ୍}}</translation>
 <translation id="6444046323172968959">ଆଲର୍ଟ ଡାୟଲଗ୍</translation>
 <translation id="6452403590345320472">ବିଷୟବସ୍ତୁର ଟେବଲ୍</translation>
-<translation id="6457542714329819968">ପ୍ରକାର</translation>
 <translation id="6468049171101508116">ପରବର୍ତ୍ତୀ ବଟନ୍</translation>
 <translation id="646954774886932461">ସୂଚୀ</translation>
 <translation id="6475604559827479857">ଶଦ୍ଦ ହାଇଲାଇଟ୍‍ ପାଇଁ ରଙ୍ଗ:</translation>
@@ -860,6 +859,7 @@
 <translation id="6910211073230771657">ଡିଲିଟ୍ କରାଗଲା</translation>
 <translation id="6910969481785184048">ଚାଲୁ, ବନ୍ଦ ଏବଂ ଅଟକାଇବା</translation>
 <translation id="6919104639734799681">ଟେବଲ୍‍ଗୁଡ଼ିକର ତାଲିକା ଦେଖାନ୍ତୁ</translation>
+<translation id="692135145298539227">ବିଲୋପ</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6949846980769640811">ମଧ୍ୟମ ନୀଳ ସବୁଜ</translation>
 <translation id="6951482098621102657">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ତର 5 ହେଡିଂ ନାହିଁ</translation>
@@ -927,7 +927,6 @@
 <translation id="7356610683936413584">ଡେସକ୍ରିପସନ୍ ଲିଷ୍ଟ ବିବରଣୀ</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ଆମ୍ପର୍ସାଣ୍ଡ୍}other{#ଟି ଆମ୍ପର୍ସାଣ୍ଡ୍}}</translation>
 <translation id="737396357417333429">clk</translation>
-<translation id="7388656272362719103">ପୂର୍ବବର୍ତ୍ତୀ କେରେକ୍ଟରକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="738899727977260036">ସ୍ଲେଟ୍ ନୀଳ</translation>
 <translation id="7393979322571982935">ସାଉଣ୍ଡ ଏବଂ ସେଟିଂସ୍</translation>
 <translation id="739763518212184081">ପୂର୍ବ ଧାଡ଼ି</translation>

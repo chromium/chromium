@@ -220,7 +220,6 @@
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2155214902713132423">이 기기에서 사용할 수 없는 인증 방법입니다. 다른 기기에서 다른 옵션을 선택하세요.</translation>
 <translation id="2158408438301413340">Chrome에서 일부 비밀번호를 확인할 수 없습니다.</translation>
-<translation id="2169830938017475061">방금</translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
 <translation id="2175927920773552910">QR 코드</translation>
@@ -298,7 +297,6 @@
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
 <translation id="2642087927315268160">로그인 하단 시트가 닫혔습니다.</translation>
-<translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 연결로 인해 다운로드가 느려질 수 있습니다</translation>
 <translation id="2647434099613338025">언어 추가</translation>
 <translation id="2649068648233607930">내 브라우저는 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="2650348088770008516">개인 정보 보호 가이드 설명이 닫힘</translation>
@@ -317,7 +315,6 @@
 <translation id="2722945394406572875">개인 정보 보호 샌드박스 메시지 닫힘</translation>
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2732063072010454421">더 나은 음성 검색 환경을 경험해 보세요</translation>
-<translation id="2739256783402597439">2G</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
 <translation id="2762000892062317888">방금 전</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되었습니다.</translation>
@@ -346,7 +343,6 @@
 <translation id="2886836735871983413">웹을 탐색하면 여기에 사이트 목록이 표시됩니다.</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>
-<translation id="2892647708214602204">파일이 준비되면 알림이 표시됩니다.</translation>
 <translation id="2893180576842394309">Google에서 내 방문 기록을 사용하여 Google 검색 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2900528713135656174">일정 만들기</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> 추천 표시됨</translation>
@@ -592,7 +588,6 @@
 <translation id="4263656433980196874">어시스턴트 음성 검색 동의 UI가 전체 높이로 열림</translation>
 <translation id="4266054596873078491">Google 계정으로 이 사이트 및 Chrome에 로그인합니다</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
-<translation id="4290281343757112331">대신 나중에 다운로드하시겠습니까?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android 설정에서 화면 잠금 사용 설정하기<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_PRIVACY_LINK" />개인정보처리방침<ph name="END_PRIVACY_LINK" />도 적용됩니다.</translation>
 <translation id="4296252229500326964">새 시크릿 탭</translation>
@@ -847,7 +842,6 @@
 <translation id="5686790454216892815">파일 이름이 너무 깁니다.</translation>
 <translation id="569536719314091526">옵션 더보기 버튼을 눌러 이 페이지를 원하는 언어로 번역하세요</translation>
 <translation id="5696597120588531049">Chrome은 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호해 줍니다.</translation>
-<translation id="5697688514913266141">파일이 <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />에 저장됩니다. <ph name="BEGIN_LINK2" />수정<ph name="END_LINK2" /></translation>
 <translation id="570347048394355941">탭으로 전환</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5726692708398506830">페이지의 모든 항목 확대</translation>
@@ -1108,7 +1102,6 @@
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6987047470128880212">이 기기에서는 시크릿 모드를 사용할 수 없습니다.</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
-<translation id="7001056293070445572">파일이 너무 큼(<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">읽기 목록에 추가 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> 복원됨</translation>
@@ -1240,7 +1233,6 @@
 <translation id="7709918231054955894">탭 모두 가져오기</translation>
 <translation id="7725024127233776428">북마크한 페이지가 여기에 표시됩니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
-<translation id="7761849928583394409">날짜 및 시간 선택</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7762928140712606393">로그인하여 추가 기능과 Chrome의 강력한 보안 설정을 사용하세요</translation>
 <translation id="7764225426217299476">주소 추가</translation>
@@ -1408,7 +1400,6 @@
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="854522910157234410">페이지 열기</translation>
 <translation id="8551513938758868521">Chrome 종료 시 시크릿 탭 잠금</translation>
-<translation id="8555836665334561807">Wi-Fi 이용 시</translation>
 <translation id="8559990750235505898">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="8560560256644480257">GIF 생성 <ph name="PERCENT" />%% 완료</translation>
 <translation id="8560602726703398413">북마크에서 읽기 목록 찾기</translation>
@@ -1446,7 +1437,6 @@
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
-<translation id="8730621377337864115">완료</translation>
 <translation id="8746155870861185046">강조표시한 텍스트 공유</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>

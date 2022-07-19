@@ -998,6 +998,7 @@
 <translation id="1931410639376954712">正在安装 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">不早于</translation>
 <translation id="1935303383381416800">允许查看您的位置信息</translation>
+<translation id="1936157145127842922">在文件夹中显示</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
 <translation id="1937774647013465102">无法使用此设备（即 <ph name="ARCHITECTURE_DEVICE" />）导入容器架构类型 <ph name="ARCHITECTURE_CONTAINER" />。您既可尝试将此容器恢复到另一设备中，也可使用“文件”应用打开此容器映像内的文件以进行访问。</translation>
 <translation id="1938320257168860255">出了点问题。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
@@ -3199,6 +3200,7 @@
 <translation id="402211067068791756">此操作会清除显示的网站所存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="4022426551683927403">添加到字典中(&amp;A)</translation>
 <translation id="4025039777635956441">将所选网站静音</translation>
+<translation id="4027958407426528157">在您的 <ph name="DEVICE_TYPE" /> 已安装的应用内打开网站</translation>
 <translation id="4028467762035011525">添加输入法</translation>
 <translation id="4029556917477724407">从“<ph name="PAGE_TITLE" />”页面返回</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
@@ -6544,6 +6546,7 @@
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378611153938412599">安全系数低的密码容易被人猜到。请务必设置安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="73786666777299047">打开 Chrome 网上应用店</translation>
+<translation id="737938816678769289">轻松连接并设置附近的快速配对设备</translation>
 <translation id="7380459290951585794">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
 <translation id="7380768571499464492">已更新<ph name="PRINTER_NAME" /></translation>
