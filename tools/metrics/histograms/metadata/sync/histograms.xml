@@ -1105,8 +1105,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
-    expires_after="2022-08-21">
-  <owner>fernandex@chromium.org</owner>
+    expires_after="2023-02-21">
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <component>Services&gt;Sync</component>
   <summary>
