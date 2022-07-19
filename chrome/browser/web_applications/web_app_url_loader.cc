@@ -24,9 +24,6 @@
 #include "url/gurl.h"
 
 namespace web_app {
-
-constexpr base::TimeDelta WebAppUrlLoader::kSecondsToWaitForWebContentsLoad;
-
 namespace {
 using UrlComparison = WebAppUrlLoader::UrlComparison;
 
