@@ -193,7 +193,7 @@
     </template>
 </if>
 
-<if expr="use_nss_certs or is_win or is_macosx">
+<if expr="(use_nss_certs or is_win or is_macosx) and not chrome_root_store_supported">
     <cr-link-row id="manageCertificates"
         class="hr"
 <if expr="not use_nss_certs">
@@ -206,6 +206,34 @@
         sub-label="$i18n{manageCertificatesDescription}"
         on-click="onManageCertificatesClick_"></cr-link-row>
 </if>
+
+<if expr="chrome_root_store_supported">
+    <template is="dom-if" if="[[!showChromeRootStoreCertificates_]]">
+      <cr-link-row id="manageCertificates"
+          class="hr"
+          external
+          label="$i18n{manageCertificates}"
+          sub-label="$i18n{manageCertificatesDescription}"
+          on-click="onManageCertificatesClick_"></cr-link-row>
+    </template>
+
+    <template is="dom-if" if="[[showChromeRootStoreCertificates_]]">
+      <cr-link-row id="manageCertificates"
+          class="hr"
+          external
+          label="$i18n{manageDeviceCertificates}"
+          sub-label="$i18n{manageDeviceCertificatesDescription}"
+          on-click="onManageCertificatesClick_"></cr-link-row>
+
+      <cr-link-row id="chromeCertificates"
+          class="hr"
+          external
+          label="$i18n{chromeCertificates}"
+          sub-label="$i18n{chromeCertificatesDescription}"
+          on-click="onChromeCertificatesClick_"></cr-link-row>
+    </template>
+</if>
+
     <cr-link-row id="advanced-protection-program-link"
         class="hr"
         label="$i18n{advancedProtectionProgramTitle}"

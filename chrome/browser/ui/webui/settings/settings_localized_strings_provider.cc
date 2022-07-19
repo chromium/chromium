@@ -84,6 +84,7 @@
 #include "device/fido/features.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
+#include "net/net_buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -139,6 +140,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/base/features.h"
 #endif
 
 namespace settings {
@@ -1534,6 +1539,14 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
     {"openChromeOSSecureDnsSettingsLabel",
      IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL},
 #endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    {"manageDeviceCertificates", IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES},
+    {"manageDeviceCertificatesDescription",
+     IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES_DESCRIPTION},
+    {"chromeCertificates", IDS_SETTINGS_CHROME_CERTIFICATES},
+    {"chromeCertificatesDescription",
+     IDS_SETTINGS_CHROME_CERTIFICATES_DESCRIPTION},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1586,6 +1599,26 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "showHttpsOnlyModeSetting",
       base::FeatureList::IsEnabled(features::kHttpsOnlyMode));
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  bool chrome_root_store_used =
+      base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  const PrefService::Preference* chrome_root_store_enabled_pref =
+      g_browser_process->local_state()->FindPreference(
+          prefs::kChromeRootStoreEnabled);
+  if (chrome_root_store_enabled_pref &&
+      chrome_root_store_enabled_pref->IsManaged())
+    chrome_root_store_used &=
+        chrome_root_store_enabled_pref->GetValue()->GetBool();
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+
+  html_source->AddBoolean("showChromeRootStoreCertificates",
+                          chrome_root_store_used);
+
+  html_source->AddString("chromeRootStoreHelpCenterURL",
+                         chrome::kChromeRootStoreSettingsHelpCenterURL);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
   // The link to the Advanced Protection Program landing page, with a referrer
   // from Chrome settings.

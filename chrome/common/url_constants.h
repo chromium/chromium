@@ -23,6 +23,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
+#include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 
 namespace chrome {
@@ -455,6 +456,10 @@ extern const char kPhoneHubPermissionLearnMoreURL[];
 
 // "Learn more" URL for the chrome apps deprecation dialog.
 extern const char kChromeAppsDeprecationLearnMoreURL[];
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+extern const char kChromeRootStoreSettingsHelpCenterURL[];
 #endif
 
 // Please do not append entries here. See the comments at the top of the file.

@@ -335,4 +335,14 @@
   <message name="IDS_SETTINGS_RESET_PROFILE_FEEDBACK" desc="Feedback label in the Reset Profile Settings dialog">
     Help make Chrome better by reporting the <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph>current settings<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
+
+  <!-- Chrome Root Store -->
+  <if expr="chrome_root_store_supported">
+    <message name="IDS_SETTINGS_CHROME_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
+      Certificates managed by Chrome
+    </message>
+    <message name="IDS_SETTINGS_CHROME_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL certificates and settings in Privacy options">
+      Information about how Chrome manages its root certificates
+    </message>
+  </if>
 </grit-part>

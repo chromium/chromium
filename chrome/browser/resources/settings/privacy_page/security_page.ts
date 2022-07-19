@@ -24,7 +24,7 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="chromeos_ash or chromeos_lacros or chrome_root_store_supported">
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 // </if>
 
@@ -84,6 +84,20 @@ export class SettingsSecurityPageElement extends
         type: Object,
         notify: true,
       },
+
+      // <if expr="chrome_root_store_supported">
+      /**
+       * Whether we should adjust Manage Certificates links to indicate
+       * support for Chrome Root Store.
+       */
+      showChromeRootStoreCertificates_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showChromeRootStoreCertificates');
+        },
+      },
+      // </if>
 
       /**
        * Whether the HTTPS-Only Mode setting should be displayed.
@@ -157,7 +171,9 @@ export class SettingsSecurityPageElement extends
       showDisableSafebrowsingDialog_: Boolean,
     };
   }
-
+  // <if expr="chrome_root_store_supported">
+  private showChromeRootStoreCertificates_: boolean;
+  // </if>
   private showHttpsOnlyModeSetting_: boolean;
   private showSecureDnsSetting_: boolean;
 
@@ -287,6 +303,13 @@ export class SettingsSecurityPageElement extends
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
   }
+
+  // <if expr="chrome_root_store_supported">
+  private onChromeCertificatesClick_() {
+    OpenWindowProxyImpl.getInstance().openURL(
+        loadTimeData.getString('chromeRootStoreHelpCenterURL'));
+  }
+  // </if>
 
   private onAdvancedProtectionProgramLinkClick_() {
     window.open(loadTimeData.getString('advancedProtectionURL'));

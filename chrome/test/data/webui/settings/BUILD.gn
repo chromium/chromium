@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -176,6 +177,7 @@ if (is_win && is_chrome_branded) {
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 preprocess_if_expr("preprocess") {
+  defines = chrome_grit_defines
   in_folder = "./"
   out_folder = preprocessed_folder
   in_files = preprocessed_files

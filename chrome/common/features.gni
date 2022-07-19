@@ -89,6 +89,7 @@ use_brlapi = is_chromeos_ash
 # Every grit target in //chrome should apply these defines so that the
 # proper build flags can be set.
 chrome_grit_defines = [
+  "chrome_root_store_supported=$chrome_root_store_supported",
   "enable_arcore=$enable_arcore",
   "enable_background_mode=$enable_background_mode",
   "enable_background_contents=$enable_background_contents",

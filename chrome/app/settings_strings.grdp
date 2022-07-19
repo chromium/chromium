@@ -1994,6 +1994,14 @@
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL certificates and settings in Privacy options">
     Manage HTTPS/SSL certificates and settings
   </message>
+  <if expr="chrome_root_store_supported">
+    <message name="IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES" desc="Text for manage device certificates button in Privacy options">
+      Manage device certificates
+    </message>
+    <message name="IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES_DESCRIPTION" desc="Secondary, continued explanation of how to manage SSL device certificates and settings in Privacy options">
+      Manage HTTPS/SSL certificates on your device
+    </message>
+  </if>
   <message name="IDS_SETTINGS_MANAGE" desc="Text displayed on a button, which when clicked opens the Extensions subpage for managing an extension">
     Manage
   </message>
