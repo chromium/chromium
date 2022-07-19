@@ -499,7 +499,7 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
 }
 
 bool HTMLFencedFrameElement::SupportsFocus() const {
-  return frame_delegate_->SupportsFocus();
+  return frame_delegate_ && frame_delegate_->SupportsFocus();
 }
 
 PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(

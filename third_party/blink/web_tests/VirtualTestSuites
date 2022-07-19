@@ -1184,7 +1184,7 @@
       "wpt_internal/fenced_frame",
       "external/wpt/html/anonymous-iframe"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
+    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,Prerender2,NoncedPartitionedCookies", "--force-renderer-accessibility"]
   },
   {
     "prefix": "disable-custom-element-default-style",
