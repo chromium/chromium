@@ -23,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
-#include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -227,8 +226,7 @@ ReportingClient::ReportingClient()
                 CompressionInformation::COMPRESSION_SNAPPY,
                 base::BindRepeating(&ReportingClient::AsyncStartUploader),
                 std::move(storage_created_cb));
-          })),
-      build_cloud_policy_client_cb_(GetCloudPolicyClientCb()) {
+          })) {
 }
 
 ReportingClient::~ReportingClient() = default;
@@ -334,8 +332,7 @@ void ReportingClient::DeliverAsyncStartUploader(
                                         instance->storage()),
                     base::BindRepeating(
                         &StorageModuleInterface::UpdateEncryptionKey,
-                        instance->storage()),
-                    instance->build_cloud_policy_client_cb_);
+                        instance->storage()));
               } else {
                 std::move(start_uploader_cb)
                     .Run(Status(error::UNAVAILABLE, "Uploader not available"));
@@ -365,11 +362,9 @@ void ReportingClient::DeliverAsyncStartUploader(
 std::unique_ptr<EncryptedReportingUploadProvider>
 ReportingClient::GetDefaultUploadProvider(
     UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-    UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    GetCloudPolicyClientCallback build_cloud_policy_client_cb) {
+    UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   return std::make_unique<EncryptedReportingUploadProvider>(
-      report_successful_upload_cb, encryption_key_attached_cb,
-      build_cloud_policy_client_cb);
+      report_successful_upload_cb, encryption_key_attached_cb);
 }
 
 }  // namespace reporting

@@ -14,7 +14,6 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -29,7 +28,6 @@
 namespace reporting {
 
 using DmServerUploader = DmServerUploadService::DmServerUploader;
-using ::policy::CloudPolicyClient;
 
 namespace {
 // Thread-safe helper callback class: calls callback once |Decrement|
@@ -65,8 +63,7 @@ class CollectorCallback {
 };
 }  // namespace
 
-DmServerUploadService::RecordHandler::RecordHandler(CloudPolicyClient* client)
-    : client_(client) {}
+DmServerUploadService::RecordHandler::RecordHandler() = default;
 
 DmServerUploader::DmServerUploader(
     bool need_encryption_key,
@@ -186,23 +183,14 @@ Status DmServerUploader::IsRecordValid(
 }
 
 void DmServerUploadService::Create(
-    CloudPolicyClient* client,
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
-  if (client == nullptr) {
-    std::move(created_cb)
-        .Run(Status(error::INVALID_ARGUMENT, "client may not be nullptr."));
-    return;
-  }
-
-  auto uploader =
-      base::WrapUnique(new DmServerUploadService(std::move(client)));
+  auto uploader = base::WrapUnique(new DmServerUploadService());
   InitRecordHandler(std::move(uploader), std::move(created_cb));
 }
 
-DmServerUploadService::DmServerUploadService(CloudPolicyClient* client)
-    : client_(std::move(client)),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
+DmServerUploadService::DmServerUploadService()
+    : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
 DmServerUploadService::~DmServerUploadService() = default;
 
@@ -224,19 +212,7 @@ void DmServerUploadService::InitRecordHandler(
     std::unique_ptr<DmServerUploadService> uploader,
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
-  auto* const client = uploader->GetClient();
-  if (client == nullptr) {
-    std::move(created_cb)
-        .Run(Status(error::FAILED_PRECONDITION, "Client was null"));
-    return;
-  }
-
-  uploader->handler_ = std::make_unique<RecordHandlerImpl>(client);
+  uploader->handler_ = std::make_unique<RecordHandlerImpl>();
   std::move(created_cb).Run(std::move(uploader));
 }
-
-CloudPolicyClient* DmServerUploadService::GetClient() {
-  return client_;
-}
-
 }  // namespace reporting

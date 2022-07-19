@@ -6,7 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -18,25 +17,21 @@
 namespace reporting {
 
 // static
-void UploadClient::Create(
-    policy::CloudPolicyClient* cloud_policy_client,
-    CreatedCallback created_cb) {
+void UploadClient::Create(CreatedCallback created_cb) {
   auto upload_client = base::WrapUnique(new UploadClient());
-  DmServerUploadService::Create(
-      std::move(cloud_policy_client),
-      base::BindOnce(
-          [](std::unique_ptr<UploadClient> upload_client,
-             CreatedCallback created_cb,
-             StatusOr<std::unique_ptr<DmServerUploadService>> uploader) {
-            if (!uploader.ok()) {
-              std::move(created_cb).Run(uploader.status());
-              return;
-            }
-            upload_client->dm_server_upload_service_ =
-                std::move(uploader.ValueOrDie());
-            std::move(created_cb).Run(std::move(upload_client));
-          },
-          std::move(upload_client), std::move(created_cb)));
+  DmServerUploadService::Create(base::BindOnce(
+      [](std::unique_ptr<UploadClient> upload_client,
+         CreatedCallback created_cb,
+         StatusOr<std::unique_ptr<DmServerUploadService>> uploader) {
+        if (!uploader.ok()) {
+          std::move(created_cb).Run(uploader.status());
+          return;
+        }
+        upload_client->dm_server_upload_service_ =
+            std::move(uploader.ValueOrDie());
+        std::move(created_cb).Run(std::move(upload_client));
+      },
+      std::move(upload_client), std::move(created_cb)));
 }
 
 Status UploadClient::EnqueueUpload(

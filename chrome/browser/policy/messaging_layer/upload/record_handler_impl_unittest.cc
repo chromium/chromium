@@ -17,9 +17,10 @@
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -73,13 +74,9 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 class RecordHandlerImplTest : public ::testing::TestWithParam<
                                   ::testing::tuple</*need_encryption_key*/ bool,
                                                    /*force_confirm*/ bool>> {
- public:
-  RecordHandlerImplTest()
-      : client_(std::make_unique<policy::MockCloudPolicyClient>()) {}
-
  protected:
   void SetUp() override {
-    client_->SetDMToken(
+    mock_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     memory_resource_ = base::MakeRefCounted<MemoryResourceImpl>(
         4u * 1024LLu * 1024LLu);  // 4 MiB
@@ -95,7 +92,8 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
 
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  policy::MockCloudPolicyClient mock_client_;
+  ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
 
   scoped_refptr<ResourceInterface> memory_resource_;
 };
@@ -135,14 +133,15 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
       .sequence_information = test_records.second.back().sequence_information(),
       .force_confirm = force_confirm()};
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(mock_client_,
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(MakeUploadEncryptedReportAction(std::move(
           ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.cb());
@@ -165,11 +164,12 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(mock_client_,
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
-                     policy::CloudPolicyClient::ResponseCallback callback) {
+                     ::policy::CloudPolicyClient::ResponseCallback callback) {
             auto response = ResponseBuilder(std::move(request))
                                 .SetForceConfirm(force_confirm_by_server)
                                 .Build();
@@ -180,7 +180,7 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.cb());
@@ -196,7 +196,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
   const auto force_confirm_by_server = force_confirm();
 
-  EXPECT_CALL(*client_,
+  EXPECT_CALL(mock_client_,
               UploadEncryptedReport(
                   RequestValidityMatcherBuilder<>::CreateDataUpload()
                       .RemoveMatcher("sequence-information-record-matcher")
@@ -205,7 +205,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
-                     policy::CloudPolicyClient::ResponseCallback callback) {
+                     ::policy::CloudPolicyClient::ResponseCallback callback) {
             auto response = ResponseBuilder(std::move(request))
                                 .SetForceConfirm(force_confirm_by_server)
                                 .Build();
@@ -217,7 +217,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.cb());
@@ -237,12 +237,12 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   // The response should show an error and UploadEncryptedReport should not have
   // been even called, because UploadEncryptedReportingRequestBuilder::Build()
   // should fail in this situation.
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client_, UploadEncryptedReport(_, _, _)).Times(0);
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         encryption_key_attached_event.cb());
@@ -257,7 +257,8 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   auto test_records =
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(mock_client_,
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(MakeUploadEncryptedReportAction(
           std::move(ResponseBuilder().SetNull(true))));
 
@@ -270,7 +271,7 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
                         encryption_key_attached_callback);
@@ -296,11 +297,11 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   // Once for failure, and once for gap.
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(*client_,
+    EXPECT_CALL(mock_client_,
                 UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(MakeUploadEncryptedReportAction(
             std::move(ResponseBuilder().SetSuccess(false))));
-    EXPECT_CALL(*client_,
+    EXPECT_CALL(mock_client_,
                 UploadEncryptedReport(IsGapUploadRequestValid(), _, _))
         .WillOnce(MakeUploadEncryptedReportAction(std::move(
             ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
@@ -320,7 +321,7 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
                         encryption_key_attached_callback);
@@ -338,9 +339,10 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   auto test_records =
       BuildTestRecordsVector(kNumTestRecords, kGenerationId, memory_resource_);
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(mock_client_,
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<2>(
-          Invoke([](policy::CloudPolicyClient::ResponseCallback callback) {
+          Invoke([](::policy::CloudPolicyClient::ResponseCallback callback) {
             std::move(callback).Run(base::Value::Dict());
           })));
 
@@ -353,7 +355,7 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), response_event.cb(),
                         encryption_key_attached_callback);
@@ -375,12 +377,13 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
       .sequence_information = test_records.second.back().sequence_information(),
       .force_confirm = force_confirm()};
 
-  EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+  EXPECT_CALL(mock_client_,
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(MakeUploadEncryptedReportAction(std::move(
           ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
-  RecordHandlerImpl handler(client_.get());
+  RecordHandlerImpl handler;
   handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
                         std::move(test_records.first), responder_event.cb(),
                         base::DoNothing());

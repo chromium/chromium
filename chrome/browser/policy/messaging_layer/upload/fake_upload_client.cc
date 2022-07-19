@@ -11,7 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -78,17 +80,13 @@ StatusOr<SequenceInformation> SequenceInformationValueToProto(
 
 }  // namespace
 
-FakeUploadClient::FakeUploadClient(
-    policy::CloudPolicyClient* cloud_policy_client)
-    : cloud_policy_client_(cloud_policy_client) {}
+FakeUploadClient::FakeUploadClient() = default;
 
 FakeUploadClient::~FakeUploadClient() = default;
 
-void FakeUploadClient::Create(policy::CloudPolicyClient* cloud_policy_client,
-                              CreatedCallback created_cb) {
+void FakeUploadClient::Create(CreatedCallback created_cb) {
   std::move(created_cb)
-      .Run(base::WrapUnique<UploadClient>(
-          new FakeUploadClient(cloud_policy_client)));
+      .Run(base::WrapUnique<UploadClient>(new FakeUploadClient()));
 }
 
 Status FakeUploadClient::EnqueueUpload(
@@ -114,9 +112,9 @@ Status FakeUploadClient::EnqueueUpload(
       std::move(scoped_reservation), std::move(report_upload_success_cb),
       std::move(encryption_key_attached_cb));
 
-  cloud_policy_client_->UploadEncryptedReport(std::move(request_result.value()),
-                                              base::Value::Dict(),
-                                              std::move(response_cb));
+  ReportingServerConnector::UploadEncryptedReport(
+      std::move(request_result.value()), base::Value::Dict(),
+      std::move(response_cb));
   return Status::StatusOK();
 }
 
@@ -124,12 +122,12 @@ void FakeUploadClient::OnUploadComplete(
     ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    absl::optional<base::Value::Dict> response) {
-  if (!response.has_value()) {
+    StatusOr<base::Value::Dict> response) {
+  if (!response.ok()) {
     return;
   }
   const base::Value::Dict* last_success =
-      response->FindDict("lastSucceedUploadedRecord");
+      response.ValueOrDie().FindDict("lastSucceedUploadedRecord");
   if (last_success != nullptr) {
     const auto force_confirm_flag = last_success->FindBool("forceConfirm");
     bool force_confirm =
@@ -142,7 +140,7 @@ void FakeUploadClient::OnUploadComplete(
   }
 
   const base::Value::Dict* signed_encryption_key_record =
-      response->FindDict("encryptionSettings");
+      response.ValueOrDie().FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
         signed_encryption_key_record->FindString("publicKey");

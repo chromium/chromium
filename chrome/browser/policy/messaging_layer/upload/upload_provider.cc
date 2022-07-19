@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/status.h"
@@ -33,14 +32,13 @@ class EncryptedReportingUploadProvider::UploadHelper
   UploadHelper(
       UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
       UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      GetCloudPolicyClientCallback build_cloud_policy_client_cb,
       UploadClientBuilderCb upload_client_builder_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
   UploadHelper(const UploadHelper& other) = delete;
   UploadHelper& operator=(const UploadHelper& other) = delete;
 
   // Requests new cloud policy client (can be invoked on any thread)
-  void PostNewCloudPolicyClientRequest();
+  void PostNewUploadClientRequest();
 
   // Uploads encrypted records (can be invoked on any thread).
   void EnqueueUpload(bool need_encryption_key,
@@ -55,11 +53,8 @@ class EncryptedReportingUploadProvider::UploadHelper
   // Refcounted object can only have private or protected destructor.
   ~UploadHelper();
 
-  // Stages of cloud policy client and upload client creation,
-  // scheduled on a sequenced task runner.
-  void TryNewCloudPolicyClientRequest();
-  void OnCloudPolicyClientResult(
-      StatusOr<policy::CloudPolicyClient*> client_result);
+  // Stages of upload client creation, scheduled on a sequenced task runner.
+  void TryNewUploadClientRequest();
   void UpdateUploadClient(std::unique_ptr<UploadClient> client);
   void OnUploadClientResult(
       StatusOr<std::unique_ptr<UploadClient>> client_result);
@@ -73,8 +68,8 @@ class EncryptedReportingUploadProvider::UploadHelper
                              base::OnceCallback<void(Status)> enqueued_cb);
 
   // Sequence task runner and checker used during
-  // |PostNewCloudPolicyClientRequest| processing.
-  // It is also used to protect |upload_client_|.
+  // `PostNewUploadClientRequest` processing.
+  // It is also used to protect `upload_client_`.
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(sequenced_task_checker_);
 
@@ -83,8 +78,7 @@ class EncryptedReportingUploadProvider::UploadHelper
       report_successful_upload_cb_;
   const UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb_;
 
-  // Callbacks for cloud policy and upload client creation.
-  const GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
+  // Callback for upload client creation.
   UploadClientBuilderCb upload_client_builder_cb_;
 
   // Tracking of asynchronous stages.
@@ -121,14 +115,12 @@ class EncryptedReportingUploadProvider::UploadHelper
 EncryptedReportingUploadProvider::UploadHelper::UploadHelper(
     UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
     UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    GetCloudPolicyClientCallback build_cloud_policy_client_cb,
     UploadClientBuilderCb upload_client_builder_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : base::RefCountedDeleteOnSequence<UploadHelper>(sequenced_task_runner),
       sequenced_task_runner_(std::move(sequenced_task_runner)),
       report_successful_upload_cb_(report_successful_upload_cb),
       encryption_key_attached_cb_(encryption_key_attached_cb),
-      build_cloud_policy_client_cb_(build_cloud_policy_client_cb),
       upload_client_builder_cb_(std::move(upload_client_builder_cb)),
       backoff_entry_(GetBackoffEntry()) {
   DETACH_FROM_SEQUENCE(sequenced_task_checker_);
@@ -140,14 +132,14 @@ EncryptedReportingUploadProvider::UploadHelper::~UploadHelper() {
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::
-    PostNewCloudPolicyClientRequest() {
+    PostNewUploadClientRequest() {
   sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UploadHelper::TryNewCloudPolicyClientRequest,
+      FROM_HERE, base::BindOnce(&UploadHelper::TryNewUploadClientRequest,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::
-    TryNewCloudPolicyClientRequest() {
+    TryNewUploadClientRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (upload_client_ != nullptr) {
     return;
@@ -165,10 +157,11 @@ void EncryptedReportingUploadProvider::UploadHelper::
             if (!self) {
               return;  // Provider expired
             }
-            self->build_cloud_policy_client_cb_.Run(base::BindPostTask(
-                self->sequenced_task_runner_,
-                base::BindOnce(&UploadHelper::OnCloudPolicyClientResult,
-                               self->weak_ptr_factory_.GetWeakPtr())));
+            std::move(self->upload_client_builder_cb_)
+                .Run(base::BindPostTask(
+                    self->sequenced_task_runner_,
+                    base::BindRepeating(&UploadHelper::OnUploadClientResult,
+                                        self)));
           },
           weak_ptr_factory_.GetWeakPtr()),
       backoff_entry_->GetTimeUntilRelease());
@@ -177,31 +170,12 @@ void EncryptedReportingUploadProvider::UploadHelper::
   backoff_entry_->InformOfRequest(/*succeeded=*/false);
 }
 
-void EncryptedReportingUploadProvider::UploadHelper::OnCloudPolicyClientResult(
-    StatusOr<policy::CloudPolicyClient*> client_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
-  if (!client_result.ok()) {
-    upload_client_request_in_progress_ = false;
-    TryNewCloudPolicyClientRequest();
-    return;
-  }
-  std::move(upload_client_builder_cb_)
-      .Run(client_result.ValueOrDie(),
-           base::BindPostTask(
-               sequenced_task_runner_,
-               base::BindRepeating(&UploadHelper::OnUploadClientResult,
-                                   weak_ptr_factory_.GetWeakPtr())));
-}
-
 void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
     StatusOr<std::unique_ptr<UploadClient>> client_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (!client_result.ok()) {
     upload_client_request_in_progress_ = false;
-    sequenced_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&UploadHelper::PostNewCloudPolicyClientRequest,
-                       weak_ptr_factory_.GetWeakPtr()));
+    PostNewUploadClientRequest();
     return;
   }
   sequenced_task_runner_->PostTask(
@@ -289,16 +263,14 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
 EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
     UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
     UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    GetCloudPolicyClientCallback build_cloud_policy_client_cb,
     UploadClientBuilderCb upload_client_builder_cb)
     : helper_(base::MakeRefCounted<UploadHelper>(
           report_successful_upload_cb,
           encryption_key_attached_cb,
-          build_cloud_policy_client_cb,
           std::move(upload_client_builder_cb),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::TaskPriority::BEST_EFFORT, base::MayBlock()}))) {
-  helper_->PostNewCloudPolicyClientRequest();
+  helper_->PostNewUploadClientRequest();
 }
 
 EncryptedReportingUploadProvider::~EncryptedReportingUploadProvider() = default;

@@ -10,7 +10,6 @@
 
 #include "base/task/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
@@ -37,8 +36,7 @@ class UploadClient {
   using CreatedCallback =
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>;
 
-  static void Create(policy::CloudPolicyClient* cloud_policy_client,
-                     CreatedCallback created_cb);
+  static void Create(CreatedCallback created_cb);
 
   virtual ~UploadClient();
   UploadClient(const UploadClient& other) = delete;

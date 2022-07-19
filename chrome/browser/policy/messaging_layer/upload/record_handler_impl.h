@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
@@ -20,14 +19,13 @@
 
 namespace reporting {
 
-// |RecordHandlerImpl| handles |ReportRequests|, sending them to
-// the server using |CloudPolicyClient|. Since |CloudPolicyClient| will cancel
-// any in progress reports if a new report is added, |RecordHandlerImpl|
-// ensures that only one report is ever processed at one time by forming a
-// queue.
+// `RecordHandlerImpl` handles `ReportRequests`, sending them to
+// the server, cancelling any in progress reports if a new report is added.
+// For that reason `RecordHandlerImpl` ensures that only one report is ever
+// processed at one time by forming a queue.
 class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
  public:
-  explicit RecordHandlerImpl(policy::CloudPolicyClient* client);
+  RecordHandlerImpl();
   ~RecordHandlerImpl() override;
 
   // Base class RecordHandler method implementation.
@@ -40,7 +38,7 @@ class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
 
  private:
   // Helper |ReportUploader| class handles enqueuing events on the
-  // |report_queue_|, and uploading those events with the |client_|.
+  // |report_queue_|.
   class ReportUploader;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

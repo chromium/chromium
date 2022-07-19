@@ -5275,8 +5275,9 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/upload/upload_client_unittest.cc",
     "../browser/policy/messaging_layer/upload/upload_provider_unittest.cc",
     "../browser/policy/messaging_layer/util/dm_token_retriever_provider_unittest.cc",
-    "../browser/policy/messaging_layer/util/get_cloud_policy_client_unittest.cc",
     "../browser/policy/messaging_layer/util/report_queue_manual_test_context_unittest.cc",
+    "../browser/policy/messaging_layer/util/reporting_server_connector_test_util.cc",
+    "../browser/policy/messaging_layer/util/reporting_server_connector_test_util.h",
     "../browser/policy/messaging_layer/util/test_request_payload.cc",
     "../browser/policy/messaging_layer/util/test_request_payload.h",
     "../browser/policy/messaging_layer/util/test_response_payload.cc",
@@ -5455,6 +5456,12 @@ test("unit_tests") {
     # unit_tests than in base_unittests.
     "../../base/path_service_unittest.cc",
   ]
+
+  if (!is_android) {
+    # The test is disabled for Android. The respective functionality is currently not being used on
+    # Android. We should enable this test when Android becomes supported.
+    sources += [ "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc" ]
+  }
 
   if (enable_feed_v2) {
     sources += [

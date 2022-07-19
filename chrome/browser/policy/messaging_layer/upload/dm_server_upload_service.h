@@ -13,7 +13,6 @@
 #include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_interface.h"
@@ -84,11 +83,7 @@ class DmServerUploadService {
             encryption_key_attached_cb) = 0;
 
    protected:
-    explicit RecordHandler(policy::CloudPolicyClient* client);
-    policy::CloudPolicyClient* GetClient() const { return client_; }
-
-   private:
-    const raw_ptr<policy::CloudPolicyClient> client_;
+    RecordHandler();
   };
 
   // Context runner for handling the upload of events passed to the
@@ -154,7 +149,6 @@ class DmServerUploadService {
   // |encryption_key_attached_cb| if called would update the encryption key with
   // the one received from the server.
   static void Create(
-      policy::CloudPolicyClient* client,
       base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
           created_cb);
   ~DmServerUploadService();
@@ -167,16 +161,13 @@ class DmServerUploadService {
       EncryptionKeyAttachedCallback encryption_key_attached_cb);
 
  private:
-  explicit DmServerUploadService(policy::CloudPolicyClient* client);
+  DmServerUploadService();
 
   static void InitRecordHandler(
       std::unique_ptr<DmServerUploadService> uploader,
       base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
           created_cb);
 
-  policy::CloudPolicyClient* GetClient();
-
-  raw_ptr<policy::CloudPolicyClient> client_;
   std::unique_ptr<RecordHandler> handler_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

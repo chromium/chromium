@@ -21,7 +21,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/mock_dm_token_retriever.h"
@@ -58,6 +61,9 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
+
+using ::policy::CloudPolicyClient;
+using ::policy::MockCloudPolicyClient;
 
 namespace reporting {
 namespace {
@@ -108,14 +114,12 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     }
 
     // Provide a mock cloud policy client.
-    client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken(kDMToken);
+    mock_client_.SetDMToken(kDMToken);
     test_reporting_ = std::make_unique<ReportingClient::TestEnvironment>(
         base::FilePath(location_.GetPath()),
         base::StringPiece(
             reinterpret_cast<const char*>(signature_verification_public_key_),
-            kKeySize),
-        client_.get());
+            kKeySize));
 
     // Use MockDMTokenRetriever and configure it to always return the test DM
     // token by default
@@ -224,7 +228,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
   auto GetEncryptionKeyInvocation() {
     return [this](base::Value::Dict payload,
-                  policy::CloudPolicyClient::ResponseCallback done_cb) {
+                  CloudPolicyClient::ResponseCallback done_cb) {
       absl::optional<bool> const attach_encryption_settings =
           payload.FindBool("attachEncryptionSettings");
       ASSERT_TRUE(attach_encryption_settings.has_value());
@@ -250,7 +254,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
   auto GetVerifyDataInvocation() {
     return [this](base::Value::Dict payload,
-                  policy::CloudPolicyClient::ResponseCallback done_cb) {
+                  CloudPolicyClient::ResponseCallback done_cb) {
       base::Value::List* const records = payload.FindList("encryptedRecord");
       ASSERT_THAT(records, Ne(nullptr));
       ASSERT_THAT(*records, SizeIs(1));
@@ -316,7 +320,8 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  MockCloudPolicyClient mock_client_;
+  ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
   raw_ptr<ReportQueueConfiguration> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
@@ -394,8 +399,9 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
     }
 
     // Uploader is available, let it set the key.
-    EXPECT_CALL(*client_, UploadEncryptedReport(
-                              IsEncryptionKeyRequestUploadRequestValid(), _, _))
+    EXPECT_CALL(
+        mock_client_,
+        UploadEncryptedReport(IsEncryptionKeyRequestUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
         .RetiresOnSaturation();
   }
@@ -408,7 +414,7 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
 
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
-    EXPECT_CALL(*client_,
+    EXPECT_CALL(mock_client_,
                 UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }
@@ -444,15 +450,15 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
     // Note: there does not seem to be another way to define the expectations
     // A+B for encrypted case and just B for non-encrypted.
     if (is_encryption_enabled()) {
-      EXPECT_CALL(*client_,
+      EXPECT_CALL(mock_client_,
                   UploadEncryptedReport(
                       IsEncryptionKeyRequestUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())));
-      EXPECT_CALL(*client_,
+      EXPECT_CALL(mock_client_,
                   UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
     } else {
-      EXPECT_CALL(*client_,
+      EXPECT_CALL(mock_client_,
                   UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
     }

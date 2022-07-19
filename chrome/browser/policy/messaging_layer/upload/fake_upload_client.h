@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
 namespace reporting {
@@ -17,8 +18,7 @@ class FakeUploadClient : public UploadClient {
  public:
   ~FakeUploadClient() override;
 
-  static void Create(policy::CloudPolicyClient* cloud_policy_client,
-                     CreatedCallback created_cb);
+  static void Create(CreatedCallback created_cb);
 
   Status EnqueueUpload(
       bool need_encryption_key,
@@ -28,15 +28,13 @@ class FakeUploadClient : public UploadClient {
       EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
 
  private:
-  explicit FakeUploadClient(policy::CloudPolicyClient* cloud_policy_client);
+  FakeUploadClient();
 
   void OnUploadComplete(
       ScopedReservation scoped_reservation,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      absl::optional<base::Value::Dict> response);
-
-  const raw_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+      StatusOr<base::Value::Dict> response);
 };
 
 }  // namespace reporting

@@ -17,6 +17,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -207,8 +209,9 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   const SequenceInformation last_record_seq_info =
       records.back().sequence_information();
 
+  ReportingServerConnector::TestEnvironment test_env(client.get());
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(client.get(), e.cb());
+  UploadClient::Create(e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 

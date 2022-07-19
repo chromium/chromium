@@ -37,16 +37,6 @@ using ::testing::WithArgs;
 namespace reporting {
 namespace {
 
-// Ensures that profile cannot be null.
-TEST(DmServerUploadServiceTest, DeniesNullptrProfile) {
-  content::BrowserTaskEnvironment task_envrionment;
-  test::TestEvent<StatusOr<std::unique_ptr<DmServerUploadService>>> e;
-  DmServerUploadService::Create(/*client=*/nullptr, e.cb());
-  StatusOr<std::unique_ptr<DmServerUploadService>> result = e.result();
-  EXPECT_THAT(result.status(),
-              Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
-}
-
 EncryptedRecord DummyRecord() {
   EncryptedRecord record;
   record.set_encrypted_wrapped_record("TEST_DATA");
@@ -55,7 +45,7 @@ EncryptedRecord DummyRecord() {
 
 class TestRecordHandler : public DmServerUploadService::RecordHandler {
  public:
-  TestRecordHandler() : RecordHandler(/*client=*/nullptr) {}
+  TestRecordHandler() = default;
   ~TestRecordHandler() override = default;
 
   void HandleRecords(bool need_encryption_key,
