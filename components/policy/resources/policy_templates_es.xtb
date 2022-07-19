@@ -5535,7 +5535,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       * Complementa la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> y las configuraciones de impresora individuales de los usuarios
 
       Si no se establece, no habrá impresoras de dispositivo y se ignorarán las otras políticas <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />.</translation>
-<translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imagen para el proveedor de búsquedas predeterminado</translation>
+<translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imágenes para el proveedor de búsquedas predeterminado</translation>
 <translation id="6953102253399571439">Habilitar de manera predeterminada la impresión con PIN</translation>
 <translation id="6956272732789158625">No permitir que los sitios utilicen la generación de claves</translation>
 <translation id="6961602002757991199">Si se define esta política como una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios web de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Estas políticas evitarán que <ph name="PRODUCT_NAME" /> y el navegador alternativo se abran entre sí.
