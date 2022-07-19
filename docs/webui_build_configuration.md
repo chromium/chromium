@@ -442,10 +442,13 @@ ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
 
-optimize_webui() related params:
-optimize: Specifies whether optimize_webui() will be used, defaults to false.
-          All other |optimize_*| parameters below must be specified if
-          |optimize| is true.
+HTML/CSS/JS optimization related params:
+optimize: Specifies whether any optimization steps will be used, defaults to
+          false. When true, html_to_wrapper() and css_to_wrapper() will be
+          invoked with the |minify| flag on, to minify HTML/CSS code.
+          optimize_webui() will be invoked to bundle+minify JS code (using
+          Rollup and Terser). All other |optimize_*| parameters below must be
+          specified if |optimize| is true.
 optimize_webui_excludes: See |excludes| in optimize_webui().
 optimize_webui_host: See |host| in optimize_webui().
 optimize_webui_in_files: See |in_files| in optimize_webui().
