@@ -18,6 +18,7 @@
 
 #include "base/check_op.h"
 #include "base/files/safe_base_name.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
