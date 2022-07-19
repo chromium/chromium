@@ -114,7 +114,7 @@
         <template is="dom-if"
             if="[[isPhoneHubCameraRollSetupRequired(pageContentData)]]"
             restamp>
-          <cr-button on-click="handlePhoneHubSetupClick_"
+          <cr-button on-click="handleCameraRollSetupClicked_"
               slot="feature-controller"
               disabled="[[isPhoneHubDisabled_(pageContentData)]]">
             $i18n{multideviceSetupButton}
@@ -135,7 +135,7 @@
         <template is="dom-if"
             if="[[isPhoneHubNotificationsSetupRequired(pageContentData)]]"
             restamp>
-          <cr-button on-click="handlePhoneHubSetupClick_"
+          <cr-button on-click="handleNotificationSetupClicked_"
               slot="feature-controller"
               disabled="[[isPhoneHubDisabled_(pageContentData)]]">
             $i18n{multideviceSetupButton}
@@ -156,7 +156,7 @@
         <template is="dom-if"
             if="[[isPhoneHubAppsSetupRequired(pageContentData)]]"
             restamp>
-          <cr-button on-click="handlePhoneHubSetupClick_"
+          <cr-button on-click="handleMessagingAppSetupClicked_"
               slot="feature-controller"
               disabled="[[isPhoneHubDisabled_(pageContentData)]]">
             $i18n{multideviceSetupButton}
