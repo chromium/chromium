@@ -145,13 +145,35 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
     return;
 
   // Step 4-9
-  [[maybe_unused]] LayoutUnit position =
-      ComputeInitialPositionAdjustment(max_dimension);
+  LayoutUnit position = ComputeInitialPositionAdjustment(max_dimension);
+
+  // 10. Horizontal: Move all the boxes in boxes down by the distance given
+  // by position.
+  //     Vertical: Move all the boxes in boxes right ...
+  LayoutUnit& adjusted_position = cue_.StartAdjustment(
+      cue_.AdjustedPosition(full_dimension, PassKey()) + position);
+
+  // 11. Remember the position of all the boxes in boxes as their specified
+  // position.
+  [[maybe_unused]] const LayoutUnit specified_position = adjusted_position;
+
+  // 12. Let title area be a box that covers all of the video’s rendering area.
+  gfx::Rect title_area = ToEnclosingRect(container.PhysicalBorderBoxRect());
+  // https://www.w3.org/TR/2017/WD-webvtt1-20170808/#apply-webvtt-cue-settings
+  // 11.14. Horizontal: Let title area be a box that covers all of the video’s
+  // rendering area except for a height of margin at the top of the rendering
+  // area and a height of margin at the bottom of the rendering area.
+  //        Vertical: Let title area be a box that covers all of the video’s
+  // rendering area except for a width of margin at the left ...
+  // TODO(crbug.com/1012242): Remove this. The latest specification does not
+  // have margins.
+  if (is_horizontal) {
+    title_area.Inset(gfx::Insets::VH(margin_.ToInt(), 0));
+  } else {
+    title_area.Inset(gfx::Insets::VH(0, margin_.ToInt()));
+  }
 
   // TODO(crbug.com/1335309): Implement this.
-
-  // This function will make cue_.adjusted_position_ a value other than
-  // LayoutUnit::Min().
 }
 
 void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {

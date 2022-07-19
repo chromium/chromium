@@ -179,6 +179,12 @@ void VTTCueBox::RemovedFrom(ContainerNode& insertion_point) {
   box_size_observer_.Clear();
 }
 
+LayoutUnit& VTTCueBox::StartAdjustment(LayoutUnit new_value) {
+  adjusted_position_ = new_value;
+  DCHECK(IsAdjusted()) << new_value;
+  return adjusted_position_;
+}
+
 void VTTCueBox::RevertAdjustment() {
   adjusted_position_ = LayoutUnit::Min();
 }
