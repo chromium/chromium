@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_desktop.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

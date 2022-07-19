@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_DESKTOP_H_
-#define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_DESKTOP_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_DESKTOP_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
 
 class Browser;
@@ -61,4 +61,4 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   raw_ptr<Browser> browser_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_DESKTOP_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_DESKTOP_H_

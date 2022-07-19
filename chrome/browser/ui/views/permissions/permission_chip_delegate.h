@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_DELEGATE_H_
-#define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_CHIP_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_CHIP_DELEGATE_H_
 
 #include <string>
 #include "components/permissions/permission_prompt.h"
@@ -39,4 +39,4 @@ class PermissionChipDelegate {
   GetPermissionPromptDelegate() = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_CHIP_DELEGATE_H_

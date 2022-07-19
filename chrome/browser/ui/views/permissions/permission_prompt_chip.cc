@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 

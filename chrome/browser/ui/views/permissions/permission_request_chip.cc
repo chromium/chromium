@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_request_chip.h"
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"

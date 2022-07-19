@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_quiet_icon.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_quiet_icon.h"
 
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "components/permissions/permission_ui_selector.h"

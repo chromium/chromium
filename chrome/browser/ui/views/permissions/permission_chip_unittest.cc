@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_quiet_chip.h"
-#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_quiet_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_request_chip.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/ax_event_counter.h"

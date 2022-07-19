@@ -5,12 +5,11 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 
 #include <memory>
-
 #include "base/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_desktop.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "components/permissions/permission_request.h"
 #include "ui/views/widget/widget.h"
 

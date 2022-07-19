@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/permission_quiet_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_quiet_chip.h"
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_request.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/events/event.h"

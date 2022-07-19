@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
-#define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_CHIP_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_CHIP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip_delegate.h"
+#include "chrome/browser/ui/views/permissions/permission_chip_delegate.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -136,4 +136,4 @@ class PermissionChip : public views::AccessiblePaneView,
   base::WeakPtrFactory<PermissionChip> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_CHIP_H_

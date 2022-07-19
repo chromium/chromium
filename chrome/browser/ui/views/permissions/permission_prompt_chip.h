@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_CHIP_H_
-#define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_CHIP_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_H_
 
-#include "chrome/browser/ui/views/permission_bubble/permission_prompt_desktop.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 
 class Browser;
 
@@ -33,4 +33,4 @@ class PermissionPromptChip : public PermissionPromptDesktop {
   void FinalizeChip();
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_CHIP_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_H_
