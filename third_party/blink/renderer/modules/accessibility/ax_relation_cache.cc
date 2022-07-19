@@ -425,7 +425,6 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
       } else if (child) {
         // Invalid owns relation: repair the parent that was set above.
         object_cache_->RestoreParentOrPrune(child);
-        DCHECK_NE(child->CachedParentObject(), owner);
       }
     }
   }
