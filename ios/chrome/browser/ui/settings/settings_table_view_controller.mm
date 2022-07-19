@@ -911,13 +911,28 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           ? localeConfig->GetLocaleForCode(_voiceLocaleCode.GetValue())
           : localeConfig->GetDefaultLocale();
   NSString* languageName = base::SysUTF16ToNSString(locale.display_name);
-  _voiceSearchDetailItem =
-      [self detailItemWithType:SettingsItemTypeVoiceSearch
-                             text:l10n_util::GetNSString(
-                                      IDS_IOS_VOICE_SEARCH_SETTING_TITLE)
-                       detailText:languageName
-                    iconImageName:kSettingsVoiceSearchImageName
-          accessibilityIdentifier:kSettingsVoiceSearchCellId];
+
+  if (UseSymbols()) {
+    _voiceSearchDetailItem =
+        [self detailItemWithType:SettingsItemTypeVoiceSearch
+                               text:l10n_util::GetNSString(
+                                        IDS_IOS_VOICE_SEARCH_SETTING_TITLE)
+                         detailText:languageName
+                         symbolView:ElevatedTableViewSymbolWithBackground(
+                                        DefaultSettingsRootSymbol(
+                                            kMicrophoneSymbol),
+                                        [UIColor colorNamed:kGreen500Color])
+            accessibilityIdentifier:kSettingsVoiceSearchCellId];
+  } else {
+    _voiceSearchDetailItem =
+        [self detailItemWithType:SettingsItemTypeVoiceSearch
+                               text:l10n_util::GetNSString(
+                                        IDS_IOS_VOICE_SEARCH_SETTING_TITLE)
+                         detailText:languageName
+                      iconImageName:kSettingsVoiceSearchImageName
+            accessibilityIdentifier:kSettingsVoiceSearchCellId];
+  }
+
   return _voiceSearchDetailItem;
 }
 
