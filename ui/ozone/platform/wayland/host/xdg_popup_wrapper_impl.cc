@@ -184,6 +184,10 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
               ZAURA_POPUP_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION) {
         zaura_popup_surface_submission_in_pixel_coordinates(aura_popup_.get());
       }
+      if (version >= ZAURA_POPUP_SET_MENU_SINCE_VERSION &&
+          wayland_window_->type() == PlatformWindowType::kMenu) {
+        zaura_popup_set_menu(aura_popup_.get());
+      }
     }
   }
 

@@ -26,7 +26,7 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 35;
+constexpr uint32_t kZAuraShellVersion = 37;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -150,6 +150,7 @@ class AuraPopup {
 
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
   void SetDecoration(SurfaceFrameType type);
+  void SetMenu();
 
  private:
   ShellSurfaceBase* shell_surface_;

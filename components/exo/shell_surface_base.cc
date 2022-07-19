@@ -704,6 +704,10 @@ void ShellSurfaceBase::SetCanMinimize(bool can_minimize) {
   WidgetDelegate::SetCanMinimize(!parent_ && can_minimize_);
 }
 
+void ShellSurfaceBase::SetMenu() {
+  is_menu_ = true;
+}
+
 void ShellSurfaceBase::DisableMovement() {
   movement_disabled_ = true;
   SetCanResize(false);
@@ -1188,7 +1192,7 @@ bool ShellSurfaceBase::IsDragged() const {
 
   ash::WindowState* window_state =
       ash::WindowState::Get(widget_->GetNativeWindow());
-  return window_state->is_dragged();
+  return window_state ? window_state->is_dragged() : false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1232,10 +1236,11 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   views::Widget::InitParams params;
-  params.type = emulate_x11_override_redirect
+  params.type = (emulate_x11_override_redirect || is_menu_)
                     ? views::Widget::InitParams::TYPE_MENU
                     : (is_popup_ ? views::Widget::InitParams::TYPE_POPUP
                                  : views::Widget::InitParams::TYPE_WINDOW);
+
   params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.delegate = this;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
@@ -1342,8 +1347,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
 
   // Start tracking changes to window bounds and window state.
   window->AddObserver(this);
-  ash::WindowState* window_state = ash::WindowState::Get(window);
-  InitializeWindowState(window_state);
+  // `window_state` can be null when the window type is menu.
+  if (!is_menu_)
+    InitializeWindowState(ash::WindowState::Get(window));
 
   SetShellUseImmersiveForFullscreen(window, immersive_implied_by_fullscreen_);
 
@@ -1385,7 +1391,7 @@ ShellSurfaceBase::OverlayParams::~OverlayParams() = default;
 bool ShellSurfaceBase::IsResizing() const {
   ash::WindowState* window_state =
       ash::WindowState::Get(widget_->GetNativeWindow());
-  if (!window_state->is_dragged())
+  if (!window_state || !window_state->is_dragged())
     return false;
   return window_state->drag_details() &&
          (window_state->drag_details()->bounds_change &
@@ -1412,7 +1418,7 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
   aura::Window* window = widget_->GetNativeWindow();
   ash::WindowState* window_state = ash::WindowState::Get(window);
   // Return early if the shell is currently managing the bounds of the widget.
-  if (!window_state->allow_set_bounds_direct()) {
+  if (window_state && !window_state->allow_set_bounds_direct()) {
     // 1) When a window is either maximized/fullscreen/pinned.
     if (window_state->IsMaximizedOrFullscreenOrPinned())
       return;
@@ -1510,11 +1516,13 @@ void ShellSurfaceBase::UpdateCornerRadius() {
       ash::WindowState::Get(widget_->GetNativeWindow());
   // The host window's transform scales by |1/GetScale()| but we do not want the
   // rounded corners scaled that way. So we multiply the radius by |GetScale()|.
-  ash::SetCornerRadius(
-      window_state->window(), host_window()->layer(),
-      window_state->IsPip()
-          ? base::ClampRound(GetScale() * ash::kPipRoundedCornerRadius)
-          : 0);
+  if (window_state) {
+    ash::SetCornerRadius(
+        window_state->window(), host_window()->layer(),
+        window_state->IsPip()
+            ? base::ClampRound(GetScale() * ash::kPipRoundedCornerRadius)
+            : 0);
+  }
 }
 
 void ShellSurfaceBase::UpdateFrameType() {
@@ -1584,7 +1592,7 @@ ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget) {
   // ShellSurfaces always use immersive mode.
   window->SetProperty(chromeos::kImmersiveIsActive, true);
   ash::WindowState* window_state = ash::WindowState::Get(window);
-  if (!frame_enabled() && !window_state->HasDelegate()) {
+  if (!frame_enabled() && window_state && !window_state->HasDelegate()) {
     window_state->SetDelegate(std::make_unique<CustomWindowStateDelegate>());
   }
   auto frame_view =
@@ -1728,7 +1736,7 @@ void ShellSurfaceBase::CommitWidget() {
 
     // TODO(crbug.com/1261321): correct the initial origin once lacros can
     // communicate it instead of centering.
-    if (window_state->IsMaximizedOrFullscreenOrPinned()) {
+    if (window_state && window_state->IsMaximizedOrFullscreenOrPinned()) {
       gfx::Size current_content_size = CalculatePreferredSize();
       gfx::Rect restore_bounds = display::Screen::GetScreen()
                                      ->GetDisplayNearestWindow(window)

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="36">
+  <interface name="zaura_shell" version="37">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -809,7 +809,7 @@
     </enum>
   </interface>
 
-  <interface name="zaura_popup" version="35">
+  <interface name="zaura_popup" version="37">
     <description summary="aura shell interface to the popup shell">
       An interface to the popup shell, which allows the
       client to access shell specific functionality.
@@ -841,5 +841,11 @@
       <entry name="normal" value="1" summary="caption with shadow"/>
       <entry name="shadow" value="2" summary="shadow only"/>
     </enum>
+
+    <request name="set_menu" since="37">
+      <description summary="set popup type to menu">
+        Set popup type to menu
+      </description>
+    </request>
   </interface>
 </protocol>

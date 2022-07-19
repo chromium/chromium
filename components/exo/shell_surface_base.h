@@ -143,6 +143,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
   void SetBoundsForShadows(const absl::optional<gfx::Rect>& bounds);
 
+  // Make the shell surface menu type.
+  void SetMenu();
+
   // Prevents shell surface from being moved.
   void DisableMovement();
 
@@ -390,6 +393,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool shadow_bounds_changed_ = false;
   SurfaceFrameType frame_type_ = SurfaceFrameType::NONE;
   bool is_popup_ = false;
+  bool is_menu_ = false;
   bool has_grab_ = false;
   bool server_side_resize_ = false;
   bool needs_layout_on_show_ = false;

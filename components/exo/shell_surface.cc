@@ -124,8 +124,10 @@ ShellSurface::~ShellSurface() {
   // Client is gone by now, so don't call callback.
   configure_callback_.Reset();
   origin_change_callback_.Reset();
-  if (widget_)
-    ash::WindowState::Get(widget_->GetNativeWindow())->RemoveObserver(this);
+  ash::WindowState* window_state =
+      widget_ ? ash::WindowState::Get(widget_->GetNativeWindow()) : nullptr;
+  if (window_state)
+    window_state->RemoveObserver(this);
 
   for (auto& observer : observers_)
     observer.OnShellSurfaceDestroyed();
