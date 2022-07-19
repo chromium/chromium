@@ -84,10 +84,9 @@ std::string BubbleActionSuffix(
 ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
     views::View* anchor,
     ShelfAlignment alignment,
-    SkColor background_color,
     base::OnceClosure on_confirm_callback,
     base::OnceClosure on_cancel_callback)
-    : ShelfBubble(anchor, alignment, background_color),
+    : ShelfBubble(anchor, alignment),
       bubble_opened_timestamp_(base::TimeTicks::Now()) {
   DCHECK(on_confirm_callback);
   DCHECK(on_cancel_callback);

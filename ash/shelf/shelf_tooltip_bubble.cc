@@ -30,9 +30,8 @@ constexpr int kTooltipLeftRightMargin = 8;
 
 ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
                                        ShelfAlignment alignment,
-                                       SkColor background_color,
                                        const std::u16string& text)
-    : ShelfBubble(anchor, alignment, background_color) {
+    : ShelfBubble(anchor, alignment) {
   set_margins(
       gfx::Insets::VH(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
   set_close_on_deactivate(false);

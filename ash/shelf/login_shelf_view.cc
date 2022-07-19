@@ -471,7 +471,6 @@ void LoginShelfView::RequestShutdown() {
     // dismissed or its buttons were presses.
     test_shutdown_confirmation_bubble_ = new ShelfShutdownConfirmationBubble(
         GetViewByID(kShutdown), shelf->alignment(),
-        shelf->shelf_widget()->GetShelfBackgroundColor(),
         base::BindOnce(&LoginShelfView::OnRequestShutdownConfirmed,
                        weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&LoginShelfView::OnRequestShutdownCancelled,

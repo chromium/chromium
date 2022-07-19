@@ -45,7 +45,6 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
 
   ShelfShutdownConfirmationBubble(views::View* anchor,
                                   ShelfAlignment alignment,
-                                  SkColor background_color,
                                   base::OnceClosure on_confirm_callback,
                                   base::OnceClosure on_cancel_callback);
 

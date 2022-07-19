@@ -36,9 +36,8 @@ ShelfTooltipPreviewBubble::ShelfTooltipPreviewBubble(
     views::View* anchor,
     const std::vector<aura::Window*>& windows,
     ShelfTooltipManager* manager,
-    ShelfAlignment alignment,
-    SkColor background_color)
-    : ShelfBubble(anchor, alignment, background_color), manager_(manager) {
+    ShelfAlignment alignment)
+    : ShelfBubble(anchor, alignment), manager_(manager) {
   set_border_radius(kPreviewBubbleBorderRadius);
   SetCanActivate(false);
   set_close_on_deactivate(false);

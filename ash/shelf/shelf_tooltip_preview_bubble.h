@@ -26,8 +26,7 @@ class ASH_EXPORT ShelfTooltipPreviewBubble : public ShelfBubble,
   ShelfTooltipPreviewBubble(views::View* anchor,
                             const std::vector<aura::Window*>& windows,
                             ShelfTooltipManager* manager,
-                            ShelfAlignment alignment,
-                            SkColor background_color);
+                            ShelfAlignment alignment);
 
   ShelfTooltipPreviewBubble(const ShelfTooltipPreviewBubble&) = delete;
   ShelfTooltipPreviewBubble& operator=(const ShelfTooltipPreviewBubble&) =

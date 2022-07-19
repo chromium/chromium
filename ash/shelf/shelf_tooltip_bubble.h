@@ -20,7 +20,6 @@ class ASH_EXPORT ShelfTooltipBubble : public ShelfBubble {
  public:
   ShelfTooltipBubble(views::View* anchor,
                      ShelfAlignment alignment,
-                     SkColor background_color,
                      const std::u16string& text);
 
   ShelfTooltipBubble(const ShelfTooltipBubble&) = delete;
