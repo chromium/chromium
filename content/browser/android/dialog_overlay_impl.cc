@@ -128,8 +128,7 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env,
   // changes only.
   if (auto* window = web_contents()->GetNativeView()->GetWindowAndroid()) {
     RegisterWindowObserverIfNeeded(window);
-    ScopedJavaLocalRef<jobject> token = window->GetWindowToken();
-    Java_DialogOverlayImpl_onWindowToken(env, obj, token);
+    Java_DialogOverlayImpl_onWindowAndroid(env, obj, window->GetJavaObject());
   }
 
   // Pass up a reference to the container view so we can observe its location.
@@ -243,15 +242,13 @@ void DialogOverlayImpl::OnAttachedToWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
 
-  ScopedJavaLocalRef<jobject> token;
-
-  if (auto* window = web_contents()->GetNativeView()->GetWindowAndroid()) {
+  auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
+  if (window)
     RegisterWindowObserverIfNeeded(window);
-    token = window->GetWindowToken();
-  }
+
   ScopedJavaLocalRef<jobject> obj = obj_.get(env);
   if (!obj.is_null())
-    Java_DialogOverlayImpl_onWindowToken(env, obj, token);
+    Java_DialogOverlayImpl_onWindowAndroid(env, obj, window->GetJavaObject());
 
   StartObservingContainerView();
 }
@@ -260,7 +257,7 @@ void DialogOverlayImpl::OnDetachedFromWindow() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = obj_.get(env);
   if (!obj.is_null())
-    Java_DialogOverlayImpl_onWindowToken(env, obj, nullptr);
+    Java_DialogOverlayImpl_onWindowAndroid(env, obj, nullptr);
   Stop();
 }
 

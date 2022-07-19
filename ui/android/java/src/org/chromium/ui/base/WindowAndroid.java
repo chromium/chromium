@@ -719,7 +719,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     // result returning value.
     private Window getWindow() {
         Activity activity = ContextUtils.activityFromContext(mContextRef.get());
-        if (activity == null) return null;
+        if (activity == null || activity.isFinishing()) return null;
         return activity.getWindow();
     }
 
@@ -843,8 +843,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     /**
      * Return the current window token, or null.
      */
-    @CalledByNative
-    protected IBinder getWindowToken() {
+    public IBinder getWindowToken() {
         Window window = getWindow();
         if (window == null) return null;
         View decorView = window.peekDecorView();

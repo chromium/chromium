@@ -107,9 +107,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   static std::unique_ptr<ScopedWindowAndroidForTesting> CreateForTesting();
 
-  // Return the window token for this window, if one exists.
-  base::android::ScopedJavaLocalRef<jobject> GetWindowToken();
-
   // This should return the same Display as Screen::GetDisplayNearestWindow
   // except the color space depends on the status of this particular window
   // rather than the display itself.

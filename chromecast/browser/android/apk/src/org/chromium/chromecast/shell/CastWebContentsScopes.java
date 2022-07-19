@@ -51,7 +51,7 @@ class CastWebContentsScopes {
         layout.setBackgroundColor(backgroundColor);
         return onLayoutInternal(context, layout, () -> new WindowAndroid(context) {
             @Override
-            protected IBinder getWindowToken() {
+            public IBinder getWindowToken() {
                 return windowTokenProvider.provideWindowToken();
             }
         }, backgroundColor);
