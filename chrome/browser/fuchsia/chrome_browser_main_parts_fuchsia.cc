@@ -32,6 +32,7 @@
 #include "chrome/browser/fuchsia/element_manager_impl.h"
 #include "chrome/browser/fuchsia/switches.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -656,11 +657,19 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
       element_manager_ = std::make_unique<ElementManagerImpl>(
           base::ComponentContextForProcess()->outgoing().get(),
           base::BindRepeating(&NotifyNewBrowserWindow));
+      use_graphical_presenter_ =
+          std::make_unique<UseGraphicalPresenter>(element_manager_.get());
+
+      // Ensure that the browser process remains live until the first browser
+      // window is opened by an ElementManager request. The browser will then
+      // terminate itself as soon as the last browser window is closed, or it
+      // is explicitly terminated by the Component Framework (see below).
+      // TODO(crbug.com/1314718): Integrate with the Framework to coordinate
+      // teardown, to avoid risk of in-flight requests being dropped.
       keep_alive_ = std::make_unique<ScopedKeepAlive>(
           KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
           KeepAliveRestartOption::ENABLED);
-      use_graphical_presenter_ =
-          std::make_unique<UseGraphicalPresenter>(element_manager_.get());
+      BrowserList::AddObserver(this);
     } else {
       // Register the ViewProvider API.
       view_provider_ = std::make_unique<ViewProviderRouter>(
@@ -706,4 +715,11 @@ void ChromeBrowserMainPartsFuchsia::PostMainMessageLoopRun() {
   view_provider_.reset();
 
   ChromeBrowserMainParts::PostMainMessageLoopRun();
+}
+
+void ChromeBrowserMainPartsFuchsia::OnBrowserAdded(Browser* browser) {
+  BrowserList::RemoveObserver(this);
+  // TODO(crbug.com/1314718): Integrate with the Component Framework to tear
+  // this down only when safe to terminate.
+  keep_alive_ = nullptr;
 }

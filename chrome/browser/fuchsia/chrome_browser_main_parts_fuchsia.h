@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 
 namespace base {
 class ProcessLifecycle;
@@ -16,7 +17,8 @@ class ProcessLifecycle;
 class ScopedKeepAlive;
 class ElementManagerImpl;
 
-class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
+class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts,
+                                      public BrowserListObserver {
  public:
   ChromeBrowserMainPartsFuchsia(bool is_integration_test,
                                 StartupData* startup_data);
@@ -37,6 +39,9 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
  private:
   class UseGraphicalPresenter;
   class ViewProviderRouter;
+
+  // BrowserListObserver implementation.
+  void OnBrowserAdded(Browser* browser) override;
 
   std::unique_ptr<base::ProcessLifecycle> lifecycle_;
 
