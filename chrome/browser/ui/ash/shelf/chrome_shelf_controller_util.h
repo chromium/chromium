@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 
 class Browser;
 
@@ -51,7 +51,7 @@ void UnpinAppWithIDFromShelf(const std::string& app_id);
 // Returns whether the app with `app_id` has been pinned to the shelf.
 bool IsAppWithIDPinnedToShelf(const std::string& app_id);
 
-apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
+apps::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source);
 
 // Checks if |BrowserAppShelfController| and |BrowserAppShelfItemController| can
