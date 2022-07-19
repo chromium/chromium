@@ -64,26 +64,26 @@ class TestAutofillDriver : public ContentAutofillDriver {
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void HandleParsedForms(const std::vector<const FormData*>& forms) override;
+  void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(
-      const std::vector<FormStructure*>& forms) override;
+      const std::vector<FormStructure*>& forms) override {}
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
-      const std::u16string& value) override;
-  void RendererShouldClearFilledSection() override;
-  void RendererShouldClearPreviewedForm() override;
+      const std::u16string& value) override {}
+  void RendererShouldClearFilledSection() override {}
+  void RendererShouldClearPreviewedForm() override {}
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field,
-                                        const std::u16string& value) override;
+                                        const std::u16string& value) override {}
   void RendererShouldPreviewFieldWithValue(
       const FieldGlobalId& field,
-      const std::u16string& value) override;
+      const std::u16string& value) override {}
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
-      const mojom::AutofillState state) override;
-  void PopupHidden() override;
+      const mojom::AutofillState state) override {}
+  void PopupHidden() override {}
   net::IsolationInfo IsolationInfo() override;
   void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) override;
+      const std::vector<FieldGlobalId>& fields) override {}
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.

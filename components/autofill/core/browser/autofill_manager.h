@@ -408,7 +408,7 @@ class AutofillManager
 
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.
-  void OnFormsParsed(const std::vector<const FormData*>& forms);
+  void OnFormsParsed(const std::vector<FormData>& forms);
 
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();

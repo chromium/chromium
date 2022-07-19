@@ -185,7 +185,7 @@ void AutofillManager::OnFormsSeen(
   if (!ShouldParseForms(updated_forms))
     return;
 
-  std::vector<const FormData*> new_forms;
+  std::vector<FormData> parsed_forms;
   for (const FormData& form : updated_forms) {
     const auto parse_form_start_time = AutofillTickClock::NowTicks();
     FormStructure* cached_form_structure =
@@ -209,17 +209,16 @@ void AutofillManager::OnFormsSeen(
     if (update_form_signature)
       form_structure->set_form_signature(CalculateFormSignature(form));
 
-    new_forms.push_back(&form);
+    parsed_forms.push_back(form);
     AutofillMetrics::LogParseFormTiming(AutofillTickClock::NowTicks() -
                                         parse_form_start_time);
   }
 
-  if (new_forms.empty())
-    return;
-  OnFormsParsed(new_forms);
+  if (!parsed_forms.empty())
+    OnFormsParsed(parsed_forms);
 }
 
-void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
+void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
@@ -228,9 +227,9 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
   std::vector<FormStructure*> non_queryable_forms;
   std::vector<FormStructure*> queryable_forms;
   DenseSet<FormType> form_types;
-  for (const FormData* form : forms) {
+  for (const FormData& form : forms) {
     FormStructure* form_structure =
-        FindCachedFormByRendererId(form->global_id());
+        FindCachedFormByRendererId(form.global_id());
     if (!form_structure) {
       NOTREACHED();
       continue;
@@ -240,12 +239,13 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
-    if (form_structure->ShouldBeQueried())
+    if (form_structure->ShouldBeQueried()) {
       queryable_forms.push_back(form_structure);
-    else
+    } else {
       non_queryable_forms.push_back(form_structure);
+    }
 
-    OnFormProcessed(*form, *form_structure);
+    OnFormProcessed(form, *form_structure);
   }
 
   if (!queryable_forms.empty() || !non_queryable_forms.empty()) {

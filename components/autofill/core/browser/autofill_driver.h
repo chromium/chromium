@@ -122,7 +122,7 @@ class AutofillDriver {
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
 
   // Forwards parsed |forms| to the embedder.
-  virtual void HandleParsedForms(const std::vector<const FormData*>& forms) = 0;
+  virtual void HandleParsedForms(const std::vector<FormData>& forms) = 0;
 
   // Sends the field type predictions specified in |forms| to the renderer. This
   // method is a no-op if the renderer is not available or the appropriate

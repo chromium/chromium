@@ -116,14 +116,13 @@ std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
   return safe_fields;
 }
 
-void AutofillDriverIOS::HandleParsedForms(
-    const std::vector<const FormData*>& forms) {
+void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
       browser_autofill_manager_.form_structures();
   std::vector<FormStructure*> form_structures;
   form_structures.reserve(forms.size());
-  for (const FormData* form : forms) {
-    auto it = map.find(form->global_id());
+  for (const FormData& form : forms) {
+    auto it = map.find(form.global_id());
     if (it != map.end())
       form_structures.push_back(it->second.get());
   }

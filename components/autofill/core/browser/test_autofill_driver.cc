@@ -84,43 +84,9 @@ std::vector<FieldGlobalId> TestAutofillDriver::FillOrPreviewForm(
   return result;
 }
 
-void TestAutofillDriver::HandleParsedForms(
-    const std::vector<const FormData*>& forms) {}
-
-void TestAutofillDriver::SendAutofillTypePredictionsToRenderer(
-    const std::vector<FormStructure*>& forms) {
-}
-
-void TestAutofillDriver::RendererShouldAcceptDataListSuggestion(
-    const FieldGlobalId& field,
-    const std::u16string& value) {}
-
-void TestAutofillDriver::RendererShouldClearFilledSection() {}
-
-void TestAutofillDriver::RendererShouldClearPreviewedForm() {
-}
-
-void TestAutofillDriver::RendererShouldFillFieldWithValue(
-    const FieldGlobalId& field,
-    const std::u16string& value) {}
-
-void TestAutofillDriver::RendererShouldPreviewFieldWithValue(
-    const FieldGlobalId& field,
-    const std::u16string& value) {}
-
-void TestAutofillDriver::RendererShouldSetSuggestionAvailability(
-    const FieldGlobalId& field,
-    const mojom::AutofillState state) {}
-
-void TestAutofillDriver::PopupHidden() {
-}
-
 net::IsolationInfo TestAutofillDriver::IsolationInfo() {
   return isolation_info_;
 }
-
-void TestAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
-    const std::vector<FieldGlobalId>& fields) {}
 
 void TestAutofillDriver::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;

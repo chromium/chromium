@@ -171,11 +171,6 @@ void ContentAutofillDriver::FillOrPreviewFormImpl(
   GetAutofillAgent()->FillOrPreviewForm(query_id, data, action);
 }
 
-void ContentAutofillDriver::HandleParsedForms(
-    const std::vector<const FormData*>& forms) {
-  // No op.
-}
-
 void ContentAutofillDriver::SendAutofillTypePredictionsToRendererImpl(
     const std::vector<FormDataPredictions>& type_predictions) {
   if (!RendererIsAvailable())
