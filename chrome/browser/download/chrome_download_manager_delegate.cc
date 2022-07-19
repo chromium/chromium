@@ -1590,7 +1590,8 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
     return true;
 
   bool file_type_dangerous =
-      (DownloadItemModel(item).GetDangerLevel() !=
+      (item &&
+       DownloadItemModel(item).GetDangerLevel() !=
            DownloadFileType::NOT_DANGEROUS &&
        danger_type == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
 
