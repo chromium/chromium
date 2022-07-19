@@ -244,7 +244,7 @@ class SyncTest : public PlatformBrowserTest {
   bool AwaitQuiescence();
 
   // Returns true if we are running tests against external servers.
-  bool UsingExternalServers();
+  bool UsingExternalServers() const;
 
   // Sets the mock gaia response for when an OAuth2 token is requested.
   // Each call to this method will overwrite responses that were previously set.

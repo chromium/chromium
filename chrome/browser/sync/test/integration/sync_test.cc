@@ -1281,7 +1281,7 @@ bool SyncTest::AwaitQuiescence() {
   return SyncServiceImplHarness::AwaitQuiescence(GetSyncClients());
 }
 
-bool SyncTest::UsingExternalServers() {
+bool SyncTest::UsingExternalServers() const {
   return server_type_ == EXTERNAL_LIVE_SERVER;
 }
 
@@ -1317,31 +1317,37 @@ std::string SyncTest::GetCacheGuid(size_t profile_index) const {
 }
 
 bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
-  // Wait for committing DeviceInfo with sharing_fields, it may happen
-  // asynchronously due to FCM token registration.
-  if (GetSyncService(profile_index)
-          ->GetPreferredDataTypes()
-          .Has(syncer::SHARING_MESSAGE)) {
-    if (!device_info_helper::WaitForFullDeviceInfoCommitted(
-            GetCacheGuid(profile_index))) {
-      return false;
+  // This is a workaround for E2E tests because currently there is no a good way
+  // to wait for asynchronous commits to the external servers. Although
+  // CommittedAllNudgedChangesChecker will wait for all the local changes to be
+  // committed, it doesn't cover all the cases.
+  if (!UsingExternalServers()) {
+    // Wait for committing DeviceInfo with sharing_fields, it may happen
+    // asynchronously due to FCM token registration.
+    if (GetSyncService(profile_index)
+            ->GetPreferredDataTypes()
+            .Has(syncer::SHARING_MESSAGE)) {
+      if (!device_info_helper::WaitForFullDeviceInfoCommitted(
+              GetCacheGuid(profile_index))) {
+        return false;
+      }
     }
-  }
 
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, default about:blank page is loaded by default. Wait for
-  // Session to be committed to prevent unexpected commit requests during
-  // test. It shouldn't be called when custom passphrase is enabled because
-  // SessionHierarchyMatchChecker doesn't support custom passphrases.
-  DCHECK(client_decryption_passphrases_.find(profile_index) ==
-         client_decryption_passphrases_.end());
-  if (!SessionHierarchyMatchChecker(
-           fake_server::SessionsHierarchy({{url::kAboutBlankURL}}),
-           GetSyncService(profile_index), GetFakeServer())
-           .Wait()) {
-    return false;
-  }
+    // On Android, default about:blank page is loaded by default. Wait for
+    // Session to be committed to prevent unexpected commit requests during
+    // test. It shouldn't be called when custom passphrase is enabled because
+    // SessionHierarchyMatchChecker doesn't support custom passphrases.
+    DCHECK(client_decryption_passphrases_.find(profile_index) ==
+           client_decryption_passphrases_.end());
+    if (!SessionHierarchyMatchChecker(
+             fake_server::SessionsHierarchy({{url::kAboutBlankURL}}),
+             GetSyncService(profile_index), GetFakeServer())
+             .Wait()) {
+      return false;
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   // Wait for any other locally nudged changes to be committed.
   if (!CommittedAllNudgedChangesChecker(GetSyncService(profile_index)).Wait()) {
