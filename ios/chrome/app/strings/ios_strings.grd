@@ -2260,9 +2260,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         To export passwords, you must first set a passcode on your device.
       </message>
       <message name="IDS_IOS_SETTINGS_HEADER_TEXT" desc="Header of the Default Browser Settings page explaining the default browser feature's utility.">
-      You can open links in Chrome automatically by making it your Default Browser App.
-      
-Follow the steps below:
+        You can open links in Chrome automatically by making it your Default Browser App.
+      </message>
+      <message name="IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT" desc="The prompt under the Default Browser Settings page's header text.">
+        Follow the steps below:
       </message>
       <message name="IDS_IOS_SETTINGS_OPEN_CHROME_SETTINGS_BUTTON_TEXT" desc="Label of the button that opens the Chrome panel in Settings.app">
           Open Chrome Settings

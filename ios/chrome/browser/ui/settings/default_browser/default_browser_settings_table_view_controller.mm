@@ -28,7 +28,8 @@ NSString* const kSettingsImageName = @"settings";
 NSString* const kSelectChromeStepImageName = @"chrome_icon";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSteps = kSectionIdentifierEnumZero,
+  SectionIdentifierIntro = kSectionIdentifierEnumZero,
+  SectionIdentifierSteps,
   SectionIdentifierOpenSettings,
 };
 
@@ -63,11 +64,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)loadModel {
   [super loadModel];
 
-  [self.tableViewModel addSectionWithIdentifier:SectionIdentifierSteps];
+  // The Default Browser Settings page breaks down into 3 sections, as follows:
+
+  // Section 1: Introduction.
+  [self.tableViewModel addSectionWithIdentifier:SectionIdentifierIntro];
+
   TableViewLinkHeaderFooterItem* headerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeHeaderItem];
   headerItem.text = l10n_util::GetNSString(IDS_IOS_SETTINGS_HEADER_TEXT);
   [self.tableViewModel setHeader:headerItem
+        forSectionWithIdentifier:SectionIdentifierIntro];
+
+  // Section 2: Instructions for setting the default browser.
+  [self.tableViewModel addSectionWithIdentifier:SectionIdentifierSteps];
+
+  TableViewLinkHeaderFooterItem* followStepsBelowItem =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeHeaderItem];
+  followStepsBelowItem.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT);
+  [self.tableViewModel setHeader:followStepsBelowItem
         forSectionWithIdentifier:SectionIdentifierSteps];
 
   TableViewDetailIconItem* openSettingsStepItem =
@@ -95,7 +110,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.tableViewModel addItem:selectChromeStepItem
        toSectionWithIdentifier:SectionIdentifierSteps];
 
+  // Section 3: 'Open Chrome Settings' action
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOpenSettings];
+
   TableViewTextItem* openSettingsButtonItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeOpenSettingsButton];
   openSettingsButtonItem.text =

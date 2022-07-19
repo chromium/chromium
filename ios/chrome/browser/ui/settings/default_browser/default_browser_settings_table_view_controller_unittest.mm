@@ -33,11 +33,13 @@ TEST_F(DefaultBrowserSettingTableViewControllerTest, TestModel) {
 
   CheckTitleWithId(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  EXPECT_EQ(2, NumberOfSections());
-  EXPECT_EQ(3, NumberOfItemsInSection(0));
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(3, NumberOfSections());
+  EXPECT_EQ(0, NumberOfItemsInSection(0));
+  EXPECT_EQ(3, NumberOfItemsInSection(1));
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
 
   CheckSectionHeaderWithId(IDS_IOS_SETTINGS_HEADER_TEXT, 0);
+  CheckSectionHeaderWithId(IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT, 1);
 }
 
 }  // namespace
