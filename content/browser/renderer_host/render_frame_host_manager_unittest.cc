@@ -423,7 +423,8 @@ class RenderFrameHostManagerTest
             controller.GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
             controller.GetIndexOfEntry(entry),
             controller.GetLastCommittedEntryIndex(), controller.GetEntryCount(),
-            frame_tree_node->current_replication_state().frame_policy);
+            frame_tree_node->current_replication_state().frame_policy,
+            frame_tree_node->AncestorOrSelfHasCSPEE());
     commit_params->post_content_type = post_content_type;
 
     std::unique_ptr<NavigationRequest> navigation_request =
@@ -3134,7 +3135,8 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
               .GetIndexOfEntry(&entry),
           controller().GetLastCommittedEntryIndex(),
           controller().GetEntryCount(),
-          frame_tree_node->current_replication_state().frame_policy);
+          frame_tree_node->current_replication_state().frame_policy,
+          frame_tree_node->AncestorOrSelfHasCSPEE());
 
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(

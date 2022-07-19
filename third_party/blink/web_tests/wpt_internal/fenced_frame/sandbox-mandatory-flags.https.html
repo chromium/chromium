@@ -5,6 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
 
 <body>
 
@@ -111,6 +112,25 @@ promise_test(async t => {
    'fenced frame even when the inner nested sandboxed iframe has all ' +
    'mandatory allow- flags.');
 
+promise_test(async t => {
+  const key = token();
+  // allow-scripts is needed to run iframe.execute, so we will test every other
+  // sandbox flag
+  for (let missing_flag of
+       mandatory_flags.filter(word => word != "allow-scripts")) {
+    const value =
+        'canLoadOpaqueURL returned true even with flag ' +
+        missing_flag + ' not set.';
+    const flags_to_add = mandatory_flags
+        .filter(word => word != missing_flag)
+        .join(" ");
+    const iframe = attachIFrameContext(
+        {attributes: [["sandbox", flags_to_add]]});
+    await iframe.execute(async (t) => {
+      assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+    });
+  }
+}, 'HTMLFencedFrameElement.canLoadOpaqueURL considers mandatory sandbox flags');
 </script>
 
 </body>

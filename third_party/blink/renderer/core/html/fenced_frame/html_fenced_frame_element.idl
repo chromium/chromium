@@ -10,4 +10,5 @@ interface HTMLFencedFrameElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
     [CEReactions, Reflect, ReflectOnly=("default", "opaque-ads"), ReflectMissing="default", ReflectInvalid="default"] attribute DOMString mode;
+    [CallWith=ScriptState] static boolean canLoadOpaqueURL();
 };

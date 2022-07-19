@@ -558,6 +558,12 @@ class CONTENT_EXPORT FrameTreeNode {
   // their opener.
   void ClearOpenerReferences();
 
+  // Calculates whether one of the ancestor frames or this frame has a CSPEE
+  // in place. This is eventually sent over to LocalFrame in the renderer where
+  // it will be used by HTMLFencedFrameElement::canLoadOpaqueURL for information
+  // it can't get on its own.
+  bool AncestorOrSelfHasCSPEE() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);

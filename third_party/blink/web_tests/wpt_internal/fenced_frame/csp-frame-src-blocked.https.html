@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="img-src 'self' https: https://*:*">
 <meta http-equiv="Content-Security-Policy" content="frame-src 'none'">
 <title>Test Content-Security-Policy fenced-frame-src falling back to frame-src</title>
 <script src="/resources/testharness.js"></script>
@@ -18,14 +19,18 @@ window.addEventListener('securitypolicyviolation', function(e) {
 
 promise_test(async () => {
   attachFencedFrame(generateURL(
-      "resources/csp-frame-src-blocked-inner.https.html",
+      "resources/csp-frame-src-blocked-inner.html",
       [key]));
   const result = await nextValueFromServer(key);
 
   const expected_blocked_uri = generateURL(
-      "resources/csp-frame-src-blocked-inner.https.html", [key]).toString();
+      "resources/csp-frame-src-blocked-inner.html", [key]).toString();
   assert_equals(result, "fenced-frame-src;" + expected_blocked_uri,
                 "The fenced frame is blocked because of CSP violation");
 }, "csp-frame-src-blocked");
+
+promise_test(async () => {
+  assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+}, "frame-src none is taken into account with HTMLFencedFrameElement.canLoadOpaqueURL");
 </script>
 </body>

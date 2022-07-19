@@ -3806,7 +3806,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
-          false /* should_load_data_url */);
+          false /* should_load_data_url */,
+          /*ancestor_or_self_has_cspee=*/node->AncestorOrSelfHasCSPEE());
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();
@@ -3947,7 +3948,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
           common_params->method, entry->GetSubframeUniqueNames(frame_tree_node),
           GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
           GetIndexOfEntry(entry), GetLastCommittedEntryIndex(), GetEntryCount(),
-          frame_tree_node->pending_frame_policy());
+          frame_tree_node->pending_frame_policy(),
+          frame_tree_node->AncestorOrSelfHasCSPEE());
   commit_params->post_content_type = post_content_type;
 
   if (common_params->url.IsAboutSrcdoc())

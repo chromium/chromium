@@ -1004,4 +1004,9 @@ void FrameTreeNode::ClearOpenerReferences() {
     observer.OnFrameTreeNodeDisownedOpenee(this);
 }
 
+bool FrameTreeNode::AncestorOrSelfHasCSPEE() const {
+  // Check if CSPEE is set in this frame or any ancestor frames.
+  return csp_attribute_ || (parent() && parent()->required_csp());
+}
+
 }  // namespace content

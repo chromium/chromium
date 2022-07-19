@@ -218,7 +218,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       int pending_offset_to_send,
       int current_offset_to_send,
       int current_length_to_send,
-      const blink::FramePolicy& frame_policy);
+      const blink::FramePolicy& frame_policy,
+      bool ancestor_or_self_has_cspee);
 
   // Once a navigation entry is committed, we should no longer track several
   // pieces of non-persisted state, as documented on the members below.

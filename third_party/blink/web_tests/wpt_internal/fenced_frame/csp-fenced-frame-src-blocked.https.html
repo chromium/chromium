@@ -18,15 +18,20 @@ window.addEventListener('securitypolicyviolation', function(e) {
 
 promise_test(async () => {
   attachFencedFrame(generateURL(
-      "resources/csp-fenced-frame-src-blocked-inner.https.html",
+      "resources/csp-fenced-frame-src-blocked-inner.html",
       [key]));
   const result = await nextValueFromServer(key);
 
   const expected_blocked_uri = generateURL(
-      "resources/csp-fenced-frame-src-blocked-inner.https.html",
+      "resources/csp-fenced-frame-src-blocked-inner.html",
       [key]).toString();
   assert_equals(result, "fenced-frame-src;" + expected_blocked_uri,
                 "The fenced frame is blocked because of CSP violation");
 }, "csp-fenced-frame-src-blocked");
+
+promise_test(async () => {
+  assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+}, "fenced-frame-src none is taken into account with " +
+   "HTMLFencedFrameElement.canLoadOpaqueURL");
 </script>
 </body>

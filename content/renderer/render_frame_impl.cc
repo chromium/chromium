@@ -1056,6 +1056,9 @@ void FillMiscNavigationParams(
           destination, std::move(data));
     }
   }
+
+  navigation_params->ancestor_or_self_has_cspee =
+      commit_params.ancestor_or_self_has_cspee;
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {

@@ -484,4 +484,13 @@ struct CommitNavigationParams {
   // returns false, the data: URL will still be loaded, but we won't try to use
   // the supplied base URL and history URL.
   bool is_load_data_with_base_url = false;
+
+  // Whether a CSPEE policy exists in any of the frame's ancestors or on the
+  // frame itself. Used to determine if an opaque-ads fenced frame is allowed
+  // to be created in the current context. See
+  // `HTMLFencedFrameElement::canLoadOpaqueURL` for usage. At the moment, this
+  // is just sending CSPEE. But this can be expanded (and renamed) in the future
+  // if we need to send more information about whether a fenced frame can load
+  // from the browser.
+  bool ancestor_or_self_has_cspee = false;
 };

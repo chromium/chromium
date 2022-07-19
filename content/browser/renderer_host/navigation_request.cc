@@ -1246,7 +1246,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
-          false /* should_load_data_url */);
+          false /* should_load_data_url */,
+          /*ancestor_or_self_has_cspee=*/
+          frame_tree_node->AncestorOrSelfHasCSPEE());
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1370,7 +1372,9 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
-          false /* should_load_data_url */);
+          false /* should_load_data_url */,
+          /*ancestor_or_self_has_cspee=*/
+          frame_tree_node->AncestorOrSelfHasCSPEE());
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(

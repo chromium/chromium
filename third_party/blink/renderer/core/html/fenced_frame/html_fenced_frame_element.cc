@@ -10,11 +10,14 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
@@ -63,48 +66,56 @@ String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
   return "";
 }
 
-bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
-  mojom::blink::FencedFrameMode current_mode = outer_element.GetMode();
-  Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
+// Helper function that returns whether the mode of the parent tree is different
+// than the mode given to the function. Note that this function will return
+// false if there is no mode set in the parent tree (i.e. not in a fenced frame
+// tree).
+bool ParentModeIsDifferent(mojom::blink::FencedFrameMode current_mode,
+                           LocalFrame& frame) {
+  Page* ancestor_page = frame.GetPage();
 
   if (ancestor_page->FencedFramesImplementationType() ==
       features::FencedFramesImplementationType::kShadowDOM) {
     // ShadowDOM check.
-    if (Frame* ancestor = outer_element.GetDocument().GetFrame()) {
-      // This loop is only relevant for fenced frames based on ShadowDOM, since
-      // it has to do with the `FramePolicy::is_fenced` bit. We have to keep
-      // traversing up the tree to see if we ever come across a fenced frame of
-      // another mode. In that case, we stop `this` frame from being fully
-      // created, since nested fenced frames of differing modes are not allowed.
-      while (ancestor && ancestor->Owner()) {
-        bool is_ancestor_fenced = ancestor->Owner()->GetFramePolicy().is_fenced;
-        // Note that this variable is only meaningful if `is_ancestor_fenced`
-        // above is true.
-        mojom::blink::FencedFrameMode ancestor_mode =
-            ancestor->Owner()->GetFramePolicy().fenced_frame_mode;
+    Frame* ancestor = &frame;
+    // This loop is only relevant for fenced frames based on ShadowDOM, since
+    // it has to do with the `FramePolicy::is_fenced` bit. We have to keep
+    // traversing up the tree to see if we ever come across a fenced frame of
+    // another mode. In that case, we stop `this` frame from being fully
+    // created, since nested fenced frames of differing modes are not allowed.
+    while (ancestor && ancestor->Owner()) {
+      bool is_ancestor_fenced = ancestor->Owner()->GetFramePolicy().is_fenced;
+      // Note that this variable is only meaningful if `is_ancestor_fenced`
+      // above is true.
+      mojom::blink::FencedFrameMode ancestor_mode =
+          ancestor->Owner()->GetFramePolicy().fenced_frame_mode;
 
-        if (is_ancestor_fenced && ancestor_mode != current_mode) {
-          return true;
-        }
-
-        // If this loop found a fenced ancestor whose mode is compatible with
-        // `current_mode`, it is not necessary to look further up the ancestor
-        // chain. This is because this loop already ran during the creation of
-        // the compatible fenced ancestor, so it is guaranteed that the rest of
-        // the ancestor chain has already been checked and approved for
-        // compatibility.
-        if (is_ancestor_fenced && ancestor_mode == current_mode) {
-          return false;
-        }
-
-        ancestor = ancestor->Tree().Parent();
+      if (is_ancestor_fenced && ancestor_mode != current_mode) {
+        return true;
       }
+
+      // If this loop found a fenced ancestor whose mode is compatible with
+      // `current_mode`, it is not necessary to look further up the ancestor
+      // chain. This is because this loop already ran during the creation of
+      // the compatible fenced ancestor, so it is guaranteed that the rest of
+      // the ancestor chain has already been checked and approved for
+      // compatibility.
+      if (is_ancestor_fenced && ancestor_mode == current_mode) {
+        return false;
+      }
+
+      ancestor = ancestor->Tree().Parent();
     }
     return false;
   }
   // MPArch check.
   return ancestor_page->IsMainFrameFencedFrameRoot() &&
          ancestor_page->FencedFrameMode() != current_mode;
+}
+
+bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
+  return ParentModeIsDifferent(outer_element.GetMode(),
+                               *(outer_element.GetDocument().GetFrame()));
 }
 
 // Returns whether `requested_size` is exactly the same size as `allowed_size`.
@@ -320,6 +331,80 @@ HTMLIFrameElement* HTMLFencedFrameElement::InnerIFrameElement() const {
   if (const ShadowRoot* root = UserAgentShadowRoot())
     return To<HTMLIFrameElement>(root->lastChild());
   return nullptr;
+}
+
+// static
+bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return false;
+
+  LocalFrame* frame_to_check = LocalDOMWindow::From(script_state)->GetFrame();
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  DCHECK(frame_to_check && context);
+
+  ContentSecurityPolicy* csp = context->GetContentSecurityPolicy();
+  DCHECK(csp);
+
+  // "A fenced frame tree of one mode cannot contain a child fenced frame of
+  // another mode."
+  // See: https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
+  // TODO(lbrady) Link to spec once it's written.
+  if (ParentModeIsDifferent(mojom::blink::FencedFrameMode::kOpaqueAds,
+                            *frame_to_check)) {
+    return false;
+  }
+
+  if (!context->IsSecureContext())
+    return false;
+
+  // Check that the flags specified in kFencedFrameMandatoryUnsandboxedFlags
+  // are not set in this context. Fenced frames loaded in a sandboxed document
+  // require these flags to remain unsandboxed.
+  if (context->IsSandboxed(kFencedFrameMandatoryUnsandboxedFlags))
+    return false;
+
+  // Check the results of the browser checks for the current frame.
+  // If the embedding frame is an iframe with CSPEE set, or any ancestor
+  // iframes has CSPEE set, the fenced frame will not be allowed to load.
+  // The renderer has no knowledge of CSPEE up the ancestor chain, so we defer
+  // to the browser to determine the existence of CSPEE outside of the scope
+  // we can see here.
+  if (frame_to_check->AncestorOrSelfHasCSPEE())
+    return false;
+
+  // Ensure that if any CSP headers are set that will affect a fenced frame,
+  // they allow all https urls to load. Opaque-ads fenced frames do not support
+  // allowing/disallowing specific hosts, as that could reveal information to
+  // a fenced frame about its embedding page. See design doc for more info:
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/interaction_with_content_security_policy.md
+  // This is being checked in the renderer because processing of <meta> tags
+  // (including CSP) happen in the renderer after navigation commit, so we can't
+  // piggy-back off of the ancestor_or_self_has_cspee bit being sent from the
+  // browser (which is sent at commit time) since it doesn't know about all the
+  // CSP headers yet.
+  for (const auto& policy : csp->GetParsedPolicies()) {
+    CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
+        *policy, CSPDirectiveName::FencedFrameSrc);
+    if (directive.type != CSPDirectiveName::Unknown) {
+      // "*" urls will cause the allow_star flag to set
+      if (directive.source_list->allow_star) {
+        continue;
+      }
+
+      // Check for "https:" or "https://*:*"
+      bool found_matching_source = false;
+      for (const auto& source : directive.source_list->sources) {
+        if (source->scheme == url::kHttpsScheme && source->host == "") {
+          found_matching_source = true;
+          break;
+        }
+      }
+      if (!found_matching_source)
+        return false;
+    }
+  }
+
+  return true;
 }
 
 Node::InsertionNotificationRequest HTMLFencedFrameElement::InsertedInto(

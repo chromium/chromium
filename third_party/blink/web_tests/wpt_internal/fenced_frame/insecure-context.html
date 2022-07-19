@@ -24,6 +24,10 @@ promise_test(async t => {
 
   assert_equals(message, "blocked");
 }, 'FencedFrame is not available in an insecure context');
+
+promise_test(async t => {
+  assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+}, 'HTMLFencedFrameElement.canLoadOpaqueURL looks at insecure contexts');
 </script>
 
 </body>

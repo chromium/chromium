@@ -759,6 +759,11 @@ class CORE_EXPORT LocalFrame final
 
   void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
+  bool AncestorOrSelfHasCSPEE() const { return ancestor_or_self_has_cspee_; }
+  void SetAncestorOrSelfHasCSPEE(bool has_policy) {
+    ancestor_or_self_has_cspee_ = has_policy;
+  }
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -987,6 +992,11 @@ class CORE_EXPORT LocalFrame final
   // Tracks the number of times this document has been retrieved from the
   // bfcache.
   uint32_t navigation_id_ = 1;
+
+  // Stores whether this frame is affected by a CSPEE policy (from any ancestor
+  // frame). Calculated browser-side and used to help determine if this frame
+  // is allowed to load a new child opaque-ads fenced frame.
+  bool ancestor_or_self_has_cspee_ = false;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

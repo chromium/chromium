@@ -474,6 +474,7 @@ DocumentLoader::DocumentLoader(
     }
   }
 
+  frame_->SetAncestorOrSelfHasCSPEE(params_->ancestor_or_self_has_cspee);
   frame_->Client()->DidCreateDocumentLoader(this);
 }
 

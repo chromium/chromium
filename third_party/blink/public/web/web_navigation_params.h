@@ -455,6 +455,13 @@ struct BLINK_EXPORT WebNavigationParams {
   // reporting url. Null, otherwise.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
   absl::optional<WebFencedFrameReporting> fenced_frame_reporting;
+
+  // Whether the current context would be allowed to create an opaque-ads
+  //  frame (based on the browser-side calculations). See
+  // HTMLFencedFrameElement::canLoadOpaqueURL for usage and
+  // ::blink::mojom::CommitNavigationParams::ancestor_or_self_has_cspee for
+  // where the value is coming from.
+  bool ancestor_or_self_has_cspee = false;
 };
 
 }  // namespace blink
