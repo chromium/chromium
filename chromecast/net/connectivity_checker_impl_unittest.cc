@@ -9,9 +9,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromecast/base/metrics/mock_cast_metrics_helper.h"
 #include "chromecast/net/fake_shared_url_loader_factory.h"
 #include "net/http/http_status_code.h"
+#include "net/test/test_with_task_environment.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -33,6 +35,10 @@ constexpr const char* kDefaultConnectivityCheckUrls[] = {
     kHttpConnectivityCheckUrl,
 };
 
+// Number of consecutive connectivity check errors before status is changed
+// to offline.
+const unsigned int kNumErrorsToNotifyOffline = 3;
+
 class FakeNetworkConnectionTracker : public network::NetworkConnectionTracker {
  public:
   // Spoof a valid connection type.
@@ -43,9 +49,35 @@ class FakeNetworkConnectionTracker : public network::NetworkConnectionTracker {
   }
 };
 
+class ConnectivityCheckPeriods {
+ public:
+  ConnectivityCheckPeriods(base::TimeDelta disconnected_check_period,
+                           base::TimeDelta connected_check_period)
+      : disconnected_check_period_(disconnected_check_period),
+        connected_check_period_(connected_check_period) {}
+
+  static const ConnectivityCheckPeriods Empty() { return empty_; }
+
+  bool IsEmpty() {
+    return disconnected_check_period_ == empty_.disconnected_check_period_ &&
+           connected_check_period_ == empty_.connected_check_period_;
+  }
+
+  const base::TimeDelta disconnected_check_period_;
+  const base::TimeDelta connected_check_period_;
+
+ private:
+  // empty object: use minimum and negative TimeDeltas for empty object.
+  static const ConnectivityCheckPeriods empty_;
+};
+
+const ConnectivityCheckPeriods ConnectivityCheckPeriods::empty_ =
+    ConnectivityCheckPeriods(base::TimeDelta::Min(), base::TimeDelta::Min());
+
 class ConnectivityCheckerImplTest : public ::testing::Test {
  public:
-  ConnectivityCheckerImplTest()
+  ConnectivityCheckerImplTest(ConnectivityCheckPeriods check_periods =
+                                  ConnectivityCheckPeriods::Empty())
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         network_connection_tracker_(
             std::make_unique<FakeNetworkConnectionTracker>()) {
@@ -56,9 +88,19 @@ class ConnectivityCheckerImplTest : public ::testing::Test {
     fake_shared_url_loader_factory_ =
         pending_factory->fake_shared_url_loader_factory();
 
-    checker_ = ConnectivityCheckerImpl::Create(
-        task_environment_.GetMainThreadTaskRunner(), std::move(pending_factory),
-        network_connection_tracker_.get(), /*time_sync_tracker=*/nullptr);
+    if (check_periods.IsEmpty()) {
+      checker_ = ConnectivityCheckerImpl::Create(
+          task_environment_.GetMainThreadTaskRunner(),
+          std::move(pending_factory), network_connection_tracker_.get(),
+          /*time_sync_tracker=*/nullptr);
+    } else {
+      checker_ = ConnectivityCheckerImpl::Create(
+          task_environment_.GetMainThreadTaskRunner(),
+          std::move(pending_factory), network_connection_tracker_.get(),
+          check_periods.disconnected_check_period_,
+          check_periods.connected_check_period_,
+          /*time_sync_tracker=*/nullptr);
+    }
     checker_->SetCastMetricsHelperForTesting(&cast_metrics_helper_);
   }
 
@@ -83,6 +125,13 @@ class ConnectivityCheckerImplTest : public ::testing::Test {
     test_url_loader_factory().ClearResponses();
   }
 
+  void DisconnectAndCheck() {
+    SetResponsesWithStatusCode(net::HTTP_INTERNAL_SERVER_ERROR);
+    checker_->Check();
+    base::RunLoop().RunUntilIdle();
+    test_url_loader_factory().ClearResponses();
+  }
+
   void CheckAndExpectRecordedError(
       ConnectivityCheckerImpl::ErrorType error_type) {
     base::RunLoop run_loop;
@@ -101,8 +150,9 @@ class ConnectivityCheckerImplTest : public ::testing::Test {
 
   const ConnectivityCheckerImpl& checker() const { return *checker_; }
 
- private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+
+ private:
   const std::unique_ptr<FakeNetworkConnectionTracker>
       network_connection_tracker_;
   scoped_refptr<FakeSharedURLLoaderFactory> fake_shared_url_loader_factory_;
@@ -137,6 +187,74 @@ INSTANTIATE_TEST_SUITE_P(ConnectivityCheckerImplTestBadHttpStatus,
                          ::testing::Values(net::HTTP_TEMPORARY_REDIRECT,
                                            net::HTTP_BAD_REQUEST,
                                            net::HTTP_INTERNAL_SERVER_ERROR));
+
+class ConnectivityCheckerImplTestPeriodParameterized
+    : public ConnectivityCheckerImplTest,
+      // disconnected probe period
+      public ::testing::WithParamInterface<ConnectivityCheckPeriods> {
+ public:
+  ConnectivityCheckerImplTestPeriodParameterized()
+      : ConnectivityCheckerImplTest(GetParam()) {}
+};
+
+TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
+       CheckWithCustomizedPeriodsConnected) {
+  const ConnectivityCheckPeriods periods = GetParam();
+  const base::TimeDelta margin = base::Milliseconds(100);
+
+  // Initial: disconnected. First Check.
+  // Next check is scheduled in disconnected_check_period_.
+  DisconnectAndCheck();
+  // Connect.
+  SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
+
+  // Jump to right before the next Check. Result is still connected.
+  task_environment_.FastForwardBy(periods.disconnected_check_period_ - margin);
+  EXPECT_FALSE(checker().Connected());
+  // After the Check --> connected.
+  // Next check is scheduled in connected_check_period_.
+  task_environment_.FastForwardBy(margin * 2);
+  EXPECT_TRUE(checker().Connected());
+}
+
+TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
+       CheckWithCustomizedPeriodsDisconnected) {
+  const ConnectivityCheckPeriods periods = GetParam();
+  const base::TimeDelta margin = base::Milliseconds(100);
+
+  // Initial: connected. First Check.
+  // Next check is scheduled in disconnected_check_period_.
+  ConnectAndCheck();
+  // Disconnect.
+  SetResponsesWithStatusCode(net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Jump to right before the next Check. Result is still connected.
+  task_environment_.FastForwardBy(periods.connected_check_period_ - margin);
+  EXPECT_TRUE(checker().Connected());
+
+  // After the Check, still connected.
+  // It retries kNumErrorsToNotifyOffline times to switch to disconnected.
+  task_environment_.FastForwardBy(margin * 2);
+  // Fast forward by kNumErrorsToNotifyOffline * connected_check_period_.
+  for (unsigned int i = 0; i < kNumErrorsToNotifyOffline; i++) {
+    EXPECT_TRUE(checker().Connected());
+    // Check again.
+    task_environment_.FastForwardBy(periods.disconnected_check_period_);
+  }
+  // After retries, the result becomes disconnected.
+  EXPECT_FALSE(checker().Connected());
+}
+
+// Test various connected/disconnected check periods
+INSTANTIATE_TEST_SUITE_P(
+    ConnectivityCheckerImplTestCheckPeriods,
+    ConnectivityCheckerImplTestPeriodParameterized,
+    ::testing::Values(
+        ConnectivityCheckPeriods(base::Seconds(1), base::Seconds(1)),
+        ConnectivityCheckPeriods(base::Seconds(1), base::Seconds(60)),
+        ConnectivityCheckPeriods(base::Seconds(60), base::Seconds(1)),
+        ConnectivityCheckPeriods(base::Seconds(10), base::Seconds(120)),
+        ConnectivityCheckPeriods(base::Seconds(50), base::Seconds(200))));
 
 TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToRequestTimeout) {
   ConnectAndCheck();

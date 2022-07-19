@@ -20,8 +20,7 @@ ConnectivityChecker::ConnectivityChecker(
           base::MakeRefCounted<base::ObserverListThreadSafe<
               ConnectivityCheckFailureObserver>>()) {}
 
-ConnectivityChecker::~ConnectivityChecker() {
-}
+ConnectivityChecker::~ConnectivityChecker() {}
 
 void ConnectivityChecker::AddConnectivityObserver(
     ConnectivityObserver* observer) {
@@ -62,10 +61,24 @@ scoped_refptr<ConnectivityChecker> ConnectivityChecker::Create(
         pending_url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     TimeSyncTracker* time_sync_tracker) {
-  return ConnectivityCheckerImpl::Create(task_runner,
-                                         std::move(pending_url_loader_factory),
-                                         network_connection_tracker,
-                                         time_sync_tracker);
+  return ConnectivityCheckerImpl::Create(
+      task_runner, std::move(pending_url_loader_factory),
+      network_connection_tracker, time_sync_tracker);
+}
+
+// static
+scoped_refptr<ConnectivityChecker> ConnectivityChecker::Create(
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
+    base::TimeDelta disconnected_probe_period,
+    base::TimeDelta connected_probe_period,
+    TimeSyncTracker* time_sync_tracker) {
+  return ConnectivityCheckerImpl::Create(
+      task_runner, std::move(pending_url_loader_factory),
+      network_connection_tracker, disconnected_probe_period,
+      connected_probe_period, time_sync_tracker);
 }
 
 }  // namespace chromecast

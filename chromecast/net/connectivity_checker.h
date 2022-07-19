@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/time/time.h"
 #include "chromecast/net/time_sync_tracker.h"
 
 namespace base {
@@ -60,6 +61,20 @@ class ConnectivityChecker
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
+      TimeSyncTracker* time_sync_tracker = nullptr);
+
+  // Static factory with additional parameters for connectivity check period
+  // - disconnected_probe_period:
+  //       connectivity check period while disconnected.
+  // - connected_probe_period:
+  //       connectivity check period while connected.
+  static scoped_refptr<ConnectivityChecker> Create(
+      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
+      base::TimeDelta disconnected_probe_period,
+      base::TimeDelta connected_probe_period,
       TimeSyncTracker* time_sync_tracker = nullptr);
 
   ConnectivityChecker(const ConnectivityChecker&) = delete;
