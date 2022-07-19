@@ -143,7 +143,7 @@ void RecentDriveSource::GotSearchResults(
         params_.value().file_system_context()->CreateCrackedFileSystemURL(
             blink::StorageKey(url::Origin::Create(params_->origin())),
             storage::kFileSystemTypeExternal, path),
-        result->metadata->last_viewed_by_me_time);
+        result->metadata->modification_time);
   }
   OnComplete();
 }
