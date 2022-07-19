@@ -45,6 +45,10 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   // Registers the AnnotatorMessageHandler that is owned by the WebUI that
   // contains the Projector annotator.
   virtual void SetAnnotatorMessageHandler(AnnotatorMessageHandler* handler) = 0;
+  // Resets the stored AnnotatorMessageHandler if it matches the one that is
+  // passed in.
+  virtual void ResetAnnotatorMessageHandler(
+      AnnotatorMessageHandler* handler) = 0;
 
   // Notifies the Projector SWA if it can trigger a new Projector session.
   virtual void OnNewScreencastPreconditionChanged(

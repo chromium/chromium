@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PROJECTOR_TEST_MOCK_PROJECTOR_CLIENT_H_
-#define ASH_PROJECTOR_TEST_MOCK_PROJECTOR_CLIENT_H_
+#ifndef ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_
+#define ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_
 
-#include "ash/ash_export.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
@@ -20,8 +19,8 @@ class FilePath;
 namespace ash {
 
 // A mock implementation of ProjectorClient for use in tests.
-class ASH_EXPORT MockProjectorClient : public ProjectorClient,
-                                       public ProjectorAnnotatorController {
+class MockProjectorClient : public ProjectorClient,
+                            public ProjectorAnnotatorController {
  public:
   MockProjectorClient();
   MockProjectorClient(const MockProjectorClient&) = delete;
@@ -40,6 +39,7 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient,
   MOCK_CONST_METHOD1(OnNewScreencastPreconditionChanged,
                      void(const NewScreencastPrecondition&));
   MOCK_METHOD1(SetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
+  MOCK_METHOD1(ResetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
 
   // ProjectorAnnotatorController:
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));

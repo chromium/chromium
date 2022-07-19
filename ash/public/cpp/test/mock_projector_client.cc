@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/projector/test/mock_projector_client.h"
+#include "ash/public/cpp/test/mock_projector_client.h"
 
 namespace ash {
 

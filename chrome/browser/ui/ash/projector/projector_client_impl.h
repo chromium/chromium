@@ -62,6 +62,8 @@ class ProjectorClientImpl
       const ash::NewScreencastPrecondition& precondition) const override;
   void SetAnnotatorMessageHandler(
       ash::AnnotatorMessageHandler* handler) override;
+  void ResetAnnotatorMessageHandler(
+      ash::AnnotatorMessageHandler* handler) override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
@@ -102,7 +104,7 @@ class ProjectorClientImpl
   void OnEnablementPolicyChanged();
 
   ash::ProjectorController* const controller_;
-  ash::AnnotatorMessageHandler* message_handler_;
+  ash::AnnotatorMessageHandler* message_handler_ = nullptr;
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;

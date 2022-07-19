@@ -166,6 +166,13 @@ void ProjectorClientImpl::SetAnnotatorMessageHandler(
   message_handler_ = handler;
 }
 
+void ProjectorClientImpl::ResetAnnotatorMessageHandler(
+    ash::AnnotatorMessageHandler* handler) {
+  if (message_handler_ == handler) {
+    message_handler_ = nullptr;
+  }
+}
+
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
@@ -198,6 +205,7 @@ void ProjectorClientImpl::OnSpeechRecognitionStopped() {
 }
 
 void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
+  DCHECK(message_handler_);
   message_handler_->SetTool(tool);
 }
 
@@ -208,6 +216,7 @@ void ProjectorClientImpl::Undo() {}
 void ProjectorClientImpl::Redo() {}
 
 void ProjectorClientImpl::Clear() {
+  DCHECK(message_handler_);
   message_handler_->Clear();
 }
 

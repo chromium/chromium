@@ -5,6 +5,7 @@
 #include "ash/webui/projector_app/annotator_message_handler.h"
 
 #include "ash/public/cpp/projector/annotator_tool.h"
+#include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -69,6 +70,7 @@ class AnnotatorMessageHandlerTest : public testing::Test {
   std::unique_ptr<AnnotatorMessageHandler> message_handler_;
   content::TestWebUI web_ui_;
   MockProjectorController controller_;
+  MockProjectorClient client_;
 };
 
 TEST_F(AnnotatorMessageHandlerTest, SetTool) {

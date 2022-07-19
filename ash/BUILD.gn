@@ -3307,8 +3307,6 @@ static_library("test_support") {
     "metrics/task_switch_time_tracker_test_api.h",
     "metrics/user_metrics_recorder_test_api.cc",
     "metrics/user_metrics_recorder_test_api.h",
-    "projector/test/mock_projector_client.cc",
-    "projector/test/mock_projector_client.h",
     "projector/test/mock_projector_metadata_controller.cc",
     "projector/test/mock_projector_metadata_controller.h",
     "projector/test/mock_projector_ui_controller.cc",

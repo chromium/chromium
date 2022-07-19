@@ -12,7 +12,7 @@
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/projector/test/mock_projector_client.h"
+#include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

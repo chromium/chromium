@@ -9,7 +9,7 @@
 
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/user_nudge_controller.h"
-#include "ash/projector/test/mock_projector_client.h"
+#include "ash/public/cpp/test/mock_projector_client.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
