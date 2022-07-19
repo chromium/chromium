@@ -7,14 +7,21 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -50,6 +57,8 @@ class LoaderTask : public content::WebContentsObserver {
   LoaderTask() = default;
   LoaderTask(const LoaderTask&) = delete;
   LoaderTask& operator=(const LoaderTask&) = delete;
+  LoaderTask(LoaderTask&&) = delete;
+  LoaderTask& operator=(LoaderTask&&) = delete;
   ~LoaderTask() override = default;
 
   void LoadUrl(const GURL& url,
@@ -79,8 +88,7 @@ class LoaderTask : public content::WebContentsObserver {
   // TODO(ortuno): Use DidStopLoading instead.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override {
-    // Ignore subframe loads.
-    if (web_contents()->GetPrimaryMainFrame() != render_frame_host) {
+    if (IsSubframeLoad(render_frame_host)) {
       return;
     }
 
@@ -104,16 +112,19 @@ class LoaderTask : public content::WebContentsObserver {
       PostResultTask(WebAppUrlLoader::Result::kUrlLoaded);
       return;
     }
-    LOG(ERROR) << "Error loading " << url_;
-    LOG(ERROR) << "  page redirected to " << validated_url;
+    LOG(ERROR) << "Error loading " << url_ << "  page redirected to "
+               << validated_url;
     PostResultTask(WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+  }
+
+  bool IsSubframeLoad(content::RenderFrameHost* render_frame_host) const {
+    return web_contents()->GetPrimaryMainFrame() != render_frame_host;
   }
 
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code) override {
-    // Ignore subframe loads.
-    if (web_contents()->GetPrimaryMainFrame() != render_frame_host) {
+    if (IsSubframeLoad(render_frame_host)) {
       return;
     }
 
@@ -192,18 +203,19 @@ void WebAppUrlLoader::PrepareForLoad(content::WebContents* web_contents,
 }
 
 const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result) {
+  using Result = WebAppUrlLoader::Result;
   switch (result) {
-    case WebAppUrlLoader::Result::kUrlLoaded:
+    case Result::kUrlLoaded:
       return "UrlLoaded";
-    case WebAppUrlLoader::Result::kRedirectedUrlLoaded:
+    case Result::kRedirectedUrlLoaded:
       return "RedirectedUrlLoaded";
-    case WebAppUrlLoader::Result::kFailedUnknownReason:
+    case Result::kFailedUnknownReason:
       return "FailedUnknownReason";
-    case WebAppUrlLoader::Result::kFailedPageTookTooLong:
+    case Result::kFailedPageTookTooLong:
       return "FailedPageTookTooLong";
-    case WebAppUrlLoader::Result::kFailedWebContentsDestroyed:
+    case Result::kFailedWebContentsDestroyed:
       return "FailedWebContentsDestroyed";
-    case WebAppUrlLoader::Result::kFailedErrorPageLoaded:
+    case Result::kFailedErrorPageLoaded:
       return "FailedErrorPageLoaded";
   }
 }

@@ -9,6 +9,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
