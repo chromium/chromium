@@ -39,30 +39,6 @@ namespace {
 constexpr char kTCPNetworkFailuresHistogramName[] =
     "DirectSockets.TCPNetworkFailures";
 
-bool CheckKeepAliveOptionsValidity(const TCPSocketOptions* options,
-                                   ExceptionState& exception_state) {
-  if (options->hasKeepAlive() && options->keepAlive()) {
-    if (!options->hasKeepAliveDelay()) {
-      exception_state.ThrowTypeError(
-          "keepAliveDelay must be set when keepAlive = true.");
-      return false;
-    }
-    if (base::Milliseconds(options->keepAliveDelay()) < base::Seconds(1)) {
-      exception_state.ThrowTypeError(
-          "keepAliveDelay must be no less than one second.");
-      return false;
-    }
-  } else {
-    if (options->hasKeepAliveDelay()) {
-      exception_state.ThrowTypeError(
-          "keepAliveDelay must not be set when keepAlive = "
-          "false or missing.");
-      return false;
-    }
-  }
-  return true;
-}
-
 bool CheckSendReceiveBufferSize(const TCPSocketOptions* options,
                                 ExceptionState& exception_state) {
   if (options->hasSendBufferSize() && options->sendBufferSize() == 0) {
@@ -101,20 +77,23 @@ mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
     return {};
   }
 
-  if (!CheckKeepAliveOptionsValidity(options, exception_state)) {
+  if (options->hasKeepAliveDelay() &&
+      base::Milliseconds(options->keepAliveDelay()) < base::Seconds(1)) {
+    exception_state.ThrowTypeError(
+        "keepAliveDelay must be no less than 1,000 milliseconds.");
     return {};
   }
 
-  if (options->hasNoDelay()) {
-    socket_options->no_delay = options->noDelay();
-  }
-  if (options->hasKeepAlive()) {
-    socket_options->keep_alive_options =
-        network::mojom::blink::TCPKeepAliveOptions::New(
-            /*enable=*/options->keepAlive(),
-            /*delay=*/base::Milliseconds(options->getKeepAliveDelayOr(0))
-                .InSeconds());
-  }
+  // noDelay has a default value specified, therefore it's safe to call
+  // ->noDelay() without checking ->hasNoDelay() first.
+  socket_options->no_delay = options->noDelay();
+
+  socket_options->keep_alive_options =
+      network::mojom::blink::TCPKeepAliveOptions::New(
+          /*enable=*/options->hasKeepAliveDelay() ? true : false,
+          /*delay=*/options->hasKeepAliveDelay()
+              ? base::Milliseconds(options->keepAliveDelay()).InSeconds()
+              : 0);
 
   if (has_full_local_address) {
     socket_options->local_hostname = options->localAddress();

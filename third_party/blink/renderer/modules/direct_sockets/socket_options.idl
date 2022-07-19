@@ -5,16 +5,15 @@
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#tcp
 
 dictionary SocketOptions {
-  unsigned long sendBufferSize;
-  unsigned long receiveBufferSize;
+  [EnforceRange] unsigned long sendBufferSize;
+  [EnforceRange] unsigned long receiveBufferSize;
 };
 
 dictionary TCPSocketOptions : SocketOptions {
   DOMString localAddress;
-  unsigned short localPort;
+  [EnforceRange] unsigned short localPort;
 
-  boolean noDelay;
-  boolean keepAlive;
+  boolean noDelay = false;
   [EnforceRange] unsigned long keepAliveDelay;
 };
 

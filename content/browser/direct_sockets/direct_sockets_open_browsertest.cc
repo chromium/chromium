@@ -296,36 +296,12 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_KeepAliveOptionsDelayMissingOnKeepAliveTrue) {
-  const std::string script =
-      JsReplace("openTcp($1, 228, { keepAlive: true })", kLocalhostAddress);
-
-  EXPECT_THAT(
-      EvalJs(shell(), script).ExtractString(),
-      ::testing::HasSubstr("keepAliveDelay must be set when keepAlive = true"));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_KeepAliveOptionsDelayLessThanASecond) {
   const std::string script =
-      JsReplace("openTcp($1, 228, { keepAlive: true, keepAliveDelay: 950 })",
-                kLocalhostAddress);
+      JsReplace("openTcp($1, 228, { keepAliveDelay: 950 })", kLocalhostAddress);
 
-  EXPECT_THAT(
-      EvalJs(shell(), script).ExtractString(),
-      ::testing::HasSubstr("keepAliveDelay must be no less than one second"));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_KeepAliveOptionsDelaySetOnKeepAliveFalse) {
-  const std::string script = JsReplace(
-      "openTcp($1, 228, { keepAlive: false, keepAliveDelay: 10_000 })",
-      kLocalhostAddress);
-
-  EXPECT_THAT(
-      EvalJs(shell(), script).ExtractString(),
-      ::testing::HasSubstr(
-          "keepAliveDelay must not be set when keepAlive = false or missing"));
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              ::testing::HasSubstr("keepAliveDelay must be no less than"));
 }
 
 using ProtocolType = DirectSocketsServiceImpl::ProtocolType;
@@ -432,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   EXPECT_EQ(3456, call.send_buffer_size);
   EXPECT_EQ(7890, call.receive_buffer_size);
   EXPECT_EQ(false, call.no_delay);
-  EXPECT_FALSE(call.keep_alive_options);
+  EXPECT_TRUE(call.keep_alive_options);
+  EXPECT_EQ(false, call.keep_alive_options->enable);
 
   // To sync histograms from renderer.
   FetchHistogramsFromChildProcesses();
@@ -453,7 +430,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
               sendBufferSize: 1243,
               receiveBufferSize: 1234,
               noDelay: true,
-              keepAlive: true,
               keepAliveDelay: 100_000
             }
           )
@@ -486,7 +462,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
               sendBufferSize: 1243,
               receiveBufferSize: 1234,
               noDelay: true,
-              keepAlive: false
             }
           )
         )";
