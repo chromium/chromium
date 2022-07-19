@@ -9680,6 +9680,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable bookmark editing',
+        },
+        {
+          'value': False,
+          'caption': 'Disable bookmark editing',
+        },
+      ],
       'example_value': False,
       'id': 83,
       'caption': '''Enable or disable bookmark editing''',
@@ -9895,6 +9905,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable import of bookmarks on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Disable import of bookmarks on first run',
+        },
+      ],
       'example_value': True,
       'default': False,
       'id': 97,
@@ -9916,6 +9936,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable import of browsing history on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Disable import of browsing history on first run',
+        },
+      ],
       'example_value': True,
       'default': False,
       'id': 98,
@@ -9936,6 +9966,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable import of homepage on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Disable import of homepage on first run',
+        },
+      ],
       'example_value': True,
       'id': 99,
       'caption': '''Import of homepage from default browser on first run''',
@@ -9956,6 +9996,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable import of default search engine on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Disable import of default search engine on first run',
+        },
+      ],
       'example_value': True,
       'id': 100,
       'caption': '''Import search engines from default browser on first run''',
@@ -9976,6 +10026,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable import of saved passwords on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Disable import of saved passwords on first run',
+        },
+      ],
       'example_value': True,
       'id': 101,
       'caption': '''Import saved passwords from default browser on first run''',
@@ -9996,6 +10056,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable import of autofill form data on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Disable import of autofill form data on first run',
+        },
+      ],
       'example_value': True,
       'id': 277,
       'caption': '''Import autofill form data from default browser on first run''',
