@@ -1833,7 +1833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ConditionalFocus.Decision"
-    enum="ConditionalFocusDecision" expires_after="2023-01-01">
+    enum="ConditionalFocusDecision" expires_after="2023-07-18">
   <owner>eladalon@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1843,7 +1843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ConditionalFocus.ExplicitLateCall" units="ms"
-    expires_after="2022-08-26">
+    expires_after="2023-07-18">
   <owner>eladalon@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1856,7 +1856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ConditionalFocus.ExplicitOnTimeCall" units="ms"
-    expires_after="2022-08-26">
+    expires_after="2023-07-18">
   <owner>eladalon@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1868,7 +1868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ConditionalFocus.MicrotaskDelay" units="ms"
-    expires_after="2022-08-26">
+    expires_after="2023-07-18">
   <owner>eladalon@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
