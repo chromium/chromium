@@ -19,7 +19,7 @@ ShareAttempt::ShareAttempt(content::WebContents* contents,
                            std::u16string title,
                            GURL url,
                            ui::ImageModel preview_image)
-    : web_contents(contents->GetWeakPtr()),
+    : web_contents(contents ? contents->GetWeakPtr() : nullptr),
       title(title),
       url(url),
       preview_image(preview_image) {}

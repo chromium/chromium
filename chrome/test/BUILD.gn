@@ -7971,6 +7971,10 @@ test("unit_tests") {
     }
   }
 
+  if (is_win || is_mac || is_linux) {
+    sources += [ "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc" ]
+  }
+
   if (use_aura) {
     deps += [
       "//ui/aura:test_support",
@@ -8976,6 +8980,13 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_test_base.cc",
         "../browser/ui/views/profiles/profile_picker_test_base.h",
+      ]
+    }
+
+    if (is_win || is_mac || is_linux || is_fuchsia) {
+      sources += [
+        "../browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.cc",
+        "../browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h",
       ]
     }
 

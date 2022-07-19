@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 

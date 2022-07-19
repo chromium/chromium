@@ -6,7 +6,7 @@
 
 #include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
-#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_desktop_impl.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/sharing_hub/preview_view.h"
@@ -39,19 +39,20 @@ constexpr int kInterItemPadding = 4;
 
 }  // namespace
 
-SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(views::View* anchor_view,
-                                                   share::ShareAttempt attempt)
+SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
+    views::View* anchor_view,
+    share::ShareAttempt attempt,
+    SharingHubBubbleController* controller)
     : LocationBarBubbleDelegateView(anchor_view, attempt.web_contents.get()),
       attempt_(attempt) {
+  DCHECK(anchor_view);
+  DCHECK(controller);
+
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetEnableArrowKeyTraversal(true);
 
-  SharingHubBubbleControllerDesktopImpl* controller =
-      static_cast<SharingHubBubbleControllerDesktopImpl*>(
-          SharingHubBubbleController::CreateOrGetFromWebContents(
-              attempt.web_contents.get()));
   controller_ = controller->GetWeakPtr();
 }
 
