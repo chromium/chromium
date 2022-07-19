@@ -61,6 +61,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
 
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;
+  void OnUIDestroyed() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -96,6 +97,10 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.
   bool active_ = false;
+
+  // Whether the Read Anything feature's UI is ready. This is set to true when
+  // the UI is constructed and false when it is destroyed.
+  bool ui_ready_ = false;
 
   base::WeakPtrFactory<ReadAnythingController> weak_pointer_factory_{this};
 };

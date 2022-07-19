@@ -39,6 +39,7 @@ class ReadAnythingPageHandler : public PageHandler,
   class Delegate {
    public:
     virtual void OnUIReady() = 0;
+    virtual void OnUIDestroyed() = 0;
   };
 
   ReadAnythingPageHandler(mojo::PendingRemote<Page> page,

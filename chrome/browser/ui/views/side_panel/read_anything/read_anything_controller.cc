@@ -53,7 +53,12 @@ void ReadAnythingController::OnFontSizeChanged(bool increase) {
 }
 
 void ReadAnythingController::OnUIReady() {
+  ui_ready_ = true;
   DistillAXTree();
+}
+
+void ReadAnythingController::OnUIDestroyed() {
+  ui_ready_ = false;
 }
 
 void ReadAnythingController::OnTabStripModelChanged(
@@ -84,7 +89,7 @@ void ReadAnythingController::WebContentsDestroyed() {
 
 void ReadAnythingController::DistillAXTree() {
   DCHECK(browser_);
-  if (!active_)
+  if (!active_ || !ui_ready_)
     return;
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
