@@ -32,6 +32,7 @@ extern const base::Feature kBackgroundThreadPool;
 extern const base::Feature kBulkTabRestore;
 extern const base::Feature kCloseTabSuggestions;
 extern const base::Feature kCriticalPersistedTabData;
+extern const base::Feature kCommerceCoupons;
 extern const base::Feature kCastDeviceFilter;
 extern const base::Feature kCCTBackgroundTab;
 extern const base::Feature kCCTBrandTransparency;

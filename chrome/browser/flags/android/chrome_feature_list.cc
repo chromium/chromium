@@ -178,6 +178,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCastDeviceFilter,
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
+    &kCommerceCoupons,
     &kCCTBackgroundTab,
     &kCCTBrandTransparency,
     &kCCTClientDataHeader,
@@ -490,6 +491,9 @@ const base::Feature kCloseTabSuggestions{"CloseTabSuggestions",
 
 const base::Feature kCriticalPersistedTabData{
     "CriticalPersistedTabData", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCommerceCoupons{"CommerceCoupons",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCCTBackgroundTab{"CCTBackgroundTab",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
