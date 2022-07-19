@@ -52,7 +52,7 @@ class IOSurfaceContext
   IOSurfaceContext(
       Type type,
       base::ScopedTypeRef<CGLContextObj> clg_context_strong);
-  virtual ~IOSurfaceContext();
+  ~IOSurfaceContext() override;
 
   Type type_;
   base::ScopedTypeRef<CGLContextObj> cgl_context_;

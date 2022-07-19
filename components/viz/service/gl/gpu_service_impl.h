@@ -48,6 +48,10 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/direct_composition_surface_win.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace arc {
 class ProtectedBufferManager;
@@ -85,8 +89,12 @@ enum class ExitCode {
 // This runs in the GPU process, and communicates with the gpu host (which is
 // the window server) over the mojom APIs. This is responsible for setting up
 // the connection to clients, allocating/free'ing gpu memory etc.
-class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
-                                          public mojom::GpuService {
+class VIZ_SERVICE_EXPORT GpuServiceImpl
+    : public gpu::GpuChannelManagerDelegate,
+#if BUILDFLAG(IS_WIN)
+      public gl::DirectCompositionOverlayCapsObserver,
+#endif
+      public mojom::GpuService {
  public:
   GpuServiceImpl(const gpu::GPUInfo& gpu_info,
                  std::unique_ptr<gpu::GpuWatchdogThread> watchdog,
@@ -248,6 +256,11 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
 #if BUILDFLAG(IS_WIN)
   void SendCreatedChildWindow(gpu::SurfaceHandle parent_window,
                               gpu::SurfaceHandle child_window) override;
+
+  // DirectCompositionOverlayCapsObserver implementation.
+  // Update overlay info and HDR status on the GPU process and send the updated
+  // info back to the browser process if there is a change.
+  void OnOverlayCapsChanged() override;
 #endif
 
   // Installs a base::LogMessageHandlerFunction which ensures messages are sent

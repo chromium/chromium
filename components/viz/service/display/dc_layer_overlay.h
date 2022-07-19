@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
@@ -19,7 +19,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
-#include "ui/gl/gpu_switching_observer.h"
+#include "ui/gl/direct_composition_surface_win.h"
 
 namespace viz {
 struct DebugRendererSettings;
@@ -74,8 +74,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
 
 typedef std::vector<DCLayerOverlay> DCLayerOverlayList;
 
-class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
-    : public ui::GpuSwitchingObserver {
+class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
+    : public gl::DirectCompositionOverlayCapsObserver {
  public:
   using FilterOperationsMap =
       base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
@@ -89,7 +89,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   DCLayerOverlayProcessor(const DCLayerOverlayProcessor&) = delete;
   DCLayerOverlayProcessor& operator=(const DCLayerOverlayProcessor&) = delete;
 
-  virtual ~DCLayerOverlayProcessor();
+  ~DCLayerOverlayProcessor() override;
 
   // Virtual for testing.
   virtual void Process(DisplayResourceProvider* resource_provider,
@@ -106,9 +106,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   // be empty.
   gfx::Rect PreviousFrameOverlayDamageContribution();
 
-  // GpuSwitchingObserver implementation.
-  void OnDisplayAdded() override;
-  void OnDisplayRemoved() override;
+  // DirectCompositionOverlayCapsObserver implementation.
+  void OnOverlayCapsChanged() override;
   void UpdateHasHwOverlaySupport();
 
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
@@ -191,7 +190,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   bool has_overlay_support_;
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
-  unsigned long frames_since_last_qualified_multi_overlays_ = 0;
+  uint64_t frames_since_last_qualified_multi_overlays_ = 0;
 
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;
@@ -218,7 +217,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   std::vector<gfx::Rect> previous_frame_overlay_candidate_rects_{};
   int frames_since_last_overlay_candidate_rects_change_ = 0;
 
-  scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace viz

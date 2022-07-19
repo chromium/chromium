@@ -12,13 +12,14 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/gpu_switching_observer.h"
 
 namespace gl {
 
 // This is a very hacky way to get the display characteristics.
 // It should be replaced by something that actually knows which
 // display is going to be used for, well, display.
-class GL_EXPORT HDRMetadataHelperWin {
+class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
  public:
   explicit HDRMetadataHelperWin(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
@@ -26,7 +27,7 @@ class GL_EXPORT HDRMetadataHelperWin {
   HDRMetadataHelperWin(const HDRMetadataHelperWin&) = delete;
   HDRMetadataHelperWin& operator=(const HDRMetadataHelperWin&) = delete;
 
-  ~HDRMetadataHelperWin();
+  ~HDRMetadataHelperWin() override;
 
   // Return the metadata for the display, if available.  Must call
   // UpdateDisplayMetadata first.
@@ -39,6 +40,10 @@ class GL_EXPORT HDRMetadataHelperWin {
   // Convert |hdr_metadata| to DXGI's metadata format.
   static DXGI_HDR_METADATA_HDR10 HDRMetadataToDXGI(
       const gfx::HDRMetadata& hdr_metadata);
+
+  // Implements GpuSwitchingObserver
+  void OnDisplayAdded() override;
+  void OnDisplayRemoved() override;
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;

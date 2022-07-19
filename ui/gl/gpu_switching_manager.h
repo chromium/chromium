@@ -13,7 +13,8 @@
 #include "ui/gl/gpu_switching_observer.h"
 
 namespace ui {
-
+// GpuSwitchingManager is not thread safe. It is running on the browser main
+// thread in the browser and/or on the gpu main thread in the GPU process.
 class GL_EXPORT GpuSwitchingManager {
  public:
   // Getter for the singleton. This will return NULL on failure.

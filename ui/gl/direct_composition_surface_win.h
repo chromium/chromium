@@ -10,7 +10,9 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
-#include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/transform.h"
@@ -32,8 +34,7 @@ namespace gl {
 class DCLayerTree;
 class DirectCompositionChildSurfaceWin;
 
-class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
-                                              public ui::GpuSwitchingObserver {
+class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
@@ -91,9 +92,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   // Similar to the above but disables software overlay support.
   static void DisableSoftwareOverlays();
 
-  // Indicate the overlay caps are invalid.
-  static void InvalidateOverlayCaps();
-
   // Returns true if scaled hardware overlays are supported.
   static bool AreScaledOverlaysSupported();
 
@@ -123,9 +121,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   static void SetScaledOverlaysSupportedForTesting(bool value);
 
   static void SetOverlayFormatUsedForTesting(DXGI_FORMAT format);
-
-  static void SetOverlayHDRGpuInfoUpdateCallback(
-      OverlayHDRInfoUpdateCallback callback);
 
   // On Intel GPUs where YUV overlays are supported, BGRA8 overlays are
   // supported as well but IDXGIOutput3::CheckOverlaySupport() returns
@@ -181,12 +176,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
       std::unique_ptr<ui::DCRendererLayerParams> params) override;
   void SetFrameRate(float frame_rate) override;
 
-  // Implements GpuSwitchingObserver.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
-  void OnDisplayAdded() override;
-  void OnDisplayRemoved() override;
-  void OnDisplayMetricsChanged() override;
-
   bool SupportsDelegatedInk() override;
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
@@ -225,6 +214,54 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   scoped_refptr<DirectCompositionChildSurfaceWin> root_surface_;
   std::unique_ptr<DCLayerTree> layer_tree_;
+};
+
+class GL_EXPORT DirectCompositionOverlayCapsObserver
+    : public base::CheckedObserver {
+ public:
+  virtual void OnOverlayCapsChanged() = 0;
+
+ protected:
+  ~DirectCompositionOverlayCapsObserver() override = default;
+};
+
+// Upon receiving display notifications from ui::GpuSwitchingManager,
+// DirectCompositionOverlayCapsMonitor updates its overlay caps with the new
+// display setting and notifies DirectCompositionOverlayCapsObserver for the
+// overlay cap change.
+class GL_EXPORT DirectCompositionOverlayCapsMonitor
+    : public ui::GpuSwitchingObserver {
+ public:
+  DirectCompositionOverlayCapsMonitor(
+      const DirectCompositionOverlayCapsMonitor&) = delete;
+  DirectCompositionOverlayCapsMonitor& operator=(
+      const DirectCompositionOverlayCapsMonitor&) = delete;
+
+  static DirectCompositionOverlayCapsMonitor* GetInstance();
+
+  // DirectCompositionOverlayCapsMonitor is running on GpuMain thread.
+  // AddObserver()/RemoveObserver() are thread safe.
+  void AddObserver(DirectCompositionOverlayCapsObserver* observer);
+  void RemoveObserver(DirectCompositionOverlayCapsObserver* observer);
+
+  // Called when the overlay caps have changed in DirectCompositionSurfaceWin.
+  void NotifyOverlayCapsChanged();
+
+  // Implements GpuSwitchingObserver.
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void OnDisplayAdded() override;
+  void OnDisplayRemoved() override;
+  void OnDisplayMetricsChanged() override;
+
+ private:
+  friend class base::NoDestructor<DirectCompositionOverlayCapsMonitor>;
+
+  DirectCompositionOverlayCapsMonitor();
+  ~DirectCompositionOverlayCapsMonitor() override;
+
+  scoped_refptr<
+      base::ObserverListThreadSafe<DirectCompositionOverlayCapsObserver>>
+      observer_list_;
 };
 
 }  // namespace gl

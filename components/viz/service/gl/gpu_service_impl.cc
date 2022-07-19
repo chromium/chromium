@@ -430,18 +430,16 @@ GpuServiceImpl::GpuServiceImpl(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  auto info_callback =
-      base::BindRepeating(&GpuServiceImpl::UpdateOverlayAndDXGIInfo,
-                          weak_ptr_factory_.GetWeakPtr());
-  gl::DirectCompositionSurfaceWin::SetOverlayHDRGpuInfoUpdateCallback(
-      info_callback);
-
   if (media::SupportMediaFoundationClearPlayback()) {
     // Initialize the OverlayStateService using the GPUServiceImpl task
     // sequence.
     auto* overlay_state_service = OverlayStateService::GetInstance();
     overlay_state_service->Initialize(base::SequencedTaskRunnerHandle::Get());
   }
+
+  // Add GpuServiceImpl to DirectCompositionOverlayCapsMonitor observer list for
+  // overlay and DXGI info update.
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
 #endif
 
   gpu_memory_buffer_factory_ =
@@ -460,6 +458,10 @@ GpuServiceImpl::~GpuServiceImpl() {
 
   if (!in_host_process())
     GetLogMessageManager()->ShutdownLogging();
+
+#if BUILDFLAG(IS_WIN)
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->RemoveObserver(this);
+#endif
 
   // Destroy the receiver on the IO thread.
   {
@@ -1339,7 +1341,8 @@ gpu::Scheduler* GpuServiceImpl::GetGpuScheduler() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void GpuServiceImpl::UpdateOverlayAndDXGIInfo() {
+// Update Overlay and DXGI Info
+void GpuServiceImpl::OnOverlayCapsChanged() {
   gpu::OverlayInfo old_overlay_info = gpu_info_.overlay_info;
   gpu::CollectHardwareOverlayInfo(&gpu_info_.overlay_info);
 

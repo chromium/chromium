@@ -79,10 +79,12 @@ bool OverlayCapsValid() {
   base::AutoLock auto_lock(GetOverlayLock());
   return g_overlay_caps_valid;
 }
+
 void SetOverlayCapsValid(bool valid) {
   base::AutoLock auto_lock(GetOverlayLock());
   g_overlay_caps_valid = valid;
 }
+
 // A warpper of IDXGIOutput4::CheckOverlayColorSpaceSupport()
 bool CheckOverlayColorSpaceSupport(
     DXGI_FORMAT dxgi_format,
@@ -107,9 +109,6 @@ gfx::Size g_primary_monitor_size;
 int g_num_of_monitors = 0;
 
 IDCompositionDevice2* g_dcomp_device = nullptr;
-
-DirectCompositionSurfaceWin::OverlayHDRInfoUpdateCallback
-    g_overlay_hdr_gpu_info_callback;
 
 // Preferred overlay format set when detecting overlay support during
 // initialization.  Set to NV12 by default so that it's used when enabling
@@ -363,11 +362,6 @@ void UpdateOverlaySupport() {
   g_overlay_format_used_hdr = overlay_format_used_hdr;
 }
 
-void RunOverlayHdrGpuInfoUpdateCallback() {
-  if (g_overlay_hdr_gpu_info_callback)
-    g_overlay_hdr_gpu_info_callback.Run();
-}
-
 void UpdateMonitorInfo() {
   g_num_of_monitors = GetSystemMetrics(SM_CMONITORS);
 
@@ -400,12 +394,9 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
           settings.disable_nv12_dynamic_textures,
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
-          settings.no_downscaled_overlay_promotion)) {
-  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
-}
+          settings.no_downscaled_overlay_promotion)) {}
 
 DirectCompositionSurfaceWin::~DirectCompositionSurfaceWin() {
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
   Destroy();
 }
 
@@ -551,17 +542,13 @@ void DirectCompositionSurfaceWin::DisableDecodeSwapChain() {
 // static
 void DirectCompositionSurfaceWin::DisableOverlays() {
   SetSupportsOverlays(false);
-  RunOverlayHdrGpuInfoUpdateCallback();
+  DirectCompositionOverlayCapsMonitor::GetInstance()
+      ->NotifyOverlayCapsChanged();
 }
 
 // static
 void DirectCompositionSurfaceWin::DisableSoftwareOverlays() {
   g_disable_sw_overlays = true;
-}
-
-// static
-void DirectCompositionSurfaceWin::InvalidateOverlayCaps() {
-  SetOverlayCapsValid(false);
 }
 
 // static
@@ -761,12 +748,6 @@ bool DirectCompositionSurfaceWin::AllowTearing() {
 }
 
 // static
-void DirectCompositionSurfaceWin::SetOverlayHDRGpuInfoUpdateCallback(
-    OverlayHDRInfoUpdateCallback callback) {
-  g_overlay_hdr_gpu_info_callback = std::move(callback);
-}
-
-// static
 void DirectCompositionSurfaceWin::EnableBGRA8OverlaysWithYUVOverlaySupport() {
   // This has to be set before initializing overlay caps.
   DCHECK(!OverlayCapsValid());
@@ -929,7 +910,8 @@ bool DirectCompositionSurfaceWin::SetDrawRectangle(const gfx::Rect& rectangle) {
   bool result = root_surface_->SetDrawRectangle(rectangle);
   if (!result &&
       DirectCompositionChildSurfaceWin::IsDirectCompositionSwapChainFailed()) {
-    RunOverlayHdrGpuInfoUpdateCallback();
+    DirectCompositionOverlayCapsMonitor::GetInstance()
+        ->NotifyOverlayCapsChanged();
   }
 
   return result;
@@ -945,29 +927,6 @@ bool DirectCompositionSurfaceWin::SupportsGpuVSync() const {
 
 void DirectCompositionSurfaceWin::SetGpuVSyncEnabled(bool enabled) {
   root_surface_->SetGpuVSyncEnabled(enabled);
-}
-
-void DirectCompositionSurfaceWin::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {}
-
-void DirectCompositionSurfaceWin::OnDisplayAdded() {
-  InvalidateOverlayCaps();
-  UpdateOverlaySupport();
-  UpdateMonitorInfo();
-  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata();
-  RunOverlayHdrGpuInfoUpdateCallback();
-}
-
-void DirectCompositionSurfaceWin::OnDisplayRemoved() {
-  InvalidateOverlayCaps();
-  UpdateOverlaySupport();
-  UpdateMonitorInfo();
-  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata();
-  RunOverlayHdrGpuInfoUpdateCallback();
-}
-
-void DirectCompositionSurfaceWin::OnDisplayMetricsChanged() {
-  UpdateMonitorInfo();
 }
 
 bool DirectCompositionSurfaceWin::SupportsDelegatedInk() {
@@ -1020,6 +979,67 @@ void DirectCompositionSurfaceWin::SetMonitorInfoForTesting(
     gfx::Size monitor_size) {
   g_num_of_monitors = num_of_monitors;
   g_primary_monitor_size = monitor_size;
+}
+
+// For DirectComposition Display Monitor.
+DirectCompositionOverlayCapsMonitor::DirectCompositionOverlayCapsMonitor()
+    : observer_list_(new base::ObserverListThreadSafe<
+                     DirectCompositionOverlayCapsObserver>()) {
+  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
+}
+
+DirectCompositionOverlayCapsMonitor::~DirectCompositionOverlayCapsMonitor() {
+  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
+}
+
+// static
+DirectCompositionOverlayCapsMonitor*
+DirectCompositionOverlayCapsMonitor::GetInstance() {
+  static base::NoDestructor<DirectCompositionOverlayCapsMonitor>
+      direct_compoisition_overlay_cap_monitor;
+  return direct_compoisition_overlay_cap_monitor.get();
+}
+
+void DirectCompositionOverlayCapsMonitor::AddObserver(
+    DirectCompositionOverlayCapsObserver* observer) {
+  observer_list_->AddObserver(observer);
+}
+
+void DirectCompositionOverlayCapsMonitor::RemoveObserver(
+    DirectCompositionOverlayCapsObserver* observer) {
+  observer_list_->RemoveObserver(observer);
+}
+
+void DirectCompositionOverlayCapsMonitor::NotifyOverlayCapsChanged() {
+  observer_list_->Notify(
+      FROM_HERE, &DirectCompositionOverlayCapsObserver::OnOverlayCapsChanged);
+}
+
+// Called from GpuSwitchingObserver on the GPU main thread.
+void DirectCompositionOverlayCapsMonitor::OnGpuSwitched(
+    gl::GpuPreference active_gpu_heuristic) {}
+
+// Called from GpuSwitchingObserver on the GPU main thread.
+void DirectCompositionOverlayCapsMonitor::OnDisplayAdded() {
+  SetOverlayCapsValid(false);
+  UpdateOverlaySupport();
+  UpdateMonitorInfo();
+
+  NotifyOverlayCapsChanged();
+}
+
+// Called from GpuSwitchingObserver on the GPU main thread.
+void DirectCompositionOverlayCapsMonitor::OnDisplayRemoved() {
+  SetOverlayCapsValid(false);
+  UpdateOverlaySupport();
+  UpdateMonitorInfo();
+
+  NotifyOverlayCapsChanged();
+}
+
+// Called from GpuSwitchingObserver on the GPU main thread.
+void DirectCompositionOverlayCapsMonitor::OnDisplayMetricsChanged() {
+  UpdateMonitorInfo();
 }
 
 }  // namespace gl

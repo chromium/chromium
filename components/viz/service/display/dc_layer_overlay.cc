@@ -30,7 +30,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 namespace viz {
 
@@ -469,41 +468,28 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
-      debug_settings_(debug_settings),
-      viz_task_runner_(skip_initialization_for_testing
-                           ? nullptr
-                           : base::ThreadTaskRunnerHandle::Get()) {
+      debug_settings_(debug_settings) {
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
-    ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
+    gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
   }
   allow_promotion_hinting_ = media::SupportMediaFoundationClearPlayback();
 }
 
 DCLayerOverlayProcessor::~DCLayerOverlayProcessor() {
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->RemoveObserver(this);
 }
 
-// Called on the Viz Compositor thread
 void DCLayerOverlayProcessor::UpdateHasHwOverlaySupport() {
-  DCHECK(viz_task_runner_->BelongsToCurrentThread());
+  // gl::AreOverlaysSupportedWin() calls
+  // gl::DirectCompositionSurfaceWin::AreOverlaysSupported(). It's thread safe.
   has_overlay_support_ = gl::AreOverlaysSupportedWin();
 }
 
-// Not on the Viz Compositor thread
-void DCLayerOverlayProcessor::OnDisplayAdded() {
-  viz_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DCLayerOverlayProcessor::UpdateHasHwOverlaySupport,
-                     base::Unretained(this)));
-}
-
-// Not on the Viz Compositor thread
-void DCLayerOverlayProcessor::OnDisplayRemoved() {
-  viz_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DCLayerOverlayProcessor::UpdateHasHwOverlaySupport,
-                     base::Unretained(this)));
+// Called on the Viz Compositor thread.
+void DCLayerOverlayProcessor::OnOverlayCapsChanged() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  UpdateHasHwOverlaySupport();
 }
 
 void DCLayerOverlayProcessor::ClearOverlayState() {
