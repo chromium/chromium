@@ -529,7 +529,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     arr = self.merge_command_line_args(arr, '--test-launcher-filter-file=', ';')
     return arr
 
-  def substitute_magic_args(self, test_config, tester_name):
+  def substitute_magic_args(self, test_config, tester_name, tester_config):
     """Substitutes any magic substitution args present in |test_config|.
 
     Substitutions are done in-place.
@@ -542,6 +542,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           a specific builder, e.g. the output of update_and_cleanup_test.
       tester_name: A string containing the name of the tester that |test_config|
           came from.
+      tester_config: A dict containing the configuration for the builder that
+          |test_config| is for.
     """
     substituted_array = []
     for arg in test_config.get('args', []):
@@ -550,7 +552,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             magic_substitutions.MAGIC_SUBSTITUTION_PREFIX, '')
         if hasattr(magic_substitutions, function):
           substituted_array.extend(
-              getattr(magic_substitutions, function)(test_config, tester_name))
+              getattr(magic_substitutions, function)(test_config, tester_name,
+                                                     tester_config))
         else:
           raise BBGenErr(
               'Magic substitution function %s does not exist' % function)
@@ -824,7 +827,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)
-    self.substitute_magic_args(result, tester_name)
+    self.substitute_magic_args(result, tester_name, tester_config)
 
     if not result.get('merge'):
       # TODO(https://crbug.com/958376): Consider adding the ability to not have
@@ -860,7 +863,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)
-    self.substitute_magic_args(result, tester_name)
+    self.substitute_magic_args(result, tester_name, tester_config)
 
     if not result.get('merge'):
       # TODO(https://crbug.com/958376): Consider adding the ability to not have
@@ -888,7 +891,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     }
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
-    self.substitute_magic_args(result, tester_name)
+    self.substitute_magic_args(result, tester_name, tester_config)
     return result
 
   def generate_junit_test(self, waterfall, tester_name, tester_config,
@@ -904,7 +907,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.initialize_args_for_test(result, tester_config)
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
-    self.substitute_magic_args(result, tester_name)
+    self.substitute_magic_args(result, tester_name, tester_config)
     return result
 
   def generate_skylab_test(self, waterfall, tester_name, tester_config,
@@ -919,7 +922,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.initialize_args_for_test(result, tester_config)
     result = self.update_and_cleanup_test(result, test_name, tester_name,
                                           tester_config, waterfall)
-    self.substitute_magic_args(result, tester_name)
+    self.substitute_magic_args(result, tester_name, tester_config)
     return result
 
   def substitute_gpu_args(self, tester_config, swarming_config, args):

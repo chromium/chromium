@@ -138,5 +138,23 @@ class GPUExpectedDeviceId(unittest.TestCase):
       magic_substitutions.GPUExpectedDeviceId({}, None)
 
 
+class GPUParallelJobs(unittest.TestCase):
+  def testNoOsType(self):
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUParallelJobs(None, None, {})
+
+  def testParallelJobs(self):
+    for os_type in ['lacros', 'linux', 'mac', 'win']:
+      retval = magic_substitutions.GPUParallelJobs(None, None,
+                                                   {'os_type': os_type})
+      self.assertEqual(retval, ['--jobs=4'])
+
+  def testSerialJobs(self):
+    for os_type in ['android', 'chromeos', 'fuchsia']:
+      retval = magic_substitutions.GPUParallelJobs(None, None,
+                                                   {'os_type': os_type})
+      self.assertEqual(retval, ['--jobs=1'])
+
+
 if __name__ == '__main__':
   unittest.main()

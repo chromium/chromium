@@ -63,6 +63,16 @@ extension_harness_additional_script = r"""
   window.onload = function() { window._loaded = true; }
 """
 
+# For whatever reason, these tests don't like being run in parallel, so run them
+# serially.
+SERIAL_TESTS = {
+    # transformfeedback tests due to crbug.com/1345466.
+    'deqp/functional/gles3/transformfeedback/basic_types_separate_lines.html',
+    'deqp/functional/gles3/transformfeedback/interpolation_smooth.html',
+    'deqp/functional/gles3/transformfeedback/point_size.html',
+    'deqp/functional/gles3/transformfeedback/random_separate_lines.html',
+}
+
 
 # cmp no longer exists in Python 3
 def cmp(a: typing.Any, b: typing.Any) -> int:
@@ -100,6 +110,9 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def Name(cls) -> str:
     return 'webgl_conformance'
 
+  def CanRunInParallel(self) -> bool:
+    return self.shortName() not in SERIAL_TESTS
+
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(WebGLConformanceIntegrationTest, cls).AddCommandlineArgs(parser)
@@ -117,6 +130,16 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       help='Whether to enable Metal debug layers')
 
   @classmethod
+  def SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs):
+    """Sets class member variables from parsed command line options.
+
+    This was historically done once in GenerateGpuTests, but that relied on the
+    process always being the same, which is not the case if running tests in
+    parallel.
+    """
+    cls._webgl_version = int(options.webgl_conformance_version.split('.')[0])
+
+  @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     #
     # Conformance tests
@@ -124,9 +147,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     test_paths = cls._ParseTests('00_test_list.txt',
                                  options.webgl_conformance_version,
                                  (options.webgl2_only == 'true'), None)
-    cls._webgl_version = [
-        int(x) for x in options.webgl_conformance_version.split('.')
-    ][0]
+    cls.SetClassVariablesFromOptions(options)
     for test_path in test_paths:
       test_path_with_args = test_path
       if cls._webgl_version > 1:
@@ -432,7 +453,15 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls) -> None:
     super(WebGLConformanceIntegrationTest, cls).SetUpProcess()
-    cls.CustomizeBrowserArgs([])
+    cls.SetClassVariablesFromOptions(cls.child.context.finder_options)
+    cls.CustomizeBrowserArgs([
+        # When running tests in parallel, windows can be treated as occluded if
+        # a newly opened window fully covers a previous one, which can cause
+        # issues in a few tests. This is practically only an issue on Windows
+        # since Linux/Mac stagger new windows, but pass in on all platforms
+        # since it could technically be hit on any platform.
+        '--disable-backgrounding-occluded-windows',
+    ])
     cls.StartBrowser()
     # By setting multiple server directories, the root of the server
     # implicitly becomes the common base directory, i.e., the Chromium

@@ -16,7 +16,7 @@ the differentiation can be done programmatically.
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 
-def ChromeOSTelemetryRemote(test_config, _):
+def ChromeOSTelemetryRemote(test_config, _=None, __=None):
   """Substitutes the correct CrOS remote Telemetry arguments.
 
   VMs use a hard-coded remote address and port, while physical hardware use
@@ -38,7 +38,7 @@ def ChromeOSTelemetryRemote(test_config, _):
   ]
 
 
-def ChromeOSGtestFilterFile(test_config, _):
+def ChromeOSGtestFilterFile(test_config, _=None, __=None):
   """Substitutes the correct CrOS filter file for gtests."""
   board = _GetChromeOSBoardName(test_config)
   test_name = test_config['name']
@@ -76,7 +76,7 @@ def _GetChromeOSBoardName(test_config):
   return dimensions[0].get('device_type', 'amd64-generic')
 
 
-def GPUExpectedDeviceId(test_config, _):
+def GPUExpectedDeviceId(test_config, _=None, __=None):
   """Substitutes the correct expected GPU(s) for certain GPU tests.
 
   Most configurations only need one expected GPU, but heterogeneous pools (e.g.
@@ -111,6 +111,23 @@ def GPUExpectedDeviceId(test_config, _):
   return retval
 
 
-def TestOnlySubstitution(_, __):
+def GPUParallelJobs(_, __, tester_config):
+  """Substitutes the correct number of jobs for GPU tests.
+
+  Linux/Mac/Windows can run tests in parallel since multiple windows can be open
+  but other platforms cannot.
+
+  Args:
+    tester_config: A dict containing the configuration for the builder
+        that |test_config| is for.
+  """
+  os_type = tester_config.get('os_type')
+  assert os_type
+  if os_type in ['lacros', 'linux', 'mac', 'win']:
+    return ['--jobs=4']
+  return ['--jobs=1']
+
+
+def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""
   return ['--magic-substitution-success']
