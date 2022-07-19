@@ -17,7 +17,8 @@ namespace string_matching {
 class TokenizedString {
  public:
   enum class Mode {
-    // Break words into tokens at camel case and alpha/num boundaries.
+    // Break words into tokens at camel case, alpha/num, and white space
+    // boundaries.
     kCamelCase,
     // Break words into tokens at white space.
     kWords,
