@@ -598,7 +598,7 @@ const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
 
 // When enabled, removes any entry points to the history UI from Incognito mode.
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
-    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)

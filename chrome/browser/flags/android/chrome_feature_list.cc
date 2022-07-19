@@ -889,7 +889,7 @@ const base::Feature kUmaBackgroundSessions{"UMABackgroundSessions",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
-    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kUpdateNotificationScheduleServiceImmediateShowOption{
     "UpdateNotificationScheduleServiceImmediateShowOption",
