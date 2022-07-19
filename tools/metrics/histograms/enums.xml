@@ -71884,6 +71884,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="59" label="Ecosia"/>
 </enum>
 
+<enum name="OmniboxSuggestionUiType">
+  <int value="0" label="DEFAULT"/>
+  <int value="1" label="EDIT_URL_SUGGESTION"/>
+  <int value="2" label="ANSWER_SUGGESTION"/>
+  <int value="3" label="ENTITY_SUGGESTION"/>
+  <int value="4" label="TAIL_SUGGESTION"/>
+  <int value="5" label="CLIPBOARD_SUGGESTION"/>
+  <int value="6" label="HEADER"/>
+  <int value="7" label="TILE_NAVSUGGEST"/>
+  <int value="8" label="PEDAL_SUGGESTION"/>
+</enum>
+
 <enum name="OmniboxSuggestRequests">
   <int value="1" label="requests sent"/>
   <int value="2" label="requests invalidated"/>

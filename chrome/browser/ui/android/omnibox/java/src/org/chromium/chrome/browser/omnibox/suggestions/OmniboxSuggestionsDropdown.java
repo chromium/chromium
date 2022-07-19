@@ -156,6 +156,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         public ViewHolder getRecycledView(int viewType) {
             ViewHolder result = super.getRecycledView(viewType);
             SuggestionsMetrics.recordSuggestionViewReused(result != null);
+            if (result == null) {
+                SuggestionsMetrics.recordSuggestionsViewCreatedType(viewType);
+            } else {
+                SuggestionsMetrics.recordSuggestionsViewReusedType(viewType);
+            }
             return result;
         }
     }

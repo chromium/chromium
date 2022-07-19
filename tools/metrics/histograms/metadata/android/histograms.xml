@@ -2667,6 +2667,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionView.CreatedType"
+    enum="OmniboxSuggestionUiType" expires_after="2023-07-01">
+  <owner>ender@google.com</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>rongtan@chromium.org</owner>
+  <summary>
+    Records the type of suggestion that was reused with the help of
+    RecyclerView.
+
+    This histogram drives OmniboxSuggestionsDropdown optimization, helping us
+    find the balance between the volume of suggestions and amount of memory we
+    delegate to re-use the pre-constructed suggestion views.
+
+    Along with the Android.Omnibox.SuggestionView.ReusedType, the two histograms
+    paint the picture of which suggestions need to be created more often than
+    others vs which suggestions have more capacity than is actually needed.
+    Higher reuse means lower latency at the expense of slight increase of memory
+    consumption.
+
+    This histogram is related to Android.Omnibox.SuggestionView.ReusedType.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionView.CreateTime"
     units="microseconds" expires_after="2022-06-19">
   <obsolete>
@@ -2744,6 +2767,29 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
     Android.Omnibox.SuggestionList.MeasureTime2,
     Android.Omnibox.SuggestionView.CreateTime2.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionView.ReusedType"
+    enum="OmniboxSuggestionUiType" expires_after="2023-07-01">
+  <owner>ender@google.com</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>rongtan@chromium.org</owner>
+  <summary>
+    Records the type of suggestion that was reused with the help of
+    RecyclerView.
+
+    This histogram drives OmniboxSuggestionsDropdown optimization, helping us
+    find the balance between the volume of suggestions and amount of memory we
+    delegate to re-use the pre-constructed suggestion views.
+
+    Along with the Android.Omnibox.SuggestionView.CreatedType, the two
+    histograms paint the picture of which suggestions need to be created more
+    often than others vs which suggestions have more capacity than is actually
+    needed. Higher reuse means lower latency at the expense of slight increase
+    of memory consumption.
+
+    This histogram is related to Android.Omnibox.SuggestionView.CreatedType.
   </summary>
 </histogram>
 

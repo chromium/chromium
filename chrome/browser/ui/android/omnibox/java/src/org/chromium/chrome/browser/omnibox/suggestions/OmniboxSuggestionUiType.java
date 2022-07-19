@@ -9,12 +9,24 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** The different types of view that a suggestion can be. */
+/**
+ * The different types of view that a suggestion can be.
+ *
+ * When modifying this list, please also update the
+ * - OmniboxSuggestionsDropdown#HistogramRecordingRecycledViewPool,
+ * - OmniboxSuggestionUiType histogram enum
+ * to reflect the expected/anticipated volume of views that may be reused and appropriate
+ * histogram details.
+ *
+ * Please note that the types below are also being recorded in a separate histogram, see:
+ * - SuggestionsMetrics#recordSuggestionsViewCreatedType()
+ * - SuggestionsMetrics#recordSuggestionsViewReusedType().
+ */
 @IntDef({OmniboxSuggestionUiType.DEFAULT, OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
         OmniboxSuggestionUiType.ANSWER_SUGGESTION, OmniboxSuggestionUiType.ENTITY_SUGGESTION,
         OmniboxSuggestionUiType.TAIL_SUGGESTION, OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
         OmniboxSuggestionUiType.HEADER, OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-        OmniboxSuggestionUiType.PEDAL_SUGGESTION})
+        OmniboxSuggestionUiType.PEDAL_SUGGESTION, OmniboxSuggestionUiType.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface OmniboxSuggestionUiType {
     int DEFAULT = 0;
@@ -26,4 +38,6 @@ public @interface OmniboxSuggestionUiType {
     int HEADER = 6;
     int TILE_NAVSUGGEST = 7;
     int PEDAL_SUGGESTION = 8;
+
+    int COUNT = 9;
 }

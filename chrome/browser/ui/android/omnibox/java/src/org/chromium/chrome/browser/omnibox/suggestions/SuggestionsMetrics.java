@@ -70,6 +70,31 @@ public class SuggestionsMetrics {
     }
 
     /**
+     * Record the type of the suggestion view that had to be constructed.
+     * Recorded view type could not be retrieved from the Recycled View Pool and had to
+     * be re-created.
+     * Relevant for Omnibox recycler view improvements.
+     *
+     * @param type The type of view that needed to be recreated.
+     */
+    static final void recordSuggestionsViewCreatedType(@OmniboxSuggestionUiType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Omnibox.SuggestionView.CreatedType", type, OmniboxSuggestionUiType.COUNT);
+    }
+
+    /**
+     * Record the type of the suggestion view that was re-used.
+     * Recorded view type was retrieved from the Recycled View Pool.
+     * Relevant for Omnibox recycler view improvements.
+     *
+     * @param type The type of view that was reused from pool.
+     */
+    static final void recordSuggestionsViewReusedType(@OmniboxSuggestionUiType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Omnibox.SuggestionView.ReusedType", type, OmniboxSuggestionUiType.COUNT);
+    }
+
+    /**
      * Record whether the interaction with the Omnibox resulted with a navigation (true) or user
      * leaving the omnibox and suggestions list.
      *
