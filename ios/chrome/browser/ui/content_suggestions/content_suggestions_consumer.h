@@ -9,6 +9,7 @@
 @class ContentSuggestionsMostVisitedItem;
 @class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
+@class QuerySuggestionConfig;
 
 // Supports adding/removing/updating UI elements to the ContentSuggestions
 // UIViewController.
@@ -41,6 +42,10 @@
 // Indicates to the consumer the current Shortcuts tiles to show with `configs`.
 - (void)setShortcutTilesWithConfigs:
     (NSArray<ContentSuggestionsMostVisitedActionItem*>*)configs;
+
+// Indicates to the consumer the current Trending Queries to show with
+// `configs`.
+- (void)setTrendingQueriesWithConfigs:(NSArray<QuerySuggestionConfig*>*)configs;
 
 // Indicates to the consumer to update the Reading List count badge with
 // `count`.

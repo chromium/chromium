@@ -46,6 +46,9 @@ const float kShadowOpacity = 0.06;
 // The shadow offset of this container.
 const CGSize kShadowOffset = CGSizeMake(0, 20);
 
+// Vertical space allocated to the Trending Queries module content.
+const float kTrendingQueriesContentHeight = 103;
+
 }  // namespace
 
 @interface ContentSuggestionsModuleContainer ()
@@ -141,6 +144,9 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
           IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
     case ContentSuggestionsModuleTypeReturnToRecentTab:
       return @"";
+    case ContentSuggestionsModuleTypeTrendingQueries:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_TRENDING_QUERIES_MODULE_TITLE);
   }
 }
 
@@ -182,6 +188,8 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
       break;
     case ContentSuggestionsModuleTypeReturnToRecentTab:
       return kReturnToRecentTabSize.height;
+    case ContentSuggestionsModuleTypeTrendingQueries:
+      contentHeight += kTrendingQueriesContentHeight;
   }
   return kContentTitleVerticalSpacing + ceilf(self.title.font.lineHeight) +
          kTitleTopInset + contentHeight;

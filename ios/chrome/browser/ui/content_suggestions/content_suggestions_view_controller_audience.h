@@ -17,6 +17,9 @@
 // Notifies the audience that the Return to Recent Tab tile has been added.
 - (void)returnToRecentTabWasAdded;
 
+// Notifies the audience that a module was removed.
+- (void)moduleWasRemoved;
+
 // Returns current safe area insets for the window owning this discover feed.
 // TODO:(crbug.com/1285378) Remove this after Content Suggestions header is
 // moved out the Content Suggestions CollectionView.

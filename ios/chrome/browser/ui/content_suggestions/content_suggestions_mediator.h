@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_response_bridge.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace favicon {
@@ -44,7 +45,8 @@ class WebStateList;
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsCommands,
                 ContentSuggestionsGestureCommands,
-                StartSurfaceRecentTabObserving>
+                StartSurfaceRecentTabObserving,
+                StartSuggestServiceResponseDelegating>
 
 // Default initializer.
 - (instancetype)

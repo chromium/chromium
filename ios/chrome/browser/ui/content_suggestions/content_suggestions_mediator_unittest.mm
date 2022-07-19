@@ -4,25 +4,27 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/time/default_clock.h"
-#include "components/favicon/core/large_icon_service_impl.h"
-#include "components/favicon/core/test/mock_favicon_service.h"
-#include "components/ntp_tiles/icon_cacher.h"
-#include "components/ntp_tiles/most_visited_sites.h"
-#include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/time/default_clock.h"
+#import "components/favicon/core/large_icon_service_impl.h"
+#import "components/favicon/core/test/mock_favicon_service.h"
+#import "components/ntp_tiles/icon_cacher.h"
+#import "components/ntp_tiles/most_visited_sites.h"
+#import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
@@ -35,10 +37,10 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,6 +78,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
     large_icon_service_.reset(new favicon::LargeIconServiceImpl(
         &mock_favicon_service_, nullptr, 32, favicon_base::IconType::kTouchIcon,
@@ -257,4 +262,34 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
 
   OCMExpect([consumer_ hideReturnToRecentTabTile]);
   [mediator_ mostRecentTabWasRemoved:web_state];
+}
+
+// Tests that the mediator calls the consumer properly in response to a call
+// from TestStartSuggestServiceResponseBridge
+TEST_F(ContentSuggestionsMediatorTest,
+       TestStartSuggestServiceResponseDelegating) {
+  // Expect the consumer is called with something if no suggestions are
+  // returned.
+  OCMExpect([consumer_ setTrendingQueriesWithConfigs:[OCMArg any]]);
+  std::vector<QuerySuggestion> response_queries{
+      {u"query1", GURL("http://test-url.com/query1")},
+      {u"query2", GURL("http://test-url.com/query1")}};
+  [mediator_ suggestionsReceived:std::move(response_queries)];
+
+  // Expect the consumer is called with an empty array if no suggestions are
+  // returned.
+  OCMExpect([consumer_ setTrendingQueriesWithConfigs:@[]]);
+  [mediator_ suggestionsReceived:std::vector<QuerySuggestion>()];
+
+  // Test that the mediator loads the URL in the config passed into
+  // loadSuggestedQuery:.
+  GURL url = GURL("http://chromium.org");
+  QuerySuggestionConfig* config = [[QuerySuggestionConfig alloc] init];
+  config.index = 1;
+  config.URL = url;
+  [mediator_ loadSuggestedQuery:config];
+  EXPECT_EQ(url, url_loader_->last_params.web_params.url);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+      url_loader_->last_params.web_params.transition_type));
 }

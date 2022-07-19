@@ -348,6 +348,10 @@
   [self.ntpDelegate setContentOffsetToTop];
 }
 
+- (void)moduleWasRemoved {
+  [self.ntpDelegate updateFeedLayout];
+}
+
 - (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
   return [SceneStateBrowserAgent::FromBrowser(self.browser)
               ->GetSceneState()

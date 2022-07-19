@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_
 
 @class CollectionViewItem;
+@class QuerySuggestionConfig;
 
 // Commands protocol allowing the ContentSuggestions ViewControllers to interact
 // with the coordinator layer, and from there to the rest of the application.
@@ -19,6 +20,8 @@
 - (void)openMostRecentTab;
 // Handles the actions following a tap on the promo.
 - (void)handlePromoTapped;
+// Handles the actions following a tap on a trending query.
+- (void)loadSuggestedQuery:(QuerySuggestionConfig*)config;
 
 @end
 
