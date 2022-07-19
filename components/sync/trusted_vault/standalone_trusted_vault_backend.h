@@ -118,6 +118,9 @@ class StandaloneTrustedVaultBackend
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
 
+  void SetDeviceRegisteredVersionForTesting(const std::string& gaia_id,
+                                            int version);
+
   void SetClockForTesting(base::Clock* clock);
 
   // These values are persisted to logs. Entries should not be renumbered and

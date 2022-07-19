@@ -556,6 +556,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
@@ -677,64 +680,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldNotRegisterDeviceIfAlreadyRegistered) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
-  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
-  const int kLastKeyVersion = 1;
-
-  TrustedVaultConnection::RegisterAuthenticationFactorCallback
-      device_registration_callback;
-  ON_CALL(*connection(),
-          RegisterAuthenticationFactor(
-              Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-              AuthenticationFactorType::kPhysicalDevice,
-              /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
-      .WillByDefault(
-          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
-              int, const SecureBoxPublicKey& device_public_key,
-              AuthenticationFactorType, absl::optional<int>,
-              TrustedVaultConnection::RegisterAuthenticationFactorCallback
-                  callback) {
-            device_registration_callback = std::move(callback);
-            return std::make_unique<TrustedVaultConnection::Request>();
-          });
-
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
-  backend()->SetPrimaryAccount(account_info,
-                               /*has_persistent_auth_error=*/false);
-  ASSERT_FALSE(device_registration_callback.is_null());
-  std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
-
-  // Now the device should be registered.
-  ASSERT_TRUE(backend()
-                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
-                  .device_registered());
-
-  // Mimic a restart. The device should remain registered.
-  ResetBackend();
-  backend()->ReadDataFromDisk();
-
-  ASSERT_TRUE(backend()
-                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
-                  .device_registered());
-
-  // The device should not register again.
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
-  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
-
-  base::HistogramTester histogram_tester;
-  backend()->SetPrimaryAccount(account_info,
-                               /*has_persistent_auth_error=*/false);
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
-      /*sample=*/
-      TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered,
       /*expected_bucket_count=*/1);
 }
 
@@ -1093,6 +1038,179 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
            /*last_key_version=*/kServerConstantKeyVersion + 1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultRedoDeviceRegistration);
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
+      {kVaultKey}, kLastKeyVersion, account_info);
+  // Mimic that device was registered before "redo registration" logic was
+  // introduced.
+  backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
+                                                  /*version=*/0);
+
+  // Mimic restart to be able to test histogram recording.
+  ResetBackend();
+  backend()->ReadDataFromDisk();
+
+  // Another device registration request should be issued upon setting the
+  // primary account.
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  std::vector<uint8_t> serialized_public_device_key;
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info),
+                  ElementsAre(GetConstantTrustedVaultKey(), kVaultKey),
+                  kLastKeyVersion, _, AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const std::vector<std::vector<uint8_t>>&, int,
+                    const SecureBoxPublicKey& device_public_key,
+                    AuthenticationFactorType, absl::optional<int>,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        serialized_public_device_key = device_public_key.ExportToBytes();
+        device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  {
+    base::HistogramTester histogram_tester;
+    backend()->SetPrimaryAccount(account_info,
+                                 /*has_persistent_auth_error=*/false);
+    ASSERT_FALSE(device_registration_callback.is_null());
+    histogram_tester.ExpectUniqueSample(
+        "Sync.TrustedVaultDeviceRegistrationState",
+        /*sample=*/
+        TrustedVaultDeviceRegistrationStateForUMA::
+            kAttemptingRegistrationWithExistingKeyPair,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                        /*sample=*/true,
+                                        /*expected_bucket_count=*/1);
+
+    // Pretend that the registration completed successfully.
+    std::move(device_registration_callback)
+        .Run(TrustedVaultRegistrationStatus::kSuccess);
+
+    // Now the device reregistration should be completed.
+    sync_pb::LocalDeviceRegistrationInfo registration_info =
+        backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
+    EXPECT_TRUE(registration_info.device_registered());
+    EXPECT_THAT(registration_info.device_registered_version(), Eq(1));
+    EXPECT_TRUE(registration_info.has_private_key_material());
+
+    // Ensure device key was reused.
+    EXPECT_THAT(ProtoStringToBytes(registration_info.private_key_material()),
+                Eq(private_device_key));
+    EXPECT_THAT(
+        serialized_public_device_key,
+        Eq(SecureBoxKeyPair::CreateByPrivateKeyImport(private_device_key)
+               ->public_key()
+               .ExportToBytes()));
+  }
+  {
+    // Mimic the restart and verify that kAlreadyRegisteredV1 is recorded.
+    ResetBackend();
+    backend()->ReadDataFromDisk();
+
+    base::HistogramTester histogram_tester;
+    backend()->SetPrimaryAccount(account_info,
+                                 /*has_persistent_auth_error=*/false);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.TrustedVaultDeviceRegistrationState",
+        /*sample=*/
+        TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                        /*sample=*/true,
+                                        /*expected_bucket_count=*/1);
+  }
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotRedoDeviceRegistrationIfFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kSyncTrustedVaultRedoDeviceRegistration);
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
+      {kVaultKey}, kLastKeyVersion, account_info);
+  // Mimic that device was registered before "redo registration" logic was
+  // introduced.
+  backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
+                                                  /*version=*/0);
+
+  // Mimic restart to be able to test histogram recording.
+  ResetBackend();
+  backend()->ReadDataFromDisk();
+
+  // No registration attempt should be made, since device is already registered
+  // and "redo registration" logic is disabled.
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
+
+  base::HistogramTester histogram_tester;
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDeviceRegistrationState",
+      /*sample=*/
+      TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRegisterWithRecentVersionAndNotRedoRegistration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultRedoDeviceRegistration);
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
+      {kVaultKey}, kLastKeyVersion, account_info);
+  EXPECT_THAT(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered_version(),
+              Eq(1));
+
+  // Mimic restart to be able to test histogram recording.
+  ResetBackend();
+  backend()->ReadDataFromDisk();
+
+  // No registration attempt should be made, since device is already registered
+  // with version 1.
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
+
+  base::HistogramTester histogram_tester;
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDeviceRegistrationState",
+      /*sample=*/
+      TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
