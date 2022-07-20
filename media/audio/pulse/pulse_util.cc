@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <memory>
+#include <type_traits>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -96,12 +97,12 @@ class ScopedPropertyList {
   ScopedPropertyList(const ScopedPropertyList&) = delete;
   ScopedPropertyList& operator=(const ScopedPropertyList&) = delete;
 
-  ~ScopedPropertyList() { pa_proplist_free(property_list_); }
-
-  pa_proplist* get() const { return property_list_; }
+  pa_proplist* get() const { return property_list_.get(); }
 
  private:
-  raw_ptr<pa_proplist, DanglingUntriaged> property_list_;
+  using deleter =
+      std::integral_constant<decltype(pa_proplist_free)*, pa_proplist_free>;
+  std::unique_ptr<pa_proplist, deleter> property_list_;
 };
 
 struct InputBusData {
