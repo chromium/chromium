@@ -2741,8 +2741,9 @@ AutotestPrivateShowPluginVMInstallerFunction::Run() {
 class AutotestPrivateInstallBorealisFunction::InstallationObserver
     : public borealis::BorealisInstaller::Observer {
  public:
-  InstallationObserver(Profile* profile,
-                       base::OnceCallback<void(bool)> completion_callback)
+  InstallationObserver(
+      Profile* profile,
+      base::OnceCallback<void(std::string)> completion_callback)
       : observation_(this),
         completion_callback_(std::move(completion_callback)) {
     observation_.Observe(
@@ -2762,9 +2763,12 @@ class AutotestPrivateInstallBorealisFunction::InstallationObserver
   void OnStateUpdated(
       borealis::BorealisInstaller::InstallingState new_state) override {}
 
-  void OnInstallationEnded(borealis::BorealisInstallResult result) override {
+  void OnInstallationEnded(borealis::BorealisInstallResult result,
+                           const std::string& error_description) override {
     std::move(completion_callback_)
-        .Run(result == borealis::BorealisInstallResult::kSuccess);
+        .Run(result == borealis::BorealisInstallResult::kSuccess
+                 ? ""
+                 : "Failed to install Borealis: " + error_description);
   }
 
   void OnCancelInitiated() override {}
@@ -2773,7 +2777,7 @@ class AutotestPrivateInstallBorealisFunction::InstallationObserver
   base::ScopedObservation<borealis::BorealisInstaller,
                           borealis::BorealisInstaller::Observer>
       observation_;
-  base::OnceCallback<void(bool)> completion_callback_;
+  base::OnceCallback<void(std::string)> completion_callback_;
 };
 
 AutotestPrivateInstallBorealisFunction::
@@ -2791,11 +2795,12 @@ AutotestPrivateInstallBorealisFunction::Run() {
   return RespondLater();
 }
 
-void AutotestPrivateInstallBorealisFunction::Complete(bool was_successful) {
-  if (was_successful) {
+void AutotestPrivateInstallBorealisFunction::Complete(
+    std::string error_or_empty) {
+  if (error_or_empty.empty()) {
     Respond(NoArguments());
   } else {
-    Respond(Error("Failed to install borealis"));
+    Respond(Error(error_or_empty));
   }
 }
 

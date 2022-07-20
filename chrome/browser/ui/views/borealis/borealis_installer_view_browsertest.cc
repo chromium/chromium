@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, SucessfulInstall) {
 
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kBorealisInstalledOnDevice, true);
-  view_->OnInstallationEnded(InstallationResult::kSuccess);
+  view_->OnInstallationEnded(InstallationResult::kSuccess, "");
   ExpectInstallationCompletedSucessfully();
 
   EXPECT_CALL(mock_context_manager_, IsRunning())
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest,
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "in progress");
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringUTF16(
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest,
 
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kBorealisInstalledOnDevice, true);
-  view_->OnInstallationEnded(InstallationResult::kSuccess);
+  view_->OnInstallationEnded(InstallationResult::kSuccess, "");
   ExpectInstallationCompletedSucessfully();
 
   EXPECT_CALL(mock_context_manager_, IsRunning())
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, InProgressError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "in progress");
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringUTF16(
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, NotAllowedError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "not allowed");
   ExpectInstallationFailedWithNoRetry();
   EXPECT_EQ(
       view_->GetPrimaryMessage(),
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcUnsupportedError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc unsupported");
   ExpectInstallationFailedWithNoRetry();
   EXPECT_EQ(
       view_->GetPrimaryMessage(),
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcInternalError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc failure");
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(
       view_->GetSecondaryMessage(),
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcBusyError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc failure");
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringUTF16(IDS_BOREALIS_DLC_BUSY_FAILED_MESSAGE));
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcNeedRebootError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc failure");
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(
       view_->GetSecondaryMessage(),
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcNeedSpaceError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc failure");
   ExpectInstallationFailedWithRetryCustomTitle();
   EXPECT_EQ(
       view_->GetPrimaryMessage(),
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcNeedUpdateError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc failure");
   ExpectInstallationFailedWithNoRetry();
   EXPECT_EQ(view_->GetPrimaryMessage(),
             l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_TITLE));
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcUnknownError) {
   ShowUi("default");
   AcceptInstallation();
 
-  view_->OnInstallationEnded(error_type);
+  view_->OnInstallationEnded(error_type, "dlc failure");
   ExpectInstallationFailedWithRetry();
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringFUTF16(

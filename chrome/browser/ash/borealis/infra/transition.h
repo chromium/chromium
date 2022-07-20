@@ -38,6 +38,12 @@ namespace borealis {
 template <typename S, typename T, typename E>
 class Transition {
  public:
+  using InitialState = S;
+
+  using FinalState = T;
+
+  using ErrorState = E;
+
   using Result = Expected<std::unique_ptr<T>, E>;
 
   using OnCompleteSignature = void(Result);

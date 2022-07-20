@@ -49,7 +49,8 @@ class BorealisInstallerView : public views::DialogDelegateView,
   void OnStateUpdated(
       borealis::BorealisInstaller::InstallingState new_state) override;
   void OnProgressUpdated(double fraction_complete) override;
-  void OnInstallationEnded(borealis::BorealisInstallResult result) override;
+  void OnInstallationEnded(borealis::BorealisInstallResult result,
+                           const std::string& error_description) override;
   void OnCancelInitiated() override {}
 
   // Public for testing purposes.

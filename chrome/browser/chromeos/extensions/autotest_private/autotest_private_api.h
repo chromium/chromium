@@ -598,7 +598,7 @@ class AutotestPrivateInstallBorealisFunction : public ExtensionFunction {
   ~AutotestPrivateInstallBorealisFunction() override;
   ResponseAction Run() override;
 
-  void Complete(bool was_successful);
+  void Complete(std::string error_or_empty);
 
   std::unique_ptr<InstallationObserver> installation_observer_;
 };
