@@ -80011,6 +80011,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Open SafeBrowsing Enhanced Protection"/>
   <int value="3" label="Open Chrome feedback form"/>
   <int value="4" label="Open Privacy Guide"/>
+  <int value="5" label="Start Tab Group Tutorial"/>
+  <int value="6" label="Open Password Manager"/>
 </enum>
 
 <enum name="ProtectorError">

@@ -11,13 +11,20 @@
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/user_education/user_education_service.h"
+#include "chrome/browser/ui/user_education/user_education_service_factory.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/user_education/common/tutorial_service.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -75,8 +82,11 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = !chrome::enterprise_util::IsBrowserManaged(profile_) &&
                     !profile_->IsChild();
       break;
-    default:
-      NOTREACHED() << "Unspecified behavior for command " << command_id;
+    case Command::kStartTabGroupTutorial:
+      can_execute = !!GetTutorialService();
+      break;
+    case Command::kOpenPasswordManager:
+      can_execute = true;
       break;
   }
   std::move(callback).Run(can_execute);
@@ -131,10 +141,44 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       base::RecordAction(
           base::UserMetricsAction("NewTabPage_Promos_PrivacyGuide"));
       break;
+    case Command::kStartTabGroupTutorial:
+      StartTabGroupTutorial();
+      break;
+    case Command::kOpenPasswordManager:
+      NavigateToURL(
+          GURL(chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage)),
+          disposition);
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
       break;
   }
+}
+
+user_education::TutorialService* BrowserCommandHandler::GetTutorialService() {
+  auto* service = UserEducationServiceFactory::GetForProfile(profile_);
+  return service ? &service->tutorial_service() : nullptr;
+}
+
+ui::ElementContext BrowserCommandHandler::GetUiElementContext() {
+  return chrome::FindBrowserWithProfile(profile_)
+      ->window()
+      ->GetElementContext();
+}
+
+void BrowserCommandHandler::StartTabGroupTutorial() {
+  user_education::TutorialService* tutorial_service = GetTutorialService();
+  if (!tutorial_service) {
+    // Should never happen since we return false in CanExecuteCommand(), but
+    // avoid a browser crash anyway.
+    return;
+  }
+
+  const ui::ElementContext context = GetUiElementContext();
+  if (!context)
+    return;
+
+  tutorial_service->StartTutorial(kTabGroupTutorialId, context);
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

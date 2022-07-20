@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -19,9 +20,13 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/common/tutorial_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
@@ -38,7 +43,11 @@ std::vector<Command> supported_commands = {
     Command::kOpenSafeBrowsingEnhancedProtectionSettings,
     Command::kOpenFeedbackForm,
     Command::kOpenPrivacyGuide,
+    Command::kStartTabGroupTutorial,
+    Command::kOpenPasswordManager,
 };
+
+const ui::ElementContext kTestContext1(1);
 
 class TestCommandHandler : public BrowserCommandHandler {
  public:
@@ -55,8 +64,14 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   void OpenFeedbackForm() override {
     // The functionality of opening the feedback form is removed, as it cannot
-    // be executed in a unittes.
+    // be executed in a unittest.
   }
+
+  user_education::TutorialService* GetTutorialService() override {
+    return tutorial_service_;
+  }
+
+  ui::ElementContext GetUiElementContext() override { return kTestContext1; }
 
   CommandUpdater* GetCommandUpdater() override {
     if (command_updater_)
@@ -70,7 +85,48 @@ class TestCommandHandler : public BrowserCommandHandler {
     EnableSupportedCommands();
   }
 
+  void SetTutorialService(user_education::TutorialService* service) {
+    tutorial_service_ = service;
+  }
+
+  user_education::TutorialService* tutorial_service_;
   std::unique_ptr<CommandUpdater> command_updater_;
+};
+
+class TestTutorialService : public user_education::TutorialService {
+ public:
+  TestTutorialService(
+      user_education::TutorialRegistry* tutorial_registry,
+      user_education::HelpBubbleFactoryRegistry* help_bubble_factory_registry)
+      : user_education::TutorialService(tutorial_registry,
+                                        help_bubble_factory_registry) {}
+  ~TestTutorialService() override = default;
+  std::u16string GetBodyIconAltText(bool is_last_step) const override {
+    return std::u16string();
+  }
+
+  bool StartTutorial(
+      user_education::TutorialIdentifier id,
+      ui::ElementContext context,
+      base::OnceClosure completed_callback = base::DoNothing(),
+      base::OnceClosure aborted_callback = base::DoNothing()) override {
+    return true;
+  }
+};
+
+class MockTutorialService : public TestTutorialService {
+ public:
+  MockTutorialService(
+      user_education::TutorialRegistry* tutorial_registry,
+      user_education::HelpBubbleFactoryRegistry* help_bubble_factory_registry)
+      : TestTutorialService(tutorial_registry, help_bubble_factory_registry) {}
+  ~MockTutorialService() override = default;
+
+  MOCK_METHOD4(StartTutorial,
+               bool(user_education::TutorialIdentifier,
+                    ui::ElementContext,
+                    base::OnceClosure,
+                    base::OnceClosure));
 };
 
 class MockCommandHandler : public TestCommandHandler {
@@ -352,4 +408,39 @@ TEST_F(BrowserCommandHandlerTest, OpenPrivacyGuideCommand) {
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPrivacyGuideSubPage)),
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenPrivacyGuide, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
+  // Command cannot be executed if the tutorial service doesn't exist.
+  command_handler_->SetTutorialService(nullptr);
+  EXPECT_FALSE(CanExecuteCommand(Command::kStartTabGroupTutorial));
+
+  // Create mock service so the command can be executed.
+  auto bubble_factory_registry =
+      std::make_unique<user_education::HelpBubbleFactoryRegistry>();
+  user_education::TutorialRegistry registry;
+  MockTutorialService service(&registry, bubble_factory_registry.get());
+  command_handler_->SetTutorialService(&service);
+  EXPECT_TRUE(CanExecuteCommand(Command::kStartTabGroupTutorial));
+
+  // The StartTabGroupTutorial command should start the tab group tutorial.
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(service, StartTutorial(kTabGroupTutorialId, kTestContext1,
+                                     testing::_, testing::_));
+  EXPECT_TRUE(ExecuteCommand(Command::kStartTabGroupTutorial, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenPasswordManagerCommand) {
+  // By default, opening the password manager is allowed.
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenPasswordManager));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  // The OpenPassswordManager command opens a new settings window with the
+  // password manager and the correct disposition.
+  EXPECT_CALL(*command_handler_,
+              NavigateToURL(
+                  GURL(chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage)),
+                  DispositionFromClick(*info)));
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenPasswordManager, std::move(info)));
 }

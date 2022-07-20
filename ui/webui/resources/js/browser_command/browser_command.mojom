@@ -20,6 +20,8 @@ enum Command {
   kOpenSafeBrowsingEnhancedProtectionSettings = 2,
   kOpenFeedbackForm = 3,
   kOpenPrivacyGuide = 4,
+  kStartTabGroupTutorial = 5,
+  kOpenPasswordManager = 6,
 };
 
 // Click information needed to determine user's desired window disposition using

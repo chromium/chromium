@@ -48,10 +48,11 @@ class TutorialService {
   void HideCurrentBubbleIfShowing();
 
   // Starts the tutorial by looking for the id in the Tutorial Registry.
-  bool StartTutorial(TutorialIdentifier id,
-                     ui::ElementContext context,
-                     CompletedCallback completed_callback = base::DoNothing(),
-                     AbortedCallback aborted_callback = base::DoNothing());
+  virtual bool StartTutorial(
+      TutorialIdentifier id,
+      ui::ElementContext context,
+      CompletedCallback completed_callback = base::DoNothing(),
+      AbortedCallback aborted_callback = base::DoNothing());
 
   void LogIPHLinkClicked(TutorialIdentifier id, bool iph_link_was_clicked);
 

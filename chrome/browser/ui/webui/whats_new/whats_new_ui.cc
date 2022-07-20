@@ -91,13 +91,12 @@ void WhatsNewUI::BindInterface(
 void WhatsNewUI::CreateBrowserCommandHandler(
     mojo::PendingReceiver<browser_command::mojom::CommandHandler>
         pending_handler) {
-  // No supported commands for M104 only. New command to be added for M106.
-  std::vector<browser_command::mojom::Command> supported_commands = {};
+  std::vector<browser_command::mojom::Command> supported_commands = {
+      browser_command::mojom::Command::kStartTabGroupTutorial,
+      browser_command::mojom::Command::kOpenPasswordManager,
+  };
   command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);
-  command_handler_->ConfigureFeedbackCommand(
-      {GURL(chrome::kChromeUIWhatsNewURL), chrome::kFeedbackSourceWhatsNew,
-       "whats-new-page"});
 }
 
 void WhatsNewUI::TryShowHatsSurveyWithTimeout() {
