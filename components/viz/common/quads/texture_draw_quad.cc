@@ -20,6 +20,7 @@ TextureDrawQuad::TextureDrawQuad()
       premultiplied_alpha(false),
       secure_output_only(false),
       is_video_frame(false),
+      is_stream_video(false),
       protected_video_type(gfx::ProtectedVideoType::kClear) {
   static_assert(static_cast<int>(gfx::ProtectedVideoType::kMaxValue) < 4,
                 "protected_video_type needs more bits in order to represent "
@@ -122,6 +123,7 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   value->SetBoolean("y_flipped", y_flipped);
   value->SetBoolean("nearest_neighbor", nearest_neighbor);
   value->SetBoolean("is_video_frame", is_video_frame);
+  value->SetBoolean("is_stream_video", is_stream_video);
   value->SetInteger("protected_video_type",
                     static_cast<int>(protected_video_type));
 }

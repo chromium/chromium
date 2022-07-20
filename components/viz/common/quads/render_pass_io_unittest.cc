@@ -4,6 +4,7 @@
 
 #include "components/viz/common/quads/render_pass_io.h"
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
@@ -191,9 +191,9 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
 TEST(RenderPassIOTest, QuadList) {
   const size_t kSharedQuadStateCount = 5;
   size_t quad_count = 0;
-  const DrawQuad::Material kQuadMaterials[] = {
+  const std::array<DrawQuad::Material, 9> kQuadMaterials = {
       DrawQuad::Material::kSolidColor,
-      DrawQuad::Material::kStreamVideoContent,
+      DrawQuad::Material::kTextureContent,  // is_stream_video set to true.
       DrawQuad::Material::kVideoHole,
       DrawQuad::Material::kYuvVideoContent,
       DrawQuad::Material::kTextureContent,
@@ -225,13 +225,17 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 2. StreamVideoDrawQuad
-      StreamVideoDrawQuad* quad =
-          render_pass0->CreateAndAppendDrawQuad<StreamVideoDrawQuad>();
+      // 2. TextureDrawQuad with is_stream_video set to true.
+      TextureDrawQuad* quad =
+          render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
+      float opacity[] = {1, 1, 1, 1};
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(10, 10, 300, 400), gfx::Rect(10, 10, 200, 400),
-                   false, ResourceId(100), gfx::Size(600, 800),
-                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f));
+                   false, ResourceId(100), gfx::Size(600, 800), false,
+                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
+                   SkColors::kTransparent, opacity, false, false, false,
+                   gfx::ProtectedVideoType::kHardwareProtected);
+      quad->is_stream_video = true;
       ++sqs_index;
       ++quad_count;
     }

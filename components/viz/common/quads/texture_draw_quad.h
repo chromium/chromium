@@ -74,6 +74,11 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // True if this quad contains a video frame from VideoResourceUpdater instead
   // of canvas or webgl content.
   bool is_video_frame : 1;
+
+  // True if this quad is a stream video texture. This mostly affects overlay
+  // creation (e.g. color space, protection type).
+  bool is_stream_video : 1;
+
   absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   // kClear if the contents do not require any special protection. See enum of a

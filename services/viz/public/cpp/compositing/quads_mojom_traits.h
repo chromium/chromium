@@ -15,7 +15,6 @@
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -128,8 +127,6 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
         return viz::mojom::DrawQuadStateDataView::Tag::kRenderPassQuadState;
       case viz::DrawQuad::Material::kSolidColor:
         return viz::mojom::DrawQuadStateDataView::Tag::kSolidColorQuadState;
-      case viz::DrawQuad::Material::kStreamVideoContent:
-        return viz::mojom::DrawQuadStateDataView::Tag::kStreamVideoQuadState;
       case viz::DrawQuad::Material::kSurfaceContent:
         return viz::mojom::DrawQuadStateDataView::Tag::kSurfaceQuadState;
       case viz::DrawQuad::Material::kTextureContent:
@@ -206,8 +203,6 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
         return data.ReadTextureQuadState(out);
       case viz::mojom::DrawQuadStateDataView::Tag::kTileQuadState:
         return data.ReadTileQuadState(out);
-      case viz::mojom::DrawQuadStateDataView::Tag::kStreamVideoQuadState:
-        return data.ReadStreamVideoQuadState(out);
       case viz::mojom::DrawQuadStateDataView::Tag::kVideoHoleQuadState:
         return data.ReadVideoHoleQuadState(out);
       case viz::mojom::DrawQuadStateDataView::Tag::kYuvVideoQuadState:
@@ -352,36 +347,6 @@ struct StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad> {
 };
 
 template <>
-struct StructTraits<viz::mojom::StreamVideoQuadStateDataView, viz::DrawQuad> {
-  static viz::ResourceId resource_id(const viz::DrawQuad& input) {
-    const viz::StreamVideoDrawQuad* quad =
-        viz::StreamVideoDrawQuad::MaterialCast(&input);
-    return quad->resources.ids[viz::StreamVideoDrawQuad::kResourceIdIndex];
-  }
-
-  static const gfx::Size& resource_size_in_pixels(const viz::DrawQuad& input) {
-    const viz::StreamVideoDrawQuad* quad =
-        viz::StreamVideoDrawQuad::MaterialCast(&input);
-    return quad->overlay_resources.size_in_pixels;
-  }
-
-  static const gfx::PointF& uv_top_left(const viz::DrawQuad& input) {
-    const viz::StreamVideoDrawQuad* quad =
-        viz::StreamVideoDrawQuad::MaterialCast(&input);
-    return quad->uv_top_left;
-  }
-
-  static const gfx::PointF& uv_bottom_right(const viz::DrawQuad& input) {
-    const viz::StreamVideoDrawQuad* quad =
-        viz::StreamVideoDrawQuad::MaterialCast(&input);
-    return quad->uv_bottom_right;
-  }
-
-  static bool Read(viz::mojom::StreamVideoQuadStateDataView data,
-                   viz::DrawQuad* out);
-};
-
-template <>
 struct StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad> {
   static const viz::SurfaceRange& surface_range(const viz::DrawQuad& input) {
     const viz::SurfaceDrawQuad* quad =
@@ -477,6 +442,12 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->secure_output_only;
+  }
+
+  static bool is_stream_video(const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->is_stream_video;
   }
 
   static bool is_video_frame(const viz::DrawQuad& input) {

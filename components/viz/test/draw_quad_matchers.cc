@@ -26,8 +26,6 @@ const char* MaterialToString(DrawQuad::Material material) {
       return "kSolidColor";
     case DrawQuad::Material::kSharedElement:
       return "kSharedElement";
-    case DrawQuad::Material::kStreamVideoContent:
-      return "kStreamVideoContent";
     case DrawQuad::Material::kSurfaceContent:
       return "kSurfaceContent";
     case DrawQuad::Material::kTextureContent:

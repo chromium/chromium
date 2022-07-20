@@ -70,13 +70,6 @@ struct SolidColorQuadState {
   bool force_anti_aliasing_off;
 };
 
-struct StreamVideoQuadState {
-  ResourceId resource_id;
-  gfx.mojom.Size resource_size_in_pixels;
-  gfx.mojom.PointF uv_top_left;
-  gfx.mojom.PointF uv_bottom_right;
-};
-
 struct SurfaceQuadState {
   SurfaceRange surface_range;
   skia.mojom.SkColor4f default_background_color;
@@ -96,6 +89,7 @@ struct TextureQuadState {
   bool y_flipped;
   bool nearest_neighbor;
   bool secure_output_only;
+  bool is_stream_video;
   bool is_video_frame;
   ProtectedVideoState protected_video_type;
   gfx.mojom.HDRMetadata? hdr_metadata;
@@ -142,7 +136,6 @@ union DrawQuadState {
   DebugBorderQuadState debug_border_quad_state;
   CompositorRenderPassQuadState render_pass_quad_state;
   SolidColorQuadState solid_color_quad_state;
-  StreamVideoQuadState stream_video_quad_state;
   SurfaceQuadState surface_quad_state;
   TextureQuadState texture_quad_state;
   TileQuadState tile_quad_state;

@@ -19,7 +19,6 @@
 #include "cc/trees/occlusion.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "media/base/video_frame.h"

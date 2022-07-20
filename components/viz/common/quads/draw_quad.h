@@ -33,22 +33,24 @@ namespace viz {
 // quad's transform maps the content space to the target space.
 class VIZ_COMMON_EXPORT DrawQuad {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Material {
-    kInvalid,
-    kDebugBorder,
-    kPictureContent,
+    kInvalid = 0,
+    kDebugBorder = 1,
+    kPictureContent = 2,
     // This is the compositor, pre-aggregation, draw quad.
-    kCompositorRenderPass,
+    kCompositorRenderPass = 3,
     // This is the viz, post-aggregation, draw quad.
-    kAggregatedRenderPass,
-    kSolidColor,
-    kSharedElement,
-    kStreamVideoContent,
-    kSurfaceContent,
-    kTextureContent,
-    kTiledContent,
-    kYuvVideoContent,
-    kVideoHole,
+    kAggregatedRenderPass = 4,
+    kSolidColor = 5,
+    kSharedElement = 6,
+    // kStreamVideoContent = 7,  // Removed. Replaced with kTextureContent.
+    kSurfaceContent = 8,
+    kTextureContent = 9,
+    kTiledContent = 10,
+    kYuvVideoContent = 11,
+    kVideoHole = 12,
     kMaxValue = kVideoHole
   };
 

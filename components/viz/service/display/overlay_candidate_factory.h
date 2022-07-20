@@ -34,7 +34,6 @@ namespace viz {
 class AggregatedRenderPassDrawQuad;
 class DisplayResourceProvider;
 class SolidColorDrawQuad;
-class StreamVideoDrawQuad;
 class TextureDrawQuad;
 class VideoHoleDrawQuad;
 
@@ -104,9 +103,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
 
   CandidateStatus FromSolidColorQuad(const SolidColorDrawQuad* quad,
                                      OverlayCandidate& candidate) const;
-
-  CandidateStatus FromStreamVideoQuad(const StreamVideoDrawQuad* quad,
-                                      OverlayCandidate& candidate) const;
 
   CandidateStatus FromVideoHoleQuad(const VideoHoleDrawQuad* quad,
                                     OverlayCandidate& candidate) const;

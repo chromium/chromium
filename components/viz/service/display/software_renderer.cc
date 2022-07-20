@@ -346,7 +346,6 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
       break;
     case DrawQuad::Material::kInvalid:
     case DrawQuad::Material::kYuvVideoContent:
-    case DrawQuad::Material::kStreamVideoContent:
     case DrawQuad::Material::kSharedElement:
       DrawUnsupportedQuad(quad);
       NOTREACHED();
@@ -433,7 +432,7 @@ void SoftwareRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad) {
 }
 
 void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
-  if (!IsSoftwareResource(quad->resource_id())) {
+  if (!IsSoftwareResource(quad->resource_id()) || quad->is_stream_video) {
     DrawUnsupportedQuad(quad);
     return;
   }

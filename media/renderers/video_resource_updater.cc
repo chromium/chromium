@@ -31,7 +31,6 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -52,6 +51,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/trace_util.h"
 
@@ -663,7 +663,8 @@ void VideoResourceUpdater::AppendQuads(
     }
     case VideoFrameResourceType::RGBA:
     case VideoFrameResourceType::RGBA_PREMULTIPLIED:
-    case VideoFrameResourceType::RGB: {
+    case VideoFrameResourceType::RGB:
+    case VideoFrameResourceType::STREAM_TEXTURE: {
       DCHECK_EQ(frame_resources_.size(), 1u);
       if (frame_resources_.size() < 1u)
         break;
@@ -683,27 +684,16 @@ void VideoResourceUpdater::AppendQuads(
                            SkColors::kTransparent, opacity, flipped,
                            nearest_neighbor, false, protected_video_type);
       texture_quad->set_resource_size_in_pixels(coded_size);
+      // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
+      // (e.g. *_layer_overlay.cc).
+      texture_quad->is_stream_video =
+          frame_resource_type_ == VideoFrameResourceType::STREAM_TEXTURE;
       texture_quad->is_video_frame = true;
       texture_quad->hdr_metadata = frame->hdr_metadata();
       for (viz::ResourceId resource_id : texture_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
       }
 
-      break;
-    }
-    case VideoFrameResourceType::STREAM_TEXTURE: {
-      DCHECK_EQ(frame_resources_.size(), 1u);
-      if (frame_resources_.size() < 1u)
-        break;
-      auto* stream_video_quad =
-          render_pass->CreateAndAppendDrawQuad<viz::StreamVideoDrawQuad>();
-      stream_video_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                                needs_blending, frame_resources_[0].id,
-                                frame_resources_[0].size_in_pixels, uv_top_left,
-                                uv_bottom_right);
-      for (viz::ResourceId resource_id : stream_video_quad->resources) {
-        resource_provider_->ValidateResource(resource_id);
-      }
       break;
     }
     case VideoFrameResourceType::NONE:

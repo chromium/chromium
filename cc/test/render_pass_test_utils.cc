@@ -19,7 +19,6 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -240,11 +239,16 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
                            false);
 
+  // We add a TextureDrawQuad with is_stream_video set to true to cover related
+  // code paths.
   auto* stream_video_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::StreamVideoDrawQuad>();
+      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   stream_video_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                            resource6, gfx::Size(), gfx::PointF(),
-                            gfx::PointF(1.f, 1.f));
+                            resource6, false, gfx::PointF(0.f, 0.f),
+                            gfx::PointF(1.f, 1.f), SkColors::kTransparent,
+                            vertex_opacity, false, false, false,
+                            gfx::ProtectedVideoType::kHardwareProtected);
+  stream_video_quad->is_stream_video = true;
 
   auto* texture_quad = to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(
@@ -417,11 +421,14 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
                            false);
 
-  viz::StreamVideoDrawQuad* stream_video_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::StreamVideoDrawQuad>();
+  viz::TextureDrawQuad* stream_video_quad =
+      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   stream_video_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                            mapped_resource6, gfx::Size(), gfx::PointF(),
-                            gfx::PointF(1.f, 1.f));
+                            mapped_resource6, false, gfx::PointF(0.f, 0.f),
+                            gfx::PointF(1.f, 1.f), SkColors::kTransparent,
+                            vertex_opacity, false, false, false,
+                            gfx::ProtectedVideoType::kHardwareProtected);
+  stream_video_quad->is_stream_video = true;
 
   viz::TextureDrawQuad* texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();

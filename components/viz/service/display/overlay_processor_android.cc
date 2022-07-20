@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/synchronization/waitable_event.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
@@ -200,9 +200,12 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
   ResourceIdSet promotion_hint_requestor_set;
 
   for (auto* quad : quad_list) {
-    if (quad->material != DrawQuad::Material::kStreamVideoContent)
+    if (quad->material != DrawQuad::Material::kTextureContent)
       continue;
-    ResourceId id = StreamVideoDrawQuad::MaterialCast(quad)->resource_id();
+    const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
+    if (!texture_quad->is_stream_video)
+      continue;
+    ResourceId id = texture_quad->resource_id();
     if (!resource_provider->DoesResourceWantPromotionHint(id))
       continue;
     promotion_hint_requestor_set.insert(id);

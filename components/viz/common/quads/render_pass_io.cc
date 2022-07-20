@@ -21,7 +21,6 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -1095,7 +1094,6 @@ int StringToDrawQuadMaterial(const std::string& str) {
   MAP_STRING_TO_MATERIAL(kCompositorRenderPass)
   MAP_STRING_TO_MATERIAL(kSharedElement)
   MAP_STRING_TO_MATERIAL(kSolidColor)
-  MAP_STRING_TO_MATERIAL(kStreamVideoContent)
   MAP_STRING_TO_MATERIAL(kSurfaceContent)
   MAP_STRING_TO_MATERIAL(kTextureContent)
   MAP_STRING_TO_MATERIAL(kTiledContent)
@@ -1249,17 +1247,6 @@ void SolidColorDrawQuadToDict(const SolidColorDrawQuad* draw_quad,
                    draw_quad->force_anti_aliasing_off);
 }
 
-void StreamVideoDrawQuadToDict(const StreamVideoDrawQuad* draw_quad,
-                               base::Value* dict) {
-  DCHECK(draw_quad);
-  DCHECK(dict);
-  dict->SetKey("uv_top_left", PointFToDict(draw_quad->uv_top_left));
-  dict->SetKey("uv_bottom_right", PointFToDict(draw_quad->uv_bottom_right));
-  DCHECK_EQ(1u, draw_quad->resources.count);
-  dict->SetKey("overlay_resource_size_in_pixels",
-               SizeToDict(draw_quad->overlay_resources.size_in_pixels));
-}
-
 #define MAP_VIDEO_TYPE_TO_STRING(NAME) \
   case gfx::ProtectedVideoType::NAME:  \
     return #NAME;
@@ -1321,6 +1308,12 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   if (draw_quad->damage_rect.has_value()) {
     dict->SetKey("damage_rect", RectToDict(draw_quad->damage_rect.value()));
   }
+  // Conditionally set is_stream_video to not break backwards-compatibility with
+  // unit test data.
+  // Note: is_video_frame is not being saved in dict.
+  if (draw_quad->is_stream_video) {
+    dict->SetBoolKey("is_stream_video", draw_quad->is_stream_video);
+  }
 }
 
 void TileDrawQuadToDict(const TileDrawQuad* draw_quad, base::Value* dict) {
@@ -1381,7 +1374,6 @@ base::Value DrawQuadToDict(const DrawQuad* draw_quad,
     WRITE_DRAW_QUAD_TYPE_FIELDS(kCompositorRenderPass,
                                 CompositorRenderPassDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kSolidColor, SolidColorDrawQuad)
-    WRITE_DRAW_QUAD_TYPE_FIELDS(kStreamVideoContent, StreamVideoDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kSurfaceContent, SurfaceDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTextureContent, TextureDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTiledContent, TileDrawQuad)
@@ -1483,41 +1475,6 @@ bool SolidColorDrawQuadFromDict(const base::Value& dict,
   return true;
 }
 
-bool StreamVideoDrawQuadFromDict(const base::Value& dict,
-                                 const DrawQuadCommon& common,
-                                 StreamVideoDrawQuad* draw_quad) {
-  DCHECK(draw_quad);
-  if (!dict.is_dict())
-    return false;
-  if (common.resources.count != 1u)
-    return false;
-  const base::Value* uv_top_left = dict.FindDictKey("uv_top_left");
-  const base::Value* uv_bottom_right = dict.FindDictKey("uv_bottom_right");
-  const base::Value* overlay_resource_size_in_pixels =
-      dict.FindDictKey("overlay_resource_size_in_pixels");
-
-  if (!uv_top_left || !uv_bottom_right || !overlay_resource_size_in_pixels) {
-    return false;
-  }
-  gfx::PointF t_uv_top_left, t_uv_bottom_right;
-  gfx::Size t_overlay_resource_size_in_pixels;
-  if (!PointFFromDict(*uv_top_left, &t_uv_top_left) ||
-      !PointFFromDict(*uv_bottom_right, &t_uv_bottom_right) ||
-      !SizeFromDict(*overlay_resource_size_in_pixels,
-                    &t_overlay_resource_size_in_pixels)) {
-    return false;
-  }
-
-  const size_t kIndex = StreamVideoDrawQuad::kResourceIdIndex;
-  ResourceId resource_id = common.resources.ids[kIndex];
-
-  draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
-                    common.needs_blending, resource_id,
-                    t_overlay_resource_size_in_pixels, t_uv_top_left,
-                    t_uv_bottom_right);
-  return true;
-}
-
 bool SurfaceDrawQuadFromDict(const base::Value& dict,
                              const DrawQuadCommon& common,
                              SurfaceDrawQuad* draw_quad) {
@@ -1603,6 +1560,9 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
       t_background_color, t_vertex_opacity, y_flipped.value(),
       nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
+
+  draw_quad->is_stream_video =
+      dict.FindBoolKey("is_stream_video").value_or(false);
 
   gfx::Rect t_damage_rect;
   if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {
@@ -1772,7 +1732,6 @@ bool QuadListFromList(const base::Value& list,
     switch (common->material) {
       GET_QUAD_FROM_DICT(kCompositorRenderPass, CompositorRenderPassDrawQuad)
       GET_QUAD_FROM_DICT(kSolidColor, SolidColorDrawQuad)
-      GET_QUAD_FROM_DICT(kStreamVideoContent, StreamVideoDrawQuad)
       GET_QUAD_FROM_DICT(kSurfaceContent, SurfaceDrawQuad)
       GET_QUAD_FROM_DICT(kTextureContent, TextureDrawQuad)
       GET_QUAD_FROM_DICT(kTiledContent, TileDrawQuad)
@@ -2011,7 +1970,6 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
     MAP_MATERIAL_TO_STRING(kCompositorRenderPass)
     MAP_MATERIAL_TO_STRING(kSharedElement)
     MAP_MATERIAL_TO_STRING(kSolidColor)
-    MAP_MATERIAL_TO_STRING(kStreamVideoContent)
     MAP_MATERIAL_TO_STRING(kSurfaceContent)
     MAP_MATERIAL_TO_STRING(kTextureContent)
     MAP_MATERIAL_TO_STRING(kTiledContent)

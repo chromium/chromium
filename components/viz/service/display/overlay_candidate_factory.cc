@@ -10,7 +10,6 @@
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
@@ -121,9 +120,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
     case DrawQuad::Material::kVideoHole:
       return FromVideoHoleQuad(VideoHoleDrawQuad::MaterialCast(quad),
                                candidate);
-    case DrawQuad::Material::kStreamVideoContent:
-      return FromStreamVideoQuad(StreamVideoDrawQuad::MaterialCast(quad),
-                                 candidate);
     case DrawQuad::Material::kSolidColor:
       if (!is_delegated_context_)
         return CandidateStatus::kFailQuadNotSupported;
@@ -442,21 +438,15 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     // quads are not intended to become overlays.
     if (!quad->resource_size_in_pixels().IsEmpty())
       candidate.priority_hint = gfx::OverlayPriorityHint::kRegular;
-  }
-  return rtn;
-}
 
-OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromStreamVideoQuad(
-    const StreamVideoDrawQuad* quad,
-    OverlayCandidate& candidate) const {
-  auto rtn = FromDrawQuadResource(quad, quad->resource_id(), false, candidate);
-
-  if (rtn == CandidateStatus::kSuccess) {
-    candidate.resource_size_in_pixels = quad->resource_size_in_pixels();
-    candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 #if BUILDFLAG(IS_ANDROID)
-    candidate.is_backed_by_surface_texture =
-        resource_provider_->IsBackedBySurfaceTexture(quad->resource_id());
+    if (quad->is_stream_video) {
+      // StreamVideoDrawQuad used to set the resource_size_in_pixels directly
+      // from the quad rather than from the resource.
+      candidate.resource_size_in_pixels = quad->resource_size_in_pixels();
+      candidate.is_backed_by_surface_texture =
+          resource_provider_->IsBackedBySurfaceTexture(quad->resource_id());
+    }
 #endif
   }
   return rtn;

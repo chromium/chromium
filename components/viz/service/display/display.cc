@@ -80,7 +80,6 @@ const DrawQuad::Material kNonSplittableMaterials[] = {
     DrawQuad::Material::kDebugBorder,
     // Exclude possible overlay candidates from quad splitting
     // See OverlayCandidate::FromDrawQuad
-    DrawQuad::Material::kStreamVideoContent,
     DrawQuad::Material::kTextureContent,
     DrawQuad::Material::kVideoHole,
     // See DCLayerOverlayProcessor::ProcessRenderPass

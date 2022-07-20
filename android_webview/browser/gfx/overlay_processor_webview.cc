@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_checker.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/resolved_frame_data.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -893,9 +893,9 @@ void OverlayProcessorWebView::ProcessForFrameSinkId(
     // TODO(vasilyt): We should get this from surface aggregator after
     // aggregator refactoring will be finished.
     const auto& frame = surface->GetActiveFrame();
-    auto* quad = viz::StreamVideoDrawQuad::MaterialCast(
+    auto* quad = viz::TextureDrawQuad::MaterialCast(
         frame.render_pass_list.back()->quad_list.front());
-    DCHECK(quad);
+    DCHECK(quad->is_stream_video);
 
     auto uv_rect = gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 

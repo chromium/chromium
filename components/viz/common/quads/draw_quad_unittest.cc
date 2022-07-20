@@ -24,7 +24,6 @@
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -243,34 +242,6 @@ TEST(DrawQuadTest, CopySolidColorDrawQuad) {
   EXPECT_EQ(force_anti_aliasing_off, copy_quad->force_anti_aliasing_off);
 }
 
-TEST(DrawQuadTest, CopyStreamVideoDrawQuad) {
-  gfx::Rect visible_rect(40, 50, 30, 20);
-  bool blending = true;
-  ResourceId resource_id(64);
-  gfx::Size resource_size_in_pixels = gfx::Size(40, 41);
-  gfx::PointF uv_top_left(0.25f, 0.3f);
-  gfx::PointF uv_bottom_right(0.75f, 0.7f);
-  CREATE_SHARED_STATE();
-
-  CREATE_QUAD_NEW(StreamVideoDrawQuad, visible_rect, blending, resource_id,
-                  resource_size_in_pixels, uv_top_left, uv_bottom_right);
-  EXPECT_EQ(DrawQuad::Material::kStreamVideoContent, copy_quad->material);
-  EXPECT_EQ(visible_rect, copy_quad->visible_rect);
-  EXPECT_EQ(blending, copy_quad->needs_blending);
-  EXPECT_EQ(resource_id, copy_quad->resource_id());
-  EXPECT_EQ(resource_size_in_pixels, copy_quad->resource_size_in_pixels());
-  EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);
-
-  CREATE_QUAD_ALL(StreamVideoDrawQuad, resource_id, resource_size_in_pixels,
-                  uv_top_left, uv_bottom_right);
-  EXPECT_EQ(DrawQuad::Material::kStreamVideoContent, copy_quad->material);
-  EXPECT_EQ(resource_id, copy_quad->resource_id());
-  EXPECT_EQ(resource_size_in_pixels, copy_quad->resource_size_in_pixels());
-  EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);
-}
-
 TEST(DrawQuadTest, CopySurfaceDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   SurfaceId primary_surface_id(
@@ -333,6 +304,7 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
+  EXPECT_FALSE(copy_quad->is_stream_video);
 
   CREATE_QUAD_ALL(TextureDrawQuad, resource_id, resource_size_in_pixels,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
@@ -349,6 +321,7 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
+  EXPECT_FALSE(copy_quad->is_stream_video);
 }
 
 TEST(DrawQuadTest, CopyTileDrawQuad) {
@@ -574,23 +547,6 @@ TEST_F(DrawQuadIteratorTest, SolidColorDrawQuad) {
   EXPECT_EQ(0, IterateAndCount(quad_new));
 }
 
-TEST_F(DrawQuadIteratorTest, StreamVideoDrawQuad) {
-  gfx::Rect visible_rect(40, 50, 30, 20);
-  ResourceId resource_id(64);
-  gfx::Size resource_size_in_pixels = gfx::Size(40, 41);
-  gfx::PointF uv_top_left(0.25f, 0.3f);
-  gfx::PointF uv_bottom_right(0.75f, 0.7f);
-
-  CREATE_SHARED_STATE();
-  CREATE_QUAD_NEW(StreamVideoDrawQuad, visible_rect, needs_blending,
-                  resource_id, resource_size_in_pixels, uv_top_left,
-                  uv_bottom_right);
-  EXPECT_EQ(resource_id, quad_new->resource_id());
-  EXPECT_EQ(resource_size_in_pixels, quad_new->resource_size_in_pixels());
-  EXPECT_EQ(1, IterateAndCount(quad_new));
-  EXPECT_EQ(NextId(resource_id), quad_new->resource_id());
-}
-
 TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   SurfaceId surface_id(kArbitraryFrameSinkId,
@@ -712,9 +668,6 @@ TEST(DrawQuadTest, LargestQuadType) {
       case DrawQuad::Material::kTiledContent:
         largest = std::max(largest, sizeof(TileDrawQuad));
         break;
-      case DrawQuad::Material::kStreamVideoContent:
-        largest = std::max(largest, sizeof(StreamVideoDrawQuad));
-        break;
       case DrawQuad::Material::kYuvVideoContent:
         largest = std::max(largest, sizeof(YUVVideoDrawQuad));
         break;
@@ -762,9 +715,6 @@ TEST(DrawQuadTest, LargestQuadType) {
         break;
       case DrawQuad::Material::kTiledContent:
         LOG(ERROR) << "TileDrawQuad " << sizeof(TileDrawQuad);
-        break;
-      case DrawQuad::Material::kStreamVideoContent:
-        LOG(ERROR) << "StreamVideoDrawQuad " << sizeof(StreamVideoDrawQuad);
         break;
       case DrawQuad::Material::kYuvVideoContent:
         LOG(ERROR) << "YUVVideoDrawQuad " << sizeof(YUVVideoDrawQuad);

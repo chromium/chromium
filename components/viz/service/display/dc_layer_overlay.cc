@@ -17,7 +17,6 @@
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/viz_utils.h"
@@ -29,6 +28,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 
@@ -66,7 +66,6 @@ enum DCLayerResult {
 };
 
 enum : size_t {
-  kStreamVideoResourceIndex = 0,
   kTextureResourceIndex = 0,
   kYPlaneResourceIndex = 0,
   kUVPlaneResourceIndex = 1,
@@ -162,38 +161,6 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   dc_layer->hdr_metadata = quad->hdr_metadata.value_or(gfx::HDRMetadata());
 }
 
-void FromStreamVideoQuad(const StreamVideoDrawQuad* quad,
-                         const gfx::Transform& transform_to_root_target,
-                         DCLayerOverlay* dc_layer) {
-  dc_layer->resources[kStreamVideoResourceIndex] = quad->resource_id();
-  dc_layer->quad_rect = quad->rect;
-  // Quad rect is in quad content space so both quad to target, and target to
-  // root transforms must be applied to it.
-  gfx::Transform quad_to_root_transform(
-      quad->shared_quad_state->quad_to_target_transform);
-  quad_to_root_transform.ConcatTransform(transform_to_root_target);
-  // Flatten transform to 2D since DirectComposition doesn't support 3D
-  // transforms.
-  quad_to_root_transform.FlattenTo2d();
-  dc_layer->transform = quad_to_root_transform;
-
-  dc_layer->clip_rect = quad->shared_quad_state->clip_rect;
-  if (dc_layer->clip_rect) {
-    // Clip rect is in quad target space, and must be transformed to root target
-    // space.
-    gfx::RectF clip_rect =
-        gfx::RectF(dc_layer->clip_rect.value_or(gfx::Rect()));
-    transform_to_root_target.TransformRect(&clip_rect);
-    dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
-  }
-
-  dc_layer->color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                                          gfx::ColorSpace::TransferID::BT709);
-  // Set the protected_video_type to kHardwareProtected to signal that a DC
-  // layer is required for this quad
-  dc_layer->protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
-}
-
 DCLayerResult ValidateTextureQuad(
     const TextureDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
@@ -247,11 +214,21 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
-    gfx::RectF clip_rect = gfx::RectF(*quad->shared_quad_state->clip_rect);
+    gfx::RectF clip_rect =
+        gfx::RectF(quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
     transform_to_root_target.TransformRect(&clip_rect);
     dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
   }
+
   dc_layer->color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Both color space and protected_video_type are hard-coded for stream video.
+  if (quad->is_stream_video) {
+    dc_layer->color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                            gfx::ColorSpace::TransferID::BT709);
+    dc_layer->protected_video_type =
+        gfx::ProtectedVideoType::kHardwareProtected;
+  }
 }
 
 bool IsProtectedVideo(const QuadList::ConstIterator& it) {
@@ -261,7 +238,8 @@ bool IsProtectedVideo(const QuadList::ConstIterator& it) {
                gfx::ProtectedVideoType::kHardwareProtected ||
            yuv_quad->protected_video_type ==
                gfx::ProtectedVideoType::kSoftwareProtected;
-  } else if (it->material == DrawQuad::Material::kStreamVideoContent) {
+  } else if (it->material == DrawQuad::Material::kTextureContent &&
+             TextureDrawQuad::MaterialCast(*it)->is_stream_video) {
     return true;
   } else {
     return false;
@@ -384,14 +362,16 @@ void RecordDCLayerResult(DCLayerResult result, QuadList::ConstIterator it) {
       RecordVideoDCLayerResult(
           result, YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type);
       break;
-    case DrawQuad::Material::kStreamVideoContent:
-      UMA_HISTOGRAM_ENUMERATION(
-          "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
+    case DrawQuad::Material::kTextureContent: {
+      if (TextureDrawQuad::MaterialCast(*it)->is_stream_video) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.DCLayerResult.Texture",
+                                  result);
+      }
       break;
-    case DrawQuad::Material::kTextureContent:
-      UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.DCLayerResult.Texture",
-                                result);
-      break;
+    }
     default:
       break;
   }
@@ -418,7 +398,6 @@ void RecordOverlayHistograms(DCLayerOverlayList* dc_layer_overlays,
 QuadList::Iterator FindAnOverlayCandidate(QuadList& quad_list) {
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     if (it->material == DrawQuad::Material::kYuvVideoContent ||
-        it->material == DrawQuad::Material::kStreamVideoContent ||
         it->material == DrawQuad::Material::kTextureContent)
       return it;
   }
@@ -430,8 +409,10 @@ QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
   QuadList::Iterator it = quad_list.end();
   for (auto quad_it = quad_list.begin(); quad_it != quad_list.end();
        ++quad_it) {
-    if (quad_it->material == DrawQuad::Material::kStreamVideoContent)
+    if (quad_it->material == DrawQuad::Material::kTextureContent &&
+        TextureDrawQuad::MaterialCast(*quad_it)->is_stream_video) {
       return quad_list.end();
+    }
     if (it == quad_list.end() &&
         (quad_it->material == DrawQuad::Material::kYuvVideoContent ||
          quad_it->material == DrawQuad::Material::kTextureContent))
@@ -764,29 +745,21 @@ void DCLayerOverlayProcessor::Process(
             processed_yuv_overlay_count_++;
         }
         break;
-      case DrawQuad::Material::kStreamVideoContent: {
-        if (allow_promotion_hinting_) {
-          // If this quad has marked itself as wanting promotion hints then get
-          // the associated mailbox.
-          const StreamVideoDrawQuad* sv_quad =
-              StreamVideoDrawQuad::MaterialCast(*it);
-          ResourceId id = sv_quad->resource_id();
-          if (resource_provider->DoesResourceWantPromotionHint(id)) {
-            promotion_hint_mailbox = resource_provider->GetMailbox(id);
-          }
-        }
-        // Stream video quads contain Media Foundation dcomp surface which is
-        // always presented as overlay.
-        result = DC_LAYER_SUCCESS;
-      } break;
       case DrawQuad::Material::kTextureContent: {
-        result = ValidateTextureQuad(TextureDrawQuad::MaterialCast(*it),
-                                     backdrop_filter_rects, resource_provider);
+        const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
+
+        if (tex_quad->is_stream_video) {
+          // Stream video quads contain Media Foundation dcomp surface which is
+          // always presented as overlay.
+          result = DC_LAYER_SUCCESS;
+        } else {
+          result = ValidateTextureQuad(tex_quad, backdrop_filter_rects,
+                                       resource_provider);
+        }
 
         if (allow_promotion_hinting_) {
           // If this quad has marked itself as wanting promotion hints then get
           // the associated mailbox.
-          const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
           ResourceId id = tex_quad->resource_id();
           if (resource_provider->DoesResourceWantPromotionHint(id)) {
             promotion_hint_mailbox = resource_provider->GetMailbox(id);
@@ -1016,10 +989,6 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
       FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
                   render_pass->transform_to_root_target, &dc_layer);
       processed_yuv_overlay_count_++;
-      break;
-    case DrawQuad::Material::kStreamVideoContent:
-      FromStreamVideoQuad(StreamVideoDrawQuad::MaterialCast(*it),
-                          render_pass->transform_to_root_target, &dc_layer);
       break;
     case DrawQuad::Material::kTextureContent:
       FromTextureQuad(TextureDrawQuad::MaterialCast(*it),

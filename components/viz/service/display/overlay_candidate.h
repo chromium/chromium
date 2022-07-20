@@ -33,7 +33,6 @@ class Rect;
 namespace viz {
 class AggregatedRenderPassDrawQuad;
 class DisplayResourceProvider;
-class StreamVideoDrawQuad;
 
 class VIZ_SERVICE_EXPORT OverlayCandidate {
  public:
@@ -109,9 +108,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   gpu::Mailbox mailbox;
 
 #if BUILDFLAG(IS_ANDROID)
-  // For candidates from StreamVideoDrawQuads, this records whether the quad is
-  // marked as being backed by a SurfaceTexture or not.  If so, it's not really
-  // promotable to an overlay.
+  // For candidates from TextureDrawQuads with is_stream_video set to true, this
+  // records whether the quad is marked as being backed by a SurfaceTexture or
+  // not.  If so, it's not really promotable to an overlay.
   bool is_backed_by_surface_texture = false;
   // Crop within the buffer to be placed inside |display_rect| before
   // |clip_rect| was applied. Valid only for surface control.

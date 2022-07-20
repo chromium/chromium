@@ -23,7 +23,6 @@
 #include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -160,9 +159,6 @@ DrawQuad* CompositorRenderPass::CopyFromAndAppendDrawQuad(
       break;
     case DrawQuad::Material::kTiledContent:
       quad_list.AllocateAndCopyFrom(TileDrawQuad::MaterialCast(quad));
-      break;
-    case DrawQuad::Material::kStreamVideoContent:
-      quad_list.AllocateAndCopyFrom(StreamVideoDrawQuad::MaterialCast(quad));
       break;
     case DrawQuad::Material::kSurfaceContent:
       quad_list.AllocateAndCopyFrom(SurfaceDrawQuad::MaterialCast(quad));
