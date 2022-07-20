@@ -217,52 +217,45 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
 
         mMetricsLogger.recordRelatedSearchesClick(index);
-        navigateToUrl(
-                new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)), false, false);
+        navigateToUrlInCurrentTab(
+                new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)), false);
     }
 
-    void openVisitsInNewTabs(List<ClusterVisit> visits, boolean isIncognito) {
+    void openVisitsInNewTabs(List<ClusterVisit> visits, boolean isIncognito, boolean inTabGroup) {
         for (ClusterVisit visit : visits) {
             mMetricsLogger.recordVisitAction(
                     HistoryClustersMetricsLogger.VisitAction.CLICKED, visit);
         }
 
-        if (mDelegate.isSeparateActivity() && visits.size() > 1) {
+        if (mDelegate.isSeparateActivity()) {
             ArrayList<String> additionalUrls = new ArrayList<>(visits.size() - 1);
             for (int i = 1; i < visits.size(); i++) {
                 additionalUrls.add(visits.get(i).getNormalizedUrl().getSpec());
             }
 
-            Intent intent = mDelegate.getOpenUrlIntent(
-                    visits.get(0).getNormalizedUrl(), isIncognito, true, additionalUrls);
+            Intent intent = mDelegate.getOpenUrlIntent(visits.get(0).getNormalizedUrl(),
+                    isIncognito, true, inTabGroup, additionalUrls);
             ContextUtils.getApplicationContext().startActivity(intent);
         } else {
-            for (ClusterVisit visit : visits) {
-                navigateToUrl(visit.getNormalizedUrl(), isIncognito, true);
+            Tab parent = createNewTab(visits.get(0).getNormalizedUrl(), isIncognito, null);
+            for (int i = 1; i < visits.size(); i++) {
+                createNewTab(visits.get(i).getNormalizedUrl(), false, parent);
             }
         }
     }
 
-    void navigateToUrl(GURL gurl, boolean inIncognito, boolean createNewTab) {
+    void navigateToUrlInCurrentTab(GURL gurl, boolean inIncognito) {
         Context appContext = ContextUtils.getApplicationContext();
         if (mDelegate.isSeparateActivity()) {
             appContext.startActivity(
-                    mDelegate.getOpenUrlIntent(gurl, inIncognito, createNewTab, null));
+                    mDelegate.getOpenUrlIntent(gurl, inIncognito, false, false, null));
             return;
         }
 
         Tab currentTab = mDelegate.getTab();
         if (currentTab == null) return;
-
-        if (createNewTab) {
-            TabCreator tabCreator = mDelegate.getTabCreator(currentTab.isIncognito());
-            assert tabCreator != null;
-            tabCreator.createNewTab(
-                    new LoadUrlParams(gurl), TabLaunchType.FROM_CHROME_UI, currentTab);
-        } else {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
-            currentTab.loadUrl(loadUrlParams);
-        }
+        LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
+        currentTab.loadUrl(loadUrlParams);
     }
 
     void deleteVisits(List<ClusterVisit> visits) {
@@ -276,6 +269,13 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         mModelList.clear();
         startQuery(mQueryState.getQuery());
+    }
+
+    private Tab createNewTab(GURL gurl, boolean incognito, Tab parentTab) {
+        TabCreator tabCreator = mDelegate.getTabCreator(incognito);
+        assert tabCreator != null;
+        return tabCreator.createNewTab(
+                new LoadUrlParams(gurl), TabLaunchType.FROM_CHROME_UI, parentTab);
     }
 
     private void queryComplete(HistoryClustersResult result) {
@@ -403,7 +403,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         } else {
             mMetricsLogger.recordVisitAction(
                     HistoryClustersMetricsLogger.VisitAction.CLICKED, clusterVisit);
-            navigateToUrl(clusterVisit.getNormalizedUrl(), false, false);
+            navigateToUrlInCurrentTab(clusterVisit.getNormalizedUrl(), false);
         }
     }
 

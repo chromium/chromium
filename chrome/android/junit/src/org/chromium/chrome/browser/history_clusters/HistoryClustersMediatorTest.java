@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.geq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -18,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.ViewGroup;
@@ -77,6 +80,10 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class HistoryClustersMediatorTest {
     private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
+    private static final String INCOGNITO_EXTRA = "history_clusters.incognito";
+    private static final String NEW_TAB_EXTRA = "history_clusters.new_tab";
+    private static final String TAB_GROUP_EXTRA = "history_clusters.tab_group";
+    private static final String ADDTIONAL_URLS_EXTRA = "history_clusters.addtional_urls";
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -97,6 +104,8 @@ public class HistoryClustersMediatorTest {
     private GURL mGurl3;
     @Mock
     private Tab mTab;
+    @Mock
+    private Tab mTab2;
     @Mock
     private GURL mMockGurl;
     @Mock
@@ -162,8 +171,14 @@ public class HistoryClustersMediatorTest {
 
             @Override
             public <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(
-                    GURL gurl, boolean inIncognito, boolean createNewTab,
+                    GURL gurl, boolean inIncognito, boolean createNewTab, boolean inTabGroup,
                     @Nullable SerializableList additionalUrls) {
+                mIntent = new Intent();
+                mIntent.setData(Uri.parse(gurl.getSpec()));
+                mIntent.putExtra(INCOGNITO_EXTRA, inIncognito);
+                mIntent.putExtra(NEW_TAB_EXTRA, createNewTab);
+                mIntent.putExtra(TAB_GROUP_EXTRA, inTabGroup);
+                mIntent.putExtra(ADDTIONAL_URLS_EXTRA, additionalUrls);
                 return mIntent;
             }
 
@@ -212,6 +227,9 @@ public class HistoryClustersMediatorTest {
 
         mShouldShowPrivacyDisclaimerSupplier.set(true);
         mShouldShowClearBrowsingDataSupplier.set(true);
+        doReturn("http://spec1.com").when(mGurl1).getSpec();
+        doReturn("http://spec2.com").when(mGurl2).getSpec();
+        doReturn("http://spec3.com").when(mGurl3).getSpec();
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
@@ -378,24 +396,15 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testNavigate() {
-        mMediator.navigateToUrl(mMockGurl, false, false);
+        mMediator.navigateToUrlInCurrentTab(mMockGurl, false);
 
         verify(mTab).loadUrl(argThat(hasSameUrl(ITEM_URL_SPEC)));
     }
 
     @Test
-    public void testNavigateToNewTab() {
-        mMediator.navigateToUrl(mMockGurl, false, true);
-
-        verify(mTabCreator)
-                .createNewTab(argThat(hasSameUrl(ITEM_URL_SPEC)), eq(TabLaunchType.FROM_CHROME_UI),
-                        eq(mTab));
-    }
-
-    @Test
     public void testNavigateSeparateActivity() {
         mIsSeparateActivity = true;
-        mMediator.navigateToUrl(mMockGurl, false, false);
+        mMediator.navigateToUrlInCurrentTab(mMockGurl, false);
         verify(mContext).startActivity(mIntent);
     }
 
@@ -535,6 +544,53 @@ public class HistoryClustersMediatorTest {
                 .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit2);
         verify(mMetricsLogger)
                 .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit3);
+    }
+
+    @Test
+    public void testOpenInNewTab() {
+        mIsSeparateActivity = true;
+        mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), false, false);
+        verify(mContext).startActivity(mIntent);
+        assertEquals(true, mIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
+        assertEquals(false, mIntent.getBooleanExtra(INCOGNITO_EXTRA, true));
+        assertEquals(false, mIntent.getBooleanExtra(TAB_GROUP_EXTRA, true));
+        assertEquals(mGurl2.getSpec(),
+                ((List<String>) mIntent.getSerializableExtra(ADDTIONAL_URLS_EXTRA)).get(0));
+
+        mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), true, false);
+        assertEquals(true, mIntent.getBooleanExtra(INCOGNITO_EXTRA, true));
+
+        mIsSeparateActivity = false;
+        doReturn(mTab2).when(mTabCreator).createNewTab(any(), anyInt(), any());
+        mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), false, false);
+        verify(mTabCreator)
+                .createNewTab(argThat(hasSameUrl(mGurl1.getSpec())),
+                        eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        verify(mTabCreator)
+                .createNewTab(argThat(hasSameUrl(mGurl2.getSpec())),
+                        eq(TabLaunchType.FROM_CHROME_UI), eq(mTab2));
+    }
+
+    @Test
+    public void testOpenInGroup() {
+        mIsSeparateActivity = true;
+        mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), false, true);
+        verify(mContext).startActivity(mIntent);
+        assertEquals(true, mIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
+        assertEquals(false, mIntent.getBooleanExtra(INCOGNITO_EXTRA, true));
+        assertEquals(true, mIntent.getBooleanExtra(TAB_GROUP_EXTRA, true));
+        assertEquals(mGurl2.getSpec(),
+                ((List<String>) mIntent.getSerializableExtra(ADDTIONAL_URLS_EXTRA)).get(0));
+
+        mIsSeparateActivity = false;
+        doReturn(mTab2).when(mTabCreator).createNewTab(any(), anyInt(), any());
+        mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), false, true);
+        verify(mTabCreator)
+                .createNewTab(argThat(hasSameUrl(mGurl1.getSpec())),
+                        eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        verify(mTabCreator)
+                .createNewTab(argThat(hasSameUrl(mGurl2.getSpec())),
+                        eq(TabLaunchType.FROM_CHROME_UI), eq(mTab2));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

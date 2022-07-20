@@ -65,6 +65,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /** Unit tests for HistoryClustersCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -105,7 +106,7 @@ public class HistoryClustersCoordinatorTest {
         @Nullable
         @Override
         public <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(
-                GURL gurl, boolean inIncognito, boolean createNewTab,
+                GURL gurl, boolean inIncognito, boolean createNewTab, boolean inTabGroup,
                 @Nullable SerializableList additionalUrls) {
             mOpenUrlIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mOpenUrlIntent.putExtra(INCOGNITO_EXTRA, inIncognito);
@@ -378,6 +379,27 @@ public class HistoryClustersCoordinatorTest {
 
         // Fulfilling the promise post-destroy shouldn't crash or do anything else for that matter.
         fulfillPromise(mPromise, mClusterResult);
+    }
+
+    @Test
+    public void testOpenInGroupMenuitem() {
+        doReturn("http://spec1.com").when(mGurl1).getSpec();
+        doReturn("http://spec2.com").when(mGurl2).getSpec();
+
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+        assertNotNull(toolbar);
+
+        mSelectionDelegate.setSelectedItems(
+                new CopyOnWriteArraySet<>(Arrays.asList(mVisit1, mVisit2)));
+        mHistoryClustersCoordinator.onMenuItemClick(
+                toolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group));
+
+        assertTrue(mOpenUrlIntent.hasExtra(NEW_TAB_EXTRA));
+        assertTrue(mOpenUrlIntent.hasExtra(INCOGNITO_EXTRA));
+        assertTrue(mOpenUrlIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
+        assertFalse(mOpenUrlIntent.getBooleanExtra(INCOGNITO_EXTRA, true));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

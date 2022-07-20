@@ -43,7 +43,8 @@ public interface HistoryClustersDelegate {
      */
     @Nullable
     <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(GURL gurl,
-            boolean inIncognito, boolean createNewTab, @Nullable SerializableList additionalUrls);
+            boolean inIncognito, boolean createNewTab, boolean inTabGroup,
+            @Nullable SerializableList additionalUrls);
 
     /** Returns a toggle view that swaps between the Journeys UI and the "normal" History UI. */
     @Nullable

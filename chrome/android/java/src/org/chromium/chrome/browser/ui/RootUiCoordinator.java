@@ -813,7 +813,7 @@ public class RootUiCoordinator
                 @Override
                 public <SerializableList extends List<String> & Serializable> Intent
                 getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab,
-                        @Nullable SerializableList additionalUrls) {
+                        boolean inTabGroup, @Nullable SerializableList additionalUrls) {
                     assert false;
                     return new Intent();
                 }

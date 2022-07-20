@@ -224,11 +224,12 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             mActivity.finish();
             return true;
         } else if (menuItem.getItemId() == R.id.selection_mode_open_in_incognito) {
-            mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), true);
+            mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), true, false);
             mSelectionDelegate.clearSelection();
             return true;
         } else if (menuItem.getItemId() == R.id.selection_mode_open_in_new_tab) {
-            mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false);
+            mMediator.openVisitsInNewTabs(
+                    mSelectionDelegate.getSelectedItemsAsList(), false, false);
             mSelectionDelegate.clearSelection();
             return true;
         } else if (menuItem.getItemId() == R.id.info_menu_id) {
@@ -241,6 +242,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             return true;
         } else if (menuItem.getItemId() == R.id.optout_menu_id) {
             mDelegate.onOptOut();
+        } else if (menuItem.getItemId() == R.id.selection_mode_open_in_tab_group) {
+            mMediator.openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false, true);
             return true;
         }
         return false;

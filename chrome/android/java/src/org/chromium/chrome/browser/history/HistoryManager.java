@@ -167,11 +167,13 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 @Override
                 public <SerializableList extends List<String> & Serializable> Intent
                 getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab,
-                        @Nullable SerializableList additionalUrls) {
+                        boolean inTabGroup, @Nullable SerializableList additionalUrls) {
                     Intent intent =
                             mContentManager.getOpenUrlIntent(gurl, inIncognito, createNewTab);
                     if (additionalUrls != null) {
                         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
+                        intent.putExtra(
+                                IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, inTabGroup);
                     }
 
                     return intent;
