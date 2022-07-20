@@ -68,6 +68,21 @@ public class TrustedVaultClient {
         Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo);
 
         /**
+         * Registers a new trusted recovery method that can be used to retrieve keys,
+         * usually for the purpose of resolving a recoverability-degraded case.
+         *
+         * @param accountInfo Account representing the user.
+         * @param publicKey Public key representing the recovery method.
+         * @param methodTypeHint Opaque value provided by the server (e.g. via Javascript).
+         * @return a promise which indicates completion.
+         */
+        // TODO(crbug.com/1341279): Switch to non-default method once all implementations are ready.
+        default Promise<Void> addTrustedRecoveryMethod(
+                CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
+            return Promise.rejected();
+        }
+
+        /**
          * Gets a PendingIntent that can be used to display a UI that allows the user to resolve a
          * degraded recoverability state, usually involving reauthentication.
          *
@@ -314,6 +329,26 @@ public class TrustedVaultClient {
                 .then(responseCallback::accept, exception -> responseCallback.accept(false));
     }
 
+    /**
+     * Forwards calls to Backend.addTrustedRecoveryMethod() and upon completion invokes native
+     * method addTrustedRecoveryMethodCompleted().
+     */
+    @CalledByNative
+    private static void addTrustedRecoveryMethod(
+            int requestId, CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
+        Consumer<Void> responseCallback = unused -> {
+            if (get().mNativeTrustedVaultClientAndroid == 0) {
+                // Native already unregistered, no response needed.
+                return;
+            }
+            TrustedVaultClientJni.get().addTrustedRecoveryMethodCompleted(
+                    get().mNativeTrustedVaultClientAndroid, requestId);
+        };
+
+        get().mBackend.addTrustedRecoveryMethod(accountInfo, publicKey, methodTypeHint)
+                .then(responseCallback::accept, exception -> responseCallback.accept(null));
+    }
+
     @NativeMethods
     interface Natives {
         void fetchKeysCompleted(
@@ -322,6 +357,7 @@ public class TrustedVaultClient {
                 long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);
         void getIsRecoverabilityDegradedCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean isDegraded);
+        void addTrustedRecoveryMethodCompleted(long nativeTrustedVaultClientAndroid, int requestId);
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
         void notifyRecoverabilityChanged(long nativeTrustedVaultClientAndroid);
         void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger);

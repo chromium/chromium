@@ -250,19 +250,21 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       account_password_store_,
       BookmarkSyncServiceFactory::GetForProfile(profile_));
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+
 #if BUILDFLAG(IS_ANDROID)
-  trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>();
+  trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>(
+      /*gaia_account_info_by_gaia_id_cb=*/base::BindRepeating(
+          [](signin::IdentityManager* identity_manager,
+             const std::string& gaia_id) -> CoreAccountInfo {
+            return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+          },
+          identity_manager));
 #else
-  // TODO(crbug.com/1113597): consider destroying/notifying
-  // |trusted_vault_client_| upon IdentityManager shutdown, to avoid its usages
-  // afterwards. This can be done by tranferring |trusted_vault_client_|
-  // ownership to SyncServiceImpl and acting on
-  // SyncServiceImpl::Shutdown() or by handling
-  // IdentityManagerFactory::Observer::IdentityManagerShutdown().
   trusted_vault_client_ =
       std::make_unique<syncer::StandaloneTrustedVaultClient>(
-          profile_->GetPath().Append(kTrustedVaultFilename),
-          IdentityManagerFactory::GetForProfile(profile_),
+          profile_->GetPath().Append(kTrustedVaultFilename), identity_manager,
           profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -25,7 +25,13 @@
 // This class must be accessed from the UI thread.
 class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
  public:
-  TrustedVaultClientAndroid();
+  // Callback that returns account information identified by |gaia_id| or an
+  // empty CoreAccountInfo if the account is not found.
+  using GetAccountInfoByGaiaIdCallback =
+      base::RepeatingCallback<CoreAccountInfo(const std::string& gaia_id)>;
+
+  explicit TrustedVaultClientAndroid(
+      const GetAccountInfoByGaiaIdCallback& gaia_account_info_by_gaia_id_cb);
   ~TrustedVaultClientAndroid() override;
 
   TrustedVaultClientAndroid(const TrustedVaultClientAndroid&) = delete;
@@ -53,6 +59,11 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
   void GetIsRecoverabilityDegradedCompleted(JNIEnv* env,
                                             jint request_id,
                                             jboolean is_degraded);
+
+  // Called from Java to notify the completion of a
+  // AddTrustedRecoveryMethod() operation previously initiated from C++ and
+  // identified by |request_id|.
+  void AddTrustedRecoveryMethodCompleted(JNIEnv* env, jint request_id);
 
   // Called from Java to notify that the keys in the vault may have changed.
   void NotifyKeysChanged(JNIEnv* env);
@@ -117,13 +128,26 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
     base::OnceCallback<void(bool)> callback;
   };
 
+  // Struct representing an in-flight AddTrustedRecoveryMethod() invoked from
+  // C++.
+  struct OngoingAddTrustedRecoveryMethod {
+    explicit OngoingAddTrustedRecoveryMethod(base::OnceClosure callback);
+    OngoingAddTrustedRecoveryMethod(OngoingAddTrustedRecoveryMethod&&);
+    ~OngoingAddTrustedRecoveryMethod();
+
+    base::OnceClosure callback;
+  };
+
   using RequestId = int32_t;
   using OngoingRequest = absl::variant<OngoingFetchKeys,
                                        OngoingMarkLocalKeysAsStale,
-                                       OngoingGetIsRecoverabilityDegraded>;
+                                       OngoingGetIsRecoverabilityDegraded,
+                                       OngoingAddTrustedRecoveryMethod>;
 
   RequestId RegisterNewOngoingRequest(OngoingRequest request);
   OngoingRequest GetAndUnregisterOngoingRequest(RequestId id);
+
+  const GetAccountInfoByGaiaIdCallback gaia_account_info_by_gaia_id_cb_;
 
   // Each in-flight request gets assigned an auto-increment ID and gets cached
   // in a map, until the response from Java is received.

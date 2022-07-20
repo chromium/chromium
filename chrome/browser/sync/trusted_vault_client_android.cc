@@ -44,7 +44,20 @@ TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
 TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
     ~OngoingGetIsRecoverabilityDegraded() = default;
 
-TrustedVaultClientAndroid::TrustedVaultClientAndroid() {
+TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
+    OngoingAddTrustedRecoveryMethod(base::OnceClosure callback)
+    : callback(std::move(callback)) {}
+
+TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
+    OngoingAddTrustedRecoveryMethod(OngoingAddTrustedRecoveryMethod&&) =
+        default;
+
+TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
+    ~OngoingAddTrustedRecoveryMethod() = default;
+
+TrustedVaultClientAndroid::TrustedVaultClientAndroid(
+    const GetAccountInfoByGaiaIdCallback& gaia_account_info_by_gaia_id_cb)
+    : gaia_account_info_by_gaia_id_cb_(gaia_account_info_by_gaia_id_cb) {
   JNIEnv* const env = base::android::AttachCurrentThread();
   Java_TrustedVaultClient_registerNative(env, reinterpret_cast<intptr_t>(this));
 }
@@ -98,6 +111,18 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
   std::move(
       absl::get<OngoingGetIsRecoverabilityDegraded>(ongoing_request).callback)
       .Run(!!is_degraded);
+}
+
+void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
+    JNIEnv* env,
+    jint request_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
+
+  std::move(
+      absl::get<OngoingAddTrustedRecoveryMethod>(ongoing_request).callback)
+      .Run();
 }
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
@@ -193,8 +218,33 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  // Not invoked on Android.
-  NOTREACHED();
+  // Not invoked on Android, but this is about to change with crbug.com/1341279.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(cb);
+
+  const CoreAccountInfo account_info =
+      gaia_account_info_by_gaia_id_cb_.Run(gaia_id);
+  if (account_info == CoreAccountInfo()) {
+    std::move(cb).Run();
+    return;
+  }
+
+  // Store for later completion when Java invokes
+  // AddTrustedRecoveryMethodCompleted().
+  const RequestId request_id =
+      RegisterNewOngoingRequest(OngoingAddTrustedRecoveryMethod(std::move(cb)));
+
+  JNIEnv* const env = base::android::AttachCurrentThread();
+  const base::android::ScopedJavaLocalRef<jobject> java_account_info =
+      ConvertToJavaCoreAccountInfo(env, account_info);
+
+  const base::android::ScopedJavaLocalRef<jbyteArray> java_public_key =
+      base::android::ToJavaByteArray(env, public_key);
+
+  // The Java implementation will eventually call
+  // AddTrustedRecoveryMethodCompleted().
+  Java_TrustedVaultClient_addTrustedRecoveryMethod(
+      env, request_id, java_account_info, java_public_key, method_type_hint);
 }
 
 void TrustedVaultClientAndroid::ClearDataForAccount(

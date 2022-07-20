@@ -150,6 +150,12 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         }
 
         @Override
+        public Promise<Void> addTrustedRecoveryMethod(
+                CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
+            return Promise.fulfilled(null);
+        }
+
+        @Override
         public Promise<PendingIntent> createRecoverabilityDegradedIntent(
                 CoreAccountInfo accountInfo) {
             Context context = InstrumentationRegistry.getContext();
