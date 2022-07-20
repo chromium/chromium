@@ -715,7 +715,19 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
   for (const FilePath& subpath : base::Reversed(subpaths)) {
     if (DirectoryExists(subpath))
       continue;
-    if (mkdir(subpath.value().c_str(), 0700) == 0)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // On ChromeOS, create directories that are traversable by group and other
+    // (rwx--x--x). This is consistent with the creation of files with mode
+    // (rw-r--r--) on ChromeOS. See also File::DoInitialize() in
+    // base/files/file_posix.cc and DoCopyDirectory() in
+    // base/files/file_util_posix.cc.
+    static constexpr mode_t kMode = S_IRWXU | S_IXGRP | S_IXOTH;  // rwx --x --x
+#else
+    static constexpr mode_t kMode = S_IRWXU;  // rwx --- ---
+#endif
+
+    if (mkdir(subpath.value().c_str(), kMode) == 0)
       continue;
     // Mkdir failed, but it might have failed with EEXIST, or some other error
     // due to the directory appearing out of thin air. This can occur if
