@@ -679,10 +679,13 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // TODO(sammiequon): Investigate if we can remove |anchor_widget_| and just
   // replace its calls with GetAnchorView()->GetWidget().
   DCHECK_EQ(anchor_widget_, GetAnchorView()->GetWidget());
-  gfx::Transform transform =
-      anchor_widget_->GetNativeWindow()->layer()->GetTargetTransform();
-  if (!transform.IsIdentity())
-    anchor_rect_->Offset(-gfx::ToRoundedVector2d(transform.To2dTranslation()));
+  if (anchor_widget_) {
+    gfx::Transform transform =
+        anchor_widget_->GetNativeWindow()->layer()->GetTargetTransform();
+    if (!transform.IsIdentity())
+      anchor_rect_->Offset(
+          -gfx::ToRoundedVector2d(transform.To2dTranslation()));
+  }
 #endif
 
   return anchor_rect_.value();
