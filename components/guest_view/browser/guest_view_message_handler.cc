@@ -77,7 +77,7 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
     int embedder_local_render_frame_id,
     int element_instance_id,
     int guest_instance_id,
-    base::Value params,
+    base::Value::Dict params,
     AttachToEmbedderFrameCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!GetBrowserContext()) {
@@ -113,8 +113,7 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
   // This sets up the embedder and guest pairing information inside
   // the manager.
   manager->AttachGuest(render_process_id(), element_instance_id,
-                       guest_instance_id,
-                       base::Value::AsDictionaryValue(params));
+                       guest_instance_id, params);
 
   const bool changed_owner_web_contents =
       owner_web_contents !=

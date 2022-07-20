@@ -31,9 +31,9 @@ class ExtensionOptionsGuest
   ~ExtensionOptionsGuest() override;
 
   // GuestViewBase implementation.
-  void CreateWebContents(const base::DictionaryValue& create_params,
+  void CreateWebContents(const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) final;
-  void DidInitialize(const base::DictionaryValue& create_params) final;
+  void DidInitialize(const base::Value::Dict& create_params) final;
   void GuestViewDidStopLoading() final;
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;

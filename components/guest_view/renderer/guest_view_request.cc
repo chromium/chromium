@@ -41,7 +41,7 @@ GuestViewAttachRequest::GuestViewAttachRequest(
     guest_view::GuestViewContainer* container,
     int render_frame_routing_id,
     int guest_instance_id,
-    std::unique_ptr<base::DictionaryValue> params,
+    base::Value::Dict params,
     v8::Local<v8::Function> callback,
     v8::Isolate* isolate)
     : container_(container),
@@ -56,7 +56,7 @@ GuestViewAttachRequest::~GuestViewAttachRequest() = default;
 void GuestViewAttachRequest::PerformRequest() {
   GetGuestViewHost()->AttachToEmbedderFrame(
       render_frame_routing_id_, container_->element_instance_id(),
-      guest_instance_id_, params_->Clone(),
+      guest_instance_id_, params_.Clone(),
       base::BindOnce(&GuestViewAttachRequest::OnAcknowledged,
                      weak_ptr_factory_.GetWeakPtr()));
 }

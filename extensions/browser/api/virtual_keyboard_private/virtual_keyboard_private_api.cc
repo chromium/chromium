@@ -128,10 +128,9 @@ VirtualKeyboardPrivateGetKeyboardConfigFunction::Run() {
 }
 
 void VirtualKeyboardPrivateGetKeyboardConfigFunction::OnKeyboardConfig(
-    std::unique_ptr<base::DictionaryValue> results) {
-  Respond(results
-              ? OneArgument(base::Value::FromUniquePtrValue(std::move(results)))
-              : Error(kUnknownError));
+    absl::optional<base::Value::Dict> results) {
+  Respond(results ? OneArgument(base::Value(std::move(*results)))
+                  : Error(kUnknownError));
 }
 
 ExtensionFunction::ResponseAction

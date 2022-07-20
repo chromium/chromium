@@ -136,10 +136,10 @@ class MimeHandlerViewGuest
   // GuestViewBase implementation.
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
-  void CreateWebContents(const base::DictionaryValue& create_params,
+  void CreateWebContents(const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
-  void DidInitialize(const base::DictionaryValue& create_params) final;
+  void DidInitialize(const base::Value::Dict& create_params) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
   bool ShouldDestroyOnDetach() const final;

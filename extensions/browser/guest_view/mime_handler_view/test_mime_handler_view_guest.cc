@@ -39,7 +39,7 @@ void TestMimeHandlerViewGuest::WaitForGuestAttached() {
 }
 
 void TestMimeHandlerViewGuest::CreateWebContents(
-    const base::DictionaryValue& create_params,
+    const base::Value::Dict& create_params,
     WebContentsCreatedCallback callback) {
   // Delay the creation of the guest's WebContents if |delay_| is set.
   if (delay_) {
@@ -47,8 +47,8 @@ void TestMimeHandlerViewGuest::CreateWebContents(
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateWebContents,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       create_params.CreateDeepCopy(), std::move(callback)),
+                       weak_ptr_factory_.GetWeakPtr(), create_params.Clone(),
+                       std::move(callback)),
         delta);
 
     // Reset the delay for the next creation.
@@ -66,10 +66,10 @@ void TestMimeHandlerViewGuest::DidAttachToEmbedder() {
 }
 
 void TestMimeHandlerViewGuest::CallBaseCreateWebContents(
-    std::unique_ptr<base::DictionaryValue> create_params,
+    base::Value::Dict create_params,
     WebContentsCreatedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  MimeHandlerViewGuest::CreateWebContents(*create_params, std::move(callback));
+  MimeHandlerViewGuest::CreateWebContents(create_params, std::move(callback));
 }
 
 // static

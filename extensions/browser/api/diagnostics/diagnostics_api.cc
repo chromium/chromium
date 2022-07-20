@@ -26,28 +26,25 @@ const char kSize[] = "size";
 
 bool ParseResult(const std::string& status, std::string* ip, double* latency) {
   // Parses the result and returns IP and latency.
-  std::unique_ptr<base::Value> parsed_value(
-      base::JSONReader::ReadDeprecated(status));
-  if (!parsed_value)
+  absl::optional<base::Value> parsed_value(base::JSONReader::Read(status));
+  if (!parsed_value || !parsed_value->is_dict())
     return false;
 
-  base::DictionaryValue* result = NULL;
-  if (!parsed_value->GetAsDictionary(&result) || result->DictSize() != 1)
+  base::Value::Dict& result = parsed_value->GetDict();
+  if (result.size() != 1)
     return false;
 
   // Returns the first item.
-  base::DictionaryValue::Iterator iterator(*result);
-
-  const base::DictionaryValue* info;
-  if (!iterator.value().GetAsDictionary(&info))
+  base::Value::Dict::iterator iterator = result.begin();
+  if (!iterator->second.is_dict())
     return false;
 
-  absl::optional<double> avg = info->FindDoubleKey("avg");
+  absl::optional<double> avg = iterator->second.GetDict().FindDouble("avg");
   if (!avg)
     return false;
   *latency = *avg;
 
-  *ip = iterator.key();
+  *ip = iterator->first;
   return true;
 }
 

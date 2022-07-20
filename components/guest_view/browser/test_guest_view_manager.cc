@@ -128,11 +128,10 @@ void TestGuestViewManager::AddGuest(int guest_instance_id,
     num_created_message_loop_runner_->Quit();
 }
 
-void TestGuestViewManager::AttachGuest(
-    int embedder_process_id,
-    int element_instance_id,
-    int guest_instance_id,
-    const base::DictionaryValue& attach_params) {
+void TestGuestViewManager::AttachGuest(int embedder_process_id,
+                                       int element_instance_id,
+                                       int guest_instance_id,
+                                       const base::Value::Dict& attach_params) {
   GuestViewManager::AttachGuest(embedder_process_id, element_instance_id,
                                 guest_instance_id, attach_params);
 

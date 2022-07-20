@@ -116,10 +116,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // newly created WebContents.
   using WebContentsCreatedCallback =
       base::OnceCallback<void(content::WebContents*)>;
-  void Init(const base::DictionaryValue& create_params,
+  void Init(const base::Value::Dict& create_params,
             WebContentsCreatedCallback callback);
 
-  void InitWithWebContents(const base::DictionaryValue& create_params,
+  void InitWithWebContents(const base::Value::Dict& create_params,
                            content::WebContents* guest_web_contents);
 
   // Used to toggle autosize mode for this GuestView, and set both the automatic
@@ -138,7 +138,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // Returns the parameters associated with the element hosting this GuestView
   // passed in from JavaScript.
-  base::DictionaryValue* attach_params() const { return attach_params_.get(); }
+  const base::Value::Dict& attach_params() const { return attach_params_; }
 
   // Returns whether this guest has an associated embedder.
   bool attached() const {
@@ -187,7 +187,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   virtual bool ShouldDestroyOnDetach() const;
 
   // Saves the attach state of the custom element hosting this GuestView.
-  void SetAttachParams(const base::DictionaryValue& params);
+  void SetAttachParams(const base::Value::Dict& params);
 
   // Returns the RenderWidgetHost corresponding to the owner frame.
   virtual content::RenderWidgetHost* GetOwnerRenderWidgetHost();
@@ -241,7 +241,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Given a set of initialization parameters, a concrete subclass of
   // GuestViewBase can create a specialized WebContents that it returns back to
   // GuestViewBase.
-  virtual void CreateWebContents(const base::DictionaryValue& create_params,
+  virtual void CreateWebContents(const base::Value::Dict& create_params,
                                  WebContentsCreatedCallback callback) = 0;
 
   // This method is called after the guest has been attached to an embedder and
@@ -255,7 +255,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   //
   // This gives the derived class an opportunity to perform additional
   // initialization.
-  virtual void DidInitialize(const base::DictionaryValue& create_params) {}
+  virtual void DidInitialize(const base::Value::Dict& create_params) {}
 
   // This method is called when embedder WebContents's fullscreen is toggled.
   //
@@ -376,7 +376,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   void SendQueuedEvents();
 
-  void CompleteInit(std::unique_ptr<base::DictionaryValue> create_params,
+  void CompleteInit(base::Value::Dict create_params,
                     WebContentsCreatedCallback callback,
                     content::WebContents* guest_web_contents);
 
@@ -390,7 +390,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Get the zoom factor for the embedder's web contents.
   double GetEmbedderZoomFactor() const;
 
-  void SetUpSizing(const base::DictionaryValue& params);
+  void SetUpSizing(const base::Value::Dict& params);
 
   void StartTrackingEmbedderZoomLevel();
   void StopTrackingEmbedderZoomLevel();
@@ -454,7 +454,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // are passed in from JavaScript. This will typically be the view instance ID,
   // and element-specific parameters. These parameters are passed along to new
   // guests that are created from this guest.
-  std::unique_ptr<base::DictionaryValue> attach_params_;
+  base::Value::Dict attach_params_;
 
   // This observer ensures that this guest self-destructs if the embedder goes
   // away. It also tracks when the embedder's fullscreen is toggled so the guest

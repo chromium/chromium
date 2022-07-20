@@ -13,12 +13,9 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/web_contents.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -72,7 +69,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   virtual void AttachGuest(int embedder_process_id,
                            int element_instance_id,
                            int guest_instance_id,
-                           const base::DictionaryValue& attach_params);
+                           const base::Value::Dict& attach_params);
 
   // Removes the association between |element_instance_id| and a guest instance
   // ID if one exists.
@@ -113,7 +110,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       base::OnceCallback<void(content::WebContents*)>;
   void CreateGuest(const std::string& view_type,
                    content::WebContents* owner_web_contents,
-                   const base::DictionaryValue& create_params,
+                   const base::Value::Dict& create_params,
                    WebContentsCreatedCallback callback);
 
   content::WebContents* CreateGuestWithWebContentsParams(

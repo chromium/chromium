@@ -16,8 +16,8 @@ ShellVirtualKeyboardDelegate::ShellVirtualKeyboardDelegate() {}
 
 void ShellVirtualKeyboardDelegate::GetKeyboardConfig(
     OnKeyboardSettingsCallback on_settings_callback) {
-  std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue());
-  settings->GetDict().Set("hotrodmode", is_hotrod_keyboard_);
+  base::Value::Dict settings;
+  settings.Set("hotrodmode", is_hotrod_keyboard_);
   std::move(on_settings_callback).Run(std::move(settings));
 }
 

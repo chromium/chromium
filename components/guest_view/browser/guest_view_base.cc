@@ -181,7 +181,7 @@ GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
 
 GuestViewBase::~GuestViewBase() {}
 
-void GuestViewBase::Init(const base::DictionaryValue& create_params,
+void GuestViewBase::Init(const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) {
   if (initialized_)
     return;
@@ -195,16 +195,14 @@ void GuestViewBase::Init(const base::DictionaryValue& create_params,
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> params(create_params.DeepCopy());
   CreateWebContents(create_params,
                     base::BindOnce(&GuestViewBase::CompleteInit,
                                    weak_ptr_factory_.GetWeakPtr(),
-                                   std::move(params), std::move(callback)));
+                                   create_params.Clone(), std::move(callback)));
 }
 
-void GuestViewBase::InitWithWebContents(
-    const base::DictionaryValue& create_params,
-    WebContents* guest_web_contents) {
+void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
+                                        WebContents* guest_web_contents) {
   DCHECK(guest_web_contents);
 
   // Create a ZoomController to allow the guest's contents to be zoomed.
@@ -231,8 +229,8 @@ void GuestViewBase::InitWithWebContents(
   GetGuestViewManager()->AddGuest(guest_instance_id_, guest_web_contents);
 
   // Populate the view instance ID if we have it on creation.
-  view_instance_id_ = create_params.FindIntKey(kParameterInstanceId)
-                          .value_or(view_instance_id_);
+  view_instance_id_ =
+      create_params.FindInt(kParameterInstanceId).value_or(view_instance_id_);
 
   SetUpSizing(create_params);
 
@@ -400,7 +398,7 @@ void GuestViewBase::DidAttach() {
 
   opener_lifetime_observer_.reset();
 
-  SetUpSizing(*attach_params());
+  SetUpSizing(attach_params());
 
   // The guest should have the same muting state as the owner.
   web_contents()->SetAudioMuted(owner_web_contents()->IsAudioMuted());
@@ -460,10 +458,10 @@ void GuestViewBase::Destroy(bool also_delete) {
     delete web_contents();
 }
 
-void GuestViewBase::SetAttachParams(const base::DictionaryValue& params) {
-  attach_params_.reset(params.DeepCopy());
-  view_instance_id_ = attach_params_->FindIntKey(kParameterInstanceId)
-                          .value_or(view_instance_id_);
+void GuestViewBase::SetAttachParams(const base::Value::Dict& params) {
+  attach_params_ = params.Clone();
+  view_instance_id_ =
+      attach_params_.FindInt(kParameterInstanceId).value_or(view_instance_id_);
 }
 
 void GuestViewBase::SetOpener(GuestViewBase* guest) {
@@ -793,10 +791,9 @@ void GuestViewBase::SendQueuedEvents() {
   }
 }
 
-void GuestViewBase::CompleteInit(
-    std::unique_ptr<base::DictionaryValue> create_params,
-    WebContentsCreatedCallback callback,
-    WebContents* guest_web_contents) {
+void GuestViewBase::CompleteInit(base::Value::Dict create_params,
+                                 WebContentsCreatedCallback callback,
+                                 WebContents* guest_web_contents) {
   if (!guest_web_contents) {
     // The derived class did not create a WebContents so this class serves no
     // purpose. Let's self-destruct.
@@ -804,7 +801,7 @@ void GuestViewBase::CompleteInit(
     std::move(callback).Run(nullptr);
     return;
   }
-  InitWithWebContents(*create_params, guest_web_contents);
+  InitWithWebContents(create_params, guest_web_contents);
   std::move(callback).Run(guest_web_contents);
 }
 
@@ -817,24 +814,24 @@ double GuestViewBase::GetEmbedderZoomFactor() const {
           embedder_web_contents()));
 }
 
-void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
+void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
   // Read the autosize parameters passed in from the embedder.
   absl::optional<bool> auto_size_enabled_opt =
-      params.FindBoolKey(kAttributeAutoSize);
+      params.FindBool(kAttributeAutoSize);
   bool auto_size_enabled = auto_size_enabled_opt.value_or(auto_size_enabled_);
 
   int max_height =
-      params.FindIntKey(kAttributeMaxHeight).value_or(max_auto_size_.height());
+      params.FindInt(kAttributeMaxHeight).value_or(max_auto_size_.height());
   int max_width =
-      params.FindIntKey(kAttributeMaxWidth).value_or(max_auto_size_.width());
+      params.FindInt(kAttributeMaxWidth).value_or(max_auto_size_.width());
 
   int min_height =
-      params.FindIntKey(kAttributeMinHeight).value_or(min_auto_size_.height());
+      params.FindInt(kAttributeMinHeight).value_or(min_auto_size_.height());
   int min_width =
-      params.FindIntKey(kAttributeMinWidth).value_or(min_auto_size_.width());
+      params.FindInt(kAttributeMinWidth).value_or(min_auto_size_.width());
 
-  double element_height = params.FindDoublePath(kElementHeight).value_or(0.0);
-  double element_width = params.FindDoublePath(kElementWidth).value_or(0.0);
+  double element_height = params.FindDouble(kElementHeight).value_or(0.0);
+  double element_width = params.FindDouble(kElementWidth).value_or(0.0);
 
   // Set the normal size to the element size so that the guestview will fit
   // the element initially if autosize is disabled.
@@ -843,7 +840,7 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   // If the element size was provided in logical units (versus physical), then
   // it will be converted to physical units.
   absl::optional<bool> element_size_is_logical_opt =
-      params.FindBoolKey(kElementSizeIsLogical);
+      params.FindBool(kElementSizeIsLogical);
   bool element_size_is_logical = element_size_is_logical_opt.value_or(false);
   if (element_size_is_logical) {
     // Convert the element size from logical pixels to physical pixels.

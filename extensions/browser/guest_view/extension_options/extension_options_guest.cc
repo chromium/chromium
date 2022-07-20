@@ -59,11 +59,11 @@ GuestViewBase* ExtensionOptionsGuest::Create(WebContents* owner_web_contents) {
 }
 
 void ExtensionOptionsGuest::CreateWebContents(
-    const base::DictionaryValue& create_params,
+    const base::Value::Dict& create_params,
     WebContentsCreatedCallback callback) {
   // Get the extension's base URL.
   const std::string* extension_id =
-      create_params.FindStringKey(extensionoptions::kExtensionId);
+      create_params.FindString(extensionoptions::kExtensionId);
 
   if (!extension_id || !crx_file::id_util::IdIsValid(*extension_id)) {
     std::move(callback).Run(nullptr);
@@ -116,7 +116,7 @@ void ExtensionOptionsGuest::CreateWebContents(
 }
 
 void ExtensionOptionsGuest::DidInitialize(
-    const base::DictionaryValue& create_params) {
+    const base::Value::Dict& create_params) {
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
   web_contents()->GetController().LoadURL(options_page_,
                                           content::Referrer(),

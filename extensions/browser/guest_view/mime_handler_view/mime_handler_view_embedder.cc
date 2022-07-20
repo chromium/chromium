@@ -187,8 +187,8 @@ void MimeHandlerViewEmbedder::CreateMimeHandlerViewGuest(
         ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
             browser_context));
   }
-  base::DictionaryValue create_params;
-  create_params.SetStringKey(mime_handler_view::kStreamId, stream_id_);
+  base::Value::Dict create_params;
+  create_params.Set(mime_handler_view::kStreamId, stream_id_);
   manager->CreateGuest(
       MimeHandlerViewGuest::Type, web_contents(), create_params,
       base::BindOnce(&MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest,
@@ -224,7 +224,7 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
       web_contents()->GetBrowserContext())
       ->AttachGuest(embedder_frame_process_id, element_instance_id,
                     guest_instance_id,
-                    base::DictionaryValue() /* unused attach_params */);
+                    base::Value::Dict() /* unused attach_params */);
   // Full page plugin refers to <iframe> or main frame navigations to a
   // MimeHandlerView resource. In such cases MHVG does not have a frame
   // container.

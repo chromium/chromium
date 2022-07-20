@@ -129,7 +129,7 @@ content::WebContents* GuestViewManager::GetGuestByInstanceIDSafely(
 void GuestViewManager::AttachGuest(int embedder_process_id,
                                    int element_instance_id,
                                    int guest_instance_id,
-                                   const base::DictionaryValue& attach_params) {
+                                   const base::Value::Dict& attach_params) {
   auto* guest_view =
       GuestViewBase::From(embedder_process_id, guest_instance_id);
   if (!guest_view)
@@ -180,7 +180,7 @@ int GuestViewManager::GetNextInstanceID() {
 
 void GuestViewManager::CreateGuest(const std::string& view_type,
                                    content::WebContents* owner_web_contents,
-                                   const base::DictionaryValue& create_params,
+                                   const base::Value::Dict& create_params,
                                    WebContentsCreatedCallback callback) {
   GuestViewBase* guest = CreateGuestInternal(owner_web_contents, view_type);
   if (!guest) {
@@ -204,7 +204,7 @@ content::WebContents* GuestViewManager::CreateGuestWithWebContentsParams(
   // https://crbug.com/832879.
   std::unique_ptr<content::WebContents> guest_web_contents =
       WebContents::Create(guest_create_params);
-  guest->InitWithWebContents(base::DictionaryValue(), guest_web_contents.get());
+  guest->InitWithWebContents(base::Value::Dict(), guest_web_contents.get());
   return guest_web_contents.release();
 }
 

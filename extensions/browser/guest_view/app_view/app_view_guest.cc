@@ -166,9 +166,9 @@ bool AppViewGuest::CheckMediaAccessPermission(
       render_frame_host, security_origin, type, guest_extension);
 }
 
-void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
+void AppViewGuest::CreateWebContents(const base::Value::Dict& create_params,
                                      WebContentsCreatedCallback callback) {
-  const std::string* app_id = create_params.FindStringKey(appview::kAppID);
+  const std::string* app_id = create_params.FindString(appview::kAppID);
   if (!app_id) {
     std::move(callback).Run(nullptr);
     return;
@@ -179,7 +179,7 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     return;
   }
 
-  const base::Value* data = create_params.FindDictKey(appview::kData);
+  const base::Value::Dict* data = create_params.FindDict(appview::kData);
   if (!data) {
     std::move(callback).Run(nullptr);
     return;
@@ -200,12 +200,10 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
   const LazyContextId context_id(browser_context(), guest_extension->id());
   LazyContextTaskQueue* queue = context_id.GetTaskQueue();
   if (queue->ShouldEnqueueTask(browser_context(), guest_extension)) {
-    queue->AddPendingTask(
-        context_id,
-        base::BindOnce(&AppViewGuest::LaunchAppAndFireEvent,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Value::AsDictionaryValue(*data).CreateDeepCopy(),
-                       std::move(callback)));
+    queue->AddPendingTask(context_id,
+                          base::BindOnce(&AppViewGuest::LaunchAppAndFireEvent,
+                                         weak_ptr_factory_.GetWeakPtr(),
+                                         data->Clone(), std::move(callback)));
     return;
   }
 
@@ -214,12 +212,11 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
       process_manager->GetBackgroundHostForExtension(guest_extension->id());
   DCHECK(host);
   LaunchAppAndFireEvent(
-      base::Value::AsDictionaryValue(*data).CreateDeepCopy(),
-      std::move(callback),
+      data->Clone(), std::move(callback),
       std::make_unique<LazyContextTaskQueue::ContextInfo>(host));
 }
 
-void AppViewGuest::DidInitialize(const base::DictionaryValue& create_params) {
+void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
 
   if (!url_.is_valid())
@@ -259,7 +256,7 @@ void AppViewGuest::CompleteCreateWebContents(
 }
 
 void AppViewGuest::LaunchAppAndFireEvent(
-    std::unique_ptr<base::DictionaryValue> data,
+    base::Value::Dict data,
     WebContentsCreatedCallback callback,
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   bool has_event_listener = EventRouter::Get(browser_context())
@@ -285,8 +282,7 @@ void AppViewGuest::LaunchAppAndFireEvent(
       new base::DictionaryValue());
   embed_request->SetIntKey(appview::kGuestInstanceID, guest_instance_id());
   embed_request->SetStringKey(appview::kEmbedderID, owner_host());
-  embed_request->SetKey(appview::kData,
-                        base::Value::FromUniquePtrValue(std::move(data)));
+  embed_request->SetKey(appview::kData, base::Value(std::move(data)));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser_context(), std::move(embed_request), extension);
 }

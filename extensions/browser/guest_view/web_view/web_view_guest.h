@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "extensions/browser/guest_view/web_view/javascript_dialog_helper.h"
@@ -167,10 +168,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                                     base::OnceCallback<void(bool)> callback);
 
   // GuestViewBase implementation.
-  void CreateWebContents(const base::DictionaryValue& create_params,
+  void CreateWebContents(const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
-  void DidInitialize(const base::DictionaryValue& create_params) final;
+  void DidInitialize(const base::Value::Dict& create_params) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   void FindReply(content::WebContents* source,
                  int request_id,
@@ -301,7 +302,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   bool HandleKeyboardShortcuts(const content::NativeWebKeyboardEvent& event);
 
-  void ApplyAttributes(const base::DictionaryValue& params);
+  void ApplyAttributes(const base::Value::Dict& params);
 
   void SetTransparency();
 

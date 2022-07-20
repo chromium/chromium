@@ -171,11 +171,12 @@ std::string GetStoragePartitionIdFromPartitionConfig(
   return (persist_storage ? webview::kPersistPrefix : "") + partition_id;
 }
 
-void ParsePartitionParam(const base::DictionaryValue& create_params,
+void ParsePartitionParam(const base::Value::Dict& create_params,
                          std::string* storage_partition_id,
                          bool* persist_storage) {
-  std::string partition_str;
-  if (!create_params.GetString(webview::kStoragePartitionId, &partition_str)) {
+  const std::string* partition_str =
+      create_params.FindString(webview::kStoragePartitionId);
+  if (!partition_str) {
     return;
   }
 
@@ -183,12 +184,12 @@ void ParsePartitionParam(const base::DictionaryValue& create_params,
   // UTF-8 encoded |partition_id|. If the prefix is a match, we can safely
   // remove the prefix without splicing in the middle of a multi-byte codepoint.
   // We can use the rest of the string as UTF-8 encoded one.
-  if (base::StartsWith(partition_str, "persist:",
-                       base::CompareCase::SENSITIVE)) {
-    size_t index = partition_str.find(":");
+  if (base::StartsWith(*partition_str,
+                       "persist:", base::CompareCase::SENSITIVE)) {
+    size_t index = partition_str->find(":");
     CHECK(index != std::string::npos);
     // It is safe to do index + 1, since we tested for the full prefix above.
-    *storage_partition_id = partition_str.substr(index + 1);
+    *storage_partition_id = partition_str->substr(index + 1);
 
     if (storage_partition_id->empty()) {
       // TODO(lazyboy): Better way to deal with this error.
@@ -196,7 +197,7 @@ void ParsePartitionParam(const base::DictionaryValue& create_params,
     }
     *persist_storage = true;
   } else {
-    *storage_partition_id = partition_str;
+    *storage_partition_id = *partition_str;
     *persist_storage = false;
   }
 }
@@ -305,7 +306,7 @@ int WebViewGuest::GetOrGenerateRulesRegistryID(
   return rules_registry_id;
 }
 
-void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
+void WebViewGuest::CreateWebContents(const base::Value::Dict& create_params,
                                      WebContentsCreatedCallback callback) {
   RenderProcessHost* owner_render_process_host =
       owner_web_contents()->GetPrimaryMainFrame()->GetProcess();
@@ -382,10 +383,10 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
 }
 
 void WebViewGuest::DidAttachToEmbedder() {
-  ApplyAttributes(*attach_params());
+  ApplyAttributes(attach_params());
 }
 
-void WebViewGuest::DidInitialize(const base::DictionaryValue& create_params) {
+void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   script_executor_ = std::make_unique<ScriptExecutor>(web_contents());
 
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
@@ -616,9 +617,8 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
       web_contents()->GetSiteInstance()->GetStoragePartitionConfig();
   const std::string storage_partition_id =
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
-  base::DictionaryValue create_params;
-  create_params.SetStringKey(webview::kStoragePartitionId,
-                             storage_partition_id);
+  base::Value::Dict create_params;
+  create_params.Set(webview::kStoragePartitionId, storage_partition_id);
 
   guest_manager->CreateGuest(
       WebViewGuest::Type, embedder_web_contents(), create_params,
@@ -1144,24 +1144,23 @@ bool WebViewGuest::HandleKeyboardShortcuts(
   return false;
 }
 
-void WebViewGuest::ApplyAttributes(const base::DictionaryValue& params) {
-  std::string name;
-  if (params.GetString(webview::kAttributeName, &name)) {
+void WebViewGuest::ApplyAttributes(const base::Value::Dict& params) {
+  if (const std::string* name = params.FindString(webview::kAttributeName)) {
     // If the guest window's name is empty, then the WebView tag's name is
     // assigned. Otherwise, the guest window's name takes precedence over the
     // WebView tag's name.
     if (name_.empty())
-      SetName(name);
+      SetName(*name);
   }
   if (attached())
     ReportFrameNameChange(name_);
 
-  std::string user_agent_override;
-  params.GetString(webview::kParameterUserAgentOverride, &user_agent_override);
-  SetUserAgentOverride(user_agent_override);
+  const std::string* user_agent_override =
+      params.FindString(webview::kParameterUserAgentOverride);
+  SetUserAgentOverride(user_agent_override ? *user_agent_override : "");
 
   absl::optional<bool> allow_transparency =
-      params.FindBoolKey(webview::kAttributeAllowTransparency);
+      params.FindBool(webview::kAttributeAllowTransparency);
   if (allow_transparency) {
     // We need to set the background opaque flag after navigation to ensure that
     // there is a RenderWidgetHostView available.
@@ -1169,12 +1168,12 @@ void WebViewGuest::ApplyAttributes(const base::DictionaryValue& params) {
   }
 
   absl::optional<bool> allow_scaling =
-      params.FindBoolKey(webview::kAttributeAllowScaling);
+      params.FindBool(webview::kAttributeAllowScaling);
   if (allow_scaling)
     SetAllowScaling(*allow_scaling);
 
   // Check for a pending zoom from before the first navigation.
-  pending_zoom_factor_ = params.FindDoubleKey(webview::kInitialZoomFactor)
+  pending_zoom_factor_ = params.FindDouble(webview::kInitialZoomFactor)
                              .value_or(pending_zoom_factor_);
 
   bool is_pending_new_window = false;
@@ -1203,9 +1202,8 @@ void WebViewGuest::ApplyAttributes(const base::DictionaryValue& params) {
 
   // Only read the src attribute if this is not a New Window API flow.
   if (!is_pending_new_window) {
-    std::string src;
-    if (params.GetString(webview::kAttributeSrc, &src))
-      NavigateGuest(src, true /* force_navigation */);
+    if (const std::string* src = params.FindString(webview::kAttributeSrc))
+      NavigateGuest(*src, true /* force_navigation */);
   }
 }
 

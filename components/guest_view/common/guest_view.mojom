@@ -18,7 +18,7 @@ interface GuestViewHost {
       int32 embedder_local_frame_routing_id,
       int32 element_instance_id,
       int32 guest_instance_id,
-      mojo_base.mojom.DeprecatedDictionaryValue params) => ();
+      mojo_base.mojom.DictionaryValue params) => ();
 
   // Sent by the renderer when a GuestView (identified by |view_instance_id|)
   // has been created in JavaScript.

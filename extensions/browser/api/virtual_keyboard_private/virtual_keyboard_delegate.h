@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_DELEGATE_H_
 
-#include <memory>
 #include <set>
 #include <string>
 
@@ -14,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/virtual_keyboard.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace extensions {
@@ -23,7 +23,7 @@ class VirtualKeyboardDelegate {
   virtual ~VirtualKeyboardDelegate() {}
 
   using OnKeyboardSettingsCallback =
-      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue> settings)>;
+      base::OnceCallback<void(absl::optional<base::Value::Dict> settings)>;
 
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
 
