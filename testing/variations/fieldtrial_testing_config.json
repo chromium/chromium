@@ -6629,22 +6629,6 @@
             ]
         }
     ],
-    "PartitionAllocPCScanBlinkPartitions": [
-        {
-            "platforms": [
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocPCScanBlinkPartitions"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocSortActiveSlotSpans": [
         {
             "platforms": [
