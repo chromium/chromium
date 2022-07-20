@@ -84,6 +84,7 @@ class PropertyTreePrinterTraits<TransformPaintPropertyNodeOrAlias> {
       PropertyTreePrinter<TransformPaintPropertyNodeOrAlias>& printer) {
     printer.AddNode(properties.PaintOffsetTranslation());
     printer.AddNode(properties.StickyTranslation());
+    printer.AddNode(properties.AnchorScrollTranslation());
     printer.AddNode(properties.Translate());
     printer.AddNode(properties.Rotate());
     printer.AddNode(properties.Scale());
@@ -234,6 +235,8 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.PaintOffsetTranslation(), "PaintOffsetTranslation",
                object);
   SetDebugName(properties.StickyTranslation(), "StickyTranslation", object);
+  SetDebugName(properties.AnchorScrollTranslation(), "AnchorScrollTranslation",
+               object);
   SetDebugName(properties.Translate(), "Translate", object);
   SetDebugName(properties.Rotate(), "Rotate", object);
   SetDebugName(properties.Scale(), "Scale", object);

@@ -101,6 +101,9 @@ class CORE_EXPORT ObjectPaintProperties {
   // +-[ StickyTranslation ]
   //  /    This applies the sticky offset induced by position:sticky.
   // |
+  // +-[ AnchorScrollTranslation ]
+  //  /    This applies the scrolling offset induced by CSS anchor-scroll.
+  // |
   // +-[ Translate ]
   //   |   The transform from CSS 'translate' (including the effects of
   //  /    'transform-origin').
@@ -154,13 +157,15 @@ class CORE_EXPORT ObjectPaintProperties {
   // https://drafts.csswg.org/css-transforms-2/#accumulated-3d-transformation-matrix-computation
  public:
   bool HasTransformNode() const {
-    return paint_offset_translation_ || sticky_translation_ || translate_ ||
-           rotate_ || scale_ || offset_ || transform_ || perspective_ ||
+    return paint_offset_translation_ || sticky_translation_ ||
+           anchor_scroll_translation_ || translate_ || rotate_ || scale_ ||
+           offset_ || transform_ || perspective_ ||
            replaced_content_transform_ || scroll_translation_ ||
            transform_isolation_node_;
   }
   ADD_TRANSFORM(PaintOffsetTranslation, paint_offset_translation_);
   ADD_TRANSFORM(StickyTranslation, sticky_translation_);
+  ADD_TRANSFORM(AnchorScrollTranslation, anchor_scroll_translation_);
   ADD_TRANSFORM(Translate, translate_);
   ADD_TRANSFORM(Rotate, rotate_);
   ADD_TRANSFORM(Scale, scale_);

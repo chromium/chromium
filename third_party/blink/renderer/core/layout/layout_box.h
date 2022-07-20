@@ -2131,6 +2131,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // 'anchor-scroll' property. Returns nullptr if the anchor query is invalid.
   const LayoutObject* AnchorScrollObject() const;
 
+  // If the AnchorScrollObject() is non-null and in a different scroll
+  // container, returns that container, so that at paint time, we can apply an
+  // offset to this element when the returned scroll container is scrolled.
+  // Returns nullptr otherwise.
+  const LayoutBlock* AnchorScrollContainer() const;
+
  protected:
   ~LayoutBox() override;
 

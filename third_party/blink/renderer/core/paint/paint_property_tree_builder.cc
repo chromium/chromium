@@ -248,6 +248,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateForObjectLocationAndSize(
       absl::optional<gfx::Vector2d>& paint_offset_translation);
   ALWAYS_INLINE void UpdateStickyTranslation();
+  ALWAYS_INLINE void UpdateAnchorScrollTranslation();
 
   void UpdateIndividualTransform(
       bool (*needs_property)(const LayoutObject&, CompositingReasons),
@@ -460,6 +461,12 @@ static bool NeedsStickyTranslation(const LayoutObject& object) {
   return To<LayoutBoxModelObject>(object).StickyConstraints();
 }
 
+static bool NeedsAnchorScrollTranslation(const LayoutObject& object) {
+  if (const LayoutBox* box = DynamicTo<LayoutBox>(object))
+    return box->AnchorScrollContainer();
+  return false;
+}
+
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
@@ -493,6 +500,8 @@ static bool NeedsPaintOffsetTranslation(
   if (NeedsScrollOrScrollTranslation(object, direct_compositing_reasons))
     return true;
   if (NeedsStickyTranslation(object))
+    return true;
+  if (NeedsAnchorScrollTranslation(object))
     return true;
   if (NeedsPaintOffsetTranslationForOverflowControls(box_model))
     return true;
@@ -741,6 +750,51 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
 
   if (properties_->StickyTranslation())
     context_.current.transform = properties_->StickyTranslation();
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
+  DCHECK(properties_);
+  if (NeedsPaintPropertyUpdate()) {
+    if (NeedsAnchorScrollTranslation(object_)) {
+      const auto& box = To<LayoutBox>(object_);
+      const PaintLayer* anchor_scroll_container_layer =
+          box.AnchorScrollContainer()->Layer();
+
+      // TODO(crbug.com/1309178): We need to accumulate the translation offsets
+      // of all the scroll containers up to the containing block.
+      gfx::Vector2dF scroll_offset =
+          anchor_scroll_container_layer->GetScrollableArea()
+              ->ScrollPosition()
+              .OffsetFromOrigin();
+      gfx::Vector2dF translation_offset = -scroll_offset;
+      TransformPaintPropertyNode::State state{translation_offset};
+
+      // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
+      // because anchor-positioned elements don't work properly under multicol
+      // for now, to keep consistency with
+      // CompositorElementIdFromUniqueObjectId() below. This will be fixed by
+      // LayoutNG block fragments.
+      state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
+          box.UniqueId(),
+          CompositorElementIdNamespace::kAnchorScrollTranslation);
+      state.rendering_context_id = context_.rendering_context_id;
+      state.flags.flattens_inherited_transform =
+          context_.should_flatten_inherited_transform;
+      state.anchor_scroll_container =
+          anchor_scroll_container_layer->GetLayoutObject()
+              .FirstFragment()
+              .PaintProperties()
+              ->ScrollTranslation();
+
+      OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
+          *context_.current.transform, std::move(state)));
+    } else {
+      OnClearTransform(properties_->ClearAnchorScrollTranslation());
+    }
+  }
+
+  if (properties_->AnchorScrollTranslation())
+    context_.current.transform = properties_->AnchorScrollTranslation();
 }
 
 // TODO(dbaron): Remove this function when we can remove the
@@ -2973,6 +3027,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 
   if (properties_) {
     UpdateStickyTranslation();
+    UpdateAnchorScrollTranslation();
     if (object_.IsSVGChild()) {
       // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
       UpdateTransformForSVGChild(full_context_.direct_compositing_reasons);
@@ -3826,6 +3881,7 @@ void PaintPropertyTreeBuilder::UpdateFragments() {
       (NeedsPaintOffsetTranslation(object_,
                                    context_.direct_compositing_reasons) ||
        NeedsStickyTranslation(object_) ||
+       NeedsAnchorScrollTranslation(object_) ||
        NeedsTranslate(object_, context_.direct_compositing_reasons) ||
        NeedsRotate(object_, context_.direct_compositing_reasons) ||
        NeedsScale(object_, context_.direct_compositing_reasons) ||

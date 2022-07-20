@@ -11,13 +11,14 @@
 
 namespace blink {
 
-const int kCompositorNamespaceBitCount = 4;
+const int kCompositorNamespaceBitCount = 5;
 
 enum class CompositorElementIdNamespace {
   kPrimary,
   kUniqueObjectId,
   kScroll,
   kStickyTranslation,
+  kAnchorScrollTranslation,
   kPrimaryEffect,
   kPrimaryTransform,
   kEffectFilter,

@@ -8107,4 +8107,13 @@ const LayoutObject* LayoutBox::AnchorScrollObject() const {
   return nullptr;
 }
 
+const LayoutBlock* LayoutBox::AnchorScrollContainer() const {
+  if (const LayoutObject* object = AnchorScrollObject()) {
+    const LayoutBlock* scroller = object->EnclosingScrollportBox();
+    if (scroller != EnclosingScrollportBox())
+      return scroller;
+  }
+  return nullptr;
+}
+
 }  // namespace blink
