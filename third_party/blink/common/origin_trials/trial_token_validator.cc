@@ -57,6 +57,61 @@ OriginTrialTokenStatus IsTokenValid(
   return status;
 }
 
+// Determine if the the |token_expiry_time| should be considered as expired
+// at |current_time| given the |trial_name|.
+// Manual completion trials add an expiry grace period, which has to be taken
+// into account to answer this question.
+bool IsTokenExpired(const base::StringPiece trial_name,
+                    const base::Time token_expiry_time,
+                    const base::Time current_time) {
+  // Check token expiry.
+  bool token_expired = token_expiry_time <= current_time;
+  if (token_expired) {
+    if (origin_trials::IsTrialValid(trial_name)) {
+      // Manual completion trials have an expiry grace period. For these trials
+      // the token expiry time is valid if:
+      // token_expiry_time + kExpiryGracePeriod > current_time
+      for (OriginTrialFeature feature :
+           origin_trials::FeaturesForTrial(trial_name)) {
+        if (origin_trials::FeatureHasExpiryGracePeriod(feature)) {
+          if (token_expiry_time + kExpiryGracePeriod > current_time) {
+            token_expired = false;  // consider the token non-expired
+            break;
+          }
+        }
+      }
+    }
+  }
+  return token_expired;
+}
+
+// Validate that the passed token has not yet expired and that the trial or
+// token has not been disabled.
+OriginTrialTokenStatus ValidateTokenEnabled(
+    const OriginTrialPolicy& policy,
+    const base::StringPiece trial_name,
+    const base::Time token_expiry_time,
+    const TrialToken::UsageRestriction usage_restriction,
+    const base::StringPiece token_signature,
+    const base::Time current_time) {
+  if (IsTokenExpired(trial_name, token_expiry_time, current_time))
+    return OriginTrialTokenStatus::kExpired;
+
+  if (policy.IsFeatureDisabled(trial_name))
+    return OriginTrialTokenStatus::kFeatureDisabled;
+
+  if (policy.IsTokenDisabled(token_signature))
+    return OriginTrialTokenStatus::kTokenDisabled;
+
+  if (usage_restriction == TrialToken::UsageRestriction::kSubset &&
+      policy.IsFeatureDisabledForUser(trial_name)) {
+    return OriginTrialTokenStatus::kFeatureDisabledForUser;
+  }
+
+  // All checks passed, return success
+  return OriginTrialTokenStatus::kSuccess;
+}
+
 }  // namespace
 
 TrialTokenValidator::OriginInfo::OriginInfo(const url::Origin& wrapped_origin)
@@ -222,47 +277,36 @@ TrialTokenResult TrialTokenValidator::ValidateToken(
   status =
       IsTokenValid(*trial_token, origin, third_party_origins, current_time);
 
-  if (status == OriginTrialTokenStatus::kExpired) {
-    if (origin_trials::IsTrialValid(trial_token->feature_name())) {
-      base::Time validated_time = current_time;
-      // Manual completion trials have an expiry grace period. For these trials
-      // the token expiry time is valid if:
-      // token.expiry_time + kExpiryGracePeriod > current_time
-      for (OriginTrialFeature feature :
-           origin_trials::FeaturesForTrial(trial_token->feature_name())) {
-        if (origin_trials::FeatureHasExpiryGracePeriod(feature)) {
-          validated_time = current_time - kExpiryGracePeriod;
-          status = IsTokenValid(*trial_token, origin, third_party_origins,
-                                validated_time);
-          if (status == OriginTrialTokenStatus::kSuccess) {
-            break;
-          }
-        }
-      }
-    }
+  if (status == OriginTrialTokenStatus::kSuccess ||
+      status == OriginTrialTokenStatus::kExpired) {
+    // Since manual completion trials have a grace period, we need to check
+    // expired tokens in addition to valid tokens.
+    status = ValidateTokenEnabled(*policy, trial_token->feature_name(),
+                                  trial_token->expiry_time(),
+                                  trial_token->usage_restriction(),
+                                  trial_token->signature(), current_time);
   }
-
-  if (status != OriginTrialTokenStatus::kSuccess)
-    return TrialTokenResult(status, std::move(trial_token));
-
-  if (policy->IsFeatureDisabled(trial_token->feature_name())) {
-    return TrialTokenResult(OriginTrialTokenStatus::kFeatureDisabled,
-                            std::move(trial_token));
-  }
-
-  if (policy->IsTokenDisabled(trial_token->signature())) {
-    return TrialTokenResult(OriginTrialTokenStatus::kTokenDisabled,
-                            std::move(trial_token));
-  }
-
-  if (trial_token->usage_restriction() ==
-          TrialToken::UsageRestriction::kSubset &&
-      policy->IsFeatureDisabledForUser(trial_token->feature_name())) {
-    return TrialTokenResult(OriginTrialTokenStatus::kFeatureDisabledForUser,
-                            std::move(trial_token));
-  }
-
   return TrialTokenResult(status, std::move(trial_token));
+}
+
+bool TrialTokenValidator::RevalidateTokenAndTrial(
+    const base::StringPiece trial_name,
+    const base::Time token_expiry_time,
+    const TrialToken::UsageRestriction usage_restriction,
+    const base::StringPiece token_signature,
+    const base::Time current_time) const {
+  OriginTrialPolicy* policy = PolicyGetter().Run();
+
+  if (!policy || !policy->IsOriginTrialsSupported())
+    return false;
+
+  if (!origin_trials::IsTrialValid(trial_name))
+    return false;
+
+  OriginTrialTokenStatus status =
+      ValidateTokenEnabled(*policy, trial_name, token_expiry_time,
+                           usage_restriction, token_signature, current_time);
+  return status == OriginTrialTokenStatus::kSuccess;
 }
 
 bool TrialTokenValidator::RequestEnablesFeature(const net::URLRequest* request,

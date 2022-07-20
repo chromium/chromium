@@ -1,0 +1,48 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = [
+    "browser/origin_trials.cc",
+    "browser/origin_trials.h",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//third_party/blink/public/common:headers",
+    "//url:url",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "common/origin_trials_persistence_provider.h",
+    "common/persisted_trial_token.cc",
+    "common/persisted_trial_token.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/blink/public/common:headers",
+    "//url:url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browser/origin_trials_unittests.cc",
+    "common/persisted_trial_token_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    ":common",
+    "./test",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//url:url",
+  ]
+}

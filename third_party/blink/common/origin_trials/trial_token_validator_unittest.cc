@@ -95,6 +95,7 @@ const char kAppropriateOrigin[] = "https://valid.example.com";
 const char kAppropriateFeatureName[] = "Frobulate";
 const char kAppropriateThirdPartyFeatureName[] = "FrobulateThirdParty";
 const char kAppropriateDeprecationFeatureName[] = "FrobulateDeprecation";
+const char kAppropriateGracePeriodFeatureName[] = "FrobulateExpiryGracePeriod";
 
 const char kInappropriateFeatureName[] = "Grokalyze";
 const char kInappropriateOrigin[] = "https://invalid.example.com";
@@ -1124,7 +1125,7 @@ TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenInsecureOrigin) {
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
 }
 
-// Finally: Tests that only check the behaviour of
+// Tests that only check the behaviour of
 // |ValidateTokenAndTrialWithOriginInfo| - these are the ones
 // that rely on changes in passing in specific OriginInfo
 
@@ -1187,6 +1188,70 @@ TEST_F(TrialTokenValidatorTest,
   EXPECT_EQ(kAppropriateThirdPartyFeatureName,
             result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+//
+// Tests of |RevalidateTokenAndTrial|
+//
+TEST_F(TrialTokenValidatorTest, RevalidateTokenInformation) {
+  EXPECT_TRUE(validator_.RevalidateTokenAndTrial(
+      kAppropriateFeatureName, kSampleTokenExpiryTime,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+}
+
+TEST_F(TrialTokenValidatorTest, RevalidateExpiredToken) {
+  // Check basic expiration. The expiry must be > the current time
+  base::Time expiry = Now();
+
+  EXPECT_FALSE(validator_.RevalidateTokenAndTrial(
+      kAppropriateFeatureName, expiry,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+
+  // Check grace period expiration
+  EXPECT_TRUE(validator_.RevalidateTokenAndTrial(
+      kAppropriateGracePeriodFeatureName, expiry,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+
+  // Check the boundary of the grace period.
+  expiry = Now() - kExpiryGracePeriod;
+  EXPECT_FALSE(validator_.RevalidateTokenAndTrial(
+      kAppropriateGracePeriodFeatureName, expiry,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+}
+
+TEST_F(TrialTokenValidatorTest, RevalidateDisabledTrial) {
+  policy_.DisableFeature(kAppropriateFeatureName);
+  EXPECT_FALSE(validator_.RevalidateTokenAndTrial(
+      kAppropriateFeatureName, kSampleTokenExpiryTime,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+}
+
+TEST_F(TrialTokenValidatorTest, RevalidateDisabledToken) {
+  policy_.DisableToken(valid_token_signature_);
+  EXPECT_FALSE(validator_.RevalidateTokenAndTrial(
+      kAppropriateFeatureName, kSampleTokenExpiryTime,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+}
+
+TEST_F(TrialTokenValidatorTest, RevalidateDisabledTrialForUser) {
+  policy_.DisableFeatureForUser(kAppropriateThirdPartyFeatureName);
+  // Per-user disabled trials should only be disabled if the token is marked as
+  // kSubset
+  EXPECT_TRUE(validator_.RevalidateTokenAndTrial(
+      kAppropriateThirdPartyFeatureName, kSampleTokenExpiryTime,
+      blink::TrialToken::UsageRestriction::kNone, valid_token_signature_,
+      Now()));
+
+  EXPECT_FALSE(validator_.RevalidateTokenAndTrial(
+      kAppropriateThirdPartyFeatureName, kSampleTokenExpiryTime,
+      blink::TrialToken::UsageRestriction::kSubset, valid_token_signature_,
+      Now()));
 }
 
 }  // namespace blink::trial_token_validator_unittest

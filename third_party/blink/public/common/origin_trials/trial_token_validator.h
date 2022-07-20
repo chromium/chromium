@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "url/origin.h"
 
 namespace net {
@@ -110,6 +111,18 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
       const url::Origin& origin,
       base::span<const url::Origin> third_party_origins,
       base::Time current_time) const;
+
+  // Re-validate that |trial_name| is still enabled given the token information.
+  // The token from which the information was obtained should previously have
+  // been validated with either |ValidateToken| or |ValidateTokenAndTrial|, to
+  // ensure that it was a valid token for the origin to which we are applying
+  // it.
+  virtual bool RevalidateTokenAndTrial(
+      const base::StringPiece trial_name,
+      const base::Time token_expiry_time,
+      const TrialToken::UsageRestriction token_usage_restriction,
+      const base::StringPiece token_signature,
+      const base::Time current_time) const;
 
   // |request| must not be nullptr.
   // NOTE: This is not currently used, but remains here for future trials.

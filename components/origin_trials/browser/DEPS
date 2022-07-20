@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/origin_trials/common",
+
+  "+third_party/blink/public/common/origin_trials",
+]

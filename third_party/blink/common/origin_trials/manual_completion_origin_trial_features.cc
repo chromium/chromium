@@ -20,6 +20,7 @@ bool FeatureHasExpiryGracePeriod(OriginTrialFeature feature) {
       // as a manual completion features, for tests.
       OriginTrialFeature::kOriginTrialsSampleAPIExpiryGracePeriod,
       OriginTrialFeature::kOriginTrialsSampleAPIExpiryGracePeriodThirdParty,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentExpiryGracePeriod,
   };
   return base::Contains(kHasExpiryGracePeriod, feature);
 }

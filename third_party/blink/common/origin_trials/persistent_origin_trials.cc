@@ -15,8 +15,10 @@ namespace blink::origin_trials {
 
 bool IsTrialPersistentToNextResponse(base::StringPiece trial_name) {
   static base::StringPiece const kPersistentTrials[] = {
-      // Enable the FrobulatePersistent trial as a persistent trial for tests.
+      // Enable the FrobulatePersistent* trials as a persistent trials for
+      // tests.
       "FrobulatePersistent",
+      "FrobulatePersistentExpiryGracePeriod",
   };
   return base::Contains(kPersistentTrials, trial_name);
 }
