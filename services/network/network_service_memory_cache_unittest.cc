@@ -1055,4 +1055,19 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_GzipResponse) {
   ASSERT_LT(status.encoded_body_length, kBodySize);
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, InvalidateOnNonSafeMethod) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  ResourceRequest request2 = CreateRequest("/cacheable");
+  request2.method = "PUT";
+
+  LoaderPair pair = CreateLoaderAndStart(request2);
+  pair.client->RunUntilResponseReceived();
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
 }  // namespace network

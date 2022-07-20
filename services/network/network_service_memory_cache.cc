@@ -285,16 +285,30 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
     return nullptr;
   }
 
-  // TODO(https://crbug.com/1339708): Make `this` work for responses from
-  // private network. Currently some tests are failing.
-  if (response->response_address_space == mojom::IPAddressSpace::kPrivate)
-    return nullptr;
-
   DCHECK(url_request->url().is_valid());
   if (!url_request->url().SchemeIsHTTPOrHTTPS())
     return nullptr;
 
-  if (url_request->method() != net::HttpRequestHeaders::kGetMethod)
+  const absl::optional<std::string> cache_key =
+      GenerateCacheKeyForURLRequest(*url_request, request_destination);
+  if (!cache_key.has_value())
+    return nullptr;
+
+  if (url_request->method() != net::HttpRequestHeaders::kGetMethod) {
+    // Invalidate the entry when the method is unsafe, as specified at
+    // https://fetch.spec.whatwg.org/#http-network-or-cache-fetch.
+    // This is a bit overkilling (for example, we don't see the response
+    // status), for the ease of implementation.
+    auto it = entries_.Peek(*cache_key);
+    if (it != entries_.end()) {
+      EraseEntry(it);
+    }
+    return nullptr;
+  }
+
+  // TODO(https://crbug.com/1339708): Make `this` work for responses from
+  // private network. Currently some tests are failing.
+  if (response->response_address_space == mojom::IPAddressSpace::kPrivate)
     return nullptr;
 
   if (!response->headers || response->headers->response_code() != net::HTTP_OK)
@@ -315,11 +329,6 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
   net::ValidationType validation_type = response->headers->RequiresValidation(
       response->request_time, response->response_time, GetCurrentTime());
   if (validation_type != net::VALIDATION_NONE)
-    return nullptr;
-
-  absl::optional<std::string> cache_key =
-      GenerateCacheKeyForURLRequest(*url_request, request_destination);
-  if (!cache_key.has_value())
     return nullptr;
 
   return std::make_unique<NetworkServiceMemoryCacheWriter>(
