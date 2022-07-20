@@ -135,8 +135,8 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
   HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to instantiate the updater internal server. "
-             << std::hex << hr;
+    VLOG(2) << "Failed to instantiate the updater internal server. " << std::hex
+            << hr;
     std::move(callback).Run();
     return;
   }
@@ -144,8 +144,8 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   hr = server.As(&updater_internal);
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to query the updater_internal interface. " << std::hex
-             << hr;
+    VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
+            << hr;
     std::move(callback).Run();
     return;
   }
@@ -162,7 +162,7 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
       updater_internal, std::move(callback));
   hr = updater_internal->Run(rpc_callback.Get());
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
 
     // Since the RPC call returned an error, it can't be determined what the
     // state of the update server is. The RPC callback may or may not have run.
@@ -194,8 +194,8 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
   HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to instantiate the updater internal server. "
-             << std::hex << hr;
+    VLOG(2) << "Failed to instantiate the updater internal server. " << std::hex
+            << hr;
     std::move(callback).Run();
     return;
   }
@@ -203,8 +203,8 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   hr = server.As(&updater_internal);
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to query the updater_internal interface. " << std::hex
-             << hr;
+    VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
+            << hr;
     std::move(callback).Run();
     return;
   }
@@ -213,8 +213,8 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
       updater_internal, std::move(callback));
   hr = updater_internal->InitializeUpdateService(rpc_callback.Get());
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdaterInternal::InitializeUpdateService"
-             << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdaterInternal::InitializeUpdateService"
+            << std::hex << hr;
     rpc_callback->Disconnect().Run();
     return;
   }

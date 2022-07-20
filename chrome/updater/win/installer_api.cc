@@ -365,7 +365,7 @@ AppInstallerResult RunApplicationInstaller(
     bool wait_result = process.WaitForExitWithTimeout(
         base::Seconds(kWaitForInstallerProgressSec), &exit_code);
     auto progress = GetInstallerProgress(app_info.scope, app_info.app_id);
-    DVLOG(3) << "installer progress: " << progress;
+    VLOG(3) << "installer progress: " << progress;
     progress_callback.Run(progress);
     if (wait_result) {
       VLOG(1) << "Installer exit code " << exit_code;

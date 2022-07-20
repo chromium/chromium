@@ -217,8 +217,8 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                           base::BindOnce(&IUpdaterRegisterAppCallback::Run,
                                          callback, response.status_code),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2) << "UpdaterImpl::RegisterApp "
-                                     << "callback returned " << std::hex << hr;
+                            VLOG(2) << "UpdaterImpl::RegisterApp "
+                                    << "callback returned " << std::hex << hr;
                           }));
                     },
                     task_runner, callback));
@@ -283,8 +283,8 @@ class StateChangeCallbackFilter {
         base::BindOnce(&IUpdaterObserver::OnStateChange, observer_,
                        Microsoft::WRL::Make<UpdateStateImpl>(update_state)),
         base::BindOnce([](HRESULT hr) {
-          DVLOG(4) << "IUpdaterObserver::OnStateChange returned " << std::hex
-                   << hr;
+          VLOG(4) << "IUpdaterObserver::OnStateChange returned " << std::hex
+                  << hr;
         }));
   }
 
@@ -347,8 +347,8 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                               Microsoft::WRL::Make<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2) << "UpdaterImpl::Update "
-                                     << "callback returned " << std::hex << hr;
+                            VLOG(2) << "UpdaterImpl::Update "
+                                    << "callback returned " << std::hex << hr;
                           }));
                     },
                     task_runner, observer));
@@ -392,8 +392,8 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
                               Microsoft::WRL::Make<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2) << "UpdaterImpl::UpdateAll "
-                                     << "callback returned " << std::hex << hr;
+                            VLOG(2) << "UpdaterImpl::UpdateAll "
+                                    << "callback returned " << std::hex << hr;
                           }));
                     },
                     task_runner, observer));
@@ -600,8 +600,8 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                               Microsoft::WRL::Make<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2) << "UpdaterImpl::RunInstaller "
-                                     << "callback returned " << std::hex << hr;
+                            VLOG(2) << "UpdaterImpl::RunInstaller "
+                                    << "callback returned " << std::hex << hr;
                           }));
                     },
                     task_runner, observer));
@@ -640,8 +640,8 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
                       base::BindOnce(&IUpdaterInternalCallback::Run, callback,
                                      0),
                       base::BindOnce([](HRESULT hr) {
-                        DVLOG(2) << "UpdaterInternalImpl::Run "
-                                 << "callback returned " << std::hex << hr;
+                        VLOG(2) << "UpdaterInternalImpl::Run "
+                                << "callback returned " << std::hex << hr;
                       }));
                 },
                 task_runner, callback));
@@ -677,7 +677,7 @@ HRESULT UpdaterInternalImpl::InitializeUpdateService(
                       base::BindOnce(&IUpdaterInternalCallback::Run, callback,
                                      0),
                       base::BindOnce([](HRESULT hr) {
-                        DVLOG(2)
+                        VLOG(2)
                             << "UpdaterInternalImpl::InitializeUpdateService "
                             << "callback returned " << std::hex << hr;
                       }));

@@ -73,7 +73,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
                                     const RegistrationResponse& response) {
     // Create a `CheckForUpdatesTask` with the local prefs' config and perform
     // an `Update` task for `kQualificationAppId`.
-    DVLOG(2) << "RegistrationResponse: " << response.status_code;
+    VLOG(2) << "RegistrationResponse: " << response.status_code;
     base::MakeRefCounted<CheckForUpdatesTask>(
         config_,
         base::BindOnce(&UpdateServiceImpl::Update,

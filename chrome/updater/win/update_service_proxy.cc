@@ -55,8 +55,8 @@ HRESULT CreateServer(UpdaterScope scope,
       scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
                                      : __uuidof(UpdaterUserClass),
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
-  DVLOG_IF(2, FAILED(hr)) << "Failed to instantiate the update server: "
-                          << std::hex << hr;
+  VLOG_IF(2, FAILED(hr)) << "Failed to instantiate the update server: "
+                         << std::hex << hr;
   return hr;
 }
 
@@ -68,8 +68,8 @@ HRESULT CreateUpdater(UpdaterScope scope,
   if (FAILED(hr))
     return hr;
   hr = server.As(&updater);
-  DVLOG_IF(2, FAILED(hr)) << "Failed to query the updater interface: "
-                          << std::hex << hr;
+  VLOG_IF(2, FAILED(hr)) << "Failed to query the updater interface: "
+                         << std::hex << hr;
   return hr;
 }
 
@@ -96,7 +96,7 @@ class UpdaterObserver
     DCHECK(update_state);
 
     if (!state_update_callback_) {
-      DVLOG(2) << "Skipping posting the update state callback.";
+      VLOG(2) << "Skipping posting the update state callback.";
       return S_OK;
     }
 
@@ -116,7 +116,7 @@ class UpdaterObserver
   // so that the owner of this object can take back the callback ownership.
   UpdateService::Callback Disconnect() {
     DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
+    VLOG(2) << __func__;
     updater_ = nullptr;
     state_update_callback_.Reset();
     return std::move(callback_);
@@ -200,7 +200,7 @@ class UpdaterObserver
         update_service_state.extra_code1 = extra_code1;
     }
 
-    DVLOG(4) << update_service_state;
+    VLOG(4) << update_service_state;
     return update_service_state;
   }
 
@@ -212,7 +212,7 @@ class UpdaterObserver
     base::win::ScopedBstr message;
     CHECK(SUCCEEDED(complete_status->get_statusCode(&code)));
 
-    DVLOG(2) << "ICompleteStatus::OnComplete(" << code << ")";
+    VLOG(2) << "ICompleteStatus::OnComplete(" << code << ")";
     return static_cast<UpdateService::Result>(code);
   }
 
@@ -250,7 +250,7 @@ class UpdaterRegisterAppCallback
   // the STA thread directly by the COM RPC runtime.
   IFACEMETHODIMP Run(LONG status_code) override {
     DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
+    VLOG(2) << __func__;
     status_code_ = status_code;
     return S_OK;
   }
@@ -260,7 +260,7 @@ class UpdaterRegisterAppCallback
   // so that the owner of this object can take back the callback ownership.
   UpdateService::RegisterAppCallback Disconnect() {
     DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
+    VLOG(2) << __func__;
     updater_ = nullptr;
     return std::move(callback_);
   }
@@ -303,7 +303,7 @@ class UpdaterCallback
   // the task runner.
   IFACEMETHODIMP Run(LONG status_code) override {
     DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
+    VLOG(2) << __func__;
     status_code_ = status_code;
     return S_OK;
   }
@@ -313,7 +313,7 @@ class UpdaterCallback
   // so that the owner of this object can take back the callback ownership.
   base::OnceCallback<void(LONG)> Disconnect() {
     DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
+    VLOG(2) << __func__;
     updater_ = nullptr;
     return std::move(callback_);
   }
@@ -514,7 +514,7 @@ void UpdateServiceProxy::GetVersionOnSTA(
   }
   base::win::ScopedBstr version;
   if (HRESULT hr = updater->GetVersion(version.Receive()); FAILED(hr)) {
-    DVLOG(2) << "IUpdater::GetVersion failed: " << std::hex << hr;
+    VLOG(2) << "IUpdater::GetVersion failed: " << std::hex << hr;
     std::move(callback).Run(base::Version());
     return;
   }
@@ -576,7 +576,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
           version.c_str(), existence_checker_path.c_str(),
           callback_wrapper.Get());
       FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::RegisterApp" << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdater::RegisterApp" << std::hex << hr;
     callback_wrapper->Disconnect().Run(RegistrationResponse(hr));
     return;
   }
@@ -612,7 +612,7 @@ void UpdateServiceProxy::RunPeriodicTasksOnSTA(base::OnceClosure callback,
                      std::move(callback)));
   if (HRESULT hr = updater->RunPeriodicTasks(callback_wrapper.Get());
       FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::RunPeriodicTasks" << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdater::RunPeriodicTasks" << std::hex << hr;
     callback_wrapper->Disconnect().Run(hr);
     return;
   }
@@ -643,7 +643,7 @@ void UpdateServiceProxy::UpdateAllOnSTA(StateChangeCallback state_update,
   auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater, state_update,
                                                         std::move(callback));
   if (HRESULT hr = updater->UpdateAll(observer.Get()); FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
 
     // Since the RPC call returned an error, it can't be determined what the
     // state of the update server is. The observer may or may not post any
@@ -683,7 +683,7 @@ void UpdateServiceProxy::UpdateOnSTA(
           UpdateService::PolicySameVersionUpdate::kAllowed,
       observer.Get());
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
     observer->Disconnect().Run(Result::kServiceFailed);
     return;
   }
@@ -747,7 +747,7 @@ void UpdateServiceProxy::InstallOnSTA(const RegistrationRequest& request,
                                 base::UTF8ToWide(install_data_index).c_str(),
                                 static_cast<int>(priority), observer.Get());
   if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
+    VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
     observer->Disconnect().Run(Result::kServiceFailed);
     return;
   }

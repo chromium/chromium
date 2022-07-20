@@ -495,7 +495,7 @@ base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {
   DCHECK_EQ(bytes_returned, sizeof(*session_id_ptr));
   DWORD session_id = *session_id_ptr;
   ::WTSFreeMemory(session_id_ptr);
-  DVLOG(1) << "::WTSQuerySessionInformation session id: " << session_id;
+  VLOG(1) << "::WTSQuerySessionInformation session id: " << session_id;
 
   HANDLE token_handle_raw = nullptr;
   if (!::WTSQueryUserToken(session_id, &token_handle_raw)) {

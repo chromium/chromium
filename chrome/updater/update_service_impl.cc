@@ -280,7 +280,7 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   persisted_data_->SetLastStarted(base::Time::NowFromSystemTime());
-  DVLOG(1) << "last_started updated.";
+  VLOG(1) << "last_started updated.";
 
   // The installer should make an updater registration, but in case it halts
   // before it does, synthesize a registration if necessary here.
@@ -355,7 +355,7 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
                 if (result == Result::kSuccess) {
                   persisted_data->SetLastChecked(
                       base::Time::NowFromSystemTime());
-                  DVLOG(1) << "last_checked updated.";
+                  VLOG(1) << "last_checked updated.";
                 }
                 std::move(callback).Run(result);
               },
@@ -490,7 +490,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                 base::BindRepeating(
                     [](StateChangeCallback state_update,
                        const std::string& app_id, int progress) {
-                      DVLOG(4) << "Install progress: " << progress;
+                      VLOG(4) << "Install progress: " << progress;
                       UpdateState state;
                       state.app_id = app_id;
                       state.state = UpdateState::State::kInstalling;

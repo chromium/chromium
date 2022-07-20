@@ -40,10 +40,10 @@ std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
     base::TimeDelta timeout) {
   auto lock = std::make_unique<ScopedPrefsLockImpl>();
 
-  DVLOG(2) << "Trying to acquire the lock.";
+  VLOG(2) << "Trying to acquire the lock.";
   if (!lock->Initialize(scope, timeout))
     return nullptr;
-  DVLOG(2) << "Lock acquired.";
+  VLOG(2) << "Lock acquired.";
 
   return std::make_unique<ScopedPrefsLock>(std::move(lock));
 }
@@ -63,7 +63,7 @@ bool ScopedPrefsLockImpl::Initialize(UpdaterScope scope,
 ScopedPrefsLockImpl::~ScopedPrefsLockImpl() {
   if (mutex_.IsValid()) {
     ::ReleaseMutex(mutex_.Get());
-    DVLOG(2) << "Lock released.";
+    VLOG(2) << "Lock released.";
   }
 }
 
