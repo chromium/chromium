@@ -5,10 +5,10 @@
 #include "content/common/cursors/webcursor.h"
 
 #include "base/check_op.h"
-#include "ui/aura/cursor/cursor_util.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/wm/core/cursor_util.h"
 
 namespace content {
 
@@ -39,8 +39,7 @@ void WebCursor::CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
   *bitmap = cursor_.custom_bitmap();
   *hotspot = cursor_.custom_hotspot();
   *scale = GetCursorScaleFactor(bitmap);
-  aura::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap,
-                                              hotspot);
+  wm::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap, hotspot);
 }
 
 #if !defined(USE_OZONE)

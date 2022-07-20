@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_AURA_CURSOR_CURSOR_LOADER_H_
-#define UI_AURA_CURSOR_CURSOR_LOADER_H_
+#ifndef UI_WM_CORE_CURSOR_LOADER_H_
+#define UI_WM_CORE_CURSOR_LOADER_H_
 
 #include <map>
 #include <memory>
@@ -25,10 +25,9 @@ namespace ui {
 class PlatformCursor;
 }
 
-namespace aura {
+namespace wm {
 
-class COMPONENT_EXPORT(UI_AURA_CURSOR) CursorLoader
-    : public ui::CursorFactoryObserver {
+class COMPONENT_EXPORT(UI_WM) CursorLoader : public ui::CursorFactoryObserver {
  public:
   explicit CursorLoader(bool use_platform_cursors = true);
   CursorLoader(const CursorLoader&) = delete;
@@ -84,6 +83,6 @@ class COMPONENT_EXPORT(UI_AURA_CURSOR) CursorLoader
   ui::CursorSize size_ = ui::CursorSize::kNormal;
 };
 
-}  // namespace aura
+}  // namespace wm
 
-#endif  // UI_AURA_CURSOR_CURSOR_LOADER_H_
+#endif  // UI_WM_CORE_CURSOR_LOADER_H_

@@ -25,7 +25,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/aura/cursor/cursor_lookup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
@@ -39,6 +38,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/cursor_lookup.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -775,9 +775,9 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
   const float cursor_image_scale_factor = cursor.image_scale_factor();
-  const SkBitmap cursor_image = aura::GetCursorBitmap(cursor);
+  const SkBitmap cursor_image = wm::GetCursorBitmap(cursor);
   const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
-      window_being_recorded_, location, aura::GetCursorHotspot(cursor),
+      window_being_recorded_, location, wm::GetCursorHotspot(cursor),
       cursor_image_scale_factor, cursor_image);
 
   if (cursor != last_cursor_) {

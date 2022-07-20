@@ -327,7 +327,7 @@ source_set("common") {
   }
 
   if (use_aura) {
-    deps += [ "//ui/aura/cursor" ]
+    deps += [ "//ui/wm" ]
   } else {
     sources -= [ "cursors/webcursor_aura.cc" ]
   }

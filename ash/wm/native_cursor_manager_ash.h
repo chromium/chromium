@@ -6,8 +6,8 @@
 #define ASH_WM_NATIVE_CURSOR_MANAGER_ASH_H_
 
 #include "ash/ash_export.h"
-#include "ui/aura/cursor/cursor_loader.h"
 #include "ui/display/display.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/native_cursor_manager.h"
 
 namespace ash {
@@ -55,7 +55,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   bool native_cursor_enabled_;
 
-  aura::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
+  wm::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 }  // namespace ash

@@ -17,7 +17,6 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/shell/browser/shell_app_window_client.h"
 #include "ui/aura/client/cursor_client.h"
-#include "ui/aura/cursor/cursor_loader.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
@@ -30,6 +29,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "ui/wm/core/compound_event_filter.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/focus_controller.h"
 #include "ui/wm/core/native_cursor_manager.h"
@@ -121,7 +121,7 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
 
   raw_ptr<ShellDesktopControllerAura> desktop_controller_;  // Not owned.
 
-  aura::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
+  wm::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 class AppsFocusRules : public wm::BaseFocusRules {

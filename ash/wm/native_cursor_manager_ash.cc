@@ -8,13 +8,13 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/check.h"
-#include "ui/aura/cursor/cursor_loader.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/layout.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
 namespace ash {

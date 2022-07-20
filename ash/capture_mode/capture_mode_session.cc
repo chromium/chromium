@@ -46,7 +46,6 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
-#include "ui/aura/cursor/cursor_util.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -77,6 +76,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/cursor_util.h"
 
 namespace ash {
 
@@ -258,7 +258,7 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
           capture_image ? IDR_CAPTURE_IMAGE_CURSOR : IDR_CAPTURE_VIDEO_CURSOR);
   SkBitmap bitmap = *icon->bitmap();
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-  aura::ScaleAndRotateCursorBitmapAndHotpoint(
+  wm::ScaleAndRotateCursorBitmapAndHotpoint(
       device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
   auto* cursor_factory = ui::CursorFactory::GetInstance();
   cursor.SetPlatformCursor(

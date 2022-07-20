@@ -2598,7 +2598,6 @@ source_set("browser") {
         "media/capture/aura_window_video_capture_device.h",
         "media/capture/mouse_cursor_overlay_controller_aura.cc",
       ]
-      deps += [ "//ui/aura/cursor" ]
     }
 
     if (is_mac) {

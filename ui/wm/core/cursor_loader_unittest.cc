@@ -2,30 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/aura/cursor/cursor_loader.h"
+#include "ui/wm/core/cursor_loader.h"
 
-#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/aura/cursor/cursor_lookup.h"
-#include "ui/aura/cursor/cursors_aura.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_paths.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/wm/core/cursor_lookup.h"
+#include "ui/wm/core/cursors_aura.h"
 
-namespace aura {
+namespace wm {
 
 namespace {
 
-using CursorLoaderTest = test::AuraTestBase;
+using CursorLoaderTest = ::aura::test::AuraTestBase;
 using ::ui::mojom::CursorType;
 
 SkBitmap GetTestBitmap() {
@@ -50,11 +46,6 @@ TEST_F(CursorLoaderTest, InvisibleCursor) {
 // from cursor_lookup.h, that will be replaced by a method of the same name in
 // CursorLoader.
 TEST_F(CursorLoaderTest, GetCursorData) {
-  ui::RegisterPathProvider();
-  base::FilePath ui_test_pak_path =
-      base::PathService::CheckedGet(ui::UI_TEST_PAK);
-  ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
-
   const ui::Cursor invisible_cursor = CursorType::kNone;
   EXPECT_TRUE(GetCursorBitmap(invisible_cursor).isNull());
   EXPECT_TRUE(GetCursorHotspot(invisible_cursor).IsOrigin());
@@ -76,4 +67,4 @@ TEST_F(CursorLoaderTest, GetCursorData) {
   EXPECT_EQ(GetCursorHotspot(custom_cursor), kHotspot);
 }
 
-}  // namespace aura
+}  // namespace wm

@@ -903,7 +903,6 @@
     'cursor': {
       'filepath': 'ash/display/cursor'\
                   '|ash/wm/.*cursor'\
-                  '|ui/aura/cursor/'\
                   '|ui/base/cursor/'\
                   '|ui/base/x/x11_cursor'\
                   '|ui/base/win/win_cursor'\

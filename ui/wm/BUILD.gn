@@ -22,8 +22,16 @@ component("wm") {
     "core/compound_event_filter.h",
     "core/coordinate_conversion.cc",
     "core/coordinate_conversion.h",
+    "core/cursor_loader.cc",
+    "core/cursor_loader.h",
+    "core/cursor_lookup.cc",
+    "core/cursor_lookup.h",
     "core/cursor_manager.cc",
     "core/cursor_manager.h",
+    "core/cursor_util.cc",
+    "core/cursor_util.h",
+    "core/cursors_aura.cc",
+    "core/cursors_aura.h",
     "core/default_activation_client.cc",
     "core/default_activation_client.h",
     "core/default_screen_position_client.cc",
@@ -66,27 +74,28 @@ component("wm") {
   configs += [ "//build/config:precompiled_headers" ]
   defines = [ "IS_UI_WM_IMPL" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//skia",
     "//ui/aura",
     "//ui/base",
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
-    "//ui/base/ime",
     "//ui/compositor",
-    "//ui/compositor_extra",
     "//ui/display",
     "//ui/events",
-    "//ui/events:events_base",
-    "//ui/events/devices",
-    "//ui/events/platform",
     "//ui/gfx",
-    "//ui/gfx/animation",
     "//ui/gfx/geometry",
-    "//ui/resources",
     "//ui/wm/public",
+  ]
+
+  deps = [
+    "//skia",
+    "//ui/base/ime",
+    "//ui/compositor_extra",
+    "//ui/events/platform",
+    "//ui/gfx/animation",
+    "//ui/resources",
   ]
 
   if (is_chromeos_ash) {
@@ -133,7 +142,9 @@ test("wm_unittests") {
     "core/capture_controller_unittest.cc",
     "core/compound_event_filter_unittest.cc",
     "core/coordinate_conversion_unittest.cc",
+    "core/cursor_loader_unittest.cc",
     "core/cursor_manager_unittest.cc",
+    "core/cursor_util_unittest.cc",
     "core/focus_controller_unittest.cc",
     "core/shadow_controller_unittest.cc",
     "core/transient_window_manager_unittest.cc",
@@ -154,6 +165,7 @@ test("wm_unittests") {
     "//skia",
     "//testing/gtest",
     "//ui/aura:test_support",
+    "//ui/base",
     "//ui/base:test_support",
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
@@ -163,6 +175,7 @@ test("wm_unittests") {
     "//ui/events:test_support",
     "//ui/events/platform",
     "//ui/gfx",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
     "//ui/gl:test_support",

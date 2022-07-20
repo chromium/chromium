@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/aura/cursor/cursor_util.h"
+#include "ui/wm/core/cursor_util.h"
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -17,7 +17,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/skbitmap_operations.h"
 
-namespace aura {
+namespace wm {
 
 namespace {
 
@@ -160,4 +160,4 @@ void GetAnimatedCursorBitmaps(int resource_id,
   }
 }
 
-}  // namespace aura
+}  // namespace wm

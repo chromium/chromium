@@ -41,7 +41,6 @@ source_set("chromeos") {
     ":features",
     "//remoting/base:base",
     "//remoting/host:clipboard",
-    "//ui/aura/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/manager",
     "//ui/wm",

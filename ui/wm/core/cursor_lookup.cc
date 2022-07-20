@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/aura/cursor/cursor_lookup.h"
+#include "ui/wm/core/cursor_lookup.h"
 
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/aura/cursor/cursors_aura.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/wm/core/cursors_aura.h"
 
-namespace aura {
+namespace wm {
 
 SkBitmap GetCursorBitmap(const ui::Cursor& cursor) {
   if (cursor.type() == ui::mojom::CursorType::kCustom)
@@ -24,4 +24,4 @@ gfx::Point GetCursorHotspot(const ui::Cursor& cursor) {
   return GetDefaultHotspot(cursor);
 }
 
-}  // namespace aura
+}  // namespace wm

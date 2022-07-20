@@ -22,7 +22,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
-#include "ui/aura/cursor/cursors_aura.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -40,6 +39,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursors_aura.h"
 
 namespace ash {
 namespace {
@@ -364,8 +364,8 @@ void CursorWindowController::UpdateCursorImage() {
     hot_point_in_physical_pixels = cursor_.custom_hotspot();
   } else {
     int resource_id;
-    if (!aura::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
-                                &resource_id, &hot_point_in_physical_pixels)) {
+    if (!wm::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
+                              &resource_id, &hot_point_in_physical_pixels)) {
       return;
     }
     image =

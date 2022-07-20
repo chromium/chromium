@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/aura/cursor/cursor_util.h"
+#include "ui/wm/core/cursor_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace aura {
+namespace wm {
 namespace {
 
 // Parameterized test for cursor bitmaps with premultiplied and unpremultiplied
@@ -67,4 +67,4 @@ TEST_P(CursorUtilTest, ScaleAndRotate) {
 INSTANTIATE_TEST_SUITE_P(All, CursorUtilTest, testing::Bool());
 
 }  // namespace
-}  // namespace aura
+}  // namespace wm

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/aura/cursor/cursors_aura.h"
+#include "ui/wm/core/cursors_aura.h"
 
 #include <stddef.h>
 
@@ -18,12 +18,12 @@
 #include "ui/resources/grit/ui_resources.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/aura/cursor/cursor_loader.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/gfx/icon_util.h"
+#include "ui/wm/core/cursor_loader.h"
 #endif
 
-namespace aura {
+namespace wm {
 
 namespace {
 
@@ -332,7 +332,7 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
 SkBitmap GetDefaultBitmap(const ui::Cursor& cursor) {
 #if BUILDFLAG(IS_WIN)
   ui::Cursor cursor_copy = cursor;
-  aura::CursorLoader cursor_loader;
+  CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
   return IconUtil::CreateSkBitmapFromHICON(
       ui::WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
@@ -353,7 +353,7 @@ SkBitmap GetDefaultBitmap(const ui::Cursor& cursor) {
 gfx::Point GetDefaultHotspot(const ui::Cursor& cursor) {
 #if BUILDFLAG(IS_WIN)
   ui::Cursor cursor_copy = cursor;
-  aura::CursorLoader cursor_loader;
+  CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
   return IconUtil::GetHotSpotFromHICON(
       ui::WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
@@ -368,4 +368,4 @@ gfx::Point GetDefaultHotspot(const ui::Cursor& cursor) {
 #endif
 }
 
-}  // namespace aura
+}  // namespace wm
