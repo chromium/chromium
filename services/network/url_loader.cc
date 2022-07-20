@@ -1554,7 +1554,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
-  if (memory_cache_) {
+  // TODO(https://crbug.com/1339708): In-memory cache should support DevTools.
+  if (memory_cache_ && !devtools_request_id().has_value()) {
     memory_cache_writer_ = memory_cache_->MaybeCreateWriter(
         url_request_.get(), request_destination_, response_);
   }

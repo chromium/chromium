@@ -747,6 +747,16 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  request.devtools_request_id = "fake-id";
+  StoreResponseToMemoryCache(request);
+
+  // TODO(https://crbug.com/1339708): Change the the expectation when the
+  // in-memory supports DevTools.
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
   ResourceRequest request = CreateRequest("/cacheable");
 

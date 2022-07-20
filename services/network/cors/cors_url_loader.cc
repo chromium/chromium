@@ -856,8 +856,9 @@ void CorsURLLoader::StartNetworkRequest() {
   network_loader_start_time_ = base::TimeTicks::Now();
 
   // Check whether a fresh entry exists in the in-memory cache.
+  // TODO(https://crbug.com/1339708): In-memory cache should support DevTools.
   absl::optional<std::string> cache_key;
-  if (memory_cache_) {
+  if (memory_cache_ && !request_.devtools_request_id.has_value()) {
     cache_key = memory_cache_->CanServe(request_,
                                         isolation_info_.network_isolation_key(),
                                         cross_origin_embedder_policy_);
