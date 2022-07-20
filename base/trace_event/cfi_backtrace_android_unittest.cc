@@ -18,7 +18,9 @@ void* GetPC() {
 
 }  // namespace
 
-TEST(CFIBacktraceAndroidTest, TestUnwinding) {
+// TODO(https://crbug.com/1346002): Disabled since the test is borken on
+// test-n-phone, test-o-phone and android-arm-tests.
+TEST(CFIBacktraceAndroidTest, DISABLED_TestUnwinding) {
   auto* unwinder = CFIBacktraceAndroid::GetInitializedInstance();
   EXPECT_TRUE(unwinder->can_unwind_stack_frames());
   EXPECT_GT(unwinder->executable_start_addr(), 0u);
