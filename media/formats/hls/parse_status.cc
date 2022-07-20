@@ -60,6 +60,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kPartTargetDurationExceedsTargetDuration);
     PARSE_STATUS_CODE_CASE(kPartHoldBackDistanceTooLow);
     PARSE_STATUS_CODE_CASE(kPartInfTagWithoutPartHoldBack);
+    PARSE_STATUS_CODE_CASE(kPlaylistHasUnexpectedDeltaUpdate);
   }
 
   NOTREACHED();

@@ -17,24 +17,13 @@ namespace media::hls {
 
 class TagItem;
 
+// All currently implemented HLS tag types.
+// For organization, these appear in the same order as in `tag_name.h`.
+
 // Represents the contents of the #EXTM3U tag
 struct MEDIA_EXPORT M3uTag {
   static constexpr auto kName = CommonTagName::kM3u;
   static ParseStatus::Or<M3uTag> Parse(TagItem);
-};
-
-// Represents the contents of the #EXT-X-VERSION tag
-struct MEDIA_EXPORT XVersionTag {
-  static constexpr auto kName = CommonTagName::kXVersion;
-  static ParseStatus::Or<XVersionTag> Parse(TagItem);
-
-  types::DecimalInteger version;
-};
-
-// Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag
-struct MEDIA_EXPORT XIndependentSegmentsTag {
-  static constexpr auto kName = CommonTagName::kXIndependentSegments;
-  static ParseStatus::Or<XIndependentSegmentsTag> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-DEFINE tag
@@ -57,58 +46,18 @@ struct MEDIA_EXPORT XDefineTag {
   absl::optional<base::StringPiece> value;
 };
 
-// Represents the contents of the #EXTINF tag
-struct MEDIA_EXPORT InfTag {
-  static constexpr auto kName = MediaPlaylistTagName::kInf;
-  static ParseStatus::Or<InfTag> Parse(TagItem);
-
-  // Target duration of the media segment.
-  base::TimeDelta duration;
-
-  // Human-readable title of the media segment.
-  SourceString title;
+// Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag
+struct MEDIA_EXPORT XIndependentSegmentsTag {
+  static constexpr auto kName = CommonTagName::kXIndependentSegments;
+  static ParseStatus::Or<XIndependentSegmentsTag> Parse(TagItem);
 };
 
-// Represents the contents of the #EXT-X-ENDLIST tag
-struct MEDIA_EXPORT XEndListTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXEndList;
-  static ParseStatus::Or<XEndListTag> Parse(TagItem);
-};
+// Represents the contents of the #EXT-X-VERSION tag
+struct MEDIA_EXPORT XVersionTag {
+  static constexpr auto kName = CommonTagName::kXVersion;
+  static ParseStatus::Or<XVersionTag> Parse(TagItem);
 
-// Represents the contents of the #EXT-X-I-FRAMES-ONLY tag
-struct MEDIA_EXPORT XIFramesOnlyTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXIFramesOnly;
-  static ParseStatus::Or<XIFramesOnlyTag> Parse(TagItem);
-};
-
-// Represents the contents of the #EXT-X-DISCONTINUITY tag
-struct MEDIA_EXPORT XDiscontinuityTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuity;
-  static ParseStatus::Or<XDiscontinuityTag> Parse(TagItem);
-};
-
-// Represents the contents of the #EXT-X-GAP tag
-struct MEDIA_EXPORT XGapTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXGap;
-  static ParseStatus::Or<XGapTag> Parse(TagItem);
-};
-
-enum class PlaylistType {
-  // Indicates that this playlist may have segments appended upon reloading
-  // (until the #EXT-X-ENDLIST tag appears), but segments will not be removed.
-  kEvent,
-
-  // Indicates that this playlist is static, and will not have segments appended
-  // or removed.
-  kVOD,
-};
-
-// Represents the contents of the #EXT-X-PLAYLIST-TYPE tag
-struct MEDIA_EXPORT XPlaylistTypeTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXPlaylistType;
-  static ParseStatus::Or<XPlaylistTypeTag> Parse(TagItem);
-
-  PlaylistType type;
+  types::DecimalInteger version;
 };
 
 // Represents the contents of the #EXT-X-STREAM-INF tag
@@ -155,25 +104,82 @@ struct MEDIA_EXPORT XStreamInfTag {
   absl::optional<types::DecimalFloatingPoint> frame_rate;
 };
 
-// Represents the contents of the #EXT-X-TARGETDURATION tag.
-struct MEDIA_EXPORT XTargetDurationTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXTargetDuration;
-  static ParseStatus::Or<XTargetDurationTag> Parse(TagItem);
+// Represents the contents of the #EXTINF tag
+struct MEDIA_EXPORT InfTag {
+  static constexpr auto kName = MediaPlaylistTagName::kInf;
+  static ParseStatus::Or<InfTag> Parse(TagItem);
 
-  // The upper bound on the duration of all media segments in the
-  // media playlist. The EXTINF duration of each Media Segment in a Playlist
-  // file, when rounded to the nearest integer, MUST be less than or equal to
-  // this duration.
+  // Target duration of the media segment.
   base::TimeDelta duration;
+
+  // Human-readable title of the media segment.
+  SourceString title;
 };
 
-// Represents the contents of the #EXT-PART-INF tag.
-struct MEDIA_EXPORT XPartInfTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXPartInf;
-  static ParseStatus::Or<XPartInfTag> Parse(TagItem);
+// Represents the contents of the #EXT-X-BITRATE tag.
+struct MEDIA_EXPORT XBitrateTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXBitrate;
+  static ParseStatus::Or<XBitrateTag> Parse(TagItem);
 
-  // This value indicates the target duration for partial media segments.
-  base::TimeDelta target_duration;
+  // The approximate bitrate of the following media segments, (except those that
+  // have the EXT-X-BYTERANGE tag) expressed in kilobits per second. The value
+  // must be within +-10% of the actual segment bitrate.
+  types::DecimalInteger bitrate;
+};
+
+// Represents the contents of the #EXT-X-BYTERANGE tag.
+struct MEDIA_EXPORT XByteRangeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
+  static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
+
+  types::ByteRangeExpression range;
+};
+
+// Represents the contents of the #EXT-X-DISCONTINUITY tag
+struct MEDIA_EXPORT XDiscontinuityTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuity;
+  static ParseStatus::Or<XDiscontinuityTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-DISCONTINUITY-SEQUENCE tag.
+struct MEDIA_EXPORT XDiscontinuitySequenceTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuitySequence;
+  static ParseStatus::Or<XDiscontinuitySequenceTag> Parse(TagItem);
+
+  // Indicates the discontinuity sequence number to assign to the first media
+  // segment in this playlist. These numbers are useful for synchronizing
+  // between variant stream timelines.
+  types::DecimalInteger number;
+};
+
+// Represents the contents of the #EXT-X-ENDLIST tag
+struct MEDIA_EXPORT XEndListTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXEndList;
+  static ParseStatus::Or<XEndListTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-GAP tag
+struct MEDIA_EXPORT XGapTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXGap;
+  static ParseStatus::Or<XGapTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-I-FRAMES-ONLY tag
+struct MEDIA_EXPORT XIFramesOnlyTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXIFramesOnly;
+  static ParseStatus::Or<XIFramesOnlyTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
+struct MEDIA_EXPORT XMediaSequenceTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXMediaSequence;
+  static ParseStatus::Or<XMediaSequenceTag> Parse(TagItem);
+
+  // Indicates the media sequence number to assign to the first media segment in
+  // this playlist. These numbers are useful for validating the same media
+  // playlist across reloads, but not for synchronizing media segments between
+  // playlists.
+  types::DecimalInteger number;
 };
 
 // Represents the contents of the #EXT-X-PART tag.
@@ -200,6 +206,33 @@ struct MEDIA_EXPORT XPartTag {
   // Whether this partial segment is unavailable, similar to EXT-X-GAP for media
   // segments.
   bool gap = false;
+};
+
+// Represents the contents of the #EXT-PART-INF tag.
+struct MEDIA_EXPORT XPartInfTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPartInf;
+  static ParseStatus::Or<XPartInfTag> Parse(TagItem);
+
+  // This value indicates the target duration for partial media segments.
+  base::TimeDelta target_duration;
+};
+
+enum class PlaylistType {
+  // Indicates that this playlist may have segments appended upon reloading
+  // (until the #EXT-X-ENDLIST tag appears), but segments will not be removed.
+  kEvent,
+
+  // Indicates that this playlist is static, and will not have segments appended
+  // or removed.
+  kVOD,
+};
+
+// Represents the contents of the #EXT-X-PLAYLIST-TYPE tag
+struct MEDIA_EXPORT XPlaylistTypeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPlaylistType;
+  static ParseStatus::Or<XPlaylistTypeTag> Parse(TagItem);
+
+  PlaylistType type;
 };
 
 // Represents the contents of the #EXT-X-SERVER-CONTROL tag.
@@ -231,46 +264,16 @@ struct MEDIA_EXPORT XServerControlTag {
   bool can_block_reload = false;
 };
 
-// Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
-struct MEDIA_EXPORT XMediaSequenceTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXMediaSequence;
-  static ParseStatus::Or<XMediaSequenceTag> Parse(TagItem);
+// Represents the contents of the #EXT-X-TARGETDURATION tag.
+struct MEDIA_EXPORT XTargetDurationTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXTargetDuration;
+  static ParseStatus::Or<XTargetDurationTag> Parse(TagItem);
 
-  // Indicates the media sequence number to assign to the first media segment in
-  // this playlist. These numbers are useful for validating the same media
-  // playlist across reloads, but not for synchronizing media segments between
-  // playlists.
-  types::DecimalInteger number;
-};
-
-// Represents the contents of the #EXT-X-DISCONTINUITY-SEQUENCE tag.
-struct MEDIA_EXPORT XDiscontinuitySequenceTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuitySequence;
-  static ParseStatus::Or<XDiscontinuitySequenceTag> Parse(TagItem);
-
-  // Indicates the discontinuity sequence number to assign to the first media
-  // segment in this playlist. These numbers are useful for synchronizing
-  // between variant stream timelines.
-  types::DecimalInteger number;
-};
-
-// Represents the contents of the #EXT-X-BYTERANGE tag.
-struct MEDIA_EXPORT XByteRangeTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
-  static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
-
-  types::ByteRangeExpression range;
-};
-
-// Represents the contents of the #EXT-X-BITRATE tag.
-struct MEDIA_EXPORT XBitrateTag {
-  static constexpr auto kName = MediaPlaylistTagName::kXBitrate;
-  static ParseStatus::Or<XBitrateTag> Parse(TagItem);
-
-  // The approximate bitrate of the following media segments, (except those that
-  // have the EXT-X-BYTERANGE tag) expressed in kilobits per second. The value
-  // must be within +-10% of the actual segment bitrate.
-  types::DecimalInteger bitrate;
+  // The upper bound on the duration of all media segments in the
+  // media playlist. The EXTINF duration of each Media Segment in a Playlist
+  // file, when rounded to the nearest integer, MUST be less than or equal to
+  // this duration.
+  base::TimeDelta duration;
 };
 
 }  // namespace media::hls

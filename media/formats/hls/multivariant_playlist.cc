@@ -99,9 +99,26 @@ ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
       }
 
       switch (static_cast<MultivariantPlaylistTagName>(*tag->GetName())) {
-        case MultivariantPlaylistTagName::kXMedia:
+        case MultivariantPlaylistTagName::kXContentSteering: {
+          // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag
+          break;
+        }
+        case MultivariantPlaylistTagName::kXIFrameStreamInf: {
+          // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag
+          break;
+        }
+        case MultivariantPlaylistTagName::kXMedia: {
           // TODO(crbug.com/1266991): Implement the EXT-X-MEDIA tag
           break;
+        }
+        case MultivariantPlaylistTagName::kXSessionData: {
+          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag
+          break;
+        }
+        case MultivariantPlaylistTagName::kXSessionKey: {
+          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag
+          break;
+        }
         case MultivariantPlaylistTagName::kXStreamInf: {
           auto error = ParseUniqueTag(*tag, inf_tag, common_state.variable_dict,
                                       sub_buffer);
@@ -110,18 +127,6 @@ ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
           }
           break;
         }
-        case MultivariantPlaylistTagName::kXIFrameStreamInf:
-          // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag
-          break;
-        case MultivariantPlaylistTagName::kXSessionData:
-          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag
-          break;
-        case MultivariantPlaylistTagName::kXSessionKey:
-          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag
-          break;
-        case MultivariantPlaylistTagName::kXContentSteering:
-          // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag
-          break;
       }
 
       continue;

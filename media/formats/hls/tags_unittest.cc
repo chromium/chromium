@@ -98,8 +98,8 @@ OkTestResult<T> OkTest(absl::optional<std::string> content,
 // `line` must be a sample line containing this tag, and must end with a
 // newline. This DOES NOT parse the item content (only that the item content
 // matches what was expected), use `OkTest` and `ErrorTest` for that.
-template <typename T>
 void RunTagIdenficationTest(
+    TagName name,
     base::StringPiece line,
     absl::optional<base::StringPiece> expected_content,
     const base::Location& from = base::Location::Current()) {
@@ -110,12 +110,20 @@ void RunTagIdenficationTest(
   auto item = std::move(item_result).value();
   auto* tag = absl::get_if<TagItem>(&item);
   ASSERT_NE(tag, nullptr) << from.ToString();
-  EXPECT_EQ(tag->GetName(), ToTagName(T::kName)) << from.ToString();
+  EXPECT_EQ(tag->GetName(), name) << from.ToString();
   EXPECT_EQ(tag->GetContent().has_value(), expected_content.has_value())
       << from.ToString();
   if (tag->GetContent().has_value() && expected_content.has_value()) {
     EXPECT_EQ(tag->GetContent()->Str(), *expected_content) << from.ToString();
   }
+}
+
+template <typename T>
+void RunTagIdenficationTest(
+    base::StringPiece line,
+    absl::optional<base::StringPiece> expected_content,
+    const base::Location& from = base::Location::Current()) {
+  RunTagIdenficationTest(ToTagName(T::kName), line, expected_content, from);
 }
 
 // Test helper for tags which are expected to have no content
@@ -193,116 +201,6 @@ TEST(HlsTagsTest, ParseM3uTag) {
   RunEmptyTagTest<M3uTag>();
 }
 
-TEST(HlsTagsTest, ParseXVersionTag) {
-  RunTagIdenficationTest<XVersionTag>("#EXT-X-VERSION:123\n", "123");
-
-  // Test valid versions
-  auto result = OkTest<XVersionTag>("1");
-  EXPECT_EQ(result.tag.version, 1u);
-  result = OkTest<XVersionTag>("2");
-  EXPECT_EQ(result.tag.version, 2u);
-  result = OkTest<XVersionTag>("3");
-  EXPECT_EQ(result.tag.version, 3u);
-  result = OkTest<XVersionTag>("4");
-  EXPECT_EQ(result.tag.version, 4u);
-  result = OkTest<XVersionTag>("5");
-  EXPECT_EQ(result.tag.version, 5u);
-  result = OkTest<XVersionTag>("6");
-  EXPECT_EQ(result.tag.version, 6u);
-  result = OkTest<XVersionTag>("7");
-  EXPECT_EQ(result.tag.version, 7u);
-  result = OkTest<XVersionTag>("8");
-  EXPECT_EQ(result.tag.version, 8u);
-  result = OkTest<XVersionTag>("9");
-  EXPECT_EQ(result.tag.version, 9u);
-  result = OkTest<XVersionTag>("10");
-  EXPECT_EQ(result.tag.version, 10u);
-
-  // While unsupported playlist versions are rejected, that's NOT the
-  // responsibility of this tag parsing function. The playlist should be
-  // rejected at a higher level.
-  result = OkTest<XVersionTag>("99999");
-  EXPECT_EQ(result.tag.version, 99999u);
-
-  // Test invalid versions
-  ErrorTest<XVersionTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
-  ErrorTest<XVersionTag>("", ParseStatusCode::kMalformedTag);
-  ErrorTest<XVersionTag>("0", ParseStatusCode::kInvalidPlaylistVersion);
-  ErrorTest<XVersionTag>("-1", ParseStatusCode::kMalformedTag);
-  ErrorTest<XVersionTag>("1.0", ParseStatusCode::kMalformedTag);
-  ErrorTest<XVersionTag>("asdf", ParseStatusCode::kMalformedTag);
-  ErrorTest<XVersionTag>("  1 ", ParseStatusCode::kMalformedTag);
-}
-
-TEST(HlsTagsTest, ParseInfTag) {
-  RunTagIdenficationTest<InfTag>("#EXTINF:123,\t\n", "123,\t");
-
-  // Test some valid tags
-  auto result = OkTest<InfTag>("123,");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123.0)));
-  EXPECT_EQ(result.tag.title.Str(), "");
-
-  result = OkTest<InfTag>("1.23,");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(1.23)));
-  EXPECT_EQ(result.tag.title.Str(), "");
-
-  // The spec implies that whitespace characters like this usually aren't
-  // permitted, but "\t" is a common occurrence for the title value.
-  result = OkTest<InfTag>("99.5,\t");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(99.5)));
-  EXPECT_EQ(result.tag.title.Str(), "\t");
-
-  result = OkTest<InfTag>("9.5,,,,");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(9.5)));
-  EXPECT_EQ(result.tag.title.Str(), ",,,");
-
-  result = OkTest<InfTag>("12,asdfsdf   ");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(12.0)));
-  EXPECT_EQ(result.tag.title.Str(), "asdfsdf   ");
-
-  // Test some invalid tags
-  ErrorTest<InfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
-  ErrorTest<InfTag>("", ParseStatusCode::kMalformedTag);
-  ErrorTest<InfTag>(",", ParseStatusCode::kMalformedTag);
-  ErrorTest<InfTag>("-123,", ParseStatusCode::kMalformedTag);
-  ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
-  ErrorTest<InfTag>("asdf,", ParseStatusCode::kMalformedTag);
-
-  // Test max value
-  result = OkTest<InfTag>(base::NumberToString(MaxSeconds()) + ",\t");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
-  ErrorTest<InfTag>(base::NumberToString(MaxSeconds() + 1) + ",\t",
-                    ParseStatusCode::kValueOverflowsTimeDelta);
-}
-
-TEST(HlsTagsTest, ParseXIndependentSegmentsTag) {
-  RunTagIdenficationTest<XIndependentSegmentsTag>(
-      "#EXT-X-INDEPENDENT-SEGMENTS\n", absl::nullopt);
-  RunEmptyTagTest<XIndependentSegmentsTag>();
-}
-
-TEST(HlsTagsTest, ParseXEndListTag) {
-  RunTagIdenficationTest<XEndListTag>("#EXT-X-ENDLIST\n", absl::nullopt);
-  RunEmptyTagTest<XEndListTag>();
-}
-
-TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
-  RunTagIdenficationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n",
-                                          absl::nullopt);
-  RunEmptyTagTest<XIFramesOnlyTag>();
-}
-
-TEST(HlsTagsTest, ParseXDiscontinuityTag) {
-  RunTagIdenficationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n",
-                                            absl::nullopt);
-  RunEmptyTagTest<XDiscontinuityTag>();
-}
-
-TEST(HlsTagsTest, ParseXGapTag) {
-  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", absl::nullopt);
-  RunEmptyTagTest<XGapTag>();
-}
-
 TEST(HlsTagsTest, ParseXDefineTag) {
   RunTagIdenficationTest<XDefineTag>(
       "#EXT-X-DEFINE:NAME=\"FOO\",VALUE=\"Bar\",\n",
@@ -363,22 +261,100 @@ TEST(HlsTagsTest, ParseXDefineTag) {
                         ParseStatusCode::kMalformedTag);
 }
 
-TEST(HlsTagsTest, ParseXPlaylistTypeTag) {
-  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:VOD\n", "VOD");
-  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:EVENT\n",
-                                           "EVENT");
+TEST(HlsTagsTest, ParseXIndependentSegmentsTag) {
+  RunTagIdenficationTest<XIndependentSegmentsTag>(
+      "#EXT-X-INDEPENDENT-SEGMENTS\n", absl::nullopt);
+  RunEmptyTagTest<XIndependentSegmentsTag>();
+}
 
-  auto result = OkTest<XPlaylistTypeTag>("EVENT");
-  EXPECT_EQ(result.tag.type, PlaylistType::kEvent);
-  result = OkTest<XPlaylistTypeTag>("VOD");
-  EXPECT_EQ(result.tag.type, PlaylistType::kVOD);
+TEST(HlsTagsTest, ParseXStartTag) {
+  RunTagIdenficationTest(ToTagName(CommonTagName::kXStart),
+                         "#EXT-X-START:TIME-OFFSET=30,PRECISE=YES\n",
+                         "TIME-OFFSET=30,PRECISE=YES");
+  // TODO(crbug.com/1266991): Implement the EXT-X-START tag.
+}
 
-  ErrorTest<XPlaylistTypeTag>("FOOBAR", ParseStatusCode::kUnknownPlaylistType);
-  ErrorTest<XPlaylistTypeTag>("EEVENT", ParseStatusCode::kUnknownPlaylistType);
-  ErrorTest<XPlaylistTypeTag>(" EVENT", ParseStatusCode::kUnknownPlaylistType);
-  ErrorTest<XPlaylistTypeTag>("EVENT ", ParseStatusCode::kUnknownPlaylistType);
-  ErrorTest<XPlaylistTypeTag>("", ParseStatusCode::kMalformedTag);
-  ErrorTest<XPlaylistTypeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+TEST(HlsTagsTest, ParseXVersionTag) {
+  RunTagIdenficationTest<XVersionTag>("#EXT-X-VERSION:123\n", "123");
+
+  // Test valid versions
+  auto result = OkTest<XVersionTag>("1");
+  EXPECT_EQ(result.tag.version, 1u);
+  result = OkTest<XVersionTag>("2");
+  EXPECT_EQ(result.tag.version, 2u);
+  result = OkTest<XVersionTag>("3");
+  EXPECT_EQ(result.tag.version, 3u);
+  result = OkTest<XVersionTag>("4");
+  EXPECT_EQ(result.tag.version, 4u);
+  result = OkTest<XVersionTag>("5");
+  EXPECT_EQ(result.tag.version, 5u);
+  result = OkTest<XVersionTag>("6");
+  EXPECT_EQ(result.tag.version, 6u);
+  result = OkTest<XVersionTag>("7");
+  EXPECT_EQ(result.tag.version, 7u);
+  result = OkTest<XVersionTag>("8");
+  EXPECT_EQ(result.tag.version, 8u);
+  result = OkTest<XVersionTag>("9");
+  EXPECT_EQ(result.tag.version, 9u);
+  result = OkTest<XVersionTag>("10");
+  EXPECT_EQ(result.tag.version, 10u);
+
+  // While unsupported playlist versions are rejected, that's NOT the
+  // responsibility of this tag parsing function. The playlist should be
+  // rejected at a higher level.
+  result = OkTest<XVersionTag>("99999");
+  EXPECT_EQ(result.tag.version, 99999u);
+
+  // Test invalid versions
+  ErrorTest<XVersionTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XVersionTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XVersionTag>("0", ParseStatusCode::kInvalidPlaylistVersion);
+  ErrorTest<XVersionTag>("-1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XVersionTag>("1.0", ParseStatusCode::kMalformedTag);
+  ErrorTest<XVersionTag>("asdf", ParseStatusCode::kMalformedTag);
+  ErrorTest<XVersionTag>("  1 ", ParseStatusCode::kMalformedTag);
+}
+
+TEST(HlsTagsTest, ParseXContentSteeringTag) {
+  RunTagIdenficationTest(
+      ToTagName(MultivariantPlaylistTagName::kXContentSteering),
+      "#EXT-X-CONTENT-STEERING:SERVER-URI=\"https://google.com/"
+      "manifest.json\"\n",
+      "SERVER-URI=\"https://google.com/manifest.json\"");
+  // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag.
+}
+
+TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
+  RunTagIdenficationTest(
+      ToTagName(MultivariantPlaylistTagName::kXIFrameStreamInf),
+      "#EXT-X-I-FRAME-STREAM-INF:URI=\"foo.m3u8\",BANDWIDTH=1000\n",
+      "URI=\"foo.m3u8\",BANDWIDTH=1000");
+  // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag.
+}
+
+TEST(HlsTagsTest, ParseXMediaTag) {
+  RunTagIdenficationTest(
+      ToTagName(MultivariantPlaylistTagName::kXMedia),
+      "#EXT-X-MEDIA:TYPE=VIDEO,URI=\"foo.m3u8\",GROUP-ID=\"HD\",NAME=\"Foo "
+      "HD\"\n",
+      "TYPE=VIDEO,URI=\"foo.m3u8\",GROUP-ID=\"HD\",NAME=\"Foo HD\"");
+  // TODO(crbug.com/1266991): Implement the EXT-X-MEDIA tag.
+}
+
+TEST(HlsTagsTest, ParseXSessionDataTag) {
+  RunTagIdenficationTest(
+      ToTagName(MultivariantPlaylistTagName::kXSessionData),
+      "#EXT-X-SESSION-DATA:DATA-ID=\"com.google.key\",VALUE=\"value\"\n",
+      "DATA-ID=\"com.google.key\",VALUE=\"value\"");
+  // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag.
+}
+
+TEST(HlsTagsTest, ParseXSessionKeyTag) {
+  RunTagIdenficationTest(
+      ToTagName(MultivariantPlaylistTagName::kXSessionKey),
+      "#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"https://google.com/key\"\n",
+      "METHOD=AES-128,URI=\"https://google.com/key\"");
+  // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag.
 }
 
 TEST(HlsTagsTest, ParseXStreamInfTag) {
@@ -489,46 +465,50 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
                            sub_buffer, ParseStatusCode::kMalformedTag);
 }
 
-TEST(HlsTagsTest, ParseXTargetDurationTag) {
-  RunTagIdenficationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
-                                             "10");
+TEST(HlsTagsTest, ParseInfTag) {
+  RunTagIdenficationTest<InfTag>("#EXTINF:123,\t\n", "123,\t");
 
-  // Content must be a valid decimal-integer
-  ErrorTest<XTargetDurationTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("-1", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("1.5", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>(" 1", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("1 ", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("one", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("{$ONE}", ParseStatusCode::kMalformedTag);
-  ErrorTest<XTargetDurationTag>("1,", ParseStatusCode::kMalformedTag);
+  // Test some valid tags
+  auto result = OkTest<InfTag>("123,");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123.0)));
+  EXPECT_EQ(result.tag.title.Str(), "");
 
-  auto result = OkTest<XTargetDurationTag>("0");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(0)));
+  result = OkTest<InfTag>("1.23,");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(1.23)));
+  EXPECT_EQ(result.tag.title.Str(), "");
 
-  result = OkTest<XTargetDurationTag>("1");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(1)));
+  // The spec implies that whitespace characters like this usually aren't
+  // permitted, but "\t" is a common occurrence for the title value.
+  result = OkTest<InfTag>("99.5,\t");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(99.5)));
+  EXPECT_EQ(result.tag.title.Str(), "\t");
 
-  result = OkTest<XTargetDurationTag>("99");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(99)));
+  result = OkTest<InfTag>("9.5,,,,");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(9.5)));
+  EXPECT_EQ(result.tag.title.Str(), ",,,");
+
+  result = OkTest<InfTag>("12,asdfsdf   ");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(12.0)));
+  EXPECT_EQ(result.tag.title.Str(), "asdfsdf   ");
+
+  // Test some invalid tags
+  ErrorTest<InfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<InfTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<InfTag>(",", ParseStatusCode::kMalformedTag);
+  ErrorTest<InfTag>("-123,", ParseStatusCode::kMalformedTag);
+  ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
+  ErrorTest<InfTag>("asdf,", ParseStatusCode::kMalformedTag);
 
   // Test max value
-  result = OkTest<XTargetDurationTag>(base::NumberToString(MaxSeconds()));
-  EXPECT_EQ(result.tag.duration, base::Seconds(MaxSeconds()));
-  ErrorTest<XTargetDurationTag>(base::NumberToString(MaxSeconds() + 1),
-                                ParseStatusCode::kValueOverflowsTimeDelta);
+  result = OkTest<InfTag>(base::NumberToString(MaxSeconds()) + ",\t");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
+  ErrorTest<InfTag>(base::NumberToString(MaxSeconds() + 1) + ",\t",
+                    ParseStatusCode::kValueOverflowsTimeDelta);
 }
 
-TEST(HlsTagsTest, ParseXMediaSequenceTag) {
-  RunTagIdenficationTest<XMediaSequenceTag>("#EXT-X-MEDIA-SEQUENCE:3\n", "3");
-  RunDecimalIntegerTagTest(&XMediaSequenceTag::number);
-}
-
-TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
-  RunTagIdenficationTest<XDiscontinuitySequenceTag>(
-      "#EXT-X-DISCONTINUITY-SEQUENCE:3\n", "3");
-  RunDecimalIntegerTagTest(&XDiscontinuitySequenceTag::number);
+TEST(HlsTagsTest, ParseXBitrateTag) {
+  RunTagIdenficationTest<XBitrateTag>("#EXT-X-BITRATE:3\n", "3");
+  RunDecimalIntegerTagTest(&XBitrateTag::bitrate);
 }
 
 TEST(HlsTagsTest, ParseXByteRangeTag) {
@@ -551,9 +531,173 @@ TEST(HlsTagsTest, ParseXByteRangeTag) {
   ErrorTest<XByteRangeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
 }
 
-TEST(HlsTagsTest, ParseXBitrateTag) {
-  RunTagIdenficationTest<XBitrateTag>("#EXT-X-BITRATE:3\n", "3");
-  RunDecimalIntegerTagTest(&XBitrateTag::bitrate);
+TEST(HlsTagsTest, ParseXDateRangeTag) {
+  RunTagIdenficationTest(
+      ToTagName(MediaPlaylistTagName::kXDateRange),
+      "#EXT-X-DATERANGE:ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"\n",
+      "ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"");
+  // TODO(crbug.com/1266991): Implement the EXT-X-DATERANGE tag.
+}
+
+TEST(HlsTagsTest, ParseXDiscontinuityTag) {
+  RunTagIdenficationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n",
+                                            absl::nullopt);
+  RunEmptyTagTest<XDiscontinuityTag>();
+}
+
+TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
+  RunTagIdenficationTest<XDiscontinuitySequenceTag>(
+      "#EXT-X-DISCONTINUITY-SEQUENCE:3\n", "3");
+  RunDecimalIntegerTagTest(&XDiscontinuitySequenceTag::number);
+}
+
+TEST(HlsTagsTest, ParseXEndListTag) {
+  RunTagIdenficationTest<XEndListTag>("#EXT-X-ENDLIST\n", absl::nullopt);
+  RunEmptyTagTest<XEndListTag>();
+}
+
+TEST(HlsTagsTest, ParseXGapTag) {
+  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", absl::nullopt);
+  RunEmptyTagTest<XGapTag>();
+}
+
+TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
+  RunTagIdenficationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n",
+                                          absl::nullopt);
+  RunEmptyTagTest<XIFramesOnlyTag>();
+}
+
+TEST(HlsTagsTest, ParseXKeyTag) {
+  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXKey),
+                         "#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
+  // TODO(crbug.com/1266991): Implement the EXT-X-KEY tag.
+}
+
+TEST(HlsTagsTest, ParseXMapTag) {
+  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXMap),
+                         "#EXT-X-MAP:URI=\"foo.ts\",BYTERANGE=12@0\n",
+                         "URI=\"foo.ts\",BYTERANGE=12@0");
+  // TODO(crbug.com/1266991): Implement the EXT-X-MAP tag.
+}
+
+TEST(HlsTagsTest, ParseXMediaSequenceTag) {
+  RunTagIdenficationTest<XMediaSequenceTag>("#EXT-X-MEDIA-SEQUENCE:3\n", "3");
+  RunDecimalIntegerTagTest(&XMediaSequenceTag::number);
+}
+
+TEST(HlsTagsTest, ParseXPartTag) {
+  RunTagIdenficationTest<XPartTag>("#EXT-X-PART:URI=\"foo.ts\",DURATION=1\n",
+                                   "URI=\"foo.ts\",DURATION=1");
+
+  VariableDictionary variable_dict = CreateBasicDictionary();
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("NUMBER"), "9"));
+  VariableDictionary::SubstitutionBuffer sub_buffer;
+
+  // The URI and DURATION attributes are required
+  ErrorTest<XPartTag>(absl::nullopt, variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("URI=\"foo.ts\"", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("DURATION=1", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("URI=\"\",DURATION=1", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  auto result =
+      OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1", variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  // Test URI attribute
+  ErrorTest<XPartTag>("URI=\"{$UNDEFINED}.ts\",DURATION=1", variable_dict,
+                      sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XPartTag>("URI=\"{$BAR}.ts\",DURATION=1", variable_dict,
+                            sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "baz.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  // Test DURATION attribute
+  result = OkTest<XPartTag>(
+      "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds()),
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+  ErrorTest<XPartTag>(
+      "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds() + 1),
+      variable_dict, sub_buffer, ParseStatusCode::kValueOverflowsTimeDelta);
+
+  // Test BYTERANGE attribute
+  ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$UNDEFINED}\"",
+                      variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"\"", variable_dict,
+                      sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"12\"",
+                            variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range->length, 12u);
+  EXPECT_EQ(result.tag.byte_range->offset, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  result =
+      OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$NUMBER}@3\"",
+                       variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range->length, 9u);
+  EXPECT_EQ(result.tag.byte_range->offset, 3u);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  // Test the INDEPENDENT attribute
+  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,INDEPENDENT=YES",
+                            variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, true);
+  EXPECT_EQ(result.tag.gap, false);
+
+  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
+    result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,INDEPENDENT=" + x,
+                              variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+    EXPECT_EQ(result.tag.duration, base::Seconds(1));
+    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+    EXPECT_EQ(result.tag.independent, false);
+    EXPECT_EQ(result.tag.gap, false);
+  }
+
+  // Test the GAP attribute
+  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,GAP=YES", variable_dict,
+                            sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, true);
+
+  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
+    result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,GAP=" + x,
+                              variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+    EXPECT_EQ(result.tag.duration, base::Seconds(1));
+    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+    EXPECT_EQ(result.tag.independent, false);
+    EXPECT_EQ(result.tag.gap, false);
+  }
 }
 
 TEST(HlsTagsTest, ParseXPartInfTag) {
@@ -590,6 +734,47 @@ TEST(HlsTagsTest, ParseXPartInfTag) {
   ErrorTest<XPartInfTag>(
       "PART-TARGET=" + base::NumberToString(MaxSeconds() + 1),
       ParseStatusCode::kValueOverflowsTimeDelta);
+}
+
+TEST(HlsTagsTest, ParseXPlaylistTypeTag) {
+  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:VOD\n", "VOD");
+  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:EVENT\n",
+                                           "EVENT");
+
+  auto result = OkTest<XPlaylistTypeTag>("EVENT");
+  EXPECT_EQ(result.tag.type, PlaylistType::kEvent);
+  result = OkTest<XPlaylistTypeTag>("VOD");
+  EXPECT_EQ(result.tag.type, PlaylistType::kVOD);
+
+  ErrorTest<XPlaylistTypeTag>("FOOBAR", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>("EEVENT", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>(" EVENT", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>("EVENT ", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPlaylistTypeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+}
+
+TEST(HlsTagsTest, ParseXPreloadHintTag) {
+  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXPreloadHint),
+                         "#EXT-X-PRELOAD-HINT:TYPE=PART,URI=\"foo.ts\"\n",
+                         "TYPE=PART,URI=\"foo.ts\"");
+  // TODO(crbug.com/1266991): Implement the EXT-X-PRELOAD-HINT tag.
+}
+
+TEST(HlsTagsTest, ParseXProgramDateTimeTag) {
+  RunTagIdenficationTest(
+      ToTagName(MediaPlaylistTagName::kXProgramDateTime),
+      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031+08:00\n",
+      "2010-02-19T14:54:23.031+08:00");
+  // TODO(crbug.com/1266991): Implement the EXT-X-PROGRAM-DATE-TIME tag.
+}
+
+TEST(HlsTagsTest, ParseXRenditionReportTag) {
+  RunTagIdenficationTest(
+      ToTagName(MediaPlaylistTagName::kXRenditionReport),
+      "#EXT-X-RENDITION-REPORT:URI=\"foo.m3u8\",LAST-MSN=200\n",
+      "URI=\"foo.m3u8\",LAST-MSN=200");
+  // TODO(crbug.com/1266991): Implement the EXT-X-RENDITION-REPORT tag.
 }
 
 TEST(HlsTagsTest, ParseXServerControlTag) {
@@ -738,119 +923,42 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   EXPECT_EQ(result.tag.can_block_reload, true);
 }
 
-TEST(HlsTagsTest, ParseXPartTag) {
-  RunTagIdenficationTest<XPartTag>("#EXT-X-PART:URI=\"foo.ts\",DURATION=1\n",
-                                   "URI=\"foo.ts\",DURATION=1");
+TEST(HlsTagsTest, ParseXSkipTag) {
+  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXSkip),
+                         "#EXT-X-SKIP:SKIPPED-SEGMENTS=10\n",
+                         "SKIPPED-SEGMENTS=10");
+  // TODO(crbug.com/1266991): Implement the EXT-X-SKIP tag.
+}
 
-  VariableDictionary variable_dict = CreateBasicDictionary();
-  EXPECT_TRUE(variable_dict.Insert(CreateVarName("NUMBER"), "9"));
-  VariableDictionary::SubstitutionBuffer sub_buffer;
+TEST(HlsTagsTest, ParseXTargetDurationTag) {
+  RunTagIdenficationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
+                                             "10");
 
-  // The URI and DURATION attributes are required
-  ErrorTest<XPartTag>(absl::nullopt, variable_dict, sub_buffer,
-                      ParseStatusCode::kMalformedTag);
-  ErrorTest<XPartTag>("", variable_dict, sub_buffer,
-                      ParseStatusCode::kMalformedTag);
-  ErrorTest<XPartTag>("URI=\"foo.ts\"", variable_dict, sub_buffer,
-                      ParseStatusCode::kMalformedTag);
-  ErrorTest<XPartTag>("DURATION=1", variable_dict, sub_buffer,
-                      ParseStatusCode::kMalformedTag);
-  ErrorTest<XPartTag>("URI=\"\",DURATION=1", variable_dict, sub_buffer,
-                      ParseStatusCode::kMalformedTag);
-  auto result =
-      OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1", variable_dict, sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-  EXPECT_EQ(result.tag.independent, false);
-  EXPECT_EQ(result.tag.gap, false);
+  // Content must be a valid decimal-integer
+  ErrorTest<XTargetDurationTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("-1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1.5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>(" 1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1 ", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("one", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("{$ONE}", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1,", ParseStatusCode::kMalformedTag);
 
-  // Test URI attribute
-  ErrorTest<XPartTag>("URI=\"{$UNDEFINED}.ts\",DURATION=1", variable_dict,
-                      sub_buffer, ParseStatusCode::kMalformedTag);
-  result = OkTest<XPartTag>("URI=\"{$BAR}.ts\",DURATION=1", variable_dict,
-                            sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "baz.ts");
-  EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-  EXPECT_EQ(result.tag.independent, false);
-  EXPECT_EQ(result.tag.gap, false);
+  auto result = OkTest<XTargetDurationTag>("0");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(0)));
 
-  // Test DURATION attribute
-  result = OkTest<XPartTag>(
-      "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds()),
-      variable_dict, sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-  EXPECT_EQ(result.tag.independent, false);
-  EXPECT_EQ(result.tag.gap, false);
-  ErrorTest<XPartTag>(
-      "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds() + 1),
-      variable_dict, sub_buffer, ParseStatusCode::kValueOverflowsTimeDelta);
+  result = OkTest<XTargetDurationTag>("1");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(1)));
 
-  // Test BYTERANGE attribute
-  ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$UNDEFINED}\"",
-                      variable_dict, sub_buffer,
-                      ParseStatusCode::kMalformedTag);
-  ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"\"", variable_dict,
-                      sub_buffer, ParseStatusCode::kMalformedTag);
-  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"12\"",
-                            variable_dict, sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range->length, 12u);
-  EXPECT_EQ(result.tag.byte_range->offset, absl::nullopt);
-  EXPECT_EQ(result.tag.independent, false);
-  EXPECT_EQ(result.tag.gap, false);
+  result = OkTest<XTargetDurationTag>("99");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(99)));
 
-  result =
-      OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$NUMBER}@3\"",
-                       variable_dict, sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range->length, 9u);
-  EXPECT_EQ(result.tag.byte_range->offset, 3u);
-  EXPECT_EQ(result.tag.independent, false);
-  EXPECT_EQ(result.tag.gap, false);
-
-  // Test the INDEPENDENT attribute
-  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,INDEPENDENT=YES",
-                            variable_dict, sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-  EXPECT_EQ(result.tag.independent, true);
-  EXPECT_EQ(result.tag.gap, false);
-
-  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
-    result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,INDEPENDENT=" + x,
-                              variable_dict, sub_buffer);
-    EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-    EXPECT_EQ(result.tag.duration, base::Seconds(1));
-    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-    EXPECT_EQ(result.tag.independent, false);
-    EXPECT_EQ(result.tag.gap, false);
-  }
-
-  // Test the GAP attribute
-  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,GAP=YES", variable_dict,
-                            sub_buffer);
-  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-  EXPECT_EQ(result.tag.duration, base::Seconds(1));
-  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-  EXPECT_EQ(result.tag.independent, false);
-  EXPECT_EQ(result.tag.gap, true);
-
-  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
-    result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,GAP=" + x,
-                              variable_dict, sub_buffer);
-    EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
-    EXPECT_EQ(result.tag.duration, base::Seconds(1));
-    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
-    EXPECT_EQ(result.tag.independent, false);
-    EXPECT_EQ(result.tag.gap, false);
-  }
+  // Test max value
+  result = OkTest<XTargetDurationTag>(base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(result.tag.duration, base::Seconds(MaxSeconds()));
+  ErrorTest<XTargetDurationTag>(base::NumberToString(MaxSeconds() + 1),
+                                ParseStatusCode::kValueOverflowsTimeDelta);
 }
 
 }  // namespace media::hls
