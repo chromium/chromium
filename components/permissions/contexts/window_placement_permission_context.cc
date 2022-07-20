@@ -21,6 +21,17 @@ WindowPlacementPermissionContext::WindowPlacementPermissionContext(
 
 WindowPlacementPermissionContext::~WindowPlacementPermissionContext() = default;
 
+#if BUILDFLAG(IS_ANDROID)
+ContentSetting WindowPlacementPermissionContext::GetPermissionStatusInternal(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin) const {
+  // TODO(crbug.com/897300): Add window-placement support on Android.
+  NOTIMPLEMENTED_LOG_ONCE() << "window-placement permission is not supported";
+  return CONTENT_SETTING_BLOCK;
+}
+#endif  // IS_ANDROID
+
 bool WindowPlacementPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }

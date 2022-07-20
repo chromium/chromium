@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
 
+#include "build/build_config.h"
 #include "components/permissions/permission_context_base.h"
 
 namespace permissions {
@@ -22,6 +23,12 @@ class WindowPlacementPermissionContext : public PermissionContextBase {
 
  protected:
   // PermissionContextBase:
+#if BUILDFLAG(IS_ANDROID)
+  ContentSetting GetPermissionStatusInternal(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const override;
+#endif  // IS_ANDROID
   bool IsRestrictedToSecureOrigins() const override;
   void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
