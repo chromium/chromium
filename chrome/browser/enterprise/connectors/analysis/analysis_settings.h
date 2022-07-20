@@ -67,6 +67,9 @@ struct LocalAnalysisSettings {
 
   std::string local_path;
   bool user_specific;
+
+  // Arrays of base64 encoded signing key signatures.
+  std::vector<std::string> verification_signatures;
 };
 
 class CloudOrLocalAnalysisSettings

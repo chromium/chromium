@@ -111,6 +111,10 @@ class AnalysisServiceSettings {
   // and other settings associated to a specific tag.
   std::map<std::string, TagSettings> tags_;
   std::string service_provider_name_;
+
+  // Arrays of base64 encoded signing key signatures used to verify the
+  // authenticity of the service provider.
+  std::vector<std::string> verification_signatures_;
 };
 
 }  // namespace enterprise_connectors

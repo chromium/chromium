@@ -15500,6 +15500,46 @@
       }
     ]
   },
+  "OnFileAttachedEnterpriseConnector.LocalProvider": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnFileAttachedEnterpriseConnector": [
+            {
+              "service_provider": "local_test",
+              "verification": {
+                "linux": ["key"],
+                "mac": ["key"],
+                "windows": ["key"]
+              },
+              "enable": [
+                {
+                  "url_list": [
+                    "*"
+                  ],
+                  "tags": [
+                    "dlp"
+                  ]
+                }
+              ],
+              "disable": [],
+              "block_until_verdict": 1,
+              "block_password_protected": false,
+              "block_large_files": false
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_file_attached": {}
+        }
+      }
+    ]
+  },
   "OnFileDownloadedEnterpriseConnector": {
     "os": [
       "win",
@@ -15546,6 +15586,46 @@
               "block_until_verdict": 1,
               "block_password_protected": false,
               "block_large_files": true
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_file_downloaded": {}
+        }
+      }
+    ]
+  },
+  "OnFileDownloadedEnterpriseConnector.LocalProvider": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnFileDownloadedEnterpriseConnector": [
+            {
+              "service_provider": "local_test",
+              "verification": {
+                "linux": ["key"],
+                "mac": ["key"],
+                "windows": ["key"]
+              },
+              "enable": [
+                {
+                  "url_list": [
+                    "*"
+                  ],
+                  "tags": [
+                    "dlp"
+                  ]
+                }
+              ],
+              "disable": [],
+              "block_until_verdict": 1,
+              "block_password_protected": false,
+              "block_large_files": false
             }
           ]
         },
@@ -15608,6 +15688,46 @@
       }
     ]
   },
+  "OnBulkDataEntryEnterpriseConnector.LocalProvider": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnBulkDataEntryEnterpriseConnector": [
+            {
+              "service_provider": "local_test",
+              "verification": {
+                "linux": ["key"],
+                "mac": ["key"],
+                "windows": ["key"]
+              },
+              "enable": [
+                {
+                  "url_list": [
+                    "*"
+                  ],
+                  "tags": [
+                    "dlp"
+                  ]
+                }
+              ],
+              "disable": [],
+              "block_until_verdict": 1,
+              "block_password_protected": false,
+              "block_large_files": false
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_bulk_data_entry": {}
+        }
+      }
+    ]
+  },
   "OnPrintEnterpriseConnector": {
     "os": [
       "win",
@@ -15630,6 +15750,39 @@
                 { "url_list": ["*.us.com"], "tags": ["malware"] }
               ],
               "block_until_verdict": 0,
+              "block_large_files": false
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_print": {}
+        }
+      }
+    ]
+  },
+  "OnPrintEnterpriseConnector.LocalProvider": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnPrintEnterpriseConnector": [
+            {
+              "service_provider": "local_test",
+              "verification": {
+                "linux": ["key"],
+                "mac": ["key"],
+                "windows": ["key"]
+              },
+              "enable": [
+                { "url_list": ["*"], "tags": ["dlp"] }
+              ],
+              "disable": [],
+              "block_until_verdict": 1,
+              "block_password_protected": false,
               "block_large_files": false
             }
           ]

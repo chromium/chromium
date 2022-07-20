@@ -25253,6 +25253,23 @@
                 'local_test'
               ]
             },
+            'verification': {
+              'type': 'object',
+              'properties': {
+                'linux': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'mac': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'windows': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+              },
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25309,6 +25326,11 @@
       },
       'example_value': [{
         'service_provider': 'google',
+        'verification': {
+          'linux': ['key'],
+          'mac': ['key'],
+          'windows': ['key']
+        },
         'enable': [
           {
             'url_list': ['*'],
@@ -25393,6 +25415,23 @@
                 'local_test'
               ]
             },
+            'verification': {
+              'type': 'object',
+              'properties': {
+                'linux': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'mac': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'windows': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+              },
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25449,6 +25488,11 @@
       },
       'example_value': [{
         'service_provider': 'google',
+        'verification': {
+          'linux': ['key'],
+          'mac': ['key'],
+          'windows': ['key']
+        },
         'enable': [
           {
             'url_list': ['*'],
@@ -25533,6 +25577,23 @@
                 'local_test'
               ]
             },
+            'verification': {
+              'type': 'object',
+              'properties': {
+                'linux': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'mac': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'windows': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+              },
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25588,6 +25649,11 @@
       },
       'example_value': [{
         'service_provider': 'google',
+        'verification': {
+          'linux': ['key'],
+          'mac': ['key'],
+          'windows': ['key']
+        },
         'enable': [
           {
             'url_list': ['*'],
@@ -25669,6 +25735,23 @@
                 'local_test'
               ]
             },
+            'verification': {
+              'type': 'object',
+              'properties': {
+                'linux': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'mac': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+                'windows': {
+                  'type': 'array',
+                  'items': { 'type': 'string' },
+                },
+              },
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25724,6 +25807,11 @@
       },
       'example_value': [{
         'service_provider': 'google',
+        'verification': {
+          'linux': ['key'],
+          'mac': ['key'],
+          'windows': ['key']
+        },
         'enable': [
           {
             'url_list': ['*.them.com', '*.others.com'],

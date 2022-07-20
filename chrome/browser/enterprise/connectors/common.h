@@ -38,6 +38,9 @@ using TriggeredRule = ContentAnalysisResponse::Result::TriggeredRule;
 
 // Keys used to read a connector's policy values.
 constexpr char kKeyServiceProvider[] = "service_provider";
+constexpr char kKeyLinuxVerification[] = "verification.linux";
+constexpr char kKeyMacVerification[] = "verification.mac";
+constexpr char kKeyWindowsVerification[] = "verification.windows";
 constexpr char kKeyEnable[] = "enable";
 constexpr char kKeyDisable[] = "disable";
 constexpr char kKeyUrlList[] = "url_list";

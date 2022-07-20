@@ -33,6 +33,7 @@ struct TestParam {
 
 constexpr char kNormalSettings[] = R"({
   "service_provider": "%s",
+  %s
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -51,12 +52,18 @@ constexpr char kNormalSettings[] = R"({
 
 constexpr char kOnlyEnabledPatternsSettings[] = R"({
   "service_provider": "%s",
+  %s
   "enable": [
     {"url_list": ["scan1.com", "scan2.com"], "tags": ["dlp"]},
   ],
 })";
 
+// This string has a dummy field so that the service provider name is filled
+// in there and does not get set in the "service_provider" field.  This is
+// needed for the base::StringPrintf() in settings_value() to work correctly.
 constexpr char kNoProviderSettings[] = R"({
+  "dummy": "%s",
+  %s
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -75,6 +82,7 @@ constexpr char kNoProviderSettings[] = R"({
 
 constexpr char kNoEnabledPatternsSettings[] = R"({
   "service_provider": "%s",
+  %s
   "disable": [
     {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
     {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
@@ -89,6 +97,7 @@ constexpr char kNoEnabledPatternsSettings[] = R"({
 
 constexpr char kNormalSettingsWithCustomMessage[] = R"({
   "service_provider": "%s",
+  %s
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -119,6 +128,7 @@ constexpr char kNormalSettingsWithCustomMessage[] = R"({
 
 constexpr char kNormalSettingsDlpRequiresBypassJustification[] = R"({
   "service_provider": "%s",
+  %s
   "enable": [
     {"url_list": ["*"], "tags": ["dlp", "malware"]},
   ],
@@ -241,8 +251,17 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
  public:
   GURL url() const { return GURL(GetParam().url); }
   std::string settings_value() const {
+    const char* verification = is_cloud_ ? "" : R"(
+      "verification": {
+        "linux": ["key"],
+        "mac": ["key"],
+        "windows": ["key"]
+      },
+    )";
+
     return base::StringPrintf(GetParam().settings_value,
-                              is_cloud_ ? "google" : "local_test");
+                              is_cloud_ ? "google" : "local_test",
+                              verification);
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
@@ -264,6 +283,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       LocalAnalysisSettings local_settings;
       local_settings.local_path = "test_path";
       local_settings.user_specific = true;
+      local_settings.verification_signatures.push_back("key");
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(local_settings));
 
@@ -331,8 +351,9 @@ TEST_P(AnalysisServiceSettingsTest, CloudTest) {
 
 TEST_P(AnalysisServiceSettingsTest, LocalTest) {
   is_cloud_ = false;
-  auto settings = base::JSONReader::Read(settings_value(),
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
+  std::string json_string = settings_value();
+  auto settings =
+      base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
 
   AnalysisServiceSettings service_settings(settings.value(),
