@@ -14,7 +14,7 @@ class IdentifiabilityStudyGroupSettingsTest : public testing::Test {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, Disabled) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      false, 0, 0, "", "", "", "", "", "");
+      false, 0, 0, "", "", "", "", "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", true, 1);
@@ -22,7 +22,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, Disabled) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, DisabledWithParams) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      false, 10, 40, "", "", "", "", "", "");
+      false, 10, 40, "", "", "", "", "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", true, 1);
@@ -30,7 +30,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, DisabledWithParams) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, DisabledBySurfaceCountZero) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 40, "", "", "", "", "", "");
+      true, 0, 40, "", "", "", "", "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);
@@ -38,7 +38,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, DisabledBySurfaceCountZero) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidRandomSurfaceSampling) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 10, 40, "", "", "1,4", "", "", "");
+      true, 10, 40, "", "", "1,4", "", "", "", "");
   EXPECT_TRUE(settings.enabled());
   EXPECT_FALSE(settings.IsUsingAssignedBlockSampling());
   EXPECT_TRUE(settings.IsUsingRandomSampling());
@@ -56,7 +56,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidRandomSurfaceSampling) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidAssignedBlockSampling) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "1;2,3;4,5;6", "1,1,1", "", "", "", "");
+      true, 0, 0, "1;2,3;4,5;6", "1,1,1", "", "", "", "", "");
   EXPECT_TRUE(settings.enabled());
   EXPECT_TRUE(settings.IsUsingAssignedBlockSampling());
   EXPECT_FALSE(settings.IsUsingRandomSampling());
@@ -67,7 +67,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidAssignedBlockSampling) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidNegativeWeight) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "1;2,3;4,5;6", "-1,1,1", "", "", "", "");
+      true, 0, 0, "1;2,3;4,5;6", "-1,1,1", "", "", "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);
@@ -75,7 +75,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidNegativeWeight) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidSurfaceTooLikely) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "1;2,1;4,5;6", "1,1,1", "", "", "", "");
+      true, 0, 0, "1;2,1;4,5;6", "1,1,1", "", "", "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);
@@ -83,7 +83,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidSurfaceTooLikely) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, EnableSettingsForValidReidBlock) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "1;2,4;5;6", "2,2", "2,3");
+      true, 0, 0, "", "", "", "1;2,4;5;6", "2,2", "2,3", "0.1,0.2");
   EXPECT_TRUE(settings.IsUsingReidScoreEstimator());
   EXPECT_FALSE(settings.IsUsingSamplingOfSurfaces());
   EXPECT_TRUE(settings.enabled());
@@ -93,7 +93,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, EnableSettingsForValidReidBlock) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidReidBlocks) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "1;2,4;5;6", "2", "2,3");
+      true, 0, 0, "", "", "", "1;2,4;5;6", "2", "2,3", "0.1,0.2");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);

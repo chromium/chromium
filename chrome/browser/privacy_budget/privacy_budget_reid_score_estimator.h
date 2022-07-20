@@ -43,6 +43,10 @@ class PrivacyBudgetReidScoreEstimator {
   // surface block.
   std::vector<int> reid_blocks_bits_;
 
+  // Keeps track of the probability of noise that should be reported for every
+  // Reid surface block.
+  std::vector<double> reid_blocks_noise_probabilities_;
+
   // Keeps track of the number of reported surfaces in every Reid surface block.
   // The Reid surface map at index i is full when the count_flag_ at i is equal
   // to the number of surfaces in that map i.e. size of the map.
@@ -51,7 +55,8 @@ class PrivacyBudgetReidScoreEstimator {
   // Compute the hash for estimating the REID score.
   uint64_t ComputeHashForReidScore(const SurfacesAndOptionalValues& surface_map,
                                    uint64_t max_num_salt,
-                                   int reid_bits);
+                                   int reid_bits,
+                                   double reid_noise_probability);
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_

@@ -400,6 +400,27 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyReidSurfaceBlocksBits;
 
+// Probabilities of reporting noise in Reid estimation.
+//
+// Parameter name: "ReidBlocksNoiseProbabilities"
+// Parameter type: Comma separated list of noise probabilities represented as
+// decimals.
+//
+// If this parameter is specified then it must specify the probability of noise
+// that should be reported for each block that is defined using the `ReidBlocks`
+// parameter. The probability should be a decimal between 0 and 1.
+//
+// * All probabilities must be positive decimals between 0 and 1.
+//
+// * There must be exactly as many Reid noise probabilities as there are Reid
+// blocks. If not, disable the Reid estimator feature.
+//
+// E.g.:
+//   * "0.1,0.05": Assigns probabilities of noise that should be reported from
+//   two Reid Blocks sent in the `ReidBlocks` parameter.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyReidBlocksNoiseProbabilities;
+
 }  // namespace features
 
 #endif  // CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_FEATURES_H_

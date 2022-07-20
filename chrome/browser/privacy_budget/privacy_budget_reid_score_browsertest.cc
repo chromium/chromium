@@ -42,6 +42,7 @@ class EnableReidEstimation {
 
     parameters.reid_salts_ranges = {1};
     parameters.reid_bits = {1};
+    parameters.reid_noise = {0.01};
 
     scoped_config_.Apply(parameters);
   }

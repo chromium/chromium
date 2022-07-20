@@ -5104,6 +5104,7 @@
                         "Gen": "8",
                         "ReidBlocks": "18009598079355128088,9223784233214641190;10735872651981970214",
                         "ReidBlocksBits": "1,4",
+                        "ReidBlocksNoiseProbabilities": "0.01,0.01",
                         "ReidBlocksSaltsRanges": "1000,1000000"
                     },
                     "enable_features": [

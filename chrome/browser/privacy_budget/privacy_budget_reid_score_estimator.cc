@@ -40,6 +40,8 @@ PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
   IdentifiableSurfaceBlocks reid_blocks = state_settings.reid_blocks();
   reid_blocks_salts_ranges_ = state_settings.reid_blocks_salts_ranges();
   reid_blocks_bits_ = state_settings.reid_blocks_bits();
+  reid_blocks_noise_probabilities_ =
+      state_settings.reid_blocks_noise_probabilities();
 
   // Step 2: Get the type of the Reid surface.
   constexpr auto kReidScoreType =
@@ -93,7 +95,7 @@ void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
           // Compute the Reid hash for the needed Reid block.
           uint64_t reid_hash = ComputeHashForReidScore(
               *surface_map, reid_blocks_salts_ranges_.at(i),
-              reid_blocks_bits_.at(i));
+              reid_blocks_bits_.at(i), reid_blocks_noise_probabilities_.at(i));
           // Report to UKM in a separate task in order to avoid re-entrancy.
           base::SequencedTaskRunnerHandle::Get()->PostTask(
               FROM_HERE, base::BindOnce(&ReportHashForReidScore, map_itr.first,
@@ -108,7 +110,8 @@ void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
 uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
     const SurfacesAndOptionalValues& surface_map,
     uint64_t max_num_salt,
-    int reid_bits) {
+    int reid_bits,
+    double reid_noise_probability) {
   std::vector<uint64_t> tokens;
   uint64_t salt = base::RandGenerator(max_num_salt);
 
@@ -117,11 +120,18 @@ uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
     tokens.emplace_back(
         static_cast<uint64_t>(surface_itr.second->ToUkmMetricValue()));
   }
-  // Use the hash function embedded in IdentifiableToken.
-  uint64_t reid_hash = blink::IdentifiabilityDigestOfBytes(
-      base::as_bytes(base::make_span(tokens)));
+  // Initialize Reid hash with random noise.
+  uint64_t reid_hash = base::RandUint64();
+  // Calculate the real hash if the random number is greater than the Reid noise
+  // probability.
+  if (base::RandDouble() >= reid_noise_probability) {
+    // Use the hash function embedded in IdentifiableToken.
+    reid_hash = blink::IdentifiabilityDigestOfBytes(
+        base::as_bytes(base::make_span(tokens)));
+  }
   // Create mask based on reid_bits required.
-  uint64_t mask = (1 << reid_bits) - 1;
+  constexpr uint64_t kTypedOne = 1;
+  uint64_t mask = (kTypedOne << reid_bits) - 1;
   uint64_t needed_bits = reid_hash & mask;
   // Return salt in the left 32 bits and Reid b-bits hash in the right 32 bits.
   return ((salt << 32) | needed_bits);
