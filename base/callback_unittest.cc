@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -676,7 +677,9 @@ TEST_F(CallbackTest, ThenRepeating) {
 // function.
 class ClassWithAMethod {
  public:
-  void TheMethod() {}
+  void TheMethod() { method_called = true; }
+
+  bool method_called = false;
 };
 
 TEST_F(CallbackTest, MaybeValidInvalidateWeakPtrsOnSameSequence) {
@@ -724,6 +727,24 @@ TEST_F(CallbackTest, MaybeValidInvalidateWeakPtrsOnOtherSequence) {
   factory.InvalidateWeakPtrs();
   // |other_thread|'s destructor will join, ensuring we wait for the task to be
   // run.
+}
+
+TEST_F(CallbackTest, ThenAfterWeakPtr) {
+  ClassWithAMethod obj;
+  WeakPtrFactory<ClassWithAMethod> factory(&obj);
+  WeakPtr<ClassWithAMethod> ptr = factory.GetWeakPtr();
+
+  // If the first callback of a chain is skipped due to InvalidateWeakPtrs(),
+  // the remaining callbacks should still run.
+  bool chained_closure_called = false;
+  OnceClosure closure =
+      BindOnce(&ClassWithAMethod::TheMethod, ptr)
+          .Then(BindLambdaForTesting(
+              [&chained_closure_called] { chained_closure_called = true; }));
+  factory.InvalidateWeakPtrs();
+  std::move(closure).Run();
+  EXPECT_FALSE(obj.method_called);
+  EXPECT_TRUE(chained_closure_called);
 }
 
 class CallbackOwner : public base::RefCounted<CallbackOwner> {
