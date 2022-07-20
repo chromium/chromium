@@ -258,6 +258,10 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
       const std::string& service_path,
       absl::optional<base::Value> configuration_properties);
 
+  // Always returns a valid pointer.
+  VpnServiceForExtensionAsh* GetVpnServiceForExtension(
+      const std::string& extension_id);
+
   // Ids of enabled vpn extensions.
   base::flat_set<std::string> vpn_extensions_;
 

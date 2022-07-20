@@ -150,7 +150,9 @@ VpnServiceForExtension::VpnServiceForExtension(
     const std::string& extension_id,
     content::BrowserContext* browser_context)
     : extension_id_(extension_id), browser_context_(browser_context) {
-  VpnService::GetVpnService()->RegisterVpnServiceForExtension(
+  auto* service_remote = VpnService::GetVpnService();
+  CHECK(service_remote);
+  service_remote->RegisterVpnServiceForExtension(
       extension_id, vpn_service_.BindNewPipeAndPassReceiver(),
       receiver_.BindNewPipeAndPassRemote());
 }
@@ -340,6 +342,7 @@ crosapi::mojom::VpnService* VpnService::GetVpnService() {
   // CrosapiManager may not be initialized.
   // TODO(crbug.com/1326801): Assert it's only happening in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
+    LOG(ERROR) << "CrosapiManager is not initialized.";
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
@@ -355,13 +358,11 @@ crosapi::mojom::VpnService* VpnService::GetVpnService() {
 
 mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
 VpnService::GetVpnServiceForExtension(const std::string& extension_id) {
-  auto it = extension_id_to_service_.find(extension_id);
-  if (it == extension_id_to_service_.end()) {
-    it = extension_id_to_service_.insert(
-        it, {extension_id, std::make_unique<VpnServiceForExtension>(
-                               extension_id, browser_context_)});
+  auto& service = extension_id_to_service_[extension_id];
+  if (!service) {
+    service = std::make_unique<VpnServiceForExtension>(extension_id,
+                                                       browser_context_);
   }
-  const auto& service = it->second;
   return service->Proxy();
 }
 
