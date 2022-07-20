@@ -77,8 +77,7 @@ class SynthesizedClip : private cc::ContentLayerClient {
       layer_->ClearClient();
   }
 
-  void UpdateLayer(bool needs_layer,
-                   const ClipPaintPropertyNode&,
+  void UpdateLayer(const ClipPaintPropertyNode&,
                    const TransformPaintPropertyNode&);
 
   cc::PictureLayer* Layer() { return layer_.get(); }

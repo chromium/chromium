@@ -461,13 +461,8 @@ void PaintArtifactCompositor::CollectPendingLayers(
   pending_layers_.ShrinkToReasonableCapacity();
 }
 
-void SynthesizedClip::UpdateLayer(bool needs_layer,
-                                  const ClipPaintPropertyNode& clip,
+void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
                                   const TransformPaintPropertyNode& transform) {
-  if (!needs_layer) {
-    layer_.reset();
-    return;
-  }
   if (!layer_) {
     layer_ = cc::PictureLayer::Create(this);
     layer_->SetIsDrawable(true);
@@ -562,7 +557,7 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
   entry->in_use = true;
   SynthesizedClip& synthesized_clip = *entry->synthesized_clip;
   if (needs_layer) {
-    synthesized_clip.UpdateLayer(needs_layer, clip, transform);
+    synthesized_clip.UpdateLayer(clip, transform);
     synthesized_clip.Layer()->SetLayerTreeHost(root_layer_->layer_tree_host());
     if (layer_debug_info_enabled_ && !synthesized_clip.Layer()->debug_info())
       synthesized_clip.Layer()->SetDebugName("Synthesized Clip");
