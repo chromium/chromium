@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_SQL_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_SQL_H_
 
-#include "stdint.h"
+#include <stdint.h>
 
 #include <vector>
 
@@ -22,6 +22,7 @@ class GURL;
 
 namespace base {
 class Clock;
+class Time;
 }  // namespace base
 
 namespace sql {
@@ -30,6 +31,7 @@ class Statement;
 
 namespace content {
 
+class AggregatableReportRequest;
 struct PublicKey;
 struct PublicKeyset;
 
@@ -58,6 +60,12 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   void ClearPublicKeysFetchedBetween(base::Time delete_begin,
                                      base::Time delete_end) override;
   void ClearPublicKeysExpiredBy(base::Time delete_end) override;
+  void StoreRequest(AggregatableReportRequest request) override;
+  void DeleteRequest(AggregationServiceStorage::RequestId request_id) override;
+  absl::optional<base::Time> NextReportTimeAfter(
+      base::Time strictly_after_time) override;
+  std::vector<AggregationServiceStorage::RequestAndId>
+  GetRequestsReportingOnOrBefore(base::Time not_after_time) override;
 
   void set_ignore_errors_for_testing(bool ignore_for_testing)
       VALID_CONTEXT_REQUIRED(sequence_checker_) {

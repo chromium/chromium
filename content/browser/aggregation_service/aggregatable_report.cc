@@ -18,10 +18,9 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/guid.h"
 #include "base/json/json_writer.h"
-#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -30,6 +29,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
+#include "content/browser/aggregation_service/proto/aggregatable_report.pb.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -255,6 +255,161 @@ std::vector<uint8_t> EncryptWithHpke(
   return payload;
 }
 
+absl::optional<AggregationServicePayloadContents>
+ConvertPayloadContentsFromProto(
+    const proto::AggregationServicePayloadContents& proto) {
+  if (proto.operation() !=
+      proto::AggregationServicePayloadContents_Operation_HISTOGRAM) {
+    return absl::nullopt;
+  }
+  AggregationServicePayloadContents::Operation operation(
+      AggregationServicePayloadContents::Operation::kHistogram);
+
+  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
+  for (const proto::AggregatableReportHistogramContribution&
+           contribution_proto : proto.contributions()) {
+    contributions.emplace_back(
+        /*bucket=*/absl::MakeUint128(contribution_proto.bucket_high(),
+                                     contribution_proto.bucket_low()),
+        /*value=*/contribution_proto.value());
+  }
+
+  mojom::AggregationServiceMode aggregation_mode =
+      mojom::AggregationServiceMode::kTeeBased;
+  switch (proto.aggregation_mode()) {
+    case proto::AggregationServiceMode::TEE_BASED:
+      break;
+    case proto::AggregationServiceMode::EXPERIMENTAL_POPLAR:
+      aggregation_mode = mojom::AggregationServiceMode::kExperimentalPoplar;
+      break;
+    default:
+      return absl::nullopt;
+  }
+
+  return AggregationServicePayloadContents(operation, std::move(contributions),
+                                           aggregation_mode);
+}
+
+absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
+    const proto::AggregatableReportSharedInfo& proto) {
+  base::Time scheduled_report_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(proto.scheduled_report_time()));
+  base::GUID report_id = base::GUID::ParseLowercase(proto.report_id());
+  url::Origin reporting_origin =
+      url::Origin::Create(GURL(proto.reporting_origin()));
+
+  AggregatableReportSharedInfo::DebugMode debug_mode =
+      AggregatableReportSharedInfo::DebugMode::kDisabled;
+  switch (proto.debug_mode()) {
+    case proto::AggregatableReportSharedInfo_DebugMode_DISABLED:
+      break;
+    case proto::AggregatableReportSharedInfo_DebugMode_ENABLED:
+      debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
+      break;
+    default:
+      return absl::nullopt;
+  }
+
+  std::string api_version = proto.api_version();
+  std::string api_identifier = proto.api_identifier();
+
+  return AggregatableReportSharedInfo(
+      scheduled_report_time, std::move(report_id), std::move(reporting_origin),
+      debug_mode,
+      // TODO(alexmt): Persist additional_fields when it becomes necessary.
+      /*additional_fields=*/base::Value::Dict(),
+      // TODO(crbug.com/1340296): Add mechanism to upgrade stored requests from
+      // older to newer versions.
+      std::move(api_version), std::move(api_identifier));
+}
+
+absl::optional<AggregatableReportRequest> ConvertReportRequestFromProto(
+    proto::AggregatableReportRequest request_proto) {
+  absl::optional<AggregationServicePayloadContents> payload_contents(
+      ConvertPayloadContentsFromProto(request_proto.payload_contents()));
+  if (!payload_contents.has_value()) {
+    return absl::nullopt;
+  }
+
+  absl::optional<AggregatableReportSharedInfo> shared_info(
+      ConvertSharedInfoFromProto(request_proto.shared_info()));
+  if (!shared_info.has_value()) {
+    return absl::nullopt;
+  }
+
+  return AggregatableReportRequest::Create(
+      std::move(payload_contents.value()), std::move(shared_info.value()),
+      std::move(*request_proto.mutable_reporting_path()));
+}
+
+void ConvertPayloadContentsToProto(
+    const AggregationServicePayloadContents& payload_contents,
+    proto::AggregationServicePayloadContents* out) {
+  switch (payload_contents.operation) {
+    case AggregationServicePayloadContents::Operation::kHistogram:
+      out->set_operation(
+          proto::AggregationServicePayloadContents_Operation_HISTOGRAM);
+  }
+
+  for (const mojom::AggregatableReportHistogramContribution& contribution :
+       payload_contents.contributions) {
+    proto::AggregatableReportHistogramContribution* contribution_proto =
+        out->add_contributions();
+    contribution_proto->set_bucket_high(
+        absl::Uint128High64(contribution.bucket));
+    contribution_proto->set_bucket_low(absl::Uint128Low64(contribution.bucket));
+    contribution_proto->set_value(contribution.value);
+  }
+
+  switch (payload_contents.aggregation_mode) {
+    case mojom::AggregationServiceMode::kTeeBased:
+      out->set_aggregation_mode(proto::AggregationServiceMode::TEE_BASED);
+      break;
+    case mojom::AggregationServiceMode::kExperimentalPoplar:
+      out->set_aggregation_mode(
+          proto::AggregationServiceMode::EXPERIMENTAL_POPLAR);
+      break;
+  }
+}
+
+void ConvertSharedInfoToProto(const AggregatableReportSharedInfo& shared_info,
+                              proto::AggregatableReportSharedInfo* out) {
+  out->set_scheduled_report_time(
+      shared_info.scheduled_report_time.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  out->set_report_id(shared_info.report_id.AsLowercaseString());
+  out->set_reporting_origin(shared_info.reporting_origin.Serialize());
+
+  switch (shared_info.debug_mode) {
+    case AggregatableReportSharedInfo::DebugMode::kDisabled:
+      out->set_debug_mode(
+          proto::AggregatableReportSharedInfo_DebugMode_DISABLED);
+      break;
+    case AggregatableReportSharedInfo::DebugMode::kEnabled:
+      out->set_debug_mode(
+          proto::AggregatableReportSharedInfo_DebugMode_ENABLED);
+      break;
+  }
+
+  DCHECK(shared_info.additional_fields.empty());
+
+  out->set_api_version(shared_info.api_version);
+  out->set_api_identifier(shared_info.api_identifier);
+}
+
+proto::AggregatableReportRequest ConvertReportRequestToProto(
+    const AggregatableReportRequest& request) {
+  proto::AggregatableReportRequest request_proto;
+  ConvertPayloadContentsToProto(
+      request.payload_contents(),
+      /*out=*/request_proto.mutable_payload_contents());
+  ConvertSharedInfoToProto(request.shared_info(),
+                           /*out=*/request_proto.mutable_shared_info());
+  *request_proto.mutable_reporting_path() = request.reporting_path();
+
+  return request_proto;
+}
+
 }  // namespace
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
@@ -431,6 +586,31 @@ GURL AggregatableReportRequest::GetReportingUrl() const {
     return GURL();
   }
   return shared_info().reporting_origin.GetURL().Resolve(reporting_path_);
+}
+
+absl::optional<AggregatableReportRequest>
+AggregatableReportRequest::Deserialize(
+    base::span<const uint8_t> serialized_proto) {
+  proto::AggregatableReportRequest request_proto;
+  if (!request_proto.ParseFromArray(serialized_proto.data(),
+                                    serialized_proto.size())) {
+    return absl::nullopt;
+  }
+
+  return ConvertReportRequestFromProto(std::move(request_proto));
+}
+
+std::vector<uint8_t> AggregatableReportRequest::Serialize() {
+  proto::AggregatableReportRequest request_proto =
+      ConvertReportRequestToProto(*this);
+
+  size_t size = request_proto.ByteSizeLong();
+  std::vector<uint8_t> serialized_proto(size);
+  if (!request_proto.SerializeToArray(serialized_proto.data(), size)) {
+    return {};
+  }
+
+  return serialized_proto;
 }
 
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(

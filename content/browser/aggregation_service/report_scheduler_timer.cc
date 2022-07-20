@@ -52,17 +52,23 @@ void ReportSchedulerTimer::MaybeSet(absl::optional<base::Time> reporting_time) {
 }
 
 void ReportSchedulerTimer::Refresh() {
+  RefreshImpl(base::Time::Now());
+}
+
+void ReportSchedulerTimer::RefreshImpl(base::Time now) {
   if (IsOffline()) {
     return;
   }
 
   delegate_->GetNextReportTime(base::BindOnce(&ReportSchedulerTimer::MaybeSet,
-                                              weak_ptr_factory_.GetWeakPtr()));
+                                              weak_ptr_factory_.GetWeakPtr()),
+                               now);
 }
 
 void ReportSchedulerTimer::OnTimerFired() {
-  delegate_->OnReportingTimeReached();
-  Refresh();
+  base::Time now = base::Time::Now();
+  delegate_->OnReportingTimeReached(now);
+  RefreshImpl(now);
 }
 
 void ReportSchedulerTimer::OnConnectionChanged(

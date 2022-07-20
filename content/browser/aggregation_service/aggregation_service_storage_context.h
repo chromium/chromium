@@ -16,7 +16,7 @@ class AggregationServiceStorageContext {
  public:
   virtual ~AggregationServiceStorageContext() = default;
 
-  // Returns the underlying storage for public keys.
+  // Returns the underlying storage for public keys and report requests.
   virtual const base::SequenceBound<AggregationServiceStorage>&
   GetStorage() = 0;
 };

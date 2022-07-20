@@ -33,15 +33,17 @@ class CONTENT_EXPORT ReportSchedulerTimer
    public:
     virtual ~Delegate() = default;
 
-    // Should be overridden with a method that gets the next report time and
-    // returns it via the callback. If there is no next report time,
-    // `absl::nullopt` should be returned instead.
+    // Should be overridden with a method that gets the next report time that
+    // the timer should fire at and returns it via the callback. If there is no
+    // next report time, `absl::nullopt` should be returned instead.
     virtual void GetNextReportTime(
-        base::OnceCallback<void(absl::optional<base::Time>)>) = 0;
+        base::OnceCallback<void(absl::optional<base::Time>)>,
+        base::Time now) = 0;
 
-    // Called when the timer is fired. `Refresh()` is automatically called
-    // after.
-    virtual void OnReportingTimeReached() = 0;
+    // Called when the timer is fired, with the current time `now`. `Refresh()`
+    // is automatically called after. If this causes a `GetNextReportTime()`
+    // call, that will be passed the same `now`.
+    virtual void OnReportingTimeReached(base::Time now) = 0;
 
     // Called when the connection changes from offline to online. May also be
     // called on a connection change if there are no stored reports, see
@@ -71,6 +73,7 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
  private:
   void OnTimerFired();
+  void RefreshImpl(base::Time now);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType) override;

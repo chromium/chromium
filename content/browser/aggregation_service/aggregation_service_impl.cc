@@ -112,6 +112,7 @@ void AggregationServiceImpl::ClearData(base::Time delete_begin,
   storage_.AsyncCall(&AggregationServiceStorage::ClearPublicKeysFetchedBetween)
       .WithArgs(delete_begin, delete_end)
       .Then(std::move(done));
+  // TODO(crbug.com/1340053): Clear stored report requests as well.
 }
 
 void AggregationServiceImpl::SetPublicKeysForTesting(

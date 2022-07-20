@@ -97,13 +97,17 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
   AttributionReportScheduler& operator=(AttributionReportScheduler&&) = delete;
 
  private:
+  // TODO(crbug.com/1345751): Ensure that no reports are missed by using the
+  // `now` parameter in the following two calls.
+
   // ReportSchedulerTimer::Delegate:
   void GetNextReportTime(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override {
+      base::OnceCallback<void(absl::optional<base::Time>)> callback,
+      base::Time now) override {
     attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
         .Then(std::move(callback));
   };
-  void OnReportingTimeReached() override { send_reports_.Run(); };
+  void OnReportingTimeReached(base::Time now) override { send_reports_.Run(); };
   void AdjustOfflineReportTimes(
       base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb)
       override {

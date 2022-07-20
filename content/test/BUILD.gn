@@ -2057,6 +2057,7 @@ test("content_unittests") {
     "../browser/accessibility/one_shot_accessibility_tree_search_unittest.cc",
     "../browser/accessibility/touch_passthrough_manager_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_assembler_unittest.cc",
+    "../browser/aggregation_service/aggregatable_report_scheduler_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_sender_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_unittest.cc",
     "../browser/aggregation_service/aggregation_service_impl_unittest.cc",

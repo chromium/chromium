@@ -81,6 +81,8 @@ class CONTENT_EXPORT AggregationServiceImpl
                          std::unique_ptr<AggregatableReportAssembler> assembler,
                          std::unique_ptr<AggregatableReportSender> sender);
 
+  // TODO(crbug.com/1340050): Hook scheduler up to service and sender.
+
   base::SequenceBound<AggregationServiceStorage> storage_;
   std::unique_ptr<AggregatableReportAssembler> assembler_;
   std::unique_ptr<AggregatableReportSender> sender_;
