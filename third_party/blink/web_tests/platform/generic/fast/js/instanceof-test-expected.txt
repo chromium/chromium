@@ -1,4 +1,3 @@
-CONSOLE ERROR: new Worker() has failed to fetch script.
 instanceof test
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

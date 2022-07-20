@@ -1,4 +1,3 @@
-CONSOLE ERROR: new Worker() has failed to fetch script.
 This test checks that the invalid context doesn't cause crashes.
 
 DONE
