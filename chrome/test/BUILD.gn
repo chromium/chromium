@@ -9660,6 +9660,10 @@ if (!is_android) {
       configs += [ "//build/config/linux/atk" ]
     }
 
+    if (is_linux) {
+      deps += [ "//ui/linux:linux_ui_impl" ]
+    }
+
     if (is_linux || is_chromeos_lacros) {
       deps += [ "//ui/base/ime/linux" ]
     }

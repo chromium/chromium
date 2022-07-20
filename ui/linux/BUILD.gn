@@ -31,11 +31,21 @@ component("linux_ui") {
     "//build:chromecast_buildflags",
     "//ui/gfx",
     "//ui/gfx/animation",
-    "//ui/native_theme",
   ]
   public_deps = [
     "//printing/buildflags",
     "//skia",
+  ]
+}
+
+source_set("linux_ui_impl") {
+  public = [ "linux_ui_base.h" ]
+  sources = [ "linux_ui_base.cc" ]
+  public_deps = [ ":linux_ui" ]
+  deps = [
+    "//base",
+    "//ui/gfx",
+    "//ui/native_theme",
   ]
 }
 
@@ -66,7 +76,7 @@ source_set("test_support") {
   public = [ "fake_linux_ui.h" ]
   sources = [ "fake_linux_ui.cc" ]
 
-  public_deps = [ ":linux_ui" ]
+  public_deps = [ ":linux_ui_impl" ]
   deps = [
     "//base",
     "//skia",

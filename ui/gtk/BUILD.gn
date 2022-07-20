@@ -137,7 +137,7 @@ component("gtk") {
     "//ui/gfx",
     "//ui/gfx:native_widget_types",
     "//ui/gfx/geometry",
-    "//ui/linux:linux_ui",
+    "//ui/linux:linux_ui_impl",
     "//ui/native_theme",
     "//ui/shell_dialogs",
     "//ui/strings",

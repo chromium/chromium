@@ -5,14 +5,14 @@
 #ifndef UI_LINUX_FAKE_LINUX_UI_H_
 #define UI_LINUX_FAKE_LINUX_UI_H_
 
-#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_base.h"
 
 namespace ui {
 
 // This class is meant to be overridden by tests.  It's provided as a
 // convenience so that tests don't have to stub lots of methods just to override
 // a single one.
-class COMPONENT_EXPORT(LINUX_UI) FakeLinuxUi : public LinuxUi {
+class FakeLinuxUi : public LinuxUiBase {
  public:
   FakeLinuxUi();
   ~FakeLinuxUi() override;
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(LINUX_UI) FakeLinuxUi : public LinuxUi {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
-  ui::NativeTheme* GetNativeTheme() const override;
+  ui::NativeTheme* GetNativeThemeImpl() const override;
   bool GetTextEditCommandsForEvent(
       const ui::Event& event,
       std::vector<ui::TextEditCommandAuraLinux>* commands) override;

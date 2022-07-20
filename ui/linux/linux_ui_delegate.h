@@ -10,7 +10,10 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "ui/gfx/native_widget_types.h"
+
+namespace gfx {
+using AcceleratedWidget = uint32_t;
+}
 
 namespace ui {
 

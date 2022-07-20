@@ -12,7 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
-#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_base.h"
 #include "ui/qt/qt_interface.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -24,9 +24,9 @@ namespace qt {
 class QtNativeTheme;
 
 // Interface to QT desktop features.
-class QtUi : public ui::LinuxUi, QtInterface::Delegate {
+class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
  public:
-  explicit QtUi(std::unique_ptr<ui::LinuxUi> fallback_linux_uik);
+  explicit QtUi(std::unique_ptr<ui::LinuxUi> fallback_linux_ui);
 
   QtUi(const QtUi&) = delete;
   QtUi& operator=(const QtUi&) = delete;
@@ -74,7 +74,7 @@ class QtUi : public ui::LinuxUi, QtInterface::Delegate {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
-  ui::NativeTheme* GetNativeTheme() const override;
+  ui::NativeTheme* GetNativeThemeImpl() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool GetTextEditCommandsForEvent(

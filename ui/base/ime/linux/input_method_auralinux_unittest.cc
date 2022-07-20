@@ -16,7 +16,6 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/ime/input_method_delegate.h"
-#include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/virtual_keyboard_controller_stub.h"
 #include "ui/events/event.h"

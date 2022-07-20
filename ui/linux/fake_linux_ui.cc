@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -119,7 +120,7 @@ int FakeLinuxUi::GetCursorThemeSize() {
   return 0;
 }
 
-ui::NativeTheme* FakeLinuxUi::GetNativeTheme() const {
+ui::NativeTheme* FakeLinuxUi::GetNativeThemeImpl() const {
   return nullptr;
 }
 

@@ -590,7 +590,7 @@ int GtkUi::GetCursorThemeSize() {
   return size;
 }
 
-ui::NativeTheme* GtkUi::GetNativeTheme() const {
+ui::NativeTheme* GtkUi::GetNativeThemeImpl() const {
   return native_theme_;
 }
 

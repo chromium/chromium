@@ -35,7 +35,8 @@ class TimeDelta;
 
 namespace gfx {
 class Image;
-}
+class Size;
+}  // namespace gfx
 
 namespace printing {
 class PrintingContextLinux;
@@ -124,7 +125,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   ui::NativeTheme* GetNativeTheme(aura::Window* window) const;
 
   // Returns the classic or system NativeTheme depending on `use_system_theme`.
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const;
+  virtual ui::NativeTheme* GetNativeTheme(bool use_system_theme) const = 0;
 
   // Sets a callback that determines whether to use the system theme.
   void SetUseSystemThemeCallback(UseSystemThemeCallback callback);
@@ -253,7 +254,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
     return cursor_theme_observer_list_;
   }
 
-  virtual ui::NativeTheme* GetNativeTheme() const = 0;
+  virtual ui::NativeTheme* GetNativeThemeImpl() const = 0;
 
  private:
   // Used to determine whether the system theme should be used for a window.  If

@@ -13,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -89,11 +88,6 @@ void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
 ui::NativeTheme* LinuxUi::GetNativeTheme(aura::Window* window) const {
   return GetNativeTheme(use_system_theme_callback_.is_null() ||
                         use_system_theme_callback_.Run(window));
-}
-
-ui::NativeTheme* LinuxUi::GetNativeTheme(bool use_system_theme) const {
-  return use_system_theme ? GetNativeTheme()
-                          : ui::NativeTheme::GetInstanceForNativeUi();
 }
 
 void LinuxUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {

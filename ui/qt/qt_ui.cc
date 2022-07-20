@@ -298,7 +298,7 @@ int QtUi::GetCursorThemeSize() {
   return 0;
 }
 
-ui::NativeTheme* QtUi::GetNativeTheme() const {
+ui::NativeTheme* QtUi::GetNativeThemeImpl() const {
   return native_theme_.get();
 }
 
