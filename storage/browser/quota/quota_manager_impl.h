@@ -531,15 +531,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     std::set<int> active_override_session_ids;
   };
 
-  using BucketTableEntry = QuotaDatabase::BucketTableEntry;
-  using BucketTableEntries = std::vector<BucketTableEntry>;
+  using BucketTableEntries = std::vector<mojom::BucketTableEntryPtr>;
   using StorageKeysByType =
       base::flat_map<blink::mojom::StorageType, std::set<blink::StorageKey>>;
 
   using QuotaSettingsCallback = base::OnceCallback<void(const QuotaSettings&)>;
 
-  using DumpBucketTableCallback =
-      base::OnceCallback<void(const BucketTableEntries&)>;
+  using DumpBucketTableCallback = base::OnceCallback<void(BucketTableEntries)>;
 
   // The values returned total_space, available_space.
   using StorageCapacityCallback = base::OnceCallback<void(int64_t, int64_t)>;
@@ -591,13 +589,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       GetDiskAvailabilityAndTempPoolSizeCallback callback,
       std::unique_ptr<AccumulateQuotaInternalsInfo> info);
   void RetrieveBucketUsageForBucketTable(RetrieveBucketsTableCallback callback,
-                                         const BucketTableEntries& entries);
+                                         BucketTableEntries entries);
   void AddBucketTableEntry(
-      const BucketTableEntry& entry,
-      base::OnceClosure barrier_callback,
-      std::vector<storage::mojom::BucketTableEntryPtr>* buckets,
+      mojom::BucketTableEntryPtr entry,
+      base::OnceCallback<void(mojom::BucketTableEntryPtr)> barrier_callback,
       int64_t usage,
-      blink::mojom::UsageBreakdownPtr bucketUsageBreakdown);
+      blink::mojom::UsageBreakdownPtr bucket_usage_breakdown);
 
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the
@@ -638,7 +635,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DeleteBucketFromDatabase(const BucketLocator& bucket,
                                 base::OnceCallback<void(QuotaError)> callback);
 
-  void DidBucketDataEvicted(QuotaDatabase::BucketTableEntry entry,
+  void DidBucketDataEvicted(mojom::BucketTableEntryPtr entry,
                             blink::mojom::QuotaStatusCode status);
 
   void ReportHistogram();
@@ -649,7 +646,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                          int64_t available_space);
   void DidGetPersistentGlobalUsageForHistogram(int64_t usage,
                                                int64_t unlimited_usage);
-  void DidDumpBucketTableForHistogram(const BucketTableEntries& entries);
+  void DidDumpBucketTableForHistogram(BucketTableEntries entries);
 
   // Returns the list of bucket ids that should be excluded from eviction due to
   // consistent errors after multiple attempts.
@@ -666,7 +663,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidGetBucketInfoForEviction(
       const BucketLocator& bucket,
-      QuotaErrorOr<QuotaDatabase::BucketTableEntry> result);
+      QuotaErrorOr<mojom::BucketTableEntryPtr> result);
 
   void DidGetEvictionRoundInfo();
 

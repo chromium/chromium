@@ -11,9 +11,9 @@ import "url/mojom/origin.mojom";
 struct BucketTableEntry {
     int64 bucket_id;
     string storage_key;
-    string type;
+    StorageType type;
     string name;
-    int64 usage;
+    int64 usage = -1;
     int64 use_count;
     mojo_base.mojom.Time last_accessed;
     mojo_base.mojom.Time last_modified;

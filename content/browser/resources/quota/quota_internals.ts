@@ -8,10 +8,16 @@ import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-we
 
 import {QuotaInternalsBrowserProxy} from './quota_internals_browser_proxy.js';
 
+enum StorageType {
+  TEMPORARY,
+  PERSISTENT,
+  SYNCABLE,
+}
+
 type BucketTableEntry = {
   'bucketId': bigint,
   'storageKey': string,
-  'type': string,
+  'type': StorageType,
   'name': string,
   'usage': bigint,
   'useCount': bigint,
@@ -146,7 +152,7 @@ async function renderUsageAndQuotaStats() {
    *   <storage_key_string>: {
    *     bucketCount: <number>,
    *     storageKeyEntries: {
-   *       <storage_type_string>: [{
+   *       <storage_type>: [{
    *         bucketId: <bigint>,
    *         name: <string>,
    *         usage: <bigint>,
@@ -180,14 +186,16 @@ async function renderUsageAndQuotaStats() {
     }
     if (!(entry.type in bucketTableEntriesByStorageKey[entry.storageKey]
                                                       ['storageKeyEntries'])) {
-      bucketTableEntriesByStorageKey
-          [entry.storageKey]['storageKeyEntries'][entry.type] =
-              [bucketTableEntryObj];
+      bucketTableEntriesByStorageKey[entry
+                                         .storageKey]['storageKeyEntries'][entry
+                                                                               .type] =
+          [bucketTableEntryObj];
       bucketTableEntriesByStorageKey[entry.storageKey]['bucketCount'] += 1;
     } else {
-      bucketTableEntriesByStorageKey
-          [entry.storageKey]['storageKeyEntries'][entry.type]
-              .push(bucketTableEntryObj);
+      bucketTableEntriesByStorageKey[entry
+                                         .storageKey]['storageKeyEntries'][entry
+                                                                               .type]
+          .push(bucketTableEntryObj);
       bucketTableEntriesByStorageKey[entry.storageKey]['bucketCount'] += 1;
     }
   }
@@ -206,11 +214,12 @@ async function renderUsageAndQuotaStats() {
         bucketTableEntriesByStorageKey[storageKey]['bucketCount'];
     const bucketsByStorageType: StorageTypeEntries =
         bucketTableEntriesByStorageKey[storageKey]['storageKeyEntries'];
-    const storageTypes: string[] = Object.keys(bucketsByStorageType);
+    const storageTypes: StorageType[] =
+        Object.keys(bucketsByStorageType).map(typeStr => Number(typeStr));
 
     // Iterate over each storageType for a given storage key.
     for (let j = 0; j < storageTypes.length; j++) {
-      const storageType: string = storageTypes[j];
+      const storageType: StorageType = storageTypes[j];
       const bucketsForStorageType: StorageTypeBucketTableEntry[] =
           bucketsByStorageType[storageType];
       const storageTypeRowSpan: number =
@@ -237,7 +246,7 @@ async function renderUsageAndQuotaStats() {
         usageAndQuotaRow.querySelector('.storage-key')!.setAttribute(
             'rowspan', `${storageKeyRowSpan}`);
         usageAndQuotaRow.querySelector('.storage-type')!.textContent =
-            storageType;
+            StorageType[storageType];
         usageAndQuotaRow.querySelector('.storage-type')!.setAttribute(
             'rowspan', `${storageTypeRowSpan}`);
         usageAndQuotaRow.querySelector('.bucket')!.textContent =

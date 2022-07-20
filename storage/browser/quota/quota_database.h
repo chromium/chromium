@@ -26,6 +26,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "storage/browser/quota/quota_internals.mojom-forward.h"
 #include "storage/browser/quota/storage_directory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -38,7 +39,7 @@ class Clock;
 namespace sql {
 class Database;
 class MetaTable;
-}
+}  // namespace sql
 
 namespace storage {
 
@@ -65,34 +66,6 @@ enum class DatabaseResetReason {
 // constructor, must called on the DB thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:
-  struct COMPONENT_EXPORT(STORAGE_BROWSER) BucketTableEntry {
-    BucketTableEntry();
-    BucketTableEntry(BucketId bucket_id,
-                     blink::StorageKey storage_key,
-                     blink::mojom::StorageType type,
-                     std::string name,
-                     int use_count,
-                     const base::Time& last_accessed,
-                     const base::Time& last_modified);
-    ~BucketTableEntry();
-
-    BucketTableEntry(const BucketTableEntry&);
-    BucketTableEntry& operator=(const BucketTableEntry&);
-
-    BucketLocator ToBucketLocator() const {
-      return BucketLocator(bucket_id, storage_key, type,
-                           name == kDefaultBucketName);
-    }
-
-    BucketId bucket_id;
-    blink::StorageKey storage_key;
-    blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
-    std::string name;
-    int use_count = 0;
-    base::Time last_accessed;
-    base::Time last_modified;
-  };
-
   static constexpr char kDatabaseName[] = "QuotaManager";
 
   // If `profile_path` is empty, an in-memory database will be used.
@@ -203,7 +176,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Returns the BucketTableEntry for `bucket` if one exists. Returns a
   // QuotaError if not found or the operation has failed.
-  QuotaErrorOr<BucketTableEntry> GetBucketInfo(BucketId bucket_id);
+  QuotaErrorOr<mojom::BucketTableEntryPtr> GetBucketInfo(BucketId bucket_id);
 
   // Deletes the bucket from the database as well as the bucket directory in the
   // storage directory.
@@ -273,9 +246,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
       const QuotaTableEntry& lhs,
       const QuotaTableEntry& rhs);
-  friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
-      const BucketTableEntry& lhs,
-      const BucketTableEntry& rhs);
 
   // Structures used for CreateSchema.
   struct TableSchema {
@@ -292,7 +262,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   using QuotaTableCallback =
       base::RepeatingCallback<bool(const QuotaTableEntry&)>;
   using BucketTableCallback =
-      base::RepeatingCallback<bool(const BucketTableEntry&)>;
+      base::RepeatingCallback<bool(mojom::BucketTableEntryPtr)>;
 
   // For long-running transactions support.  We always keep a transaction open
   // so that multiple transactions can be batched.  They are flushed

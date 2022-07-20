@@ -32,6 +32,7 @@
 #include "sql/test/test_helpers.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
+#include "storage/browser/quota/quota_internals.mojom.h"
 #include "storage/browser/quota/storage_directory_util.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +51,11 @@ static const blink::mojom::StorageType kTemp =
 static const blink::mojom::StorageType kPerm =
     blink::mojom::StorageType::kPersistent;
 
+static const storage::mojom::StorageType kStorageTemp =
+    storage::mojom::StorageType::kTemporary;
+static const storage::mojom::StorageType kStoragePerm =
+    storage::mojom::StorageType::kPersistent;
+
 static constexpr char kDatabaseName[] = "QuotaManager";
 
 bool ContainsBucket(const std::set<BucketLocator>& buckets,
@@ -64,7 +70,7 @@ bool ContainsBucket(const std::set<BucketLocator>& buckets,
 // mode. True will create the database in memory.
 class QuotaDatabaseTest : public testing::TestWithParam<bool> {
  protected:
-  using BucketTableEntry = QuotaDatabase::BucketTableEntry;
+  using BucketTableEntry = mojom::BucketTableEntry;
 
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
@@ -93,12 +99,15 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
   struct EntryVerifier {
     std::set<EntryType> table;
 
-    template <typename Iterator>
-    EntryVerifier(Iterator itr, Iterator end)
-        : table(itr, end) {}
+    template <size_t length>
+    explicit EntryVerifier(const EntryType (&entries)[length]) {
+      for (size_t i = 0; i < length; ++i) {
+        table.insert(entries[i]->Clone());
+      }
+    }
 
-    bool Run(const EntryType& entry) {
-      EXPECT_EQ(1u, table.erase(entry));
+    bool Run(EntryType entry) {
+      EXPECT_EQ(1u, table.erase(std::move(entry)));
       return true;
     }
   };
@@ -163,14 +172,18 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
           quota_database->db_->GetCachedStatement(SQL_FROM_HERE, kSql));
       ASSERT_TRUE(statement.is_valid());
 
-      statement.BindInt64(0, entry.bucket_id.value());
-      statement.BindString(1, entry.storage_key.Serialize());
-      statement.BindString(2, entry.storage_key.origin().host());
-      statement.BindInt(3, static_cast<int>(entry.type));
-      statement.BindString(4, entry.name);
-      statement.BindInt(5, entry.use_count);
-      statement.BindTime(6, entry.last_accessed);
-      statement.BindTime(7, entry.last_modified);
+      absl::optional<StorageKey> storage_key =
+          StorageKey::Deserialize(entry->storage_key);
+      ASSERT_TRUE(storage_key.has_value());
+
+      statement.BindInt64(0, entry->bucket_id);
+      statement.BindString(1, entry->storage_key);
+      statement.BindString(2, std::move(storage_key).value().origin().host());
+      statement.BindInt(3, static_cast<int>(entry->type));
+      statement.BindString(4, entry->name);
+      statement.BindInt(5, static_cast<int>(entry->use_count));
+      statement.BindTime(6, entry->last_accessed);
+      statement.BindTime(7, entry->last_modified);
       EXPECT_TRUE(statement.Run());
     }
     quota_database->Commit();
@@ -566,37 +579,52 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
-  using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(
-      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
-      kTemp, kDefaultBucketName, 99, now, now);
-  Entry bucket2 = Entry(
-      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
-      kTemp, kDefaultBucketName, 0, now, now);
-  Entry bucket3 = Entry(
-      BucketId(3), StorageKey::CreateFromStringForTesting("http://example-c/"),
-      kTemp, "bucket_c", 1, now, now);
-  Entry bucket4 = Entry(
-      BucketId(4), StorageKey::CreateFromStringForTesting("http://example-d/"),
-      kPerm, "bucket_d", 5, now, now);
-  Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
+  using Entry = mojom::BucketTableEntryPtr;
+  StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://example-a/");
+  StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://example-b/");
+  StorageKey storage_key3 =
+      StorageKey::CreateFromStringForTesting("http://example-c/");
+  StorageKey storage_key4 =
+      StorageKey::CreateFromStringForTesting("http://example-d/");
+
+  BucketId bucket_id1 = BucketId(1);
+  BucketId bucket_id2 = BucketId(2);
+  BucketId bucket_id3 = BucketId(3);
+  BucketId bucket_id4 = BucketId(4);
+
+  Entry bucket1 = mojom::BucketTableEntry::New(
+      bucket_id1.value(), storage_key1.Serialize(), kStorageTemp,
+      kDefaultBucketName, -1, 99, now, now);
+  Entry bucket2 = mojom::BucketTableEntry::New(
+      bucket_id2.value(), storage_key2.Serialize(), kStorageTemp,
+      kDefaultBucketName, -1, 0, now, now);
+  Entry bucket3 =
+      mojom::BucketTableEntry::New(bucket_id3.value(), storage_key3.Serialize(),
+                                   kStorageTemp, "bucket_c", -1, 1, now, now);
+  Entry bucket4 =
+      mojom::BucketTableEntry::New(bucket_id4.value(), storage_key4.Serialize(),
+                                   kStoragePerm, "bucket_d", -1, 5, now, now);
+  Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone(), bucket3->Clone(),
+                           bucket4->Clone()};
   AssignBucketTable(db.get(), kTableEntries);
 
   // Update access time for three temporary storages, and
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket1.bucket_id,
-                                        base::Time::FromJavaTime(10)),
-            QuotaError::kNone);
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket2.bucket_id,
-                                        base::Time::FromJavaTime(20)),
-            QuotaError::kNone);
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket3.bucket_id,
-                                        base::Time::FromJavaTime(30)),
-            QuotaError::kNone);
+  EXPECT_EQ(
+      db->SetBucketLastAccessTime(bucket_id1, base::Time::FromJavaTime(10)),
+      QuotaError::kNone);
+  EXPECT_EQ(
+      db->SetBucketLastAccessTime(bucket_id2, base::Time::FromJavaTime(20)),
+      QuotaError::kNone);
+  EXPECT_EQ(
+      db->SetBucketLastAccessTime(bucket_id3, base::Time::FromJavaTime(30)),
+      QuotaError::kNone);
 
   // One persistent.
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket4.bucket_id,
-                                        base::Time::FromJavaTime(40)),
-            QuotaError::kNone);
+  EXPECT_EQ(
+      db->SetBucketLastAccessTime(bucket_id4, base::Time::FromJavaTime(40)),
+      QuotaError::kNone);
 
   // One non-existent.
   EXPECT_EQ(
@@ -605,53 +633,58 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket1.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id1, result.value().id);
 
   // Test that unlimited origins are excluded from eviction, but
   // protected origins are not excluded.
   auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-  policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
-  policy->AddProtected(bucket2.storage_key.origin().GetURL());
+  policy->AddUnlimited(storage_key1.origin().GetURL());
+  policy->AddProtected(storage_key2.origin().GetURL());
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket2.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id2, result.value().id);
 
   // Test that durable origins are excluded from eviction.
-  policy->AddDurable(bucket2.storage_key.origin().GetURL());
+  policy->AddDurable(storage_key2.origin().GetURL());
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket3.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id3, result.value().id);
 
   // Bucket exceptions exclude specified buckets.
-  bucket_exceptions.insert(bucket1.bucket_id);
+  bucket_exceptions.insert(bucket_id1);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket2.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id2, result.value().id);
 
-  bucket_exceptions.insert(bucket2.bucket_id);
+  bucket_exceptions.insert(bucket_id2);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket3.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id3, result.value().id);
 
-  bucket_exceptions.insert(bucket3.bucket_id);
+  bucket_exceptions.insert(bucket_id3);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket1.bucket_id, base::Time::Now()),
+  EXPECT_EQ(db->SetBucketLastAccessTime(bucket_id1, base::Time::Now()),
             QuotaError::kNone);
 
+  BucketLocator bucketLocator =
+      BucketLocator(bucket_id3, storage_key3,
+                    static_cast<blink::mojom::StorageType>(bucket3->type),
+                    bucket3->name == kDefaultBucketName);
+
   // Delete storage_key/type last access time information.
-  EXPECT_EQ(db->DeleteBucketData(bucket3.ToBucketLocator()), QuotaError::kNone);
+  EXPECT_EQ(db->DeleteBucketData(bucketLocator), QuotaError::kNone);
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket2.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id2, result.value().id);
 
-  bucket_exceptions.insert(bucket1.bucket_id);
-  bucket_exceptions.insert(bucket2.bucket_id);
+  bucket_exceptions.insert(bucket_id1);
+  bucket_exceptions.insert(bucket_id2);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
@@ -669,31 +702,40 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
 
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
-  using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(
-      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
-      kTemp, kDefaultBucketName, 99, now, now);
-  Entry bucket2 = Entry(
-      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
-      kTemp, kDefaultBucketName, 0, now, now);
-  Entry kTableEntries[] = {bucket1, bucket2};
+  using Entry = mojom::BucketTableEntryPtr;
+
+  StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://example-a/");
+  StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://example-b/");
+
+  BucketId bucket_id1 = BucketId(1);
+  BucketId bucket_id2 = BucketId(2);
+
+  Entry bucket1 = mojom::BucketTableEntry::New(
+      bucket_id1.value(), storage_key1.Serialize(), kStorageTemp,
+      kDefaultBucketName, -1, 99, now, now);
+  Entry bucket2 = mojom::BucketTableEntry::New(
+      bucket_id2.value(), storage_key2.Serialize(), kStorageTemp,
+      kDefaultBucketName, -1, 0, now, now);
+  Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone()};
   AssignBucketTable(db.get(), kTableEntries);
 
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket1.bucket_id,
-                                        base::Time::FromJavaTime(10)),
-            QuotaError::kNone);
-  EXPECT_EQ(db->SetBucketLastAccessTime(bucket2.bucket_id,
-                                        base::Time::FromJavaTime(20)),
-            QuotaError::kNone);
+  EXPECT_EQ(
+      db->SetBucketLastAccessTime(bucket_id1, base::Time::FromJavaTime(10)),
+      QuotaError::kNone);
+  EXPECT_EQ(
+      db->SetBucketLastAccessTime(bucket_id2, base::Time::FromJavaTime(20)),
+      QuotaError::kNone);
 
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket1.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id1, result.value().id);
 
-  ASSERT_TRUE(db->UpdateBucketPersistence(bucket1.bucket_id, true).ok());
+  ASSERT_TRUE(db->UpdateBucketPersistence(bucket_id1, true).ok());
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket2.bucket_id, result.value().id);
+  EXPECT_EQ(bucket_id2, result.value().id);
 }
 
 TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
@@ -714,11 +756,10 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, kTemp, now),
             QuotaError::kNone);
 
-  QuotaErrorOr<QuotaDatabase::BucketTableEntry> info =
-      db->GetBucketInfo(bucket->id);
+  QuotaErrorOr<mojom::BucketTableEntryPtr> info = db->GetBucketInfo(bucket->id);
   EXPECT_TRUE(info.ok());
-  EXPECT_EQ(now, info->last_accessed);
-  EXPECT_EQ(1, info->use_count);
+  EXPECT_EQ(now, info.value()->last_accessed);
+  EXPECT_EQ(1, info.value()->use_count);
 }
 
 TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
@@ -889,10 +930,10 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
                     kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_result.ok());
 
-  QuotaErrorOr<QuotaDatabase::BucketTableEntry> info =
+  QuotaErrorOr<mojom::BucketTableEntryPtr> info =
       db->GetBucketInfo(bucket_result->id);
   EXPECT_TRUE(info.ok());
-  EXPECT_EQ(0, info->use_count);
+  EXPECT_EQ(0, info.value()->use_count);
 
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(
                 StorageKey::CreateFromStringForTesting("http://a/"), kTemp,
@@ -900,26 +941,35 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
             QuotaError::kNone);
   info = db->GetBucketInfo(bucket_result->id);
   EXPECT_TRUE(info.ok());
-  EXPECT_EQ(1, info->use_count);
+  EXPECT_EQ(1, info.value()->use_count);
 
   EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys_by_type),
             QuotaError::kNone);
 
   info = db->GetBucketInfo(bucket_result->id);
   EXPECT_TRUE(info.ok());
-  EXPECT_EQ(1, info->use_count);
+  EXPECT_EQ(1, info.value()->use_count);
 }
 
 TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   base::Time now = base::Time::Now();
-  using Entry = QuotaDatabase::BucketTableEntry;
+  using Entry = mojom::BucketTableEntryPtr;
+
+  StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://go/");
+  StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://oo/");
+  StorageKey storage_key3 =
+      StorageKey::CreateFromStringForTesting("http://gle/");
+
   Entry kTableEntries[] = {
-      Entry(BucketId(1), StorageKey::CreateFromStringForTesting("http://go/"),
-            kTemp, kDefaultBucketName, 2147483647, now, now),
-      Entry(BucketId(2), StorageKey::CreateFromStringForTesting("http://oo/"),
-            kTemp, kDefaultBucketName, 0, now, now),
-      Entry(BucketId(3), StorageKey::CreateFromStringForTesting("http://gle/"),
-            kTemp, kDefaultBucketName, 1, now, now),
+      mojom::BucketTableEntry::New(1, storage_key1.Serialize(), kStorageTemp,
+                                   kDefaultBucketName, -1, 2147483647, now,
+                                   now),
+      mojom::BucketTableEntry::New(2, storage_key2.Serialize(), kStorageTemp,
+                                   kDefaultBucketName, -1, 0, now, now),
+      mojom::BucketTableEntry::New(3, storage_key3.Serialize(), kStorageTemp,
+                                   kDefaultBucketName, -1, 1, now, now),
   };
 
   auto db = CreateDatabase(use_in_memory_db());
@@ -927,7 +977,7 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   AssignBucketTable(db.get(), kTableEntries);
 
   using Verifier = EntryVerifier<Entry>;
-  Verifier verifier(kTableEntries, std::end(kTableEntries));
+  Verifier verifier(kTableEntries);
   EXPECT_EQ(DumpBucketTable(db.get(),
                             base::BindRepeating(&Verifier::Run,
                                                 base::Unretained(&verifier))),
@@ -936,32 +986,34 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketInfo) {
-  using Entry = QuotaDatabase::BucketTableEntry;
-  Entry kTableEntries[] = {
-      Entry(BucketId(123), StorageKey::CreateFromStringForTesting("http://go/"),
-            kTemp, "test_bucket", 100, base::Time(), base::Time())};
+  using Entry = mojom::BucketTableEntryPtr;
+  StorageKey storage_key = StorageKey::CreateFromStringForTesting("http://go/");
+  BucketId bucket_id = BucketId(123);
+  storage::mojom::StorageType type = kStorageTemp;
+
+  Entry kTableEntries[] = {mojom::BucketTableEntry::New(
+      bucket_id.value(), storage_key.Serialize(), type, "test_bucket", -1, 100,
+      base::Time(), base::Time())};
 
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));
   AssignBucketTable(db.get(), kTableEntries);
 
   {
-    QuotaErrorOr<QuotaDatabase::BucketTableEntry> entry =
-        db->GetBucketInfo(kTableEntries[0].bucket_id);
+    QuotaErrorOr<Entry> entry = db->GetBucketInfo(bucket_id);
     EXPECT_TRUE(entry.ok());
-    EXPECT_EQ(kTableEntries[0].bucket_id, entry->bucket_id);
-    EXPECT_EQ(kTableEntries[0].type, entry->type);
-    EXPECT_EQ(kTableEntries[0].storage_key, entry->storage_key);
-    EXPECT_EQ(kTableEntries[0].name, entry->name);
-    EXPECT_EQ(kTableEntries[0].use_count, entry->use_count);
-    EXPECT_EQ(kTableEntries[0].last_accessed, entry->last_accessed);
-    EXPECT_EQ(kTableEntries[0].last_modified, entry->last_modified);
+    EXPECT_EQ(bucket_id.value(), entry.value()->bucket_id);
+    EXPECT_EQ(type, entry.value()->type);
+    EXPECT_EQ(storage_key.Serialize(), entry.value()->storage_key);
+    EXPECT_EQ(kTableEntries[0]->name, entry.value()->name);
+    EXPECT_EQ(kTableEntries[0]->use_count, entry.value()->use_count);
+    EXPECT_EQ(kTableEntries[0]->last_accessed, entry.value()->last_accessed);
+    EXPECT_EQ(kTableEntries[0]->last_modified, entry.value()->last_modified);
   }
 
   {
     // BucketId 456 is not in the database.
-    QuotaErrorOr<QuotaDatabase::BucketTableEntry> entry =
-        db->GetBucketInfo(BucketId(456));
+    QuotaErrorOr<Entry> entry = db->GetBucketInfo(BucketId(456));
     EXPECT_FALSE(entry.ok());
   }
 }

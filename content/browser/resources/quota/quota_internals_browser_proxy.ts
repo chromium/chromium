@@ -7,10 +7,16 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
+enum StorageType {
+  TEMPORARY,
+  PERSISTENT,
+  SYNCABLE,
+}
+
 type BucketTableEntry = {
   'bucketId': bigint,
   'storageKey': string,
-  'type': string,
+  'type': StorageType,
   'name': string,
   'usage': bigint,
   'useCount': bigint,
