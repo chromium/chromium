@@ -927,6 +927,52 @@ TEST_F(SCTAuditingHandlerTest, RestoringMaxRetries) {
       "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo="));
 }
 
+// Regression test for crbug.com/134432. For hashdance clients, when log list is
+// empty the handler should just gracefully drop the report instead of crashing,
+// and log a histogram for this case.
+TEST_F(SCTAuditingHandlerTest, LogNotFound) {
+  // Set up an empty CT log list.
+  std::vector<mojom::CTLogInfoPtr> log_list;
+  base::RunLoop run_loop;
+  network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now(),
+                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION, "extensions",
+      "valid_signature", base::Time::Now(), net::ct::SCT_STATUS_OK, &sct_list);
+  net::ct::MerkleTreeLeaf merkle_tree_leaf;
+  std::string leaf_hash_string;
+  ASSERT_TRUE(net::ct::GetMerkleTreeLeaf(chain_.get(), sct_list.at(0).sct.get(),
+                                         &merkle_tree_leaf));
+  ASSERT_TRUE(net::ct::HashMerkleTreeLeaf(merkle_tree_leaf, &leaf_hash_string));
+  std::vector<uint8_t> leaf_hash(leaf_hash_string.begin(),
+                                 leaf_hash_string.end());
+
+  for (mojom::SCTAuditingMode mode :
+       {mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting,
+        mojom::SCTAuditingMode::kHashdance}) {
+    SCOPED_TRACE(testing::Message() << "Mode: " << static_cast<int>(mode));
+    base::HistogramTester histograms;
+    handler_->SetMode(mode);
+    handler_->MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
+    auto* pending_reporters = handler_->GetPendingReportersForTesting();
+    EXPECT_EQ(pending_reporters->size(),
+              mode == mojom::SCTAuditingMode::kHashdance ? 0u : 1u);
+
+    // The hashdance request should record a count for DroppedDueToLogNotFound.
+    histograms.ExpectUniqueSample(
+        "Security.SCTAuditing.OptOut.DroppedDueToLogNotFound", true,
+        mode == mojom::SCTAuditingMode::kHashdance ? 1 : 0);
+
+    // Reset by clearing all pending reports and cache entries.
+    handler_->ClearPendingReports();
+    network_service_->sct_auditing_cache()->ClearCache();
+  }
+}
+
 class NoPersistenceSCTAuditingHandlerTest : public SCTAuditingHandlerTest {
  public:
   void SetUp() override {

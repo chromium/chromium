@@ -486,6 +486,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.SCTAuditing.OptOut.DroppedDueToLogNotFound"
+    enum="Boolean" expires_after="2022-11-27">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records whether a hashdance report was dropped due to not finding the log
+    metadata for the selected SCT. Recorded once when creating a new auditing
+    report, but before the report is sampled or deduplicated.
+  </summary>
+</histogram>
+
 <histogram name="Security.SCTAuditing.OptOut.LookupQueryResult"
     enum="SCTLookupQueryResult" expires_after="2022-12-04">
   <owner>cthomp@chromium.org</owner>

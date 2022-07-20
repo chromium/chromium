@@ -60,6 +60,11 @@ void RecordPopularSCTSkippedMetrics(bool popular_sct_skipped) {
                             popular_sct_skipped);
 }
 
+void RecordReportDroppedDueToLogNotFound(bool report_dropped) {
+  base::UmaHistogramBoolean(
+      "Security.SCTAuditing.OptOut.DroppedDueToLogNotFound", report_dropped);
+}
+
 }  // namespace
 
 SCTAuditingHandler::SCTAuditingHandler(NetworkContext* context,
@@ -153,7 +158,23 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     auto log = std::find_if(logs.begin(), logs.end(), [&sct](const auto& log) {
       return log->id == sct->log_id;
     });
-    CHECK(log != logs.end());
+    // It's possible that log entry metadata may not exist for a few reasons:
+    //
+    // 1) The PKI Metadata component has not yet been loaded and no log list
+    //    has been set.
+    // 2) The PKI Metadata component was updated sometime between the SCTs
+    //    being validated and MaybeEnqueueReport() being called.
+    // 3) The log is actually unknown. (This last case should not happen as the
+    //    SCTs should not have been considered valid.)
+    //
+    // In particular, (1) can occur for a short duration at browser startup, so
+    // handle this gracefully and drop the report.
+    if (log == logs.end()) {
+      RecordReportDroppedDueToLogNotFound(true);
+      return;
+    }
+    RecordReportDroppedDueToLogNotFound(false);
+
     sct_metadata->log_id = log->get()->id;
     sct_metadata->log_mmd = log->get()->mmd;
     sct_metadata->certificate_expiry =
