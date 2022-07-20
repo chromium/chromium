@@ -262,6 +262,14 @@ class HIDDetectionScreenChromeboxTest
       hid_controller_.set_wait_until_idle_after_device_update(wait);
   }
 
+  void AssertHidDisconnectedCount(HidType hid_type, int count) {
+    // This is not applicable after the revamp.
+    if (!GetParam()) {
+      histogram_tester_.ExpectBucketCount(
+          "OOBE.HidDetectionScreen.HidDisconnected", hid_type, count);
+    }
+  }
+
   size_t num_devices_created_ = 0u;
 
   device::BluetoothDevice::ConnectCallback connect_callback_;
@@ -385,6 +393,8 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   }
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
 
+  AssertHidDisconnectedCount(HidType::kSerialKeyboard, /*count=*/1);
+  AssertHidDisconnectedCount(HidType::kSerialPointer, /*count=*/1);
   SimulatePointerHidConnected(device::mojom::InputDeviceType::TYPE_USB);
   SimulateKeyboardHidConnected(device::mojom::InputDeviceType::TYPE_USB);
   // TODO(crbug/1173782): use screen or JS state instead of handler()
@@ -407,6 +417,9 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   }
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
 
+  AssertHidDisconnectedCount(HidType::kUsbKeyboard, /*count=*/1);
+  AssertHidDisconnectedCount(HidType::kUsbPointer, /*count=*/1);
+
   // The device states and names are set during pairing in the revamped
   // code.
   if (GetParam()) {
@@ -428,7 +441,83 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   AssertHidConnectedCount(HidType::kBluetoothKeyboard, /*count=*/1);
   AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/1);
 
+  // Not applicable after the revamp.
+  if (!GetParam()) {
+    // Remove bluetooth devices.
+    SimulatePointerHidRemoved();
+    SimulateKeyboardHidRemoved();
+    AssertHidDisconnectedCount(HidType::kBluetoothKeyboard, /*count=*/1);
+    AssertHidDisconnectedCount(HidType::kBluetoothPointer, /*count=*/1);
+  }
+
   ForceStopHidDetectionIfRevamp();
+};
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
+                       AddRemoveDevicesAfterScreen) {
+  // This test is not applicable after the revamp.
+  if (GetParam()) {
+    ForceStopHidDetectionIfRevamp();
+    return;
+  }
+
+  // NOTE: State strings match those in hid_detection_screen.cc.
+  // No devices added yet
+  EXPECT_EQ("searching", handler()->mouse_state_for_test());
+  EXPECT_EQ("searching", handler()->keyboard_state_for_test());
+  test::OobeJS().ExpectDisabledPath(kHidContinueButton);
+
+  // Generic connection types. Unlike the pointing device, which may be a tablet
+  // or touchscreen, the keyboard only reports usb and bluetooth states.
+  SimulatePointerHidConnected(device::mojom::InputDeviceType::TYPE_SERIO);
+  test::OobeJS().ExpectEnabledPath(kHidContinueButton);
+  AssertHidConnectedCount(HidType::kSerialPointer, /*count=*/1);
+
+  SimulateKeyboardHidConnected(device::mojom::InputDeviceType::TYPE_SERIO);
+  EXPECT_EQ("connected", handler()->mouse_state_for_test());
+  EXPECT_EQ("usb", handler()->keyboard_state_for_test());
+  test::OobeJS().ExpectEnabledPath(kHidContinueButton);
+  AssertHidConnectedCount(HidType::kSerialKeyboard, /*count=*/1);
+
+  ContinueToWelcomeScreen();
+
+  SimulatePointerHidRemoved();
+  SimulateKeyboardHidRemoved();
+
+  AssertHidDisconnectedCount(HidType::kSerialKeyboard, /*count=*/0);
+  AssertHidDisconnectedCount(HidType::kSerialPointer, /*count=*/0);
+
+  // Re-add the generic keyboard/mouse and make sure the count doesn't increase.
+  SimulatePointerHidConnected(device::mojom::InputDeviceType::TYPE_SERIO);
+  SimulateKeyboardHidConnected(device::mojom::InputDeviceType::TYPE_SERIO);
+
+  AssertHidConnectedCount(HidType::kSerialPointer, /*count=*/1);
+  AssertHidConnectedCount(HidType::kSerialKeyboard, /*count=*/1);
+
+  SimulatePointerHidRemoved();
+  SimulateKeyboardHidRemoved();
+
+  // Make sure a not yet added device type also doesn't increment the count.
+  SimulatePointerHidConnected(device::mojom::InputDeviceType::TYPE_USB);
+  SimulateKeyboardHidConnected(device::mojom::InputDeviceType::TYPE_USB);
+
+  AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/0);
+  AssertHidConnectedCount(HidType::kUsbPointer, /*count=*/0);
+}
+
+// Test that there isn't a crash when a device is removed that was never added.
+// This is a regression test for b/235083051.
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
+                       BluetoothDeviceRemoveNeverAdded) {
+  // This test is not applicable after the revamp.
+  if (GetParam()) {
+    ForceStopHidDetectionIfRevamp();
+    return;
+  }
+
+  SimulatePointerHidRemoved();
+  AssertHidDisconnectedCount(HidType::kUsbPointer, /*count=*/0);
+  AssertHidDisconnectedCount(HidType::kSerialPointer, /*count=*/0);
 }
 
 // Test that if there is any Bluetooth device connected on HID screen, the

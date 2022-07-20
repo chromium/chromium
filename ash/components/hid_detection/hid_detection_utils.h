@@ -40,6 +40,9 @@ void RecordHidConnected(const device::mojom::InputDeviceInfo& device);
 // is shown.
 void RecordBluetoothPairingAttempts(size_t attempts);
 
+// Record each HID that is disconnected while the HID detection screen is shown.
+void RecordHidDisconnected(const device::mojom::InputDeviceInfo& device);
+
 }  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_UTILS_H_

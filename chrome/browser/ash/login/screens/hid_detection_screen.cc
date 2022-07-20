@@ -563,9 +563,17 @@ void HIDDetectionScreen::InputDeviceAddedForTesting(InputDeviceInfoPtr info) {
 }
 
 void HIDDetectionScreen::InputDeviceRemoved(const std::string& id) {
-  devices_.erase(id);
-  if (is_hidden())
+  if (is_hidden()) {
+    devices_.erase(id);
     return;
+  }
+
+  // Some devices may be removed that were not registered in InputDeviceAdded or
+  // OnGetInputDevicesList.
+  if (base::Contains(devices_, id))
+    hid_detection::RecordHidDisconnected(*devices_[id]);
+
+  devices_.erase(id);
 
   if (id == touchscreen_id_) {
     touchscreen_id_.clear();

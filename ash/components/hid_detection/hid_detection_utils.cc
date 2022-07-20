@@ -72,6 +72,21 @@ void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
                                 hid_type.value());
 }
 
+void RecordHidDisconnected(const device::mojom::InputDeviceInfo& device) {
+  absl::optional<HidType> hid_type = GetHidType(device);
+
+  // If |device| is not relevant (i.e. an accelerometer, joystick, etc), don't
+  // emit metric.
+  if (!hid_type.has_value()) {
+    HID_LOG(DEBUG) << "HidDisconnected not logged for device " << device.id
+                   << " because it doesn't have a relevant device type.";
+    return;
+  }
+
+  base::UmaHistogramEnumeration("OOBE.HidDetectionScreen.HidDisconnected",
+                                hid_type.value());
+}
+
 void RecordBluetoothPairingAttempts(size_t attempts) {
   base::UmaHistogramCounts100(
       "OOBE.HidDetectionScreen.BluetoothPairingAttempts", attempts);
