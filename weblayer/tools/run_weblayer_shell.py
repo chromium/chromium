@@ -73,6 +73,12 @@ def main():
                     'launch']
       launch_cmd.extend(args.remaining_args)
       subprocess.call(launch_cmd)
+    elif (os.path.basename(args.shell_apk_path) == "BFShell.apk"):
+      launch_cmd = [os.path.join(os.path.dirname(args.shell_apk_path),
+                                 os.pardir, 'bin', 'browserfragment_shell_apk'),
+                    'launch']
+      launch_cmd.extend(args.remaining_args)
+      subprocess.call(launch_cmd)
     else:
       device.adb.Shell('monkey -p org.chromium.weblayer.shell 1')
 

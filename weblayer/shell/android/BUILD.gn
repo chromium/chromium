@@ -106,6 +106,26 @@ weblayer_shell_apk_helper("weblayer_shell_system_webview") {
   apk_name = "WebLayerShellSystemWebView"
 }
 
+generate_wrapper("run_browserfragment_shell") {
+  testonly = true
+  wrapper_script = "$root_out_dir/bin/run_browserfragment_shell"
+  executable = "//weblayer/tools/run_weblayer_shell.py"
+  executable_args = [
+    "--shell-apk-path",
+    "@WrappedPath(apks/BFShell.apk)",
+    "--support-apk-path",
+    "@WrappedPath(apks/BFSandbox.apk)",
+    "--support-apk-path",
+    "@WrappedPath(apks/WebLayerSupport.apk)",
+  ]
+
+  deps = [
+    ":browser_sandbox_apk",
+    ":browserfragment_shell_apk",
+    ":weblayer_support_apk",
+  ]
+}
+
 generate_wrapper("run_weblayer_shell") {
   testonly = true
   wrapper_script = "$root_out_dir/bin/run_weblayer_shell"
