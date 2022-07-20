@@ -1044,6 +1044,11 @@ void EventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
   DispatchMountCompletedEvent(
       file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT, error_code,
       volume);
+
+  // TODO(mtomasz): Move VolumeManager and part of the event router outside of
+  // file_manager, so there is no dependency between File System API and the
+  // file_manager code.
+  extensions::file_system_api::DispatchVolumeListChangeEvent(profile_);
 }
 
 void EventRouter::DispatchMountCompletedEvent(
