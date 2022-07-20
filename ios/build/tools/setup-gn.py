@@ -19,6 +19,7 @@ import tempfile
 
 SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
 SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official')
+ADDITIONAL_FILE_ROOTS = ('//ios', '//ios_internal', '//docs')
 
 # Pattern matching lines from ~/.lldbinit that must not be copied to the
 # generated .lldbinit file. They match what the user were told to add to
@@ -213,7 +214,8 @@ class GnGenerator(object):
       gn_command.append('--xcode-build-system=new')
       gn_command.append('--xcode-project=%s' % xcode_project_name)
       gn_command.append('--xcode-additional-files-patterns=*.md')
-      gn_command.append('--xcode-additional-files-roots=//ios;//ios_internal')
+      gn_command.append(
+          '--xcode-additional-files-roots=' + ';'.join(ADDITIONAL_FILE_ROOTS))
       gn_command.append('--xcode-configs=' + ';'.join(SUPPORTED_CONFIGS))
       gn_command.append('--xcode-config-build-dir='
                         '//out/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}')
