@@ -147,13 +147,7 @@ static CompositingReasons DirectReasonsForSVGChildPaintProperties(
   // scene that contains it.
   auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
-  // Disable compositing of SVG, except in the cases where it is required for
-  // correctness, if there is clip-path or mask to avoid hairline along the
-  // edges. TODO(crbug.com/1171601): Fix the root cause.
   const ComputedStyle& style = object.StyleRef();
-  if (style.HasClipPath() || style.HasMask())
-    return reasons;
-
   reasons |= CompositingReasonFinder::CompositingReasonsForAnimation(object);
   reasons |= CompositingReasonsForWillChange(style);
   // Exclude will-change for other properties some of which don't apply to SVG

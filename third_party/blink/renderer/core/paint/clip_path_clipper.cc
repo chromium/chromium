@@ -215,11 +215,11 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     const DisplayItemClient& display_item_client) {
   const auto* properties = layout_object.FirstFragment().PaintProperties();
   DCHECK(properties);
-  DCHECK(properties->MaskClip());
   DCHECK(properties->ClipPathMask());
+  DCHECK(properties->ClipPathMask()->OutputClip());
   PropertyTreeStateOrAlias property_tree_state(
-      properties->MaskClip()->LocalTransformSpace(), *properties->MaskClip(),
-      *properties->ClipPathMask());
+      properties->ClipPathMask()->LocalTransformSpace(),
+      *properties->ClipPathMask()->OutputClip(), *properties->ClipPathMask());
   ScopedPaintChunkProperties scoped_properties(
       context.GetPaintController(), property_tree_state, display_item_client,
       DisplayItem::kSVGClip);

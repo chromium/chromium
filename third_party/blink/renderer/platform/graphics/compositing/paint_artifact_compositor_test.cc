@@ -2696,7 +2696,8 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->draws_content());
   EXPECT_TRUE(clip_mask0->HitTestable());
-  EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Size(306, 206), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Vector2dF(47, 47), clip_mask0->offset_to_transform_parent());
   // c1 should be applied in the clip mask layer.
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
@@ -2789,8 +2790,9 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->draws_content());
   EXPECT_TRUE(clip_mask0->HitTestable());
-  EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
-  EXPECT_EQ(c1_id, clip_mask0->clip_tree_index());
+  EXPECT_EQ(gfx::Size(304, 204), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Vector2dF(48, 48), clip_mask0->offset_to_transform_parent());
+  EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
       *GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
@@ -3036,17 +3038,18 @@ TEST_P(PaintArtifactCompositorTest,
   const cc::EffectNode& mask_isolation_0 =
       *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
-  EXPECT_EQ(c1_id, mask_isolation_0.clip_id);
+  EXPECT_EQ(c0_id, mask_isolation_0.clip_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
-  EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
-  EXPECT_EQ(c1_id, clip_mask0->clip_tree_index());
+  EXPECT_EQ(gfx::Size(304, 204), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Vector2dF(48, 48), clip_mask0->offset_to_transform_parent());
+  EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
       *GetPropertyTrees().effect_tree().Node(mask_effect_0_id);
   ASSERT_EQ(mask_isolation_0_id, mask_effect_0.parent_id);
-  EXPECT_EQ(c1_id, mask_effect_0.clip_id);
+  EXPECT_EQ(c0_id, mask_effect_0.clip_id);
   EXPECT_EQ(SkBlendMode::kDstIn, mask_effect_0.blend_mode);
 }
 
@@ -3448,7 +3451,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
       *GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(t0_id, mask_isolation_0.transform_id);
-  EXPECT_EQ(c1_id, mask_isolation_0.clip_id);
+  EXPECT_EQ(c0_id, mask_isolation_0.clip_id);
   EXPECT_TRUE(mask_isolation_0.backdrop_filters.IsEmpty());
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(1.0f, mask_isolation_0.opacity);
@@ -3504,7 +3507,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_NE(mask_isolation_1_id, mask_isolation_2_id);
   ASSERT_EQ(e0_id, mask_isolation_2.parent_id);
   EXPECT_EQ(t0_id, mask_isolation_2.transform_id);
-  EXPECT_EQ(c1_id, mask_isolation_2.clip_id);
+  EXPECT_EQ(c0_id, mask_isolation_2.clip_id);
   EXPECT_TRUE(mask_isolation_2.backdrop_filters.IsEmpty());
   EXPECT_TRUE(mask_isolation_2.is_fast_rounded_corner);
   EXPECT_EQ(1.0f, mask_isolation_2.opacity);
@@ -3572,7 +3575,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
   ASSERT_EQ(c0_id, cc_c1.parent_id);
 
   ASSERT_EQ(e0_id, mask_isolation.parent_id);
-  EXPECT_EQ(c1_id, mask_isolation.clip_id);
+  EXPECT_EQ(c0_id, mask_isolation.clip_id);
   EXPECT_TRUE(mask_isolation.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
             mask_isolation.mask_filter_info.rounded_corner_bounds());

@@ -13,6 +13,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
@@ -80,6 +81,12 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   gfx::Size layer_bounds = pending_layer.LayerBounds();
   gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
   gfx::Size old_layer_bounds = raster_invalidator_.LayerBounds();
+
+  if (layer_state.Effect().BlendMode() == SkBlendMode::kDstIn) {
+    AdjustMaskLayerGeometry(pending_layer.GetPropertyTreeState().Transform(),
+                            layer_offset, layer_bounds);
+  }
+
   DCHECK_EQ(old_layer_bounds, cc_picture_layer_->bounds());
   raster_invalidator_.Generate(raster_invalidation_function_, paint_chunks,
                                layer_offset, layer_bounds, layer_state);

@@ -781,6 +781,8 @@ component("platform") {
     "graphics/color_space_gamut.h",
     "graphics/color_space_profile_data.cc",
     "graphics/color_space_profile_data.h",
+    "graphics/compositing/adjust_mask_layer_geometry.cc",
+    "graphics/compositing/adjust_mask_layer_geometry.h",
     "graphics/compositing/chunk_to_layer_mapper.cc",
     "graphics/compositing/chunk_to_layer_mapper.h",
     "graphics/compositing/content_layer_client_impl.cc",

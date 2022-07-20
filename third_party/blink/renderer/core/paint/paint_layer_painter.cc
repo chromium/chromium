@@ -361,7 +361,9 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     const auto* properties = fragment_data.PaintProperties();
     DCHECK(properties);
     DCHECK(properties->Mask());
+    DCHECK(properties->Mask()->OutputClip());
     chunk_properties.SetEffect(*properties->Mask());
+    chunk_properties.SetClip(*properties->Mask()->OutputClip());
   }
   ScopedPaintChunkProperties fragment_paint_chunk_properties(
       context.GetPaintController(), chunk_properties, paint_layer_,

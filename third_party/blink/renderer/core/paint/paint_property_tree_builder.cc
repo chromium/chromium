@@ -1440,10 +1440,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
     if (NeedsEffect()) {
       absl::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
-      const auto* output_clip = EffectCanUseCurrentClipAsOutputClip()
-                                    ? context_.current.clip
-                                    : nullptr;
-
       if (mask_clip || needs_mask_based_clip_path_) {
         DCHECK(mask_clip || clip_path_bounding_box_.has_value());
         gfx::RectF combined_clip =
@@ -1455,7 +1451,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             ClipPaintPropertyNode::State(
                 context_.current.transform, combined_clip,
                 FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)))));
-        output_clip = properties_->MaskClip();
+        // We don't use MaskClip as the output clip of Effect, Mask and
+        // ClipPathMask because we only want to apply MaskClip to the contents,
+        // not the masks.
       } else {
         OnClearClip(properties_->ClearMaskClip());
       }
@@ -1468,7 +1466,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
       EffectPaintPropertyNode::State state;
       state.local_transform_space = context_.current.transform;
-      state.output_clip = output_clip;
+      if (EffectCanUseCurrentClipAsOutputClip())
+        state.output_clip = context_.current.clip;
       state.opacity = style.Opacity();
       if (object_.IsBlendingAllowed()) {
         state.blend_mode = WebCoreCompositeToSkiaComposite(
@@ -1576,7 +1575,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (mask_clip) {
         EffectPaintPropertyNode::State mask_state;
         mask_state.local_transform_space = context_.current.transform;
-        mask_state.output_clip = output_clip;
+        mask_state.output_clip = context_.current.clip;
         mask_state.blend_mode = SkBlendMode::kDstIn;
         mask_state.compositor_element_id = mask_compositor_element_id;
         mask_state.direct_compositing_reasons = mask_direct_compositing_reasons;
@@ -1589,7 +1588,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (needs_mask_based_clip_path_) {
         EffectPaintPropertyNode::State clip_path_state;
         clip_path_state.local_transform_space = context_.current.transform;
-        clip_path_state.output_clip = output_clip;
+        clip_path_state.output_clip = context_.current.clip;
         clip_path_state.blend_mode = SkBlendMode::kDstIn;
         clip_path_state.compositor_element_id = GetCompositorElementId(
             CompositorElementIdNamespace::kEffectClipPath);

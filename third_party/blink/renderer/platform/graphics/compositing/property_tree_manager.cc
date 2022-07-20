@@ -982,8 +982,23 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     }
 
     if (pending_clip.type & CcEffectType::kSyntheticForNonTrivialClip) {
-      if (clip_id == cc::kInvalidPropertyNodeId)
-        clip_id = EnsureCompositorClipNode(*pending_clip.clip);
+      if (clip_id == cc::kInvalidPropertyNodeId) {
+        const auto* clip = pending_clip.clip;
+        // Some virtual/document-transition/wpt_internal/document-transition/*
+        // tests will fail without the following condition.
+        // TODO(crbug.com/1345805): Investigate the reason and remove the
+        // condition if possible.
+        if (!current_.effect->DocumentTransitionSharedElementId().valid()) {
+          // Use the parent clip as the output clip of the synthetic effect so
+          // that the clip will apply to the masked contents but not the mask
+          // layer, to ensure the masked content is fully covered by the mask
+          // layer (after AdjustMaskLayerGeometry) in case of rounding errors
+          // of the clip in the compositor.
+          DCHECK(clip->UnaliasedParent());
+          clip = clip->UnaliasedParent();
+        }
+        clip_id = EnsureCompositorClipNode(*clip);
+      }
       // For non-trivial clip, isolation_effect.stable_id will be assigned later
       // when the effect is closed. For now the default value INVALID_STABLE_ID
       // is used. See PropertyTreeManager::EmitClipMaskLayer().

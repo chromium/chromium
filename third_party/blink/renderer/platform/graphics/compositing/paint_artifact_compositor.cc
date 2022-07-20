@@ -17,6 +17,7 @@
 #include "cc/trees/mutator_host.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/adjust_mask_layer_geometry.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
@@ -478,15 +479,18 @@ void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
 
   const auto& path = clip.ClipPath();
   SkRRect new_rrect(clip.PaintClipRect());
-  gfx::Rect layer_bounds = gfx::ToEnclosingRect(clip.PaintClipRect().Rect());
+  gfx::Rect layer_rect = gfx::ToEnclosingRect(clip.PaintClipRect().Rect());
   bool needs_display = false;
 
   auto new_translation_2d_or_matrix =
       GeometryMapper::SourceToDestinationProjection(clip.LocalTransformSpace(),
                                                     transform);
-  new_translation_2d_or_matrix.MapRect(layer_bounds);
-  new_translation_2d_or_matrix.PostTranslate(-layer_bounds.x(),
-                                             -layer_bounds.y());
+  new_translation_2d_or_matrix.MapRect(layer_rect);
+  gfx::Vector2dF layer_offset(layer_rect.OffsetFromOrigin());
+  gfx::Size layer_bounds = layer_rect.size();
+  AdjustMaskLayerGeometry(transform, layer_offset, layer_bounds);
+  new_translation_2d_or_matrix.PostTranslate(-layer_offset.x(),
+                                             -layer_offset.y());
 
   if (!path && new_translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
     const auto& translation = new_translation_2d_or_matrix.Translation2D();
@@ -505,9 +509,8 @@ void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
   if (needs_display)
     layer_->SetNeedsDisplay();
 
-  layer_->SetOffsetToTransformParent(
-      gfx::Vector2dF(layer_bounds.OffsetFromOrigin()));
-  layer_->SetBounds(layer_bounds.size());
+  layer_->SetOffsetToTransformParent(layer_offset);
+  layer_->SetBounds(layer_bounds);
   rrect_ = new_rrect;
   path_ = path;
 }
