@@ -225,12 +225,7 @@ void AnsibleManagementService::OnApplyAnsiblePlaybookProgress(
       OnConfigurationFinished(container_id, false);
       break;
     case vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::IN_PROGRESS:
-      for (auto& observer : observers_) {
-        observer.OnAnsibleSoftwareConfigurationProgress(
-            container_id,
-            std::vector<std::string>(signal.status_string().begin(),
-                                     signal.status_string().end()));
-      }
+      // TODO(okalitova): Report Ansible playbook application progress.
       break;
     default:
       NOTREACHED();
