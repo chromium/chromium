@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -1422,15 +1423,20 @@ TEST_F(TextFragmentAnchorTest, NoMatchFoundFallsBackToElementFragment) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  Element& p = *GetDocument().getElementById("element");
 
-  // The TextFragmentAnchor needs another frame to invoke the element anchor
+  // At this point, the anchor should exist and have entered kScriptableActions
+  // state without any matches. Ensure invoking (which can happen arbitrarily
+  // from layout which can  be forced from bindings) is a no-op.
+  ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
+  GetDocument().View()->GetFragmentAnchor()->Invoke();
+  EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
+
+  // In the next frame, the anchor will PerformScriptableActions and invoke the
+  // element anchor.
   Compositor().BeginFrame();
-  RunAsyncMatchingTasks();
 
   EXPECT_EQ(GetDocument().Url(), "https://example.com/test.html#element");
-
-  Element& p = *GetDocument().getElementById("element");
 
   EXPECT_EQ(p, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))

@@ -273,7 +273,8 @@ bool TextFragmentAnchor::InvokeSelector() {
     case kScriptableActions:
       // The search has finished but we're waiting to apply some effects in a
       // script-safe section. Like above, ensure the match is kept in view.
-      EnsureFirstMatchInViewIfNeeded();
+      if (first_match_)
+        EnsureFirstMatchInViewIfNeeded();
       break;
     case kDone:
       break;
