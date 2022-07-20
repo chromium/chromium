@@ -241,7 +241,7 @@ DialogModelCombobox::DialogModelCombobox(
 DialogModelCombobox::~DialogModelCombobox() = default;
 
 void DialogModelCombobox::OnSelectedIndexChanged(base::PassKey<DialogModelHost>,
-                                                 int selected_index) {
+                                                 size_t selected_index) {
   selected_index_ = selected_index;
 }
 

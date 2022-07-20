@@ -68,9 +68,9 @@ MenuItemView* MenuModelAdapter::CreateMenu() {
 
 // Static.
 MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
-                                                       int model_index,
+                                                       size_t model_index,
                                                        MenuItemView* menu,
-                                                       int menu_index,
+                                                       size_t menu_index,
                                                        int item_id) {
   absl::optional<MenuItemView::Type> type;
   ui::MenuModel::ItemType menu_type = model->GetTypeAt(model_index);
@@ -133,19 +133,17 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
 
 // Static.
 MenuItemView* MenuModelAdapter::AppendMenuItemFromModel(ui::MenuModel* model,
-                                                        int model_index,
+                                                        size_t model_index,
                                                         MenuItemView* menu,
                                                         int item_id) {
-  const int menu_index =
-      menu->HasSubmenu()
-          ? static_cast<int>(menu->GetSubmenu()->children().size())
-          : 0;
+  const size_t menu_index =
+      menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : size_t{0};
   return AddMenuItemFromModelAt(model, model_index, menu, menu_index, item_id);
 }
 
 MenuItemView* MenuModelAdapter::AppendMenuItem(MenuItemView* menu,
                                                ui::MenuModel* model,
-                                               int index) {
+                                               size_t index) {
   return AppendMenuItemFromModel(model, index, menu,
                                  model->GetCommandIdAt(index));
 }

@@ -413,7 +413,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return AddChildView<T>(view.release());
   }
   template <typename T>
-  T* AddChildViewAt(std::unique_ptr<T> view, int index) {
+  T* AddChildViewAt(std::unique_ptr<T> view, size_t index) {
     DCHECK(!view->owned_by_client())
         << "This should only be called if the client is passing ownership of "
            "|view| to the parent View.";
@@ -424,17 +424,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // for new code.
   template <typename T>
   T* AddChildView(T* view) {
-    AddChildViewAtImpl(view, static_cast<int>(children_.size()));
+    AddChildViewAtImpl(view, children_.size());
     return view;
   }
   template <typename T>
-  T* AddChildViewAt(T* view, int index) {
+  T* AddChildViewAt(T* view, size_t index) {
     AddChildViewAtImpl(view, index);
     return view;
   }
 
   // Moves |view| to the specified |index|. A negative value for |index| moves
   // the view at the end.
+  // TODO(crbug.com/1292951): Change `index` to size_t and remove negative
+  // indexing behavior.
   void ReorderChildView(View* view, int index);
 
   // Removes |view| from this view. The view's parent will change to null.
@@ -1755,7 +1757,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // Adds |view| as a child of this view at |index|.
-  void AddChildViewAtImpl(View* view, int index);
+  void AddChildViewAtImpl(View* view, size_t index);
 
   // Removes |view| from the hierarchy tree. If |update_tool_tip| is
   // true, the tooltip is updated. If |delete_removed_view| is true, the

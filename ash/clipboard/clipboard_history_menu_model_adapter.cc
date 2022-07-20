@@ -137,7 +137,7 @@ ClipboardHistoryMenuModelAdapter::GetItemFromCommandId(int command_id) const {
   return iter->second;
 }
 
-int ClipboardHistoryMenuModelAdapter::GetMenuItemsCount() const {
+size_t ClipboardHistoryMenuModelAdapter::GetMenuItemsCount() const {
   // We should not use `root_view_` to retrieve the item count. Because the
   // menu item view is removed from `root_view_` asynchronously.
   return item_views_by_command_id_.size();
@@ -272,13 +272,13 @@ gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
 }
 
 const views::MenuItemView*
-ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(int index) const {
+ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(size_t index) const {
   DCHECK(root_view_);
   return root_view_->GetSubmenu()->GetMenuItemAt(index);
 }
 
 views::MenuItemView* ClipboardHistoryMenuModelAdapter::GetMenuItemViewAtForTest(
-    int index) {
+    size_t index) {
   return const_cast<views::MenuItemView*>(
       const_cast<const ClipboardHistoryMenuModelAdapter*>(this)
           ->GetMenuItemViewAtForTest(index));
@@ -383,7 +383,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
 views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
     views::MenuItemView* menu,
     ui::MenuModel* model,
-    int index) {
+    size_t index) {
   const int command_id = model->GetCommandIdAt(index);
 
   views::MenuItemView* container = menu->AppendMenuItem(command_id);

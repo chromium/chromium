@@ -640,7 +640,7 @@ void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 }
 
-void Combobox::MenuSelectionAt(int index) {
+void Combobox::MenuSelectionAt(size_t index) {
   if (!menu_selection_at_callback_ || !menu_selection_at_callback_.Run(index)) {
     SetSelectedIndex(index);
     OnPerformAction();

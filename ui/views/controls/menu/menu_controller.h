@@ -521,7 +521,7 @@ class VIEWS_EXPORT MenuController
                                       ui::OwnedWindowAnchor* anchor);
 
   // Returns the depth of the menu.
-  static int MenuDepth(MenuItemView* item);
+  static size_t MenuDepth(MenuItemView* item);
 
   // Selects the next or previous (depending on |direction|) menu item.
   void IncrementSelection(SelectionIncrementDirectionType direction);
@@ -544,15 +544,6 @@ class VIEWS_EXPORT MenuController
   MenuItemView* FindInitialSelectableMenuItem(
       MenuItemView* parent,
       SelectionIncrementDirectionType direction);
-
-  // Returns the next or previous selectable child menu item of |parent|
-  // starting at |index| and incrementing or decrementing index by 1 depending
-  // on |direction|. If there are no more selectable items NULL is returned.
-  MenuItemView* FindNextSelectableMenuItem(
-      MenuItemView* parent,
-      int index,
-      SelectionIncrementDirectionType direction,
-      bool is_initial);
 
   // If the selected item has a submenu and it isn't currently open, the
   // the selection is changed such that the menu opens immediately.

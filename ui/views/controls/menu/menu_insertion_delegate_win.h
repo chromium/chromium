@@ -12,7 +12,7 @@ namespace views {
 class MenuInsertionDelegateWin {
  public:
   // Returns the index to insert items into the menu at.
-  virtual int GetInsertionIndex(HMENU native_menu) = 0;
+  virtual size_t GetInsertionIndex(HMENU native_menu) = 0;
 
  protected:
   virtual ~MenuInsertionDelegateWin() = default;

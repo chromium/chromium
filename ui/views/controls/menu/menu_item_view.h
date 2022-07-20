@@ -154,7 +154,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Add an item to the menu at a specified index.  ChildrenChanged() should
   // called after adding menu items if the menu may be active.
-  MenuItemView* AddMenuItemAt(int index,
+  MenuItemView* AddMenuItemAt(size_t index,
                               int item_id,
                               const std::u16string& label,
                               const std::u16string& secondary_label,
@@ -194,7 +194,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   void AppendSeparator();
 
   // Adds a separator to this menu at the specified position.
-  void AddSeparatorAt(int index);
+  void AddSeparatorAt(size_t index);
 
   // All the AppendXXX methods funnel into this.
   MenuItemView* AppendMenuItemImpl(int item_id,

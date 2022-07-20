@@ -506,7 +506,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   return combobox;
 }
 
-bool SidePanelCoordinator::OnComboboxChangeTriggered(int index) {
+bool SidePanelCoordinator::OnComboboxChangeTriggered(size_t index) {
   SidePanelEntry::Id entry_id = combobox_model_->GetIdAt(index);
   Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kComboboxSelected);
   return true;

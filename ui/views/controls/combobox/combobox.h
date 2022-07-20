@@ -44,7 +44,7 @@ class VIEWS_EXPORT Combobox : public View,
  public:
   METADATA_HEADER(Combobox);
 
-  using MenuSelectionAtCallback = base::RepeatingCallback<bool(int index)>;
+  using MenuSelectionAtCallback = base::RepeatingCallback<bool(size_t index)>;
 
   static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
   static constexpr int kDefaultComboboxTextStyle = style::STYLE_PRIMARY;
@@ -84,7 +84,7 @@ class VIEWS_EXPORT Combobox : public View,
       views::PropertyChangedCallback callback);
 
   // Called when there has been a selection from the menu.
-  void MenuSelectionAt(int index);
+  void MenuSelectionAt(size_t index);
 
   // Looks for the first occurrence of |value| in |model()|. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.

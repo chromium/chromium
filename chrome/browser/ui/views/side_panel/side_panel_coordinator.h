@@ -111,7 +111,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // and before any selected id and combobox model change takes place. This
   // allows us to make the entry displayed in the combobox follow the same
   // delays as the side panel content when there are delays for loading content.
-  bool OnComboboxChangeTriggered(int index);
+  bool OnComboboxChangeTriggered(size_t index);
 
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelEntry* entry) override;

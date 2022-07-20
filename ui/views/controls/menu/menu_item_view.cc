@@ -352,7 +352,7 @@ void MenuItemView::Cancel() {
 }
 
 MenuItemView* MenuItemView::AddMenuItemAt(
-    int index,
+    size_t index,
     int item_id,
     const std::u16string& label,
     const std::u16string& secondary_label,
@@ -362,10 +362,9 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     Type type,
     ui::MenuSeparatorType separator_style) {
   DCHECK_NE(type, Type::kEmpty);
-  DCHECK_GE(index, 0);
   if (!submenu_)
     CreateSubmenu();
-  DCHECK_LE(static_cast<size_t>(index), submenu_->children().size());
+  DCHECK_LE(index, submenu_->children().size());
   if (type == Type::kSeparator) {
     submenu_->AddChildViewAt(std::make_unique<MenuSeparator>(separator_style),
                              index);
@@ -425,7 +424,7 @@ void MenuItemView::AppendSeparator() {
   AppendMenuItemImpl(0, std::u16string(), ui::ImageModel(), Type::kSeparator);
 }
 
-void MenuItemView::AddSeparatorAt(int index) {
+void MenuItemView::AddSeparatorAt(size_t index) {
   AddMenuItemAt(index, /*item_id=*/0, /*label=*/std::u16string(),
                 /*secondary_label=*/std::u16string(),
                 /*minor_text=*/std::u16string(),
@@ -439,8 +438,7 @@ MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
                                                const std::u16string& label,
                                                const ui::ImageModel& icon,
                                                Type type) {
-  const int index =
-      submenu_ ? static_cast<int>(submenu_->children().size()) : 0;
+  const size_t index = submenu_ ? submenu_->children().size() : size_t{0};
   return AddMenuItemAt(index, item_id, label, std::u16string(),
                        std::u16string(), ui::ImageModel(), icon, type,
                        ui::NORMAL_SEPARATOR);

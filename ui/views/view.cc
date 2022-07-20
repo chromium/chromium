@@ -1575,7 +1575,7 @@ void View::RemoveAccelerator(const ui::Accelerator& accelerator) {
     return;
   }
 
-  size_t index = i - accelerators_->begin();
+  auto index = static_cast<size_t>(i - accelerators_->begin());
   accelerators_->erase(i);
   if (index >= registered_accelerator_count_) {
     // The accelerator is not registered to FocusManager.
@@ -2556,10 +2556,9 @@ void View::PaintDebugRects(const PaintInfo& parent_paint_info) {
 
 // Tree operations -------------------------------------------------------------
 
-void View::AddChildViewAtImpl(View* view, int index) {
+void View::AddChildViewAtImpl(View* view, size_t index) {
   CHECK_NE(view, this) << "You cannot add a view as its own child";
-  DCHECK_GE(index, 0);
-  DCHECK_LE(static_cast<size_t>(index), children_.size());
+  DCHECK_LE(index, children_.size());
 
   // TODO(https://crbug.com/942298): Should just DCHECK(!view->parent_);.
   View* parent = view->parent_;
@@ -2578,7 +2577,8 @@ void View::AddChildViewAtImpl(View* view, int index) {
 #if DCHECK_IS_ON()
   DCHECK(!iterating_);
 #endif
-  const auto pos = children_.insert(std::next(children_.cbegin(), index), view);
+  const auto pos = children_.insert(
+      std::next(children_.cbegin(), static_cast<ptrdiff_t>(index)), view);
 
   view->RemoveFromFocusList();
   SetFocusSiblings(view, pos);
@@ -3142,8 +3142,9 @@ void View::RegisterPendingAccelerators() {
     NOTREACHED();
     return;
   }
-  for (std::vector<ui::Accelerator>::const_iterator i(
-           accelerators_->begin() + registered_accelerator_count_);
+  for (std::vector<ui::Accelerator>::const_iterator i =
+           accelerators_->begin() +
+           static_cast<ptrdiff_t>(registered_accelerator_count_);
        i != accelerators_->end(); ++i) {
     accelerator_focus_manager_->RegisterAccelerator(
         *i, ui::AcceleratorManager::kNormalPriority, this);

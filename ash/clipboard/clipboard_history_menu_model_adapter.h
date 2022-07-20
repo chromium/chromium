@@ -69,7 +69,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   const ClipboardHistoryItem& GetItemFromCommandId(int command_id) const;
 
   // Returns the count of menu items.
-  int GetMenuItemsCount() const;
+  size_t GetMenuItemsCount() const;
 
   // Selects the menu item specified by `command_id`.
   void SelectMenuItemWithCommandId(int command_id);
@@ -89,8 +89,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
-  const views::MenuItemView* GetMenuItemViewAtForTest(int index) const;
-  views::MenuItemView* GetMenuItemViewAtForTest(int index);
+  const views::MenuItemView* GetMenuItemViewAtForTest(size_t index) const;
+  views::MenuItemView* GetMenuItemViewAtForTest(size_t index);
 
  private:
   class ScopedA11yIgnore;
@@ -115,7 +115,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // views::MenuModelAdapter:
   views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
                                       ui::MenuModel* model,
-                                      int index) override;
+                                      size_t index) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
 
   // The model which holds the contents of the menu.

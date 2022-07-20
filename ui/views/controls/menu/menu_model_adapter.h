@@ -53,15 +53,15 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // Creates a menu item for the specified entry in the model and adds it as
   // a child to |menu| at the specified |menu_index|.
   static MenuItemView* AddMenuItemFromModelAt(ui::MenuModel* model,
-                                              int model_index,
+                                              size_t model_index,
                                               MenuItemView* menu,
-                                              int menu_index,
+                                              size_t menu_index,
                                               int item_id);
 
   // Creates a menu item for the specified entry in the model and appends it as
   // a child to |menu|.
   static MenuItemView* AppendMenuItemFromModel(ui::MenuModel* model,
-                                               int model_index,
+                                               size_t model_index,
                                                MenuItemView* menu,
                                                int item_id);
 
@@ -76,7 +76,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // menu.
   virtual MenuItemView* AppendMenuItem(MenuItemView* menu,
                                        ui::MenuModel* model,
-                                       int index);
+                                       size_t index);
 
   // views::MenuDelegate implementation.
   void ExecuteCommand(int id) override;

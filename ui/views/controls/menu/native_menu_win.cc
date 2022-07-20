@@ -31,7 +31,7 @@ struct NativeMenuWin::ItemData {
   raw_ptr<NativeMenuWin> native_menu_win;
 
   // The index of the item within the menu's model.
-  int model_index;
+  size_t model_index;
 };
 
 // Returns the NativeMenuWin for a particular HMENU.
@@ -68,7 +68,7 @@ void NativeMenuWin::Rebuild(MenuInsertionDelegateWin* delegate) {
   items_.clear();
 
   owner_draw_ = model_->HasIcons() || owner_draw_;
-  first_item_index_ = delegate ? delegate->GetInsertionIndex(menu_) : 0;
+  first_item_index_ = delegate ? delegate->GetInsertionIndex(menu_) : size_t{0};
   for (size_t model_index = 0; model_index < model_->GetItemCount();
        ++model_index) {
     size_t menu_index = model_index + first_item_index_;
@@ -81,7 +81,7 @@ void NativeMenuWin::Rebuild(MenuInsertionDelegateWin* delegate) {
 
 void NativeMenuWin::UpdateStates() {
   // A depth-first walk of the menu items, updating states.
-  int model_index = 0;
+  size_t model_index = 0;
   for (const auto& item : items_) {
     size_t menu_index = model_index + first_item_index_;
     SetMenuItemState(menu_index, model_->IsEnabledAt(model_index),
@@ -101,7 +101,7 @@ void NativeMenuWin::UpdateStates() {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeMenuWin, private:
 
-bool NativeMenuWin::IsSeparatorItemAt(int menu_index) const {
+bool NativeMenuWin::IsSeparatorItemAt(size_t menu_index) const {
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);
   mii.fMask = MIIM_FTYPE;
@@ -109,7 +109,7 @@ bool NativeMenuWin::IsSeparatorItemAt(int menu_index) const {
   return !!(mii.fType & MF_SEPARATOR);
 }
 
-void NativeMenuWin::AddMenuItemAt(int menu_index, int model_index) {
+void NativeMenuWin::AddMenuItemAt(size_t menu_index, size_t model_index) {
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);
   mii.fMask = MIIM_FTYPE | MIIM_ID | MIIM_DATA;
@@ -131,29 +131,31 @@ void NativeMenuWin::AddMenuItemAt(int menu_index, int model_index) {
   } else {
     if (type == ui::MenuModel::TYPE_RADIO)
       mii.fType |= MFT_RADIOCHECK;
-    mii.wID = model_->GetCommandIdAt(model_index);
+    mii.wID = static_cast<UINT>(model_->GetCommandIdAt(model_index));
   }
   item_data->native_menu_win = this;
   item_data->model_index = model_index;
   mii.dwItemData = reinterpret_cast<ULONG_PTR>(item_data.get());
-  items_.insert(items_.begin() + model_index, std::move(item_data));
+  items_.insert(items_.begin() + static_cast<ptrdiff_t>(model_index),
+                std::move(item_data));
   UpdateMenuItemInfoForString(&mii, model_index,
                               model_->GetLabelAt(model_index));
   InsertMenuItem(menu_, menu_index, TRUE, &mii);
 }
 
-void NativeMenuWin::AddSeparatorItemAt(int menu_index, int model_index) {
+void NativeMenuWin::AddSeparatorItemAt(size_t menu_index, size_t model_index) {
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);
   mii.fMask = MIIM_FTYPE;
   mii.fType = MFT_SEPARATOR;
   // Insert a dummy entry into our label list so we can index directly into it
   // using item indices if need be.
-  items_.insert(items_.begin() + model_index, std::make_unique<ItemData>());
-  InsertMenuItem(menu_, menu_index, TRUE, &mii);
+  items_.insert(items_.begin() + static_cast<ptrdiff_t>(model_index),
+                std::make_unique<ItemData>());
+  InsertMenuItem(menu_, static_cast<UINT>(menu_index), TRUE, &mii);
 }
 
-void NativeMenuWin::SetMenuItemState(int menu_index,
+void NativeMenuWin::SetMenuItemState(size_t menu_index,
                                      bool enabled,
                                      bool checked,
                                      bool is_default) {
@@ -170,11 +172,11 @@ void NativeMenuWin::SetMenuItemState(int menu_index,
   mii.cbSize = sizeof(mii);
   mii.fMask = MIIM_STATE;
   mii.fState = state;
-  SetMenuItemInfo(menu_, menu_index, MF_BYPOSITION, &mii);
+  SetMenuItemInfo(menu_, static_cast<UINT>(menu_index), MF_BYPOSITION, &mii);
 }
 
-void NativeMenuWin::SetMenuItemLabel(int menu_index,
-                                     int model_index,
+void NativeMenuWin::SetMenuItemLabel(size_t menu_index,
+                                     size_t model_index,
                                      const std::u16string& label) {
   if (IsSeparatorItemAt(menu_index))
     return;
@@ -182,11 +184,11 @@ void NativeMenuWin::SetMenuItemLabel(int menu_index,
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);
   UpdateMenuItemInfoForString(&mii, model_index, label);
-  SetMenuItemInfo(menu_, menu_index, MF_BYPOSITION, &mii);
+  SetMenuItemInfo(menu_, static_cast<UINT>(menu_index), MF_BYPOSITION, &mii);
 }
 
 void NativeMenuWin::UpdateMenuItemInfoForString(MENUITEMINFO* mii,
-                                                int model_index,
+                                                size_t model_index,
                                                 const std::u16string& label) {
   std::u16string formatted = label;
   ui::MenuModel::ItemType type = model_->GetTypeAt(model_index);

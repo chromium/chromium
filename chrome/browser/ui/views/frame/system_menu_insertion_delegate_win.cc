@@ -6,6 +6,6 @@
 
 #include <algorithm>
 
-int SystemMenuInsertionDelegateWin::GetInsertionIndex(HMENU native_menu) {
-  return std::max(0, GetMenuItemCount(native_menu) - 1);
+size_t SystemMenuInsertionDelegateWin::GetInsertionIndex(HMENU native_menu) {
+  return static_cast<size_t>(std::max(1, GetMenuItemCount(native_menu)) - 1);
 }

@@ -338,7 +338,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
   DialogModelCombobox& operator=(const DialogModelCombobox&) = delete;
   ~DialogModelCombobox() override;
 
-  int selected_index() const { return selected_index_; }
+  size_t selected_index() const { return selected_index_; }
   ui::ComboboxModel* combobox_model() { return combobox_model_.get(); }
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
@@ -350,7 +350,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     return accessible_name_;
   }
   void OnSelectedIndexChanged(base::PassKey<DialogModelHost>,
-                              int selected_index);
+                              size_t selected_index);
   void OnPerformAction(base::PassKey<DialogModelHost>);
 
  private:
@@ -358,7 +358,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
 
   const std::u16string label_;
   const std::u16string accessible_name_;
-  int selected_index_;
+  size_t selected_index_;
   std::unique_ptr<ui::ComboboxModel> combobox_model_;
   base::RepeatingClosure callback_;
 };

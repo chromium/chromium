@@ -721,17 +721,6 @@ class MenuControllerTest : public ViewsTestBase,
         parent, MenuController::INCREMENT_SELECTION_UP);
   }
 
-  MenuItemView* FindNextSelectableMenuItem(MenuItemView* parent, int index) {
-    return menu_controller_->FindNextSelectableMenuItem(
-        parent, index, MenuController::INCREMENT_SELECTION_DOWN, false);
-  }
-
-  MenuItemView* FindPreviousSelectableMenuItem(MenuItemView* parent,
-                                               int index) {
-    return menu_controller_->FindNextSelectableMenuItem(
-        parent, index, MenuController::INCREMENT_SELECTION_UP, false);
-  }
-
   internal::MenuControllerDelegate* GetCurrentDelegate() {
     return menu_controller_->delegate_;
   }
@@ -1064,11 +1053,6 @@ TEST_F(MenuControllerTest, InitialSelectedItem) {
   last_selectable = FindInitialSelectableMenuItemUp(menu_item());
   ASSERT_NE(nullptr, last_selectable);
   EXPECT_EQ(2, last_selectable->GetCommand());
-
-  // There should be no next or previous selectable item since there is only a
-  // single enabled item in the menu.
-  EXPECT_EQ(nullptr, FindNextSelectableMenuItem(menu_item(), 1));
-  EXPECT_EQ(nullptr, FindPreviousSelectableMenuItem(menu_item(), 1));
 
   // Clear references in menu controller to the menu item that is going away.
   ResetSelection();

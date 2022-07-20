@@ -22,7 +22,7 @@ class SystemMenuInsertionDelegateWin : public views::MenuInsertionDelegateWin {
   ~SystemMenuInsertionDelegateWin() override {}
 
   // Overridden from views::MenuInsertionDelegateWin:
-  int GetInsertionIndex(HMENU native_menu) override;
+  size_t GetInsertionIndex(HMENU native_menu) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_INSERTION_DELEGATE_WIN_H_
