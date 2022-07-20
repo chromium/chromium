@@ -1872,13 +1872,16 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         additional_usage_flags = gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
 
-      gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-          size, buffer_format, buffer_usage, gpu::kNullSurfaceHandle, nullptr);
-
-      if (gpu_memory_buffer) {
-        back_buffer_mailbox = sii->CreateSharedImage(
-            gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
-            origin, kPremul_SkAlphaType, usage | additional_usage_flags);
+      if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
+              buffer_format, ContextProvider()->GetCapabilities())) {
+        gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
+            size, buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
+            nullptr);
+        if (gpu_memory_buffer) {
+          back_buffer_mailbox = sii->CreateSharedImage(
+              gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
+              origin, kPremul_SkAlphaType, usage | additional_usage_flags);
+        }
       }
     }
 

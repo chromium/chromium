@@ -421,6 +421,10 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     // candidate.
     case RED_8:
 #endif
+#if BUILDFLAG(IS_MAC)
+    case BGRX_8888:
+    case RGBX_8888:
+#endif
     case R16_EXT:
     case RGBA_4444:
     case RGBA_8888:
@@ -436,13 +440,15 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case RED_8:
 #endif
+#if !BUILDFLAG(IS_MAC)
+    case BGRX_8888:
+    case RGBX_8888:
+#endif
     case RGB_565:
     case LUMINANCE_F16:
     case BGR_565:
     case RG_88:
     case RG16_EXT:
-    case RGBX_8888:
-    case BGRX_8888:
     case YVU_420:
     case YUV_420_BIPLANAR:
     case P010:

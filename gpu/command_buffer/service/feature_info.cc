@@ -985,20 +985,23 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_sized_texture_filterable_internal_format.AddValue(
         GL_BGRA8_EXT);
     feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
-#if BUILDFLAG(IS_MAC)
-    // TODO(sugoi): Remove this once crbug.com/1276529 is fixed.
-    // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
-    // this allows WebGL-rendered canvases to be composited by the OS rather
-    // than Chrome. Currently, this causes an issue on MacOS with SwANGLE when
-    // alpha is false, so disable that case for now so that we go through
-    // emulation.
-    if (!gl_version_info_->is_angle_swiftshader)
-#endif
-    {
-      feature_flags_.gpu_memory_buffer_formats.Add(
-          gfx::BufferFormat::BGRX_8888);
-    }
+    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRX_8888);
   }
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(sugoi): Remove this once crbug.com/1276529 is fixed.
+  // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
+  // this allows WebGL-rendered canvases to be composited by the OS rather
+  // than Chrome. Currently, this causes an issue on MacOS with SwANGLE when
+  // alpha is false, so disable that case for now so that we go through
+  // emulation.
+  if (gl_version_info_->is_angle_swiftshader) {
+    feature_flags_.gpu_memory_buffer_formats.Remove(
+        gfx::BufferFormat::RGBX_8888);
+    feature_flags_.gpu_memory_buffer_formats.Remove(
+        gfx::BufferFormat::BGRX_8888);
+  }
+#endif
 
   // On desktop, all devices support BGRA render buffers (note that on desktop
   // BGRA internal formats are converted to RGBA in the API implementation).

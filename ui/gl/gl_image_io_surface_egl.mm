@@ -45,6 +45,7 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
     case gfx::BufferFormat::RG_1616:
       return {GL_RG, GL_UNSIGNED_SHORT};
     case gfx::BufferFormat::BGRX_8888:
+    case gfx::BufferFormat::RGBX_8888:
       return {GL_RGB, GL_UNSIGNED_BYTE};
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::RGBA_8888:
@@ -55,7 +56,6 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
       return {GL_RGB10_A2, GL_UNSIGNED_INT_2_10_10_10_REV};
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBA_1010102:
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
@@ -126,7 +126,7 @@ GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
   EGLBoolean result =
       eglChooseConfig(display_, nullptr, &dummy_config_, 1, &numConfigs);
   DCHECK(result == EGL_TRUE);
-  DCHECK(numConfigs = 1);
+  DCHECK_EQ(numConfigs, 1);
   DCHECK(dummy_config_ != nullptr);
   const char* extensions = eglQueryString(display_, EGL_EXTENSIONS);
   if (GLSurface::ExtensionsContain(extensions,

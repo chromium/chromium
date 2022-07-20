@@ -65,7 +65,9 @@ GLImageBackingFactory::GLImageBackingFactory(
     const gfx::BufferFormat buffer_format = viz::BufferFormat(format);
     switch (buffer_format) {
       case gfx::BufferFormat::RGBA_8888:
+      case gfx::BufferFormat::RGBX_8888:
       case gfx::BufferFormat::BGRA_8888:
+      case gfx::BufferFormat::BGRX_8888:
       case gfx::BufferFormat::RGBA_F16:
       case gfx::BufferFormat::R_8:
       case gfx::BufferFormat::BGRA_1010102:
