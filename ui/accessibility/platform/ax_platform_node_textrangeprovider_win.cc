@@ -1130,9 +1130,7 @@ AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
 
   const AXNode* anchor = position->GetAnchor();
   DCHECK(anchor);
-  AXTreeID tree_id = anchor->tree()->GetAXTreeID();
-  const AXTreeManager* ax_tree_manager =
-      AXTreeManagerMap::GetInstance().GetManager(tree_id);
+  const AXTreeManager* ax_tree_manager = position->GetManager();
   DCHECK(ax_tree_manager);
 
   const AXPlatformTreeManager* platform_tree_manager =

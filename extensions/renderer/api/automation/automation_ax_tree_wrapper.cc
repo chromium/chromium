@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 
-#include "automation_ax_tree_wrapper.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"

@@ -115,8 +115,8 @@ base::Value AXPositionToBaseValue(
   if (position->IsNullPosition())
     return AXNilToBaseValue();
 
-  const AXPlatformTreeManager* manager = static_cast<AXPlatformTreeManager*>(
-      AXTreeManagerMap::GetInstance().GetManager(position->tree_id()));
+  const AXPlatformTreeManager* manager =
+      static_cast<AXPlatformTreeManager*>(position->GetManager());
   if (!manager)
     return AXNilToBaseValue();
 
