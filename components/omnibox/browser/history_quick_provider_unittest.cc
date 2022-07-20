@@ -297,6 +297,14 @@ HistoryQuickProviderTest::GetTestData() {
        "'pre suf' should score higher than 'presuf'", 3, 3, 2},
       {"https://suffix.com/prefixsuffix3",
        "'pre suf' should score higher than 'presuf'", 3, 3, 3},
+      {"http://somedomain.com/a", "a", 1, 1, 1},
+      {"http://somedomain.com/b", "b", 1, 1, 1},
+      {"http://somedomain.com/c", "c", 1, 1, 1},
+      {"http://somedomain.com/d", "d", 1, 1, 1},
+      {"http://somedomain.com/e", "e", 1, 1, 1},
+      {"http://somedomain.com/f", "f", 1, 1, 1},
+      {"http://somedomain.com/g", "g", 1, 1, 1},
+      {"http://somedomain.com/h", "h", 1, 1, 1},
   };
 }
 
@@ -977,6 +985,25 @@ TEST_F(HistoryQuickProviderTest,
 
   AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_TRUE(match.contents.empty());
+}
+
+TEST_F(HistoryQuickProviderTest, MaxMatches) {
+  // Keyword mode is off. We should only get provider_max_matches_ matches.
+  AutocompleteInput input(u"somedomain.com", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider().Start(input, false);
+
+  ACMatches matches = provider().matches();
+  EXPECT_EQ(matches.size(), provider().provider_max_matches());
+
+  // Turn keyword mode on. we should be able to get more matches now.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_prefer_keyword(true);
+  provider().Start(input, false);
+
+  matches = provider().matches();
+  EXPECT_EQ(matches.size(), provider().provider_max_matches_in_keyword_mode());
 }
 
 // HQPOrderingTest -------------------------------------------------------------

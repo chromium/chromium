@@ -139,8 +139,15 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
     }
   }
 
+  // In keyword mode, it's possible we only provide results from one or two
+  // autocomplete provider(s), so it's sometimes necessary to show more results
+  // than provider_max_matches_.
+  size_t max_matches = InKeywordMode(input)
+                           ? provider_max_matches_in_keyword_mode_
+                           : provider_max_matches_;
+
   // Sort and clip the resulting matches.
-  size_t num_matches = std::min(matches_.size(), provider_max_matches_);
+  size_t num_matches = std::min(matches_.size(), max_matches);
   std::partial_sort(matches_.begin(), matches_.begin() + num_matches,
                     matches_.end(), AutocompleteMatch::MoreRelevant);
   matches_.resize(num_matches);

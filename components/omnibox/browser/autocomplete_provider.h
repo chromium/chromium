@@ -286,6 +286,12 @@ class AutocompleteProvider
   // return.
   size_t provider_max_matches() const { return provider_max_matches_; }
 
+  // Returns a suggested upper bound for how many matches this provider should
+  // return while in keyword mode.
+  size_t provider_max_matches_in_keyword_mode() const {
+    return provider_max_matches_in_keyword_mode_;
+  }
+
   // Returns the set of matches for the current query.
   const ACMatches& matches() const { return matches_; }
 
@@ -401,6 +407,7 @@ class AutocompleteProvider
   std::vector<AutocompleteProviderListener*> listeners_;
 
   const size_t provider_max_matches_;
+  const size_t provider_max_matches_in_keyword_mode_{7};
 
   ACMatches matches_;
   // A map of suggestion group IDs to suggestion group information corresponding

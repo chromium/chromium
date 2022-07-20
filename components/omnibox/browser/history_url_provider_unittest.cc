@@ -1475,3 +1475,27 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
   EXPECT_EQ(GURL("http://www.google.com/"), matches_[0].destination_url);
   EXPECT_TRUE(matches_[0].from_keyword);
 }
+
+TEST_F(HistoryURLProviderTest, MaxMatches) {
+  // Keyword mode is off. We should only get provider_max_matches_ matches.
+  AutocompleteInput input(u"star", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  autocomplete_->Start(input, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+
+  matches_ = autocomplete_->matches();
+  EXPECT_EQ(matches_.size(), autocomplete_->provider_max_matches());
+
+  // Turn keyword mode on. we should be able to get more matches now.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_prefer_keyword(true);
+  autocomplete_->Start(input, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+
+  matches_ = autocomplete_->matches();
+  EXPECT_EQ(matches_.size(),
+            autocomplete_->provider_max_matches_in_keyword_mode());
+}

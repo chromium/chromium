@@ -84,6 +84,16 @@ struct BookmarksTestInfo {
     {"testing short bookmarks", "https://zzz.com"},
     // For testing bookmarks search in keyword mode.
     {"@bookmarks", "chrome://bookmarks"},
+    // For testing max matches.
+    {"zyx1", "http://randomsite.com/zyx1"},
+    {"zyx2", "http://randomsite.com/zyx2"},
+    {"zyx3", "http://randomsite.com/zyx3"},
+    {"zyx4", "http://randomsite.com/zyx4"},
+    {"zyx5", "http://randomsite.com/zyx5"},
+    {"zyx6", "http://randomsite.com/zyx6"},
+    {"zyx7", "http://randomsite.com/zyx7"},
+    {"zyx8", "http://randomsite.com/zyx8"},
+    {"zyx9", "http://randomsite.com/zyx9"},
 };
 
 // Structures and functions supporting the BookmarkProviderTest.Positions
@@ -812,4 +822,23 @@ TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
   matches = provider_->matches();
   ASSERT_EQ(matches.size(), 1u);
   EXPECT_EQ(u"domain", matches[0].description);
+}
+
+TEST_F(BookmarkProviderTest, MaxMatches) {
+  // Keyword mode is off. We should only get provider_max_matches_ matches.
+  AutocompleteInput input(u"zyx", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+
+  ACMatches matches = provider_->matches();
+  EXPECT_EQ(matches.size(), provider_->provider_max_matches());
+
+  // Turn keyword mode on. we should be able to get more matches now.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_prefer_keyword(true);
+  provider_->Start(input, false);
+
+  matches = provider_->matches();
+  EXPECT_EQ(matches.size(), provider_->provider_max_matches_in_keyword_mode());
 }

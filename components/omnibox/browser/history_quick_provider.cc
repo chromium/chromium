@@ -79,10 +79,17 @@ size_t HistoryQuickProvider::EstimateMemoryUsage() const {
 HistoryQuickProvider::~HistoryQuickProvider() = default;
 
 void HistoryQuickProvider::DoAutocomplete() {
+  // In keyword mode, it's possible we only provide results from one or two
+  // autocomplete provider(s), so it's sometimes necessary to show more results
+  // than provider_max_matches_.
+  size_t max_matches = InKeywordMode(autocomplete_input_)
+                           ? provider_max_matches_in_keyword_mode_
+                           : provider_max_matches_;
+
   // Get the matching URLs from the DB.
   ScoredHistoryMatches matches = in_memory_url_index_->HistoryItemsForTerms(
       autocomplete_input_.text(), autocomplete_input_.cursor_position(),
-      provider_max_matches_);
+      max_matches);
   if (matches.empty())
     return;
 
