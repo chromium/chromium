@@ -49,7 +49,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
     // potentially being partially transparent, if post scaled).
     bool requires_clear = true;
     // If clearing is needed, the color to clear to.
-    SkColor background_color = SK_ColorTRANSPARENT;
+    SkColor4f background_color = SkColors::kTransparent;
   };
   // Serialize the buffer with a preamble. This function wraps the buffer in a
   // save/restore and includes any translations, scales, and clearing as

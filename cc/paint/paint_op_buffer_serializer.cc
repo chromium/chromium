@@ -142,8 +142,7 @@ void PaintOpBufferSerializer::ClearForOpaqueRaster(
                              SkClipOp::kDifference, false);
     SerializeOp(canvas, &inner_clip_op, nullptr, params);
   }
-  DrawColorOp clear_op(SkColor4f::FromColor(preamble.background_color),
-                       SkBlendMode::kSrc);
+  DrawColorOp clear_op(preamble.background_color, SkBlendMode::kSrc);
   SerializeOp(canvas, &clear_op, nullptr, params);
   RestoreToCount(canvas, 1, params);
 }

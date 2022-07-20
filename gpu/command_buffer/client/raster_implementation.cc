@@ -1347,8 +1347,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   preamble.post_translation = post_translate;
   preamble.post_scale = post_scale;
   preamble.requires_clear = requires_clear;
-  // TODO(aaronhk): change the preamble to float color
-  preamble.background_color = raster_properties_->background_color.toSkColor();
+  preamble.background_color = raster_properties_->background_color;
 
   // Wrap the provided provider in a stashing provider so that we can delay
   // unrefing images until we have serialized dependent commands.
