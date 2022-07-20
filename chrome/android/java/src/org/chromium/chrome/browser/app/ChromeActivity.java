@@ -2896,6 +2896,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mDisplayAndroidObserver;
     }
 
+    @VisibleForTesting
+    public BackPressManager getBackPressManagerForTesting() {
+        return mBackPressManager;
+    }
+
     /** Returns whether the print action was successfully started. */
     private boolean doPrintShare(Activity activity, Supplier<Tab> currentTabSupplier) {
         PrintingController printingController = PrintingControllerImpl.getInstance();

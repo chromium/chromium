@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -60,6 +61,8 @@ public class TestBottomSheetContent implements BottomSheetContent {
     /** Current offset controller. */
     @Nullable
     private Callback<Integer> mOffsetController;
+
+    private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
 
     /**
      * @param context A context to inflate views with.
@@ -187,7 +190,22 @@ public class TestBottomSheetContent implements BottomSheetContent {
     }
 
     public void setHandleBackPress(boolean handleBackPress) {
+        getBackPressStateChangedSupplier().set(handleBackPress);
         mHandleBackPress = handleBackPress;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        if (mBackPressStateChangedSupplier == null) {
+            mBackPressStateChangedSupplier = new ObservableSupplierImpl<>();
+            mBackPressStateChangedSupplier.set(false);
+        }
+        return mBackPressStateChangedSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        setHandleBackPress(false);
     }
 
     @Override

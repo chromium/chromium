@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.back_press;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -38,6 +39,7 @@ public class BackPressManager {
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private final boolean[] mStates = new boolean[Type.NUM_TYPES];
     private int mEnabledCount;
+    private int mLastCalledHandlerForTesting = -1;
 
     /**
      * @return True if the back gesture refactor is enabled.
@@ -132,12 +134,24 @@ public class BackPressManager {
             if (enabled != null && enabled) {
                 handler.handleBackPress();
                 record(i);
+                mLastCalledHandlerForTesting = i;
                 return;
             }
         }
     }
 
-    BackPressHandler[] getHandlersForTesting() {
+    @VisibleForTesting
+    public BackPressHandler[] getHandlersForTesting() {
         return mHandlers;
+    }
+
+    @VisibleForTesting
+    public int getLastCalledHandlerForTesting() {
+        return mLastCalledHandlerForTesting;
+    }
+
+    @VisibleForTesting
+    public void resetLastCalledHandlerForTesting() {
+        mLastCalledHandlerForTesting = -1;
     }
 }
