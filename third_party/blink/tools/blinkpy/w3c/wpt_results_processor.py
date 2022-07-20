@@ -178,8 +178,13 @@ class WPTResultsProcessor(object):
             if component:
                 tests = {component: tests}
         results['tests'] = tests
-        test_names = self._extract_artifacts(results['tests'],
-                                             delim=results['path_delimiter'])
+        metadata = results.get('metadata') or {}
+        test_names = self._extract_artifacts(
+            results['tests'],
+            delim=results['path_delimiter'],
+            # Unlike the "external/wpt" prefix, this prefix does not actually
+            # exist on disk and only affects how the results are reported.
+            test_name_prefix=metadata.get('test_name_prefix', ''))
         _log.info('Extracted artifacts for %d tests', len(test_names))
 
         results_serialized = json.dumps(results)
@@ -199,7 +204,11 @@ class WPTResultsProcessor(object):
             json.dump(results, dest)
             dest.write(');')
 
-    def _extract_artifacts(self, current_node, current_path='', delim='/'):
+    def _extract_artifacts(self,
+                           current_node,
+                           current_path='',
+                           delim='/',
+                           test_name_prefix=''):
         """Recursively extract artifacts from the test results trie.
 
         The JSON results represent tests as the leaves of a trie (nested
@@ -215,10 +224,14 @@ class WPTResultsProcessor(object):
                 root directory.
             delim (str): Delimiter between components in test names. In
                 practice, the value is the POSIX directory separator.
+            test_name_prefix (str): Test name prefix to prepend to the generated
+                path when uploading results.
 
         Returns:
             list[str]: A list of test names found.
         """
+        if test_name_prefix and not test_name_prefix.endswith(delim):
+            test_name_prefix += delim
         if 'actual' in current_node:
             # Leaf node detected.
             if 'artifacts' not in current_node:
@@ -234,7 +247,8 @@ class WPTResultsProcessor(object):
             # Required by fast/harness/results.html to show stderr.
             if 'stderr' in artifacts:
                 current_node['has_stderr'] = True
-            self._add_result_to_sink(current_node, current_path)
+            self._add_result_to_sink(current_node, current_path,
+                                     test_name_prefix)
             _log.debug('Extracted artifacts for %s: %s', current_path,
                        ', '.join(artifacts) if artifacts else '(none)')
             return [current_path]
@@ -247,7 +261,8 @@ class WPTResultsProcessor(object):
                     # At the web test root, do not include a leading slash.
                     child_path = component
                 test_names.extend(
-                    self._extract_artifacts(child_node, child_path, delim))
+                    self._extract_artifacts(child_node, child_path, delim,
+                                            test_name_prefix))
             return test_names
 
     def _locate_expected_text(self, test_name, extension='.ini'):
@@ -461,7 +476,7 @@ class WPTResultsProcessor(object):
         index = test_name.rfind('?')
         return test_name if index == -1 else test_name[:index]
 
-    def _add_result_to_sink(self, node, test_name):
+    def _add_result_to_sink(self, node, test_name, test_name_prefix=''):
         """Add test results to the result sink."""
         actual_statuses = node['actual'].split()
         flaky = len(set(actual_statuses)) > 1
@@ -503,9 +518,12 @@ class WPTResultsProcessor(object):
                 # upload the same artifacts multiple times.
                 artifacts=(artifacts.artifacts if iteration == 0 else {}),
             )
-            self.sink.report_individual_test_result(test_name, result,
-                                                    self.results_dir, None,
-                                                    test_path)
+            self.sink.report_individual_test_result(
+                test_name_prefix=test_name_prefix,
+                result=result,
+                artifact_output_dir=self.results_dir,
+                expectations=None,
+                test_file_location=test_path)
 
     def _trim_to_regressions(self, current_node):
         """Recursively remove non-regressions from the test results trie.

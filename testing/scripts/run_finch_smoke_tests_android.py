@@ -329,8 +329,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     ret = super(FinchTestCase, self).run_test()
     self.stop_browser()
 
+    self._include_variation_prefix(test_run_variation)
+    self.process_and_upload_results()
     with open(self.wpt_output, 'r') as curr_test_results:
-      curr_results_dict = json.loads(curr_test_results.read())
+      curr_results_dict = json.load(curr_test_results)
       results_dict['tests'][test_run_variation] = curr_results_dict['tests']
       # Compare screenshots with baselines stored in Skia Gold
       ret |= self._compare_screenshots_with_baselines(curr_results_dict)
@@ -340,6 +342,13 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
         results_dict['num_failures_by_type'][result] += count
 
     return ret
+
+  def _include_variation_prefix(self, test_run_variation):
+    with open(self.wpt_output, 'r') as test_results_file:
+      results = json.load(test_results_file)
+    results.setdefault('metadata', {})['test_name_prefix'] = test_run_variation
+    with open(self.wpt_output, 'w+') as test_results_file:
+      json.dump(results, test_results_file)
 
   def stop_browser(self):
     logger.info('Stopping package %s', self.browser_package_name)

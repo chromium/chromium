@@ -49,9 +49,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.fs = host.filesystem
         self.path_finder = PathFinder(self.fs)
         self.port = host.port_factory.get()
-        # Path to the output of the test run. Comes from the args passed to the
-        # run, parsed after this constructor. Can be overwritten by tests.
-        self.wpt_output = None
         self.wptreport = None
         self._include_filename = None
         self.layout_test_results_subdir = 'layout-test-results'
@@ -242,8 +239,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         if report is not None:
             if not report:
                 report = self._default_wpt_report()
-            wpt_output = self.options.isolated_script_test_output
-            self.wptreport = self.fs.join(self.fs.dirname(wpt_output), report)
+            self.wptreport = self.fs.join(self.fs.dirname(self.wpt_output),
+                                          report)
+
+    @property
+    def wpt_output(self):
+        return self.options.isolated_script_test_output
 
     def _show_wpt_help(self):
         command = [
@@ -317,10 +318,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 rest_args.append(unknown_arg)
         return rest_args
 
-    def do_post_test_run_tasks(self):
-        if not self.wpt_output and self.options:
-            self.wpt_output = self.options.isolated_script_test_output
-
+    def process_and_upload_results(self):
         command = [
             self.select_python_executable(),
             os.path.join(BLINK_TOOLS_DIR, 'wpt_process_results.py'),
@@ -340,6 +338,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             command.extend(['--wpt-report', self.wptreport])
         common.run_command(command)
 
+    def clean_up_after_test_run(self):
         if self._include_filename:
             self.fs.remove(self._include_filename)
 

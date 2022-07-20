@@ -198,7 +198,11 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                 os.makedirs(self._metadata_dir)
             return super().run_test()
 
+    def do_post_test_run_tasks(self):
+        self.process_and_upload_results()
+
     def clean_up_after_test_run(self):
+        super().clean_up_after_test_run()
         # Avoid having a dangling reference to the temp directory
         # which was deleted
         self._metadata_dir = None

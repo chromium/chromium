@@ -25,15 +25,15 @@ class MockResultSink(object):
         self.invocation_level_artifacts = {}
         self.host = TypFakeHost()
 
-    def report_individual_test_result(self, test_name, result,
-                                      artifacts_sub_dir, expectation,
-                                      test_path):
-        del artifacts_sub_dir
-        assert not expectation, 'expectation parameter should always be None'
+    def report_individual_test_result(self, test_name_prefix, result,
+                                      artifact_output_dir, expectations,
+                                      test_file_location):
+        assert not expectations, 'expectation parameter should always be None'
         self.sink_requests.append({
-            'test': test_name,
-            'test_path': test_path,
+            'test_name_prefix': test_name_prefix,
+            'test_path': test_file_location,
             'result': {
+                'name': result.name,
                 'actual': result.actual,
                 'expected': result.expected,
                 'unexpected': result.unexpected,
@@ -155,20 +155,22 @@ class WPTResultsProcessorTest(LoggingTestCase):
         path_from_out_dir = self.fs.join('layout-test-results', 'external',
                                          'wpt', 'fail',
                                          'test_variant1-actual.txt')
-        self.assertEqual(self.processor.sink.sink_requests, [{
-            'test': test_name,
-            'test_path': test_abs_path,
-            'result': {
-                'actual': 'FAIL',
-                'expected': {'PASS', 'FAIL'},
-                'unexpected': False,
-                'took': 0,
-                'flaky': False,
-                'artifacts': {
-                    'actual_text': [path_from_out_dir],
-                },
-            },
-        }])
+        self.assertEqual(self.processor.sink.sink_requests,
+                         [{
+                             'test_name_prefix': '',
+                             'test_path': test_abs_path,
+                             'result': {
+                                 'name': test_name,
+                                 'actual': 'FAIL',
+                                 'expected': {'PASS', 'FAIL'},
+                                 'unexpected': False,
+                                 'took': 0,
+                                 'flaky': False,
+                                 'artifacts': {
+                                     'actual_text': [path_from_out_dir],
+                                 },
+                             },
+                         }])
 
     def test_result_sink_for_test_variant(self):
         json_dict = {
@@ -196,20 +198,74 @@ class WPTResultsProcessorTest(LoggingTestCase):
         path_from_out_dir = self.fs.join('layout-test-results', 'external',
                                          'wpt', 'fail',
                                          'test_variant1-actual.txt')
-        self.assertEqual(self.processor.sink.sink_requests, [{
-            'test': test_name,
-            'test_path': test_abs_path,
-            'result': {
-                'actual': 'FAIL',
-                'expected': {'PASS'},
-                'unexpected': True,
-                'took': 0,
-                'flaky': False,
-                'artifacts': {
-                    'actual_text': [path_from_out_dir],
+        self.assertEqual(self.processor.sink.sink_requests,
+                         [{
+                             'test_name_prefix': '',
+                             'test_path': test_abs_path,
+                             'result': {
+                                 'name': test_name,
+                                 'actual': 'FAIL',
+                                 'expected': {'PASS'},
+                                 'unexpected': True,
+                                 'took': 0,
+                                 'flaky': False,
+                                 'artifacts': {
+                                     'actual_text': [path_from_out_dir],
+                                 },
+                             },
+                         }])
+
+    def test_result_sink_with_prefix_through_metadata(self):
+        """Verify that the sink uploads results with a test name prefix.
+
+        The JSON results format allows passing arbitrary key-value data through
+        the "metadata" field. Some test runners include a "test_name_prefix"
+        metadata key that should be prepended to each test path in the trie.
+
+        See Also:
+            https://source.chromium.org/chromium/_/chromium/catapult.git/+/0c6b8d6722cc0e4a35b51d5104374b8cf9cc264e:third_party/typ/typ/runner.py;l=243-244
+        """
+        self._create_json_output({
+            'tests': {
+                'fail': {
+                    'test.html': {
+                        'expected': 'PASS',
+                        'actual': 'FAIL',
+                        'artifacts': {
+                            'wpt_actual_status': ['OK'],
+                            'wpt_actual_metadata': ['test.html actual text'],
+                        },
+                    },
                 },
             },
-        }])
+            'path_delimiter': '/',
+            'metadata': {
+                'test_name_prefix': 'with_finch_seed',
+            },
+        })
+
+        self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
+        test_name = self.fs.join('external', 'wpt', 'fail', 'test.html')
+        test_abs_path = self.fs.join(self.processor.web_tests_dir, 'external',
+                                     'wpt', 'fail', 'test.html')
+        path_from_out_dir = self.fs.join('layout-test-results', 'external',
+                                         'wpt', 'fail', 'test-actual.txt')
+        self.assertEqual(self.processor.sink.sink_requests,
+                         [{
+                             'test_name_prefix': 'with_finch_seed/',
+                             'test_path': test_abs_path,
+                             'result': {
+                                 'name': test_name,
+                                 'actual': 'FAIL',
+                                 'expected': {'PASS'},
+                                 'unexpected': True,
+                                 'took': 0,
+                                 'flaky': False,
+                                 'artifacts': {
+                                     'actual_text': [path_from_out_dir],
+                                 },
+                             },
+                         }])
 
     def test_result_sink_for_multiple_runs(self):
         json_dict = {
@@ -231,29 +287,32 @@ class WPTResultsProcessorTest(LoggingTestCase):
         test_name = self.fs.join('external', 'wpt', 'fail', 'test.html')
         test_abs_path = self.fs.join(self.processor.web_tests_dir, 'external',
                                      'wpt', 'fail', 'test.html')
-        self.assertEqual(self.processor.sink.sink_requests, [{
-            'test': test_name,
-            'test_path': test_abs_path,
-            'result': {
-                'actual': 'PASS',
-                'expected': {'PASS'},
-                'unexpected': False,
-                'took': 2,
-                'flaky': True,
-                'artifacts': {},
-            },
-        }, {
-            'test': test_name,
-            'test_path': test_abs_path,
-            'result': {
-                'actual': 'FAIL',
-                'expected': {'PASS'},
-                'unexpected': True,
-                'took': 3,
-                'flaky': True,
-                'artifacts': {},
-            },
-        }])
+        self.assertEqual(self.processor.sink.sink_requests,
+                         [{
+                             'test_name_prefix': '',
+                             'test_path': test_abs_path,
+                             'result': {
+                                 'name': test_name,
+                                 'actual': 'PASS',
+                                 'expected': {'PASS'},
+                                 'unexpected': False,
+                                 'took': 2,
+                                 'flaky': True,
+                                 'artifacts': {},
+                             },
+                         }, {
+                             'test_name_prefix': '',
+                             'test_path': test_abs_path,
+                             'result': {
+                                 'name': test_name,
+                                 'actual': 'FAIL',
+                                 'expected': {'PASS'},
+                                 'unexpected': True,
+                                 'took': 3,
+                                 'flaky': True,
+                                 'artifacts': {},
+                             },
+                         }])
 
     def test_result_sink_artifacts(self):
         json_dict = {
@@ -279,11 +338,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
         path_from_out_dir = self.fs.join('layout-test-results', 'external',
                                          'wpt', 'fail', 'test-actual.txt')
         self.assertEqual(
-            self.processor.sink.sink_requests,
-            [{
-                'test': self.fs.join('external', 'wpt', 'fail', 'test.html'),
+            self.processor.sink.sink_requests, [{
+                'test_name_prefix': '',
                 'test_path': test_abs_path,
                 'result': {
+                    'name': self.fs.join('external', 'wpt', 'fail',
+                                         'test.html'),
                     'actual': 'FAIL',
                     'expected': {'PASS'},
                     'unexpected': True,
