@@ -11890,6 +11890,20 @@ should be kept until we remove incident reporting. -->
   <summary>The time spent before the screen locker is ready.</summary>
 </histogram>
 
+<histogram name="ScreenLocker.{LockState}.Duration" units="ms"
+    expires_after="2023-07-07">
+  <owner>charleszhao@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The duration for the screen to be in locked/unlocked state. Recorded inside
+    ScreenlockMonitor, when the screen lock state changes.
+  </summary>
+  <token key="LockState">
+    <variant name="Locked" summary="screen was locked in this duration."/>
+    <variant name="Unlocked" summary="screen was unlocked in this duration."/>
+  </token>
+</histogram>
+
 <histogram base="true" name="SendTabToSelf.ClickResult"
     enum="SendTabToSelfClickResult" expires_after="2022-10-25">
   <owner>jeffreycohen@chromium.org</owner>

@@ -5,6 +5,7 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 
@@ -43,6 +44,7 @@ void ScreenlockMonitor::NotifyScreenLocked() {
                        "ScreenlockMonitor::NotifyScreenLocked",
                        TRACE_EVENT_SCOPE_GLOBAL);
   DVLOG(1) << "Screen Locked";
+  ReportLockUnlockDuration(/*is_locked=*/true);
   observers_->Notify(FROM_HERE, &ScreenlockObserver::OnScreenLocked);
 }
 
@@ -51,7 +53,35 @@ void ScreenlockMonitor::NotifyScreenUnlocked() {
                        "ScreenlockMonitor::NotifyScreenUnlocked",
                        TRACE_EVENT_SCOPE_GLOBAL);
   DVLOG(1) << "Screen Unlocked";
+  ReportLockUnlockDuration(/*is_locked=*/false);
   observers_->Notify(FROM_HERE, &ScreenlockObserver::OnScreenUnlocked);
+}
+
+void ScreenlockMonitor::ReportLockUnlockDuration(bool is_locked) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // If it is the first time called, just record the time and lock state.
+  if (last_lock_unlock_time_.is_null()) {
+    last_lock_unlock_time_ = now;
+    is_locked_ = is_locked;
+    return;
+  }
+
+  // Skip if duplicated lock state is called.
+  if (is_locked_ == is_locked)
+    return;
+
+  is_locked_ = is_locked;
+
+  // Record metrics.
+  if (is_locked_) {
+    base::UmaHistogramLongTimes("ScreenLocker.Unlocked.Duration",
+                                now - last_lock_unlock_time_);
+  } else {
+    base::UmaHistogramLongTimes("ScreenLocker.Locked.Duration",
+                                now - last_lock_unlock_time_);
+  }
+  last_lock_unlock_time_ = now;
 }
 
 }  // namespace content
