@@ -189,8 +189,7 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
   std::move(callback).Run(html_bytes.get());
 }
 
-std::string NewTabUI::NewTabHTMLSource::GetMimeType(
-    const std::string& resource) {
+std::string NewTabUI::NewTabHTMLSource::GetMimeType(const GURL&) {
   return "text/html";
 }
 
