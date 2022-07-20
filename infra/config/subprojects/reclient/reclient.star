@@ -55,17 +55,39 @@ def fyi_reclient_staging_builder(
         *,
         name,
         console_view_category,
-        reclient_instance = "rbe-chromium-trusted",
-        **kwargs):
-    return ci.builder(
-        name = name,
-        reclient_instance = reclient_instance,
-        console_view_entry = consoles.console_view_entry(
-            category = "rbe|" + console_view_category,
-            short_name = "rcs",
+        reclient_instance = "rbe-chromium-%s",
+        untrusted_service_account = (
+            "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com"
         ),
-        **kwargs
-    )
+        reclient_version = "staging",
+        **kwargs):
+    trusted_instance = reclient_instance % "trusted"
+    unstrusted_instance = reclient_instance % "untrusted"
+    return [
+        ci.builder(
+            name = name,
+            description_html = "Builds chromium using the %s version of reclient and the %s rbe instance." %
+                               (reclient_version, trusted_instance),
+            reclient_instance = trusted_instance,
+            console_view_entry = consoles.console_view_entry(
+                category = "rbe|" + console_view_category,
+                short_name = "rcs",
+            ),
+            **kwargs
+        ),
+        ci.builder(
+            name = name + " untrusted",
+            description_html = "Builds chromium using the %s version of reclient and the %s rbe instance." %
+                               (reclient_version, unstrusted_instance),
+            reclient_instance = unstrusted_instance,
+            console_view_entry = consoles.console_view_entry(
+                category = "rbecq|" + console_view_category,
+                short_name = "rcs",
+            ),
+            service_account = untrusted_service_account,
+            **kwargs
+        ),
+    ]
 
 def fyi_reclient_test_builder(
         *,
@@ -75,19 +97,9 @@ def fyi_reclient_test_builder(
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,
-        reclient_instance = "rbe-chromium-trusted-test",
-        **kwargs
-    )
-
-def fyi_reclient_gvisor_test_builder(
-        *,
-        name,
-        console_view_category,
-        **kwargs):
-    return fyi_reclient_staging_builder(
-        name = name,
-        console_view_category = console_view_category,
-        reclient_instance = "rbe-chromium-untrusted-test",
+        reclient_instance = "rbe-chromium-%s-test",
+        reclient_version = "test",
+        untrusted_service_account = ci.DEFAULT_SERVICE_ACCOUNT,
         **kwargs
     )
 
@@ -198,29 +210,6 @@ fyi_reclient_staging_builder(
 
 fyi_reclient_test_builder(
     name = "Win x64 Builder reclient test",
-    builder_spec = builder_config.copy_from(
-        "ci/Win x64 Builder",
-        lambda spec: structs.evolve(
-            spec,
-            gclient_config = structs.extend(
-                spec.gclient_config,
-                apply_configs = [
-                    "enable_reclient",
-                    "reclient_test",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    builderless = True,
-    console_view_category = "win",
-    cores = 32,
-    execution_timeout = 5 * time.hour,
-    os = os.WINDOWS_ANY,
-)
-
-fyi_reclient_gvisor_test_builder(
-    name = "Win x64 Builder reclient gVisor cross test",
     builder_spec = builder_config.copy_from(
         "ci/Win x64 Builder",
         lambda spec: structs.evolve(
