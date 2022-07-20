@@ -240,6 +240,7 @@ src/webgpu/api/validation/query_set/destroy.spec.ts
 src/webgpu/api/validation/queue/buffer_mapped.spec.ts
 src/webgpu/api/validation/queue/submit.spec.ts
 src/webgpu/api/validation/queue/writeBuffer.spec.ts
+src/webgpu/api/validation/queue/writeTexture.spec.ts
 src/webgpu/api/validation/queue/copyToTexture/CopyExternalImageToTexture.spec.ts
 src/webgpu/api/validation/queue/destroyed/query_set.spec.ts
 src/webgpu/api/validation/render_pass/attachment_compatibility.spec.ts
