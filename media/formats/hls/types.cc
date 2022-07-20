@@ -175,6 +175,7 @@ ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
   return result;
 }
 
+// static
 ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
     ResolvedSourceString source_str) {
   // decimal-resolution values are in the format: DecimalInteger 'x'
@@ -202,6 +203,7 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
                            .height = std::move(height).value()};
 }
 
+// static
 ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
     ResolvedSourceString source_str) {
   // If this ByteRange has an offset, it will be separated from the length by
@@ -231,6 +233,7 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
                              .offset = offset};
 }
 
+// static
 absl::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
                                               DecimalInteger offset) {
   if (length == 0) {
@@ -390,6 +393,7 @@ ParseStatus AttributeMap::FillUntilError(AttributeListIterator* iter) {
   }
 }
 
+// static
 ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
   static const base::NoDestructor<re2::RE2> variable_name_regex(
       "[a-zA-Z0-9_-]+");
@@ -402,6 +406,7 @@ ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
   return VariableName(source_str.Str());
 }
 
+// static
 ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
   const auto is_char_valid = [](char c) -> bool {
     return base::IsAsciiAlphaNumeric(c) || IsOneOf(c, "+/=.-_");
@@ -414,6 +419,7 @@ ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
   return StableId(std::string{str.Str()});
 }
 
+// static
 ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
   constexpr base::StringPiece kCcStr = "CC";
   constexpr base::StringPiece kServiceStr = "SERVICE";
@@ -461,6 +467,7 @@ AudioChannels& AudioChannels::operator=(AudioChannels&&) = default;
 
 AudioChannels::~AudioChannels() = default;
 
+// static
 ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
   // First parameter is a decimal-integer indicating the number of channels
   const auto max_channels_str = str.ConsumeDelimiter('/');

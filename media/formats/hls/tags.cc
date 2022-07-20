@@ -241,10 +241,12 @@ struct TypedAttributeMap {
 
 }  // namespace
 
+// static
 ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
   return ParseEmptyTag<M3uTag>(tag);
 }
 
+// static
 ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
   auto result = ParseDecimalIntegerTag(tag, &XVersionTag::version);
   if (result.has_error()) {
@@ -261,6 +263,7 @@ ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
   return out;
 }
 
+// static
 ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(InfTag::kName));
 
@@ -297,36 +300,44 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   return InfTag{.duration = duration, .title = title_str};
 }
 
+// static
 ParseStatus::Or<XIndependentSegmentsTag> XIndependentSegmentsTag::Parse(
     TagItem tag) {
   return ParseEmptyTag<XIndependentSegmentsTag>(tag);
 }
 
+// static
 ParseStatus::Or<XEndListTag> XEndListTag::Parse(TagItem tag) {
   return ParseEmptyTag<XEndListTag>(tag);
 }
 
+// static
 ParseStatus::Or<XIFramesOnlyTag> XIFramesOnlyTag::Parse(TagItem tag) {
   return ParseEmptyTag<XIFramesOnlyTag>(tag);
 }
 
+// static
 ParseStatus::Or<XDiscontinuityTag> XDiscontinuityTag::Parse(TagItem tag) {
   return ParseEmptyTag<XDiscontinuityTag>(tag);
 }
 
+// static
 ParseStatus::Or<XGapTag> XGapTag::Parse(TagItem tag) {
   return ParseEmptyTag<XGapTag>(tag);
 }
 
+// static
 XDefineTag XDefineTag::CreateDefinition(types::VariableName name,
                                         base::StringPiece value) {
   return XDefineTag{.name = name, .value = value};
 }
 
+// static
 XDefineTag XDefineTag::CreateImport(types::VariableName name) {
   return XDefineTag{.name = name, .value = absl::nullopt};
 }
 
+// static
 ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XDefineTag::kName));
 
@@ -396,6 +407,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   return ParseStatusCode::kMalformedTag;
 }
 
+// static
 ParseStatus::Or<XPlaylistTypeTag> XPlaylistTypeTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XPlaylistTypeTag::kName));
 
@@ -426,6 +438,7 @@ XStreamInfTag& XStreamInfTag::operator=(const XStreamInfTag&) = default;
 
 XStreamInfTag& XStreamInfTag::operator=(XStreamInfTag&&) = default;
 
+// static
 ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
     TagItem tag,
     const VariableDictionary& variable_dict,
@@ -527,6 +540,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   return out;
 }
 
+// static
 ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XTargetDurationTag::kName));
   if (!tag.GetContent().has_value()) {
@@ -548,6 +562,7 @@ ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
   return XTargetDurationTag{.duration = duration};
 }
 
+// static
 ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XPartInfTag::kName));
   if (!tag.GetContent().has_value()) {
@@ -588,6 +603,7 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   return XPartInfTag{.target_duration = part_target};
 }
 
+// static
 ParseStatus::Or<XPartTag> XPartTag::Parse(
     TagItem tag,
     const VariableDictionary& variable_dict,
@@ -677,6 +693,7 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
                   .gap = gap};
 }
 
+// static
 ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XServerControlTag::kName));
   if (!tag.GetContent().has_value()) {
@@ -783,15 +800,18 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   };
 }
 
+// static
 ParseStatus::Or<XMediaSequenceTag> XMediaSequenceTag::Parse(TagItem tag) {
   return ParseDecimalIntegerTag(tag, &XMediaSequenceTag::number);
 }
 
+// static
 ParseStatus::Or<XDiscontinuitySequenceTag> XDiscontinuitySequenceTag::Parse(
     TagItem tag) {
   return ParseDecimalIntegerTag(tag, &XDiscontinuitySequenceTag::number);
 }
 
+// static
 ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XByteRangeTag::kName));
   if (!tag.GetContent().has_value()) {
@@ -808,6 +828,7 @@ ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
   return XByteRangeTag{.range = std::move(range).value()};
 }
 
+// static
 ParseStatus::Or<XBitrateTag> XBitrateTag::Parse(TagItem tag) {
   return ParseDecimalIntegerTag(tag, &XBitrateTag::bitrate);
 }

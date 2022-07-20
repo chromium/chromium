@@ -31,6 +31,7 @@ MultivariantPlaylist& MultivariantPlaylist::operator=(MultivariantPlaylist&&) =
 
 MultivariantPlaylist::~MultivariantPlaylist() = default;
 
+// static
 ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
     base::StringPiece source,
     GURL uri) {

@@ -52,6 +52,7 @@ MediaPlaylist& MediaPlaylist::operator=(MediaPlaylist&&) = default;
 
 MediaPlaylist::~MediaPlaylist() = default;
 
+// static
 ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     base::StringPiece source,
     GURL uri,
