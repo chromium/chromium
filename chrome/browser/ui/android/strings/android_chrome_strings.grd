@@ -2906,7 +2906,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Sign in to this site and Chrome with your Google Account.
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_SEND_TAB_TO_SELF" desc="The subtitle for the account picker bottom sheet that tells the user what happens if the button 'Continue as John Doe' is clicked, when send-tab-to-self triggered the UI.">
-        You can send tabs between devices that are signed in with the same Google Account
+        To send this tab to another device, sign in to Chrome on both devices
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SIGNIN_TITLE" desc="The title of the account picker bottom sheet tells that the user is in the process of signing in with their Google Account">
         Signing in...
@@ -4618,6 +4618,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_WHEN_SIGNED_IN_UNAVAILABLE" desc="Instructions for the user to enable the feature when it's currently unavailable.">
         You can send tabs between devices that are signed in with the same Google Account
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_ANDROID_NO_TARGET_DEVICE_LABEL" desc="Text shown when a user with no available target devices attempts to use send-tab-to-self.">
+        To send this tab to another device, sign in to Chrome there
       </message>
 
 

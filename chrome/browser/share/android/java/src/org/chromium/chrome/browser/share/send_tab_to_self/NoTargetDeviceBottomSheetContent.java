@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -30,6 +31,8 @@ public class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
         mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.send_tab_to_self_feature_unavailable_prompt, null);
         if (isPromoFeatureEnabled) {
+            TextView label = (TextView) mContentView.findViewById(R.id.empty_state_label);
+            label.setText(R.string.send_tab_to_self_android_no_target_device_label);
             mContentView.findViewById(R.id.manage_account_devices_link).setVisibility(View.VISIBLE);
         }
         // TODO(crbug.com/1298185): This is cumulating both signed-out and single device users.

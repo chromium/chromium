@@ -33,6 +33,7 @@
     android:text="@string/send_tab_to_self_share_activity_title"/>
 
   <TextView
+    android:id="@+id/empty_state_label"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
