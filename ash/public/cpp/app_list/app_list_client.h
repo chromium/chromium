@@ -120,14 +120,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void OnSearchResultVisibilityChanged(const std::string& id,
                                                bool visibility) = 0;
 
-  // TODO(crbug.com/1076270): This method exists for chrome-side logging of UI
-  // actions, and can be folded into the AppListNotifier once it is
-  // complete.
-  virtual void NotifySearchResultsForLogging(
-      const std::u16string& trimmed_query,
-      const SearchResultIdWithPositionIndices& results,
-      int position_index) = 0;
-
   // Returns the AppListNotifier instance owned by this client. Depending on the
   // implementation, this can return nullptr.
   virtual AppListNotifier* GetNotifier() = 0;

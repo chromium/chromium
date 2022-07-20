@@ -675,16 +675,6 @@ void AppListClientImpl::OpenURL(Profile* profile,
   }
 }
 
-void AppListClientImpl::NotifySearchResultsForLogging(
-    const std::u16string& trimmed_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int position_index) {
-  if (search_controller_) {
-    search_controller_->OnSearchResultsImpressionMade(trimmed_query, results,
-                                                      position_index);
-  }
-}
-
 ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
 }

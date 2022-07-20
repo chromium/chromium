@@ -72,8 +72,9 @@ void AppListNotifierImplOld::NotifySearchQueryChanged(
     const std::u16string& query) {
   // In some cases the query can change after the launcher is closed, in
   // particular this happens when abandoning the launcher with a non-empty
-  // query. Only do a state transition if the launcher is open.
-  if (view_ != ash::AppListViewState::kClosed) {
+  // query. Only do a state transition if the launcher is showing results.
+  if (view_ == ash::AppListViewState::kHalf ||
+      view_ == ash::AppListViewState::kFullscreenSearch) {
     DoStateTransition(Location::kList, State::kShown);
     DoStateTransition(Location::kTile, State::kShown);
   }

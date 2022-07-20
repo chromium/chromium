@@ -57,7 +57,6 @@ constexpr int kPreferredTitleHorizontalMargins = 16;
 constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
 
-constexpr base::TimeDelta kImpressionThreshold = base::Seconds(3);
 constexpr static base::TimeDelta kFadeInDuration = base::Milliseconds(100);
 constexpr static base::TimeDelta kIdentityTranslationDuration =
     base::Milliseconds(200);
@@ -73,18 +72,6 @@ constexpr int kAnswerCardMaxResults = 1;
 // distance of 'kAnimatedOffsetMultiplier' * i where i is the position of the
 // view in the 'ProductivityLauncherSearchView'.
 constexpr int kAnimatedOffsetMultiplier = 4;
-
-SearchResultIdWithPositionIndices GetSearchResultsForLogging(
-    std::vector<SearchResultView*> search_result_views) {
-  SearchResultIdWithPositionIndices results;
-  for (const auto* item : search_result_views) {
-    if (item->result()) {
-      results.emplace_back(SearchResultIdWithPositionIndex(
-          item->result()->id(), item->index_in_container()));
-    }
-  }
-  return results;
-}
 
 size_t GetMaxSearchResultListItems() {
   if (app_list_features::IsCategoricalSearchEnabled())
@@ -458,33 +445,7 @@ int SearchResultListView::DoUpdate() {
     notifier->NotifyResultsUpdated(SearchResultDisplayType::kList,
                                    notifier_results);
   }
-
-  // Logic for logging impression of items that were shown to user.
-  // Each time DoUpdate() called, start a timer that will be fired after a
-  // certain amount of time |kImpressionThreshold|. If during the waiting time,
-  // there's another DoUpdate() called, reset the timer and start a new timer
-  // with updated result list.
-  if (impression_timer_.IsRunning())
-    impression_timer_.Stop();
-  impression_timer_.Start(FROM_HERE, kImpressionThreshold, this,
-                          &SearchResultListView::LogImpressions);
   return displayed_results.size();
-}
-
-void SearchResultListView::LogImpressions() {
-  // TODO(crbug.com/1216097): Handle impressions for bubble launcher.
-  if (!main_view_)
-    return;
-
-  // Since no items is actually clicked, send the position index of clicked item
-  // as -1.
-  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
-  if (main_view_->search_box_view()->is_search_box_active()) {
-    view_delegate_->NotifySearchResultsForLogging(
-        search_model->search_box()->text(),
-        GetSearchResultsForLogging(search_result_views_),
-        -1 /* position_index */);
-  }
 }
 
 void SearchResultListView::Layout() {
@@ -527,11 +488,6 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 
   RecordSearchResultOpenSource(result, view_delegate_->GetAppListViewState(),
                                view_delegate_->IsInTabletMode());
-  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
-  view_delegate_->NotifySearchResultsForLogging(
-      search_model->search_box()->text(),
-      GetSearchResultsForLogging(search_result_views_),
-      view->index_in_container());
 
   AppListLaunchType launch_type =
       IsAppListSearchResultAnApp(result->result_type())

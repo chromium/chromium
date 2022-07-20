@@ -112,14 +112,6 @@ class SearchController {
   // get_query().size().
   virtual int GetLastQueryLength() const = 0;
 
-  // TODO(crbug.com/1199206): This is unused and can be deleted.
-  // Called when items in the results list have been on screen for some amount
-  // of time, or the user clicked a search result.
-  virtual void OnSearchResultsImpressionMade(
-      const std::u16string& trimmed_query,
-      const ash::SearchResultIdWithPositionIndices& results,
-      int launched_index) = 0;
-
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 

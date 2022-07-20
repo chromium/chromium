@@ -183,11 +183,6 @@ void AppListTestViewDelegate::OnSearchResultVisibilityChanged(
     const std::string& id,
     bool visibility) {}
 
-void AppListTestViewDelegate::NotifySearchResultsForLogging(
-    const std::u16string& raw_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int position_index) {}
-
 void AppListTestViewDelegate::MaybeIncreaseSuggestedContentInfoShownCount() {}
 
 bool AppListTestViewDelegate::IsAssistantAllowedAndEnabled() const {

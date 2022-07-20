@@ -47,11 +47,17 @@ SearchControllerImpl::SearchControllerImpl(
       mixer_(std::make_unique<Mixer>(model_updater, this)),
       metrics_observer_(
           std::make_unique<SearchMetricsObserver>(profile, notifier)),
-      list_controller_(list_controller) {
+      list_controller_(list_controller),
+      notifier_(notifier) {
   DCHECK(!app_list_features::IsCategoricalSearchEnabled());
+  if (notifier_)
+    notifier_->AddObserver(this);
 }
 
-SearchControllerImpl::~SearchControllerImpl() {}
+SearchControllerImpl::~SearchControllerImpl() {
+  if (notifier_)
+    notifier_->RemoveObserver(this);
+}
 
 void SearchControllerImpl::InitializeRankers() {
   mixer_->InitializeRankers(profile_);
@@ -61,7 +67,7 @@ void SearchControllerImpl::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
-  for (Observer& observer : observer_list_) {
+  for (SearchController::Observer& observer : observer_list_) {
     observer.OnResultsCleared();
   }
 
@@ -177,21 +183,17 @@ ChromeSearchResult* SearchControllerImpl::FindSearchResult(
   return nullptr;
 }
 
-void SearchControllerImpl::OnSearchResultsImpressionMade(
-    const std::u16string& trimmed_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int launched_index) {
-  if (trimmed_query.empty()) {
-    if (mixer_) {
-      mixer_->search_result_ranker()->ZeroStateResultsDisplayed(results);
+void SearchControllerImpl::OnImpression(
+    ash::AppListNotifier::Location location,
+    const std::vector<ash::AppListNotifier::Result>& results,
+    const std::u16string& query) {
+  if (query.empty() && location == ash::kList && mixer_) {
+    ash::SearchResultIdWithPositionIndices results_with_indices;
+    for (size_t i = 0; i < results.size(); ++i) {
+      results_with_indices.emplace_back(results[i].id, i);
     }
-
-    // Extract result types for logging.
-    std::vector<RankingItemType> result_types;
-    for (const auto& result : results) {
-      result_types.push_back(
-          RankingItemTypeFromSearchResult(*FindSearchResult(result.id)));
-    }
+    mixer_->search_result_ranker()->ZeroStateResultsDisplayed(
+        results_with_indices);
   }
 }
 
@@ -259,11 +261,12 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
   mixer_->Train(launch_data);
 }
 
-void SearchControllerImpl::AddObserver(Observer* observer) {
+void SearchControllerImpl::AddObserver(SearchController::Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void SearchControllerImpl::RemoveObserver(Observer* observer) {
+void SearchControllerImpl::RemoveObserver(
+    SearchController::Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
@@ -275,7 +278,7 @@ void SearchControllerImpl::NotifyResultsAdded(
   std::vector<const ChromeSearchResult*> observer_results;
   for (auto* result : results)
     observer_results.push_back(const_cast<const ChromeSearchResult*>(result));
-  for (Observer& observer : observer_list_)
+  for (SearchController::Observer& observer : observer_list_)
     observer.OnResultsAdded(last_query_, observer_results);
 }
 

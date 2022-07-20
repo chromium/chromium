@@ -61,10 +61,6 @@ class TestAppListClient : public AppListClient {
   void OnQuickSettingsChanged(
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}
-  void NotifySearchResultsForLogging(
-      const std::u16string& trimmed_query,
-      const SearchResultIdWithPositionIndices& results,
-      int position_index) override {}
   AppListNotifier* GetNotifier() override;
   void LoadIcon(int profile_id, const std::string& app_id) override {}
   ash::AppListSortOrder GetPermanentSortingOrder() const override;

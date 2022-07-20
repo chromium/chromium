@@ -146,18 +146,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   virtual void OnSearchResultVisibilityChanged(const std::string& id,
                                                bool visibility) = 0;
 
-  // Called if a search result item got clicked, or a list of search result has
-  // been shown to the user after a certain amount of time. |raw_query| is the
-  // raw query that produced the results, |results| is a list of items that were
-  // being shown to the users and their corresponding position indices of them
-  // (see |SearchResultIdWithPositionIndex| for more details),
-  // |position_index| is the position index of the clicked item (if no item got
-  // clicked, |position_index| will be -1).
-  virtual void NotifySearchResultsForLogging(
-      const std::u16string& raw_query,
-      const SearchResultIdWithPositionIndices& results,
-      int position_index) = 0;
-
   // If the |prefs::kSuggestedContentInfoShownInLauncher| value is in the range
   // of allowed values, we will increment it.
   virtual void MaybeIncreaseSuggestedContentInfoShownCount() = 0;

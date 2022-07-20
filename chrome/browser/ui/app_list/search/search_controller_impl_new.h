@@ -75,10 +75,6 @@ class SearchControllerImplNew : public SearchController {
   void Train(LaunchData&& launch_data) override;
   void ViewClosing() override;
   int GetLastQueryLength() const override;
-  void OnSearchResultsImpressionMade(
-      const std::u16string& trimmed_query,
-      const ash::SearchResultIdWithPositionIndices& results,
-      int launched_index) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void set_results_changed_callback_for_test(

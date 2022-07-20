@@ -78,11 +78,6 @@ int TestSearchController::GetLastQueryLength() const {
   return 0;
 }
 
-void TestSearchController::OnSearchResultsImpressionMade(
-    const std::u16string& trimmed_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int launched_index) {}
-
 void TestSearchController::AddObserver(Observer* observer) {}
 
 void TestSearchController::RemoveObserver(Observer* observer) {}

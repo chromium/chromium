@@ -1522,17 +1522,6 @@ void AppListControllerImpl::OnSearchResultVisibilityChanged(
     client_->OnSearchResultVisibilityChanged(id, visibility);
 }
 
-void AppListControllerImpl::NotifySearchResultsForLogging(
-    const std::u16string& raw_query,
-    const SearchResultIdWithPositionIndices& results,
-    int position_index) {
-  if (client_) {
-    std::u16string query;
-    base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
-    client_->NotifySearchResultsForLogging(query, results, position_index);
-  }
-}
-
 void AppListControllerImpl::MaybeIncreaseSuggestedContentInfoShownCount() {
   if (ShouldShowSuggestedContentInfo()) {
     const int count = GetSuggestedContentInfoShownCount();

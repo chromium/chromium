@@ -361,20 +361,6 @@ ChromeSearchResult* SearchControllerImplNew::FindSearchResult(
   return nullptr;
 }
 
-void SearchControllerImplNew::OnSearchResultsImpressionMade(
-    const std::u16string& trimmed_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int launched_index) {
-  if (trimmed_query.empty()) {
-    // Extract result types for logging.
-    std::vector<RankingItemType> result_types;
-    for (const auto& result : results) {
-      result_types.push_back(
-          RankingItemTypeFromSearchResult(*FindSearchResult(result.id)));
-    }
-  }
-}
-
 ChromeSearchResult* SearchControllerImplNew::GetResultByTitleForTest(
     const std::string& title) {
   std::u16string target_title = base::ASCIIToUTF16(title);

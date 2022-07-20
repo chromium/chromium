@@ -14,7 +14,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
@@ -141,10 +140,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   int GetHeightForWidth(int w) const override;
   void OnThemeChanged() override;
 
-  // Logs the set of recommendations (impressions) that were shown to the user
-  // after a period of time.
-  void LogImpressions();
-
   // Returns search results specific to Assistant if any are available.
   std::vector<SearchResult*> GetAssistantResults();
 
@@ -192,8 +187,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   absl::optional<SearchResultListType> list_type_ =
       SearchResultListType::kUnified;
   views::Label* title_label_ = nullptr;  // Owned by view hierarchy.
-  // Used for logging impressions shown to users.
-  base::OneShotTimer impression_timer_;
 
   // The search result list view's location in the
   // productivity_launcher_search_view_'s list of 'search_result_list_view_'.

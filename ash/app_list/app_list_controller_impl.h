@@ -192,10 +192,6 @@ class ASH_EXPORT AppListControllerImpl
   AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
-  void NotifySearchResultsForLogging(
-      const std::u16string& raw_query,
-      const SearchResultIdWithPositionIndices& results,
-      int position_index) override;
   void MaybeIncreaseSuggestedContentInfoShownCount() override;
   bool IsAssistantAllowedAndEnabled() const override;
   bool ShouldShowSuggestedContentInfo() const override;
