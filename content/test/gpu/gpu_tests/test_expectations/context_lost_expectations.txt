@@ -177,7 +177,7 @@ crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2U
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
-crbug.com/1340081 [ linux release intel ] ContextLost_WebGLContextLostFromSelectElement [ RetryOnFailure ]
+crbug.com/1340081 [ linux release intel ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 crbug.com/1340081 [ linux release intel ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 crbug.com/1340081 [ linux release intel-0x5912 ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ RetryOnFailure ]
 
