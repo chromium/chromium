@@ -104,6 +104,9 @@ void StoragePartitionCodeCacheDataRemover::ClearCache(
 void StoragePartitionCodeCacheDataRemover::ClearJSCodeCache() {
   if (generated_code_cache_context_ &&
       generated_code_cache_context_->generated_js_code_cache()) {
+    generated_code_cache_context_->generated_js_code_cache()
+        ->ClearInMemoryCache();
+
     net::CompletionOnceCallback callback = base::BindOnce(
         &StoragePartitionCodeCacheDataRemover::ClearWASMCodeCache,
         base::Unretained(this));
@@ -122,6 +125,9 @@ void StoragePartitionCodeCacheDataRemover::ClearJSCodeCache() {
 void StoragePartitionCodeCacheDataRemover::ClearWASMCodeCache(int rv) {
   if (generated_code_cache_context_ &&
       generated_code_cache_context_->generated_wasm_code_cache()) {
+    generated_code_cache_context_->generated_wasm_code_cache()
+        ->ClearInMemoryCache();
+
     net::CompletionOnceCallback callback = base::BindOnce(
         &StoragePartitionCodeCacheDataRemover::ClearWebUIJSCodeCache,
         base::Unretained(this));
@@ -139,6 +145,9 @@ void StoragePartitionCodeCacheDataRemover::ClearWASMCodeCache(int rv) {
 void StoragePartitionCodeCacheDataRemover::ClearWebUIJSCodeCache(int rv) {
   if (generated_code_cache_context_ &&
       generated_code_cache_context_->generated_webui_js_code_cache()) {
+    generated_code_cache_context_->generated_webui_js_code_cache()
+        ->ClearInMemoryCache();
+
     net::CompletionOnceCallback callback = base::BindOnce(
         &StoragePartitionCodeCacheDataRemover::DoneClearCodeCache,
         base::Unretained(this));

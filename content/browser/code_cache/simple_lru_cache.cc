@@ -99,6 +99,12 @@ uint64_t SimpleLruCache::GetSize() const {
   return size_;
 }
 
+void SimpleLruCache::Clear() {
+  entries_.clear();
+  access_list_.clear();
+  size_ = 0;
+}
+
 bool SimpleLruCache::GetInternal(const std::string& key,
                                  base::Time* response_time,
                                  mojo_base::BigBuffer* data) {

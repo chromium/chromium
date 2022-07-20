@@ -234,6 +234,24 @@ TEST_P(SimpleLruCacheTest, Delete) {
   EXPECT_FALSE(cache.Has(kKey4));
 }
 
+TEST_P(SimpleLruCacheTest, Clear) {
+  const base::Time kResponseTime = base::Time::UnixEpoch();
+  const std::string kKey("key1");
+  const uint8_t kData[1] = {0x08};
+
+  SimpleLruCache cache(/*capacity=*/1024 * 1024);
+
+  cache.Put(kKey, kResponseTime, base::make_span(kData));
+
+  EXPECT_TRUE(cache.Has(kKey));
+  EXPECT_GT(cache.GetSize(), 0u);
+
+  cache.Clear();
+
+  EXPECT_FALSE(cache.Has(kKey));
+  EXPECT_EQ(cache.GetSize(), 0u);
+}
+
 INSTANTIATE_TEST_SUITE_P(SimpleLruCacheTest,
                          SimpleLruCacheTest,
                          testing::Bool());

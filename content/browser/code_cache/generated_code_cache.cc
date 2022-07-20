@@ -964,6 +964,10 @@ void GeneratedCodeCache::SetLastUsedTimeForTest(
   }
 }
 
+void GeneratedCodeCache::ClearInMemoryCache() {
+  lru_cache_.Clear();
+}
+
 void GeneratedCodeCache::OpenCompleteForSetLastUsedForTest(
     base::Time time,
     base::OnceClosure callback,

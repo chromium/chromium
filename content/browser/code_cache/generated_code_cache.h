@@ -132,6 +132,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
                               base::Time time,
                               base::OnceClosure callback);
 
+  // Clears the in-memory cache.
+  void ClearInMemoryCache();
+
   const base::FilePath& path() const { return path_; }
 
  private:

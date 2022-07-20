@@ -61,6 +61,9 @@ class CONTENT_EXPORT SimpleLruCache {
   // Returns the total size of the cache.
   uint64_t GetSize() const;
 
+  // Clears all the entries.
+  void Clear();
+
   static constexpr uint32_t kEmptyEntrySize = 1024;
 
  private:
