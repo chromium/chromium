@@ -59,6 +59,14 @@ extern const char kSettingMediaSizeHeightMicrons[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeWidthMicrons[];
 COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaLeftMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaBottomMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaRightMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaTopMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeVendorId[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeIsDefault[];

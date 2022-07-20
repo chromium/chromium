@@ -168,9 +168,13 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   if (!open_in_external_preview &&
       (printer_type == mojom::PrinterType::kPdf ||
        printer_type == mojom::PrinterType::kExtension)) {
-    SetDefaultPrintableAreaForVirtualPrinters();
+    if (settings_->page_setup_device_units().printable_area().IsEmpty())
+      SetDefaultPrintableAreaForVirtualPrinters();
     return mojom::ResultCode::kSuccess;
   }
+
+  // The `open_in_external_preview` case does not care about the printable area.
+  // Local printers set their printable area within UpdatePrinterSettings().
   DCHECK(open_in_external_preview ||
          printer_type == mojom::PrinterType::kLocal);
 

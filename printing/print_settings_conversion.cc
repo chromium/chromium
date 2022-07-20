@@ -24,6 +24,8 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace printing {
 
@@ -73,6 +75,43 @@ void SetRectToJobSettings(const std::string& json_path,
   dict.Set("width", rect.width());
   dict.Set("height", rect.height());
   job_settings.Set(json_path, std::move(dict));
+}
+
+void SetPrintableAreaIfValid(PrintSettings& settings,
+                             const gfx::Size& size_microns,
+                             const base::Value::Dict& media_size) {
+  absl::optional<int> left_microns =
+      media_size.FindInt(kSettingsImageableAreaLeftMicrons);
+  absl::optional<int> bottom_microns =
+      media_size.FindInt(kSettingsImageableAreaBottomMicrons);
+  absl::optional<int> right_microns =
+      media_size.FindInt(kSettingsImageableAreaRightMicrons);
+  absl::optional<int> top_microns =
+      media_size.FindInt(kSettingsImageableAreaTopMicrons);
+  if (!bottom_microns.has_value() || !left_microns.has_value() ||
+      !right_microns.has_value() || !top_microns.has_value()) {
+    return;
+  }
+
+  // Scale the page size and printable area to device units.
+  float x_scale =
+      static_cast<float>(settings.dpi_horizontal()) / kMicronsPerInch;
+  float y_scale = static_cast<float>(settings.dpi_vertical()) / kMicronsPerInch;
+  gfx::Size page_size = gfx::ScaleToRoundedSize(size_microns, x_scale, y_scale);
+  // Flip the y-axis since the imageable area origin is at the bottom-left,
+  // while the gfx::Rect origin is at the top-left.
+  gfx::Rect printable_area = gfx::ScaleToRoundedRect(
+      {left_microns.value(), size_microns.height() - top_microns.value(),
+       right_microns.value() - left_microns.value(),
+       top_microns.value() - bottom_microns.value()},
+      x_scale, y_scale);
+  // Sanity check that the printable area makes sense.
+  if (printable_area.IsEmpty() ||
+      !gfx::Rect(page_size).Contains(printable_area)) {
+    return;
+  }
+  settings.SetPrinterPrintableArea(page_size, printable_area,
+                                   /*landscape_needs_flip=*/true);
 }
 
 }  // namespace
@@ -184,6 +223,8 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     if (width_microns.has_value() && height_microns.has_value()) {
       requested_media.size_microns =
           gfx::Size(width_microns.value(), height_microns.value());
+      SetPrintableAreaIfValid(*settings, requested_media.size_microns,
+                              *media_size_value);
     }
 
     const std::string* vendor_id =

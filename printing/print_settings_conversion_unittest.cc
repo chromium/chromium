@@ -48,6 +48,33 @@ const char kPrinterSettings[] = R"({
   "pinValue": "0000"
 })";
 
+const char kPrinterSettingsWithImageableArea[] = R"({
+  "headerFooterEnabled": false,
+  "title": "Test Doc",
+  "url": "http://localhost/",
+  "shouldPrintBackgrounds": false,
+  "shouldPrintSelectionOnly": false,
+  "mediaSize": {
+    "height_microns": 297000,
+    "imageable_area_bottom_microns": 1000,
+    "imageable_area_left_microns": 0,
+    "imageable_area_right_microns": 180000,
+    "imageable_area_top_microns": 297000,
+    "width_microns": 210000
+  },
+  "collate": false,
+  "copies": 1,
+  "color": 2,
+  "duplex": 0,
+  "landscape": false,
+  "deviceName": "printer",
+  "scaleFactor": 100,
+  "rasterizePDF": false,
+  "pagesPerSheet": 1,
+  "dpiHorizontal": 300,
+  "dpiVertical": 300,
+})";
+
 }  // namespace
 
 TEST(PrintSettingsConversionTest, InvalidSettings) {
@@ -80,6 +107,59 @@ TEST(PrintSettingsConversionTest, Conversion) {
   EXPECT_TRUE(dict.Remove("dpiVertical"));
   settings = PrintSettingsFromJobSettings(dict);
   EXPECT_FALSE(settings);
+}
+
+TEST(PrintSettingsConversionTest, ConversionTestWithValidImageableArea) {
+  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
+  ASSERT_TRUE(settings);
+  EXPECT_EQ(settings->dpi_horizontal(), 300);
+  EXPECT_EQ(settings->dpi_vertical(), 300);
+  EXPECT_EQ(settings->page_setup_device_units().physical_size(),
+            gfx::Size(2480, 3508));
+  EXPECT_EQ(settings->page_setup_device_units().printable_area(),
+            gfx::Rect(0, 0, 2126, 3496));
+}
+
+TEST(PrintSettingsConversionTest, ConversionTestWithValidFlippedImageableArea) {
+  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
+  dict.Set("landscape", true);
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
+  ASSERT_TRUE(settings);
+  EXPECT_EQ(settings->page_setup_device_units().physical_size(),
+            gfx::Size(3508, 2480));
+  EXPECT_EQ(settings->page_setup_device_units().printable_area(),
+            gfx::Rect(0, 354, 3496, 2126));
+}
+
+TEST(PrintSettingsConversionTest, ConversionTestWithOutOfBoundsImageableArea) {
+  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
+  auto* media_size_dict = dict.FindDict("mediaSize");
+  ASSERT_TRUE(media_size_dict);
+  media_size_dict->Set("imageable_area_left_microns", -500);
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
+  ASSERT_TRUE(settings);
+  EXPECT_TRUE(settings->page_setup_device_units().physical_size().IsEmpty());
+  EXPECT_TRUE(settings->page_setup_device_units().printable_area().IsEmpty());
+}
+
+TEST(PrintSettingsConversionTest, ConversionTestWithMissingImageableAreaValue) {
+  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
+  ASSERT_TRUE(value.is_dict());
+  auto& dict = value.GetDict();
+  auto* media_size_dict = dict.FindDict("mediaSize");
+  ASSERT_TRUE(media_size_dict);
+  media_size_dict->Remove("imageable_area_left_microns");
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
+  ASSERT_TRUE(settings);
+  EXPECT_TRUE(settings->page_setup_device_units().physical_size().IsEmpty());
+  EXPECT_TRUE(settings->page_setup_device_units().printable_area().IsEmpty());
 }
 
 TEST(PrintSettingsConversionTest, MissingDeviceName) {
