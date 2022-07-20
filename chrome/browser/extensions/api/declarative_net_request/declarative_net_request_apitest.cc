@@ -156,22 +156,11 @@ INSTANTIATE_TEST_SUITE_P(DeclarativeNetRequestApiFencedFrameTest,
 class DeclarativeNetRequestApiPrerenderingTest
     : public DeclarativeNetRequestLazyApiTest {
  public:
-  DeclarativeNetRequestApiPrerenderingTest()
-      : prerender_helper_(base::BindRepeating(
-            &DeclarativeNetRequestApiPrerenderingTest::GetActiveWebContents,
-            base::Unretained(this))) {}
+  DeclarativeNetRequestApiPrerenderingTest() = default;
   ~DeclarativeNetRequestApiPrerenderingTest() override = default;
 
  private:
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-  void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
-    DeclarativeNetRequestApiTest::SetUp();
-  }
-
-  content::test::PrerenderTestHelper prerender_helper_;
+  content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

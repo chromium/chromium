@@ -511,17 +511,11 @@ IN_PROC_BROWSER_TEST_F(PersistentScriptingAPITest,
 
 class ScriptingAPIPrerenderingTest : public ScriptingAPITest {
  protected:
-  ScriptingAPIPrerenderingTest()
-      : prerender_helper_(
-            base::BindRepeating(&ScriptingAPIPrerenderingTest::GetWebContents,
-                                base::Unretained(this))) {}
+  ScriptingAPIPrerenderingTest() = default;
   ~ScriptingAPIPrerenderingTest() override = default;
 
  private:
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-  content::test::PrerenderTestHelper prerender_helper_;
+  content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, Basic) {
