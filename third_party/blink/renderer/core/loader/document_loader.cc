@@ -2396,7 +2396,8 @@ void DocumentLoader::CommitNavigation() {
   }
 
   bool should_clear_window_name =
-      previous_window && frame_->IsMainFrame() && !frame_->Loader().Opener() &&
+      previous_window && frame_->IsOutermostMainFrame() &&
+      !frame_->Loader().Opener() &&
       !frame_->DomWindow()->GetSecurityOrigin()->IsSameOriginWith(
           previous_window->GetSecurityOrigin());
   if (should_clear_window_name) {
@@ -2409,7 +2410,7 @@ void DocumentLoader::CommitNavigation() {
   }
 
   bool should_clear_cross_site_cross_browsing_context_group_window_name =
-      previous_window && frame_->IsMainFrame() &&
+      previous_window && frame_->IsOutermostMainFrame() &&
       is_cross_site_cross_browsing_context_group_;
   if (should_clear_cross_site_cross_browsing_context_group_window_name) {
     // TODO(shuuran): CrossSiteCrossBrowsingContextGroupSetNulledName will just

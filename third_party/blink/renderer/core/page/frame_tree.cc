@@ -68,7 +68,7 @@ const AtomicString& FrameTree::GetName() const {
 
   if (cross_site_cross_browsing_context_group_set_nulled_name_) {
     auto* frame = DynamicTo<LocalFrame>(this_frame_.Get());
-    if (frame && frame->IsMainFrame() && !name_.IsEmpty()) {
+    if (frame && frame->IsOutermostMainFrame() && !name_.IsEmpty()) {
       UseCounter::Count(
           frame->GetDocument(),
           WebFeature::
@@ -109,7 +109,7 @@ void FrameTree::SetName(const AtomicString& name,
   experimental_set_nulled_name_ = false;
 
   auto* frame = DynamicTo<LocalFrame>(this_frame_.Get());
-  if (frame && frame->IsMainFrame() && !name.IsEmpty()) {
+  if (frame && frame->IsOutermostMainFrame() && !name.IsEmpty()) {
     // TODO(shuuran): remove this once we have gathered the data
     cross_site_cross_browsing_context_group_set_nulled_name_ = false;
   }
