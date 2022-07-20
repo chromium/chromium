@@ -904,4 +904,24 @@ TEST_P(UnifiedMessageCenterViewTest, CollapseAndExpand_NoNotifications) {
   EXPECT_FALSE(message_center_view()->GetVisible());
 }
 
+TEST_P(UnifiedMessageCenterViewTest, ClearAllButtonHeight) {
+  std::string id0 = AddNotification(false /* pinned */);
+  std::string id1 = AddNotification(false /* pinned */);
+  CreateMessageCenterView();
+  EXPECT_TRUE(message_center_view()->GetVisible());
+  EXPECT_TRUE(GetNotificationBar()->GetVisible());
+  EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
+
+  // Get ClearAll Button height.
+  const int previous_button_height =
+      GetNotificationBarClearAllButton()->height();
+
+  // Remove a notification.
+  MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+
+  // ClearAll Button height should remain the same.
+  EXPECT_EQ(previous_button_height,
+            GetNotificationBarClearAllButton()->height());
+}
+
 }  // namespace ash
