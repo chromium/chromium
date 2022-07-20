@@ -143,6 +143,10 @@ bool UsingBuiltinCertVerifier() {
   if (base::FeatureList::IsEnabled(net::features::kCertVerifierBuiltinFeature))
     return true;
 #endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed))
+    return true;
+#endif
   return false;
 #endif
 }

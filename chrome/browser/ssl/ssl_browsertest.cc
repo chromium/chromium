@@ -1699,8 +1699,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SHA1IsDefaultDisabled) {
   // TODO(https://crbug.com/977767): Remove this when CertVerifyProcMac is
   // removed.
   if (base::mac::IsAtLeastOS10_15() &&
-      !base::FeatureList::IsEnabled(
-          net::features::kCertVerifierBuiltinFeature)) {
+      !ssl_test_util::UsingBuiltinCertVerifier()) {
     expected_error |= net::CERT_STATUS_INVALID;
   }
 #endif
