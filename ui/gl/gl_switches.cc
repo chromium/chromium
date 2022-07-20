@@ -268,4 +268,12 @@ bool IsDefaultANGLEVulkan() {
   return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
 }
 
+// Use waitable swap chain on Windows to reduce display latency.
+const base::Feature kDXGIWaitableSwapChain{"DXGIWaitableSwapChain",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If using waitable swap chain, specify the maximum number of queued frames.
+const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
+    &kDXGIWaitableSwapChain, "DXGIWaitableSwapChainMaxQueuedFrames", 2};
+
 }  // namespace features

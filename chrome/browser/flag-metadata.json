@@ -3062,6 +3062,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-waitable-swap-chain",
+    "owners": [ "alex.forrence@gmail.com", "sunnyps" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-web-authentication-cable-disco-creds",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 112

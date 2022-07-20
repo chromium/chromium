@@ -374,6 +374,22 @@ const FeatureEntry::Choice kUseAngleChoicesMac[] = {
      gl::kANGLEImplementationMetalName}};
 #endif
 
+#if BUILDFLAG(IS_WIN)
+const FeatureEntry::FeatureParam kDXGIWaitableSwapChain1Frame = {
+    "DXGIWaitableSwapChainMaxQueuedFrames", "1"};
+
+const FeatureEntry::FeatureParam kDXGIWaitableSwapChain2Frames = {
+    "DXGIWaitableSwapChainMaxQueuedFrames", "2"};
+
+const FeatureEntry::FeatureParam kDXGIWaitableSwapChain3Frames = {
+    "DXGIWaitableSwapChainMaxQueuedFrames", "3"};
+
+const FeatureEntry::FeatureVariation kDXGIWaitableSwapChainVariations[] = {
+    {"Max 1 Frame", &kDXGIWaitableSwapChain1Frame, 1, nullptr},
+    {"Max 2 Frames", &kDXGIWaitableSwapChain2Frames, 1, nullptr},
+    {"Max 3 Frames", &kDXGIWaitableSwapChain3Frames, 1, nullptr}};
+#endif
+
 #if BUILDFLAG(IS_LINUX)
 const FeatureEntry::Choice kOzonePlatformHintRuntimeChoices[] = {
     {flag_descriptions::kOzonePlatformHintChoiceDefault, "", ""},
@@ -3866,6 +3882,15 @@ const FeatureEntry kFeatureEntries[] = {
         flag_descriptions::kMediaFoundationClearDescription,
         kOsWin,
         FEATURE_VALUE_TYPE(media::kMediaFoundationClearPlayback),
+    },
+    {
+        "enable-waitable-swap-chain",
+        flag_descriptions::kUseWaitableSwapChainName,
+        flag_descriptions::kUseWaitableSwapChainDescription,
+        kOsWin,
+        FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDXGIWaitableSwapChain,
+                                       kDXGIWaitableSwapChainVariations,
+                                       "DXGIWaitableSwapChain"),
     },
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)

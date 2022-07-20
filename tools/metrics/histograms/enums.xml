@@ -55515,6 +55515,7 @@ from previous Chrome versions.
       label="EnableBackForwardCacheForScreenReader:enabled"/>
   <int value="-2043331707" label="PasswordScriptsFetching:disabled"/>
   <int value="-2043128632" label="enable-tab-switcher-in-document-mode"/>
+  <int value="-2043095449" label="DXGIWaitableSwapChain:enabled"/>
   <int value="-2042278511" label="SmartSuggestionForLargeDownloads:disabled"/>
   <int value="-2041281386" label="MultiPaste:disabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
@@ -61525,6 +61526,7 @@ from previous Chrome versions.
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>
   <int value="1799526742" label="PreemptiveLinkToTextGeneration:disabled"/>
   <int value="1800509458" label="DriveFsChromeNetworking:disabled"/>
+  <int value="1800603694" label="DXGIWaitableSwapChain:disabled"/>
   <int value="1801585504" label="ContextMenuShopWithGoogleLens:enabled"/>
   <int value="1802874714" label="QueryTilesEnableQueryEditing:disabled"/>
   <int value="1803465156" label="enable-zero-suggest-most-visited"/>

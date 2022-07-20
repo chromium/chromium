@@ -64,6 +64,17 @@ bool IsVerifyDrawOffsetEnabled() {
       features::kDirectCompositionVerifyDrawOffset);
 }
 
+bool IsWaitableSwapChainEnabled() {
+  // Waitable swap chains were first enabled in Win 8.1/DXGI 1.3
+  return (base::win::GetVersion() >= base::win::Version::WIN8_1) &&
+         base::FeatureList::IsEnabled(features::kDXGIWaitableSwapChain);
+}
+
+UINT GetMaxWaitableQueuedFrames() {
+  return static_cast<UINT>(
+      features::kDXGIWaitableSwapChainMaxQueuedFrames.Get());
+}
+
 }  // namespace
 
 DirectCompositionChildSurfaceWin::PendingFrame::PendingFrame(
@@ -430,6 +441,9 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
     desc.Flags = DirectCompositionSurfaceWin::AllowTearing()
                      ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
                      : 0;
+    desc.Flags |= IsWaitableSwapChainEnabled()
+                      ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT
+                      : 0;
     HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
         d3d11_device_.Get(), &desc, nullptr, &swap_chain_);
     first_swap_ = true;
@@ -458,6 +472,11 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
           gfx::ColorSpaceWin::GetDXGIColorSpace(color_space_));
       DCHECK(SUCCEEDED(hr))
           << "SetColorSpace1 failed with error " << std::hex << hr;
+      if (IsWaitableSwapChainEnabled()) {
+        hr = swap_chain->SetMaximumFrameLatency(GetMaxWaitableQueuedFrames());
+        DCHECK(SUCCEEDED(hr))
+            << "SetMaximumFrameLatency failed with error " << std::hex << hr;
+      }
     }
   }
 
@@ -568,6 +587,9 @@ bool DirectCompositionChildSurfaceWin::Resize(
     UINT flags = DirectCompositionSurfaceWin::AllowTearing()
                      ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
                      : 0;
+    flags |= IsWaitableSwapChainEnabled()
+                 ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT
+                 : 0;
     HRESULT hr = swap_chain_->ResizeBuffers(buffer_count, size.width(),
                                             size.height(), format, flags);
     UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.SwapChainResizeResult",

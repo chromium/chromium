@@ -2404,6 +2404,9 @@ extern const char kUseAngleD3D11[];
 extern const char kUseAngleD3D9[];
 extern const char kUseAngleD3D11on12[];
 
+extern const char kUseWaitableSwapChainName[];
+extern const char kUseWaitableSwapChainDescription[];
+
 extern const char kUseWinrtMidiApiName[];
 extern const char kUseWinrtMidiApiDescription[];
 
