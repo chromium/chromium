@@ -3536,7 +3536,9 @@ var parser = (function() {
   }();
   parser.lexer = lexer;
 
-  let page, point, objectToMatch;
+  let page;
+  let point;
+  let objectToMatch;
 
   let indent = '';
   const increaseIndent = () => indent = indent + '  ';

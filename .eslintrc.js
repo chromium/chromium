@@ -58,6 +58,12 @@ module.exports = {
     'quotes': ['error', 'single', {allowTemplateLiterals: true}],
     'semi': ['error', 'always'],
 
+    // https://google.github.io/styleguide/jsguide.html#features-one-variable-per-declaration
+    'one-var': ['error', {
+      let: 'never',
+      const: 'never',
+    }],
+
     // TODO(dpapad): Add more checks according to our styleguide.
   },
 

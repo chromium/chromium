@@ -130,7 +130,8 @@ Polymer({
   attached() {
     this.browserProxy_ = InternetDetailDialogBrowserProxyImpl.getInstance();
     const dialogArgs = this.browserProxy_.getDialogArguments();
-    let type, name;
+    let type;
+    let name;
     if (dialogArgs) {
       const args = JSON.parse(dialogArgs);
       this.guid = args.guid || '';

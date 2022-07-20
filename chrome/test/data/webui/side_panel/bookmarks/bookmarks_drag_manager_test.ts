@@ -101,7 +101,10 @@ suite('SidePanelBookmarkDragManagerTest', () => {
   });
 
   test('DragStartCallsAPI', () => {
-    let calledIds, calledIndex, calledX, calledY;
+    let calledIds;
+    let calledIndex;
+    let calledX;
+    let calledY;
     let calledTouch = false;
     chrome.bookmarkManagerPrivate.startDrag =
         (ids: string[], index: number, touch: boolean, x: number,
@@ -189,7 +192,8 @@ suite('SidePanelBookmarkDragManagerTest', () => {
   });
 
   test('DropsIntoFolder', () => {
-    let calledId, calledIndex;
+    let calledId;
+    let calledIndex;
     chrome.bookmarkManagerPrivate.startDrag = () => {};
     chrome.bookmarkManagerPrivate.drop = (id, index) => {
       calledId = id;
@@ -217,7 +221,8 @@ suite('SidePanelBookmarkDragManagerTest', () => {
   });
 
   test('DropsBookmarksToReorder', () => {
-    let calledId, calledIndex;
+    let calledId;
+    let calledIndex;
     chrome.bookmarkManagerPrivate.startDrag = () => {};
     chrome.bookmarkManagerPrivate.drop = (id, index) => {
       calledId = id;

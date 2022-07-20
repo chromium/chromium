@@ -143,7 +143,10 @@ export const RectUtil = {
       return RectUtil.ZERO_RECT;
     }
 
-    let above, below, toTheLeft, toTheRight;
+    let above;
+    let below;
+    let toTheLeft;
+    let toTheRight;
 
     if (outer.top < subtrahend.top) {
       above = {

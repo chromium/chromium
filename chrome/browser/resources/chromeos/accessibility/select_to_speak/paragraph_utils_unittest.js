@@ -603,7 +603,9 @@ AX_TEST_F(
       const thirdStatic = 'No child sentence.';
       const thirdSentence = thirdStatic + ' ';
 
-      let nodeGroup, startIndexInGroup, endIndexInGroup;
+      let nodeGroup;
+      let startIndexInGroup;
+      let endIndexInGroup;
       ({nodeGroup, startIndexInGroup, endIndexInGroup} =
            ParagraphUtils.buildSingleNodeGroupWithOffset(nodes));
       assertEquals(

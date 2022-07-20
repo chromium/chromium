@@ -495,7 +495,8 @@ export class NodeUtils {
    * @return {!NodeUtils.Position}
    */
   static getPositionFromNodeGroup(nodeGroup, charIndex, fallbackToEnd) {
-    let node, offset;
+    let node;
+    let offset;
     if (charIndex !== undefined) {
       ({node, offset} = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
            nodeGroup, charIndex));

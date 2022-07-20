@@ -638,7 +638,8 @@ AutomationPredicate = class {
     const dir = opts.dir || Dir.FORWARD;
 
     // Compute the row/col index defaulting to 0.
-    let rowIndex = 0, colIndex = 0;
+    let rowIndex = 0;
+    let colIndex = 0;
     let tableNode = start;
     while (tableNode) {
       if (AutomationPredicate.table(tableNode)) {

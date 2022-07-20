@@ -151,7 +151,8 @@ export class DisplayPanel extends HTMLElement {
     if (this.items_.length == 0) {
       return;
     }
-    let errors = 0, progressCount = 0;
+    let errors = 0;
+    let progressCount = 0;
     const connectedPanels = this.connectedPanelItems_();
     for (const panel of connectedPanels) {
       // Only sum progress for attached progress panels.

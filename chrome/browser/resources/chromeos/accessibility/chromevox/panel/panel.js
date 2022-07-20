@@ -641,7 +641,8 @@ export class Panel extends PanelInterface {
       Panel.brailleTableElement2_.deleteRow(0);
     }
 
-    let row1, row2;
+    let row1;
+    let row2;
     // Number of rows already written.
     rowCount = 0;
     // Number of cells already written in this row.

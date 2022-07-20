@@ -155,7 +155,8 @@ TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
 TEST_F(
     'ChromeVoxTtsBackgroundTest', 'DISABLED_EmptyStringCallsCallbacks',
     function() {
-      let startCalls = 0, endCalls = 0;
+      let startCalls = 0;
+      let endCalls = 0;
       assertCallsCallbacks = (text, speakCalls) => {
         tts.speak(text, QueueMode.QUEUE, {
           startCallback() {

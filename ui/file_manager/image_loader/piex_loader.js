@@ -512,10 +512,14 @@ class ImageBuffer {
     bitmap.setUint32(62, /* BlueMask */ 0, true);
     bitmap.setUint32(66, /* AlphaMask */ 0, true);
 
-    let rx = 0, ry = 0;
-    let gx = 0, gy = 0;
-    let bx = 0, by = 0;
-    let zz = 0, gg = 0;
+    let rx = 0;
+    let ry = 0;
+    let gx = 0;
+    let gy = 0;
+    let bx = 0;
+    let by = 0;
+    let zz = 0;
+    let gg = 0;
 
     if (thumbnail.colorSpace !== 'adobeRgb') {
       bitmap.setUint8(70, 's'.charCodeAt(0));

@@ -214,7 +214,8 @@ export class CursorRange {
    * Select the text contained within this range.
    */
   select() {
-    let start = this.start_, end = this.end_;
+    let start = this.start_;
+    let end = this.end_;
     if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
       start = this.end;
       end = this.start;

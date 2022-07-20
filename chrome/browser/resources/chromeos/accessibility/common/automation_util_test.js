@@ -103,7 +103,8 @@ AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'GetUniqueAncestors',
     async function() {
       const root = await this.runWithLoadedTree(this.basicDoc());
-      let leftmost = root, rightmost = root;
+      let leftmost = root;
+      let rightmost = root;
       while (leftmost.firstChild) {
         leftmost = leftmost.firstChild;
       }
@@ -142,7 +143,8 @@ AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'GetDirection',
     async function() {
       const root = await this.runWithLoadedTree(this.basicDoc());
-      let left = root, right = root;
+      let left = root;
+      let right = root;
 
       // Same node.
       assertEquals(Dir.FORWARD, AutomationUtil.getDirection(left, right));

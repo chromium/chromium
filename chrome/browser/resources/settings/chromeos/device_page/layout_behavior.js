@@ -323,7 +323,8 @@ export const LayoutBehavior = {
    * @private
    */
   calculateBounds_(id, width, height) {
-    let left, top;
+    let left;
+    let top;
     const layout = this.displayLayoutMap_.get(id);
     if (this.mirroring || !layout || !layout.parentId) {
       left = -width / 2;
@@ -394,7 +395,8 @@ export const LayoutBehavior = {
       if (x >= left && x < left + width && y >= top && y < top + height) {
         return otherId;
       }  // point is inside rect
-      let dx, dy;
+      let dx;
+      let dy;
       if (x < left) {
         dx = left - x;
       } else if (x > left + width) {
@@ -654,7 +656,9 @@ export const LayoutBehavior = {
 
     // Offset is calculated from top or left edge.
     const parentBounds = this.getCalculatedDisplayBounds(layout.parentId);
-    let offset, minOffset, maxOffset;
+    let offset;
+    let minOffset;
+    let maxOffset;
     if (position === chrome.system.display.LayoutPosition.LEFT ||
         position === chrome.system.display.LayoutPosition.RIGHT) {
       offset = bounds.top - parentBounds.top;

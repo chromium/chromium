@@ -554,7 +554,8 @@ export class Output {
     if (this.brailleBuffer_.length) {
       const buff = this.mergeBraille_(this.brailleBuffer_);
       const selSpan = buff.getSpanInstanceOf(OutputSelectionSpan);
-      let startIndex = -1, endIndex = -1;
+      let startIndex = -1;
+      let endIndex = -1;
       if (selSpan) {
         const valueStart = buff.getSpanStart(selSpan);
         const valueEnd = buff.getSpanEnd(selSpan);

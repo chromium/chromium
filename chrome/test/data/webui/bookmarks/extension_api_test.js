@@ -9,9 +9,20 @@ test('bookmarkManagerPrivate', async () => {
   const bookmarkManager = chrome.bookmarkManagerPrivate;
   const {pass, fail, runTests} = simulateChromeExtensionAPITest();
 
-  let fooNode, fooNode2, barNode, gooNode, count, emptyFolder, emptyFolder2;
-  let folder, nodeA, nodeB;
-  let childFolder, grandChildFolder, childNodeA, childNodeB;
+  let fooNode;
+  let fooNode2;
+  let barNode;
+  let gooNode;
+  let count;
+  let emptyFolder;
+  let emptyFolder2;
+  let folder;
+  let nodeA;
+  let nodeB;
+  let childFolder;
+  let grandChildFolder;
+  let childNodeA;
+  let childNodeB;
 
   function doCopy() {
     bookmarkManager.copy.apply(null, arguments);

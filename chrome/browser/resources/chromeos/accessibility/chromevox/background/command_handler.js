@@ -1136,7 +1136,8 @@ export class CommandHandler extends CommandHandlerInterface {
         }
 
         // Get word start and end indices.
-        let wordStarts, wordEnds;
+        let wordStarts;
+        let wordEnds;
         if (node.role === RoleType.INLINE_TEXT_BOX) {
           wordStarts = node.wordStarts;
           wordEnds = node.wordEnds;

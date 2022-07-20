@@ -644,7 +644,8 @@ AX_TEST_F(
       // Second paragraph has another two sentences.
       assertEquals(nodeGroupForParagraph2.text, 'Line 3. Line 4. ');
 
-      let nodes, offset;
+      let nodes;
+      let offset;
       // Navigating forward from the first sentence returns the second sentence.
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
            nodeGroupForParagraph1, 0 /* currentCharIndex */,
@@ -793,7 +794,9 @@ AX_TEST_F(
           nodeGroup.text,
           'Line 1. This sentence is chopped. Another chopped sentence. ');
 
-      let nodes, offset, result;
+      let nodes;
+      let offset;
+      let result;
       // Navigating forward from the first word returns the content starting
       // from the second sentence.
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(

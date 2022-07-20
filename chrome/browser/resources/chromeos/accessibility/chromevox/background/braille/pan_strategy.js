@@ -130,7 +130,8 @@ export class PanStrategy {
     const buf =
         this.panStrategyWrapped_ ? this.wrappedBuffer_ : this.fixedBuffer_;
 
-    let startIndex, endIndex;
+    let startIndex;
+    let endIndex;
     if (this.panStrategyWrapped_) {
       startIndex = this.wrappedCursor_.start;
       endIndex = this.wrappedCursor_.end;
@@ -353,7 +354,8 @@ export class PanStrategy {
     const contentLength =
         this.panStrategyWrapped_ ? this.wrappedLineCount : this.fixedLineCount;
     if (this.viewPort_.firstRow > 0) {
-      let newStart, newEnd;
+      let newStart;
+      let newEnd;
       if (this.viewPort_.firstRow < this.displaySize_.rows) {
         newStart = 0;
         newEnd = Math.min(this.displaySize_.rows, contentLength);

@@ -132,7 +132,8 @@ cr.define('cr.ui', function() {
       // TODO(arv): Handle scrolled documents when needed.
 
       const element = e.currentTarget;
-      let x, y;
+      let x;
+      let y;
       // When the user presses the context menu key (on the keyboard) we need
       // to detect this.
       if (this.keyIsDown_) {

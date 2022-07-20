@@ -324,7 +324,8 @@ export class Cursor {
 
         switch (movement) {
           case CursorMovement.BOUND: {
-            let wordStarts, wordEnds;
+            let wordStarts;
+            let wordEnds;
             if (newNode.role === RoleType.INLINE_TEXT_BOX) {
               wordStarts = newNode.wordStarts;
               wordEnds = newNode.wordEnds;
@@ -332,7 +333,8 @@ export class Cursor {
               wordStarts = newNode.nonInlineTextWordStarts;
               wordEnds = newNode.nonInlineTextWordEnds;
             }
-            let start, end;
+            let start;
+            let end;
             for (let i = 0; i < wordStarts.length; i++) {
               if (newIndex >= wordStarts[i] && newIndex < wordEnds[i]) {
                 start = wordStarts[i];
@@ -351,7 +353,8 @@ export class Cursor {
             }
           // fallthrough
           case CursorMovement.DIRECTIONAL: {
-            let wordStarts, wordEnds;
+            let wordStarts;
+            let wordEnds;
             let start;
             if (newNode.role === RoleType.INLINE_TEXT_BOX) {
               wordStarts = newNode.wordStarts;
@@ -520,7 +523,8 @@ export class Cursor {
           break;
         }
 
-        let targetLine, targetIndex = 0;
+        let targetLine;
+        let targetIndex = 0;
         for (let i = 0, line, cur = 0; line = lines[i]; i++) {
           const lineLength = line.name ? line.name.length : 1;
           cur += lineLength;

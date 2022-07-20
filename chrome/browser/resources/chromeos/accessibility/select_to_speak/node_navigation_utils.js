@@ -275,7 +275,8 @@ export class NodeNavigationUtils {
    */
   static getNodesForNextSentence(
       currentNodeGroup, currentCharIndex, direction, pred) {
-    let nodes = [], offset;
+    let nodes = [];
+    let offset;
     if (!currentNodeGroup) {
       return {nodes, offset};
     }

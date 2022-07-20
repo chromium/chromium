@@ -343,7 +343,8 @@ export class ChromeCartModuleElement extends I18nMixin
    */
   private onLeftScrollClick_() {
     const carts = this.$.cartCarousel.querySelectorAll('.cart-container');
-    let visibleRange = 0, firstVisibleIndex = 0;
+    let visibleRange = 0;
+    let firstVisibleIndex = 0;
     for (let i = carts.length - 1; i >= 0; i--) {
       if (this.getVisibilityForIndex_(i)) {
         visibleRange += 1;

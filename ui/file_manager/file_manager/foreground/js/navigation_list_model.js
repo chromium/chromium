@@ -616,7 +616,8 @@ export class NavigationListModel extends EventTarget {
       this.navigationItems_.push(shortcut);
     }
 
-    let myFilesEntry, myFilesModel;
+    let myFilesEntry;
+    let myFilesModel;
     if (!this.myFilesModel_) {
       // When MyFilesVolume is enabled we use the Downloads volume to be the
       // MyFiles volume.
