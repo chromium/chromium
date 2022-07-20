@@ -1,8 +1,7 @@
 #!/bin/sh
 
 # Go to the project root folder.
-cd "$(dirname $0)/"
-
+(cd "$(dirname $0)/" && \
 npm run build && \
 ./wpt/wpt run \
   --webdriver-binary ./runBiDiServer.sh \
@@ -12,4 +11,4 @@ npm run build && \
   --log-wptreport wptreport.json \
   --timeout-multiplier 8 \
   chromium \
-  $1
+  "$1")

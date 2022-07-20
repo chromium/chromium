@@ -5,7 +5,7 @@ the BiDi protocol can be used. Examples are based on
 [Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 .
 
-## Instalation
+## Installation
 
 The examples are written using Python, to align with e2e test. Python 3.6+ and
 some dependencies are required:
