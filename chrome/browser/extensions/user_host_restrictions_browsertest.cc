@@ -515,4 +515,32 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
           non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
 }
 
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       UserPermittedSitesAndChromeFavicon) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Note: MV2 extension because chrome://favicon is removed in MV3 (yay!).
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 2,
+           "permissions": ["<all_urls>"]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL favicon_url("chrome://favicon/http://example.com");
+  EXPECT_TRUE(extension->permissions_data()->HasHostPermission(favicon_url));
+
+  WithholdExtensionPermissions(*extension);
+  EXPECT_TRUE(extension->permissions_data()->HasHostPermission(favicon_url));
+
+  AddUserPermittedSite(GURL("https://allowed.example"));
+  EXPECT_TRUE(extension->permissions_data()->HasHostPermission(favicon_url));
+}
+
 }  // namespace extensions

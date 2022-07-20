@@ -254,16 +254,22 @@ void PermissionsManager::UpdatePermissionsWithUserSettings(
   std::unique_ptr<const PermissionSet> bounded_desired =
       GetBoundedExtensionDesiredPermissions(extension);
 
-  // 3) Finalize the allowed set. Since we don't allow withholding of API and
-  // manifest permissions, the allowed set always contains all (bounded)
-  // requested API and manifest permissions.
+  // 3) Add in any always-approved hosts that shouldn't be removed (such as
+  //    chrome://favicon).
+  allowed_permissions =
+      ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
+          *bounded_desired, *allowed_permissions);
+
+  // 4) Finalize the allowed set. Since we don't allow withholding of API and
+  //    manifest permissions, the allowed set always contains all (bounded)
+  //    requested API and manifest permissions.
   allowed_permissions = std::make_unique<const PermissionSet>(
       bounded_desired->apis().Clone(),
       bounded_desired->manifest_permissions().Clone(),
       allowed_permissions->explicit_hosts().Clone(),
       allowed_permissions->scriptable_hosts().Clone());
 
-  // 4) Calculate the new active and withheld permissions. The active
+  // 5) Calculate the new active and withheld permissions. The active
   //    permissions are the intersection of all permissions the extension is
   //    allowed to have with all permissions the extension elected to have.
   //    Said differently, we grant a permission if both the extension and the
