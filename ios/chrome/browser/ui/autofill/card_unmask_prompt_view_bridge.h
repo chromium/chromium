@@ -5,12 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
+@class CardUnmaskPromptViewController;
+@class UIViewController;
+
 namespace autofill {
+
+class CardUnmaskPromptController;
+
 // iOS implementation of the unmask prompt UI.
 class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
  public:
+  CardUnmaskPromptViewBridge(CardUnmaskPromptController* controller,
+                             UIViewController* base_view_controller);
   CardUnmaskPromptViewBridge(const CardUnmaskPromptViewBridge&) = delete;
   CardUnmaskPromptViewBridge& operator=(const CardUnmaskPromptViewBridge&) =
       delete;
@@ -23,6 +32,28 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   void DisableAndWaitForVerification() override;
   void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override;
+
+  CardUnmaskPromptController* GetController();
+
+  // Closes the view.
+  void PerformClose();
+
+ protected:
+  // Created on `Show` and destroyed when 'this' is destroyed.
+  CardUnmaskPromptViewController* view_controller_;
+
+ private:
+  // Deletes self. This should only be called by CardUnmaskPromptViewController
+  // after it finishes dismissing its own UI elements.
+  void DeleteSelf();
+
+  // The controller `this` queries for logic and state.
+  CardUnmaskPromptController* controller_;  // weak
+
+  // Weak reference to the view controller used to present UI.
+  __weak UIViewController* base_view_controller_;
+
+  base::WeakPtrFactory<CardUnmaskPromptViewBridge> weak_ptr_factory_;
 };
 
 }  // namespace autofill

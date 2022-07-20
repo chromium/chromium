@@ -87,6 +87,7 @@ source_set("bridges") {
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
