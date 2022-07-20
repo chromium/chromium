@@ -86,6 +86,16 @@ void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
 }
 
 void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
+  // If the request has failed but we have not yet rejected the promise,
+  // e.g. when the user has declined the permission or the API is disabled
+  // etc., we have already recorded a RequestTokenStatus. i.e.
+  // `request_token_status_recorded_` would be true. In this case, we
+  // shouldn't record another RequestTokenStatus.
+  if (request_token_status_recorded_) {
+    return;
+  }
+  request_token_status_recorded_ = true;
+
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_RequestIdToken(static_cast<int>(status));
     ukm_builder.Record(ukm::UkmRecorder::Get());

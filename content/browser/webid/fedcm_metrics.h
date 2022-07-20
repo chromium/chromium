@@ -101,6 +101,9 @@ class FedCmMetrics {
   // The SourceId to be used to log the UKM event Blink.FedCmIdp. Uses
   // |provider_| as the URL.
   ukm::SourceId provider_source_id_;
+
+  // Whether a RequestTokenStatus has been recorded.
+  bool request_token_status_recorded_{false};
 };
 
 // The following are UMA-only recordings, hence do not need to be in the

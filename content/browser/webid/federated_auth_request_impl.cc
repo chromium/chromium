@@ -237,17 +237,7 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // pending promise.
   if (auth_request_callback_) {
     DCHECK(!logout_callback_);
-    // If we have completed the request, e.g. when the token is returned or the
-    // API is aborted, `auth_request_callback_` would be null so we won't double
-    // count. If the request was failed but we have not yet rejected the
-    // promise, e.g. when the user has declined the permission or the API is
-    // disabled etc., we have already reported the errors to console. i.e.
-    // `errors_logged_to_console_` would be true so we won't double count
-    // either. We record `kUnhandledRequest` only when the user refreshed,
-    // closed or left the page while the UI is displayed.
-    if (!errors_logged_to_console_) {
-      fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kUnhandledRequest);
-    }
+    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kUnhandledRequest);
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_call_callback=*/true);
   }
@@ -353,18 +343,9 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_callback_)
     return;
 
-  // If we have completed the request, e.g. when the token is returned or the
-  // API is aborted, `auth_request_callback_` would be null so we won't double
-  // count. If the request was failed but we have not yet rejected the
-  // promise, e.g. when the user has declined the permission or the API is
-  // disabled etc., we have already reported the errors to console. i.e.
-  // `errors_logged_to_console_` would be true so we won't double count
-  // either.
-  if (!errors_logged_to_console_) {
-    // Dialog will be hidden by the destructor for request_dialog_controller_,
-    // triggered by CompleteRequest.
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kAborted);
-  }
+  // Dialog will be hidden by the destructor for request_dialog_controller_,
+  // triggered by CompleteRequest.
+  fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kAborted);
 
   CompleteRequest(FederatedAuthRequestResult::kErrorCanceled, "",
                   /*should_call_callback=*/true);
