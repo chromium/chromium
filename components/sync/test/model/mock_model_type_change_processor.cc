@@ -6,106 +6,14 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/test/model/forwarding_model_type_change_processor.h"
 
 namespace syncer {
-namespace {
 
 using testing::_;
 using testing::Invoke;
-
-class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
- public:
-  // |other| must not be nullptr and must outlive this object.
-  explicit ForwardingModelTypeChangeProcessor(ModelTypeChangeProcessor* other)
-      : other_(other) {}
-  ~ForwardingModelTypeChangeProcessor() override = default;
-
-  void Put(const std::string& client_tag,
-           std::unique_ptr<EntityData> entity_data,
-           MetadataChangeList* metadata_change_list) override {
-    other_->Put(client_tag, std::move(entity_data), metadata_change_list);
-  }
-
-  void Delete(const std::string& client_tag,
-              MetadataChangeList* metadata_change_list) override {
-    other_->Delete(client_tag, metadata_change_list);
-  }
-
-  void UpdateStorageKey(const EntityData& entity_data,
-                        const std::string& storage_key,
-                        MetadataChangeList* metadata_change_list) override {
-    other_->UpdateStorageKey(entity_data, storage_key, metadata_change_list);
-  }
-
-  void UntrackEntityForStorageKey(const std::string& storage_key) override {
-    other_->UntrackEntityForStorageKey(storage_key);
-  }
-
-  void UntrackEntityForClientTagHash(
-      const ClientTagHash& client_tag_hash) override {
-    other_->UntrackEntityForClientTagHash(client_tag_hash);
-  }
-
-  bool IsEntityUnsynced(const std::string& storage_key) override {
-    return other_->IsEntityUnsynced(storage_key);
-  }
-
-  base::Time GetEntityCreationTime(
-      const std::string& storage_key) const override {
-    return other_->GetEntityCreationTime(storage_key);
-  }
-
-  base::Time GetEntityModificationTime(
-      const std::string& storage_key) const override {
-    return other_->GetEntityModificationTime(storage_key);
-  }
-
-  void OnModelStarting(ModelTypeSyncBridge* bridge) override {
-    other_->OnModelStarting(bridge);
-  }
-
-  void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override {
-    other_->ModelReadyToSync(std::move(batch));
-  }
-
-  bool IsTrackingMetadata() const override {
-    return other_->IsTrackingMetadata();
-  }
-
-  std::string TrackedAccountId() const override {
-    return other_->TrackedAccountId();
-  }
-
-  std::string TrackedCacheGuid() const override {
-    return other_->TrackedCacheGuid();
-  }
-
-  void ReportError(const ModelError& error) override {
-    other_->ReportError(error);
-  }
-
-  absl::optional<ModelError> GetError() const override {
-    return other_->GetError();
-  }
-
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override {
-    return other_->GetControllerDelegate();
-  }
-
-  const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
-      const std::string& storage_key) const override {
-    return other_->GetPossiblyTrimmedRemoteSpecifics(storage_key);
-  }
-
- private:
-  raw_ptr<ModelTypeChangeProcessor> other_;
-};
-
-}  // namespace
 
 MockModelTypeChangeProcessor::MockModelTypeChangeProcessor() = default;
 

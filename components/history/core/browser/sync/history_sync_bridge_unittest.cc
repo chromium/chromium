@@ -4,6 +4,9 @@
 
 #include "components/history/core/browser/sync/history_sync_bridge.h"
 
+#include <map>
+#include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,9 +17,10 @@
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/forwarding_model_type_change_processor.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,6 +53,159 @@ syncer::EntityData SpecificsToEntityData(
   return data;
 }
 
+class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
+ public:
+  FakeModelTypeChangeProcessor() = default;
+  ~FakeModelTypeChangeProcessor() override = default;
+
+  void SetIsTrackingMetadata(bool is_tracking_metadata) {
+    is_tracking_metadata_ = is_tracking_metadata;
+  }
+
+  void MarkEntitySynced(const std::string& storage_key) {
+    DCHECK(unsynced_entities_.count(storage_key));
+    unsynced_entities_.erase(storage_key);
+  }
+
+  void AddRemoteEntity(const std::string& storage_key,
+                       syncer::EntityData entity_data) {
+    // Remote entities are tracked, but *not* unsynced.
+    tracked_entities_[storage_key] = entity_data.client_tag_hash;
+    entities_[storage_key] = std::move(entity_data);
+  }
+
+  const std::map<std::string, syncer::EntityData>& GetEntities() const {
+    return entities_;
+  }
+
+  void Put(const std::string& storage_key,
+           std::unique_ptr<syncer::EntityData> entity_data,
+           syncer::MetadataChangeList* metadata_change_list) override {
+    // Update the persisted metadata.
+    sync_pb::EntityMetadata metadata;
+    metadata.set_sequence_number(1);
+    metadata_change_list->UpdateMetadata(storage_key, metadata);
+    // Store the entity, and mark it as tracked and unsynced.
+    tracked_entities_[storage_key] = entity_data->client_tag_hash;
+    unsynced_entities_.insert(storage_key);
+    entities_[storage_key] = std::move(*entity_data);
+  }
+
+  void Delete(const std::string& storage_key,
+              syncer::MetadataChangeList* metadata_change_list) override {
+    NOTREACHED();
+  }
+
+  void UpdateStorageKey(
+      const syncer::EntityData& entity_data,
+      const std::string& storage_key,
+      syncer::MetadataChangeList* metadata_change_list) override {
+    NOTREACHED();
+  }
+
+  void UntrackEntityForStorageKey(const std::string& storage_key) override {
+    tracked_entities_.erase(storage_key);
+    // If the entity isn't tracked anymore, it also can't be unsynced.
+    unsynced_entities_.erase(storage_key);
+  }
+
+  void UntrackEntityForClientTagHash(
+      const syncer::ClientTagHash& client_tag_hash) override {
+    for (const auto& [storage_key, cth] : tracked_entities_) {
+      if (cth == client_tag_hash) {
+        UntrackEntityForStorageKey(storage_key);
+        // Note: This modified `tracked_entities_`, so it's not safe to continue
+        // the loop.
+        break;
+      }
+    }
+  }
+
+  std::vector<std::string> GetAllTrackedStorageKeys() const override {
+    std::vector<std::string> storage_keys;
+    for (const auto& [storage_key, cth] : tracked_entities_) {
+      storage_keys.push_back(storage_key);
+    }
+    return storage_keys;
+  }
+
+  bool IsEntityUnsynced(const std::string& storage_key) override {
+    return unsynced_entities_.count(storage_key) > 0;
+  }
+
+  base::Time GetEntityCreationTime(
+      const std::string& storage_key) const override {
+    NOTREACHED();
+    return base::Time();
+  }
+
+  base::Time GetEntityModificationTime(
+      const std::string& storage_key) const override {
+    NOTREACHED();
+    return base::Time();
+  }
+
+  void OnModelStarting(syncer::ModelTypeSyncBridge* bridge) override {}
+
+  void ModelReadyToSync(std::unique_ptr<syncer::MetadataBatch> batch) override {
+  }
+
+  bool IsTrackingMetadata() const override { return is_tracking_metadata_; }
+
+  std::string TrackedAccountId() const override {
+    if (!IsTrackingMetadata()) {
+      return "";
+    }
+    return "account_id";
+  }
+
+  std::string TrackedCacheGuid() const override {
+    if (!IsTrackingMetadata()) {
+      return "";
+    }
+    return "local_cache_guid";
+  }
+
+  void ReportError(const syncer::ModelError& error) override {
+    ADD_FAILURE() << "ReportError: " << error.ToString();
+  }
+
+  absl::optional<syncer::ModelError> GetError() const override {
+    return absl::nullopt;
+  }
+
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+      override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
+      const std::string& storage_key) const override {
+    NOTREACHED();
+    return sync_pb::EntitySpecifics::default_instance();
+  }
+
+  std::unique_ptr<ModelTypeChangeProcessor> CreateForwardingProcessor() {
+    return base::WrapUnique<ModelTypeChangeProcessor>(
+        new syncer::ForwardingModelTypeChangeProcessor(this));
+  }
+
+ private:
+  bool is_tracking_metadata_ = false;
+
+  // Map from storage key to EntityData for all entities passed to Put().
+  std::map<std::string, syncer::EntityData> entities_;
+
+  // Map from storage key to ClientTagHash for all entities currently tracked by
+  // the processor.
+  std::map<std::string, syncer::ClientTagHash> tracked_entities_;
+
+  // Set of storage keys of all unsynced entities (i.e. with local changes that
+  // are pending commit).
+  std::set<std::string> unsynced_entities_;
+};
+
 class HistorySyncBridgeTest : public testing::Test {
  public:
   HistorySyncBridgeTest() : metadata_db_(&db_, &meta_table_) {}
@@ -60,25 +217,10 @@ class HistorySyncBridgeTest : public testing::Test {
     metadata_db_.Init();
     meta_table_.Init(&db_, /*version=*/1, /*compatible_version=*/1);
 
-    // HistorySyncBridge never issues deletions (they're handled via
-    // DeleteDirectives instead).
-    EXPECT_CALL(*processor(), Delete).Times(0);
-
     // Creating the bridge triggers loading of the metadata, which is
     // synchronous.
-    EXPECT_CALL(*processor(), ModelReadyToSync);
     bridge_ = std::make_unique<HistorySyncBridge>(
-        &backend_, &metadata_db_, mock_processor_.CreateForwardingProcessor());
-
-    // Set up the processor to store metadata on Put().
-    ON_CALL(*processor(), Put)
-        .WillByDefault([](const std::string& storage_key,
-                          std::unique_ptr<syncer::EntityData> entity_data,
-                          syncer::MetadataChangeList* metadata_change_list) {
-          sync_pb::EntityMetadata metadata;
-          metadata.set_sequence_number(1);
-          metadata_change_list->UpdateMetadata(storage_key, metadata);
-        });
+        &backend_, &metadata_db_, fake_processor_.CreateForwardingProcessor());
   }
 
   void TearDown() override {
@@ -87,7 +229,7 @@ class HistorySyncBridgeTest : public testing::Test {
   }
 
   TestHistoryBackendForSync* backend() { return &backend_; }
-  syncer::MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  FakeModelTypeChangeProcessor* processor() { return &fake_processor_; }
   HistorySyncBridge* bridge() { return bridge_.get(); }
 
   std::pair<URLRow, VisitRow> AddVisitToBackendAndAdvanceClock(
@@ -124,6 +266,8 @@ class HistorySyncBridgeTest : public testing::Test {
     syncer::EntityChangeList entity_change_list;
     for (const sync_pb::HistorySpecifics& specifics : specifics_vector) {
       syncer::EntityData data = SpecificsToEntityData(specifics);
+      data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+          syncer::HISTORY, bridge_->GetClientTag(data));
       std::string storage_key = bridge_->GetStorageKey(data);
       entity_change_list.push_back(
           syncer::EntityChange::CreateAdd(storage_key, std::move(data)));
@@ -134,15 +278,59 @@ class HistorySyncBridgeTest : public testing::Test {
   void MergeSyncData(
       const std::vector<sync_pb::HistorySpecifics>& specifics_vector) {
     // Just before the merge, the processor starts tracking metadata.
-    ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-    ON_CALL(*processor(), TrackedCacheGuid())
-        .WillByDefault(Return("local_cache_guid"));
+    processor()->SetIsTrackingMetadata(true);
+
+    // Populate a MetadataChangeList with an update for each entity.
+    std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
+        bridge()->CreateMetadataChangeList();
+    for (const sync_pb::HistorySpecifics& specifics : specifics_vector) {
+      syncer::EntityData data = SpecificsToEntityData(specifics);
+      data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+          syncer::HISTORY, bridge_->GetClientTag(data));
+      std::string storage_key = bridge_->GetStorageKey(data);
+      // Note: Don't bother actually populating the EntityMetadata - the bridge
+      // doesn't inspect it anyway.
+      metadata_changes->UpdateMetadata(storage_key, sync_pb::EntityMetadata());
+      processor()->AddRemoteEntity(storage_key, std::move(data));
+    }
 
     absl::optional<syncer::ModelError> error =
-        bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
+        bridge()->MergeSyncData(std::move(metadata_changes),
                                 CreateAddEntityChangeList(specifics_vector));
     if (error) {
       ADD_FAILURE() << "MergeSyncData failed: " << error->ToString();
+    }
+  }
+
+  void ApplySyncChanges(
+      const std::vector<sync_pb::HistorySpecifics>& specifics_vector,
+      const std::vector<std::string> extra_updated_metadata_storage_keys = {}) {
+    // Populate a MetadataChangeList with the given updates/clears.
+    std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
+        bridge()->CreateMetadataChangeList();
+    // By default, add a metadata update for each new/changed entity.
+    for (const sync_pb::HistorySpecifics& specifics : specifics_vector) {
+      syncer::EntityData data = SpecificsToEntityData(specifics);
+      data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+          syncer::HISTORY, bridge_->GetClientTag(data));
+      std::string storage_key = bridge_->GetStorageKey(data);
+      // Note: Don't bother actually populating the EntityMetadata - the bridge
+      // doesn't inspect it anyway.
+      metadata_changes->UpdateMetadata(storage_key, sync_pb::EntityMetadata());
+      processor()->AddRemoteEntity(storage_key, std::move(data));
+    }
+    // Add additional metadata updates, if specified.
+    for (const std::string& storage_key : extra_updated_metadata_storage_keys) {
+      // Note: Don't bother actually populating the EntityMetadata - the bridge
+      // doesn't inspect it anyway.
+      metadata_changes->UpdateMetadata(storage_key, sync_pb::EntityMetadata());
+    }
+
+    absl::optional<syncer::ModelError> error =
+        bridge()->ApplySyncChanges(std::move(metadata_changes),
+                                   CreateAddEntityChangeList(specifics_vector));
+    if (error) {
+      ADD_FAILURE() << "ApplySyncChanges failed: " << error->ToString();
     }
   }
 
@@ -160,7 +348,7 @@ class HistorySyncBridgeTest : public testing::Test {
     bridge()->ApplyStopSyncChanges(std::move(delete_all_metadata));
 
     // After stopping sync, metadata is not tracked anymore.
-    ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(false));
+    processor()->SetIsTrackingMetadata(false);
   }
 
   syncer::EntityMetadataMap GetAllMetadata() {
@@ -181,7 +369,7 @@ class HistorySyncBridgeTest : public testing::Test {
 
   TestHistoryBackendForSync backend_;
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  FakeModelTypeChangeProcessor fake_processor_;
 
   std::unique_ptr<HistorySyncBridge> bridge_;
 };
@@ -190,12 +378,12 @@ TEST_F(HistorySyncBridgeTest, MergeDoesNotUploadData) {
   AddVisitToBackendAndAdvanceClock(GURL("https://www.url.com"),
                                    ui::PAGE_TRANSITION_LINK);
 
-  // The local data should *not* get uploaded to Sync.
-  EXPECT_CALL(*processor(), Put).Times(0);
-
   MergeSyncData({});
 
-  // The local data should still exist.
+  // The data should *not* have been uploaded to Sync.
+  EXPECT_TRUE(processor()->GetEntities().empty());
+
+  // The local data should still exist though.
   EXPECT_EQ(backend()->GetURLs().size(), 1u);
   EXPECT_EQ(backend()->GetVisits().size(), 1u);
 }
@@ -296,17 +484,16 @@ TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
 
   // Notify the bridge about the visit - it should be sent to the processor.
-  syncer::EntityData entity;
-  EXPECT_CALL(*processor(),
-              Put(HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
-                      visit_row.visit_time),
-                  _, _))
-      .WillOnce([&](const std::string& storage_key,
-                    std::unique_ptr<syncer::EntityData> put_entity,
-                    auto* metadata_cl) { entity = std::move(*put_entity); });
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row.transition, url_row,
       visit_row.visit_time);
+
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row.visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  const syncer::EntityData& entity = processor()->GetEntities().at(storage_key);
 
   // Spot check some fields of the resulting entity.
   ASSERT_TRUE(entity.specifics.has_history());
@@ -334,27 +521,29 @@ TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {
       GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
 
   // Notify the bridge about the visit - it should be sent to the processor.
-  const std::string storage_key =
-      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
-          visit_row.visit_time);
-  EXPECT_CALL(*processor(), Put(storage_key, _, _));
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row.transition, url_row,
       visit_row.visit_time);
 
-  // Update the visit by adding a duration. This should result in a Put().
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row.visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  EXPECT_EQ(processor()->GetEntities().count(storage_key), 1u);
+
+  // Update the visit by adding a duration.
   const base::TimeDelta visit_duration = base::Seconds(10);
   visit_row.visit_duration = visit_duration;
-  EXPECT_CALL(*processor(), Put(storage_key, _, _))
-      .WillOnce([&](const std::string& storage_key,
-                    std::unique_ptr<syncer::EntityData> entity,
-                    auto* metadata_cl) {
-        EXPECT_EQ(base::Microseconds(
-                      entity->specifics.history().visit_duration_micros()),
-                  visit_duration);
-      });
   ASSERT_TRUE(backend()->UpdateVisit(visit_row));
   bridge()->OnVisitUpdated(visit_row);
+
+  // The updated data should have been sent to the processor.
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  const syncer::EntityData& entity = processor()->GetEntities().at(storage_key);
+  EXPECT_EQ(
+      base::Microseconds(entity.specifics.history().visit_duration_micros()),
+      visit_duration);
 }
 
 TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
@@ -396,22 +585,20 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
   backend()->AddVisit(visit_row3);
 
-  // Notify the bridge about all of the visits - the whole chain should result
-  // in a single entity being Put().
-  syncer::EntityData entity;
-  EXPECT_CALL(
-      *processor(),
-      Put(HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time), _,
-          _))
-      .WillOnce([&](const std::string& storage_key,
-                    std::unique_ptr<syncer::EntityData> put_entity,
-                    auto* metadata_cl) { entity = std::move(*put_entity); });
+  // Notify the bridge about all of the visits.
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row1.transition, url_row1, visit_time);
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row2.transition, url_row2, visit_time);
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row3.transition, url_row3, visit_time);
+
+  // The whole chain should have resulting in a single entity being Put().
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  const syncer::EntityData& entity = processor()->GetEntities().at(storage_key);
 
   // Check that the resulting entity contains the redirect chain.
   ASSERT_TRUE(entity.specifics.has_history());
@@ -430,6 +617,97 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
       ui::PAGE_TRANSITION_LINK));
 }
 
+TEST_F(HistorySyncBridgeTest, UntracksEntitiesAfterCommit) {
+  // Start syncing (with no data yet).
+  MergeSyncData({});
+
+  // Visit some URLs.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url1.com"), ui::PAGE_TRANSITION_TYPED);
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url2.com"), ui::PAGE_TRANSITION_LINK);
+
+  // Notify the bridge about the visits - they should be sent to the processor.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, visit_row1.transition, url_row1,
+      visit_row1.visit_time);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, visit_row2.transition, url_row2,
+      visit_row2.visit_time);
+
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
+  // The metadata for these entities should now be tracked.
+  EXPECT_EQ(GetAllMetadata().size(), 2u);
+
+  // Simulate a successful commit, which results in an ApplySyncChanges() call
+  // to the bridge, updating the committed entities' metadata.
+  std::vector<std::string> updated_storage_keys;
+  for (const auto& [storage_key, metadata] : GetAllMetadata()) {
+    processor()->MarkEntitySynced(storage_key);
+    updated_storage_keys.push_back(storage_key);
+  }
+  ApplySyncChanges({}, updated_storage_keys);
+
+  // Now the metadata should not be tracked anymore.
+  EXPECT_EQ(GetAllMetadata().size(), 0u);
+  EXPECT_TRUE(GetAllMetadata().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, UntracksRemoteEntities) {
+  // Start Sync with an initial remote entity.
+  MergeSyncData(
+      {CreateSpecifics(base::Time::Now() - base::Seconds(10),
+                       "remote_cache_guid", GURL("https://remote.com"))});
+  ASSERT_EQ(backend()->GetURLs().size(), 1u);
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+  ASSERT_EQ(backend()->GetVisits()[0].visit_duration, base::TimeDelta());
+
+  // The entity should have been untracked immediately.
+  EXPECT_TRUE(GetAllMetadata().empty());
+
+  // Another remote entity comes in.
+  ApplySyncChanges(
+      {CreateSpecifics(base::Time::Now() - base::Seconds(5),
+                       "remote_cache_guid", GURL("https://remote2.com"))});
+
+  // This entity should also have been untracked immediately.
+  EXPECT_TRUE(GetAllMetadata().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotUntrackEntityPendingCommit) {
+  // Start syncing (with no data yet).
+  MergeSyncData({});
+
+  // Visit a URL locally.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://url1.com"), ui::PAGE_TRANSITION_TYPED);
+
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row1.visit_time);
+
+  // Notify the bridge about the visit.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, visit_row1.transition, url_row1,
+      visit_row1.visit_time);
+
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+
+  // The metadata for this entity should now be tracked.
+  ASSERT_EQ(GetAllMetadata().size(), 1u);
+
+  // Before the entity gets committed (and thus untracked), a remote entity
+  // comes in.
+  ApplySyncChanges({CreateSpecifics(base::Time::Now(), "remote_cache_guid",
+                                    GURL("https://remote.com"))});
+
+  // The remote entity should have been untracked immediately, but the local
+  // entity pending commit should still be tracked.
+  syncer::EntityMetadataMap metadata = GetAllMetadata();
+  EXPECT_EQ(metadata.size(), 1u);
+  EXPECT_EQ(metadata.count(storage_key), 1u);
+}
+
 TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
   // Start syncing (with no data yet).
   MergeSyncData({});
@@ -441,8 +719,6 @@ TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
       GURL("https://url2.com"), ui::PAGE_TRANSITION_LINK);
 
   // Notify the bridge about the visits - they should be sent to the processor.
-  syncer::EntityData entity;
-  EXPECT_CALL(*processor(), Put).Times(2);
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row1.transition, url_row1,
       visit_row1.visit_time);
@@ -451,16 +727,13 @@ TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
       visit_row2.visit_time);
   ASSERT_EQ(GetAllMetadata().size(), 2u);
 
-  // Now delete the first URL+visit and notify the bridge. This should not
-  // result in any Put() or Delete() calls to the processor (deletions are
-  // handled through the separate HISTORY_DELETE_DIRECTIVES data type), but it
-  // should untrack the deleted entity.
-  EXPECT_CALL(*processor(), Put).Times(0);
-  EXPECT_CALL(*processor(), Delete).Times(0);
-  EXPECT_CALL(*processor(),
-              UntrackEntityForStorageKey(
-                  HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
-                      visit_row1.visit_time)));
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
+
+  // Now, *before* the entities get committed successfully (and thus would get
+  // untracked anyway), delete the first URL+visit and notify the bridge. This
+  // should not result in any Put() or Delete() calls to the processor
+  // (deletions are handled through the separate HISTORY_DELETE_DIRECTIVES data
+  // type), but it should untrack the deleted entity.
   backend()->RemoveURLAndVisits(url_row1.id());
 
   bridge()->OnVisitDeleted(visit_row1);
@@ -482,7 +755,6 @@ TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
       GURL("https://url2.com"), ui::PAGE_TRANSITION_LINK);
 
   // Notify the bridge about the visits - they should be sent to the processor.
-  EXPECT_CALL(*processor(), Put).Times(2);
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, visit_row1.transition, url_row1,
       visit_row1.visit_time);
@@ -491,19 +763,20 @@ TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
       visit_row2.visit_time);
   ASSERT_EQ(GetAllMetadata().size(), 2u);
 
-  // Now simulate a delete-all-history operation. This should not result in any
-  // Put() or Delete() calls on the processor (deletions are handled through the
-  // separate HISTORY_DELETE_DIRECTIVES data type), but it should untrack all
-  // entities.
-  EXPECT_CALL(*processor(), Put).Times(0);
-  EXPECT_CALL(*processor(), Delete).Times(0);
-  EXPECT_CALL(*processor(), UntrackEntityForStorageKey).Times(2);
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
+
+  // Now, *before* the entities get committed successfully (and thus would get
+  // untracked anyway), simulate a delete-all-history operation. This should not
+  // result in any Put() or Delete() calls on the processor (deletions are
+  // handled through the separate HISTORY_DELETE_DIRECTIVES data type), but it
+  // should untrack all entities.
   backend()->Clear();
   // Deleting all history does *not* result in OnVisitDeleted() calls, and also
   // does not include the actual deleted URLs in OnURLsDeleted().
   bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/true,
                           /*expired=*/false, /*deleted_rows=*/{},
                           /*favicon_urls=*/{});
+
   EXPECT_TRUE(GetAllMetadata().empty());
 }
 

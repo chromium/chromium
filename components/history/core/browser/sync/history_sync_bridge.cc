@@ -365,6 +365,13 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
     RecordDatabaseError(
         SyncHistoryDatabaseError::kApplySyncChangesWriteMetadata);
   }
+
+  // ApplySyncChanges() gets called both for incoming remote changes (i.e. for
+  // GetUpdates) and after a successful Commit. In either case, there's now
+  // likely some local metadata that's not needed anymore, so go and clean that
+  // up.
+  UntrackAndClearMetadataForSyncedEntities();
+
   return metadata_error;
 }
 
@@ -667,6 +674,19 @@ bool HistorySyncBridge::UpdateEntityInBackend(
   // TODO(crbug.com/1318028): Handle updates to the URL-related fields
   // (notably the title - other fields probably can't change).
   return true;
+}
+
+void HistorySyncBridge::UntrackAndClearMetadataForSyncedEntities() {
+  for (const std::string& storage_key :
+       change_processor()->GetAllTrackedStorageKeys()) {
+    if (change_processor()->IsEntityUnsynced(storage_key)) {
+      // "Unsynced" entities (i.e. those with local changes that still need to
+      // be committed) have to be tracked, so *don't* clear their metadata.
+      continue;
+    }
+    sync_metadata_database_->ClearSyncMetadata(syncer::HISTORY, storage_key);
+    change_processor()->UntrackEntityForStorageKey(storage_key);
+  }
 }
 
 std::string HistorySyncBridge::GetLocalCacheGuid() const {

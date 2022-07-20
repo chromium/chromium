@@ -512,6 +512,18 @@ void ClientTagBasedModelTypeProcessor::UntrackEntityForClientTagHash(
   entity_tracker_->RemoveEntityForClientTagHash(client_tag_hash);
 }
 
+std::vector<std::string>
+ClientTagBasedModelTypeProcessor::GetAllTrackedStorageKeys() const {
+  std::vector<std::string> storage_keys;
+  if (entity_tracker_) {
+    for (const ProcessorEntity* entity :
+         entity_tracker_->GetAllEntitiesIncludingTombstones()) {
+      storage_keys.push_back(entity->storage_key());
+    }
+  }
+  return storage_keys;
+}
+
 bool ClientTagBasedModelTypeProcessor::IsEntityUnsynced(
     const std::string& storage_key) {
   if (!entity_tracker_) {

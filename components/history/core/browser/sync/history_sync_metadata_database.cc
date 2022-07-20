@@ -125,8 +125,6 @@ uint64_t HistorySyncMetadataDatabase::StorageKeyToMicrosSinceWindowsEpoch(
   DCHECK_EQ(storage_key.size(), sizeof(microseconds_since_windows_epoch));
   base::ReadBigEndian(reinterpret_cast<const uint8_t*>(storage_key.data()),
                       &microseconds_since_windows_epoch);
-  // Make sure microseconds_since_windows_epoch is set.
-  DCHECK_NE(microseconds_since_windows_epoch, 0u);
   return microseconds_since_windows_epoch;
 }
 

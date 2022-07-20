@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -66,6 +67,9 @@ class ModelTypeChangeProcessor {
   // is unknown.
   virtual void UntrackEntityForClientTagHash(
       const ClientTagHash& client_tag_hash) = 0;
+
+  // Returns the storage keys for all tracked entities (including tombstones).
+  virtual std::vector<std::string> GetAllTrackedStorageKeys() const = 0;
 
   // Returns true if a tracked entity has local changes. A commit may or may not
   // be in progress at this time.

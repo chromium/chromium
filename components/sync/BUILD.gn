@@ -94,6 +94,8 @@ static_library("test_support_model") {
     "test/model/fake_model_type_sync_bridge.h",
     "test/model/fake_sync_change_processor.cc",
     "test/model/fake_sync_change_processor.h",
+    "test/model/forwarding_model_type_change_processor.cc",
+    "test/model/forwarding_model_type_change_processor.h",
     "test/model/mock_model_type_change_processor.cc",
     "test/model/mock_model_type_change_processor.h",
     "test/model/model_type_store_test_util.cc",

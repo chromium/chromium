@@ -92,6 +92,11 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   bool UpdateEntityInBackend(VisitIDRemapper* id_remapper,
                              const sync_pb::HistorySpecifics& specifics);
 
+  // Untracks all entities from the processor, and clears their (persisted)
+  // metadata, except for entities that are "unsynced", i.e. that are waiting to
+  // be committed.
+  void UntrackAndClearMetadataForSyncedEntities();
+
   // Returns the cache GUID of the Sync client on this device. Must only be
   // called after `change_processor()->IsTrackingMetadata()` returns true
   // (because before that, the cache GUID isn't known).

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -50,6 +51,10 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               UntrackEntityForClientTagHash,
               (const ClientTagHash& client_tag_hash),
               (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetAllTrackedStorageKeys,
+              (),
+              (const override));
   MOCK_METHOD(bool,
               IsEntityUnsynced,
               (const std::string& storage_key),
