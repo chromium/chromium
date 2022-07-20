@@ -196,8 +196,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
   std::string account_id_;
-  // Used by revocation.
-  std::string hint_;
   base::TimeTicks start_time_;
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;
