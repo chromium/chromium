@@ -97,7 +97,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
 
     if (resolve_type_ == ResolveType::kFulfill) {
       if (react_type_ == ReactType::kTransitionWhile)
-        navigate_event_->RestoreScrollAfterTransitionIfNeeded();
+        navigate_event_->PotentiallyProcessScrollBehavior();
       navigation_api->ResolvePromisesAndFireNavigateSuccessEvent(navigation_);
     } else {
       navigation_api->RejectPromisesAndFireNavigateErrorEvent(navigation_,

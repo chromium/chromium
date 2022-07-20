@@ -40858,6 +40858,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4301" label="ClientHintsMetaEquivDelegateCH"/>
   <int value="4302" label="ExpectCTHeader"/>
   <int value="4303" label="NavigateEventTransitionWhile"/>
+  <int value="4304" label="NavigateEventRestoreScroll"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

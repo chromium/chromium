@@ -4915,6 +4915,7 @@ interface NavigateEvent : Event
     method constructor
     method intercept
     method restoreScroll
+    method scroll
     method transitionWhile
 interface Navigation : EventTarget
     attribute @@toStringTag

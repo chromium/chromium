@@ -25,7 +25,7 @@ promise_test(async t => {
 
   let back_promises = navigation.back();
   navigation.onnavigate = t.step_func(e => {
-    e.intercept({ scrollRestoration: "after-transition",
+    e.intercept({ scroll: "after-transition",
                   handler: async () => {
                     // The ordering here should be:
                     //  * intercept() is called
@@ -43,6 +43,6 @@ promise_test(async t => {
   await back_promises.finished;
   assert_equals(window.scrollY, 0);
   assert_true(navigatesuccess_called);
-}, "scrollRestoration: after-transition should scroll when back completes, just before navigatesuccess");
+}, "scroll: after-transition should scroll when back completes, just before navigatesuccess");
 </script>
 </body>

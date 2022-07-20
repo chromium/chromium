@@ -12,9 +12,16 @@ promise_test(async t => {
   assert_equals(window.scrollY, 0);
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
-  navigation.onnavigate = e => e.intercept({ scrollRestoration: "manual" });
+
+  let navigate_event;
+  navigation.onnavigate = e => {
+    navigate_event = e;
+    e.intercept({ scroll: "manual" });
+  };
   await navigation.back().finished;
   assert_not_equals(window.scrollY, 0);
-}, "scrollRestoration: manual should prevent auto scroll on back.");
+  assert_throws_dom("InvalidStateError", () => navigate_event.scroll());
+  assert_not_equals(window.scrollY, 0);
+}, "scroll: scroll() should throw after a navigation finished promise fulfills");
 </script>
 </body>

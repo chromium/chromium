@@ -5,6 +5,7 @@
 // https://wicg.github.io/navigation-api/
 callback NavigationInterceptHandler = Promise<void>();
 
-dictionary NavigationInterceptOptions : NavigationTransitionWhileOptions {
+dictionary NavigationInterceptOptions : NavigationInterceptOrTransitionWhileOptions {
   NavigationInterceptHandler handler;
+  NavigationScrollBehavior scroll;
 };

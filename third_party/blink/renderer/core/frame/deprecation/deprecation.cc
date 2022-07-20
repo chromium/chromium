@@ -244,6 +244,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kNavigateEventTransitionWhile:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kNavigateEventTransitionWhile);
+    case WebFeature::kNavigateEventRestoreScroll:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kNavigateEventRestoreScroll);
     default:
       return DeprecationInfo::NotDeprecated(feature);
   }

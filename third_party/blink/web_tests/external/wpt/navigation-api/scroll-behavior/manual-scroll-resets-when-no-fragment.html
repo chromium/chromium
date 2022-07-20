@@ -9,16 +9,25 @@ promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
-  assert_equals(window.scrollY, 0);
+  let start_url = location.href;
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
+
+  let intercept_resolve;
+  let navigate_event;
   navigation.onnavigate = e => {
-    e.intercept({ scrollRestoration: "manual" });
-    e.restoreScroll();
-    assert_equals(window.scrollY, 0);
-  }
-  await navigation.back().finished;
+    navigate_event = e;
+    e.intercept({ handler: () => new Promise(r => intercept_resolve = r),
+                  scroll: "manual" });
+  };
+  let promises = navigation.navigate(start_url);
+  await promises.committed;
+  assert_not_equals(window.scrollY, 0);
+  navigate_event.scroll();
   assert_equals(window.scrollY, 0);
-}, "scrollRestoration: restoreScroll() should work inside a navigate event handler");
+  intercept_resolve();
+  await promises.finished;
+  assert_equals(window.scrollY, 0);
+}, "scroll: scroll() should reset scroll position when the destination url contains no fragment");
 </script>
 </body>

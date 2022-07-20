@@ -10,23 +10,15 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
   assert_equals(window.scrollY, 0);
-
-  history.scrollRestoration = "manual";
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
-
-  let intercept_resolve;
   navigation.onnavigate = e => {
-    e.intercept({ handler: () => new Promise(r => intercept_resolve = r),
-                  scrollRestoration: "after-transition" });
-  };
-
-  let back_promises = navigation.back();
-  await back_promises.committed;
-  history.scrollRestoration = "auto";
-  intercept_resolve();
-  await back_promises.finished;
+    e.intercept({ scroll: "manual" });
+    e.scroll();
+    assert_equals(window.scrollY, 0);
+  }
+  await navigation.back().finished;
   assert_equals(window.scrollY, 0);
-}, "scrollRestoration: after-transition should ignore history.scrollRestoration even if it changes in the middle of the navigation");
+}, "scroll: scroll() should work inside a navigate event handler");
 </script>
 </body>

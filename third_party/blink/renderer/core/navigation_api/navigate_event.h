@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_scroll_restoration.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_scroll_behavior.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -26,6 +26,7 @@ class AbortSignal;
 class NavigationDestination;
 class NavigateEventInit;
 class NavigationInterceptOptions;
+class NavigationInterceptOrTransitionWhileOptions;
 class NavigationTransitionWhileOptions;
 class ExceptionState;
 class FormData;
@@ -65,8 +66,9 @@ class NavigateEvent final : public Event,
                        ExceptionState&);
   void intercept(NavigationInterceptOptions*, ExceptionState&);
 
+  void scroll(ExceptionState&);
   void restoreScroll(ExceptionState&);
-  void RestoreScrollAfterTransitionIfNeeded();
+  void PotentiallyProcessScrollBehavior();
 
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
@@ -86,11 +88,11 @@ class NavigateEvent final : public Event,
   void Trace(Visitor*) const final;
 
  private:
-  bool PerformSharedInteceptChecksAndSetup(NavigationTransitionWhileOptions*,
-                                           const String& function_name,
-                                           ExceptionState&);
-  void RestoreScrollInternal();
-  bool InManualScrollRestorationMode();
+  bool PerformSharedInteceptChecksAndSetup(
+      NavigationInterceptOrTransitionWhileOptions*,
+      const String& function_name,
+      ExceptionState&);
+  void DefinitelyProcessScrollBehavior();
 
   String navigation_type_;
   Member<NavigationDestination> destination_;
@@ -102,8 +104,7 @@ class NavigateEvent final : public Event,
   String download_request_;
   ScriptValue info_;
   absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
-  absl::optional<V8NavigationScrollRestoration> scroll_restoration_behavior_ =
-      absl::nullopt;
+  absl::optional<V8NavigationScrollBehavior> scroll_behavior_ = absl::nullopt;
   absl::optional<HistoryItem::ViewState> history_item_view_state_;
 
   KURL url_;
@@ -112,8 +113,8 @@ class NavigateEvent final : public Event,
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
 
-  enum class ManualRestoreState { kNotRestored, kRestored, kDone };
-  ManualRestoreState restore_state_ = ManualRestoreState::kNotRestored;
+  bool did_process_scroll_behavior_ = false;
+  bool did_finish_ = false;
   bool did_change_focus_during_transition_while_ = false;
 };
 

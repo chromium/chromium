@@ -23,4 +23,5 @@
   [RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional NavigationTransitionWhileOptions options = {});
   [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
   [RaisesException] void restoreScroll();
+  [RaisesException] void scroll();
 };

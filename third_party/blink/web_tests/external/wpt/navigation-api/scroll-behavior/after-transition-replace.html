@@ -10,11 +10,20 @@ promise_test(async t => {
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
   assert_equals(window.scrollY, 0);
-  await navigation.navigate("#frag").finished;
-  assert_not_equals(window.scrollY, 0);
-  navigation.onnavigate = e => e.intercept({ scrollRestoration: "after-transition" });
-  await navigation.back().finished;
+
+  let intercept_resolve;
+  let navigate_event;
+  navigation.onnavigate = e => {
+    navigate_event = e;
+    e.intercept({ handler: () => new Promise(r => intercept_resolve = r),
+                  scroll: "after-transition" });
+  };
+  let promises = navigation.navigate("#frag", { history: "replace" });
+  await promises.committed;
   assert_equals(window.scrollY, 0);
-}, "scrollRestoration: after-transition should scroll when back completes");
+  intercept_resolve();
+  await promises.finished;
+  assert_not_equals(window.scrollY, 0);
+}, "scroll: after-transition should work on a replace navigation");
 </script>
 </body>

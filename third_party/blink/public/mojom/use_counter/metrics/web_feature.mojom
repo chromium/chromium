@@ -3622,6 +3622,7 @@ enum WebFeature {
   kClientHintsMetaEquivDelegateCH = 4301,
   kExpectCTHeader = 4302,
   kNavigateEventTransitionWhile = 4303,
+  kNavigateEventRestoreScroll = 4304,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

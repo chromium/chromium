@@ -9,7 +9,6 @@ promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
-  assert_equals(window.scrollY, 0);
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
 
@@ -18,16 +17,16 @@ promise_test(async t => {
   navigation.onnavigate = e => {
     navigate_event = e;
     e.intercept({ handler: () => new Promise(r => intercept_resolve = r),
-                  scrollRestoration: "manual" });
+                  scroll: "manual" });
   };
-  let back_promises = navigation.back();
-  await back_promises.committed;
+  let promises = navigation.navigate("#does-not-exist");
+  await promises.committed;
   assert_not_equals(window.scrollY, 0);
-  navigate_event.restoreScroll();
-  assert_equals(window.scrollY, 0);
+  navigate_event.scroll();
+  assert_not_equals(window.scrollY, 0);
   intercept_resolve();
-  await back_promises.finished;
-  assert_equals(window.scrollY, 0);
-}, "scrollRestoration: restoreScroll() should work after a navigate event dispatch");
+  await promises.finished;
+  assert_not_equals(window.scrollY, 0);
+}, "scroll: scroll() should do nothing when the fragment does not exist");
 </script>
 </body>

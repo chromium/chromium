@@ -44,7 +44,7 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
 }
 
 bool NavigateEvent::PerformSharedInteceptChecksAndSetup(
-    NavigationTransitionWhileOptions* options,
+    NavigationInterceptOrTransitionWhileOptions* options,
     const String& function_name,
     ExceptionState& exception_state) {
   if (!DomWindow()) {
@@ -96,28 +96,13 @@ bool NavigateEvent::PerformSharedInteceptChecksAndSetup(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
-              "The \"" + options->focusReset().AsString() +
-                  "\" value for transitionWhile()'s focusReset option will "
-                  "override the previously-passed value of \"" +
+              "The \"" + options->focusReset().AsString() + "\" value for " +
+                  function_name +
+                  "()'s focusReset option "
+                  "will override the previously-passed value of \"" +
                   focus_reset_behavior_->AsString() + "\"."));
     }
     focus_reset_behavior_ = options->focusReset();
-  }
-
-  if (options->hasScrollRestoration() && navigation_type_ == "traverse") {
-    if (scroll_restoration_behavior_ &&
-        scroll_restoration_behavior_->AsEnum() !=
-            options->scrollRestoration().AsEnum()) {
-      GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "The \"" + options->scrollRestoration().AsString() +
-                  "\" value for transitionWhile()'s scrollRestoration option "
-                  "will override the previously-passed value of \"" +
-                  scroll_restoration_behavior_->AsString() + "\"."));
-    }
-    scroll_restoration_behavior_ = options->scrollRestoration();
   }
   return true;
 }
@@ -132,6 +117,20 @@ void NavigateEvent::transitionWhile(ScriptPromise newNavigationAction,
 
   if (PerformSharedInteceptChecksAndSetup(options, "transitionWhile",
                                           exception_state)) {
+    if (options->hasScrollRestoration()) {
+      if (scroll_behavior_ &&
+          scroll_behavior_->AsEnum() != options->scrollRestoration().AsEnum()) {
+        GetExecutionContext()->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "The \"" + options->scrollRestoration().AsString() +
+                    "\" value for transitionWhile()'s scrollRestoration option "
+                    "will override the previously-passed value of \"" +
+                    scroll_behavior_->AsString() + "\"."));
+      }
+      scroll_behavior_ = options->scrollRestoration();
+    }
     has_navigation_actions_ = true;
     navigation_action_promises_list_.push_back(newNavigationAction);
   }
@@ -141,6 +140,20 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
                               ExceptionState& exception_state) {
   if (PerformSharedInteceptChecksAndSetup(options, "intercept",
                                           exception_state)) {
+    if (options->hasScroll()) {
+      if (scroll_behavior_ &&
+          scroll_behavior_->AsEnum() != options->scroll().AsEnum()) {
+        GetExecutionContext()->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "The \"" + options->scroll().AsString() + "\" value for " +
+                    "intercept()'s scroll option "
+                    "will override the previously-passed value of \"" +
+                    scroll_behavior_->AsString() + "\"."));
+      }
+      scroll_behavior_ = options->scroll();
+    }
     has_navigation_actions_ = true;
     if (options->hasHandler())
       navigation_action_handlers_list_.push_back(options->handler());
@@ -196,43 +209,63 @@ bool NavigateEvent::ShouldSendAxEvents() const {
 }
 
 void NavigateEvent::restoreScroll(ExceptionState& exception_state) {
+  if (DomWindow()) {
+    Deprecation::CountDeprecation(DomWindow(),
+                                  WebFeature::kNavigateEventRestoreScroll);
+  }
+
   if (navigation_type_ != "traverse") {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "restoreScroll() may only be used for \"traverse\" navigations");
     return;
   }
-  if (!InManualScrollRestorationMode()) {
+  if (!scroll_behavior_ ||
+      scroll_behavior_->AsEnum() != V8NavigationScrollBehavior::Enum::kManual) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "restoreScroll() may only be used when in manual scroll restoration "
         "mode");
     return;
   }
-
-  switch (restore_state_) {
-    case ManualRestoreState::kNotRestored:
-      RestoreScrollInternal();
-      restore_state_ = ManualRestoreState::kRestored;
-      return;
-    case ManualRestoreState::kRestored:
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "restoreScroll() already called");
-      return;
-    case ManualRestoreState::kDone:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "restoreScroll() may not be called after the transition completes");
-      return;
-  }
-  NOTREACHED();
+  scroll(exception_state);
 }
 
-void NavigateEvent::RestoreScrollAfterTransitionIfNeeded() {
-  if (InManualScrollRestorationMode())
-    restore_state_ = ManualRestoreState::kDone;
-  else if (navigation_type_ == "traverse")
-    RestoreScrollInternal();
+void NavigateEvent::scroll(ExceptionState& exception_state) {
+  if (did_finish_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "scroll() may not be called after transition completes");
+    return;
+  }
+  if (did_process_scroll_behavior_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "scroll() already called");
+    return;
+  }
+  if (!DomWindow()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "scroll() may not be called in a detached window.");
+  }
+  if (!has_navigation_actions_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "intercept() must be called before scroll()");
+  }
+  DefinitelyProcessScrollBehavior();
+}
+
+void NavigateEvent::PotentiallyProcessScrollBehavior() {
+  DCHECK(!did_finish_);
+  did_finish_ = true;
+  if (!has_navigation_actions_ || did_process_scroll_behavior_)
+    return;
+  if (scroll_behavior_ &&
+      scroll_behavior_->AsEnum() == V8NavigationScrollBehavior::Enum::kManual) {
+    return;
+  }
+  DefinitelyProcessScrollBehavior();
 }
 
 void NavigateEvent::SaveStateFromDestinationItem(HistoryItem* item) {
@@ -240,20 +273,29 @@ void NavigateEvent::SaveStateFromDestinationItem(HistoryItem* item) {
     history_item_view_state_ = item->GetViewState();
 }
 
-void NavigateEvent::RestoreScrollInternal() {
-  // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
-  // because we are certain that we want to actually restore the scroll if we
-  // reach this point. Using mojom::blink::ScrollRestorationType::kManual would
-  // block the scroll.
-  DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
-      url_, WebFrameLoadType::kBackForward, history_item_view_state_,
-      mojom::blink::ScrollRestorationType::kAuto);
+WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
+  if (navigation_type == "push")
+    return WebFrameLoadType::kStandard;
+  if (navigation_type == "replace")
+    return WebFrameLoadType::kReplaceCurrentItem;
+  if (navigation_type == "traverse")
+    return WebFrameLoadType::kBackForward;
+  if (navigation_type == "reload")
+    return WebFrameLoadType::kReload;
+  NOTREACHED();
+  return WebFrameLoadType::kStandard;
 }
 
-bool NavigateEvent::InManualScrollRestorationMode() {
-  return scroll_restoration_behavior_ &&
-         scroll_restoration_behavior_->AsEnum() ==
-             V8NavigationScrollRestoration::Enum::kManual;
+void NavigateEvent::DefinitelyProcessScrollBehavior() {
+  DCHECK(!did_process_scroll_behavior_);
+  did_process_scroll_behavior_ = true;
+  // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
+  // because we are certain that we want to actually scroll if we reach this
+  // point. Using mojom::blink::ScrollRestorationType::kManual would block the
+  // scroll.
+  DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
+      url_, LoadTypeFromNavigation(navigation_type_), history_item_view_state_,
+      mojom::blink::ScrollRestorationType::kAuto);
 }
 
 const AtomicString& NavigateEvent::InterfaceName() const {
