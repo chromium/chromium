@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -23,33 +24,34 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog shown to the user to enroll a credit card into the virtual card feature. */
 public class AutofillVirtualCardEnrollmentDialog {
+    /**
+     * The interface that implements the action to be performed when links are clicked.
+     */
+    @FunctionalInterface
+    public interface LinkClickCallback {
+        void call(String url, @VirtualCardEnrollmentLinkType int virtualCardEnrollmentLinkType);
+    }
+
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
     private final String mAcceptButtonText;
     private final String mDeclineButtonText;
-    // TODO(@vishwasuppoor): Replace the 3 link click callbacks with a single callback after fixing
-    // crbug.com/1318681.
-    private final Callback<String> mOnEducationTextLinkClicked;
-    private final Callback<String> mOnGoogleLegalMessageLinkClicked;
-    private final Callback<String> mOnIssuerLegalMessageLinkClicked;
+    private final LinkClickCallback mOnLinkClicked;
     private final Callback<Integer> mResultHandler;
     private PropertyModel mDialogModel;
 
     public AutofillVirtualCardEnrollmentDialog(Context context,
             ModalDialogManager modalDialogManager,
             VirtualCardEnrollmentFields virtualCardEnrollmentFields, String acceptButtonText,
-            String declineButtonText, Callback<String> onEducationTextLinkClicked,
-            Callback<String> onGoogleLegalMessageLinkClicked,
-            Callback<String> onIssuerLegalMessageLinkClicked, Callback<Integer> resultHandler) {
+            String declineButtonText, LinkClickCallback onLinkClicked,
+            Callback<Integer> resultHandler) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mVirtualCardEnrollmentFields = virtualCardEnrollmentFields;
         mAcceptButtonText = acceptButtonText;
         mDeclineButtonText = declineButtonText;
-        mOnEducationTextLinkClicked = onEducationTextLinkClicked;
-        mOnGoogleLegalMessageLinkClicked = onGoogleLegalMessageLinkClicked;
-        mOnIssuerLegalMessageLinkClicked = onIssuerLegalMessageLinkClicked;
+        mOnLinkClicked = onLinkClicked;
         mResultHandler = resultHandler;
     }
 
@@ -88,21 +90,31 @@ public class AutofillVirtualCardEnrollmentDialog {
                 AutofillUiUtils.getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
                         mContext, R.string.autofill_virtual_card_enrollment_dialog_education_text,
                         ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
-                        mOnEducationTextLinkClicked));
+                        url
+                        -> mOnLinkClicked.call(url,
+                                VirtualCardEnrollmentLinkType
+                                        .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK)));
         virtualCardEducationTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView googleLegalMessageTextView =
                 (TextView) customView.findViewById(R.id.google_legal_message);
         googleLegalMessageTextView.setText(AutofillUiUtils.getSpannableStringForLegalMessageLines(
                 mContext, mVirtualCardEnrollmentFields.getGoogleLegalMessages(),
-                /* underlineLinks= */ false, mOnGoogleLegalMessageLinkClicked));
+                /* underlineLinks= */ false,
+                url
+                -> mOnLinkClicked.call(url,
+                        VirtualCardEnrollmentLinkType
+                                .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK)));
         googleLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView issuerLegalMessageTextView =
                 (TextView) customView.findViewById(R.id.issuer_legal_message);
         issuerLegalMessageTextView.setText(AutofillUiUtils.getSpannableStringForLegalMessageLines(
                 mContext, mVirtualCardEnrollmentFields.getIssuerLegalMessages(),
-                /* underlineLinks= */ false, mOnIssuerLegalMessageLinkClicked));
+                /* underlineLinks= */ false,
+                url
+                -> mOnLinkClicked.call(url,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK)));
         issuerLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         ((TextView) customView.findViewById(R.id.credit_card_identifier))

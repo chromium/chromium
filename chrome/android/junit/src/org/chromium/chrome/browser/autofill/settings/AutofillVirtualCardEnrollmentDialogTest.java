@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -55,11 +56,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     @Mock
     private Callback<Integer> mResultHandlerMock;
     @Mock
-    private Callback<String> mOnEducationTextLinkClickedMock;
-    @Mock
-    private Callback<String> mOnGoogleLegalMessageLinkClickedMock;
-    @Mock
-    private Callback<String> mOnIssuerLegalMessageLinkClickedMock;
+    private AutofillVirtualCardEnrollmentDialog.LinkClickCallback mOnLinkClickedMock;
     private FakeModalDialogManager mModalDialogManager;
     private AutofillVirtualCardEnrollmentDialog mDialog;
     private VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
@@ -71,11 +68,10 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 "card label", Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8));
         mVirtualCardEnrollmentFields.mGoogleLegalMessages.add(createLegalMessageLine("google"));
         mVirtualCardEnrollmentFields.mIssuerLegalMessages.add(createLegalMessageLine("issuer"));
-        mDialog = new AutofillVirtualCardEnrollmentDialog(
-                ApplicationProvider.getApplicationContext(), mModalDialogManager,
-                mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
-                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
-                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
+        mDialog =
+                new AutofillVirtualCardEnrollmentDialog(ApplicationProvider.getApplicationContext(),
+                        mModalDialogManager, mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT,
+                        DECLINE_BUTTON_TEXT, mOnLinkClickedMock, mResultHandlerMock);
         mDialog.show();
     }
 
@@ -126,8 +122,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
         mDialog = new AutofillVirtualCardEnrollmentDialog(activity, mModalDialogManager,
                 mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
-                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
-                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
+                mOnLinkClickedMock, mResultHandlerMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
@@ -144,9 +139,11 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 .isEqualTo("Learn more about virtual cards");
         // Click on the link. The callback doesn't use the view so it can be null.
         learnMoreSpan.onClick(null);
-        // Verify that the callback is called with url for learn more page.
-        verify(mOnEducationTextLinkClickedMock)
-                .onResult(ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL);
+        // Verify that the callback is called with url for learn more page and enum type
+        // corresponding to the learn more link.
+        verify(mOnLinkClickedMock)
+                .call(ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK);
     }
 
     @Test
@@ -157,8 +154,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
         mDialog = new AutofillVirtualCardEnrollmentDialog(activity, mModalDialogManager,
                 mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
-                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
-                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
+                mOnLinkClickedMock, mResultHandlerMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
@@ -175,8 +171,12 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 .isEqualTo("oo");
         // Click on the link. The callback doesn't use the view so it can be null.
         googleSpan.onClick(null);
-        // Verify that the callback is called with LEGAL_MESSAGE_URL.
-        verify(mOnGoogleLegalMessageLinkClickedMock).onResult(LEGAL_MESSAGE_URL);
+        // Verify that the callback is called with LEGAL_MESSAGE_URL and enum type corresponding to
+        // Google legal message lines.
+        verify(mOnLinkClickedMock)
+                .call(LEGAL_MESSAGE_URL,
+                        VirtualCardEnrollmentLinkType
+                                .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK);
     }
 
     @Test
@@ -187,8 +187,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
         mDialog = new AutofillVirtualCardEnrollmentDialog(activity, mModalDialogManager,
                 mVirtualCardEnrollmentFields, ACCEPT_BUTTON_TEXT, DECLINE_BUTTON_TEXT,
-                mOnEducationTextLinkClickedMock, mOnGoogleLegalMessageLinkClickedMock,
-                mOnIssuerLegalMessageLinkClickedMock, mResultHandlerMock);
+                mOnLinkClickedMock, mResultHandlerMock);
         mDialog.show();
         // Make sure that the dialog was shown properly.
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
@@ -205,8 +204,11 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 .isEqualTo("ss");
         // Click on the link. The callback doesn't use the view so it can be null.
         issuerSpan.onClick(null);
-        // Verify that the callback is called with LEGAL_MESSAGE_URL.
-        verify(mOnIssuerLegalMessageLinkClickedMock).onResult(LEGAL_MESSAGE_URL);
+        // Verify that the callback is called with LEGAL_MESSAGE_URL and enum type corresponding to
+        // issuer legal message lines.
+        verify(mOnLinkClickedMock)
+                .call(LEGAL_MESSAGE_URL,
+                        VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK);
     }
 
     private SpannableString getSpannableStringForViewFromCurrentDialog(int textViewId) {

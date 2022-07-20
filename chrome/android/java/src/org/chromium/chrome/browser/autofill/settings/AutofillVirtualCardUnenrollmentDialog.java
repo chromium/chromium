@@ -11,8 +11,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.VirtualCardDialogLink;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -60,8 +60,9 @@ public class AutofillVirtualCardUnenrollmentDialog {
                                         url -> {
                                             RecordHistogram.recordEnumeratedHistogram(
                                                     "Autofill.VirtualCard.SettingsPageUnenrollment.LinkClicked",
-                                                    VirtualCardDialogLink.EDUCATION_TEXT,
-                                                    VirtualCardDialogLink.NUM_ENTRIES);
+                                                    VirtualCardEnrollmentLinkType
+                                                            .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                                                    VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
                                             CustomTabActivity.showInfoPage(mContext, url);
                                         }))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,

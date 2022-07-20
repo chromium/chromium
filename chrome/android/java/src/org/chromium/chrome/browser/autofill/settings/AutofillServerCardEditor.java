@@ -21,13 +21,13 @@ import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.VirtualCardDialogLink;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -226,12 +226,13 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private void showVirtualCardEnrollmentDialog(
             VirtualCardEnrollmentFields virtualCardEnrollmentFields,
             ModalDialogManager modalDialogManager) {
-        Callback<String> onEducationTextLinkClicked =
-                url -> onLinkClicked(url, VirtualCardDialogLink.EDUCATION_TEXT);
-        Callback<String> onGoogleLegalMessageLinkClicked =
-                url -> onLinkClicked(url, VirtualCardDialogLink.GOOGLE_LEGAL_MESSAGE);
-        Callback<String> onIssuerLegalMessageLinkClicked =
-                url -> onLinkClicked(url, VirtualCardDialogLink.ISSUER_LEGAL_MESSAGE);
+        AutofillVirtualCardEnrollmentDialog.LinkClickCallback onLinkClicked =
+                (url, virtualCardEnrollmentLinkType) -> {
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT + ".LinkClicked",
+                    virtualCardEnrollmentLinkType, VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
+            CustomTabActivity.showInfoPage(getActivity(), url);
+        };
         Callback<Integer> resultHandler = dismissalCause -> {
             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                 logSettingsPageEnrollmentDialogUserSelection(true);
@@ -250,8 +251,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 getActivity(), modalDialogManager, virtualCardEnrollmentFields,
                 getActivity().getString(
                         R.string.autofill_virtual_card_enrollment_accept_button_label),
-                getActivity().getString(R.string.no_thanks), onEducationTextLinkClicked,
-                onGoogleLegalMessageLinkClicked, onIssuerLegalMessageLinkClicked, resultHandler);
+                getActivity().getString(R.string.no_thanks), onLinkClicked, resultHandler);
         dialog.show();
     }
 
@@ -269,13 +269,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                     }
                 });
         dialog.show();
-    }
-
-    private void onLinkClicked(String url, @VirtualCardDialogLink int virtualCardDialogLink) {
-        RecordHistogram.recordEnumeratedHistogram(
-                SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT + ".LinkClicked", virtualCardDialogLink,
-                VirtualCardDialogLink.NUM_ENTRIES);
-        CustomTabActivity.showInfoPage(getActivity(), url);
     }
 
     private void removeLocalCopyViews() {

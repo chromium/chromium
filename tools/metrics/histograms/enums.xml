@@ -9584,9 +9584,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofillVirtualCardDialogLinkClicked">
-  <int value="0" label="Education text link"/>
-  <int value="1" label="Google legal message link"/>
-  <int value="2" label="Issuer legal message link"/>
+  <int value="0" label="Google legal message link"/>
+  <int value="1" label="Issuer legal message link"/>
+  <int value="2" label="Education text link"/>
 </enum>
 
 <enum name="AutofillVirtualCardEnrollBubbleResult">

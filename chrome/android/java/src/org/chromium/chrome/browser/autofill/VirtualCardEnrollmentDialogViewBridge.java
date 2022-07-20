@@ -9,7 +9,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill.settings.AutofillVirtualCardEnrollmentDialog;
 import org.chromium.chrome.browser.autofill.settings.VirtualCardEnrollmentFields;
-import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
@@ -61,16 +60,6 @@ public class VirtualCardEnrollmentDialogViewBridge {
      */
     @CalledByNative
     private void showDialog() {
-        Callback<String> onEducationTextLinkClicked = url
-                -> mDelegate.onLinkClicked(
-                        url, VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK);
-        Callback<String> onGoogleLegalMessageLinkClicked = url
-                -> mDelegate.onLinkClicked(url,
-                        VirtualCardEnrollmentLinkType
-                                .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK);
-        Callback<String> onIssuerLegalMessageLinkClicked = url
-                -> mDelegate.onLinkClicked(
-                        url, VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK);
         Callback<Integer> resultHandler = dismissalCause -> {
             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                 mDelegate.onAccepted();
@@ -82,8 +71,7 @@ public class VirtualCardEnrollmentDialogViewBridge {
         };
         mDialog = new AutofillVirtualCardEnrollmentDialog(mWindowAndroid.getActivity().get(),
                 mWindowAndroid.getModalDialogManager(), mFields, mAcceptButtonText,
-                mDeclineButtonText, onEducationTextLinkClicked, onGoogleLegalMessageLinkClicked,
-                onIssuerLegalMessageLinkClicked, resultHandler);
+                mDeclineButtonText, mDelegate::onLinkClicked, resultHandler);
         mDialog.show();
     }
 
