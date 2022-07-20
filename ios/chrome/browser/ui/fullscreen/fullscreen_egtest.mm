@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/translate/core/browser/translate_pref_names.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -90,6 +91,19 @@ void WaitforPDFExtensionView() {
 @end
 
 @implementation FullscreenTestCase
+
+// TODO(crbug.com/1345810): Remove when iOS16/kSmoothScrollingDefault is fixed.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if (@available(iOS 16, *)) {
+    NSString* bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+    if ([bundleIdentifier hasPrefix:@"org.chromium.ost.chrome"]) {
+      config.features_disabled.push_back(
+          fullscreen::features::kSmoothScrollingDefault);
+    }
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
