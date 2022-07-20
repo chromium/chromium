@@ -727,17 +727,13 @@ void HTMLVideoElement::OnIntersectionChangedForLazyLoad(
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCreated() {
-  if (RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled()) {
-    if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
-      vfc_requester->OnWebMediaPlayerCreated();
-  }
+  if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
+    vfc_requester->OnWebMediaPlayerCreated();
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCleared() {
-  if (RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled()) {
-    if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
-      vfc_requester->OnWebMediaPlayerCleared();
-  }
+  if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
+    vfc_requester->OnWebMediaPlayerCleared();
 }
 
 void HTMLVideoElement::AttributeChanged(
@@ -748,7 +744,6 @@ void HTMLVideoElement::AttributeChanged(
 }
 
 void HTMLVideoElement::OnRequestVideoFrameCallback() {
-  DCHECK(RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled());
   VideoFrameCallbackRequester::From(*this)->OnRequestVideoFrameCallback();
 }
 

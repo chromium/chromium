@@ -1358,7 +1358,6 @@ WebMediaPlayerMS::GetVideoFramePresentationMetadata() {
 }
 
 void WebMediaPlayerMS::RequestVideoFrameCallback() {
-  DCHECK(RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!compositor_) {

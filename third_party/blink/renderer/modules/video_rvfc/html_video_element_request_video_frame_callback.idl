@@ -4,7 +4,6 @@
 
 // See https://wicg.github.io/video-rvfc/.
 [
-    RuntimeEnabled=RequestVideoFrameCallback,
     ImplementedAs=VideoFrameCallbackRequesterImpl
 ] partial interface HTMLVideoElement {
     [Measure] long requestVideoFrameCallback(VideoFrameRequestCallback callback);

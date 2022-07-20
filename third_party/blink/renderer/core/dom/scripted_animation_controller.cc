@@ -91,7 +91,6 @@ void ScriptedAnimationController::DispatchEventsAndCallbacksForPrinting() {
 
 void ScriptedAnimationController::ScheduleVideoFrameCallbacksExecution(
     ExecuteVfcCallback execute_vfc_callback) {
-  DCHECK(RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled());
   vfc_execution_queue_.push_back(std::move(execute_vfc_callback));
   ScheduleAnimationIfNeeded();
 }
@@ -255,11 +254,9 @@ void ScriptedAnimationController::ServiceScriptedAnimations(
   // steps for that Document, passing in now as the timestamp.
   RunTasks();
 
-  if (RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled()) {
-    // Run the fulfilled HTMLVideoELement.requestVideoFrameCallback() callbacks.
-    // See https://wicg.github.io/video-rvfc/.
-    ExecuteVideoFrameCallbacks();
-  }
+  // Run the fulfilled HTMLVideoELement.requestVideoFrameCallback() callbacks.
+  // See https://wicg.github.io/video-rvfc/.
+  ExecuteVideoFrameCallbacks();
 
   // 10.11. For each fully active Document in docs, run the animation
   // frame callbacks for that Document, passing in now as the timestamp.

@@ -85,7 +85,6 @@ void VideoFrameCallbackRequesterImpl::cancelVideoFrameCallback(
 }
 
 void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCreated() {
-  DCHECK(RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled());
   if (!callback_collection_->IsEmpty())
     GetSupplementable()->GetWebMediaPlayer()->RequestVideoFrameCallback();
 }
@@ -192,7 +191,6 @@ bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {
 }
 
 void VideoFrameCallbackRequesterImpl::OnRequestVideoFrameCallback() {
-  DCHECK(RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled());
   TRACE_EVENT1("blink",
                "VideoFrameCallbackRequesterImpl::OnRequestVideoFrameCallback",
                "has_callbacks", !callback_collection_->IsEmpty());

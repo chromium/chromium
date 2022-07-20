@@ -1950,11 +1950,6 @@
       name: "RenderPriorityAttribute"
     },
     {
-      // See https://crbug.com/1012063
-      name: "RequestVideoFrameCallback",
-      status: "stable",
-    },
-    {
       name: "RestrictBatteryStatusToSecureContexts",
       status: "stable",
     },

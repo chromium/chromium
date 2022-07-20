@@ -4,5 +4,4 @@
 
 // See https://wicg.github.io/video-rvfc/.
 
-[RuntimeEnabled=RequestVideoFrameCallback]
 callback VideoFrameRequestCallback = void(DOMHighResTimeStamp time, VideoFrameMetadata metadata);
