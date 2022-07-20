@@ -42,7 +42,7 @@ struct AnchorTestData {
       const NGPhysicalAnchorQuery& anchor_query) {
     Vector<AnchorTestData> items;
     for (const auto& it : anchor_query.anchor_references)
-      items.push_back(AnchorTestData{it.key, it.value});
+      items.push_back(AnchorTestData{it.key, it.value->rect});
     std::sort(items.begin(), items.end(),
               [](const AnchorTestData& a, const AnchorTestData& b) {
                 return CodeUnitCompare(a.name, b.name) < 0;

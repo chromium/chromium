@@ -8079,4 +8079,32 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   return constraining_rect;
 }
 
+const LayoutObject* LayoutBox::AnchorScrollObject() const {
+  if (!StyleRef().AnchorScroll())
+    return nullptr;
+
+  if (StyleRef().GetPosition() != EPosition::kAbsolute &&
+      StyleRef().GetPosition() != EPosition::kFixed) {
+    return nullptr;
+  }
+
+  NGPhysicalFragmentList containing_block_fragments =
+      ContainingBlock()->PhysicalFragments();
+  if (containing_block_fragments.IsEmpty())
+    return nullptr;
+
+  // TODO(crbug.com/1309178): Fix it when the containing block is fragmented.
+  const NGPhysicalAnchorQuery* anchor_query =
+      containing_block_fragments.front().AnchorQuery();
+  if (!anchor_query)
+    return nullptr;
+
+  if (const auto& reference =
+          anchor_query->anchor_references.find(StyleRef().AnchorScroll());
+      reference != anchor_query->anchor_references.end()) {
+    return reference->value->fragment->GetLayoutObject();
+  }
+  return nullptr;
+}
+
 }  // namespace blink

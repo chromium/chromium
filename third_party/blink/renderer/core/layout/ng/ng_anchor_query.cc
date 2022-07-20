@@ -5,8 +5,17 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 
 namespace blink {
+
+void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
+  visitor->Trace(fragment);
+}
+
+void NGPhysicalAnchorQuery::Trace(Visitor* visitor) const {
+  visitor->Trace(anchor_references);
+}
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     const AtomicString& anchor_name,
@@ -19,7 +28,7 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
   if (it == anchor_references.end())
     return absl::nullopt;  // No targets.
 
-  const PhysicalRect anchor = container_converter.ToPhysical(it->value);
+  const PhysicalRect anchor = container_converter.ToPhysical(it->value.rect);
   LayoutUnit value;
   switch (anchor_value) {
     case AnchorValue::kLeft:
@@ -63,7 +72,7 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
   if (it == anchor_references.end())
     return absl::nullopt;  // No targets.
 
-  const LogicalSize& anchor = it->value.size;
+  const LogicalSize& anchor = it->value.rect.size;
   switch (anchor_size_value) {
     case AnchorSizeValue::kInline:
       return anchor.inline_size;

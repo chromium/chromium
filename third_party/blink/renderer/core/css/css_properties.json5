@@ -1432,6 +1432,18 @@
       runtime_flag: "CSSAnchorPositioning",
     },
     {
+      name: "anchor-scroll",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      type_name: "AtomicString",
+      default_value: "g_null_atom",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertNoneOrCustomIdent",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
+    },
+    {
       name: "aspect-ratio",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,

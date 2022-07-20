@@ -11,18 +11,42 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
+class NGPhysicalFragment;
 class WritingModeConverter;
+
+struct NGPhysicalAnchorReference
+    : public GarbageCollected<NGPhysicalAnchorReference> {
+  NGPhysicalAnchorReference(PhysicalRect rect,
+                            const NGPhysicalFragment* fragment)
+      : rect(rect), fragment(fragment) {}
+
+  PhysicalRect rect;
+  Member<const NGPhysicalFragment> fragment;
+
+  void Trace(Visitor* visitor) const;
+};
 
 struct NGPhysicalAnchorQuery {
   bool IsEmpty() const { return anchor_references.IsEmpty(); }
 
-  HashMap<AtomicString, PhysicalRect> anchor_references;
+  HeapHashMap<AtomicString, Member<NGPhysicalAnchorReference>>
+      anchor_references;
+
+  void Trace(Visitor* visitor) const;
+  DISALLOW_NEW();
+};
+
+struct NGLogicalAnchorReference {
+  LogicalRect rect;
+  const NGPhysicalFragment* fragment;
+
+  STACK_ALLOCATED();
 };
 
 struct NGLogicalAnchorQuery {
@@ -43,7 +67,9 @@ struct NGLogicalAnchorQuery {
                                           WritingMode container_writing_mode,
                                           WritingMode self_writing_mode) const;
 
-  HashMap<AtomicString, LogicalRect> anchor_references;
+  HashMap<AtomicString, NGLogicalAnchorReference> anchor_references;
+
+  STACK_ALLOCATED();
 };
 
 }  // namespace blink

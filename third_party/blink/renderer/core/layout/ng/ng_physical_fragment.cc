@@ -411,8 +411,9 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
       oof_data = MakeGarbageCollected<OutOfFlowData>();
 
     for (const auto& it : builder->anchor_query_.anchor_references) {
-      oof_data->anchor_query.anchor_references.insert(
-          it.key, converter.ToPhysical(it.value));
+      oof_data->anchor_query.anchor_references.Set(
+          it.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
+                      converter.ToPhysical(it.value.rect), it.value.fragment));
     }
   }
 
@@ -1078,6 +1079,7 @@ bool NGPhysicalFragment::DependsOnPercentageBlockSize(
 
 void NGPhysicalFragment::OutOfFlowData::Trace(Visitor* visitor) const {
   visitor->Trace(oof_positioned_descendants);
+  visitor->Trace(anchor_query);
 }
 
 std::ostream& operator<<(std::ostream& out,

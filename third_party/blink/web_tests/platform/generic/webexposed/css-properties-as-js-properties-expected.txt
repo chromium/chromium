@@ -9,6 +9,7 @@ alignSelf
 alignmentBaseline
 all
 anchorName
+anchorScroll
 animation
 animationDelay
 animationDirection

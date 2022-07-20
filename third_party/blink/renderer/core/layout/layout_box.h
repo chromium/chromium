@@ -2127,6 +2127,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // See StickyPositionScrollingConstraints::constraining_rect.
   PhysicalRect ComputeStickyConstrainingRect() const;
 
+  // Returns the LayoutObject of the anchor element specified by the CSS
+  // 'anchor-scroll' property. Returns nullptr if the anchor query is invalid.
+  const LayoutObject* AnchorScrollObject() const;
+
  protected:
   ~LayoutBox() override;
 

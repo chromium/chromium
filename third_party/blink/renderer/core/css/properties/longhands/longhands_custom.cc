@@ -152,6 +152,25 @@ const CSSValue* AnchorName::CSSValueFromComputedStyleInternal(
   return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorName());
 }
 
+const CSSValue* AnchorScroll::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeDashedIdent(range, context);
+}
+const CSSValue* AnchorScroll::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (style.AnchorScroll().IsEmpty())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorScroll());
+}
+
 const CSSValue* AnimationDelay::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

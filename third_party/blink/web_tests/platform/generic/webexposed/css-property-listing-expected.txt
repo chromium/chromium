@@ -59,6 +59,7 @@ All changes to this list should go through Blink's feature review process: http:
     alignment-baseline
     all
     anchor-name
+    anchor-scroll
     animation-delay
     animation-direction
     animation-duration
