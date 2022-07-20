@@ -2364,6 +2364,34 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(BidderWorkletTest, WasmReportWin2) {
+  // Regression test for https://crbug.com/1345219 --- JS loaded but WASM not
+  // by time of reportWin() causing it to not get run.
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateReportWinScript(R"(sendReportTo("https://foo.test"))"));
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+
+  auto bidder_worklet = CreateWorklet();
+  ASSERT_TRUE(bidder_worklet);
+
+  // Get the JS a chance to load.
+  task_environment_.RunUntilIdle();
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(
+      bidder_worklet.get(), GURL("https://foo.test"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_errors=*/{},
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  task_environment_.RunUntilIdle();
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/absl::nullopt, ToyWasm());
+  task_environment_.RunUntilIdle();
+
+  run_loop.Run();
+}
+
 TEST_F(BidderWorkletTest, WasmOrdering) {
   enum Event { kWasmSuccess, kJsSuccess, kWasmFailure, kJsFailure };
 

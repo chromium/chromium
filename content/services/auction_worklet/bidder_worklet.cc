@@ -768,8 +768,7 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
                        base::BindOnce(&BidderWorklet::V8State::SetWorkletScript,
                                       base::Unretained(v8_state_.get()),
                                       std::move(worklet_script)));
-  RunReadyGenerateBidTasks();
-  RunReportWinTasks();  // These only depends on JS, so they can be run.
+  RunReadyTasks();
 }
 
 void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
@@ -797,20 +796,22 @@ void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
                        base::BindOnce(&BidderWorklet::V8State::SetWasmHelper,
                                       base::Unretained(v8_state_.get()),
                                       std::move(wasm_helper)));
-  RunReadyGenerateBidTasks();
-  // ReportWin() tasks currently don't have access to WASM.
+  RunReadyTasks();
 }
 
-void BidderWorklet::RunReadyGenerateBidTasks() {
+void BidderWorklet::RunReadyTasks() {
   // Run all GenerateBid() tasks that are ready. GenerateBidIfReady() does *not*
   // modify `generate_bid_tasks_` when invoked, so this is safe.
   for (auto generate_bid_task = generate_bid_tasks_.begin();
        generate_bid_task != generate_bid_tasks_.end(); ++generate_bid_task) {
     GenerateBidIfReady(generate_bid_task);
   }
-}
 
-void BidderWorklet::RunReportWinTasks() {
+  // While reportWin() doesn't use WASM, since we do load it, we wait for it in
+  // order to ensure determinism if the load fails.
+  if (!IsCodeReady())
+    return;
+
   // Run all ReportWin() tasks. RunReportWin() does *not* modify
   // `report_win_tasks_` when invoked, so this is safe.
   for (auto report_win_task = report_win_tasks_.begin();
