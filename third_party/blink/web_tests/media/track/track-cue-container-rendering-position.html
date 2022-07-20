@@ -16,10 +16,13 @@ async_test(function(t) {
     var video = document.querySelector("video");
     video.src = "../content/test.ogv";
 
-    video.oncanplaythrough = t.step_func_done(function() {
+    video.oncanplaythrough = t.step_func(function() {
         var cueDisplayElement = textTrackDisplayElement(video);
-        document.body.offsetTop; // Force layout.
-        assert_true(cueDisplayElement.offsetTop > (video.videoHeight * 0.75));
+        requestAnimationFrame(t.step_func(() => {
+            requestAnimationFrame(t.step_func_done(() => {
+                assert_true(cueDisplayElement.offsetTop > (video.videoHeight * 0.75));
+            }));
+        }));
     });
 });
 </script>
