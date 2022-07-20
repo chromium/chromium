@@ -39,14 +39,9 @@ class ChannelIndicatorView : public TrayItemView {
   void SetAccessibleName(version_info::Channel channel);
   void SetTooltip(version_info::Channel channel);
 
-  // The localized string used to announce this view in accessibility mode.
   std::u16string accessible_name_;
-
-  // The localized string displayed when this view is hovered-over.
   std::u16string tooltip_;
-
-  // The release track on which this devices resides.
-  const version_info::Channel channel_;
+  version_info::Channel channel_;
 };
 
 }  // namespace ash

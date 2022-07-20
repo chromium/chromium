@@ -21,12 +21,6 @@ class ChannelIndicatorViewTest
     : public AshTestBase,
       public testing::WithParamInterface<version_info::Channel> {
  public:
-  ChannelIndicatorViewTest() = default;
-  ChannelIndicatorViewTest(const ChannelIndicatorViewTest&) = delete;
-  ChannelIndicatorViewTest& operator=(const ChannelIndicatorViewTest&) = delete;
-  ~ChannelIndicatorViewTest() override = default;
-
-  // AshTestBase:
   void SetUp() override {
     // Need this feature enabled in order for the `ChannelIndicatorView` to be
     // instantiated.
