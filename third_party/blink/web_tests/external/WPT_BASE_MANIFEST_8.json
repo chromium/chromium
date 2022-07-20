@@ -840,6 +840,15 @@
       ]
      ]
     },
+    "css-cascade": {
+     "layer-statement-copy-crash.html": [
+      "f183ab30ab72f2364dd71c37ff3b545bfaf556f1",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-contain": {
      "contain-crash.html": [
       "373e004c0507e764e1383b17a05e64537b6711ab",
@@ -242888,6 +242897,19 @@
       {}
      ]
     ],
+    "devicepixel2.html": [
+     "581fefa0a2645a7ef2e4c102febc59c7a81d5bf2",
+     [
+      null,
+      [
+       [
+        "/resize-observer/devicepixel2-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "iframe-same-origin.html": [
      "22d8399b23127354a5d711615fd44d7c37240773",
      [
@@ -327046,8 +327068,16 @@
      "e8dd0b916eb51dd80442bd7de90d46183df6cc21",
      []
     ],
+    "create-pattern-data-url.js": [
+     "d3634dc424b96c619da5e9dfea865288ae4135fa",
+     []
+    ],
     "devicepixel-ref.html": [
      "a006732015be3bbf07c79ecd11d8a50c4ebbda3f",
+     []
+    ],
+    "devicepixel2-ref.html": [
+     "7674eb0ab835a1b02541a28b4ed9084e61b2e088",
      []
     ],
     "iframe-same-origin-ref.html": [
