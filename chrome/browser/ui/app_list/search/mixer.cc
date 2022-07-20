@@ -100,7 +100,7 @@ class Mixer::Group {
 
     if (ranker)
       ranker->Rank(&results_);
-    std::sort(results_.begin(), results_.end());
+    std::stable_sort(results_.begin(), results_.end());
   }
 
   const SortedResults& results() const { return results_; }
@@ -165,7 +165,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
     chip_ranker_->Rank(&results);
   }
 
-  std::sort(results.begin(), results.end());
+  std::stable_sort(results.begin(), results.end());
 
   const size_t original_size = results.size();
   if (original_size < num_max_results) {
@@ -180,7 +180,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
     // 0.4) that the People result will be 5th, not 7th, because the Omnibox
     // group has a soft maximum of 4 results. (Otherwise, the People result
     // would not be seen at all once the result list is truncated.)
-    std::sort(results.begin() + original_size, results.end());
+    std::stable_sort(results.begin() + original_size, results.end());
   }
   RemoveDuplicates(&results);
 

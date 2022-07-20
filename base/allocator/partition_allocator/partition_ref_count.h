@@ -319,15 +319,46 @@ static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
 constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
 constexpr size_t kPartitionPastAllocationAdjustment = 0;
 
-constexpr size_t kPartitionRefCountIndexMultiplier =
-    SystemPageSize() /
-    (sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()));
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
-                   kPartitionRefCountIndexMultiplier <=
-               SystemPageSize()),
-              "PartitionRefCount Bitmap size must be smaller than or equal to "
-              "<= SystemPageSize().");
+#if defined(PA_REF_COUNT_CHECK_COOKIE) || \
+    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+static constexpr size_t kPartitionRefCountSizeShift = 4;
+#else   //  defined(PA_REF_COUNT_CHECK_COOKIE) ||
+        //  defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+static constexpr size_t kPartitionRefCountSizeShift = 3;
+#endif  //  defined(PA_REF_COUNT_CHECK_COOKIE) ||
+        //  defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+
+#else  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+
+#if defined(PA_REF_COUNT_CHECK_COOKIE) && \
+    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+static constexpr size_t kPartitionRefCountSizeShift = 4;
+#elif defined(PA_REF_COUNT_CHECK_COOKIE) || \
+    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+static constexpr size_t kPartitionRefCountSizeShift = 3;
+#else
+static constexpr size_t kPartitionRefCountSizeShift = 2;
+#endif
+
+#endif  // defined(PA_REF_COUNT_CHECK_COOKIE)
+static_assert((1 << kPartitionRefCountSizeShift) == sizeof(PartitionRefCount));
+
+// We need one PartitionRefCount for each system page in a super page. They take
+// `x = sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize())` space.
+// They need to fit into a system page of metadata as sparsely as possible to
+// minimize cache line sharing, hence we calculate a multiplier as
+// `SystemPageSize() / x`.
+//
+// The multiplier is expressed as a bitshift to optimize the code generation.
+// SystemPageSize() isn't always a constrexpr, in which case the compiler
+// wouldn't know it's a power of two. The equivalence of these calculations is
+// checked in PartitionAllocGlobalInit().
+static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+GetPartitionRefCountIndexMultiplierShift() {
+  return SystemPageShift() * 2 - kSuperPageShift - kPartitionRefCountSizeShift;
+}
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
@@ -351,8 +382,8 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     // No need to tag, as the metadata region isn't protected by MTE.
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
-    size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift()) *
-                   kPartitionRefCountIndexMultiplier;
+    size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift())
+                   << GetPartitionRefCountIndexMultiplierShift();
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
 #endif

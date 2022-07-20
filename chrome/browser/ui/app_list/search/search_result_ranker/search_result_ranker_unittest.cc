@@ -439,9 +439,12 @@ TEST_F(SearchResultRankerTest, ZeroStateTwoMissingGroupsAdded) {
 
   ranker->Rank(&results);
   ranker->OverrideZeroStateResults(&results);
-  EXPECT_THAT(results, WhenSorted(ElementsAre(
-                           HasId("Z1"), HasId("Z2"), HasId("Z3"), HasId("D1"),
-                           HasId("O1"), HasId("Z4"), HasId("Z5"))));
+  // Z4 and Z5 have equal order so use std::stable_sort instead of WhenSorted(),
+  // which uses std::sort.
+  std::stable_sort(results.begin(), results.end());
+  EXPECT_THAT(results,
+              ElementsAre(HasId("Z1"), HasId("Z2"), HasId("Z3"), HasId("D1"),
+                          HasId("O1"), HasId("Z4"), HasId("Z5")));
 }
 
 // If one group won't have shown results and has a new result in the list, but

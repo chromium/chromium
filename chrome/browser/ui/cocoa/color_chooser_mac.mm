@@ -15,7 +15,7 @@
 
 namespace {
 // The currently active color chooser.
-raw_ptr<ColorChooserMac> g_current_color_chooser = nullptr;
+ColorChooserMac* g_current_color_chooser = nullptr;
 }  // namespace
 
 // static
@@ -28,7 +28,7 @@ std::unique_ptr<ColorChooserMac> ColorChooserMac::Create(
   // Note that WebContentsImpl::ColorChooser ultimately takes ownership (and
   // deletes) the returned pointer.
   g_current_color_chooser = new ColorChooserMac(web_contents, initial_color);
-  return base::WrapUnique(g_current_color_chooser.get());
+  return base::WrapUnique(g_current_color_chooser);
 }
 
 ColorChooserMac::ColorChooserMac(content::WebContents* web_contents,
