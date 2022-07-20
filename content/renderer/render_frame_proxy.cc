@@ -5,37 +5,15 @@
 #include "content/renderer/render_frame_proxy.h"
 
 #include <stdint.h>
-#include <map>
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "content/common/content_switches_internal.h"
-#include "content/public/common/content_client.h"
-#include "content/public/common/content_switches.h"
-#include "content/public/renderer/content_renderer_client.h"
-#include "content/renderer/agent_scheduling_group.h"
-#include "content/renderer/mojo/blink_interface_registry_impl.h"
-#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_view_impl.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/navigation/impression.h"
-#include "third_party/blink/public/common/navigation/navigation_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
-#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
-#include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url_request_util.h"
-#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
-#include "ui/gfx/geometry/size_conversions.h"
 
 namespace content {
 
@@ -93,7 +71,8 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     web_frame = blink::WebRemoteFrame::CreateMainFrame(
         web_view, proxy.get(), frame_token, devtools_frame_token, opener,
         std::move(remote_frame_interfaces->frame_host),
-        std::move(remote_frame_interfaces->frame_receiver));
+        std::move(remote_frame_interfaces->frame_receiver),
+        std::move(replicated_state));
     // Root frame proxy has no ancestors to point to their RenderWidget.
 
     // The WebRemoteFrame created here was already attached to the Page as its
@@ -106,24 +85,13 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // to be a RenderFrameProxy, because navigations initiated by local frames
     // should not wind up here.
     web_frame = parent->CreateRemoteChild(
-        tree_scope_type, blink::WebString::FromUTF8(replicated_state->name),
-        replicated_state->frame_policy, proxy.get(), frame_token,
-        devtools_frame_token, opener,
+        tree_scope_type, proxy.get(), frame_token, devtools_frame_token, opener,
         std::move(remote_frame_interfaces->frame_host),
-        std::move(remote_frame_interfaces->frame_receiver));
+        std::move(remote_frame_interfaces->frame_receiver),
+        std::move(replicated_state));
   }
 
   proxy->Init(web_frame);
-
-  // Initialize proxy's WebRemoteFrame with the security origin and other
-  // replicated information.
-  // TODO(dcheng): Calling this when parent_routing_id != MSG_ROUTING_NONE is
-  // mostly redundant, since we already pass the name and sandbox flags in
-  // createLocalChild(). We should update the Blink interface so it also takes
-  // the origin. Then it will be clear that the replication call is only needed
-  // for the case of setting up a main frame proxy.
-  proxy->SetReplicatedState(std::move(replicated_state));
-
   return proxy.release();
 }
 
@@ -131,6 +99,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* parent,
     const blink::RemoteFrameToken& frame_token,
+    blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
     const blink::WebElement& frame_owner,
     mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost> frame_host,
@@ -140,7 +109,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
       blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
           blink::mojom::TreeScopeType::kDocument, proxy.get(), frame_token,
           devtools_frame_token, frame_owner, std::move(frame_host),
-          std::move(frame));
+          std::move(frame), std::move(replicated_state));
   proxy->Init(web_frame);
   return proxy.release();
 }
@@ -152,54 +121,6 @@ RenderFrameProxy::~RenderFrameProxy() = default;
 void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame) {
   CHECK(web_frame);
   web_frame_ = web_frame;
-}
-
-void RenderFrameProxy::SetReplicatedState(
-    blink::mojom::FrameReplicationStatePtr state) {
-  DCHECK(web_frame_);
-
-  web_frame_->SetReplicatedOrigin(
-      state->origin, state->has_potentially_trustworthy_unique_origin);
-
-#if DCHECK_IS_ON()
-  blink::WebSecurityOrigin security_origin_before_sandbox_flags =
-      web_frame_->GetSecurityOrigin();
-#endif
-
-  web_frame_->SetReplicatedSandboxFlags(state->active_sandbox_flags);
-
-#if DCHECK_IS_ON()
-  // If |state->has_potentially_trustworthy_unique_origin| is set,
-  // - |state->origin| should be unique (this is checked in
-  //   blink::SecurityOrigin::SetUniqueOriginIsPotentiallyTrustworthy() in
-  //   SetReplicatedOrigin()), and thus
-  // - The security origin is not updated by SetReplicatedSandboxFlags() and
-  //   thus we don't have to apply |has_potentially_trustworthy_unique_origin|
-  //   flag after SetReplicatedSandboxFlags().
-  if (state->has_potentially_trustworthy_unique_origin)
-    DCHECK(security_origin_before_sandbox_flags ==
-           web_frame_->GetSecurityOrigin());
-#endif
-
-  web_frame_->SetReplicatedName(blink::WebString::FromUTF8(state->name),
-                                blink::WebString::FromUTF8(state->unique_name));
-  web_frame_->SetReplicatedInsecureRequestPolicy(
-      state->insecure_request_policy);
-  web_frame_->SetReplicatedInsecureNavigationsSet(
-      state->insecure_navigations_set);
-  web_frame_->SetReplicatedIsAdSubframe(state->is_ad_subframe);
-  web_frame_->SetReplicatedPermissionsPolicyHeader(
-      state->permissions_policy_header);
-  if (state->has_active_user_gesture) {
-    // TODO(crbug.com/1087963): This should be hearing about sticky activations
-    // and setting those (as well as the active one?). But the call to
-    // UpdateUserActivationState sets the transient activation.
-    web_frame_->UpdateUserActivationState(
-        blink::mojom::UserActivationUpdateType::kNotifyActivation,
-        blink::mojom::UserActivationNotificationType::kMedia);
-  }
-  web_frame_->SetHadStickyUserActivationBeforeNavigation(
-      state->has_received_user_gesture_before_nav);
 }
 
 void RenderFrameProxy::DidStartLoading() {

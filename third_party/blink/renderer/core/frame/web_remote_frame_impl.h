@@ -39,7 +39,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
       WebFrame* opener,
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
           remote_frame_host,
-      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::FrameReplicationStatePtr replicated_state);
 
   static WebRemoteFrameImpl* CreateForPortalOrFencedFrame(
       mojom::blink::TreeScopeType,
@@ -49,7 +50,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const WebElement& frame_owner,
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
           remote_frame_host,
-      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::FrameReplicationStatePtr replicated_state);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
                      WebRemoteFrameClient*,
@@ -74,8 +76,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
   WebRemoteFrame* CreateRemoteChild(
       mojom::blink::TreeScopeType,
-      const WebString& name,
-      const FramePolicy&,
       WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
@@ -83,25 +83,12 @@ class CORE_EXPORT WebRemoteFrameImpl final
       CrossVariantMojoAssociatedRemote<
           mojom::blink::RemoteFrameHostInterfaceBase> remote_frame_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
-          receiver) override;
+          receiver,
+      mojom::FrameReplicationStatePtr replicated_state) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;
-  void SetReplicatedSandboxFlags(
-      network::mojom::blink::WebSandboxFlags) override;
-  void SetReplicatedName(const WebString& name,
-                         const WebString& unique_name) override;
-  void SetReplicatedPermissionsPolicyHeader(
-      const ParsedPermissionsPolicy& parsed_header) override;
-  void SetReplicatedInsecureRequestPolicy(
-      mojom::blink::InsecureRequestPolicy) override;
-  void SetReplicatedInsecureNavigationsSet(const WebVector<unsigned>&) override;
-  void SetReplicatedIsAdSubframe(bool is_ad_subframe) override;
   void DidStartLoading() override;
-  void UpdateUserActivationState(
-      mojom::blink::UserActivationUpdateType update_type,
-      mojom::blink::UserActivationNotificationType notification_type) override;
-  void SetHadStickyUserActivationBeforeNavigation(bool value) override;
   v8::Local<v8::Object> GlobalProxy() const override;
   WebString UniqueName() const override;
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
@@ -128,6 +115,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void Trace(Visitor*) const;
 
   gfx::Rect GetCompositingRect();
+
+  void SetReplicatedState(mojom::FrameReplicationStatePtr replicated_state);
 
  private:
   friend class RemoteFrameClientImpl;

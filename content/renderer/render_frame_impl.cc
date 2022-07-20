@@ -3491,10 +3491,9 @@ RenderFrameImpl::CreatePortal(
       std::move(remote_frame_interfaces), &initial_replicated_state,
       &portal_token, &frame_token, &devtools_frame_token);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
-      agent_scheduling_group_, this, frame_token, devtools_frame_token,
-      portal_element, std::move(remote_frame_host),
-      std::move(remote_frame_receiver));
-  proxy->SetReplicatedState(std::move(initial_replicated_state));
+      agent_scheduling_group_, this, frame_token,
+      std::move(initial_replicated_state), devtools_frame_token, portal_element,
+      std::move(remote_frame_host), std::move(remote_frame_receiver));
   return std::make_pair(proxy->web_frame(), portal_token);
 }
 
@@ -3519,10 +3518,9 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
                               &replicated_state, &frame_token,
                               &devtools_frame_token);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
-      agent_scheduling_group_, this, frame_token, devtools_frame_token,
-      portal_element, std::move(remote_frame_host),
+      agent_scheduling_group_, this, frame_token, std::move(replicated_state),
+      devtools_frame_token, portal_element, std::move(remote_frame_host),
       std::move(remote_frame_receiver));
-  proxy->SetReplicatedState(std::move(replicated_state));
   return proxy->web_frame();
 }
 
@@ -3549,10 +3547,9 @@ blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
       &initial_replicated_state, &frame_token, &devtools_frame_token);
 
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
-      agent_scheduling_group_, this, frame_token, devtools_frame_token,
-      fenced_frame, std::move(remote_frame_host),
-      std::move(remote_frame_receiver));
-  proxy->SetReplicatedState(std::move(initial_replicated_state));
+      agent_scheduling_group_, this, frame_token,
+      std::move(initial_replicated_state), devtools_frame_token, fenced_frame,
+      std::move(remote_frame_host), std::move(remote_frame_receiver));
 
   for (auto& observer : observers_)
     observer.DidCreateFencedFrame(frame_token);
@@ -4096,7 +4093,8 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   // This executes the unload handlers on this frame and its local descendants.
   bool success = frame_->Swap(
       proxy->web_frame(), std::move(remote_frame_interfaces->frame_host),
-      std::move(remote_frame_interfaces->frame_receiver));
+      std::move(remote_frame_interfaces->frame_receiver),
+      std::move(replicated_frame_state));
 
   // WARNING: Do not access 'this' past this point!
 
@@ -4124,9 +4122,6 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   if (is_loading)
     proxy->DidStartLoading();
 
-  // Initialize the WebRemoteFrame with the replication state passed by the
-  // process that is now rendering the frame.
-  proxy->SetReplicatedState(std::move(replicated_frame_state));
   return true;
 }
 

@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -87,7 +88,8 @@ class BLINK_EXPORT WebFrame {
       CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>
           remote_frame_host,
       CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>
-          receiver);
+          receiver,
+      mojom::FrameReplicationStatePtr replicated_state);
 
   // This method closes and deletes the WebFrame. This is typically called by
   // the embedder in response to a frame detached callback to the WebFrame

@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
@@ -326,16 +327,19 @@ WebRemoteFrameImpl* CreateRemoteChild(
     const WebString& name,
     scoped_refptr<SecurityOrigin> security_origin,
     TestWebRemoteFrameClient* client) {
+  mojom::FrameReplicationStatePtr replicated_state =
+      mojom::FrameReplicationState::New();
+  replicated_state->name = name.Utf8();
   std::unique_ptr<TestWebRemoteFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebRemoteFrameImpl>(parent.CreateRemoteChild(
-      mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
-      RemoteFrameToken(),
+      mojom::blink::TreeScopeType::kDocument, client, RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), /*opener=*/nullptr,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
-          .BindNewEndpointAndPassDedicatedReceiver()));
+          .BindNewEndpointAndPassDedicatedReceiver(),
+      std::move(replicated_state)));
   client->Bind(frame, std::move(owned_client));
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();
@@ -347,11 +351,18 @@ void SwapRemoteFrame(
     WebFrame* old_frame,
     WebRemoteFrame* new_remote_frame,
     mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost> frame_host) {
+  mojom::FrameReplicationStatePtr replicated_state =
+      mojom::FrameReplicationState::New();
+  // Preserve the frame's name on swap.
+  replicated_state->name =
+      WebFrame::ToCoreFrame(*old_frame)->Tree().GetName().Utf8();
+
   old_frame->Swap(new_remote_frame,
                   CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
                       std::move(frame_host)),
                   mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
-                      .BindNewEndpointAndPassDedicatedReceiver());
+                      .BindNewEndpointAndPassDedicatedReceiver(),
+                  std::move(replicated_state));
 }
 
 WebViewHelper::WebViewHelper(
@@ -492,7 +503,8 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
-          .BindNewEndpointAndPassDedicatedReceiver());
+          .BindNewEndpointAndPassDedicatedReceiver(),
+      mojom::FrameReplicationState::New());
   web_remote_frame_client->Bind(frame,
                                 std::move(owned_web_remote_frame_client));
   if (!security_origin)

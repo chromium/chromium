@@ -94,6 +94,7 @@ class CONTENT_EXPORT RenderFrameProxy : public blink::WebRemoteFrameClient {
       AgentSchedulingGroup& agent_scheduling_group,
       RenderFrameImpl* parent,
       const blink::RemoteFrameToken& frame_token,
+      blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token,
       const blink::WebElement& frame_owner_element,
       mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost> frame_host,
@@ -103,10 +104,6 @@ class CONTENT_EXPORT RenderFrameProxy : public blink::WebRemoteFrameClient {
   RenderFrameProxy& operator=(const RenderFrameProxy&) = delete;
 
   ~RenderFrameProxy() override;
-
-  // Pass replicated information, such as security origin, to this
-  // RenderFrameProxy's WebRemoteFrame.
-  void SetReplicatedState(blink::mojom::FrameReplicationStatePtr state);
 
   blink::WebRemoteFrame* web_frame() { return web_frame_; }
 
