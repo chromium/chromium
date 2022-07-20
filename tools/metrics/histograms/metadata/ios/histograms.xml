@@ -1222,6 +1222,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordManager.Favicons.Count" units="count"
+    expires_after="2023-07-01">
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    The number of favicons loaded (image, not monogram string) in the Password
+    Manager recorded when the view will disappear.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PasswordManager.Favicons.Percentage" units="%"
+    expires_after="2023-07-01">
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    The percentage of passwords that have a favicon that is an image in the
+    Password Manager recorded when the view will disappear.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PasswordManager.PasswordsWithFavicons.Count" units="count"
+    expires_after="2023-07-01">
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    The number of passwords with a favicon loaded in the Password Manager
+    recorded when the view will disappear.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordsInOtherApps.AutoFillStatusChange"
     enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
   <owner>ginnyhuang@chromium.org</owner>

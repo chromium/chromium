@@ -316,6 +316,11 @@ bool IsFaviconEnabled() {
 // Return YES if the search bar should be enabled.
 @property(nonatomic, assign) BOOL shouldEnableSearchBar;
 
+// Keep track of how many passwords have been loaded for the logs and how many
+// of them are favicons with an image (not monogram string).
+@property(nonatomic, strong)
+    NSMutableDictionary<NSString*, NSNumber*>* passwordsLoadedWithFavicons;
+
 @end
 
 @implementation PasswordManagerViewController
@@ -439,6 +444,10 @@ bool IsFaviconEnabled() {
   if (!_didReceiveSavedForms) {
     [self showLoadingSpinnerBackground];
   }
+
+  if (!self.passwordsLoadedWithFavicons) {
+    self.passwordsLoadedWithFavicons = [[NSMutableDictionary alloc] init];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -458,6 +467,8 @@ bool IsFaviconEnabled() {
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
+
+  [self logMetricsForFavicons];
 
   // Restore to default origin offset for cancel button proxy style.
   UIBarButtonItem* cancelButton = [UIBarButtonItem
@@ -1797,6 +1808,31 @@ bool IsFaviconEnabled() {
   }
 }
 
+// Logs metrics related to favicons for the Password Manager.
+- (void)logMetricsForFavicons {
+  // Log the number of passwords with a favicon loaded.
+  base::UmaHistogramCounts10000(
+      "IOS.PasswordManager.PasswordsWithFavicons.Count",
+      self.passwordsLoadedWithFavicons.count);
+
+  if (self.passwordsLoadedWithFavicons.count == 0)
+    return;
+
+  int count = 0;
+  NSNumber* yesAsNSNumber = [NSNumber numberWithBool:YES];
+  for (NSNumber* value in self.passwordsLoadedWithFavicons.allValues) {
+    if (value == yesAsNSNumber)
+      count++;
+  }
+  // Log the number of favicons loaded (image, not monogram string).
+  base::UmaHistogramCounts10000("IOS.PasswordManager.Favicons.Count", count);
+  // Log % of passwords that have a favicon that is an image.
+  float percentage =
+      ((float)count / (float)self.passwordsLoadedWithFavicons.count) * 100.0f;
+  base::UmaHistogramPercentage("IOS.PasswordManager.Favicons.Percentage",
+                               percentage);
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -2018,6 +2054,13 @@ bool IsFaviconEnabled() {
            if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
              DCHECK(attributes);
              [URLCell.faviconView configureWithAttributes:attributes];
+
+             // Value is YES if the favicon is an image not a monogram string.
+             // Storing as the value as an NSNumber object because values in an
+             // NSDictionary must be objects.
+             [self.passwordsLoadedWithFavicons
+                 setValue:(attributes.faviconImage != nil ? @YES : @NO)
+                   forKey:itemIdentifier];
            }
          }];
 }
