@@ -358,7 +358,10 @@ void UserManagerBase::RemoveNonOwnerUserInternal(const AccountId& account_id,
   NotifyUserToBeRemoved(account_id);
   AsyncRemoveCryptohome(account_id);
   RemoveUserFromList(account_id);
-  NotifyUserRemoved(account_id, reason);
+  // |account_id| cannot be used after the |RemoveUserFromList| call, use
+  // |account_id_copy| instead if needed.
+
+  NotifyUserRemoved(account_id_copy, reason);
 
   if (delegate)
     delegate->OnUserRemoved(account_id_copy);
