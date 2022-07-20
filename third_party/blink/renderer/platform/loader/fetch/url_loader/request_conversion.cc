@@ -40,8 +40,7 @@ namespace blink {
 namespace {
 
 constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
-constexpr char kWebBundleAcceptHeader[] =
-    "application/webbundle;v=b2,application/webbundle;v=b1;q=0.8";
+constexpr char kWebBundleAcceptHeader[] = "application/webbundle;v=b2";
 
 // TODO(yhirano): Unify these with variables in
 // content/public/common/content_constants.h.
