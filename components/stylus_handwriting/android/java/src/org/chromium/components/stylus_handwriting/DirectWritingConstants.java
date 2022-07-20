@@ -15,6 +15,11 @@ class DirectWritingConstants {
     static final String SERVICE_CLS_NAME =
             "com.samsung.android.directwriting.service.DirectWritingService";
 
+    // The fingerprint of valid Samsung Direct Writing service package.
+    static final String SERVICE_PKG_SHA_256_FINGERPRINT =
+            "C8:A2:E9:BC:CF:59:7C:2F:B6:DC:66:BE:E2:93:FC:13"
+            + ":F2:FC:47:EC:77:BC:6B:2B:0D:52:C1:1F:51:19:2A:B8";
+
     /**
      * Set text and selection from service callback
      */

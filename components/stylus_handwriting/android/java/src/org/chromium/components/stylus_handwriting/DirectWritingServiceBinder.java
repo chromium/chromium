@@ -20,6 +20,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.directwriting.IDirectWritingService;
 
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
+
+import java.util.List;
 
 /**
  * Direct writing Service connection handler class. Takes care of calling DW Service APIs for
@@ -92,10 +95,20 @@ class DirectWritingServiceBinder {
             Log.d(TAG, "bindService already requested");
             return;
         }
+
+        // Verify that connecting service package fingerprint matches with expected fingerprint of
+        // Direct Writing service package. This is to prevent any attacker from spoofing the package
+        // name and tricking Chrome into connecting to it.
+        List<String> fingerprints = PackageUtils.getCertificateSHA256FingerprintForPackage(
+                context.getPackageManager(), DirectWritingConstants.SERVICE_PKG_NAME);
+        if (fingerprints == null || fingerprints.size() > 1
+                || !fingerprints.get(0).equals(
+                        DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT)) {
+            Log.e(TAG, "Don't connect to service due to package fingerprint mismatch");
+            return;
+        }
         try {
             Intent intent = new Intent();
-            // TODO(mahesh.ma): Check the signature of Direct writing service so that a non-Samsung
-            // device cannot trick us into connecting to it.
             intent.setComponent(new ComponentName(DirectWritingConstants.SERVICE_PKG_NAME,
                     DirectWritingConstants.SERVICE_CLS_NAME));
             context.bindService(intent, mConnection, BIND_AUTO_CREATE);
