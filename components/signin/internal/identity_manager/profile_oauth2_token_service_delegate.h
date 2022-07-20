@@ -197,6 +197,8 @@ class ProfileOAuth2TokenServiceDelegate {
                            RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
                            BackOffIsTriggerredForTransientErrors);
+  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
+                           UpdateAuthError_TransientErrors);
 
   // List of observers to notify when refresh token availability changes.
   // Makes sure list is empty on destruction.
