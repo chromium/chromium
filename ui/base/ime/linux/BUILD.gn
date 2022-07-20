@@ -17,8 +17,6 @@ component("linux") {
     "linux_input_method_context.h",
     "linux_input_method_context_factory.cc",
     "linux_input_method_context_factory.h",
-    "linux_input_method_context_wrapper.cc",
-    "linux_input_method_context_wrapper.h",
     "text_edit_command_auralinux.cc",
     "text_edit_command_auralinux.h",
     "text_edit_key_bindings_delegate_auralinux.cc",
