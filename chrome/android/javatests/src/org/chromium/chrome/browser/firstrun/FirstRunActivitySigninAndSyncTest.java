@@ -206,8 +206,10 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void acceptingSyncEndsFreAndEnablesSyncIfEnableSyncImmediatelyFeatureEnabled() {
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS,
+            ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    public void
+    acceptingSyncEndsFreAndEnablesSyncIfEnableSyncImmediatelyFeatureEnabled() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
@@ -240,8 +242,10 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void refusingSyncEndsFreAndDoesNotEnableSyncIfEnableSyncImmediatelyFeatureEnabled() {
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS,
+            ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    public void
+    refusingSyncEndsFreAndDoesNotEnableSyncIfEnableSyncImmediatelyFeatureEnabled() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
         ensureCurrentPageIs(SigninFirstRunFragment.class);
@@ -274,7 +278,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS,
+            ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
     @DisabledTest(message = "https://crbug.com/1335094")
     public void
     clickingSettingsEndsFreAndStartsEnablingSyncIfEnableSyncImmediatelyFeatureEnabled() {

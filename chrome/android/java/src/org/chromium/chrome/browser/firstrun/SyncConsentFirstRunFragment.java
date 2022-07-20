@@ -33,6 +33,15 @@ public class SyncConsentFirstRunFragment
     // saved state bundle. See crbug.com/1225102
     public SyncConsentFirstRunFragment() {}
 
+    /**
+     * Returns true if sync will be enabled as soon as the user clicks the "Yes, I'm in" button,
+     * and false if this will be deferred until the main activity starts.
+     */
+    public static boolean shouldEnableImmediately() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -69,7 +78,7 @@ public class SyncConsentFirstRunFragment
                     MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE)) {
+        if (shouldEnableImmediately()) {
             // Enable sync now. Leave the account pref empty in FirstRunSignInProcessor, so start()
             // doesn't try to do it a second time. Only set the advanced setup pref later in
             // closeAndMaybeOpenSyncSettings(), because settings shouldn't open if
@@ -87,7 +96,7 @@ public class SyncConsentFirstRunFragment
 
     @Override
     protected void closeAndMaybeOpenSyncSettings(boolean settingsClicked) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE);
+        assert shouldEnableImmediately();
         // Now that signinAndEnableSync() succeeded, signal whether FirstRunSignInProcessor.start()
         // should open settings.
         FirstRunSignInProcessor.setFirstRunFlowSignInSetup(settingsClicked);
