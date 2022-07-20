@@ -38,6 +38,7 @@ public class SearchResumptionTileView extends RelativeLayout {
     void updateSuggestionData(AutocompleteMatch suggestion) {
         mSearchTile = suggestion;
         mTileContent.setText(suggestion.getDisplayText());
+        setContentDescription(mTileContent.getText());
     }
 
     void addOnSuggestionClickCallback(OnSuggestionClickCallback callback) {

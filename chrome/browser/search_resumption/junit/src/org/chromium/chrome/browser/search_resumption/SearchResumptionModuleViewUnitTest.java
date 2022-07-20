@@ -143,6 +143,7 @@ public class SearchResumptionModuleViewUnitTest {
 
         tileView.updateSuggestionData(match);
         Assert.assertEquals(text, tileView.getTextForTesting());
+        Assert.assertEquals(text, tileView.getContentDescription());
 
         OnSuggestionClickCallback callback = Mockito.mock(OnSuggestionClickCallback.class);
         tileView.addOnSuggestionClickCallback(callback);
