@@ -1746,8 +1746,15 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
     return const_cast<BrowserAccessibilityManager*>(this);
 
   BrowserAccessibilityManager* parent_manager = GetParentManager();
-  if (!parent_manager)
+  if (!parent_manager) {
+    // This can occur when the child frame has an embedding token, but the
+    // parent element (e.g. <iframe>) does not yet know about the child.
+    // Attempting to change this to a DCHECK() will currently cause a number of
+    // tests to fail. Ideally, we would not need this if Blink always serialized
+    // the embedding token in the child tree owning element first, before
+    // serializing the child tree.
     return nullptr;
+  }
 
   return parent_manager->GetRootManager();
 }
@@ -1793,7 +1800,7 @@ bool BrowserAccessibilityManager::IsRootTree() const {
   if (!delegate_)
     return GetTreeData().parent_tree_id == ui::AXTreeIDUnknown();
 
-  bool is_root_tree = delegate_ && delegate_->AccessibilityIsMainFrame();
+  bool is_root_tree = delegate_->AccessibilityIsMainFrame();
   DCHECK(!is_root_tree || GetParentTreeID() == ui::AXTreeIDUnknown())
       << "Root tree has parent tree id of: " << GetParentTreeID();
   return is_root_tree;
