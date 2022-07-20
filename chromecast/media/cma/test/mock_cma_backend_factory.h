@@ -22,6 +22,7 @@ class MockCmaBackendFactory : public CmaBackendFactory {
 
   MOCK_METHOD1(CreateBackend,
                std::unique_ptr<CmaBackend>(const MediaPipelineDeviceParams&));
+  MOCK_METHOD0(GetMediaTaskRunner, scoped_refptr<base::SequencedTaskRunner>());
 };
 
 }  // namespace media

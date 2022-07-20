@@ -32,6 +32,8 @@ class CmaBackendFactoryImpl : public CmaBackendFactory {
   std::unique_ptr<CmaBackend> CreateBackend(
       const MediaPipelineDeviceParams& params) override;
 
+  scoped_refptr<base::SequencedTaskRunner> GetMediaTaskRunner() override;
+
  protected:
   MediaPipelineBackendManager* media_pipeline_backend_manager() {
     return media_pipeline_backend_manager_;

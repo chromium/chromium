@@ -75,7 +75,7 @@ CmaBackendShim::CmaBackendShim(
       delegate_task_runner_(std::move(delegate_task_runner)),
       params_(params),
       backend_manager_(backend_manager),
-      media_task_runner_(backend_manager_->task_runner()),
+      media_task_runner_(backend_manager_->GetMediaTaskRunner()),
       backend_task_runner_(backend_manager_->task_runner()),
       audio_decoder_(nullptr) {
   DETACH_FROM_SEQUENCE(media_sequence_checker_);

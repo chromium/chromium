@@ -35,5 +35,10 @@ std::unique_ptr<CmaBackend> CmaBackendFactoryImpl::CreateBackend(
   return backend;
 }
 
+scoped_refptr<base::SequencedTaskRunner>
+CmaBackendFactoryImpl::GetMediaTaskRunner() {
+  return media_pipeline_backend_manager_->GetMediaTaskRunner();
+}
+
 }  // namespace media
 }  // namespace chromecast

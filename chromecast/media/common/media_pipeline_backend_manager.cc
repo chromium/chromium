@@ -84,6 +84,11 @@ std::unique_ptr<CmaBackend> MediaPipelineBackendManager::CreateBackend(
                                                        media_resource_tracker_);
 }
 
+scoped_refptr<base::SequencedTaskRunner>
+MediaPipelineBackendManager::GetMediaTaskRunner() {
+  return media_task_runner_;
+}
+
 void MediaPipelineBackendManager::BackendDestroyed(
     MediaPipelineBackendWrapper* backend_wrapper) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());

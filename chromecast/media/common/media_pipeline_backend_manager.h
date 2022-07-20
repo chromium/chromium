@@ -98,6 +98,7 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   // media::CmaBackendFactory implementation:
   std::unique_ptr<CmaBackend> CreateBackend(
       const MediaPipelineDeviceParams& params) override;
+  scoped_refptr<base::SequencedTaskRunner> GetMediaTaskRunner() override;
 
   // Inform that a backend previously created is destroyed.
   // Must be called on the same thread as |media_task_runner_|.
