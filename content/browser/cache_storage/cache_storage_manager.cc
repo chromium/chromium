@@ -409,7 +409,8 @@ void CacheStorageManager::GetAllStorageKeysUsage(
           /*total_size_bytes=*/0,
           /*last_modified=*/base::Time()));
     }
-    GetAllStorageKeysUsageGetSizes(std::move(callback), std::move(usages));
+    GetAllStorageKeysUsageGetSizes(owner, std::move(callback),
+                                   std::move(usages));
     return;
   }
 
@@ -420,11 +421,13 @@ void CacheStorageManager::GetAllStorageKeysUsage(
           base::WrapRefCounted(scheduler_task_runner_.get()), std::move(usages),
           profile_path_, owner,
           base::BindOnce(&CacheStorageManager::GetAllStorageKeysUsageGetSizes,
-                         base::WrapRefCounted(this), std::move(callback))));
+                         base::WrapRefCounted(this), owner,
+                         std::move(callback))));
 }
 
 // TODO(https://crbug.com/1304786):  Rename to or add GetAllBucketsUsageGetSizes
 void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
+    storage::mojom::CacheStorageOwner owner,
     storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback callback,
     std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -452,8 +455,7 @@ void CacheStorageManager::GetAllStorageKeysUsageGetSizes(
       continue;
     }
     CacheStorageHandle cache_storage =
-        OpenCacheStorage(blink::StorageKey(usage->origin),
-                         storage::mojom::CacheStorageOwner::kCacheAPI);
+        OpenCacheStorage(blink::StorageKey(usage->origin), owner);
     CacheStorage::From(cache_storage)
         ->Size(base::BindOnce(&OneOriginSizeReported, barrier_closure, &usage));
   }

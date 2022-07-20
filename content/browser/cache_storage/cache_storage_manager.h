@@ -144,6 +144,7 @@ class CONTENT_EXPORT CacheStorageManager
       CacheStorageMap;
 
   void GetAllStorageKeysUsageGetSizes(
+      storage::mojom::CacheStorageOwner owner,
       storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
           callback,
       std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
