@@ -12,8 +12,8 @@ component("disks") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/dbus",
-    "//chromeos/dbus/cros_disks",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
   ]
@@ -35,8 +35,8 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/cros_disks",
     "//chromeos/dbus/power:power_manager_proto",
     "//testing/gmock",
     "//testing/gtest",
@@ -53,8 +53,8 @@ source_set("unit_tests") {
     ":disks",
     ":test_support",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/cros_disks",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//testing/gmock",

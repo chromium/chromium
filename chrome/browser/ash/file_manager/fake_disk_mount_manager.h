@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
 namespace file_manager {
 

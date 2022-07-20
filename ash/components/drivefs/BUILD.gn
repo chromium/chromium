@@ -35,9 +35,9 @@ component("drivefs") {
     "//ash/components/drivefs/mojom",
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus",
-    "//chromeos/dbus/cros_disks",
     "//components/account_id",
     "//components/drive",
     "//components/signin/public/identity_manager",
@@ -61,8 +61,8 @@ source_set("test_support") {
     ":drivefs",
     "//ash/components/drivefs/mojom",
     "//base",
+    "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/cros_disks",
     "//net",
   ]
 }

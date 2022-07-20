@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "components/drive/file_errors.h"
 #include "third_party/ced/src/util/encodings/encodings.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"

@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"

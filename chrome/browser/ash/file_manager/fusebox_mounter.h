@@ -10,7 +10,7 @@
 #include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
 namespace file_manager {
 

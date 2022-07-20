@@ -7,8 +7,8 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("cros_disks") {
-  output_name = "chromeos_cros_disks"
-  defines = [ "IS_CHROMEOS_DBUS_CROS_DISKS_IMPL" ]
+  output_name = "ash_cros_disks"
+  defines = [ "IS_ASH_DBUS_CROS_DISKS_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/common",

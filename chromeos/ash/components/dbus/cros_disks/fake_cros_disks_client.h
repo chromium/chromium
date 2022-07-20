@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
-#define CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
 
 #include <set>
 #include <string>
@@ -13,13 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
 namespace chromeos {
 
 // A fake implementation of CrosDiskeClient. This class provides a fake behavior
 // and the user of this class can raise a fake mouse events.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
+class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
     : public CrosDisksClient {
  public:
   using CustomMountPointCallback =
@@ -207,4 +207,4 @@ namespace ash {
 using ::chromeos::FakeCrosDisksClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_

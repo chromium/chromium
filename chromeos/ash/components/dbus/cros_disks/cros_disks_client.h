@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
-#define CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
 
 #include <cstdint>
 #include <ostream>
@@ -79,7 +79,7 @@ enum MountError {
 };
 
 // Output operator for logging.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS)
+COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
 std::ostream& operator<<(std::ostream& out, MountError error);
 
 // Rename error reported by cros-disks.
@@ -157,7 +157,7 @@ enum RemountOption {
 };
 
 // A class to represent information about a disk sent from cros-disks.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) DiskInfo {
+class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
  public:
   DiskInfo(const std::string& device_path, dbus::Response* response);
   ~DiskInfo();
@@ -268,7 +268,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) DiskInfo {
 };
 
 // A struct to represent information about a mount point sent from cros-disks.
-struct COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) MountEntry {
+struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountEntry {
  public:
   MountEntry()
       : error_code_(MOUNT_ERROR_UNKNOWN), mount_type_(MOUNT_TYPE_INVALID) {}
@@ -297,7 +297,7 @@ struct COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) MountEntry {
 // A class to make the actual DBus calls for cros-disks service.
 // This class only makes calls, result/error handling should be done
 // by callbacks.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
+class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
     : public DBusClient {
  public:
   // A callback to handle the result of EnumerateDevices.
@@ -489,4 +489,4 @@ using ::chromeos::RENAME_ERROR_UNKNOWN;
 using ::chromeos::RenameError;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_

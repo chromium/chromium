@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
 namespace ash {
 namespace disks {
