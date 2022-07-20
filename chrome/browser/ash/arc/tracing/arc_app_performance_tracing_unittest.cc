@@ -11,8 +11,8 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
-#include "chrome/browser/ash/app_restore/arc_window_handler.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
@@ -324,8 +324,9 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           ash::Shell::GetPrimaryRootWindow());
-  std::unique_ptr<ash::full_restore::ArcWindowHandler> ghost_window_handler =
-      std::make_unique<ash::full_restore::ArcWindowHandler>();
+  std::unique_ptr<ash::full_restore::ArcGhostWindowHandler>
+      ghost_window_handler =
+          std::make_unique<ash::full_restore::ArcGhostWindowHandler>();
 
   app_restore::AppRestoreData restore_data;
   restore_data.display_id = display.id();

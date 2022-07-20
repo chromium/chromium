@@ -35,7 +35,7 @@ class AppLaunchHandler;
 
 namespace full_restore {
 class ArcAppLaunchHandlerArcAppBrowserTest;
-class ArcWindowHandler;
+class ArcGhostWindowHandler;
 class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
 
@@ -254,7 +254,7 @@ class ArcAppLaunchHandler
   std::map<int32_t, int32_t> window_id_to_session_id_;
   std::map<int32_t, int32_t> session_id_to_window_id_;
 
-  full_restore::ArcWindowHandler* window_handler_ = nullptr;
+  full_restore::ArcGhostWindowHandler* window_handler_ = nullptr;
 
   // If the system is under memory pressuure or high CPU usage rate, only launch
   // 1 window following the window stack priority. `first_run_` is used to check

@@ -17,7 +17,7 @@ class Profile;
 
 namespace ash {
 namespace full_restore {
-class ArcWindowHandler;
+class ArcGhostWindowHandler;
 class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
 
@@ -42,7 +42,7 @@ class AppRestoreArcTaskHandler : public KeyedService,
   ~AppRestoreArcTaskHandler() override;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  full_restore::ArcWindowHandler* window_handler() {
+  full_restore::ArcGhostWindowHandler* window_handler() {
     return window_handler_.get();
   }
 #endif
@@ -98,7 +98,7 @@ class AppRestoreArcTaskHandler : public KeyedService,
       arc_prefs_observer_{this};
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  std::unique_ptr<full_restore::ArcWindowHandler> window_handler_;
+  std::unique_ptr<full_restore::ArcGhostWindowHandler> window_handler_;
 #endif
 
   // Maps launch ids to ArcAppLaunchHandlers. Positive ids are used for desk

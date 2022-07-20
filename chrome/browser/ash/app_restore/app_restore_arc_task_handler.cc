@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
-#include "chrome/browser/ash/app_restore/arc_window_handler.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,7 +42,7 @@ AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (full_restore::IsArcGhostWindowEnabled())
-    window_handler_ = std::make_unique<full_restore::ArcWindowHandler>();
+    window_handler_ = std::make_unique<full_restore::ArcGhostWindowHandler>();
 #endif
 
   arc_app_launch_handlers_[kFullRestoreId] =

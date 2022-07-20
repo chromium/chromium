@@ -28,7 +28,7 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
       shell_surface_(shell_surface) {
   DCHECK(shell_surface);
 
-  observation_.Observe(ArcWindowHandler::Get());
+  observation_.Observe(ArcGhostWindowHandler::Get());
   SetDisplayId(display_id);
 }
 ArcGhostWindowDelegate::~ArcGhostWindowDelegate() = default;
@@ -132,7 +132,7 @@ void ArcGhostWindowDelegate::OnDragFinished(int x, int y, bool canceled) {}
 
 void ArcGhostWindowDelegate::OnZoomLevelChanged(exo::ZoomChange zoom_change) {}
 
-// ArcWindowHandler::Observer
+// ArcGhostWindowHandler::Observer
 void ArcGhostWindowDelegate::OnAppInstanceConnected() {
   // Update window info to ARC when app instance connected, since the previous
   // window info may not be delivered.
@@ -159,7 +159,7 @@ bool ArcGhostWindowDelegate::SetDisplayId(int64_t display_id) {
 }
 
 void ArcGhostWindowDelegate::UpdateWindowInfoToArc() {
-  ArcWindowHandler::Get()->OnWindowInfoUpdated(
+  ArcGhostWindowHandler::Get()->OnWindowInfoUpdated(
       window_id_, pending_close_ ? kNullWindowState : (int)window_state_,
       display_id_, gfx::ScaleToRoundedRect(bounds_, scale_factor_));
 }

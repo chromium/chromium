@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_HANDLER_H_
-#define CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_HANDLER_H_
+#define CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_HANDLER_H_
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "base/memory/weak_ptr.h"
@@ -19,8 +19,8 @@ struct AppRestoreData;
 namespace ash {
 namespace full_restore {
 
-// The ArcWindowHandler class provides control for ARC ghost window.
-class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
+// The ArcGhostWindowHandler class provides control for ARC ghost window.
+class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   // Map from window_session_id to exo::ClientControlledShellSurface.
   using ShellSurfaceMap =
       std::map<int, std::unique_ptr<exo::ClientControlledShellSurface>>;
@@ -56,16 +56,16 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
     ~Observer() override = default;
   };
 
-  ArcWindowHandler();
-  ArcWindowHandler(const ArcWindowHandler&) = delete;
-  ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
-  ~ArcWindowHandler() override;
+  ArcGhostWindowHandler();
+  ArcGhostWindowHandler(const ArcGhostWindowHandler&) = delete;
+  ArcGhostWindowHandler& operator=(const ArcGhostWindowHandler&) = delete;
+  ~ArcGhostWindowHandler() override;
 
-  // ArcWindowHandler is created and destroyed with the
+  // ArcGhostWindowHandler is created and destroyed with the
   // ash::AppRestore::AppRestoreArcTaskHandler.
-  // ArcWindowHandler::Get may be nullptr if accessed outside the expected
+  // ArcGhostWindowHandler::Get may be nullptr if accessed outside the expected
   // lifetime.
-  static ArcWindowHandler* Get();
+  static ArcGhostWindowHandler* Get();
 
   // Returns true if the ghost window is created and launched. Otherwise,
   // returns false.
@@ -106,10 +106,10 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
 
   base::ObserverList<Observer> observer_list_;
 
-  base::WeakPtrFactory<ArcWindowHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ArcGhostWindowHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace full_restore
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_HANDLER_H_
