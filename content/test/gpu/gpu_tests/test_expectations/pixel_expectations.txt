@@ -372,6 +372,9 @@ crbug.com/1288134 [ win10 amd-0x7340 skia-renderer-gl ] Pixel_DirectComposition_
 crbug.com/1273033 [ android android-pixel-4 ] Pixel_OffscreenCanvasTransferBeforeStyleResize [ Failure ]
 crbug.com/1273033 [ android android-pixel-4 ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
+# Pixel 4 Flaky Failures - Passthrough and Validating on Chromium
+crbug.com/1346117 [ android android-chromium android-pixel-4 ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
+
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1286919 [ android android-pixel-6 skia-renderer-vulkan android-chromium ] Pixel_Video_MP4 [ Failure ]
