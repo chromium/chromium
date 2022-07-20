@@ -1039,4 +1039,20 @@ TEST_F(NetworkServiceMemoryCacheTest,
   ASSERT_EQ(pair.client->completion_status().error_code, net::ERR_FAILED);
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_GzipResponse) {
+  constexpr int64_t kBodySize = 100;
+  const std::string kContent(kBodySize, 'x');
+  ResourceRequest request =
+      CreateRequest(base::StringPrintf("/gzip-body?%s", kContent.c_str()));
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilComplete();
+  const URLLoaderCompletionStatus& status = pair.client->completion_status();
+  ASSERT_EQ(status.error_code, net::OK);
+  ASSERT_EQ(status.decoded_body_length, kBodySize);
+  ASSERT_LT(status.encoded_body_length, kBodySize);
+}
+
 }  // namespace network

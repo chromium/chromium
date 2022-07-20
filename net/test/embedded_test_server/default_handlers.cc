@@ -793,6 +793,7 @@ std::unique_ptr<HttpResponse> HandleGzipBody(const HttpRequest& request) {
   http_response->set_content(
       std::string(compressed_body.data(), compressed_size));
   http_response->AddCustomHeader("Content-Encoding", "gzip");
+  http_response->AddCustomHeader("Cache-Control", "max-age=60");
   return http_response;
 }
 
