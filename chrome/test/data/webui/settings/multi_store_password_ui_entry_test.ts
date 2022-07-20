@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {createPasswordEntry} from './passwords_and_autofill_fake_data.js';
 
@@ -19,8 +19,6 @@ suite('MultiStorePasswordUiEntry', function() {
 
     const multiStoreDeviceEntry =
         new MultiStorePasswordUiEntry(multiStoreEntry);
-    assertTrue(multiStoreDeviceEntry.isPresentOnDevice());
-    assertTrue(multiStoreDeviceEntry.isPresentInAccount());
     assertEquals(multiStoreDeviceEntry.id, 0);
   });
 
@@ -33,8 +31,6 @@ suite('MultiStorePasswordUiEntry', function() {
     });
 
     const multiStoreDeviceEntry = new MultiStorePasswordUiEntry(accountEntry);
-    assertFalse(multiStoreDeviceEntry.isPresentOnDevice());
-    assertTrue(multiStoreDeviceEntry.isPresentInAccount());
     assertEquals(multiStoreDeviceEntry.id, 0);
   });
 
@@ -47,8 +43,6 @@ suite('MultiStorePasswordUiEntry', function() {
     });
 
     const multiStoreDeviceEntry = new MultiStorePasswordUiEntry(deviceEntry);
-    assertTrue(multiStoreDeviceEntry.isPresentOnDevice());
-    assertFalse(multiStoreDeviceEntry.isPresentInAccount());
     assertEquals(multiStoreDeviceEntry.id, 0);
   });
 });

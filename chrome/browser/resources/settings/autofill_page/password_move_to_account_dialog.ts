@@ -73,9 +73,11 @@ export class PasswordMoveToAccountDialogElement extends PolymerElement {
   }
 
   private onMoveButtonClick_() {
-    assert(this.passwordToMove.isPresentOnDevice());
+    assert(
+        this.passwordToMove.storedIn !==
+        chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
-        [this.passwordToMove.id!]);
+        [this.passwordToMove.id]);
     this.$.dialog.close();
   }
 

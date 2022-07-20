@@ -1640,8 +1640,7 @@ suite('PasswordsSection', function() {
     const toastManager = passwordsSection.$.passwordsListHandler.$.removalToast;
 
     const params = new URLSearchParams();
-    params.set('removedFromAccount', 'true');
-    params.set('removedFromDevice', 'false');
+    params.set('removedFromStores', passwordEntry.storedIn);
     Router.getInstance().navigateTo(routes.PASSWORDS, params);
 
     flush();

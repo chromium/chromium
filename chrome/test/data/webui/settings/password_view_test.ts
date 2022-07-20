@@ -112,10 +112,26 @@ suite('PasswordViewTest', function() {
                 }
               }));
 
-  [{id: 1, inDevice: false, isAccount: true, username: USERNAME},
-   {id: 2, inDevice: true, isAccount: false, username: USERNAME},
-   {id: 3, inDevice: true, isAccount: true, username: USERNAME2},
-   {id: 4, inDevice: false, isAccount: true, username: USERNAME2},
+  [{
+    id: 1,
+    storedIn: chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT,
+    username: USERNAME,
+  },
+   {
+     id: 2,
+     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+     username: USERNAME,
+   },
+   {
+     id: 3,
+     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
+     username: USERNAME2,
+   },
+   {
+     id: 4,
+     storedIn: chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT,
+     username: USERNAME2,
+   },
   ]
       .forEach(
           item => test(
@@ -162,10 +178,7 @@ suite('PasswordViewTest', function() {
                 await flushTasks();
                 assertVisibilityOfPageElements(page, /*visibility=*/ true);
                 assertEquals(item.id, page.credential!.id);
-                assertEquals(
-                    item.inDevice, page.credential!.isPresentOnDevice());
-                assertEquals(
-                    item.isAccount, page.credential!.isPresentInAccount());
+                assertEquals(item.storedIn, page.credential!.storedIn);
                 assertEquals(item.username, page.credential!.username);
                 assertEquals(SITE, page.credential!.urls.shown);
               }));
@@ -408,8 +421,7 @@ suite('PasswordViewTest', function() {
 
         assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
         const newParams = Router.getInstance().getQueryParameters();
-        assertEquals('false', newParams.get('removedFromAccount'));
-        assertEquals('true', newParams.get('removedFromDevice'));
+        assertEquals(entry.storedIn, newParams.get('removedFromStores'));
       });
 
   test(
@@ -458,8 +470,9 @@ suite('PasswordViewTest', function() {
         assertEquals(
             routes.PASSWORDS.path, Router.getInstance().getCurrentRoute().path);
         const pageParams = Router.getInstance().getQueryParameters();
-        assertEquals('true', pageParams.get('removedFromAccount'));
-        assertEquals('true', pageParams.get('removedFromDevice'));
+        assertEquals(
+            chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
+            pageParams.get('removedFromStores'));
       });
 
   test('Copy password button shows the copy toast', async function() {

@@ -567,13 +567,14 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       // Storage message is not shown in the ADD mode.
       return '';
     }
-    if (this.existingEntry!.isPresentInAccount() &&
-        this.existingEntry!.isPresentOnDevice()) {
-      return this.i18n('passwordStoredInAccountAndOnDevice');
+    switch (this.existingEntry!.storedIn) {
+      case chrome.passwordsPrivate.PasswordStoreSet.DEVICE:
+        return this.i18n('passwordStoredOnDevice');
+      case chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT:
+        return this.i18n('passwordStoredInAccount');
+      case chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT:
+        return this.i18n('passwordStoredInAccountAndOnDevice');
     }
-    return this.existingEntry!.isPresentInAccount() ?
-        this.i18n('passwordStoredInAccount') :
-        this.i18n('passwordStoredOnDevice');
   }
 
   private getStoreOptionAccountText_(): string {
@@ -747,10 +748,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     const relevantPasswords = this.dialogMode === PasswordDialogMode.EDIT ?
         // In EDIT mode entries considered duplicates only if in the same store.
         this.savedPasswords.filter(item => {
-          return item.isPresentOnDevice() ===
-              this.existingEntry!.isPresentOnDevice() ||
-              item.isPresentInAccount() ===
-              this.existingEntry!.isPresentInAccount();
+          return item.storedIn === this.existingEntry!.storedIn;
         }) :
         // In ADD mode entries considered duplicates irrespective of the store.
         this.savedPasswords;

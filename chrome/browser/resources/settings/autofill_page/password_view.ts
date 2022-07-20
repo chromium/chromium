@@ -58,8 +58,7 @@ const PasswordViewElementBase =
     };
 
 export enum PasswordRemovalUrlParams {
-  REMOVED_FROM_ACCOUNT = 'removedFromAccount',
-  REMOVED_FROM_DEVICE = 'removedFromDevice',
+  REMOVED_FROM_STORES = 'removedFromStores',
 }
 
 export enum PasswordViewPageUrlParams {
@@ -219,8 +218,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   override onPasswordRemoveDialogPasswordsRemoved(
       event: PasswordRemoveDialogPasswordsRemovedEvent) {
     super.onPasswordRemoveDialogPasswordsRemoved(event);
-    this.rerouteAndShowRemovalNotification_(
-        event.detail.removedFromAccount, event.detail.removedFromDevice);
+    this.rerouteAndShowRemovalNotification_(event.detail.removedFromStores);
   }
 
   /** Gets the title text for the show/hide icon. */
@@ -300,9 +298,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     if (!this.removePassword(this.credential)) {
       return;
     }
-    this.rerouteAndShowRemovalNotification_(
-        this.credential.isPresentInAccount(),
-        this.credential.isPresentOnDevice());
+    this.rerouteAndShowRemovalNotification_(this.credential.storedIn);
   }
 
   /** Handler to open edit dialog for the password. */
@@ -391,16 +387,13 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   /** Reroutes to PASSWORDS page and shows the removal notification */
   private rerouteAndShowRemovalNotification_(
-      removedFromAccount: boolean, removedFromDevice: boolean): void {
+      removedFromStores: chrome.passwordsPrivate.PasswordStoreSet): void {
     // TODO(https://crbug.com/1298027): find a way to reroute to
     // DEVICE_PASSWORDS if view is opened from there.
     const params = new URLSearchParams();
     params.set(
-        PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT,
-        removedFromAccount.toString());
-    params.set(
-        PasswordRemovalUrlParams.REMOVED_FROM_DEVICE,
-        removedFromDevice.toString());
+        PasswordRemovalUrlParams.REMOVED_FROM_STORES,
+        removedFromStores.toString());
     Router.getInstance().navigateTo(routes.PASSWORDS, params);
   }
 

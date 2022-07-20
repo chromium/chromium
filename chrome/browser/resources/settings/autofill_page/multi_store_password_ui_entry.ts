@@ -54,20 +54,4 @@ export class MultiStorePasswordUiEntry {
   get isAndroidCredential(): boolean {
     return this.contents_.isAndroidCredential;
   }
-
-  /**
-   * @return Whether the credential is stored on the account.
-   */
-  isPresentInAccount(): boolean {
-    return this.contents_.storedIn !==
-        chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
-  }
-
-  /**
-   * @return Whether the credential is stored on the device.
-   */
-  isPresentOnDevice(): boolean {
-    return this.contents_.storedIn !==
-        chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
-  }
 }

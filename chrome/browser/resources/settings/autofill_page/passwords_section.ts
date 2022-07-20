@@ -515,7 +515,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private computeNumberOfDevicePasswords_(): number {
-    return this.savedPasswords.filter(p => p.isPresentOnDevice()).length;
+    return this.savedPasswords
+        .filter(
+            p =>
+                p.storedIn !== chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT)
+        .length;
   }
 
   private computeHasPasswordExceptions_(): boolean {

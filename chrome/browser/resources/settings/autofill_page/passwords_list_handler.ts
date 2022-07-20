@@ -208,15 +208,13 @@ export class PasswordsListHandlerElement extends
     }
 
     const params = Router.getInstance().getQueryParameters();
-    if (!params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) ||
-        !params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE)) {
+    if (!params.get(PasswordRemovalUrlParams.REMOVED_FROM_STORES)) {
       return;
     }
     this.displayRemovalNotification_(
-        params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) === 'true',
-        params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE) === 'true');
-    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT);
-    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE);
+        params.get(PasswordRemovalUrlParams.REMOVED_FROM_STORES) as
+        chrome.passwordsPrivate.PasswordStoreSet);
+    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_STORES);
     Router.getInstance().updateRouteParams(params);
     // TODO(https://crbug.com/1298027): find a way to announce the removal toast
     // before the first item in the page
@@ -251,8 +249,7 @@ export class PasswordsListHandlerElement extends
   override onPasswordRemoveDialogPasswordsRemoved(
       event: PasswordRemoveDialogPasswordsRemovedEvent) {
     super.onPasswordRemoveDialogPasswordsRemoved(event);
-    this.displayRemovalNotification_(
-        event.detail.removedFromAccount, event.detail.removedFromDevice);
+    this.displayRemovalNotification_(event.detail.removedFromStores);
   }
 
   private onPasswordViewPageClickedEvent(event: PasswordViewPageClickedEvent) {
@@ -330,8 +327,7 @@ export class PasswordsListHandlerElement extends
     if (!this.removePassword(password)) {
       return;
     }
-    this.displayRemovalNotification_(
-        password.isPresentInAccount(), password.isPresentOnDevice());
+    this.displayRemovalNotification_(password.storedIn);
     this.activePassword_ = null;
   }
 
@@ -348,18 +344,22 @@ export class PasswordsListHandlerElement extends
    * At least one of |removedFromAccount| or |removedFromDevice| must be true.
    */
   private displayRemovalNotification_(
-      removedFromAccount: boolean, removedFromDevice: boolean) {
-    assert(removedFromAccount || removedFromDevice);
-    this.removalNotification_ = this.i18n('passwordDeleted');
+      removedFromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     if (this.isAccountStoreUser) {
-      if (removedFromAccount && removedFromDevice) {
-        this.removalNotification_ =
-            this.i18n('passwordDeletedFromAccountAndDevice');
-      } else if (removedFromAccount) {
-        this.removalNotification_ = this.i18n('passwordDeletedFromAccount');
-      } else {
-        this.removalNotification_ = this.i18n('passwordDeletedFromDevice');
+      switch (removedFromStores) {
+        case chrome.passwordsPrivate.PasswordStoreSet.DEVICE:
+          this.removalNotification_ = this.i18n('passwordDeletedFromDevice');
+          break;
+        case chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT:
+          this.removalNotification_ = this.i18n('passwordDeletedFromAccount');
+          break;
+        case chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT:
+          this.removalNotification_ =
+              this.i18n('passwordDeletedFromAccountAndDevice');
+          break;
       }
+    } else {
+      this.removalNotification_ = this.i18n('passwordDeleted');
     }
 
     this.hideToasts_();

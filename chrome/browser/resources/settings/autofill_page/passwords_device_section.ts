@@ -273,17 +273,19 @@ export class PasswordsDeviceSectionElement extends
   }
 
   private computeAllDevicePasswords_(): MultiStorePasswordUiEntry[] {
-    return this.savedPasswords.filter(p => p.isPresentOnDevice());
+    return this.savedPasswords.filter(
+        p => p.storedIn !== chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
   }
 
   private computeDeviceOnlyPasswords_(): MultiStorePasswordUiEntry[] {
     return this.savedPasswords.filter(
-        p => p.isPresentOnDevice() && !p.isPresentInAccount());
+        p => p.storedIn === chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
   }
 
   private computeDeviceAndAccountPasswords_(): MultiStorePasswordUiEntry[] {
     return this.savedPasswords.filter(
-        p => p.isPresentOnDevice() && p.isPresentInAccount());
+        p => p.storedIn ===
+            chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT);
   }
 
   private computeIsUserAllowedToAccessPage_(): boolean {

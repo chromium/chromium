@@ -29,7 +29,7 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './password_remove_dialog.html.js';
 
 export type PasswordRemoveDialogPasswordsRemovedEvent =
-    CustomEvent<{removedFromAccount: boolean, removedFromDevice: boolean}>;
+    CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;
 
 declare global {
   interface HTMLElementEventMap {
@@ -96,8 +96,9 @@ export class PasswordRemoveDialogElement extends
 
     // At creation time, the password should exist in both locations.
     assert(
-        this.duplicatedPassword.isPresentInAccount() &&
-        this.duplicatedPassword.isPresentOnDevice());
+        this.duplicatedPassword.storedIn ===
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT);
+
     this.$.dialog.showModal();
 
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(accounts => {
@@ -129,8 +130,7 @@ export class PasswordRemoveDialogElement extends
           bubbles: true,
           composed: true,
           detail: {
-            removedFromAccount: this.removeFromAccountChecked_,
-            removedFromDevice: this.removeFromDeviceChecked_,
+            removedFromStores: fromStores,
           },
         }));
   }
