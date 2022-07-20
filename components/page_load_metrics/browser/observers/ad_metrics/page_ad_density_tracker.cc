@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/page_ad_density_tracker.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/default_tick_clock.h"
@@ -283,10 +284,17 @@ void PageAdDensityTracker::CalculatePageAdDensity() {
   if (result.ad_density_by_area) {
     max_page_ad_density_by_area_ = std::max(result.ad_density_by_area.value(),
                                             max_page_ad_density_by_area_);
+
+    VLOG(2) << "page-ad-density by area: " << result.ad_density_by_area.value()
+            << " (max: " << max_page_ad_density_by_area_ << ")";
   }
   if (result.ad_density_by_height) {
     max_page_ad_density_by_height_ = std::max(
         result.ad_density_by_height.value(), max_page_ad_density_by_height_);
+
+    VLOG(2) << "page-ad-density by height: "
+            << result.ad_density_by_height.value()
+            << " (max: " << max_page_ad_density_by_height_ << ")";
   }
 }
 
@@ -298,6 +306,18 @@ void PageAdDensityTracker::CalculateViewportAdDensity() {
 
   AccumulateOutstandingViewportAdDensity();
   last_viewport_ad_density_by_area_ = result.ad_density_by_area.value();
+
+  if (VLOG_IS_ON(2)) {
+    UnivariateStats::DistributionMoments moments =
+        viewport_ad_density_by_area_stats_.CalculateStats();
+    VLOG(2) << "viewport-ad-density by area: "
+            << last_viewport_ad_density_by_area_
+            << " (mean: " << base::ClampRound(moments.mean)
+            << ", variance: " << base::ClampRound(moments.variance)
+            << ", skewness: " << base::ClampRound(moments.skewness)
+            << ", kurtosis: " << base::ClampRound(moments.excess_kurtosis)
+            << ")";
+  }
 }
 
 // Ad density measurement uses a modified Bentley's Algorithm, the high level
