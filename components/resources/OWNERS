@@ -22,5 +22,6 @@ per-file sync_driver_resources.grdp=file://components/sync/OWNERS
 per-file translate_resources.grdp=file://components/translate/OWNERS
 
 # For refactorings or mechanical horizontal changes only.
+per-file BUILD.gn=file://ui/webui/PLATFORM_OWNERS
 per-file *.grd=file://ui/webui/PLATFORM_OWNERS
 per-file *.grdp=file://ui/webui/PLATFORM_OWNERS
