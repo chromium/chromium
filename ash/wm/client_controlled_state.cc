@@ -81,7 +81,7 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     set_next_bounds_change_animation_type(kAnimationCrossFade);
     EnterNextState(window_state, next_state_type);
 
-    VLOG(1) << "Processing Pinned Transtion: event=" << event_type
+    VLOG(1) << "Processing Pinned Transition: event=" << event_type
             << ", state=" << old_state_type << "=>" << next_state_type
             << ", pinned=" << was_pinned << "=>" << window_state->IsPinned()
             << ", trusted pinned=" << was_trusted_pinned << "=>"
@@ -101,6 +101,9 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
       UpdateWindowForTransitionEvents(window_state, next_state, event_type);
       break;
     }
+    case WM_EVENT_FLOAT:
+      // TODO(crbug.com/1346061): Implement this.
+      break;
     case WM_EVENT_RESTORE:
       UpdateWindowForTransitionEvents(
           window_state, window_state->GetRestoreWindowState(), event_type);
