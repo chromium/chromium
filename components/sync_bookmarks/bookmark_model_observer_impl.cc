@@ -502,14 +502,6 @@ void BookmarkModelObserverImpl::ProcessUpdate(
   // determined here by comparing hashes.
   if (entity->MatchesSpecificsHash(specifics)) {
     // Specifics haven't actually changed, so the local change can be ignored.
-    //
-    // This is an opportunity to populate the favicon hash in sync metadata if
-    // it hasn't been populated yet. This is needed because the proto field that
-    // stores favicon hashes was introduced late. The fact that hashed specifics
-    // match implies that the favicon (which is part of specifics) must also
-    // match, hence the proto field can be safely populated.
-    bookmark_tracker_->PopulateFaviconHashIfUnset(
-        entity, specifics.bookmark().favicon());
     return;
   }
 

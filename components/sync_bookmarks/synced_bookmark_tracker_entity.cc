@@ -74,15 +74,6 @@ bool SyncedBookmarkTrackerEntity::MatchesFaviconHash(
          base::PersistentHash(favicon_png_bytes);
 }
 
-void SyncedBookmarkTrackerEntity::PopulateFaviconHashIfUnset(
-    const std::string& favicon_png_bytes) {
-  if (metadata_.has_bookmark_favicon_hash()) {
-    return;
-  }
-
-  metadata_.set_bookmark_favicon_hash(base::PersistentHash(favicon_png_bytes));
-}
-
 syncer::ClientTagHash SyncedBookmarkTrackerEntity::GetClientTagHash() const {
   return syncer::ClientTagHash::FromHashed(metadata_.client_tag_hash());
 }

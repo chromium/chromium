@@ -80,8 +80,6 @@ class SyncedBookmarkTrackerEntity {
     commit_may_have_started_ = value;
   }
 
-  void PopulateFaviconHashIfUnset(const std::string& favicon_png_bytes);
-
   syncer::ClientTagHash GetClientTagHash() const;
 
   // Returns the estimate of dynamically allocated memory in bytes.

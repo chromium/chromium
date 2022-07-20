@@ -246,13 +246,6 @@ void SyncedBookmarkTracker::UpdateServerVersion(
       server_version);
 }
 
-void SyncedBookmarkTracker::PopulateFaviconHashIfUnset(
-    const SyncedBookmarkTrackerEntity* entity,
-    const std::string& favicon_png_bytes) {
-  DCHECK(entity);
-  AsMutableEntity(entity)->PopulateFaviconHashIfUnset(favicon_png_bytes);
-}
-
 void SyncedBookmarkTracker::MarkCommitMayHaveStarted(
     const SyncedBookmarkTrackerEntity* entity) {
   DCHECK(entity);
@@ -515,6 +508,16 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
         DLOG(ERROR) << "Bookmark GUID does not match the client tag.";
         return CorruptionReason::BOOKMARK_GUID_MISMATCH;
       }
+    }
+
+    // The code populates |bookmark_favicon_hash| for all new nodes, including
+    // folders, but it is possible that folders are tracked that predate the
+    // introduction of |bookmark_favicon_hash|, which never got it populated
+    // because for some time it got populated opportunistically upon favicon
+    // load, which never triggers for folders.
+    if (!node->is_folder() &&
+        !bookmark_metadata.metadata().has_bookmark_favicon_hash()) {
+      return CorruptionReason::MISSING_FAVICON_HASH;
     }
 
     auto entity = std::make_unique<SyncedBookmarkTrackerEntity>(

@@ -55,8 +55,9 @@ enum class ExpectedCorruptionReason {
   DUPLICATED_CLIENT_TAG_HASH = 10,
   TRACKED_MANAGED_NODE = 11,
   MISSING_CLIENT_TAG_HASH = 12,
+  MISSING_FAVICON_HASH = 13,
 
-  kMaxValue = MISSING_CLIENT_TAG_HASH
+  kMaxValue = MISSING_FAVICON_HASH
 };
 
 sync_pb::EntitySpecifics GenerateSpecifics(const std::string& title,
@@ -82,6 +83,10 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
       syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
                                           node->guid().AsLowercaseString())
           .value());
+  // Required by the validation logic.
+  if (!node->is_folder()) {
+    bookmark_metadata.mutable_metadata()->set_bookmark_favicon_hash(123);
+  }
   return bookmark_metadata;
 }
 
@@ -927,6 +932,34 @@ TEST(SyncedBookmarkTrackerTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingFaviconHash) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+
+  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node0 =
+      model->AddURL(/*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
+                    GURL("http://www.url.com"));
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(model.get());
+  sync_pb::BookmarkMetadata* node0_metadata =
+      model_metadata.add_bookmarks_metadata();
+  *node0_metadata = CreateNodeMetadata(node0, /*server_id=*/"id0");
+
+  node0_metadata->mutable_metadata()->clear_bookmark_favicon_hash();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+                  model.get(), std::move(model_metadata)),
+              IsNull());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksModelMetadataCorruptionReason",
+      /*sample=*/ExpectedCorruptionReason::MISSING_FAVICON_HASH,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(SyncedBookmarkTrackerTest,
      ShouldMatchModelWithUnsyncableNodesAndMetadata) {
   auto client = std::make_unique<bookmarks::TestBookmarkClient>();
@@ -1009,7 +1042,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
   const SyncedBookmarkTrackerEntity* entity =
       tracker->GetEntityForSyncId(kSyncId);
   ASSERT_THAT(entity, NotNull());
-  ASSERT_FALSE(entity->metadata().has_bookmark_favicon_hash());
   ASSERT_FALSE(entity->MatchesFaviconHash(kFaviconPngBytes));
 
   sync_pb::EntitySpecifics specifics = GenerateSpecifics(kTitle, kUrl.spec());
@@ -1020,45 +1052,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
   EXPECT_TRUE(entity->metadata().has_bookmark_favicon_hash());
   EXPECT_TRUE(entity->MatchesFaviconHash(kFaviconPngBytes));
   EXPECT_FALSE(entity->MatchesFaviconHash("otherhash"));
-}
-
-TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashExplicitly) {
-  const std::string kSyncId = "SYNC_ID";
-  const std::string kFaviconPngBytes = "fakefaviconbytes";
-
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node =
-      model->AddURL(/*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
-                    GURL("http://www.url.com"));
-
-  sync_pb::BookmarkModelMetadata model_metadata =
-      CreateMetadataForPermanentNodes(model.get());
-
-  // Add entry for the URL node.
-  *model_metadata.add_bookmarks_metadata() = CreateNodeMetadata(node, kSyncId);
-
-  std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-          model.get(), std::move(model_metadata));
-  ASSERT_THAT(tracker, NotNull());
-
-  const SyncedBookmarkTrackerEntity* entity =
-      tracker->GetEntityForSyncId(kSyncId);
-  ASSERT_THAT(entity, NotNull());
-  ASSERT_FALSE(entity->metadata().has_bookmark_favicon_hash());
-  ASSERT_FALSE(entity->MatchesFaviconHash(kFaviconPngBytes));
-
-  tracker->PopulateFaviconHashIfUnset(entity, kFaviconPngBytes);
-  EXPECT_TRUE(entity->metadata().has_bookmark_favicon_hash());
-  EXPECT_TRUE(entity->MatchesFaviconHash(kFaviconPngBytes));
-  EXPECT_FALSE(entity->MatchesFaviconHash("otherhash"));
-
-  // Further calls should be ignored.
-  tracker->PopulateFaviconHashIfUnset(entity, "otherpngbytes");
-  EXPECT_TRUE(entity->MatchesFaviconHash(kFaviconPngBytes));
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {

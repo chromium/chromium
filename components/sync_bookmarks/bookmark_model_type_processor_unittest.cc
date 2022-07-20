@@ -142,6 +142,10 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
           .value());
   *bookmark_metadata.mutable_metadata()->mutable_unique_position() =
       unique_position.ToProto();
+  // Required by SyncedBookmarkTracker during validation of local metadata.
+  if (!node->is_folder()) {
+    bookmark_metadata.mutable_metadata()->set_bookmark_favicon_hash(123);
+  }
   return bookmark_metadata;
 }
 
