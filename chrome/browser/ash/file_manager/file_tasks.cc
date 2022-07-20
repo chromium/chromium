@@ -706,6 +706,28 @@ std::string TaskTypeToString(TaskType task_type) {
   return "";
 }
 
+bool TaskDescriptor::operator<(const TaskDescriptor& other) const {
+  if (app_id < other.app_id) {
+    return true;
+  } else if (app_id > other.app_id) {
+    return false;
+  }
+
+  // If we're here, it's because app_id == other.app_id.
+  if (task_type < other.task_type) {
+    return true;
+  } else if (task_type > other.task_type) {
+    return false;
+  }
+
+  // If we're here, it's because task_type == other.task_type.
+  if (action_id < other.action_id) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& in_task_descriptor,
                                        const std::string& in_task_title,
                                        const Verb in_task_verb,

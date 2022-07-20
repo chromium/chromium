@@ -151,6 +151,25 @@ TEST(FileManagerFileTasksTest, ParseTaskID_UnknownTaskType) {
   EXPECT_FALSE(ParseTaskID("app-id|unknown|action-id", &task));
 }
 
+TEST(FileManagerFileTasksTest, BaseContainsFindsTaskDescriptors) {
+  // Create several task descriptors that each have one field with the
+  // "smallest" value in that category. i.e. task_1 has the "smallest" app_id
+  // value, task_2 has the "smallest" task type value, and task_3 has the
+  // "smallest" action_id value.
+  TaskDescriptor task_1("a", TASK_TYPE_ARC_APP, "other");
+  TaskDescriptor task_2("b", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
+  TaskDescriptor task_3("c", TASK_TYPE_FILE_HANDLER, "edit");
+
+  std::set<TaskDescriptor> tasks;
+  tasks.insert(task_1);
+  tasks.insert(task_2);
+  tasks.insert(task_3);
+
+  ASSERT_TRUE(base::Contains(tasks, task_1));
+  ASSERT_TRUE(base::Contains(tasks, task_2));
+  ASSERT_TRUE(base::Contains(tasks, task_3));
+}
+
 // Test that the right task is chosen from multiple choices per mime types
 // and file extensions.
 TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_MultipleTasks) {

@@ -182,10 +182,7 @@ struct TaskDescriptor {
   }
   TaskDescriptor() = default;
 
-  bool operator<(const TaskDescriptor& other) const {
-    return app_id < other.app_id || task_type < other.task_type ||
-           action_id < other.action_id;
-  }
+  bool operator<(const TaskDescriptor& other) const;
 
   std::string app_id;
   TaskType task_type;
