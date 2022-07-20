@@ -15,6 +15,7 @@ android_library("java") {
     "//base:base_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
 
@@ -30,6 +31,12 @@ android_library("java") {
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraScanDialog.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraScanModel.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraScanView.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerCallbacks.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerDialog.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerModel.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/image_picker/AssistantQrCodeImagePickerView.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionBinder.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionCallback.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/permission/AssistantQrCodePermissionCoordinator.java",
@@ -44,7 +51,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/layout/autofill_assistant_qr_code_camera_scan_dialog.xml",
+    "java/res/drawable/folder_img.xml",
+    "java/res/layout/autofill_assistant_qr_code_dialog.xml",
     "java/res/layout/autofill_assistant_qr_code_permission_layout.xml",
     "java/res/values-v17/dimens.xml",
   ]

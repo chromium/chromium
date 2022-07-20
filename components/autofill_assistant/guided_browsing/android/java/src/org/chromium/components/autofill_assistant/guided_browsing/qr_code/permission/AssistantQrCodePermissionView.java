@@ -9,9 +9,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import org.chromium.components.autofill_assistant.guided_browsing.LayoutUtils;
 import org.chromium.components.autofill_assistant.guided_browsing.R;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.ChromeImageView;
 
 /**
  * Manages the Android View representing the QR Code permission.
@@ -39,7 +42,7 @@ public class AssistantQrCodePermissionView {
     /**
      * The AssistantQrCodePermissionView constructor.
      */
-    public AssistantQrCodePermissionView(Context context,
+    public AssistantQrCodePermissionView(Context context, AssistantQrCodePermissionType permission,
             AssistantQrCodePermissionView.Delegate delegate,
             AssistantQrCodePermissionCallback permissionCallback) {
         mContext = context;
@@ -51,6 +54,13 @@ public class AssistantQrCodePermissionView {
 
         mPermissionTextView = mPermissionView.findViewById(R.id.permission_text);
         mPermissionButton = mPermissionView.findViewById(R.id.permission_button);
+
+        // Updating permission view image based on the permission type.
+        ChromeImageView permissionImageView = mPermissionView.findViewById(R.id.permission_image);
+        int permissionImageResouce = mContext.getResources().getIdentifier(
+                permission.getAndroidPermissionImage(), "drawable", mContext.getPackageName());
+        permissionImageView.setImageDrawable(
+                ContextCompat.getDrawable(mContext, permissionImageResouce));
 
         updatePermissionButtonBehaviour();
     }

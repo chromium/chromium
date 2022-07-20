@@ -69,7 +69,7 @@ class AssistantQrCodeCameraScanView {
      */
     private View createRootView() {
         View dialogView = LayoutUtils.createInflater(mContext).inflate(
-                R.layout.autofill_assistant_qr_code_camera_scan_dialog, /* root= */ null);
+                R.layout.autofill_assistant_qr_code_dialog, /* root= */ null);
 
         ChromeImageButton closeButton = dialogView.findViewById(R.id.close_button);
         closeButton.setOnClickListener(v -> { mViewDelegate.onScanCancelled(); });

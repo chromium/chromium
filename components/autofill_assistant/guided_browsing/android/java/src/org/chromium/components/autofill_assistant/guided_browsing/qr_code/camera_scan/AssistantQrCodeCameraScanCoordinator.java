@@ -10,7 +10,6 @@ import android.view.View;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.AssistantQrCodeDelegate;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.permission.AssistantQrCodePermissionCallback;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.permission.AssistantQrCodePermissionCoordinator;
-import org.chromium.components.autofill_assistant.guided_browsing.qr_code.permission.AssistantQrCodePermissionModel;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.permission.AssistantQrCodePermissionType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -46,11 +45,8 @@ public class AssistantQrCodeCameraScanCoordinator {
         mWindowAndroid = windowAndroid;
         mCameraScanModel = cameraScanModel;
 
-        AssistantQrCodePermissionModel permissionModel =
-                mCameraScanModel.getCameraPermissionModel();
-
         mPermissionCoordinator = new AssistantQrCodePermissionCoordinator(mContext, mWindowAndroid,
-                permissionModel, AssistantQrCodePermissionType.CAMERA,
+                mCameraScanModel.getCameraPermissionModel(), AssistantQrCodePermissionType.CAMERA,
                 new AssistantQrCodePermissionCallback() {
                     @Override
                     public void onPermissionsChanged(boolean hasPermission) {
@@ -60,13 +56,11 @@ public class AssistantQrCodeCameraScanCoordinator {
                     }
                 });
 
-        View permissionView = mPermissionCoordinator.getView();
-
         AssistantQrCodeCameraCallbacks cameraCallbacks =
                 new AssistantQrCodeCameraCallbacks(context, cameraScanModel, dialogCallbacks);
-        mCameraScanView = new AssistantQrCodeCameraScanView(context, permissionView,
-                cameraCallbacks::onPreviewFrame, cameraCallbacks::onError,
-                new AssistantQrCodeCameraScanView.Delegate() {
+        mCameraScanView = new AssistantQrCodeCameraScanView(context,
+                mPermissionCoordinator.getView(), cameraCallbacks::onPreviewFrame,
+                cameraCallbacks::onError, new AssistantQrCodeCameraScanView.Delegate() {
                     @Override
                     public void onScanCancelled() {
                         AssistantQrCodeDelegate delegate =

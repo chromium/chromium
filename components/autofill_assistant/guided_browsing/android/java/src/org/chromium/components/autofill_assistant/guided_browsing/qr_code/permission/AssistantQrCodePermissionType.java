@@ -6,17 +6,27 @@ package org.chromium.components.autofill_assistant.guided_browsing.qr_code.permi
 
 import android.Manifest.permission;
 
+import org.chromium.ui.permissions.PermissionConstants;
+
 public enum AssistantQrCodePermissionType {
     // List of permissions should be mentioned here
-    CAMERA(permission.CAMERA);
+    CAMERA(permission.CAMERA, "camera_img"),
+    READ_MEDIA_IMAGES(PermissionConstants.READ_MEDIA_IMAGES, "folder_img"),
+    READ_EXTERNAL_STORAGE(permission.READ_EXTERNAL_STORAGE, "folder_img");
 
     private String mAndroidPermission;
+    private String mAndroidPermissionImage;
 
     public String getAndroidPermission() {
         return this.mAndroidPermission;
     }
 
-    private AssistantQrCodePermissionType(String permission) {
+    public String getAndroidPermissionImage() {
+        return this.mAndroidPermissionImage;
+    }
+
+    private AssistantQrCodePermissionType(String permission, String permissionImage) {
         this.mAndroidPermission = permission;
+        this.mAndroidPermissionImage = permissionImage;
     }
 }

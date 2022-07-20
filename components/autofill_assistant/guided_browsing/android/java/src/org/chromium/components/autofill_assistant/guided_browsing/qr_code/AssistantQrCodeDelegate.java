@@ -12,6 +12,9 @@ public interface AssistantQrCodeDelegate {
     /** Called when QR Code Scan is cancelled. */
     public void onScanCancelled();
 
+    /** Called when QR Code Scan does not produce any valid output. */
+    public void onScanFailure();
+
     /** Called when QR Code Scan fails because of Camera Error. */
     public void onCameraError();
 }

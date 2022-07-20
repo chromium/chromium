@@ -38,7 +38,7 @@ public class AssistantQrCodePermissionCoordinator {
         mRequiredPermission = requiredPermission;
 
         mPermissionView = new AssistantQrCodePermissionView(
-                context, new AssistantQrCodePermissionView.Delegate() {
+                context, requiredPermission, new AssistantQrCodePermissionView.Delegate() {
                     @Override
                     public void promptForPermission() {
                         AssistantQrCodePermissionUtils.promptForPermission(

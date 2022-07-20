@@ -20,7 +20,7 @@
         android:importantForAccessibility="no"/>
 
     <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/camera_icon"
+        android:id="@+id/permission_image"
         android:layout_marginTop="112dp"
         android:layout_gravity="center_horizontal"
         android:layout_width="150dp"

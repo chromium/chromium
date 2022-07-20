@@ -7,15 +7,24 @@ package org.chromium.chrome.browser.autofill_assistant.guided_browsing;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -28,7 +37,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Manual;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -38,6 +47,7 @@ import org.chromium.components.autofill_assistant.guided_browsing.R;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.AssistantQrCodeController;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.AssistantQrCodeDelegate;
 import org.chromium.components.autofill_assistant.guided_browsing.qr_code.camera_scan.AssistantQrCodeCameraScanModel;
+import org.chromium.components.autofill_assistant.guided_browsing.qr_code.image_picker.AssistantQrCodeImagePickerModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -63,6 +73,50 @@ public class AssistantQrCodeTest {
     @Mock
     public AssistantQrCodeDelegate mAssistantQrCodeDelegateMock;
 
+    /**
+     * Dummy Implementation of AssistantQrCodeDelegate that prints user interaction logs to
+     * STDOUT for manual testing.
+     */
+    class MockAssistantQrCodeDelegate implements AssistantQrCodeDelegate {
+        public static final String TAG = "MockAssistantQrCodeDelegate";
+
+        private Runnable mOnUserInteractionComplete;
+
+        /**
+         * Constructor for MockAssistantQrCodeDelegate.
+         *
+         * @param onUserInteractionComplete Run when any of the delegate function is called.
+         *         Used to notify the completion of user interaction.
+         */
+        public MockAssistantQrCodeDelegate(Runnable onUserInteractionComplete) {
+            mOnUserInteractionComplete = onUserInteractionComplete;
+        }
+
+        @Override
+        public void onScanResult(String value) {
+            Log.i(TAG, "Scan Result: " + value);
+            mOnUserInteractionComplete.run();
+        }
+
+        @Override
+        public void onScanCancelled() {
+            Log.i(TAG, "onScanCancelled");
+            mOnUserInteractionComplete.run();
+        }
+
+        @Override
+        public void onScanFailure() {
+            Log.i(TAG, "onScanFailure");
+            mOnUserInteractionComplete.run();
+        }
+
+        @Override
+        public void onCameraError() {
+            Log.i(TAG, "onCameraError");
+            mOnUserInteractionComplete.run();
+        }
+    }
+
     @Before
     public void setUp() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
@@ -77,13 +131,13 @@ public class AssistantQrCodeTest {
     @Test
     @MediumTest
     public void testCameraScanToolbar() {
-        // Trigger QR Code Scanning
+        // Trigger QR Code Scanning via Camera Preview
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AssistantQrCodeCameraScanModel cameraScanModel = new AssistantQrCodeCameraScanModel();
             cameraScanModel.setDelegate(mAssistantQrCodeDelegateMock);
             cameraScanModel.setToolbarTitle("Scan QR Code");
 
-            AssistantQrCodeController.promptQrCodeScan(
+            AssistantQrCodeController.promptQrCodeCameraScan(
                     getActivity(), getActivity().getWindowAndroid(), cameraScanModel);
         });
 
@@ -95,48 +149,38 @@ public class AssistantQrCodeTest {
         verify(mAssistantQrCodeDelegateMock).onScanCancelled();
     }
 
+    @Test
+    @MediumTest
+    public void testImagePickerCreatesActionPickIntent() {
+        // Initializes Intents and begins recording intents. Must be called prior to triggering
+        // any actions that send out intents which need to be verified or stubbed.
+        Intents.init();
+
+        // Stub all external intents. By default Espresso does not stub any Intent. Note that in
+        // this case, all external calls will be blocked.
+        intending(not(isInternal())).respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        // Trigger QR Code Scanning via Image Picker
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AssistantQrCodeImagePickerModel imagePickerModel =
+                    new AssistantQrCodeImagePickerModel();
+            imagePickerModel.setDelegate(mAssistantQrCodeDelegateMock);
+
+            AssistantQrCodeController.promptQrCodeImagePicker(
+                    getActivity(), getActivity().getWindowAndroid(), imagePickerModel);
+        });
+
+        // Verify that an ACTION_PICK intent is started.
+        intended(hasAction(Intent.ACTION_PICK));
+
+        // Clears Intents state.
+        Intents.release();
+    }
+
     /** Manual Test to prompt QR Code Camera Scan and wait for any user interaction. */
     @Test
-    @Manual
-    public void testpromptQrCodeScan() throws Exception {
-        /**
-         * Dummy Implementation of AssistantQrCodeDelegate that prints user interaction logs to
-         * STDOUT for manual testing.
-         */
-        class MockAssistantQrCodeDelegate implements AssistantQrCodeDelegate {
-            public static final String TAG = "MockAssistantQrCodeDelegate";
-
-            private Runnable mOnUserInteractionComplete;
-
-            /**
-             * Constructor for MockAssistantQrCodeDelegate.
-             *
-             * @param onUserInteractionComplete Run when any of the delegate function is called.
-             *         Used to notify the completion of user interaction.
-             */
-            public MockAssistantQrCodeDelegate(Runnable onUserInteractionComplete) {
-                mOnUserInteractionComplete = onUserInteractionComplete;
-            }
-
-            @Override
-            public void onScanResult(String value) {
-                Log.i(TAG, "Scan Result: " + value);
-                mOnUserInteractionComplete.run();
-            }
-
-            @Override
-            public void onScanCancelled() {
-                Log.i(TAG, "onScanCancelled");
-                mOnUserInteractionComplete.run();
-            }
-
-            @Override
-            public void onCameraError() {
-                Log.i(TAG, "onCameraError");
-                mOnUserInteractionComplete.run();
-            }
-        }
-
+    @DisabledTest(message = "Only for local testing. Not supposed in production")
+    public void testpromptQrCodeCameraScan() throws Exception {
         MockAssistantQrCodeDelegate delegate = new MockAssistantQrCodeDelegate(mRunnableMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AssistantQrCodeCameraScanModel cameraScanModel = new AssistantQrCodeCameraScanModel();
@@ -151,8 +195,33 @@ public class AssistantQrCodeTest {
             cameraScanModel.setOpenSettingsButtonText("Open Settings");
             cameraScanModel.setOverlayTitle("Focus the QR Code inside the box");
 
-            AssistantQrCodeController.promptQrCodeScan(
+            AssistantQrCodeController.promptQrCodeCameraScan(
                     getActivity(), getActivity().getWindowAndroid(), cameraScanModel);
+        });
+
+        verify(mRunnableMock, timeout(/* millis= */ 60000)).run();
+    }
+
+    /** Manual Test to prompt QR Code Image Picker and wait for any user interaction. */
+    @Test
+    @DisabledTest(message = "Only for local testing. Not supposed in production")
+    public void testpromptQrCodeImagePicker() throws Exception {
+        MockAssistantQrCodeDelegate delegate = new MockAssistantQrCodeDelegate(mRunnableMock);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AssistantQrCodeImagePickerModel imagePickerModel =
+                    new AssistantQrCodeImagePickerModel();
+            imagePickerModel.setDelegate(delegate);
+
+            // Set UI strings in model.
+            imagePickerModel.setToolbarTitle("Scan QR Code");
+            imagePickerModel.setPermissionText("Please provide permissions to access images");
+            imagePickerModel.setPermissionButtonText("Continue");
+            imagePickerModel.setOpenSettingsText(
+                    "Please enable media permissions in device settings");
+            imagePickerModel.setOpenSettingsButtonText("Open Settings");
+
+            AssistantQrCodeController.promptQrCodeImagePicker(
+                    getActivity(), getActivity().getWindowAndroid(), imagePickerModel);
         });
 
         verify(mRunnableMock, timeout(/* millis= */ 60000)).run();
