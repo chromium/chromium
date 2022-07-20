@@ -45,6 +45,7 @@
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/custom_window_state_delegate.h"
+#include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/window_properties.h"
@@ -944,8 +945,10 @@ void ShellSurfaceBase::OnSetApplicationId(const char* application_id) {
 }
 
 void ShellSurfaceBase::OnActivationRequested() {
-  if (widget_ && HasPermissionToActivate(widget_->GetNativeWindow()))
+  if (widget_ && GetSecurityDelegate() &&
+      GetSecurityDelegate()->CanSelfActivate(widget_->GetNativeWindow())) {
     this->Activate();
+  }
 }
 
 void ShellSurfaceBase::OnSetServerStartResize() {

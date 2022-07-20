@@ -208,6 +208,13 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetCentered() {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetSecurityDelegate(
+    SecurityDelegate* security_delegate) {
+  DCHECK(!built_);
+  security_delegate_ = security_delegate;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetParent(ShellSurface* parent) {
   DCHECK(!built_);
   parent_shell_surface_ = parent;
@@ -380,6 +387,10 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
 
   if (system_modal_) {
     shell_surface->SetSystemModal(true);
+  }
+
+  if (security_delegate_) {
+    shell_surface->SetSecurityDelegate(security_delegate_);
   }
 
   if (commit_on_build_) {

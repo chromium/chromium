@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "components/exo/shell_surface_util.h"
+
 namespace exo {
 
 namespace {
@@ -26,6 +28,15 @@ SecurityDelegate::~SecurityDelegate() = default;
 std::unique_ptr<SecurityDelegate>
 SecurityDelegate::GetDefaultSecurityDelegate() {
   return std::make_unique<DefaultSecurityDelegate>();
+}
+
+bool SecurityDelegate::CanSelfActivate(aura::Window* window) const {
+  // TODO(b/233691818): The default should be "false", and clients should
+  // override that if they need to self-activate.
+  //
+  // Unfortunately, several clients don't have their own SecurityDelegate yet,
+  // so we will continue to use the old exo::Permissions stuff until they do.
+  return HasPermissionToActivate(window);
 }
 
 }  // namespace exo

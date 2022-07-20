@@ -26,12 +26,14 @@
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/permission.h"
+#include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_test_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
@@ -497,7 +499,7 @@ TEST_F(ShellSurfaceTest, SetApplicationId) {
   EXPECT_EQ(nullptr, GetShellApplicationId(window));
 }
 
-TEST_F(ShellSurfaceTest, ActivationPermission) {
+TEST_F(ShellSurfaceTest, ActivationPermissionLegacy) {
   gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
@@ -528,7 +530,9 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_TRUE(HasPermissionToActivate(window));
 }
 
-TEST_F(ShellSurfaceTest, WidgetActivation) {
+TEST_F(ShellSurfaceTest, WidgetActivationLegacy) {
+  std::unique_ptr<SecurityDelegate> default_security_delegate =
+      SecurityDelegate::GetDefaultSecurityDelegate();
   gfx::Size buffer_size(64, 64);
   auto buffer1 = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
@@ -536,6 +540,7 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   auto shell_surface1 = std::make_unique<ShellSurface>(surface1.get());
   surface1->Attach(buffer1.get());
   surface1->Commit();
+  shell_surface1->SetSecurityDelegate(default_security_delegate.get());
 
   // The window is active.
   views::Widget* widget1 = shell_surface1->GetWidget();
@@ -548,6 +553,7 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
   auto shell_surface2 = std::make_unique<ShellSurface>(surface2.get());
   surface2->Attach(buffer2.get());
   surface2->Commit();
+  shell_surface2->SetSecurityDelegate(default_security_delegate.get());
 
   // Now the second window is active.
   views::Widget* widget2 = shell_surface2->GetWidget();
@@ -564,6 +570,44 @@ TEST_F(ShellSurfaceTest, WidgetActivation) {
 
   // The second window cannot activate itself.
   surface2->RequestActivation();
+  EXPECT_TRUE(widget1->IsActive());
+  EXPECT_FALSE(widget2->IsActive());
+}
+
+TEST_F(ShellSurfaceTest, WidgetActivation) {
+  test::MockSecurityDelegate security_delegate;
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<ShellSurface> shell_surface1 =
+      test::ShellSurfaceBuilder(buffer_size)
+          .SetSecurityDelegate(&security_delegate)
+          .BuildShellSurface();
+
+  // The window is active.
+  views::Widget* widget1 = shell_surface1->GetWidget();
+  EXPECT_TRUE(widget1->IsActive());
+
+  // Create a second window.
+  std::unique_ptr<ShellSurface> shell_surface2 =
+      test::ShellSurfaceBuilder(buffer_size)
+          .SetSecurityDelegate(&security_delegate)
+          .BuildShellSurface();
+
+  // Now the second window is active.
+  views::Widget* widget2 = shell_surface2->GetWidget();
+  EXPECT_FALSE(widget1->IsActive());
+  EXPECT_TRUE(widget2->IsActive());
+
+  // The first window can activate itself.
+  EXPECT_CALL(security_delegate, CanSelfActivate(widget1->GetNativeWindow()))
+      .WillOnce(testing::Return(true));
+  shell_surface1->surface_for_testing()->RequestActivation();
+  EXPECT_TRUE(widget1->IsActive());
+  EXPECT_FALSE(widget2->IsActive());
+
+  // The second window cannot activate itself.
+  EXPECT_CALL(security_delegate, CanSelfActivate(widget2->GetNativeWindow()))
+      .WillOnce(testing::Return(false));
+  shell_surface2->surface_for_testing()->RequestActivation();
   EXPECT_TRUE(widget1->IsActive());
   EXPECT_FALSE(widget2->IsActive());
 }

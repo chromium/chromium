@@ -17,6 +17,7 @@
 
 namespace exo {
 class ClientControlledShellSurface;
+class SecurityDelegate;
 class ShellSurface;
 class ShellSurfaceBase;
 class Surface;
@@ -52,6 +53,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetApplicationId(const std::string& application_id);
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
+  ShellSurfaceBuilder& SetSecurityDelegate(SecurityDelegate* security_delegate);
 
   // Sets parameters defined in ShellSurface.
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
@@ -89,6 +91,7 @@ class ShellSurfaceBuilder {
   absl::optional<gfx::Rect> geometry_;
   absl::optional<cc::Region> input_region_;
   absl::optional<SurfaceFrameType> type_;
+  SecurityDelegate* security_delegate_ = nullptr;
   std::string application_id_;
   bool use_system_modal_container_ = false;
   bool system_modal_ = false;

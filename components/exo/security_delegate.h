@@ -8,6 +8,10 @@
 #include <memory>
 #include <string>
 
+namespace aura {
+class Window;
+}
+
 namespace exo {
 
 // Defines the set of actions/associations which are needed to implement a
@@ -35,6 +39,12 @@ class SecurityDelegate {
   // server may use it, and it is an error to spawn a non-default server without
   // a security context.
   virtual std::string GetSecurityContext() const = 0;
+
+  // "Self-activation" is a security sensitive windowing operation that is a
+  // common paradigm in X11. The need to self-activate is controlled
+  // per-subsystem, i.e. a product like ARC++ knows that its windows should be
+  // able to self activate, whereas Crostini knows they usually shouldn't.
+  virtual bool CanSelfActivate(aura::Window* window) const;
 };
 
 }  // namespace exo
