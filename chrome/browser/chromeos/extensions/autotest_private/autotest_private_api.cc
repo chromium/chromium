@@ -4589,7 +4589,7 @@ ExtensionFunction::ResponseAction AutotestPrivateCloseAppWindowFunction::Run() {
 // AutotestPrivateInstallPWAForCurrentURL
 ///////////////////////////////////////////////////////////////////////////////
 
-// Used to notify when when a certain URL contains a WPA.
+// Used to notify when when a certain URL contains a PWA.
 class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
     : public webapps::AppBannerManager::Observer {
  public:
@@ -4646,7 +4646,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
   webapps::AppBannerManager* app_banner_manager_;
 };
 
-// Used to notify when a WPA is installed.
+// Used to notify when a PWA is installed.
 class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
     : public web_app::WebAppInstallManagerObserver {
  public:
@@ -4654,8 +4654,9 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
       Profile* profile,
       base::OnceCallback<void(const web_app::AppId&)> callback)
       : callback_(std::move(callback)) {
-    observation_.Observe(
-        &web_app::WebAppProvider::GetForTest(profile)->install_manager());
+    auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+    if (provider)
+      observation_.Observe(&provider->install_manager());
   }
 
   PWAInstallManagerObserver(const PWAInstallManagerObserver&) = delete;
