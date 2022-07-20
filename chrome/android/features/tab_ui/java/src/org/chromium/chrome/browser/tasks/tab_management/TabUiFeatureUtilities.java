@@ -168,12 +168,9 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabletTabGroupsEnabled(Context context) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
+                && ChromeFeatureList.sTabStripImprovements.isEnabled()
                 && ChromeFeatureList.sTabGroupsForTablets.isEnabled();
-    }
-
-    public static boolean isTabletTabManagementImprovementsEnabled(Context context) {
-        return isTabletGridTabSwitcherEnabled(context) && isTabStripImprovementsEnabled(context)
-                && isTabletTabGroupsEnabled(context);
     }
 
     /**
@@ -211,7 +208,7 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupsAndroidEnabled(Context context) {
         // Disable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return ChromeFeatureList.sTabGroupsForTablets.isEnabled();
+            return isTabletTabGroupsEnabled(context);
         }
 
         return !DeviceClassManager.enableAccessibilityLayout(context)

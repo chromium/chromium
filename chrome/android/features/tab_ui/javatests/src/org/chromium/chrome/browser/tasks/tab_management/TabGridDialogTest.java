@@ -37,6 +37,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITC
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_STRIP_IMPROVEMENTS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickNthTabInDialog;
@@ -125,7 +126,7 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Features.EnableFeatures({TAB_GRID_LAYOUT_ANDROID, TAB_GROUPS_ANDROID,
-    TAB_GROUPS_FOR_TABLETS,GRID_TAB_SWITCHER_FOR_TABLETS})
+    TAB_GROUPS_FOR_TABLETS,GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS})
 public class TabGridDialogTest {
     // clang-format on
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";

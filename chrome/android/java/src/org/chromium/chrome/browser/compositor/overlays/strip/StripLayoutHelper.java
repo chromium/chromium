@@ -1703,7 +1703,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     calculateOffsetToMakeTabVisible(mInteractingTab, true, true, true, true);
             mScroller.startScroll(
                     mScrollOffset, 0, (int) fastExpandDelta, 0, time, getExpandDuration());
-        } else if (isTabManagementImprovementsEnabled()) {
+        } else if (isTabGroupsEnabled()) {
             computeAndUpdateTabGroupMargins(true);
         }
 
@@ -1728,7 +1728,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mRunningAnimator.start();
 
         // 3. Clear any tab group margins if they are enabled.
-        if (isTabManagementImprovementsEnabled()) resetTabGroupMargins();
+        if (isTabGroupsEnabled()) resetTabGroupMargins();
 
         // 4. Request an update.
         mUpdateHost.requestUpdate();
@@ -1825,11 +1825,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int destIndex = TabModel.INVALID_TAB_INDEX;
         boolean isFirstTab = curIndex == 0;
         boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
-        boolean tabManagementImprovementsEnabled =
-                TabUiFeatureUtilities.isTabletTabManagementImprovementsEnabled(mContext);
-        boolean isInGroup = tabManagementImprovementsEnabled
+        boolean tabGroupsEnabled = TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext);
+        boolean isInGroup = tabGroupsEnabled
                 && mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
-        boolean approachingMargin = tabManagementImprovementsEnabled && towardEnd
+        boolean approachingMargin = tabGroupsEnabled && towardEnd
                 ? mInteractingTab.getTrailingMargin() > 0f
                 : (!isFirstTab && mStripTabs[curIndex - 1].getTrailingMargin() > 0f);
 
@@ -1872,7 +1871,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // 3.b. Re-compute tab group margins if necessary.
             float oldIdealX = mInteractingTab.getIdealX();
-            if (tabManagementImprovementsEnabled) computeAndUpdateTabGroupMargins(false);
+            if (tabGroupsEnabled) computeAndUpdateTabGroupMargins(false);
 
             // 3.c. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
@@ -2216,8 +2215,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                                                  : CLOSE_BTN_VISIBILITY_THRESHOLD_END);
     }
 
-    private boolean isTabManagementImprovementsEnabled() {
-        return TabUiFeatureUtilities.isTabletTabManagementImprovementsEnabled(mContext);
+    private boolean isTabGroupsEnabled() {
+        return TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext);
     }
 
     /**
