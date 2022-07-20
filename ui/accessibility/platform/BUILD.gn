@@ -87,6 +87,7 @@ source_set("platform") {
 
   public_deps = [
     "//ui/accessibility:ax_base",
+    "//ui/base:buildflags",
     "//ui/display",
   ]
 

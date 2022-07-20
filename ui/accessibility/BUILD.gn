@@ -79,16 +79,28 @@ component("ax_base") {
     "ax_tree_update_forward.h",
   ]
 
+  if (!is_chromeos_ash) {
+    sources += [
+      "ax_enum_localization_util.cc",
+      "ax_enum_localization_util.h",
+    ]
+  }
+
   public_deps = [
     ":ax_constants_mojo",
     ":ax_enums_mojo",
     "//base",
-    "//base:i18n",
-    "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/strings",
   ]
+
+  if (!is_chromeos_ash) {
+    public_deps += [
+      "//base:i18n",
+      "//ui/base",
+      "//ui/strings",
+    ]
+  }
 
   deps = [ "//build:chromeos_buildflags" ]
 

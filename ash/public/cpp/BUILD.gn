@@ -398,6 +398,7 @@ component("cpp") {
     "//ui/display",
     "//ui/events/devices",
     "//ui/message_center/public/cpp",
+    "//ui/strings:ui_strings_grit",
     "//ui/views",
     "//ui/wm",
     "//ui/wm/public",
