@@ -18,6 +18,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/network_isolation_key.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -319,6 +320,10 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
       load_flags & net::LOAD_DISABLE_CACHE) {
     return nullptr;
   }
+
+  // See comments in net::HttpCache::Transaction::WriteResponseInfoToEntry().
+  if (net::IsCertStatusError(url_request->ssl_info().cert_status))
+    return nullptr;
 
   if (!CheckSpecialRequestHeaders(url_request->extra_request_headers()))
     return nullptr;
