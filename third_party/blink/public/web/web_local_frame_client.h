@@ -669,6 +669,10 @@ class BLINK_EXPORT WebLocalFrameClient {
                                     ax::mojom::EventFrom event_from,
                                     ax::mojom::Action event_from_action) {}
 
+  // Adds automatic label annotations for |obj| and stores them
+  // in |dst|. This method assumes the object is an image.
+  virtual void AddImageAnnotations(WebAXObject& obj, ui::AXNodeData* dst) {}
+
   // Audio Output Devices API --------------------------------------------
 
   // Checks that the given audio sink exists and is authorized. The result is

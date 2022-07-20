@@ -256,6 +256,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 
+  void AddImageAnnotations(AXObject*, ui::AXNodeData*);
+
   // Set the parent of |child|. If no parent is possible, this means the child
   // can no longer be in the AXTree, so remove the child.
   AXObject* RestoreParentOrPrune(AXObject* child);

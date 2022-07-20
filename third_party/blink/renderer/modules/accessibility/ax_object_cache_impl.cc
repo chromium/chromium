@@ -3511,6 +3511,16 @@ void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, true);
 }
 
+void AXObjectCacheImpl::AddImageAnnotations(AXObject* obj,
+                                            ui::AXNodeData* node_data) {
+  WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(
+      obj->GetDocument()->AXObjectCacheOwner().GetFrame());
+  if (webframe && webframe->Client()) {
+    WebAXObject web_object(obj);
+    webframe->Client()->AddImageAnnotations(web_object, node_data);
+  }
+}
+
 void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
   if (!obj)
     return;

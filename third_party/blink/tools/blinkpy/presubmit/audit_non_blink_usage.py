@@ -673,6 +673,8 @@ _CONFIG = [
             'ui::IsDialog',
             'ui::IsHeading',
             'ui::IsLandmark',
+            'ui::IsLink',
+            'ui::IsImage',
             'ui::IsPlatformDocument',
             'ui::IsPresentational',
             'ui::IsSelectRequiredOrImplicit',

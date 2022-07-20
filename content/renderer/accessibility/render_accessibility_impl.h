@@ -131,6 +131,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
       ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
       std::vector<ui::AXEventIntent> event_intents = {},
       ax::mojom::Event event_type = ax::mojom::Event::kNone);
+  void AddImageAnnotations(blink::WebAXObject&, ui::AXNodeData* dst);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.

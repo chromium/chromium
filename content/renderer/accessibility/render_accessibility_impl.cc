@@ -490,6 +490,11 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
   ScheduleSendPendingAccessibilityEvents();
 }
 
+void RenderAccessibilityImpl::AddImageAnnotations(WebAXObject& obj,
+                                                  ui::AXNodeData* dst) {
+  tree_source_->AddImageAnnotations(obj, dst);
+}
+
 void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   const WebDocument& document = GetMainDocument();
   if (document.IsNull())

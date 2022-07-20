@@ -90,56 +90,6 @@ void CheckParentUnignoredOf(WebAXObject parent, WebAXObject child) {
 }
 #endif
 
-// Helper function that searches in the subtree of |obj| to a max
-// depth of |max_depth| for an image.
-//
-// Returns true on success, or false if it finds more than one image,
-// or any node with a name, or anything deeper than |max_depth|.
-bool SearchForExactlyOneInnerImage(WebAXObject obj,
-                                   WebAXObject* inner_image,
-                                   int max_depth) {
-  DCHECK(inner_image);
-
-  // If it's the first image, set |inner_image|. If we already
-  // found an image, fail.
-  if (ui::IsImage(obj.Role())) {
-    if (!inner_image->IsDetached())
-      return false;
-    *inner_image = obj;
-  } else {
-    // If we found something else with a name, fail.
-    if (!ui::IsPlatformDocument(obj.Role()) && !ui::IsLink(obj.Role())) {
-      blink::WebString web_name = obj.GetName();
-      if (!base::ContainsOnlyChars(web_name.Utf8(), base::kWhitespaceASCII)) {
-        return false;
-      }
-    }
-  }
-
-  // Fail if we recursed to |max_depth| and there's more of a subtree.
-  if (max_depth == 0 && obj.ChildCount())
-    return false;
-
-  // Don't count ignored nodes toward depth.
-  int next_depth = obj.AccessibilityIsIgnored() ? max_depth : max_depth - 1;
-
-  // Recurse.
-  for (unsigned int i = 0; i < obj.ChildCount(); i++) {
-    if (!SearchForExactlyOneInnerImage(obj.ChildAt(i), inner_image, next_depth))
-      return false;
-  }
-
-  return !inner_image->IsDetached();
-}
-
-// Return true if the subtree of |obj|, to a max depth of 3, contains
-// exactly one image. Return that image in |inner_image|.
-bool FindExactlyOneInnerImageInMaxDepthThree(WebAXObject obj,
-                                             WebAXObject* inner_image) {
-  DCHECK(inner_image);
-  return SearchForExactlyOneInnerImage(obj, inner_image, /* max_depth = */ 3);
-}
-
 // Ignore code that limits based on the protocol (like https, file, etc.)
 // to enable tests to run.
 bool g_ignore_protocol_checks_for_testing;
@@ -466,20 +416,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   if (src.AccessibilityIsIgnored() &&
       !dst->HasState(ax::mojom::State::kFocusable)) {
     return;
-  }
-
-  if (ui::IsImage(dst->role))
-    AddImageAnnotations(src, dst);
-
-  // If a link or web area isn't otherwise labeled and contains exactly one
-  // image (searching only to a max depth of 2), and the link doesn't have
-  // accessible text from an attribute like aria-label, then annotate the
-  // link/web area with the image's annotation, too.
-  if ((ui::IsLink(dst->role) || ui::IsPlatformDocument(dst->role)) &&
-      dst->GetNameFrom() != ax::mojom::NameFrom::kAttribute) {
-    WebAXObject inner_image;
-    if (FindExactlyOneInnerImageInMaxDepthThree(src, &inner_image))
-      AddImageAnnotations(inner_image, dst);
   }
 
   if (dst->id == image_data_node_id_) {

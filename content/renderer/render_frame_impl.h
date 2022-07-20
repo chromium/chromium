@@ -625,6 +625,7 @@ class CONTENT_EXPORT RenderFrameImpl
                             bool subtree,
                             ax::mojom::EventFrom event_from,
                             ax::mojom::Action event_from_action) override;
+  void AddImageAnnotations(blink::WebAXObject&, ui::AXNodeData* dst) override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;
