@@ -48,6 +48,70 @@ source_set("liblcasdk") {
   ]
 }
 
+source_set("libagentsdk") {
+  sources = [
+    "src/agent/include/content_analysis/sdk/analysis_agent.h",
+    "src/agent/include/content_analysis/sdk/result_codes.h",
+    "src/agent/src/agent_base.cc",
+    "src/agent/src/agent_base.h",
+    "src/agent/src/event_base.cc",
+    "src/agent/src/event_base.h",
+  ]
+
+  if (is_win) {
+    sources += [
+      "src/agent/src/agent_utils_win.cc",
+      "src/agent/src/agent_utils_win.h",
+      "src/agent/src/agent_win.cc",
+      "src/agent/src/agent_win.h",
+      "src/agent/src/event_win.cc",
+      "src/agent/src/event_win.h",
+      "src/common/utils_win.cc",
+      "src/common/utils_win.h",
+    ]
+  } else if (is_mac) {
+    sources += [
+      "src/agent/src/agent_mac.cc",
+      "src/agent/src/agent_mac.h",
+      "src/agent/src/event_mac.cc",
+      "src/agent/src/event_mac.h",
+    ]
+  } else {
+    sources += [
+      "src/agent/src/agent_posix.cc",
+      "src/agent/src/agent_posix.h",
+      "src/agent/src/event_posix.cc",
+      "src/agent/src/event_posix.h",
+    ]
+  }
+
+  include_dirs = [
+    "src",
+    "src/agent/include",
+    "gen/third_party/content_analysis_sdk/src/proto",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+executable("lca_agent") {
+  sources = [
+    "src/demo/agent.cc",
+    "src/demo/handler.h",
+  ]
+
+  include_dirs = [
+    "src",
+    "src/agent/include",
+    "gen/third_party/content_analysis_sdk/src/proto",
+  ]
+
+  public_deps = [ ":libagentsdk" ]
+}
+
 proto_library("proto") {
   proto_in_dir = "src/proto"
   sources = [ "src/proto/content_analysis/sdk/analysis.proto" ]
