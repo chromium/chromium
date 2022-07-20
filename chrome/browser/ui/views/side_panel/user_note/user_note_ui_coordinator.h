@@ -66,6 +66,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
                                UserNoteView* user_note_view);
   void OnNoteUpdated(const base::UnguessableToken& id,
                      const std::u16string& note_content);
+  void OnNoteSelected(const base::UnguessableToken& id);
 
   // UserNoteUI overrides
   void FocusNote(const base::UnguessableToken& guid) override;

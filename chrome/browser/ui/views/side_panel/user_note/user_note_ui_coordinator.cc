@@ -97,6 +97,17 @@ void UserNoteUICoordinator::OnNoteDeleted(const base::UnguessableToken& id,
   service->OnNoteDeleted(id);
 }
 
+void UserNoteUICoordinator::OnNoteSelected(const base::UnguessableToken& id) {
+  auto* service =
+      user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
+  // TODO(crbug.com/1313967): This only works because notes are only supported
+  // in the primary main frame for now. If notes are ever supported in
+  // subframes, this will need to change.
+  service->OnNoteSelected(id, browser_->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetPrimaryMainFrame());
+}
+
 void UserNoteUICoordinator::OnNoteCreationDone(
     const base::UnguessableToken& id,
     const std::u16string& note_content) {

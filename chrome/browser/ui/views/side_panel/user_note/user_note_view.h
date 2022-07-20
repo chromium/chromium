@@ -59,6 +59,11 @@ class UserNoteView : public views::View {
 
   const gfx::Rect& user_note_rect() const { return rect_; }
 
+  // views::View:
+  // TODO(crbug.com/1313967): Keyboard navigation and touchscreens are currently
+  // not handled.
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+
  private:
   void CreateOrUpdateNoteView(UserNoteView::State state,
                               base::Time date,

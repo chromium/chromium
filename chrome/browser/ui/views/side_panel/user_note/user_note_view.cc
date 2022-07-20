@@ -409,6 +409,11 @@ void UserNoteView::OnAddUserNote() {
   coordinator_->OnNoteCreationDone(user_note_id(), note_content);
 }
 
+bool UserNoteView::OnMousePressed(const ui::MouseEvent& event) {
+  coordinator_->OnNoteSelected(user_note_id());
+  return true;
+}
+
 void UserNoteView::OnEditUserNote(int event_flags) {
   const std::u16string note_content = user_note_body_->GetText();
 
