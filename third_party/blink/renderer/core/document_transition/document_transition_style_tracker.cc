@@ -968,7 +968,18 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     builder.Append(")");
   };
 
-  auto add_animation = [&builder, &append_selector](
+  auto add_plus_lighter = [&builder, &append_selector](const String& tag) {
+    append_selector("html::page-transition-image-wrapper", tag);
+    builder.Append("{ isolation: isolate; }");
+
+    append_selector("html::page-transition-incoming-image", tag);
+    builder.Append("{ mix-blend-mode: plus-lighter; }");
+
+    append_selector("html::page-transition-outgoing-image", tag);
+    builder.Append("{ mix-blend-mode: plus-lighter; }");
+  };
+
+  auto add_animation = [&builder, &append_selector, &add_plus_lighter](
                            const String& tag,
                            const TransformationMatrix& source_matrix,
                            const LayoutSize& source_size) {
@@ -993,6 +1004,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     builder.Append("{ animation: page-transition-container-anim-");
     builder.Append(tag);
     builder.Append(" 0.25s both }");
+
+    add_plus_lighter(tag);
   };
 
   // SUBTLETY AHEAD!
@@ -1025,8 +1038,9 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
 
   for (auto& root_tag : AllRootTags()) {
     // This is case 3 above.
-    if (old_root_data_ && old_root_data_->tags.Contains(root_tag) &&
-        element_data_map_.Contains(root_tag)) {
+    bool tag_is_old_root =
+        old_root_data_ && old_root_data_->tags.Contains(root_tag);
+    if (tag_is_old_root && element_data_map_.Contains(root_tag)) {
       DCHECK(
           element_data_map_.find(root_tag)->value->new_snapshot_id.IsValid());
       continue;
@@ -1042,6 +1056,11 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           right: 0;
           bottom: 0;
         })CSS");
+
+    bool tag_is_new_root =
+        new_root_data_ && new_root_data_->tags.Contains(root_tag);
+    if (tag_is_old_root && tag_is_new_root)
+      add_plus_lighter(root_tag);
   }
 
   float device_pixel_ratio = document_->DevicePixelRatio();

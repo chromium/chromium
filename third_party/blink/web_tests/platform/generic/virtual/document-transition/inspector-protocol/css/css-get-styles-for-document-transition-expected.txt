@@ -449,16 +449,48 @@ The test verifies functionality of querying style information for document-trans
                                         name : left
                                         value : 0px
                                     }
-                                    [5] : {
-                                        name : isolation
-                                        value : isolate
-                                    }
                                 ]
                                 shorthandEntries : [
                                     [0] : {
                                         name : inset
                                         value : 0px
                                     }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-image-wrapper(root)
+                                    }
+                                ]
+                                text : html::page-transition-image-wrapper(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : isolation
+                                        value : isolate
+                                    }
+                                ]
+                                shorthandEntries : [
                                 ]
                             }
                             supports : [
@@ -515,16 +547,48 @@ The test verifies functionality of querying style information for document-trans
                                         name : left
                                         value : 0px
                                     }
-                                    [5] : {
-                                        name : isolation
-                                        value : isolate
-                                    }
                                 ]
                                 shorthandEntries : [
                                     [0] : {
                                         name : inset
                                         value : 0px
                                     }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-image-wrapper(shared)
+                                    }
+                                ]
+                                text : html::page-transition-image-wrapper(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : isolation
+                                        value : isolate
+                                    }
+                                ]
+                                shorthandEntries : [
                                 ]
                             }
                             supports : [
@@ -581,10 +645,6 @@ The test verifies functionality of querying style information for document-trans
                                         value : auto
                                     }
                                     [4] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
-                                    }
-                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -669,6 +729,42 @@ The test verifies functionality of querying style information for document-trans
                         }
                     }
                     [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-outgoing-image(root)
+                                    }
+                                ]
+                                text : html::page-transition-outgoing-image(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -822,10 +918,6 @@ The test verifies functionality of querying style information for document-trans
                                         value : auto
                                     }
                                     [4] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
-                                    }
-                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -910,6 +1002,42 @@ The test verifies functionality of querying style information for document-trans
                         }
                     }
                     [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-outgoing-image(shared)
+                                    }
+                                ]
+                                text : html::page-transition-outgoing-image(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -1063,147 +1191,6 @@ The test verifies functionality of querying style information for document-trans
                                         value : auto
                                     }
                                     [4] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
-                                    }
-                                    [5] : {
-                                        name : will-change
-                                        value : opacity
-                                    }
-                                ]
-                                shorthandEntries : [
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                    [1] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        text : html::page-transition-incoming-image()
-                                    }
-                                ]
-                                text : html::page-transition-incoming-image()
-                            }
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [1] : {
-                                        name : animation-timing-function
-                                        value : ease
-                                    }
-                                    [2] : {
-                                        name : animation-delay
-                                        value : 0s
-                                    }
-                                    [3] : {
-                                        name : animation-iteration-count
-                                        value : 1
-                                    }
-                                    [4] : {
-                                        name : animation-direction
-                                        value : normal
-                                    }
-                                    [5] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [6] : {
-                                        name : animation-play-state
-                                        value : running
-                                    }
-                                    [7] : {
-                                        name : animation-name
-                                        value : blink-page-transition-fade-in
-                                    }
-                                    [8] : {
-                                        name : animation-timeline
-                                        value : auto
-                                    }
-                                ]
-                                shorthandEntries : [
-                                    [0] : {
-                                        name : animation
-                                        value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
-                                    }
-                                ]
-                            }
-                            supports : [
-                            ]
-                        }
-                    }
-                ]
-                pseudoIdentifier : root
-                pseudoType : page-transition-incoming-image
-            }
-            [8] : {
-                matches : [
-                    [0] : {
-                        matchingSelectors : [
-                            [0] : 0
-                        ]
-                        rule : {
-                            containerQueries : [
-                            ]
-                            layers : [
-                            ]
-                            media : [
-                            ]
-                            origin : user-agent
-                            scopes : [
-                            ]
-                            selectorList : {
-                                selectors : [
-                                    [0] : {
-                                        text : ::page-transition-incoming-image()
-                                    }
-                                    [1] : {
-                                        text : ::page-transition-outgoing-image()
-                                    }
-                                ]
-                                text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
-                            }
-                            style : {
-                                cssProperties : [
-                                    [0] : {
-                                        name : position
-                                        value : absolute
-                                    }
-                                    [1] : {
-                                        name : inset-block-start
-                                        value : 0px
-                                    }
-                                    [2] : {
-                                        name : inline-size
-                                        value : 100%
-                                    }
-                                    [3] : {
-                                        name : block-size
-                                        value : auto
-                                    }
-                                    [4] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
-                                    }
-                                    [5] : {
                                         name : will-change
                                         value : opacity
                                     }
@@ -1288,6 +1275,211 @@ The test verifies functionality of querying style information for document-trans
                         }
                     }
                     [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-incoming-image(root)
+                                    }
+                                ]
+                                text : html::page-transition-incoming-image(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : root
+                pseudoType : page-transition-incoming-image
+            }
+            [8] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : ::page-transition-incoming-image()
+                                    }
+                                    [1] : {
+                                        text : ::page-transition-outgoing-image()
+                                    }
+                                ]
+                                text : ::page-transition-incoming-image(), ::page-transition-outgoing-image()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : inset-block-start
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : inline-size
+                                        value : 100%
+                                    }
+                                    [3] : {
+                                        name : block-size
+                                        value : auto
+                                    }
+                                    [4] : {
+                                        name : will-change
+                                        value : opacity
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-incoming-image()
+                                    }
+                                ]
+                                text : html::page-transition-incoming-image()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : 0.25s
+                                    }
+                                    [1] : {
+                                        name : animation-timing-function
+                                        value : ease
+                                    }
+                                    [2] : {
+                                        name : animation-delay
+                                        value : 0s
+                                    }
+                                    [3] : {
+                                        name : animation-iteration-count
+                                        value : 1
+                                    }
+                                    [4] : {
+                                        name : animation-direction
+                                        value : normal
+                                    }
+                                    [5] : {
+                                        name : animation-fill-mode
+                                        value : both
+                                    }
+                                    [6] : {
+                                        name : animation-play-state
+                                        value : running
+                                    }
+                                    [7] : {
+                                        name : animation-name
+                                        value : blink-page-transition-fade-in
+                                    }
+                                    [8] : {
+                                        name : animation-timeline
+                                        value : auto
+                                    }
+                                ]
+                                shorthandEntries : [
+                                    [0] : {
+                                        name : animation
+                                        value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
+                                    }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        text : html::page-transition-incoming-image(shared)
+                                    }
+                                ]
+                                text : html::page-transition-incoming-image(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
                         matchingSelectors : [
                             [0] : 0
                         ]
@@ -1571,16 +1763,48 @@ Dumping styles for : ::page-transition-image-wrapper with id root{
                                 name : left
                                 value : 0px
                             }
-                            [5] : {
-                                name : isolation
-                                value : isolate
-                            }
                         ]
                         shorthandEntries : [
                             [0] : {
                                 name : inset
                                 value : 0px
                             }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::page-transition-image-wrapper(root)
+                            }
+                        ]
+                        text : html::page-transition-image-wrapper(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : isolation
+                                value : isolate
+                            }
+                        ]
+                        shorthandEntries : [
                         ]
                     }
                     supports : [
@@ -1639,10 +1863,6 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                                 value : auto
                             }
                             [4] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
-                            }
-                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -1727,6 +1947,42 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                 }
             }
             [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::page-transition-outgoing-image(root)
+                            }
+                        ]
+                        text : html::page-transition-outgoing-image(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -1882,10 +2138,6 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                                 value : auto
                             }
                             [4] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
-                            }
-                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -1963,6 +2215,42 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                                 name : animation
                                 value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
                             }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::page-transition-incoming-image(root)
+                            }
+                        ]
+                        text : html::page-transition-incoming-image(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
                         ]
                     }
                     supports : [
@@ -2201,16 +2489,48 @@ Dumping styles for : ::page-transition-image-wrapper with id shared{
                                 name : left
                                 value : 0px
                             }
-                            [5] : {
-                                name : isolation
-                                value : isolate
-                            }
                         ]
                         shorthandEntries : [
                             [0] : {
                                 name : inset
                                 value : 0px
                             }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::page-transition-image-wrapper(shared)
+                            }
+                        ]
+                        text : html::page-transition-image-wrapper(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : isolation
+                                value : isolate
+                            }
+                        ]
+                        shorthandEntries : [
                         ]
                     }
                     supports : [
@@ -2269,10 +2589,6 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                                 value : auto
                             }
                             [4] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
-                            }
-                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -2357,6 +2673,42 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                 }
             }
             [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::page-transition-outgoing-image(shared)
+                            }
+                        ]
+                        text : html::page-transition-outgoing-image(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
@@ -2512,10 +2864,6 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                                 value : auto
                             }
                             [4] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
-                            }
-                            [5] : {
                                 name : will-change
                                 value : opacity
                             }
@@ -2600,6 +2948,42 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                 }
             }
             [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : html::page-transition-incoming-image(shared)
+                            }
+                        ]
+                        text : html::page-transition-incoming-image(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
                 matchingSelectors : [
                     [0] : 0
                 ]
