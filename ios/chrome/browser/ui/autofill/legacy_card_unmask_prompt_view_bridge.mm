@@ -65,11 +65,18 @@ LegacyCardUnmaskPromptViewBridge::~LegacyCardUnmaskPromptViewBridge() {
 }
 
 void LegacyCardUnmaskPromptViewBridge::Show() {
-  view_controller_ =
+  card_view_controller_ =
       [[LegacyCardUnmaskPromptViewController alloc] initWithBridge:this];
+
+  view_controller_ = [[UINavigationController alloc]
+      initWithRootViewController:card_view_controller_];
   [view_controller_ setModalPresentationStyle:UIModalPresentationFormSheet];
   [view_controller_
       setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
+  // If this prompt is swiped away, it cannot be opened again. Work
+  // around this bug by preventing swipe-to-dismiss.
+  [view_controller_ setModalInPresentation:YES];
+
   [base_view_controller_ presentViewController:view_controller_
                                       animated:YES
                                     completion:nil];
@@ -81,14 +88,14 @@ void LegacyCardUnmaskPromptViewBridge::ControllerGone() {
 }
 
 void LegacyCardUnmaskPromptViewBridge::DisableAndWaitForVerification() {
-  [view_controller_ showSpinner];
+  [card_view_controller_ showSpinner];
 }
 
 void LegacyCardUnmaskPromptViewBridge::GotVerificationResult(
     const std::u16string& error_message,
     bool allow_retry) {
   if (error_message.empty()) {
-    [view_controller_ showSuccess];
+    [card_view_controller_ showSuccess];
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&LegacyCardUnmaskPromptViewBridge::PerformClose,
@@ -96,10 +103,10 @@ void LegacyCardUnmaskPromptViewBridge::GotVerificationResult(
         controller_->GetSuccessMessageDuration());
   } else {
     if (allow_retry) {
-      [view_controller_
+      [card_view_controller_
           showCVCInputFormWithError:base::SysUTF16ToNSString(error_message)];
     } else {
-      [view_controller_ showError:base::SysUTF16ToNSString(error_message)];
+      [card_view_controller_ showError:base::SysUTF16ToNSString(error_message)];
     }
   }
 }
@@ -144,7 +151,7 @@ void LegacyCardUnmaskPromptViewBridge::DeleteSelf() {
   UICollectionViewLayout* layout = [[MDCCollectionViewFlowLayout alloc] init];
   DCHECK(bridge);
   self = [super initWithLayout:layout
-                         style:CollectionViewControllerStyleAppBar];
+                         style:CollectionViewControllerStyleDefault];
   if (self) {
     _bridge = bridge;
     self.title =

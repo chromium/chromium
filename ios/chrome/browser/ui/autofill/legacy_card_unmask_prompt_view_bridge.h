@@ -54,7 +54,11 @@ class LegacyCardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   void DeleteSelf();
 
  protected:
-  LegacyCardUnmaskPromptViewController* view_controller_;
+  // The presented UINavigationController.
+  UINavigationController* view_controller_;
+
+  // The view controller with the unmask prompt UI.
+  LegacyCardUnmaskPromptViewController* card_view_controller_;
 
  private:
   // The controller `this` queries for logic and state.

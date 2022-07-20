@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -162,6 +163,11 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
   // Spin the run loop to trigger the animation.
   base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1.0));
   EXPECT_TRUE([base_view_controller.presentedViewController
+      isMemberOfClass:[UINavigationController class]]);
+  UINavigationController* navigation_controller =
+      base::mac::ObjCCast<UINavigationController>(
+          base_view_controller.presentedViewController);
+  EXPECT_TRUE([navigation_controller.topViewController
       isMemberOfClass:[LegacyCardUnmaskPromptViewController class]]);
 
   full_card_requester.OnUnmaskVerificationResult(
