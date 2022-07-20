@@ -69,6 +69,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Windows.DragEventsAfterPress" units="events"
     expires_after="2022-08-01">
+  <obsolete>
+    We stopped emitting this stat on 07/14/22 in crrev.com/c/3761201.
+  </obsolete>
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
