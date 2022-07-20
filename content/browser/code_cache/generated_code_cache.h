@@ -238,9 +238,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
   CodeCacheType cache_type_;
 
   // A hypothetical memory-backed code cache. Used to collect UMAs.
-  SimpleLruCache lru_cache_{kLruCacheCapacity};
+  SimpleLruCache lru_cache_;
   base::RepeatingTimer histograms_timer_;
-  static const int64_t kLruCacheCapacity = 50 * 1024 * 1024;
+  static constexpr int64_t kLruCacheCapacity = 50 * 1024 * 1024;
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
 };

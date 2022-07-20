@@ -371,7 +371,10 @@ GeneratedCodeCache::GeneratedCodeCache(const base::FilePath& path,
     : backend_state_(kInitializing),
       path_(path),
       max_size_bytes_(max_size_bytes),
-      cache_type_(cache_type) {
+      cache_type_(cache_type),
+      lru_cache_(max_size_bytes == 0
+                     ? kLruCacheCapacity
+                     : std::min<int64_t>(kLruCacheCapacity, max_size_bytes)) {
   CreateBackend();
   if (cache_type == CodeCacheType::kJavaScript) {
     histograms_timer_.Start(
