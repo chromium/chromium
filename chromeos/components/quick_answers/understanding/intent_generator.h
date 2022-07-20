@@ -54,7 +54,8 @@ class IntentGenerator {
 
   void MaybeLoadTextClassifier(const QuickAnswersRequest& request);
   void CheckSpellingCallback(const QuickAnswersRequest& request,
-                             bool correctness);
+                             bool correctness,
+                             const std::string& language);
 
   void LoadModelCallback(
       const QuickAnswersRequest& request,

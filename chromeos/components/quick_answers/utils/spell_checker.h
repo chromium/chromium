@@ -23,7 +23,8 @@ namespace quick_answers {
 // Utility class for spell check.
 class SpellChecker : public QuickAnswersStateObserver {
  public:
-  using CheckSpellingCallback = base::OnceCallback<void(bool)>;
+  using CheckSpellingCallback =
+      base::OnceCallback<void(bool, const std::string&)>;
   using SpellCheckLanguageIterator =
       std::vector<std::unique_ptr<SpellCheckLanguage>>::iterator;
 

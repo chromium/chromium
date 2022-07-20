@@ -16,10 +16,33 @@ namespace quick_answers {
 namespace {
 
 constexpr char kUnitConversionQueryRewriteTemplate[] = "Convert:%s";
-constexpr char kDictionaryQueryRewriteTemplate[] = "Define %s";
+constexpr char kDictionaryQueryRewriteTemplate[] = "%s %s";
 constexpr char kTranslationQueryRewriteTemplate[] = "Translate:%s";
 
+constexpr char kDictionaryQueryKeyword[] = "Define";
+constexpr char kDictionaryQueryKeywordES[] = "Definir";
+constexpr char kDictionaryQueryKeywordIT[] = "Definire";
+constexpr char kDictionaryQueryKeywordFR[] = "Définir";
+constexpr char kDictionaryQueryKeywordPT[] = "Definir";
+constexpr char kDictionaryQueryKeywordDE[] = "Definieren";
+
 }  // namespace
+
+// Get the best dictionary query keyword based on the language.
+const char* GetDictionaryQueryKeyword(const std::string& language) {
+  if (language == "es")
+    return kDictionaryQueryKeywordES;
+  if (language == "it")
+    return kDictionaryQueryKeywordIT;
+  if (language == "fr")
+    return kDictionaryQueryKeywordFR;
+  if (language == "pt")
+    return kDictionaryQueryKeywordPT;
+  if (language == "de")
+    return kDictionaryQueryKeywordDE;
+
+  return kDictionaryQueryKeyword;
+}
 
 const PreprocessedOutput PreprocessRequest(const IntentInfo& intent_info) {
   PreprocessedOutput processed_output;
@@ -33,7 +56,9 @@ const PreprocessedOutput PreprocessRequest(const IntentInfo& intent_info) {
       break;
     case IntentType::kDictionary:
       processed_output.query = base::StringPrintf(
-          kDictionaryQueryRewriteTemplate, intent_info.intent_text.c_str());
+          kDictionaryQueryRewriteTemplate,
+          GetDictionaryQueryKeyword(intent_info.source_language),
+          intent_info.intent_text.c_str());
       break;
     case IntentType::kTranslation:
       processed_output.query = base::StringPrintf(

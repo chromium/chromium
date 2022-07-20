@@ -29,7 +29,7 @@ void SpellChecker::CheckSpelling(const std::string& word,
                                  CheckSpellingCallback callback) {
   auto iterator = spellcheck_languages_.begin();
   if (iterator == spellcheck_languages_.end()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, std::string());
     return;
   }
 
@@ -108,19 +108,19 @@ void SpellChecker::CollectResults(const std::string& word,
                                   int languages_list_version,
                                   bool is_correct) {
   if (is_correct) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(true, iterator->get()->language());
     return;
   }
 
   // The languages list has been updated, return false for the current call.
   if (languages_list_version != languages_list_version_) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(false, std::string());
     return;
   }
 
   iterator++;
   if (iterator == spellcheck_languages_.end()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, std::string());
     return;
   }
 

@@ -120,9 +120,9 @@ SpellCheckLanguage::SpellCheckLanguage(
 
 SpellCheckLanguage::~SpellCheckLanguage() = default;
 
-void SpellCheckLanguage::Initialize(const std::string& locale) {
-  locale_ = locale;
-  dictionary_file_path_ = GetDictionaryFilePath(locale);
+void SpellCheckLanguage::Initialize(const std::string& language) {
+  language_ = language;
+  dictionary_file_path_ = GetDictionaryFilePath(language);
 
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
@@ -207,7 +207,7 @@ void SpellCheckLanguage::MaybeRetryInitialize() {
   }
 
   ++num_retries_;
-  Initialize(locale_);
+  Initialize(language_);
 }
 
 void SpellCheckLanguage::OnPathExistsComplete(bool path_exists) {

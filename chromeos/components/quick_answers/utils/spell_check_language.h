@@ -36,7 +36,7 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
 
   ~SpellCheckLanguage() override;
 
-  void Initialize(const std::string& locale);
+  void Initialize(const std::string& language);
 
   // Check spelling of the given word, run |callback| with true if the word is
   // spelled correctly. Virtual for testing.
@@ -46,6 +46,8 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
   base::WeakPtr<SpellCheckLanguage> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  const std::string& language() const { return language_; }
 
  private:
   void InitializeSpellCheckService();
@@ -65,7 +67,7 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
   // Task runner where the file operations takes place.
   scoped_refptr<base::SequencedTaskRunner> const task_runner_;
 
-  std::string locale_;
+  std::string language_;
 
   // Whether the spell check dictionary has been successfully initialized.
   bool dictionary_initialized_ = false;

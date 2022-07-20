@@ -48,13 +48,17 @@ class FakeSpellChecker : public SpellChecker {
   // SpellChecker:
   void CheckSpelling(const std::string& word,
                      CheckSpellingCallback callback) override {
-    std::move(callback).Run(dictionary_.find(word) != dictionary_.end());
+    std::move(callback).Run(dictionary_.find(word) != dictionary_.end(),
+                            dictionary_[word]);
   }
 
-  void AddWordToDictionary(std::string word) { dictionary_.insert(word); }
+  void AddWordToDictionary(const std::string& word,
+                           const std::string& language = "en") {
+    dictionary_.insert({word, language});
+  }
 
  private:
-  std::set<std::string> dictionary_;
+  std::map<std::string, std::string> dictionary_;
 };
 
 }  // namespace
@@ -569,6 +573,31 @@ TEST_F(IntentGeneratorTest, ShouldTriggerForSingleWordInDictionary) {
   // Should generate dictionary intent.
   EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
   EXPECT_EQ(kWord, intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, ShouldTriggerForNonEnglishWordInDictionary) {
+  const std::string kWord = "palabra";
+  const std::string kLanguage = "es";
+
+  // No Annotation provided.
+  std::vector<TextAnnotationPtr> annotations;
+  UseFakeServiceConnection(annotations);
+
+  // Add word to the dictionary.
+  spell_checker()->AddWordToDictionary(kWord, kLanguage);
+
+  // Word selected.
+  std::unique_ptr<QuickAnswersRequest> quick_answers_request =
+      std::make_unique<QuickAnswersRequest>();
+  quick_answers_request->selected_text = kWord;
+
+  intent_generator_->GenerateIntent(*quick_answers_request);
+  task_environment_.RunUntilIdle();
+
+  // Should generate dictionary intent.
+  EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
+  EXPECT_EQ(kWord, intent_info_.intent_text);
+  EXPECT_EQ(kLanguage, intent_info_.source_language);
 }
 
 TEST_F(IntentGeneratorTest,

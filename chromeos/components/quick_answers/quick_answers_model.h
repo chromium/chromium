@@ -178,8 +178,8 @@ struct IntentInfo {
   // Device language code.
   std::string device_language;
 
-  // Source language for translation query, should only be used for translation
-  // intents.
+  // Source language for definition or translation query, should only be used
+  // for definition or translation intents.
   std::string source_language;
 };
 

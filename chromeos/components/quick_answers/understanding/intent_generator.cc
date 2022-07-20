@@ -201,7 +201,8 @@ void IntentGenerator::MaybeLoadTextClassifier(
 }
 
 void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
-                                            bool correctness) {
+                                            bool correctness,
+                                            const std::string& language) {
   // Generate dictionary intent if the selected word passed spell check.
   // The dictionaries treat digits as valid words, while we will not be able to
   // grab any useful information from the Search server for words like that.
@@ -210,7 +211,8 @@ void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
   if (correctness && !HasDigits(request.selected_text)) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
-                        QuickAnswersState::Get()->application_locale()));
+                        QuickAnswersState::Get()->application_locale(),
+                        language));
 
     // Record intent source type for dictionary intent.
     RecordDictionaryIntentSource(DictionaryIntentSource::kHunspell);
