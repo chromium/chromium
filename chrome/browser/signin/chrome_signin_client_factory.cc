@@ -6,12 +6,9 @@
 
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 ChromeSigninClientFactory::ChromeSigninClientFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ChromeSigninClient",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ChromeSigninClient") {
   DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
 }
 

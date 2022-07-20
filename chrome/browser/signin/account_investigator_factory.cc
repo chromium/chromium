@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/signin/core/browser/account_investigator.h"
@@ -26,9 +25,7 @@ AccountInvestigator* AccountInvestigatorFactory::GetForProfile(
 }
 
 AccountInvestigatorFactory::AccountInvestigatorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccountInvestigator",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AccountInvestigator") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

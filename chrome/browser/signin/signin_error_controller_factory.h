@@ -6,14 +6,12 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_ERROR_CONTROLLER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/signin/core/browser/signin_error_controller.h"
-
-class Profile;
 
 // Singleton that owns all SigninErrorControllers and associates them with
 // Profiles.
-class SigninErrorControllerFactory : public BrowserContextKeyedServiceFactory {
+class SigninErrorControllerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of SigninErrorController associated with this profile
   // (creating one if none exists). Returns NULL if this profile cannot have an

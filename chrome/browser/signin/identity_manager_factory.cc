@@ -17,7 +17,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_provider.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -60,9 +59,7 @@ void IdentityManagerFactory::RegisterProfilePrefs(
 }
 
 IdentityManagerFactory::IdentityManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "IdentityManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("IdentityManager") {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DependsOn(WebDataServiceFactory::GetInstance());
 #endif

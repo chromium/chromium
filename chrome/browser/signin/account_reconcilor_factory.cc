@@ -15,7 +15,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
@@ -114,9 +113,7 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
 }  // namespace
 
 AccountReconcilorFactory::AccountReconcilorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccountReconcilor",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AccountReconcilor") {
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

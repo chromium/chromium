@@ -5,13 +5,10 @@
 #include "chrome/browser/signin/cookie_reminter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/core/browser/cookie_reminter.h"
 
 CookieReminterFactory::CookieReminterFactory()
-    : BrowserContextKeyedServiceFactory(
-          "CookieReminter",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("CookieReminter") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_ACCOUNT_INVESTIGATOR_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_ACCOUNT_INVESTIGATOR_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class Profile;
 class AccountInvestigator;
 
 namespace base {
@@ -16,7 +15,7 @@ struct DefaultSingletonTraits;
 }  // namespace base
 
 // Factory for BrowserKeyedService AccountInvestigator.
-class AccountInvestigatorFactory : public BrowserContextKeyedServiceFactory {
+class AccountInvestigatorFactory : public ProfileKeyedServiceFactory {
  public:
   static AccountInvestigator* GetForProfile(Profile* profile);
 

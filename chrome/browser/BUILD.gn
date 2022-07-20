@@ -1433,6 +1433,8 @@ static_library("browser") {
     "profiles/profile_io_data.h",
     "profiles/profile_key.cc",
     "profiles/profile_key.h",
+    "profiles/profile_keyed_service_factory.cc",
+    "profiles/profile_keyed_service_factory.h",
     "profiles/profile_manager.cc",
     "profiles/profile_manager.h",
     "profiles/profile_manager_observer.h",

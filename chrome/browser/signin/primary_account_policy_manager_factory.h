@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_SIGNIN_PRIMARY_ACCOUNT_POLICY_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/primary_account_policy_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
-class PrimaryAccountPolicyManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class PrimaryAccountPolicyManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns an instance of the factory singleton.
   static PrimaryAccountPolicyManagerFactory* GetInstance();

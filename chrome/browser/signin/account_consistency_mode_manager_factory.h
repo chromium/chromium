@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class AccountConsistencyModeManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class AccountConsistencyModeManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns an instance of the factory singleton.
   static AccountConsistencyModeManagerFactory* GetInstance();

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_APP_LOAD_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -16,7 +16,7 @@ namespace apps {
 
 class AppLoadService;
 
-class AppLoadServiceFactory : public BrowserContextKeyedServiceFactory {
+class AppLoadServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static AppLoadService* GetForBrowserContext(content::BrowserContext* context);
 
@@ -32,8 +32,6 @@ class AppLoadServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace apps

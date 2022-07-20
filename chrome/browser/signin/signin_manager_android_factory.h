@@ -7,12 +7,11 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class Profile;
 class SigninManagerAndroid;
 
-class SigninManagerAndroidFactory : public BrowserContextKeyedServiceFactory {
+class SigninManagerAndroidFactory : public ProfileKeyedServiceFactory {
  public:
   static SigninManagerAndroid* GetForProfile(Profile* profile);
 

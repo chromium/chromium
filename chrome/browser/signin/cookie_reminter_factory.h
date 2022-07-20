@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SIGNIN_COOKIE_REMINTER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class CookieReminter;
 class Profile;
 
-class CookieReminterFactory : public BrowserContextKeyedServiceFactory {
+class CookieReminterFactory : public ProfileKeyedServiceFactory {
  public:
   static CookieReminter* GetForProfile(Profile* profile);
   static CookieReminterFactory* GetInstance();

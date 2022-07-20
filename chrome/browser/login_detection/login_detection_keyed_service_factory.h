@@ -6,11 +6,7 @@
 #define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_KEYED_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-
-namespace content {
-class BrowserContext;
-}  // namespace content
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -20,8 +16,7 @@ class LoginDetectionKeyedService;
 
 // LazyInstance that owns all LoginDetectionKeyedServices and associates them
 // with Profiles.
-class LoginDetectionKeyedServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class LoginDetectionKeyedServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the LoginDetectionService for the profile.
   //
@@ -38,8 +33,6 @@ class LoginDetectionKeyedServiceFactory
   ~LoginDetectionKeyedServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

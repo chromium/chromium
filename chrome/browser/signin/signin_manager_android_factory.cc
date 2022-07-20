@@ -8,12 +8,9 @@
 #include "chrome/browser/android/signin/signin_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 SigninManagerAndroidFactory::SigninManagerAndroidFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SigninManagerAndroid",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SigninManagerAndroid") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

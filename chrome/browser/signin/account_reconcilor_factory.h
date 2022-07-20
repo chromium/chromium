@@ -8,23 +8,17 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-
-namespace signin {
-class IdentityManager;
-}
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace signin {
 class AccountReconcilorDelegate;
 }
 
 class AccountReconcilor;
-class Profile;
-class SigninClient;
 
 // Singleton that owns all AccountReconcilors and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up.
-class AccountReconcilorFactory : public BrowserContextKeyedServiceFactory {
+class AccountReconcilorFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of AccountReconcilor associated with this profile
   // (creating one if none exists). Returns NULL if this profile cannot have an

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class SigninProfileAttributesUpdater;
 
 class SigninProfileAttributesUpdaterFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Returns nullptr if this profile cannot have a
   // SigninProfileAttributesUpdater (for example, if |profile| is incognito).

@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class DiceWebSigninInterceptor;
 class Profile;
 
-class DiceWebSigninInterceptorFactory
-    : public BrowserContextKeyedServiceFactory {
+class DiceWebSigninInterceptorFactory : public ProfileKeyedServiceFactory {
  public:
   static DiceWebSigninInterceptor* GetForProfile(Profile* profile);
   static DiceWebSigninInterceptorFactory* GetInstance();

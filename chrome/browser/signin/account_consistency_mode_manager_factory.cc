@@ -5,10 +5,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 
 #include "base/check.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 // static
 AccountConsistencyModeManagerFactory*
@@ -25,9 +22,9 @@ AccountConsistencyModeManagerFactory::GetForProfile(Profile* profile) {
 }
 
 AccountConsistencyModeManagerFactory::AccountConsistencyModeManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AccountConsistencyModeManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildServicesForRegularProfile()) {}
 
 AccountConsistencyModeManagerFactory::~AccountConsistencyModeManagerFactory() =
     default;
@@ -37,9 +34,7 @@ KeyedService* AccountConsistencyModeManagerFactory::BuildServiceInstanceFor(
   DCHECK(!context->IsOffTheRecord());
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return AccountConsistencyModeManager::ShouldBuildServiceForProfile(profile)
-             ? new AccountConsistencyModeManager(profile)
-             : nullptr;
+  return new AccountConsistencyModeManager(profile);
 }
 
 void AccountConsistencyModeManagerFactory::RegisterProfilePrefs(

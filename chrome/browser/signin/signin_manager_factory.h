@@ -7,10 +7,10 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/signin_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class SigninManagerFactory : public BrowserContextKeyedServiceFactory {
+class SigninManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns an instance of the factory singleton.
   static SigninManagerFactory* GetInstance();

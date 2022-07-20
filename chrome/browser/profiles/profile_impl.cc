@@ -438,6 +438,19 @@ ProfileImpl::ProfileImpl(
   DCHECK(!path.empty()) << "Using an empty path will attempt to write "
                         << "profile files to the root directory!";
 
+  if (path == ProfileManager::GetGuestProfilePath()) {
+    profile_metrics::SetBrowserProfileType(
+        this, profile_metrics::BrowserProfileType::kGuest);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (path == ProfileManager::GetSystemProfilePath()) {
+    profile_metrics::SetBrowserProfileType(
+        this, profile_metrics::BrowserProfileType::kSystem);
+#endif
+  } else {
+    profile_metrics::SetBrowserProfileType(
+        this, profile_metrics::BrowserProfileType::kRegular);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_regular_profile = ash::ProfileHelper::IsRegularProfile(this);
 
@@ -454,19 +467,6 @@ ProfileImpl::ProfileImpl(
            "session";
   }
 #endif
-
-  if (path == ProfileManager::GetGuestProfilePath()) {
-      profile_metrics::SetBrowserProfileType(
-          this, profile_metrics::BrowserProfileType::kGuest);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (path == ProfileManager::GetSystemProfilePath()) {
-    profile_metrics::SetBrowserProfileType(
-        this, profile_metrics::BrowserProfileType::kSystem);
-#endif
-  } else {
-    profile_metrics::SetBrowserProfileType(
-        this, profile_metrics::BrowserProfileType::kRegular);
-  }
 
   // The ProfileImpl can be created both synchronously and asynchronously.
   bool async_prefs = create_mode == CREATE_MODE_ASYNCHRONOUS;

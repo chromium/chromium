@@ -10,7 +10,6 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 SigninManagerFactory* SigninManagerFactory::GetInstance() {
@@ -25,9 +24,7 @@ SigninManager* SigninManagerFactory::GetForProfile(Profile* profile) {
 }
 
 SigninManagerFactory::SigninManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SigninManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SigninManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeSigninClientFactory::GetInstance());
 }
