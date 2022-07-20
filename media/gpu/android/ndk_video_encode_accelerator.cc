@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
+#include "media/base/android/media_jni_headers/VideoEncodeAcceleratorUtil_jni.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/mediacodec_stubs.h"
@@ -44,18 +45,6 @@ struct AMediaFormatDeleter {
 };
 
 using MediaFormatPtr = std::unique_ptr<AMediaFormat, AMediaFormatDeleter>;
-
-absl::optional<PixelFormat> GetSupportedColorFormatForMime(
-    const std::string& mime) {
-  if (mime.empty())
-    return {};
-
-  auto formats = MediaCodecUtil::GetEncoderColorFormats(mime);
-  if (formats.count(COLOR_FORMAT_YUV420_SEMIPLANAR) > 0)
-    return COLOR_FORMAT_YUV420_SEMIPLANAR;
-
-  return {};
-}
 
 MediaFormatPtr CreateVideoFormat(const std::string& mime,
                                  const VideoEncodeAccelerator::Config& config,
@@ -106,16 +95,10 @@ const base::Feature kAndroidNdkVideoEncoder{"AndroidNdkVideoEncoder",
 
 static bool InitMediaCodec() {
   // We need at least Android P for AMediaCodec_getInputFormat(), but in
-  // Android P we have issues with CFI and dynamic linker on arm64.
-  const base::android::SdkVersion min_supported_version =
-#if defined(ARCH_CPU_ARMEL)
-      base::android::SDK_VERSION_P;
-#else
-      base::android::SDK_VERSION_Q;
-#endif
-
+  // Android P we have issues with CFI and dynamic linker on arm64. However
+  // GetSupportedProfiles() needs Q+, so just limit to Q.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      min_supported_version) {
+      base::android::SDK_VERSION_Q) {
     return false;
   }
 
@@ -132,29 +115,6 @@ static bool InitMediaCodec() {
     return false;
   }
   return true;
-}
-
-bool IsThereGoodMediaCodecFor(VideoCodec codec) {
-  switch (codec) {
-    case VideoCodec::kH264:
-      if (!MediaCodecUtil::IsH264EncoderAvailable())
-        return false;
-      break;
-    case VideoCodec::kVP8:
-      if (!MediaCodecUtil::IsVp8EncoderAvailable())
-        return false;
-      break;
-    default:
-      return false;
-  }
-
-  // TODO(eugene): We should allow unaccelerated MediaCodecs for H.264
-  // because on Android we don't ship a software codec of our own.
-  // It's not enough to remove a call to IsKnownUnaccelerated(), we'll also need
-  // to change MediaCodecUtil::IsH264EncoderAvailable() to allow software
-  // encoders.
-  return !MediaCodecUtil::IsKnownUnaccelerated(codec,
-                                               MediaCodecDirection::ENCODER);
 }
 
 }  // namespace
@@ -176,25 +136,39 @@ bool NdkVideoEncodeAccelerator::IsSupported() {
 VideoEncodeAccelerator::SupportedProfiles
 NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SupportedProfiles profiles;
 
+  SupportedProfiles profiles;
   if (!IsSupported())
     return profiles;
 
-  // That's what Android CTS uses, so all compliant devices should support it.
-  SupportedProfile supported_profile;
-  supported_profile.max_resolution.SetSize(1920, 1080);
-  supported_profile.max_framerate_numerator = 30;
-  supported_profile.max_framerate_denominator = 1;
-  supported_profile.rate_control_modes =
-      media::VideoEncodeAccelerator::kConstantMode |
-      media::VideoEncodeAccelerator::kVariableMode;
-
-  for (auto profile : {H264PROFILE_BASELINE, VP8PROFILE_ANY}) {
-    if (!IsThereGoodMediaCodecFor(VideoCodecProfileToVideoCodec(profile)))
-      continue;
-    supported_profile.profile = profile;
-    profiles.push_back(supported_profile);
+  // Sadly the NDK doesn't provide a mechanism for accessing the equivalent of
+  // the SDK's MediaCodecList, so we must call into Java to enumerate support.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto java_profiles =
+      Java_VideoEncodeAcceleratorUtil_getSupportedProfiles(env);
+  if (java_profiles) {
+    for (auto java_profile : java_profiles.ReadElements<jobject>()) {
+      VideoEncodeAccelerator::SupportedProfile result;
+      result.profile = static_cast<VideoCodecProfile>(
+          Java_SupportedProfileAdapter_getProfile(env, java_profile));
+      result.min_resolution = gfx::Size(
+          Java_SupportedProfileAdapter_getMinWidth(env, java_profile),
+          Java_SupportedProfileAdapter_getMinHeight(env, java_profile));
+      result.max_resolution = gfx::Size(
+          Java_SupportedProfileAdapter_getMaxWidth(env, java_profile),
+          Java_SupportedProfileAdapter_getMaxHeight(env, java_profile));
+      result.max_framerate_numerator =
+          Java_SupportedProfileAdapter_getMaxFramerateNumerator(env,
+                                                                java_profile);
+      result.max_framerate_denominator =
+          Java_SupportedProfileAdapter_getMaxFramerateDenominator(env,
+                                                                  java_profile);
+      if (Java_SupportedProfileAdapter_supportsCbr(env, java_profile))
+        result.rate_control_modes |= kConstantMode;
+      if (Java_SupportedProfileAdapter_supportsVbr(env, java_profile))
+        result.rate_control_modes |= kVariableMode;
+      profiles.push_back(result);
+    }
   }
   return profiles;
 }
@@ -241,14 +215,9 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  auto format = GetSupportedColorFormatForMime(mime);
-  if (!format.has_value()) {
-    MEDIA_LOG(ERROR, log_) << "Unsupported pixel format";
-    return false;
-  }
   effective_framerate_ = config.initial_framerate.value_or(kDefaultFramerate);
-  auto media_format =
-      CreateVideoFormat(mime, config, effective_framerate_, format.value());
+  auto media_format = CreateVideoFormat(mime, config, effective_framerate_,
+                                        COLOR_FORMAT_YUV420_SEMIPLANAR);
 
   media_codec_.reset(AMediaCodec_createEncoderByType(mime.c_str()));
   if (!media_codec_) {
@@ -706,6 +675,17 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
                                              key_frame, timestamp)));
   AMediaCodec_releaseOutputBuffer(media_codec_.get(),
                                   output_buffer.buffer_index, false);
+}
+
+bool NdkVideoEncodeAccelerator::IsThereGoodMediaCodecFor(VideoCodec codec) {
+  // GetSupportedProfiles() already accounts for codec support, so if the codec
+  // is listed it's supported.
+  static const SupportedProfiles kSupportedProfiles = GetSupportedProfiles();
+  for (const auto& profile : kSupportedProfiles) {
+    if (codec == VideoCodecProfileToVideoCodec(profile.profile))
+      return true;
+  }
+  return false;
 }
 
 }  // namespace media

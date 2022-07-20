@@ -186,7 +186,7 @@ void GpuVideoAcceleratorUtil::InsertUniqueEncodeProfiles(
   for (const auto& profile : new_profiles) {
     bool duplicate = false;
     for (const auto& media_profile : *media_profiles) {
-      if (media_profile.profile == profile.profile) {
+      if (media_profile == profile) {
         duplicate = true;
         break;
       }
