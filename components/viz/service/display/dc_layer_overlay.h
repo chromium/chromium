@@ -183,7 +183,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // `candidate_index_list` contains the indexes in `quad_list` of overlay
   // candidates.
   void RemoveClearVideoQuadCandidatesIfMoving(
-      const gfx::Transform& transform_to_root_target,
       const QuadList* quad_list,
       std::vector<size_t>* candidate_index_list);
 

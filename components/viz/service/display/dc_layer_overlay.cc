@@ -655,7 +655,6 @@ bool DCLayerOverlayProcessor::IsPreviousFrameUnderlayRect(
 }
 
 void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
-    const gfx::Transform& transform_to_root_target,
     const QuadList* quad_list,
     std::vector<size_t>* candidate_index_list) {
   // The number of frames all overlay candidates need to be stable before we
@@ -669,9 +668,7 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
     auto candidate_it = std::next(quad_list->begin(), index);
     if (IsClearVideoQuad(candidate_it)) {
       gfx::Rect quad_rectangle_in_target_space =
-          cc::MathUtil::MapEnclosingClippedRect(
-              transform_to_root_target,
-              gfx::ToEnclosingRect(ClippedQuadRectangle(*candidate_it)));
+          gfx::ToEnclosingRect(ClippedQuadRectangle(*candidate_it));
       current_frame_overlay_candidate_rects.push_back(
           quad_rectangle_in_target_space);
     }
@@ -867,9 +864,7 @@ void DCLayerOverlayProcessor::Process(
   processed_yuv_overlay_count_ = 0;
 
   if (base::FeatureList::IsEnabled(features::kDisableVideoOverlayIfMoving)) {
-    RemoveClearVideoQuadCandidatesIfMoving(
-        render_pass->transform_to_root_target, quad_list,
-        &candidate_index_list);
+    RemoveClearVideoQuadCandidatesIfMoving(quad_list, &candidate_index_list);
   }
 
   // Copy the overlay quad info to dc_layer_overlays and replace/delete overlay
