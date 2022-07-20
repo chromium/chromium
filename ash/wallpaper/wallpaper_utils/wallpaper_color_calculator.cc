@@ -77,8 +77,10 @@ WallpaperCalculatedColors CalculateWallpaperColor(
   for (size_t i = 0; i < prominent_swatches.size(); ++i)
     prominent_colors[i] = prominent_swatches[i].color;
 
-  SkColor k_mean_color =
-      color_utils::CalculateKMeanColorOfBitmap(*resized_image.bitmap());
+  constexpr color_utils::HSL kNoBounds = {-1, -1, -1};
+  SkColor k_mean_color = color_utils::CalculateKMeanColorOfBitmap(
+      *resized_image.bitmap(), resized_image.height(), kNoBounds, kNoBounds,
+      /*find_closest=*/true);
 
   UMA_HISTOGRAM_TIMES("Ash.Wallpaper.ColorExtraction.Durations",
                       base::TimeTicks::Now() - start_time);
