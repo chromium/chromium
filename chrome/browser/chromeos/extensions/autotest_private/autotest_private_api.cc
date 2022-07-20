@@ -2345,7 +2345,7 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   ash::SystemWebAppManager* swa_manager =
-      ash::SystemWebAppManager::GetForTest(profile);
+      ash::SystemWebAppManager::Get(profile);
 
   if (!swa_manager)
     return RespondNow(Error("System Web Apps are not available for profile."));
