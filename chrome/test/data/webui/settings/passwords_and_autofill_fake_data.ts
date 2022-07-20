@@ -19,6 +19,7 @@ export type PasswordEntryParams = {
   id?: number,
   inAccountStore?: boolean,
   inProfileStore?: boolean,
+  isAndroidCredential?: boolean,
   note?: string,
 };
 
@@ -59,6 +60,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     federationText: params.federationText,
     id: id,
     storedIn: storeType,
+    isAndroidCredential: params.isAndroidCredential || false,
     passwordNote: note,
   };
 }

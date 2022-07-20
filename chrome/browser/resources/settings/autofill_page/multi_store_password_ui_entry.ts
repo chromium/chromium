@@ -51,6 +51,10 @@ export class MultiStorePasswordUiEntry {
     return this.contents_.storedIn;
   }
 
+  get isAndroidCredential(): boolean {
+    return this.contents_.isAndroidCredential;
+  }
+
   /**
    * @return Whether the credential is stored on the account.
    */

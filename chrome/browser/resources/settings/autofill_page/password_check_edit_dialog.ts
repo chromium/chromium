@@ -154,8 +154,8 @@ export class SettingsPasswordCheckEditDialogElement extends
    */
   private getSiteOrApp_(): string {
     return this.i18n(
-        this.item!.isAndroidCredential ? 'editCompromisedPasswordApp' :
-                                         'editCompromisedPasswordSite');
+        this.item!.isAndroidCredential ? 'editPasswordAppLabel' :
+                                         'editPasswordWebsiteLabel');
   }
 }
 

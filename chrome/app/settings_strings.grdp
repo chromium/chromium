@@ -526,9 +526,6 @@
   <message name="IDS_SETTINGS_REMOVE_COMPROMISED_PASSWORD_CONFIRMATION_DESCRIPTION" desc="Compromised password remove dialog conformation description">
     Removing this password will not delete your account on <ph name="DOMAIN">$1<ex>airbnb.com</ex></ph>. Change your password or delete your account on <ph name="DOMAIN_LINK">$2<ex>&lt;a href="https://airbnb.com" target="_blank"&gt;airbnb.com&lt;/a&gt;</ex></ph> to keep it safe from others.
   </message>
-  <message name="IDS_SETTINGS_COMPROMISED_EDIT_PASSWORD_SITE" desc="A label for the field, which displays the site for which the password was saved. The field is part of a dialog, which allows the user to edit the password.">
-    Site
-  </message>
   <message name="IDS_SETTINGS_COMPROMISED_EDIT_PASSWORD_APP" desc="A label for the field, which displays the app for which the password was saved. The field is part of a dialog, which allows the user to edit the password.">
     App
   </message>

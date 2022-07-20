@@ -431,8 +431,12 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
    * Gets the initial text to show in the website input.
    */
   private getWebsite_(): string {
-    return this.dialogMode === PasswordDialogMode.ADD ?
-        '' :
+    if (this.dialogMode === PasswordDialogMode.ADD) {
+      return '';
+    }
+
+    return this.existingEntry!.isAndroidCredential ?
+        this.existingEntry!.urls.shown :
         this.existingEntry!.urls.link;
   }
 
@@ -627,6 +631,15 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       default:
         return '';
     }
+  }
+
+  private getLabelForWebsiteInput_(): string {
+    if (this.dialogMode === PasswordDialogMode.ADD) {
+      return this.i18n('editPasswordWebsiteLabel');
+    }
+    return this.i18n(
+        this.existingEntry!.isAndroidCredential ? 'editPasswordAppLabel' :
+                                                  'editPasswordWebsiteLabel');
   }
 
   private getClassForWebsiteInput_(): string {

@@ -30,6 +30,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -436,6 +437,8 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
       entry.password_note = base::UTF16ToUTF8(credential.note.value);
       entry.id = id;
       entry.stored_in = ConvertToAPIStore(credential.stored_in);
+      entry.is_android_credential =
+          password_manager::IsValidAndroidFacetURI(credential.signon_realm);
       if (!credential.federation_origin.opaque()) {
         std::u16string formatted_origin =
             url_formatter::FormatOriginForSecurityDisplay(

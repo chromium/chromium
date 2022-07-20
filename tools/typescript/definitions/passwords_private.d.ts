@@ -59,6 +59,7 @@ declare global {
         federationText?: string;
         id: number;
         storedIn: PasswordStoreSet;
+        isAndroidCredential: boolean;
         passwordNote: string;
       }
 

@@ -198,7 +198,9 @@ MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
   return testing::Value(expected.get().urls.link, arg.urls.link) &&
          testing::Value(expected.get().username, arg.username) &&
          testing::Value(expected.get().password_note, arg.password_note) &&
-         testing::Value(expected.get().stored_in, arg.stored_in);
+         testing::Value(expected.get().stored_in, arg.stored_in) &&
+         testing::Value(expected.get().is_android_credential,
+                        arg.is_android_credential);
 }
 
 }  // namespace
@@ -948,6 +950,29 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings,
       2);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+
+  password_manager::PasswordForm android_form;
+  android_form.signon_realm = "android://hash@example.com";
+  android_form.username_value = u"test@gmail.com";
+  android_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+  SetUpPasswordStores({android_form});
+
+  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
+
+  api::passwords_private::PasswordUiEntry expected_entry;
+  expected_entry.urls.link =
+      "https://play.google.com/store/apps/details?id=example.com";
+  expected_entry.username = "test@gmail.com";
+  expected_entry.password_note = "";
+  expected_entry.is_android_credential = true;
+  expected_entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  EXPECT_CALL(callback, Run(testing::ElementsAre(PasswordUiEntryDataEquals(
+                            testing::ByRef(expected_entry)))));
+  delegate.GetSavedPasswordsList(callback.Get());
 }
 
 }  // namespace extensions

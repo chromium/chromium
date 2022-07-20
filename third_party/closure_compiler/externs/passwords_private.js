@@ -82,6 +82,7 @@ chrome.passwordsPrivate.UrlCollection;
  *   federationText: (string|undefined),
  *   id: number,
  *   storedIn: !chrome.passwordsPrivate.PasswordStoreSet,
+ *   isAndroidCredential: boolean,
  *   passwordNote: string
  * }}
  */
