@@ -61,6 +61,8 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 
+using ::testing::_;
+
 namespace apps {
 
 namespace {
@@ -119,6 +121,31 @@ class MockAppPlatformMetricsObserver : public AppPlatformMetrics::Observer {
               (override));
 
   MOCK_METHOD(void, OnAppPlatformMetricsDestroyed, (), (override));
+};
+
+class FakePublisher : public AppPublisher {
+ public:
+  FakePublisher(AppServiceProxy* proxy, AppType app_type)
+      : AppPublisher(proxy) {
+    RegisterPublisher(app_type);
+  }
+
+  MOCK_METHOD4(Launch,
+               void(const std::string& app_id,
+                    int32_t event_flags,
+                    LaunchSource launch_source,
+                    WindowInfoPtr window_info));
+
+  MOCK_METHOD2(LaunchAppWithParams,
+               void(AppLaunchParams&& params, LaunchCallback callback));
+
+  MOCK_METHOD6(LoadIcon,
+               void(const std::string& app_id,
+                    const IconKey& icon_key,
+                    apps::IconType icon_type,
+                    int32_t size_hint_in_dip,
+                    bool allow_placeholder_icon,
+                    LoadIconCallback callback));
 };
 
 void SetScreenOff(bool is_screen_off) {
@@ -855,7 +882,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
 
   void VerifyAppsLaunchUkm(const std::string& app_info,
                            AppTypeName app_type_name,
-                           apps::mojom::LaunchSource launch_source) {
+                           LaunchSource launch_source) {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.Launch");
     int count = 0;
@@ -2078,56 +2105,75 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
+  // Simulate registering publishers for the launch interface to record metrics.
+  proxy->RegisterPublishersForTesting();
+  FakePublisher fake_arc_apps(proxy, AppType::kArc);
+  FakePublisher fake_standalone_browser(proxy, AppType::kStandaloneBrowser);
+  FakePublisher fake_standalone_browser_chrome_app(
+      proxy, AppType::kStandaloneBrowserChromeApp);
+  FakePublisher fake_standalone_browser_extension(
+      proxy, AppType::kStandaloneBrowserExtension);
+
   proxy->Launch(
       /*app_id=*/borealis::kClientAppId, ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://borealis/client", AppTypeName::kBorealis,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
 
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kBorealis);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
       /*app_id=*/borealis::FakeAppId("borealistest"), ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://borealis/123", AppTypeName::kBorealis,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
 
   VerifyAppLaunchPerAppTypeHistogram(2, AppTypeName::kBorealis);
   VerifyAppLaunchPerAppTypeV2Histogram(2, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
       /*app_id=*/crostini::CrostiniTestHelper::GenerateAppId("test"),
-      ui::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      ui::EF_NONE, LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://test/test", AppTypeName::kCrostini,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
 
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kCrostini);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kCrostini);
 
+  EXPECT_CALL(fake_arc_apps, Launch(/*app_id=*/"a", ui::EF_NONE,
+                                    LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
-      /*app_id=*/"a", ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      /*app_id=*/"a", ui::EF_NONE, LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://com.google.A", AppTypeName::kArc,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kArc);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kArc);
 
+  EXPECT_CALL(fake_standalone_browser,
+              Launch(/*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
+                     LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
       /*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(app_constants::kLacrosAppId),
                       AppTypeName::kStandaloneBrowser,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kStandaloneBrowser);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kStandaloneBrowser);
 
+  EXPECT_CALL(fake_standalone_browser_chrome_app,
+              Launch(/*app_id=*/MuxId(profile(), kChromeAppId), ui::EF_NONE,
+                     LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
       /*app_id=*/MuxId(profile(), kChromeAppId), ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(kChromeAppId),
                       AppTypeName::kStandaloneBrowserChromeApp,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(1,
                                      AppTypeName::kStandaloneBrowserChromeApp);
   VerifyAppLaunchPerAppTypeV2Histogram(
@@ -2146,37 +2192,49 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
                 /*is_platform_app=*/false, WindowMode::kWindow);
 
   // Launch `kChromeAppId1`.
+  EXPECT_CALL(fake_standalone_browser_chrome_app,
+              Launch(/*app_id=*/MuxId(profile(), kChromeAppId1), ui::EF_NONE,
+                     LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
       /*app_id=*/MuxId(profile(), kChromeAppId1), ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   // Verify `kChromeAppId1` launching as kStandaloneBrowser.
   VerifyAppsLaunchUkm("app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(2 /*launch kLacrosAppId + kChromeAppId1*/,
                                      AppTypeName::kStandaloneBrowser);
   VerifyAppLaunchPerAppTypeV2Histogram(
       1, AppTypeNameV2::kStandaloneBrowserChromeAppTab);
 
   // Launch `kChromeAppId2` in a Lacros window tab.
+  EXPECT_CALL(fake_standalone_browser_chrome_app,
+              Launch(/*app_id=*/MuxId(profile(), kChromeAppId2), ui::EF_NONE,
+                     LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
       /*app_id=*/MuxId(profile(), kChromeAppId2), ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   // Verify `kChromeAppId2` launching as kStandaloneBrowserChromeApp.
   VerifyAppsLaunchUkm("app://" + kChromeAppId2,
                       AppTypeName::kStandaloneBrowserChromeApp,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(2 /*Launch kChromeAppId + kChromeAppId2*/,
                                      AppTypeName::kStandaloneBrowserChromeApp);
   VerifyAppLaunchPerAppTypeV2Histogram(
       2 /*Launch kChromeAppId + kChromeAppId2*/,
       AppTypeNameV2::kStandaloneBrowserChromeAppWindow);
 
+  EXPECT_CALL(fake_standalone_browser_extension,
+              Launch(/*app_id=*/MuxId(profile(), kExtensionId), ui::EF_NONE,
+                     LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
       /*app_id=*/MuxId(profile(), kExtensionId), ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+      LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(kExtensionId),
                       AppTypeName::kStandaloneBrowserExtension,
-                      apps::mojom::LaunchSource::kFromChromeInternal);
+                      LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(1,
                                      AppTypeName::kStandaloneBrowserExtension);
   VerifyAppLaunchPerAppTypeV2Histogram(
@@ -2186,7 +2244,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
       /*app_id=*/"w", ui::EF_NONE, GURL("https://boo.com/a"),
       apps::mojom::LaunchSource::kFromFileManager, nullptr);
   VerifyAppsLaunchUkm("https://foo.com", GetWebAppTypeName(),
-                      apps::mojom::LaunchSource::kFromFileManager);
+                      LaunchSource::kFromFileManager);
   VerifyAppLaunchPerAppTypeHistogram(1, GetWebAppTypeName());
   VerifyAppLaunchPerAppTypeV2Histogram(
       1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
@@ -2194,31 +2252,29 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 
   // TODO(crbug.com/1253250): Register non-mojom apps and use
   // AppServiceProxy::LaunchAppWithParams to test launching.
-  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
-      apps::AppLaunchParams("w2", apps::LaunchContainer::kLaunchContainerTab,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            apps::LaunchSource::kFromTest));
+  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
+      "w2", LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
   if (IsLacrosPrimary()) {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kStandaloneBrowser,
-                        apps::mojom::LaunchSource::kFromTest);
+                        LaunchSource::kFromTest);
     VerifyAppLaunchPerAppTypeHistogram(
         3 /*Launch kLacrosAppId + kChromeAppId1 + `w2`*/,
         AppTypeName::kStandaloneBrowser);
   } else {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
-                        apps::mojom::LaunchSource::kFromTest);
+                        LaunchSource::kFromTest);
     VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
   }
   VerifyAppLaunchPerAppTypeV2Histogram(
       1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppTab
                            : AppTypeNameV2::kWebTab);
 
-  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
-      apps::AppLaunchParams("s", apps::LaunchContainer::kLaunchContainerTab,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            apps::LaunchSource::kFromTest));
+  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
+      "s", LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,
-                      apps::mojom::LaunchSource::kFromTest);
+                      LaunchSource::kFromTest);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
 }

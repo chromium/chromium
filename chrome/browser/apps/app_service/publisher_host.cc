@@ -76,6 +76,36 @@ void PublisherHost::ReInitializeCrostiniForTesting(AppServiceProxy* proxy) {
   crostini_apps_->Initialize();
 }
 
+void PublisherHost::RegisterPublishersForTesting() {
+  DCHECK(proxy_);
+  if (built_in_chrome_os_apps_) {
+    proxy_->RegisterPublisher(AppType::kBuiltIn,
+                              built_in_chrome_os_apps_.get());
+  }
+  if (crostini_apps_) {
+    proxy_->RegisterPublisher(AppType::kCrostini, crostini_apps_.get());
+  }
+  if (chrome_apps_) {
+    proxy_->RegisterPublisher(AppType::kChromeApp, chrome_apps_.get());
+  }
+  if (extension_apps_) {
+    proxy_->RegisterPublisher(AppType::kExtension, extension_apps_.get());
+  }
+  if (plugin_vm_apps_) {
+    proxy_->RegisterPublisher(AppType::kPluginVm, plugin_vm_apps_.get());
+  }
+  if (standalone_browser_apps_) {
+    proxy_->RegisterPublisher(AppType::kStandaloneBrowser,
+                              standalone_browser_apps_.get());
+  }
+  if (web_apps_) {
+    proxy_->RegisterPublisher(AppType::kWeb, web_apps_.get());
+  }
+  if (borealis_apps_) {
+    proxy_->RegisterPublisher(AppType::kBorealis, borealis_apps_.get());
+  }
+}
+
 void PublisherHost::Shutdown() {
   if (proxy_->AppService().is_connected()) {
     chrome_apps_->Shutdown();

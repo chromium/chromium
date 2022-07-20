@@ -121,6 +121,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void SetAppPlatformMetricsServiceForTesting(
       std::unique_ptr<apps::AppPlatformMetricsService>
           app_platform_metrics_service);
+  void RegisterPublishersForTesting();
 
  private:
   // For access to Initialize.

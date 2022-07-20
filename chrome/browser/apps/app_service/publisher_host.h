@@ -47,6 +47,8 @@ class PublisherHost {
 
   void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
 
+  void RegisterPublishersForTesting();
+
   void Shutdown();
 #endif
 

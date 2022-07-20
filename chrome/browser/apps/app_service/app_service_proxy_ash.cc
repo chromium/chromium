@@ -305,6 +305,12 @@ void AppServiceProxyAsh::SetAppPlatformMetricsServiceForTesting(
   app_platform_metrics_service_ = std::move(app_platform_metrics_service);
 }
 
+void AppServiceProxyAsh::RegisterPublishersForTesting() {
+  if (publisher_host_) {
+    publisher_host_->RegisterPublishersForTesting();
+  }
+}
+
 void AppServiceProxyAsh::Shutdown() {
   crosapi_subscriber_ = nullptr;
 
