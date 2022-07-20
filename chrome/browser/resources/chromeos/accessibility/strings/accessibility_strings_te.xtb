@@ -340,7 +340,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3172700825913348768">{COUNT,plural, =1{ఖాళీ}other{# ఖాళీలు}}</translation>
 <translation id="3179119189286472195">లింక్ కాదు</translation>
 <translation id="320041337977930740">ప్రదర్శన శైలిని ఇంటర్‌లీవ్‌కు మార్చు</translation>
-<translation id="3206698050650195442">ట్యుటోరియల్ నుండి నిష్క్రమించు</translation>
+<translation id="3206698050650195442">ట్యుటోరియల్ నుండి నిష్క్రమించండి</translation>
 <translation id="3208346789712025453">తర్వాత నియంత్రణ లేదు</translation>
 <translation id="321072937702597574">ముదరు ఊదా రంగు</translation>
 <translation id="3218691001991391708"><ph name="TEXT" />ని అతికించండి.</translation>
@@ -452,7 +452,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3930498801443296724">పుల్‌కోట్</translation>
 <translation id="3935615366277838204">క్యాప్ <ph name="LETTER" /></translation>
 <translation id="3936394396199829062">లావెండర్ ఎరుపు</translation>
-<translation id="3943857333388298514">అతికించు</translation>
+<translation id="3943857333388298514">పేస్ట్ చేయండి</translation>
 <translation id="3962990492275676168">ప్రస్తుత స్థానం నుండి చదవడం ప్రారంభించండి</translation>
 <translation id="3970951409746498040">ఇసుక గోధుమ రంగు</translation>
 <translation id="3989324057180830702">tgl btn</translation>
@@ -969,7 +969,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">సహజ వాయిస్</translation>
 <translation id="7714340021005120797">తర్వాత కాంబో పెట్టె లేదు</translation>
-<translation id="7724603315864178912">కత్తిరించు</translation>
+<translation id="7724603315864178912">కత్తిరించండి</translation>
 <translation id="7731785449856576010">తర్వాత మీడియా విడ్జెట్ లేదు</translation>
 <translation id="7735498529470878067">స్క్రీన్‌పై ఏముందో ఒక అంచనాకు రావడంలో తాకడం ద్వారా పరిశీలించడం మీకు సహాయపడుతుంది.</translation>
 <translation id="773906353055481349">సెల్ వారీగా నావిగేట్ చేయడం కోసం బాణం గుర్తు ఉన్న బటన్‌లతో పాటు శోధన+Ctrl+Alt నొక్కండి</translation>
@@ -1150,7 +1150,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="9077305471618729969">లేత సముద్ర ఆకుపచ్చ</translation>
 <translation id="9080299285199342830">చివరకు తీసుకెళ్లు</translation>
 <translation id="9089864840575085222">సైకిల్ టైపింగ్ అనుకరణ</translation>
-<translation id="9099429023611373837">కత్తిరించు</translation>
+<translation id="9099429023611373837">కత్తిరించండి</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{శాతం గుర్తు}other{# శాతం గుర్తులు}}</translation>
