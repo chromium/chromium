@@ -466,6 +466,14 @@ void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   }
 }
 
+void NonClientFrameViewAsh::AddedToWidget() {
+  if (!chromeos::features::IsDarkLightModeEnabled())
+    return;
+
+  highlight_border_overlay_ =
+      std::make_unique<HighlightBorderOverlay>(GetWidget());
+}
+
 // views::NonClientFrameView:
 bool NonClientFrameViewAsh::DoesIntersectRect(const views::View* target,
                                               const gfx::Rect& rect) const {
