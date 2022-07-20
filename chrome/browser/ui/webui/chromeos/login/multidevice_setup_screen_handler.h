@@ -5,26 +5,23 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class MultiDeviceSetupScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between MultiDeviceSetupScreen and its
 // WebUI representation.
-class MultiDeviceSetupScreenView {
+class MultiDeviceSetupScreenView
+    : public base::SupportsWeakPtr<MultiDeviceSetupScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"multidevice-setup-screen"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "multidevice-setup-screen", "MultiDeviceSetupScreen"};
 
   virtual ~MultiDeviceSetupScreenView() = default;
 
-  virtual void Bind(ash::MultiDeviceSetupScreen* screen) = 0;
   virtual void Show() = 0;
-  virtual void Hide() = 0;
 };
 
 // Concrete MultiDeviceSetupScreenView WebUI-based implementation.
@@ -47,13 +44,7 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
   void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // MultiDeviceSetupScreenView:
-  void Bind(ash::MultiDeviceSetupScreen* screen) override;
   void Show() override;
-  void Hide() override;
-
- private:
-  // BaseScreenHandler:
-  void InitializeDeprecated() override;
 };
 
 }  // namespace chromeos

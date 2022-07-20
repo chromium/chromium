@@ -8,6 +8,7 @@
 #include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
@@ -38,19 +39,16 @@ std::string MultiDeviceSetupScreen::GetResultString(Result result) {
 }
 
 MultiDeviceSetupScreen::MultiDeviceSetupScreen(
-    MultiDeviceSetupScreenView* view,
+    base::WeakPtr<MultiDeviceSetupScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(MultiDeviceSetupScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
-MultiDeviceSetupScreen::~MultiDeviceSetupScreen() {
-  view_->Bind(nullptr);
-}
+MultiDeviceSetupScreen::~MultiDeviceSetupScreen() = default;
 
 void MultiDeviceSetupScreen::TryInitSetupClient() {
   if (!setup_client_) {
@@ -87,7 +85,9 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* context) {
 }
 
 void MultiDeviceSetupScreen::ShowImpl() {
-  view_->Show();
+  if (view_) {
+    view_->Show();
+  }
 
   // Record that user was presented with setup flow to prevent spam
   // notifications from suggesting setup in the future.
@@ -98,12 +98,11 @@ void MultiDeviceSetupScreen::ShowImpl() {
   oobe_completion_tracker->MarkOobeShown();
 }
 
-void MultiDeviceSetupScreen::HideImpl() {
-  view_->Hide();
-}
+void MultiDeviceSetupScreen::HideImpl() {}
 
-void MultiDeviceSetupScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void MultiDeviceSetupScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
   if (action_id == kAcceptedSetupUserAction) {
     RecordMultiDeviceSetupOOBEUserChoiceHistogram(
         MultiDeviceSetupOOBEUserChoice::kAccepted);
@@ -113,7 +112,7 @@ void MultiDeviceSetupScreen::OnUserActionDeprecated(
         MultiDeviceSetupOOBEUserChoice::kDeclined);
     exit_callback_.Run(Result::NEXT);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
     NOTREACHED();
   }
 }

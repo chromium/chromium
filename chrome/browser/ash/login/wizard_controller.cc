@@ -682,7 +682,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnAssistantOptInFlowScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<MultiDeviceSetupScreen>(
-      oobe_ui->GetView<MultiDeviceSetupScreenHandler>(),
+      oobe_ui->GetView<MultiDeviceSetupScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnMultiDeviceSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<PinSetupScreen>(
