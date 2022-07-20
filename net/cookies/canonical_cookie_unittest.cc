@@ -366,10 +366,6 @@ TEST(CanonicalCookieTest, Create) {
 // Test that a cookie string with an empty domain attribute generates a
 // canonical host cookie.
 TEST(CanonicalCookieTest, CreateHostCookieFromString) {
-  // Enable the feature flag for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kCookieDomainAttributeEmptyString);
   // Create a new canonical host cookie via empty string domain in the
   // cookie_line.
   GURL url("http://www.example.com/test/foo.html");

@@ -877,10 +877,6 @@ TEST(ParsedCookieTest, SetAttributes) {
 
 // Setting the domain attribute to the empty string should be valid.
 TEST(ParsedCookieTest, EmptyDomainAttributeValid) {
-  // Enable the feature flag for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kCookieDomainAttributeEmptyString);
   ParsedCookie pc("name=value; domain=");
   EXPECT_TRUE(pc.IsValid());
 }
@@ -888,10 +884,6 @@ TEST(ParsedCookieTest, EmptyDomainAttributeValid) {
 // Set the domain attribute twice in a cookie line. If the second attribute's
 // value is empty, it should equal the empty string.
 TEST(ParsedCookieTest, MultipleDomainAttributes) {
-  // Enable the feature flag for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kCookieDomainAttributeEmptyString);
   ParsedCookie pc1("name=value; domain=foo.com; domain=bar.com");
   EXPECT_EQ("bar.com", pc1.Domain());
   ParsedCookie pc2("name=value; domain=foo.com; domain=");

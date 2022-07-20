@@ -766,12 +766,7 @@ void ParsedCookie::SetupAttributes() {
     if (pairs_[i].first == kPathTokenName) {
       path_index_ = i;
     } else if (pairs_[i].first == kDomainTokenName) {
-      // Domain can be the empty string if the flag is enabled.
-      if (base::FeatureList::IsEnabled(
-              features::kCookieDomainAttributeEmptyString) ||
-          pairs_[i].second != "") {
-        domain_index_ = i;
-      }
+      domain_index_ = i;
     } else if (pairs_[i].first == kExpiresTokenName) {
       expires_index_ = i;
     } else if (pairs_[i].first == kMaxAgeTokenName) {
