@@ -886,17 +886,27 @@ bool ExecuteFileTask(Profile* profile,
     notifier->NotifyFileTasks(file_urls);
   }
 
-  // Some action IDs of the file manager's file browser handlers require the
-  // files to be directly opened with the browser. In a multiprofile session
-  // this will always open on the current desktop, regardless of which profile
-  // owns the files, so return TASK_RESULT_OPENED.
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
   if (IsFilesAppId(task.app_id) &&
       (parsed_action_id == "upload-office-to-drive")) {
-    return chromeos::cloud_upload::CloudUploadDialog::Show();
+    const bool opened = chromeos::cloud_upload::CloudUploadDialog::Show();
+    if (done) {
+      if (opened) {
+        std::move(done).Run(
+            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+      } else {
+        std::move(done).Run(
+            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+      }
+    }
+    return true;
   }
 
+  // Some action IDs of the file manager's file browser handlers require the
+  // files to be directly opened with the browser. In a multiprofile session
+  // this will always open on the current desktop, regardless of which profile
+  // owns the files, so return TASK_RESULT_OPENED.
   if (ShouldBeOpenedWithBrowser(task.app_id, parsed_action_id)) {
     const bool result =
         OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
