@@ -71942,6 +71942,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OmniboxZeroSuggestRequests">
+  <obsolete>
+    Obsolete as of M105.
+  </obsolete>
   <int value="1" label="requests sent">Suggest requests that were sent.</int>
   <int value="2" label="requests invalidated">
     Suggest requests that were invalidated, e.g., due to user starting to type.
@@ -104343,6 +104346,25 @@ Called by update_scheduler_enums.py.-->
   <int value="5" label="Ineligible: Not participating">
     User is not participating in an experiment that enables RemoteNoURL
     suggestions on the NTP.
+  </int>
+</enum>
+
+<enum name="ZeroSuggestProviderEvent">
+  <int value="0" label="cached response converted to results">
+    Cached response was synchronously converted to displayed matches.
+  </int>
+  <int value="1" label="request sent">Remote request was sent.</int>
+  <int value="2" label="request invalidated">
+    Remote request was invalidated (due to user starting to type or another
+    zero-suggest request).
+  </int>
+  <int value="3" label="response received">
+    Remote response was received asynchronously.
+  </int>
+  <int value="4" label="response cached">Remote response was cached.</int>
+  <int value="5" label="response converted to results">
+    Remote response ended up being converted to displayed matches. This may
+    happen due to an empty displayed result set or an empty remote result set.
   </int>
 </enum>
 

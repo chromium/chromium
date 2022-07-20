@@ -2278,8 +2278,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ZeroSuggestProvider.{ResultType}.{RequestType}"
+    enum="ZeroSuggestProviderEvent" expires_after="2022-12-11">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Enumerates the events in the ZeroSuggestProvider as a result of
+    {RequestType} for {ResultType} (i.e., suggestions shown when the user has
+    focused or cleared the omnibox but has not typed in yet).
+  </summary>
+  <token key="ResultType">
+    <variant name="NoURL"
+        summary="zero-prefix suggestions not based on the current page URL"/>
+    <variant name="URLBased"
+        summary="zero-prefix suggestions based on the current page URL"/>
+  </token>
+  <token key="RequestType">
+    <variant name="NonPrefetch" summary="user-initiated requests"/>
+    <variant name="Prefetch" summary="non-user-initiated proactive requests"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggestRequests.NonPrefetch"
     enum="OmniboxZeroSuggestRequests" expires_after="2022-12-11">
+  <obsolete>
+    Obsolete as of M105.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2308,6 +2332,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.ZeroSuggestRequests.Prefetch"
     enum="OmniboxZeroSuggestRequests" expires_after="2022-12-11">
+  <obsolete>
+    Obsolete as of M105.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

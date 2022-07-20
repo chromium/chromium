@@ -60,7 +60,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
 
-  // Registers a preference used to cache zero suggest results.
+  // Registers a preference used to cache the zero suggest response.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // AutocompleteProvider:
@@ -121,27 +121,38 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
 
-  // Called when the remote response is received. Stores the remote response in
-  // the user prefs, if valid and applicable based on |result_type_running_|.
-  //
-  // Returns the successfully parsed response if it is eligible to update the
-  // displayed results or nullptr otherwise.
-  std::unique_ptr<base::Value> StoreRemoteResponse(
-      const std::string& response_json);
-
-  // Returns the response stored in the user prefs, if applicable based on
+  // Called when the remote response is received. Stores the response json in
+  // the user prefs, if successfully parsed and if applicable based on
   // |result_type_running_|.
-  // Returns the successfully parsed response or nullptr otherwise.
+  //
+  // Returns the successfully parsed response if it is eligible to be converted
+  // to |matches_| or nullptr otherwise.
+  std::unique_ptr<base::Value> StoreRemoteResponse(
+      const std::string& response_json,
+      bool is_prefetch);
+
+  // Called on Start().
+  //
+  // Returns the response stored in the user prefs, if applicable based on
+  // |result_type_running_| or nullptr otherwise.
   std::unique_ptr<base::Value> ReadStoredResponse();
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
       const SearchSuggestionParser::NavigationResult& navigation);
 
-  // Converts the parsed response to a set of AutocompleteMatches and populates
-  // |matches_| and its associated metadata. Also records histograms for how
-  // many results were received.
-  void ConvertResponseToAutocompleteMatches(
+  // Called on Start() with the cached response (where |matches_| is empty), or
+  // when the remote response is received and is eligible to be converted to
+  // |matches_| (where |matches_| may not be empty).
+  //
+  // If the given response can be successfully parsed, converts it to a set of
+  // AutocompleteMatches and populates |matches_| as well as its associated
+  // metadata, if applicable. Also logs how many results were received.
+  //
+  // Returns whether the response was successfully converted to |matches_|.
+  // Note that this does not imply |matches_| were populated with the response.
+  // An empty result set in the response will clear |matches_| and return true.
+  bool ConvertResponseToAutocompleteMatches(
       std::unique_ptr<base::Value> response);
 
   // Whether zero suggest suggestions are allowed in the given context.

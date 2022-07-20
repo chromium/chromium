@@ -494,16 +494,25 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
   EXPECT_TRUE(provider_->done());
 
   // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                    3);
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                     1 /*ZERO_SUGGEST_REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                     3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestRequests.NonPrefetch",
-      6 /*ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS*/, 1);
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.Prefetch", 0);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
@@ -584,16 +593,25 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   EXPECT_TRUE(provider_did_notify_);
 
   // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                    2);
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                     1 /*ZERO_SUGGEST_REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                     3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestRequests.NonPrefetch",
-      6 /*ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS*/, 0);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      4 /*REMOTE_RESPONSE_CACHED*/, 1);
 
   // Expect the same results after the response has been handled.
   ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
@@ -640,16 +658,28 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
   EXPECT_TRUE(provider_->done());
 
   // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                    3);
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                     1 /*ZERO_SUGGEST_REQUEST_SENT*/, 1);
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                     3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 5);
   histogram_tester.ExpectBucketCount(
-      "Omnibox.ZeroSuggestRequests.NonPrefetch",
-      6 /*ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS*/, 1);
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.Prefetch", 0);
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      4 /*REMOTE_RESPONSE_CACHED*/, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+      5 /*REMOTE_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
 
   // Expect the provider to have notified the provider listener.
   EXPECT_TRUE(provider_did_notify_);
@@ -700,17 +730,22 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     EXPECT_TRUE(provider_->done());
 
     // Expect correct histograms to have been logged.
-    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.Prefetch",
-                                      2);
-    histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.Prefetch",
-                                       1 /*ZERO_SUGGEST_REQUEST_SENT*/, 1);
-    histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestRequests.Prefetch",
-                                       3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 3);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestRequests.NonPrefetch",
-        6 /*ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS*/, 0);
-    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                      0);
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 1 /*REQUEST_SENT*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch",
+        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch",
+        4 /*REMOTE_RESPONSE_CACHED*/, 1);
 
     // Expect the provider not to have notified the provider listener.
     EXPECT_FALSE(provider_did_notify_);
@@ -751,19 +786,25 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     EXPECT_TRUE(provider_->done());
 
     // Expect correct histograms to have been logged.
-    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.NonPrefetch",
-                                      2);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.Prefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.URLBased.NonPrefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 4);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestRequests.NonPrefetch",
-        1 /*ZERO_SUGGEST_REQUEST_SENT*/, 1);
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+        0 /*CACHED_RESPONSE_CONVERTED_TO_MATCHES*/, 1);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestRequests.NonPrefetch",
-        3 /*ZERO_SUGGEST_RESPONSE_RECEIVED*/, 1);
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch", 1 /*REQUEST_SENT*/, 1);
     histogram_tester.ExpectBucketCount(
-        "Omnibox.ZeroSuggestRequests.NonPrefetch",
-        6 /*ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS*/, 0);
-    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestRequests.Prefetch",
-                                      0);
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+        3 /*REMOTE_RESPONSE_RECEIVED*/, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
+        4 /*REMOTE_RESPONSE_CACHED*/, 1);
 
     // Expect the provider to have notified the provider listener.
     EXPECT_TRUE(provider_did_notify_);
