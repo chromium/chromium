@@ -18,10 +18,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -527,6 +527,26 @@ void DeviceInfoSyncBridge::ApplyStopSyncChanges(
   if (!all_data_.empty()) {
     all_data_.clear();
     NotifyObservers();
+  }
+}
+
+ModelTypeSyncBridge::CommitAttemptFailedBehavior
+DeviceInfoSyncBridge::OnCommitAttemptFailed(
+    syncer::SyncCommitError commit_error) {
+  // DeviceInfo is normally committed once a day and hence it's important to
+  // retry on the next sync cycle in case of auth or network errors. For other
+  // errors, do not retry to prevent blocking sync for other data types if
+  // DeviceInfo entity causes the error. OnCommitAttemptErrors would show that
+  // something is wrong with the DeviceInfo entity from the last commit request
+  // but those errors are not retried at the moment since it's a very tiny
+  // fraction.
+  switch (commit_error) {
+    case syncer::SyncCommitError::kAuthError:
+    case syncer::SyncCommitError::kNetworkError:
+      return CommitAttemptFailedBehavior::kShouldRetryOnNextCycle;
+    case syncer::SyncCommitError::kBadServerResponse:
+    case syncer::SyncCommitError::kServerError:
+      return CommitAttemptFailedBehavior::kDontRetryOnNextCycle;
   }
 }
 

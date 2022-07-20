@@ -18,12 +18,8 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/glue/sync_transport_data_prefs.h"
-#include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
-#include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -33,7 +29,6 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -47,6 +42,7 @@ using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::IsSupersetOf;
+using testing::Not;
 using testing::UnorderedElementsAre;
 
 MATCHER(HasFullHardwareClass, "") {
@@ -59,6 +55,19 @@ MATCHER(IsFullHardwareClassEmpty, "") {
 
 MATCHER_P(ModelEntryHasCacheGuid, expected_cache_guid, "") {
   return arg->guid() == expected_cache_guid;
+}
+
+MATCHER_P(HasInterestedDataType, expected_data_type, "") {
+  for (int32_t interested_data_type_id : arg.specifics()
+                                             .device_info()
+                                             .invalidation_fields()
+                                             .interested_data_type_ids()) {
+    if (interested_data_type_id ==
+        syncer::GetSpecificsFieldNumberFromModelType(expected_data_type)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::string CacheGuidForSuffix(int suffix) {
@@ -118,6 +127,37 @@ sync_pb::DeviceInfoSpecifics CreateSpecifics(int suffix) {
                          DefaultInterestedDataTypes());
 }
 
+// Waits for a DeviceInfo entity to be committed to the fake server (regardless
+// whether the commit succeeds or not). Note that it doesn't handle disabled
+// network case.
+class DeviceInfoCommitChecker : public SingleClientStatusChangeChecker {
+  // SingleClientStatusChangeChecker is used instead of
+  // FakeServerMatchStatusChecker because current checker is used when there is
+  // an HTTP error on the fake server.
+ public:
+  DeviceInfoCommitChecker(syncer::SyncServiceImpl* service,
+                          fake_server::FakeServer* fake_server)
+      : SingleClientStatusChangeChecker(service), fake_server_(fake_server) {}
+
+  // StatusChangeChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for DeviceInfo to be committed.";
+
+    sync_pb::ClientToServerMessage message;
+    fake_server_->GetLastCommitMessage(&message);
+    for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
+      if (entity.specifics().has_device_info()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+ private:
+  const raw_ptr<fake_server::FakeServer> fake_server_;
+};
+
 class SingleClientDeviceInfoSyncTest : public SyncTest {
  public:
   SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -160,6 +200,9 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
             specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
+
+  // SyncTest overrides.
+  bool UseConfigurationRefresher() override { return false; }
 
  private:
   base::test::ScopedFeatureList override_features_;
@@ -516,6 +559,28 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // On receiving the tombstone, the client should reupload its own device info.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
                   ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldRetryDeviceInfoCommitOnAuthError) {
+  ASSERT_TRUE(SetupSync());
+
+  GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
+
+  // Disable another data type to trigger a commit of a new DeviceInfo entity.
+  // Create a checker to catch a commit request before disabling the data type.
+  DeviceInfoCommitChecker device_info_committer_checker(GetSyncService(0),
+                                                        GetFakeServer());
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(device_info_committer_checker.Wait());
+
+  GetFakeServer()->ClearHttpError();
+
+  // Wait for the DeviceInfo to be committed to the fake server again.
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(Not(HasInterestedDataType(syncer::BOOKMARKS))))
                   .Wait());
 }
 

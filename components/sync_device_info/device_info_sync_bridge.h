@@ -83,6 +83,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::string GetStorageKey(const EntityData& entity_data) override;
   void ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
+  ModelTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      syncer::SyncCommitError commit_error) override;
 
   // DeviceInfoTracker implementation.
   bool IsSyncing() const override;

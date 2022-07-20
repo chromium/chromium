@@ -5,6 +5,7 @@ include_rules = [
   "+components/metrics",
   "+components/prefs",
   "+components/sync/base",
+  "+components/sync/engine",
   "+components/sync/invalidations",
   "+components/sync/model",
   "+components/sync/protocol",
