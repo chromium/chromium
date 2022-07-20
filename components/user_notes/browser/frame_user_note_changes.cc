@@ -62,6 +62,11 @@ void FrameUserNoteChanges::Apply(base::OnceClosure callback) {
     manager->RemoveNote(note_id);
   }
 
+  if (notes_added_.empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
   // For added notes, the async highlight creation on the renderer side must be
   // awaited, because the order in which notes are shown in the Notes UI depends
   // on the order of the corresponding highlights in the page. Use a barrier
