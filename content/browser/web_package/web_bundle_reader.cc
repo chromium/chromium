@@ -4,141 +4,27 @@
 
 #include "content/browser/web_package/web_bundle_reader.h"
 
-#include <limits>
-
 #include "base/check_op.h"
-#include "base/numerics/safe_math.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/web_package/shared_file.h"
 #include "content/browser/web_package/web_bundle_blob_data_source.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
-#include "mojo/public/cpp/system/file_data_source.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
 namespace content {
-
-WebBundleReader::SharedFile::SharedFile(
-    std::unique_ptr<WebBundleSource> source) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](std::unique_ptr<WebBundleSource> source)
-              -> std::unique_ptr<base::File> { return source->OpenFile(); },
-          std::move(source)),
-      base::BindOnce(&SharedFile::SetFile, base::RetainedRef(this)));
-}
-
-void WebBundleReader::SharedFile::DuplicateFile(
-    base::OnceCallback<void(base::File)> callback) {
-  // Basically this interface expects this method is called at most once. Have
-  // a DCHECK for the case that does not work for a clear reason, just in case.
-  // The call site also have another DCHECK for external callers not to cause
-  // such problematic cases.
-  DCHECK(duplicate_callback_.is_null());
-  duplicate_callback_ = std::move(callback);
-
-  if (file_)
-    SetFile(std::move(file_));
-}
-
-base::File* WebBundleReader::SharedFile::operator->() {
-  DCHECK(file_);
-  return file_.get();
-}
-
-WebBundleReader::SharedFile::~SharedFile() {
-  // Move the last reference to |file_| that leads an internal blocking call
-  // that is not permitted here.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce([](std::unique_ptr<base::File> file) {},
-                     std::move(file_)));
-}
-
-void WebBundleReader::SharedFile::SetFile(std::unique_ptr<base::File> file) {
-  file_ = std::move(file);
-
-  if (duplicate_callback_.is_null())
-    return;
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](base::File* file) -> base::File { return file->Duplicate(); },
-          file_.get()),
-      std::move(duplicate_callback_));
-}
-
-class WebBundleReader::SharedFileDataSource final
-    : public mojo::DataPipeProducer::DataSource {
- public:
-  SharedFileDataSource(scoped_refptr<WebBundleReader::SharedFile> file,
-                       uint64_t offset,
-                       uint64_t length)
-      : file_(std::move(file)), offset_(offset), length_(length) {
-    error_ = mojo::FileDataSource::ConvertFileErrorToMojoResult(
-        (*file_)->error_details());
-
-    // base::File::Read takes int64_t as an offset. So, offset + length should
-    // not overflow in int64_t.
-    uint64_t max_offset;
-    if (!base::CheckAdd(offset, length).AssignIfValid(&max_offset) ||
-        (std::numeric_limits<int64_t>::max() < max_offset)) {
-      error_ = MOJO_RESULT_INVALID_ARGUMENT;
-    }
-  }
-
-  SharedFileDataSource(const SharedFileDataSource&) = delete;
-  SharedFileDataSource& operator=(const SharedFileDataSource&) = delete;
-
- private:
-  // Implements mojo::DataPipeProducer::DataSource. Following methods are called
-  // on a blockable sequenced task runner.
-  uint64_t GetLength() const override { return length_; }
-  ReadResult Read(uint64_t offset, base::span<char> buffer) override {
-    ReadResult result;
-    result.result = error_;
-
-    if (length_ < offset)
-      result.result = MOJO_RESULT_INVALID_ARGUMENT;
-
-    if (result.result != MOJO_RESULT_OK)
-      return result;
-
-    uint64_t readable_size = length_ - offset;
-    uint64_t writable_size = buffer.size();
-    uint64_t copyable_size =
-        std::min(std::min(readable_size, writable_size),
-                 static_cast<uint64_t>(std::numeric_limits<int>::max()));
-
-    int bytes_read =
-        (*file_)->Read(offset_ + offset, buffer.data(), copyable_size);
-    if (bytes_read < 0) {
-      result.result = mojo::FileDataSource::ConvertFileErrorToMojoResult(
-          (*file_)->GetLastFileError());
-    } else {
-      result.bytes_read = bytes_read;
-    }
-    return result;
-  }
-
-  scoped_refptr<WebBundleReader::SharedFile> file_;
-  MojoResult error_;
-  const uint64_t offset_;
-  const uint64_t length_;
-};
 
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)
     : source_(std::move(source)),
       parser_(std::make_unique<data_decoder::SafeWebBundleParser>()),
-      file_(base::MakeRefCounted<SharedFile>(source_->Clone())) {
+      file_(base::MakeRefCounted<web_package::SharedFile>(base::BindOnce(
+          [](std::unique_ptr<WebBundleSource> source)
+              -> std::unique_ptr<base::File> { return source->OpenFile(); },
+          source_->Clone()))) {
   DCHECK(source_->is_trusted_file() || source_->is_file());
 }
 
@@ -290,8 +176,8 @@ void WebBundleReader::ReadResponseBody(
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     mojo::DataPipeProducer* raw_producer = data_producer.get();
     raw_producer->Write(
-        std::make_unique<SharedFileDataSource>(file_, response->payload_offset,
-                                               response->payload_length),
+        file_->CreateDataSource(response->payload_offset,
+                                response->payload_length),
         base::BindOnce(
             [](std::unique_ptr<mojo::DataPipeProducer> producer,
                BodyCompletionCallback callback, MojoResult result) {

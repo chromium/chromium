@@ -8,6 +8,8 @@ static_library("web_package") {
   sources = [
     "input_reader.cc",
     "input_reader.h",
+    "shared_file.cc",
+    "shared_file.h",
     "signed_web_bundles/ed25519_public_key.cc",
     "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/integrity_block_parser.cc",

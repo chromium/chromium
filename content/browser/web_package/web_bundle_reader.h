@@ -9,15 +9,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
+#include "components/web_package/shared_file.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
@@ -100,30 +97,6 @@ class CONTENT_EXPORT WebBundleReader final
  private:
   friend class base::RefCounted<WebBundleReader>;
 
-  // A simple wrapper class to share a single base::File instance among multiple
-  // SharedFileDataSource instances.
-  class SharedFile final : public base::RefCountedThreadSafe<SharedFile> {
-   public:
-    explicit SharedFile(std::unique_ptr<WebBundleSource> source);
-
-    SharedFile(const SharedFile&) = delete;
-    SharedFile& operator=(const SharedFile&) = delete;
-
-    void DuplicateFile(base::OnceCallback<void(base::File)> callback);
-    base::File* operator->();
-
-   private:
-    friend class base::RefCountedThreadSafe<SharedFile>;
-    ~SharedFile();
-
-    void SetFile(std::unique_ptr<base::File> file);
-
-    base::FilePath file_path_;
-    std::unique_ptr<base::File> file_;
-    base::OnceCallback<void(base::File)> duplicate_callback_;
-  };
-  class SharedFileDataSource;
-
   enum class State {
     kInitial,
     kMetadataReady,
@@ -155,7 +128,7 @@ class CONTENT_EXPORT WebBundleReader final
 
   std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
   // Used when loading a web bundle from file.
-  scoped_refptr<SharedFile> file_;
+  scoped_refptr<web_package::SharedFile> file_;
   // Used when loading a web bundle from network.
   std::unique_ptr<WebBundleBlobDataSource> blob_data_source_;
 
