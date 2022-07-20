@@ -395,7 +395,6 @@ void MockRTCPeerConnectionHandlerPlatform::
                                                const char* trace_event_name) {}
 
 void MockRTCPeerConnectionHandlerPlatform::TrackIceConnectionStateChange(
-    RTCPeerConnectionHandler::IceConnectionStateVersion version,
     webrtc::PeerConnectionInterface::IceConnectionState state) {}
 
 }  // namespace blink

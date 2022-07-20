@@ -2334,20 +2334,11 @@ void RTCPeerConnectionHandler::OnIceConnectionChange(
 }
 
 void RTCPeerConnectionHandler::TrackIceConnectionStateChange(
-    RTCPeerConnectionHandler::IceConnectionStateVersion version,
     webrtc::PeerConnectionInterface::IceConnectionState state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!peer_connection_tracker_)
     return;
-  switch (version) {
-    case RTCPeerConnectionHandler::IceConnectionStateVersion::kLegacy:
-      peer_connection_tracker_->TrackLegacyIceConnectionStateChange(this,
-                                                                    state);
-      break;
-    case RTCPeerConnectionHandler::IceConnectionStateVersion::kDefault:
-      peer_connection_tracker_->TrackIceConnectionStateChange(this, state);
-      break;
-  }
+  peer_connection_tracker_->TrackIceConnectionStateChange(this, state);
 }
 
 // Called any time the combined peerconnection state changes

@@ -1191,9 +1191,7 @@ void RTCPeerConnection::UpdateIceConnectionState() {
   DCHECK_EQ(webrtc::SdpSemantics::kUnifiedPlan, sdp_semantics_);
   auto new_state = ComputeIceConnectionState();
   if (ice_connection_state_ != new_state) {
-    peer_handler_->TrackIceConnectionStateChange(
-        RTCPeerConnectionHandler::IceConnectionStateVersion::kDefault,
-        new_state);
+    peer_handler_->TrackIceConnectionStateChange(new_state);
   }
   ChangeIceConnectionState(new_state);
 }
@@ -2722,15 +2720,12 @@ void RTCPeerConnection::DidChangeIceConnectionState(
   DCHECK(GetExecutionContext()->IsContextThread());
   if (sdp_semantics_ == webrtc::SdpSemantics::kUnifiedPlan) {
     // Unified plan relies on UpdateIceConnectionState() instead.
-    peer_handler_->TrackIceConnectionStateChange(
-        RTCPeerConnectionHandler::IceConnectionStateVersion::kLegacy,
-        new_state);
-  } else {
-    peer_handler_->TrackIceConnectionStateChange(
-        RTCPeerConnectionHandler::IceConnectionStateVersion::kDefault,
-        new_state);
-    ChangeIceConnectionState(new_state);
+    return;
   }
+  // Plan B only.
+  // TODO(https://crbug.com/1302249): Delete this.
+  peer_handler_->TrackIceConnectionStateChange(new_state);
+  ChangeIceConnectionState(new_state);
 }
 
 void RTCPeerConnection::DidChangePeerConnectionState(

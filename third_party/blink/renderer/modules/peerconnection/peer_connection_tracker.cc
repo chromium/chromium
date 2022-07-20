@@ -1040,18 +1040,6 @@ void PeerConnectionTracker::TrackSignalingStateChange(
       webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
-void PeerConnectionTracker::TrackLegacyIceConnectionStateChange(
-    RTCPeerConnectionHandler* pc_handler,
-    webrtc::PeerConnectionInterface::IceConnectionState state) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  int id = GetLocalIDForHandler(pc_handler);
-  if (id == -1)
-    return;
-  SendPeerConnectionUpdate(
-      id, "iceconnectionstatechange (legacy)",
-      webrtc::PeerConnectionInterface::AsString(state).data());
-}
-
 void PeerConnectionTracker::TrackIceConnectionStateChange(
     RTCPeerConnectionHandler* pc_handler,
     webrtc::PeerConnectionInterface::IceConnectionState state) {

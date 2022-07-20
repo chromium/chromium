@@ -133,8 +133,8 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
       base::OnceClosure closure,
       const char* trace_event_name) override;
   void TrackIceConnectionStateChange(
-      RTCPeerConnectionHandler::IceConnectionStateVersion version,
       webrtc::PeerConnectionInterface::IceConnectionState state) override;
+
  private:
   class DummyRTCRtpTransceiverPlatform;
 

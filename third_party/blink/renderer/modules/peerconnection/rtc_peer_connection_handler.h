@@ -153,17 +153,6 @@ class MODULES_EXPORT LocalRTCStatsRequest : public rtc::RefCountInterface {
 // the main render thread.
 class MODULES_EXPORT RTCPeerConnectionHandler {
  public:
-  enum class IceConnectionStateVersion {
-    // Only applicable in Unified Plan when the JavaScript-exposed
-    // iceConnectionState is calculated in blink. In this case, kLegacy is used
-    // to report the webrtc::PeerConnectionInterface implementation which is not
-    // visible in JavaScript, but still useful to track for debugging purposes.
-    kLegacy,
-    // The JavaScript-visible iceConnectionState. In Plan B, this is the same as
-    // the webrtc::PeerConnectionInterface implementation.
-    kDefault,
-  };
-
   RTCPeerConnectionHandler(
       RTCPeerConnectionHandlerClient* client,
       blink::PeerConnectionDependencyFactory* dependency_factory,
@@ -245,7 +234,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const char* trace_event_name);
 
   virtual void TrackIceConnectionStateChange(
-      RTCPeerConnectionHandler::IceConnectionStateVersion version,
       webrtc::PeerConnectionInterface::IceConnectionState state);
 
   // Delegate functions to allow for mocking of WebKit interfaces.

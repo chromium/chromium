@@ -139,8 +139,6 @@ export class PeerConnectionUpdateTable {
     // Highlight ICE/DTLS failures and failure callbacks.
     if ((update.type === 'iceconnectionstatechange' &&
          update.value === 'failed') ||
-        (update.type === 'iceconnectionstatechange (legacy)' &&
-         update.value === 'failed') ||
         (update.type === 'connectionstatechange' &&
          update.value === 'failed') ||
         update.type.indexOf('OnFailure') !== -1 ||
