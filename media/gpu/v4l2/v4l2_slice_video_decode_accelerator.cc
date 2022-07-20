@@ -655,8 +655,8 @@ bool V4L2SliceVideoDecodeAccelerator::CreateInputBuffers() {
   DCHECK(decoder_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(!input_queue_->IsStreaming());
 
-  if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP) <
-      kNumInputBuffers) {
+  if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP,
+                                    /*incoherent=*/false) < kNumInputBuffers) {
     LOG(ERROR) << "Failed AllocateBuffers";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return false;
@@ -1387,8 +1387,8 @@ void V4L2SliceVideoDecodeAccelerator::AssignPictureBuffersTask(
       (image_processor_device_ || output_mode_ == Config::OutputMode::ALLOCATE
            ? V4L2_MEMORY_MMAP
            : V4L2_MEMORY_DMABUF);
-  if (output_queue_->AllocateBuffers(buffers.size(), memory) !=
-      buffers.size()) {
+  if (output_queue_->AllocateBuffers(buffers.size(), memory,
+                                     /*incoherent=*/false) != buffers.size()) {
     LOG(ERROR) << "Could not allocate enough output buffers";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return;

@@ -548,4 +548,8 @@ std::vector<Fourcc> LibYUVImageProcessorBackend::GetSupportedOutputFormats(
   return supported_formats;
 }
 
+bool LibYUVImageProcessorBackend::supports_incoherent_buffers() const {
+  return true;
+}
+
 }  // namespace media

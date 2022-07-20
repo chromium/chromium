@@ -861,6 +861,10 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   }
 
   image_processor_ = std::move(status_or_image_processor).value();
+
+  if (decoder_)
+    decoder_->SetDmaIncoherentV4L2(image_processor_->SupportsIncoherentBufs());
+
   // TODO(b/203240043): Currently, the modifier is not read by any callers of
   // this function. We can eventually provide it by making it available to fetch
   // through the |image_processor|.

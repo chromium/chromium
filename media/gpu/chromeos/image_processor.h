@@ -111,6 +111,15 @@ class MEDIA_GPU_EXPORT ImageProcessor {
     return needs_linear_output_buffers_;
   }
 
+  // Returns true if the image processor supports buffers allocated
+  // incoherently. The MTK MDP3 image processor has coherency issues, but the
+  // Libyuv image processor benefits greatly from incoherent allocations.
+  // Defaults to false, since only Libyuv has been shown to support this feature
+  // so far.
+  bool SupportsIncoherentBufs() const {
+    return backend_ && backend_->supports_incoherent_buffers();
+  }
+
  protected:
   // Container for both FrameReadyCB and LegacyFrameReadyCB. With this class,
   // we could store both kind of callback in the same container.

@@ -1107,10 +1107,14 @@ absl::optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
   return absl::nullopt;
 }
 
-size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
+size_t V4L2Queue::AllocateBuffers(size_t count,
+                                  enum v4l2_memory memory,
+                                  bool incoherent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!free_buffers_);
   DCHECK(queued_buffers_.empty());
+
+  incoherent_ = incoherent;
 
   if (IsStreaming()) {
     VQLOGF(1) << "Cannot allocate buffers while streaming.";
@@ -1142,7 +1146,9 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
   reqbufs.count = count;
   reqbufs.type = type_;
   reqbufs.memory = memory;
+  reqbufs.flags = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
   DVQLOGF(3) << "Requesting " << count << " buffers.";
+  DVQLOGF(3) << "Incoherent flag is " << incoherent << ".";
 
   int ret = device_->Ioctl(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
@@ -1200,6 +1206,7 @@ bool V4L2Queue::DeallocateBuffers() {
   reqbufs.count = 0;
   reqbufs.type = type_;
   reqbufs.memory = memory_;
+  reqbufs.flags = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
 
   int ret = device_->Ioctl(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {

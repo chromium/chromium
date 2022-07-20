@@ -49,6 +49,13 @@ class ImageProcessorWithPool {
   // returned by |ready_cb|.
   void Reset();
 
+  // Returns true if the image processor supports buffers allocated
+  // incoherently. The MTK MDP3 image processor has coherency issues, but the
+  // Libyuv image processor benefits greatly from incoherent allocations.
+  bool SupportsIncoherentBufs() const {
+    return image_processor_ && image_processor_->SupportsIncoherentBufs();
+  }
+
  private:
   friend class VideoDecoderPipelineTest;
 

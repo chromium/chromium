@@ -114,6 +114,8 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
   virtual bool needs_linear_output_buffers() const;
 
+  virtual bool supports_incoherent_buffers() const;
+
  protected:
   friend struct std::default_delete<ImageProcessorBackend>;
 

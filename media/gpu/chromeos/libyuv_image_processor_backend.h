@@ -49,6 +49,8 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
 
   static std::vector<Fourcc> GetSupportedOutputFormats(Fourcc input_format);
 
+  bool supports_incoherent_buffers() const override;
+
  private:
   LibYUVImageProcessorBackend(
       std::unique_ptr<VideoFrameMapper> input_frame_mapper,

@@ -1936,8 +1936,8 @@ bool V4L2VideoEncodeAccelerator::CreateInputBuffers() {
       break;
   }
 
-  if (input_queue_->AllocateBuffers(num_buffers, input_memory_type_) <
-      kInputBufferCount) {
+  if (input_queue_->AllocateBuffers(num_buffers, input_memory_type_,
+                                    /*incoherent=*/false) < kInputBufferCount) {
     VLOGF(1) << "Failed to allocate V4L2 input buffers.";
     return false;
   }
@@ -1952,7 +1952,8 @@ bool V4L2VideoEncodeAccelerator::CreateOutputBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(!output_queue_->IsStreaming());
 
-  if (output_queue_->AllocateBuffers(kOutputBufferCount, V4L2_MEMORY_MMAP) <
+  if (output_queue_->AllocateBuffers(kOutputBufferCount, V4L2_MEMORY_MMAP,
+                                     /*incoherent=*/false) <
       kOutputBufferCount) {
     VLOGF(1) << "Failed to allocate V4L2 output buffers.";
     return false;

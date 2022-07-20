@@ -84,6 +84,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                    base::TimeDelta timestamp) override;
   DmabufVideoFramePool* GetVideoFramePool() const override;
 
+  void SetDmaIncoherentV4L2(bool incoherent) override;
+
  private:
   friend class V4L2VideoDecoderTest;
 
@@ -215,6 +217,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // |decoder_task_runner_|.
   base::WeakPtr<V4L2VideoDecoder> weak_this_for_polling_;
   base::WeakPtrFactory<V4L2VideoDecoder> weak_this_for_polling_factory_;
+
+  // Whether or not our V4L2Queues should be requested with
+  // V4L2_MEMORY_FLAG_NON_COHERENT
+  bool incoherent_ = false;
 };
 
 }  // namespace media

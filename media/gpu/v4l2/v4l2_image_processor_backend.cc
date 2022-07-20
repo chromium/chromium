@@ -90,7 +90,9 @@ bool AllocateV4L2Buffers(V4L2Queue* queue,
   if (memory_type == V4L2_MEMORY_DMABUF)
     requested_buffers = VIDEO_MAX_FRAME;
 
-  if (queue->AllocateBuffers(requested_buffers, memory_type) == 0u)
+  // Note that MDP does not support incoherent buffer allocations.
+  if (queue->AllocateBuffers(requested_buffers, memory_type,
+                             /*incoherent=*/false) == 0u)
     return false;
 
   if (queue->AllocatedBuffersCount() < num_buffers) {

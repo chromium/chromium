@@ -417,7 +417,8 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
   else
     memory = V4L2_MEMORY_MMAP;
 
-  if (output_queue_->AllocateBuffers(buffers.size(), memory) == 0) {
+  if (output_queue_->AllocateBuffers(buffers.size(), memory,
+                                     /*incoherent=*/false) == 0) {
     LOG(ERROR) << "Failed to request buffers!";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return;
@@ -2226,7 +2227,8 @@ bool V4L2VideoDecodeAccelerator::CreateInputBuffers() {
   DCHECK_EQ(decoder_state_, kInitialized);
   DCHECK(input_queue_);
 
-  if (input_queue_->AllocateBuffers(kInputBufferCount, V4L2_MEMORY_MMAP) == 0) {
+  if (input_queue_->AllocateBuffers(kInputBufferCount, V4L2_MEMORY_MMAP,
+                                    /*incoherent=*/false) == 0) {
     LOG(ERROR) << "Failed allocating input buffers";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return false;

@@ -99,6 +99,10 @@ bool ImageProcessorBackend::needs_linear_output_buffers() const {
   return false;
 }
 
+bool ImageProcessorBackend::supports_incoherent_buffers() const {
+  return false;
+}
+
 }  // namespace media
 
 namespace std {

@@ -341,7 +341,8 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     return V4L2Status::Codes::kBadFormat;
   }
 
-  if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP) == 0) {
+  if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP,
+                                    incoherent_) == 0) {
     VLOGF(1) << "Failed to allocate input buffer.";
     return V4L2Status::Codes::kFailedResourceAllocation;
   }
@@ -736,7 +737,8 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
   const size_t v4l2_num_buffers =
       (type == V4L2_MEMORY_DMABUF) ? VIDEO_MAX_FRAME : num_output_frames_;
 
-  if (output_queue_->AllocateBuffers(v4l2_num_buffers, type) == 0) {
+  if (output_queue_->AllocateBuffers(v4l2_num_buffers, type, incoherent_) ==
+      0) {
     VLOGF(1) << "Failed to request output buffers.";
     SetState(State::kError);
     return CroStatus::Codes::kFailedToChangeResolution;
@@ -851,6 +853,10 @@ DmabufVideoFramePool* V4L2VideoDecoder::GetVideoFramePool() const {
   DVLOGF(4);
 
   return client_->GetVideoFramePool();
+}
+
+void V4L2VideoDecoder::SetDmaIncoherentV4L2(bool incoherent) {
+  incoherent_ = incoherent;
 }
 
 void V4L2VideoDecoder::SetState(State new_state) {
