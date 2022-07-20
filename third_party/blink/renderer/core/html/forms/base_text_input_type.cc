@@ -42,11 +42,6 @@ BaseTextInputType::BaseTextInputType(HTMLInputElement& element)
 
 BaseTextInputType::~BaseTextInputType() = default;
 
-HTMLFormControlElement::PopupTriggerSupport
-BaseTextInputType::SupportsPopupTriggering() const {
-  return HTMLFormControlElement::PopupTriggerSupport::kDownArrow;
-}
-
 int BaseTextInputType::MaxLength() const {
   return GetElement().maxLength();
 }

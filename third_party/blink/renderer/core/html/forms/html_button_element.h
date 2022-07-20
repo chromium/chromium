@@ -63,7 +63,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
 
   // Buttons can trigger popups.
   PopupTriggerSupport SupportsPopupTriggering() const override {
-    return PopupTriggerSupport::kActivate;
+    return PopupTriggerSupport::kSupported;
   }
 
   void AppendToFormData(FormData&) override;

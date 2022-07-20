@@ -99,8 +99,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   enum class PopupTriggerSupport {
     kNone,
-    kActivate,
-    kDownArrow,
+    kSupported,
   };
 
   // Retrieves the element pointed to by 'popuptoggletarget', 'popupshowtarget',

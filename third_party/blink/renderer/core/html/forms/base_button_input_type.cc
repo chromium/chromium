@@ -61,7 +61,7 @@ void BaseButtonInputType::CreateShadowSubtree() {
 
 HTMLFormControlElement::PopupTriggerSupport
 BaseButtonInputType::SupportsPopupTriggering() const {
-  return HTMLFormControlElement::PopupTriggerSupport::kActivate;
+  return HTMLFormControlElement::PopupTriggerSupport::kSupported;
 }
 
 void BaseButtonInputType::ValueAttributeChanged() {

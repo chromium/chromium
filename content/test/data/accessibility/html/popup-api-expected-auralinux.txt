@@ -3,7 +3,7 @@
 ++[entry] selectable-text
 ++[static] name='Text input pointing to hidden popup '
 ++[push button] name='Show button pointing to hidden hint' description='Hint' description-from:tooltip
-++[entry] description='Hint' selectable-text description-from:tooltip
+++[entry] selectable-text
 ++[static] name='Search input pointing to hidden hint '
 ++[push button] name='Hide button pointing to hidden manual'
 ++[entry] selectable-text
@@ -12,7 +12,7 @@
 ++[entry] selectable-text
 ++[static] name='Tel input pointing to showing popup '
 ++[push button] name='Show button pointing to showing hint' description='Hint (nested)' described-by description-from:tooltip
-++[entry] description='Hint (nested)' selectable-text described-by description-from:tooltip
+++[entry] selectable-text
 ++[static] name='Url input pointing to showing hint '
 ++[section]
 ++++[static] name='Popup'

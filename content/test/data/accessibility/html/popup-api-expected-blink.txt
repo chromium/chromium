@@ -22,7 +22,7 @@ rootWebArea
 ++++++button description='Hint' name='Show button pointing to hidden hint' descriptionFrom=popupElement
 ++++++++staticText name='Show button pointing to hidden hint'
 ++++++++++inlineTextBox name='Show button pointing to hidden hint'
-++++++searchBox description='Hint' descriptionFrom=popupElement
+++++++searchBox
 ++++++++genericContainer
 ++++++staticText name='Search input pointing to hidden hint '
 ++++++++inlineTextBox name='Search input pointing to hidden hint '
@@ -47,7 +47,7 @@ rootWebArea
 ++++++button description='Hint (nested)' name='Show button pointing to showing hint' descriptionFrom=popupElement
 ++++++++staticText name='Show button pointing to showing hint'
 ++++++++++inlineTextBox name='Show button pointing to showing hint'
-++++++textField description='Hint (nested)' descriptionFrom=popupElement
+++++++textField
 ++++++++genericContainer
 ++++++staticText name='Url input pointing to showing hint '
 ++++++++inlineTextBox name='Url input pointing to showing hint '

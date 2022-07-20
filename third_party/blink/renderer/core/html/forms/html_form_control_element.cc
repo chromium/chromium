@@ -393,20 +393,13 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       bool can_hide = popup.element->popupOpen() &&
                       (popup.action == PopupTriggerAction::kToggle ||
                        popup.action == PopupTriggerAction::kHide);
-      if (trigger_support == PopupTriggerSupport::kActivate &&
-          event.type() == event_type_names::kDOMActivate &&
+      if (event.type() == event_type_names::kDOMActivate &&
           (!Form() || !IsSuccessfulSubmitButton())) {
         if (can_hide) {
           popup.element->HidePopUpInternal(
               HidePopupFocusBehavior::kFocusPreviousElement,
               HidePopupForcingLevel::kHideAfterAnimations);
         } else if (can_show) {
-          popup.element->InvokePopup(this);
-        }
-      } else if (trigger_support == PopupTriggerSupport::kDownArrow &&
-                 event.type() == event_type_names::kKeydown) {
-        const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
-        if (can_show && key_event && key_event->key() == "ArrowDown") {
           popup.element->InvokePopup(this);
         }
       }

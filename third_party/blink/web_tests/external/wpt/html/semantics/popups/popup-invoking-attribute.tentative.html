@@ -22,11 +22,6 @@ const buttonLogic = (t,s,h) => {
   }
   return {expectedBehavior, expectedId};
 }
-const textLogic = (t,s,h) => {
-  // This mimics the expected logic for text field invokers, which can
-  // only be shown via the down arrow, and never hidden.
-  return {expectedBehavior: (t || s) ? "show" : "none", expectedId: t || s || 1};
-};
 const noActivationLogic = (t,s,h) => {
   // This does not activate any pop-ups.
   return {expectedBehavior: "none", expectedId: 1};
@@ -69,16 +64,7 @@ const supportedInputButtonTypes = ['button','reset','submit','image'].map(type =
     supported: true,
   };
 });
-const supportedTextTypes = ['text','email','password','search','tel','url'].map(type => {
-  return {
-    name: `<input type="${type}"">`,
-    makeElement: makeElementWithType('input',type),
-    invokeFn: activateTextInputFn('down'),
-    getExpectedLogic: textLogic, // Down arrow should work
-    supported: true,
-  };
-});
-const unsupportedTypes = ['checkbox','radio','range','file','color','date','datetime-local','month','time','week','number'].map(type => {
+const unsupportedTypes = ['text','email','password','search','tel','url','checkbox','radio','range','file','color','date','datetime-local','month','time','week','number'].map(type => {
   return {
     name: `<input type="${type}"">`,
     makeElement: makeElementWithType('input',type),
@@ -90,22 +76,7 @@ const unsupportedTypes = ['checkbox','radio','range','file','color','date','date
 const invokers = [
   ...supportedButtonTypes,
   ...supportedInputButtonTypes,
-  ...supportedTextTypes,
   ...unsupportedTypes,
-  {
-    name: '<input type=text> with right arrow invocation',
-    makeElement: makeElementWithType('input','text'),
-    invokeFn: activateTextInputFn('right'),
-    getExpectedLogic: noActivationLogic, // Right arrow should not work
-    supported: false,
-  },
-  {
-    name: '<input type=text> focus only',
-    makeElement: makeElementWithType('input','text'),
-    invokeFn: el => el.focus(),
-    getExpectedLogic: noActivationLogic, // Just focusing the control should not work
-    supported: false,
-  },
 ];
 ["auto","hint","manual"].forEach(type => {
   invokers.forEach(testcase => {

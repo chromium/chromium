@@ -43,9 +43,6 @@ class BaseTextInputType : public TextFieldInputType {
  public:
   void Trace(Visitor* visitor) const override;
 
-  HTMLFormControlElement::PopupTriggerSupport SupportsPopupTriggering()
-      const override;
-
  protected:
   BaseTextInputType(HTMLInputElement&);
   ~BaseTextInputType() override;
