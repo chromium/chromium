@@ -131,7 +131,7 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
   placement_data_.grid_item_positions.ReserveInitialCapacity(grid_items.Size());
   placement_data_.column_start_offset = placement_data_.row_start_offset = 0;
 
-  for (const auto& grid_item : grid_items.item_data) {
+  for (const auto& grid_item : grid_items) {
     const auto& item_style = grid_item.node.Style();
 
     GridArea position;

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_node.h"
 
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 
 namespace blink {
@@ -45,22 +44,23 @@ GridItems NGGridNode::ConstructGridItems(
   const int initial_order = ComputedStyleInitialValues::InitialOrder();
 
   for (auto child = FirstChild(); child; child = child.NextSibling()) {
-    GridItemData grid_item(To<NGBlockNode>(child), container_style,
-                           container_style.GetWritingMode());
+    auto* grid_item = MakeGarbageCollected<GridItemData>(
+        To<NGBlockNode>(child), container_style,
+        container_style.GetWritingMode());
 
     // Order all of our in-flow children by their order property.
-    if (!grid_item.IsOutOfFlow()) {
+    if (!grid_item->IsOutOfFlow()) {
       should_sort_grid_items_by_order_property |=
           child.Style().Order() != initial_order;
-      grid_items.Append(std::move(grid_item));
+      grid_items.Append(grid_item);
     }
   }
 
   // We only need to sort this when we encounter a non-initial order property.
   if (should_sort_grid_items_by_order_property) {
-    auto CompareItemsByOrderProperty = [](const GridItemData& lhs,
-                                          const GridItemData& rhs) {
-      return lhs.node.Style().Order() < rhs.node.Style().Order();
+    auto CompareItemsByOrderProperty = [](const Member<GridItemData>& lhs,
+                                          const Member<GridItemData>& rhs) {
+      return lhs->node.Style().Order() < rhs->node.Style().Order();
     };
     std::stable_sort(grid_items.item_data.begin(), grid_items.item_data.end(),
                      CompareItemsByOrderProperty);
@@ -89,7 +89,7 @@ GridItems NGGridNode::ConstructGridItems(
 
   // Copy each resolved position to its respective grid item data.
   auto* resolved_position = cached_placement_data->grid_item_positions.begin();
-  for (auto& grid_item : grid_items.item_data)
+  for (auto& grid_item : grid_items)
     grid_item.resolved_position = *(resolved_position++);
   return grid_items;
 }
@@ -109,14 +109,14 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
     if (!has_standalone_columns && !has_standalone_rows)
       return grid_items;
 
-    for (auto& grid_item : grid_items.item_data) {
+    for (auto& grid_item : grid_items) {
       grid_item.can_subgrid_items_in_column_direction = has_standalone_columns;
       grid_item.can_subgrid_items_in_row_direction = has_standalone_rows;
     }
   }
 
   for (wtf_size_t i = 0; i < grid_items.Size(); ++i) {
-    auto& current_item = grid_items.item_data[i];
+    auto& current_item = grid_items[i];
 
     // TODO(ethavar): Don't consider subgrids with size containment.
     if (!current_item.node.IsGrid())
@@ -170,18 +170,14 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
 
     // TODO(ethavar): Compute automatic repetitions for subgridded axes as
     // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.
+
     auto subgridded_items = subgrid.ConstructGridItems(&subgrid_placement_data);
+    grid_items.ReserveCapacity(grid_items.Size() + subgridded_items.Size());
 
     const wtf_size_t column_start_line = current_item.StartLine(kForColumns);
     const wtf_size_t row_start_line = current_item.StartLine(kForRows);
 
-    // Don't use |current_item| after we reserve the new capacity; the reference
-    // becomes invalid because |grid_items| is reallocated.
-    grid_items.ReserveCapacity(grid_items.Size() + subgridded_items.Size());
-
-    for (auto& subgridded_item : subgridded_items.item_data) {
-      subgridded_item.is_subgridded_to_parent_grid = true;
-
+    for (auto& subgridded_item : subgridded_items) {
       subgridded_item.resolved_position.columns.Translate(column_start_line);
       subgridded_item.resolved_position.rows.Translate(row_start_line);
 
@@ -195,7 +191,8 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
       subgridded_item.can_subgrid_items_in_row_direction =
           should_subgrid_items_in_row_direction;
 
-      grid_items.Append(std::move(subgridded_item));
+      subgridded_item.parent_grid = &current_item;
+      grid_items.Append(&subgridded_item);
     }
   }
   return grid_items;

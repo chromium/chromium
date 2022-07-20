@@ -90,7 +90,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
 namespace {
 
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
-  for (const auto& grid_item : grid_items.item_data) {
+  for (const auto& grid_item : grid_items) {
     if (grid_item.is_sizing_dependent_on_block_size)
       return true;
   }
@@ -102,7 +102,7 @@ NGGridProperties InitializeGridProperties(
     const WritingMode container_writing_mode) {
   NGGridProperties grid_properties;
 
-  for (const auto& grid_item : grid_items.item_data) {
+  for (const auto& grid_item : grid_items) {
     grid_properties.has_baseline_column |=
         grid_item.IsBaselineSpecifiedForDirection(kForColumns);
     grid_properties.has_baseline_row |=
@@ -151,14 +151,15 @@ void CacheGridTrackSpanProperties(
           grid_item.SetTrackSpanProperty(property, track_direction);
       };
 
-  GridItemDataVector grid_items_spanning_multiple_ranges;
-  for (auto& grid_item : grid_items->item_data) {
+  GridItems grid_items_spanning_multiple_ranges;
+  for (auto& grid_item : *grid_items) {
     const auto& range_indices = grid_item.RangeIndices(track_direction);
 
     // If a grid item spans only one range, then we can just cache the track
     // span properties directly. On the contrary, if a grid item spans multiple
     // tracks, it is added to |grid_items_spanning_multiple_ranges| as we need
     // to do more work to cache its track span properties.
+    //
     // TODO(layout-dev): Investigate applying this concept to spans > 1.
     if (range_indices.begin == range_indices.end) {
       CacheTrackSpanProperty(grid_item, range_indices.begin,
@@ -172,20 +173,20 @@ void CacheGridTrackSpanProperties(
       CacheTrackSpanProperty(grid_item, range_indices.begin,
                              TrackSpanProperties::kHasFixedMaximumTrack);
     } else {
-      grid_items_spanning_multiple_ranges.emplace_back(&grid_item);
+      grid_items_spanning_multiple_ranges.Append(&grid_item);
     }
   }
 
   if (grid_items_spanning_multiple_ranges.IsEmpty())
     return;
 
-  auto CompareGridItemsByStartLine = [track_direction](
-                                         const GridItemData* lhs,
-                                         const GridItemData* rhs) -> bool {
+  auto CompareGridItemsByStartLine =
+      [track_direction](const Member<GridItemData>& lhs,
+                        const Member<GridItemData>& rhs) -> bool {
     return lhs->StartLine(track_direction) < rhs->StartLine(track_direction);
   };
-  std::sort(grid_items_spanning_multiple_ranges.begin(),
-            grid_items_spanning_multiple_ranges.end(),
+  std::sort(grid_items_spanning_multiple_ranges.item_data.begin(),
+            grid_items_spanning_multiple_ranges.item_data.end(),
             CompareGridItemsByStartLine);
 
   auto CacheTrackSpanPropertyForAllGridItems =
@@ -197,7 +198,7 @@ void CacheGridTrackSpanProperties(
         wtf_size_t current_range_index = 0;
         const wtf_size_t range_count = track_collection.RangeCount();
 
-        for (auto* grid_item : grid_items_spanning_multiple_ranges) {
+        for (auto& grid_item : grid_items_spanning_multiple_ranges) {
           // We want to find the first range in the collection that:
           //   - Spans tracks located AFTER the start line of the current grid
           //   item; this can be done by checking that the last track number of
@@ -209,7 +210,7 @@ void CacheGridTrackSpanProperties(
           //   - Contains a track that fulfills the specified property.
           while (current_range_index < range_count &&
                  (track_collection.RangeEndLine(current_range_index) <=
-                      grid_item->StartLine(track_direction) ||
+                      grid_item.StartLine(track_direction) ||
                   !track_collection.RangeHasTrackSpanProperty(
                       current_range_index, property))) {
             ++current_range_index;
@@ -230,8 +231,8 @@ void CacheGridTrackSpanProperties(
           // range are excluded from the grid item's span, meaning that such
           // item cannot satisfy the property we are looking for.
           if (track_collection.RangeEndLine(current_range_index) <=
-              grid_item->EndLine(track_direction)) {
-            grid_item->SetTrackSpanProperty(property, track_direction);
+              grid_item.EndLine(track_direction)) {
+            grid_item.SetTrackSpanProperty(property, track_direction);
           }
         }
       };
@@ -279,7 +280,7 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
     intrinsic_block_size = grid_data->intrinsic_block_size;
     layout_data = grid_data->layout_data;
 
-    for (auto& grid_item : grid_items.item_data) {
+    for (auto& grid_item : grid_items) {
       grid_item.ComputeSetIndices(*layout_data.Columns());
       grid_item.ComputeSetIndices(*layout_data.Rows());
     }
@@ -423,7 +424,7 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
       LayoutTrackCollection(placement_data, kForColumns, &grid_items),
       LayoutTrackCollection(placement_data, kForRows, &grid_items));
 
-  for (auto& grid_item : grid_items.item_data) {
+  for (auto& grid_item : grid_items) {
     grid_item.ComputeSetIndices(*layout_data.Columns());
     grid_item.ComputeSetIndices(*layout_data.Rows());
   }
@@ -659,7 +660,7 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
         *row_builder_collection, is_block_available_size_indefinite);
   }
 
-  for (auto& grid_item : grid_items->item_data) {
+  for (auto& grid_item : *grid_items) {
     grid_item.ComputeSetIndices(*layout_data->Columns());
     grid_item.ComputeSetIndices(*layout_data->Rows());
   }
@@ -852,7 +853,7 @@ const NGLayoutResult* LayoutGridItemForMeasure(
   absl::optional<NGDisableSideEffectsScope> disable_side_effects;
   if (!node.GetLayoutBox()->NeedsLayout() &&
       (sizing_constraint != SizingConstraint::kLayout ||
-       grid_item.is_subgridded_to_parent_grid)) {
+       grid_item.ParentGrid())) {
     disable_side_effects.emplace();
   }
   return node.Layout(constraint_space);
@@ -1368,7 +1369,7 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollection(
 
   const auto track_direction = track_collection->Direction();
 
-  for (auto& grid_item : grid_items->item_data) {
+  for (auto& grid_item : *grid_items) {
     auto& range_indices = grid_item.RangeIndices(track_direction);
     track_collection->EnsureTrackCoverage(grid_item.StartLine(track_direction),
                                           grid_item.SpanSize(track_direction),
@@ -1466,7 +1467,7 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
       track_collection->SetMinorBaseline(set_index, candidate_baseline);
   };
 
-  for (auto& grid_item : grid_items->item_data) {
+  for (auto& grid_item : *grid_items) {
     if (!grid_item.IsBaselineSpecifiedForDirection(track_direction))
       continue;
 
@@ -1607,7 +1608,7 @@ void NGGridLayoutAlgorithm::InitializeTrackSizes(
 namespace {
 
 struct BlockSizeDependentGridItem {
-  const GridItemData* item_data;
+  GridItemIndices row_set_indices;
   LayoutUnit cached_block_size;
 };
 
@@ -1619,18 +1620,16 @@ Vector<BlockSizeDependentGridItem> BlockSizeDependentGridItems(
   Vector<BlockSizeDependentGridItem> dependent_items;
   dependent_items.ReserveInitialCapacity(grid_items.Size());
 
-  for (const auto& grid_item : grid_items.item_data) {
+  for (const auto& grid_item : grid_items) {
     if (!grid_item.is_sizing_dependent_on_block_size)
       continue;
 
     const auto& set_indices = grid_item.SetIndices(kForRows);
     BlockSizeDependentGridItem dependent_item = {
-        &grid_item, track_collection.ComputeSetSpanSize(set_indices.begin,
-                                                        set_indices.end)};
+        set_indices, track_collection.ComputeSetSpanSize(set_indices.begin,
+                                                         set_indices.end)};
     dependent_items.emplace_back(std::move(dependent_item));
   }
-
-  dependent_items.ShrinkToFit();
   return dependent_items;
 }
 
@@ -1640,9 +1639,8 @@ bool MayChangeBlockSizeDependentGridItemContributions(
   DCHECK_EQ(track_collection.Direction(), kForRows);
 
   for (const auto& grid_item : dependent_items) {
-    const auto& set_indices = grid_item.item_data->SetIndices(kForRows);
-    const LayoutUnit block_size =
-        track_collection.ComputeSetSpanSize(set_indices.begin, set_indices.end);
+    const LayoutUnit block_size = track_collection.ComputeSetSpanSize(
+        grid_item.row_set_indices.begin, grid_item.row_set_indices.end);
 
     DCHECK_NE(block_size, kIndefiniteSize);
     if (block_size != grid_item.cached_block_size)
@@ -2191,8 +2189,8 @@ void DistributeExtraSpaceToWeightedSets(
 }  // namespace
 
 void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
-    GridItemDataVector::iterator group_begin,
-    GridItemDataVector::iterator group_end,
+    GridItems::Iterator group_begin,
+    GridItems::Iterator group_end,
     const NGGridLayoutData& layout_data,
     const bool is_group_spanning_flex_track,
     const SizingConstraint sizing_constraint,
@@ -2208,9 +2206,9 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
 
   GridSetVector sets_to_grow;
   GridSetVector sets_to_grow_beyond_limit;
-  for (auto** it = group_begin; it != group_end; ++it) {
-    GridItemData& grid_item = **it;
 
+  while (group_begin != group_end) {
+    GridItemData& grid_item = *(group_begin++);
     DCHECK(grid_item.IsSpanningIntrinsicTrack(track_direction));
 
     sets_to_grow.Shrink(0);
@@ -2308,12 +2306,12 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   DCHECK(track_collection && grid_items);
   const auto track_direction = track_collection->Direction();
 
-  GridItemDataVector reordered_grid_items;
+  GridItems reordered_grid_items;
   reordered_grid_items.ReserveInitialCapacity(grid_items->Size());
 
-  for (auto& grid_item : grid_items->item_data) {
+  for (auto& grid_item : *grid_items) {
     if (grid_item.IsSpanningIntrinsicTrack(track_direction))
-      reordered_grid_items.push_back(&grid_item);
+      reordered_grid_items.Append(&grid_item);
   }
 
   // Reorder grid items to process them as follows:
@@ -2323,8 +2321,8 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   not spanning a flexible track have been considered.
   //   - Finally, consider all items spanning a flexible track.
   auto CompareGridItemsForIntrinsicTrackResolution =
-      [track_direction](const GridItemData* lhs,
-                        const GridItemData* rhs) -> bool {
+      [track_direction](const Member<GridItemData>& lhs,
+                        const Member<GridItemData>& rhs) -> bool {
     if (lhs->IsSpanningFlexibleTrack(track_direction) ||
         rhs->IsSpanningFlexibleTrack(track_direction)) {
       // Ignore span sizes if one of the items spans a track with a flexible
@@ -2333,24 +2331,25 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     }
     return lhs->SpanSize(track_direction) < rhs->SpanSize(track_direction);
   };
-  std::sort(reordered_grid_items.begin(), reordered_grid_items.end(),
+  std::sort(reordered_grid_items.item_data.begin(),
+            reordered_grid_items.item_data.end(),
             CompareGridItemsForIntrinsicTrackResolution);
 
   // First, process the items that don't span a flexible track.
-  auto** current_group_begin = reordered_grid_items.begin();
+  auto current_group_begin = reordered_grid_items.begin();
   while (current_group_begin != reordered_grid_items.end() &&
-         !(*current_group_begin)->IsSpanningFlexibleTrack(track_direction)) {
+         !current_group_begin->IsSpanningFlexibleTrack(track_direction)) {
     // Each iteration considers all items with the same span size.
     wtf_size_t current_group_span_size =
-        (*current_group_begin)->SpanSize(track_direction);
+        current_group_begin->SpanSize(track_direction);
 
-    auto** current_group_end = current_group_begin;
+    auto current_group_end = current_group_begin;
     do {
-      DCHECK(!(*current_group_end)->IsSpanningFlexibleTrack(track_direction));
+      DCHECK(!current_group_end->IsSpanningFlexibleTrack(track_direction));
       ++current_group_end;
     } while (current_group_end != reordered_grid_items.end() &&
-             !(*current_group_end)->IsSpanningFlexibleTrack(track_direction) &&
-             (*current_group_end)->SpanSize(track_direction) ==
+             !current_group_end->IsSpanningFlexibleTrack(track_direction) &&
+             current_group_end->SpanSize(track_direction) ==
                  current_group_span_size);
 
     IncreaseTrackSizesToAccommodateGridItems(
@@ -2385,8 +2384,8 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   sizing function...
 #if DCHECK_IS_ON()
   // Every grid item of the remaining group should span a flexible track.
-  for (auto** it = current_group_begin; it != reordered_grid_items.end(); ++it)
-    DCHECK((*it)->IsSpanningFlexibleTrack(track_direction));
+  for (auto it = current_group_begin; it != reordered_grid_items.end(); ++it)
+    DCHECK(it->IsSpanningFlexibleTrack(track_direction));
 #endif
 
   // Now, process items spanning flexible tracks (if any).
@@ -2621,7 +2620,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     //   - For each grid item that crosses a flexible track, the result of
     //   finding the size of an fr using all the grid tracks that the item
     //   crosses and a space to fill of the item’s max-content contribution.
-    for (auto& grid_item : grid_items->item_data) {
+    for (auto& grid_item : *grid_items) {
       if (grid_item.IsSpanningFlexibleTrack(track_direction)) {
         double grid_item_fr_size = FindFrSize(
             GetSetIteratorForItem(grid_item, *track_collection),
@@ -2999,7 +2998,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
 
   BaselineAccumulator baseline_accumulator;
 
-  for (const auto& grid_item : grid_items.item_data) {
+  for (const auto& grid_item : grid_items) {
     LogicalRect containing_grid_area;
     const auto space = CreateConstraintSpaceForLayout(grid_item, layout_data,
                                                       &containing_grid_area);
@@ -3220,7 +3219,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     auto child_break_token_it = child_break_tokens.begin();
     auto* placement_data_it = grid_items_placement_data->begin();
 
-    for (const auto& grid_item : grid_items.item_data) {
+    for (const auto& grid_item : grid_items) {
       // Grab the offsets and break-token (if present) for this child.
       auto& item_placement_data = *(placement_data_it++);
       const NGBlockBreakToken* break_token = nullptr;
@@ -3388,7 +3387,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   // Adjust by |delta| the pre-computed item-offset for all grid items with a
   // row begin index greater or equal than |row_index|.
   auto AdjustItemOffsets = [&](wtf_size_t row_index, LayoutUnit delta) {
-    const auto* current_item = grid_items.item_data.begin();
+    auto current_item = grid_items.begin();
 
     for (auto& item_placement_data : *grid_items_placement_data) {
       if (row_index <= (current_item++)->SetIndices(kForRows).begin)

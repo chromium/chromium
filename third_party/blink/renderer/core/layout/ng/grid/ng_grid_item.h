@@ -28,9 +28,7 @@ struct OutOfFlowItemPlacement {
   GridItemIndices offset_in_range;
 };
 
-struct CORE_EXPORT GridItemData {
-  DISALLOW_NEW();
-
+struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   GridItemData(const NGBlockNode node,
                const ComputedStyle& container_style,
                const WritingMode container_writing_mode);
@@ -104,6 +102,8 @@ struct CORE_EXPORT GridItemData {
     return false;
   }
 
+  GridItemData* ParentGrid() const { return parent_grid.Get(); }
+
   bool IsConsideredForSizing(
       const GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? is_considered_for_column_sizing
@@ -152,15 +152,18 @@ struct CORE_EXPORT GridItemData {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(node); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(node);
+    visitor->Trace(parent_grid);
+  }
 
   NGBlockNode node;
   GridArea resolved_position;
+  Member<GridItemData> parent_grid;
 
   bool is_block_axis_overflow_safe : 1;
   bool is_inline_axis_overflow_safe : 1;
   bool is_sizing_dependent_on_block_size : 1;
-  bool is_subgridded_to_parent_grid : 1;
   bool is_considered_for_column_sizing : 1;
   bool is_considered_for_row_sizing : 1;
   bool can_subgrid_items_in_column_direction : 1;
@@ -194,70 +197,90 @@ struct CORE_EXPORT GridItemData {
   OutOfFlowItemPlacement row_placement;
 };
 
-using GridItemDataVector = Vector<GridItemData*, 16>;
-
 struct CORE_EXPORT GridItems {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
-  using GridItemStorageVector = HeapVector<GridItemData, 16>;
+  using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
 
-  class Iterator : public std::iterator<std::input_iterator_tag, GridItemData> {
+  template <bool is_const>
+  class IteratorBase {
     STACK_ALLOCATED();
 
    public:
-    Iterator(GridItemStorageVector* item_data,
-             Vector<wtf_size_t>::const_iterator current_index)
-        : item_data_(item_data), current_index_(current_index) {
+    using value_type = typename std::
+        conditional<is_const, const GridItemData, GridItemData>::type;
+
+    using GridItemDataVectorPtr =
+        typename std::conditional<is_const,
+                                  const GridItemDataVector*,
+                                  GridItemDataVector*>::type;
+
+    IteratorBase(GridItemDataVectorPtr item_data, wtf_size_t current_index)
+        : current_index_(current_index), item_data_(item_data) {
       DCHECK(item_data_);
+      DCHECK_LE(current_index_, item_data_->size());
     }
 
-    bool operator!=(const Iterator& other) const {
+    bool operator!=(const IteratorBase& other) {
       return current_index_ != other.current_index_ ||
              item_data_ != other.item_data_;
     }
 
-    Iterator& operator++() {
+    IteratorBase& operator++() {
       ++current_index_;
       return *this;
     }
 
-    GridItemData& operator*() const {
-      DCHECK(current_index_ && *current_index_ < item_data_->size());
-      return item_data_->at(*current_index_);
+    IteratorBase operator++(int) {
+      auto current_iterator = *this;
+      ++current_index_;
+      return current_iterator;
     }
 
-    GridItemData* operator->() const { return &operator*(); }
+    value_type* operator->() const {
+      DCHECK_LT(current_index_, item_data_->size());
+      return item_data_->at(current_index_).Get();
+    }
+
+    value_type& operator*() const { return *operator->(); }
 
    private:
-    GridItemStorageVector* item_data_;
-    HeapVector<wtf_size_t>::const_iterator current_index_;
+    wtf_size_t current_index_;
+    GridItemDataVectorPtr item_data_;
   };
 
-  Iterator begin() {
-    return Iterator(&item_data, reordered_item_indices.begin());
-  }
-  Iterator end() { return Iterator(&item_data, reordered_item_indices.end()); }
+  typedef IteratorBase<false> Iterator;
+  typedef IteratorBase<true> ConstIterator;
 
-  void Append(GridItemData&& new_item_data) {
-    reordered_item_indices.push_back(item_data.size());
-    item_data.emplace_back(new_item_data);
-  }
+  Iterator begin() { return {&item_data, 0}; }
+  Iterator end() { return {&item_data, item_data.size()}; }
 
-  void ReserveInitialCapacity(wtf_size_t initial_capacity);
-  void ReserveCapacity(wtf_size_t new_capacity);
-  void RemoveSubgriddedItems();
+  ConstIterator begin() const { return {&item_data, 0}; }
+  ConstIterator end() const { return {&item_data, item_data.size()}; }
 
   wtf_size_t Size() const { return item_data.size(); }
   bool IsEmpty() const { return item_data.IsEmpty(); }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
+  GridItemData& operator[](wtf_size_t index) { return *item_data[index]; }
 
-  // Grid items are appended in document order, but we want to rearrange them in
-  // order-modified document order since auto-placement and painting rely on it
-  // later in the algorithm.
-  GridItemStorageVector item_data;
-  Vector<wtf_size_t> reordered_item_indices;
+  void Append(GridItemData* new_item_data) {
+    DCHECK(new_item_data);
+    item_data.emplace_back(new_item_data);
+  }
+
+  void RemoveSubgriddedItems();
+
+  void ReserveInitialCapacity(wtf_size_t initial_capacity) {
+    item_data.ReserveInitialCapacity(initial_capacity);
+  }
+  void ReserveCapacity(wtf_size_t new_capacity) {
+    item_data.ReserveCapacity(new_capacity);
+  }
+
+  // Grid items are rearranged in order-modified document order since
+  // auto-placement and painting rely on it later in the algorithm.
+  GridItemDataVector item_data;
 };
 
 }  // namespace blink

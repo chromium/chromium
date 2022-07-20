@@ -161,8 +161,8 @@ GridItemData::GridItemData(const NGBlockNode node,
                            const ComputedStyle& container_style,
                            const WritingMode container_writing_mode)
     : node(node),
+      parent_grid(nullptr),
       is_sizing_dependent_on_block_size(false),
-      is_subgridded_to_parent_grid(false),
       is_considered_for_column_sizing(true),
       is_considered_for_row_sizing(true),
       can_subgrid_items_in_column_direction(false),
@@ -373,30 +373,18 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
-void GridItems::ReserveInitialCapacity(wtf_size_t initial_capacity) {
-  reordered_item_indices.ReserveInitialCapacity(initial_capacity);
-  item_data.ReserveInitialCapacity(initial_capacity);
-}
-
-void GridItems::ReserveCapacity(wtf_size_t new_capacity) {
-  reordered_item_indices.ReserveCapacity(new_capacity);
-  item_data.ReserveCapacity(new_capacity);
-}
-
 void GridItems::RemoveSubgriddedItems() {
   wtf_size_t new_item_count = 0;
   for (const auto& grid_item : item_data) {
-    if (grid_item.is_subgridded_to_parent_grid)
+    if (grid_item->ParentGrid())
       break;
     ++new_item_count;
   }
 
 #if DCHECK_IS_ON()
   for (wtf_size_t i = new_item_count; i < item_data.size(); ++i)
-    DCHECK(item_data[i].is_subgridded_to_parent_grid);
+    DCHECK(item_data[i]->ParentGrid());
 #endif
-
-  reordered_item_indices.Shrink(new_item_count);
   item_data.Shrink(new_item_count);
 }
 

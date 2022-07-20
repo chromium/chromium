@@ -42,27 +42,18 @@ class NGGridLayoutAlgorithmTest
 
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
     auto placement_data = algorithm.PlacementData();
-    items_->grid_items_ =
+    auto grid_items =
         algorithm.Node().GridItemsIncludingSubgridded(&placement_data);
 
-    // Build block track collections.
-    NGGridBlockTrackCollection column_block_track_collection(
-        algorithm.Style(), placement_data, kForColumns);
-    NGGridBlockTrackCollection row_block_track_collection(
-        algorithm.Style(), placement_data, kForRows);
-
-    algorithm.BuildBlockTrackCollection(&items_->grid_items_,
-                                        &column_block_track_collection);
-    algorithm.BuildBlockTrackCollection(&items_->grid_items_,
-                                        &row_block_track_collection);
-
     LayoutUnit unused_intrinsic_block_size;
-    algorithm.ComputeGridGeometry(placement_data, &items_->grid_items_,
-                                  &layout_data_, &unused_intrinsic_block_size);
+    algorithm.ComputeGridGeometry(placement_data, &grid_items, &layout_data_,
+                                  &unused_intrinsic_block_size);
+
+    *cached_grid_items_ = grid_items.item_data;
   }
 
   const GridItemData& GridItem(wtf_size_t index) {
-    return items_->grid_items_.item_data[index];
+    return *cached_grid_items_->at(index);
   }
 
   const NGGridSizingTrackCollection& TrackCollection(
@@ -83,12 +74,12 @@ class NGGridLayoutAlgorithmTest
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
   // is a friend of NGGridLayoutAlgorithm but the individual tests are not.
-  wtf_size_t GridItemCount() { return items_->grid_items_.item_data.size(); }
+  wtf_size_t GridItemCount() { return cached_grid_items_->size(); }
 
   Vector<GridArea> GridItemGridAreas(const NGGridLayoutAlgorithm& algorithm) {
     Vector<GridArea> results;
-    for (const auto& item : items_->grid_items_.item_data)
-      results.push_back(item.resolved_position);
+    for (const auto& grid_item : *cached_grid_items_)
+      results.push_back(grid_item->resolved_position);
     return results;
   }
 
@@ -160,13 +151,8 @@ class NGGridLayoutAlgorithmTest
     return fragment->DumpFragmentTree(flags);
   }
 
-  struct Items final : public GarbageCollected<Items> {
-    void Trace(Visitor* visitor) const { visitor->Trace(grid_items_); }
-    GridItems grid_items_;
-  };
-
-  Persistent<Items> items_ = MakeGarbageCollected<Items>();
-
+  Persistent<GridItems::GridItemDataVector> cached_grid_items_ =
+      MakeGarbageCollected<GridItems::GridItemDataVector>();
   NGGridLayoutData layout_data_;
 };
 
