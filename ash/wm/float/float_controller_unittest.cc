@@ -115,6 +115,25 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
 
 using TabletWindowFloatTest = WindowFloatTest;
 
+TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
+  auto window1 = CreateFloatedWindow();
+  ASSERT_TRUE(WindowState::Get(window1.get())->IsFloated());
+
+  // Test that on entering tablet mode, we maintain float state.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsFloated());
+
+  // Create a new floated window in tablet mode. It should unfloat the existing
+  // floated window.
+  auto window2 = CreateFloatedWindow();
+  EXPECT_FALSE(WindowState::Get(window1.get())->IsFloated());
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsFloated());
+
+  // Test that on exiting tablet mode, we maintain float state.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsFloated());
+}
+
 // Tests that a window can be floated in tablet mode, unless its minimum width
 // is greater than half the work area.
 TEST_F(TabletWindowFloatTest, TabletPositioningLandscape) {
@@ -196,8 +215,8 @@ TEST_F(TabletWindowFloatTest, ImmersiveMode) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(immersive_controller->IsEnabled());
 
-  // TODO(crbug.com/1339489): Add tests to check immersive mode when transition
-  // to tablet from clamshell and vice versa.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_FALSE(immersive_controller->IsEnabled());
 }
 
 TEST_F(TabletWindowFloatTest, Rotation) {
@@ -324,7 +343,7 @@ TEST_F(TabletWindowFloatTest, TuckedWindow) {
   // Tests that after we exit tablet mode, the window is untucked and fully
   // visible, but is still floated.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  // TODO(crbug.com/1339489): Temporary remove float state check until fixed.
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
   EXPECT_TRUE(screen_util::GetDisplayBoundsInParent(window.get())
                   .Contains(window->bounds()));
 }

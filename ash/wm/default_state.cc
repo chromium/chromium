@@ -539,10 +539,12 @@ void DefaultState::ReenterToCurrentState(
   WindowStateType previous_state_type = state_in_previous_mode->GetType();
 
   // A state change should not move a window into or out of full screen or
-  // pinned since these are "special mode" the user wanted to be in and
+  // pinned or float since these are "special mode" the user wanted to be in and
   // should be respected as such.
   if (IsFullscreenOrPinnedWindowStateType(previous_state_type) ||
-      IsFullscreenOrPinnedWindowStateType(state_type_)) {
+      IsFullscreenOrPinnedWindowStateType(state_type_) ||
+      previous_state_type == WindowStateType::kFloated ||
+      state_type_ == WindowStateType::kFloated) {
     state_type_ = previous_state_type;
   }
 

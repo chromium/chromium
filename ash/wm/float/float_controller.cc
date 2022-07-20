@@ -16,6 +16,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/check_op.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
@@ -32,10 +33,6 @@ constexpr float kFloatWindowTabletHeightRatio = 0.8f;
 // TODO(sophiewen): Remove this once the untuck window widget is implemented. It
 // is temporarily here to give users a way to untuck the window.
 constexpr int kTuckedFloatWindowVisibleWidth = 100;
-
-bool InTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
 
 gfx::Size GetPreferredFloatWindowTabletSize(const gfx::Rect& work_area,
                                             bool landscape) {
@@ -239,6 +236,7 @@ void FloatController::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(float_window_, window);
   float_window_observation_.Reset();
   float_window_ = nullptr;
+  scoped_window_tucker_.reset();
   tablet_mode_observation_.Reset();
   display_observer_.reset();
 }
@@ -246,13 +244,14 @@ void FloatController::OnWindowDestroying(aura::Window* window) {
 void FloatController::OnTabletModeStarting() {
   DCHECK(float_window_);
   aura::Window* floated_window = float_window_;
+
   if (!CanFloatWindowInTablet(floated_window))
     ResetFloatedWindow();
 
   MaybeUpdateWindowUIAndBoundsForTablet(floated_window);
 }
 
-void FloatController::OnTabletModeEnded() {
+void FloatController::OnTabletModeEnding() {
   DCHECK(float_window_);
   scoped_window_tucker_.reset();
   MaybeUpdateWindowUIAndBoundsForTablet(float_window_);
@@ -327,8 +326,12 @@ void FloatController::MaybeUpdateWindowUIAndBoundsForTablet(
     aura::Window* window) {
   DCHECK(window);
 
-  if (!InTabletMode())
+  // Update bounds and UI when entering or exiting tablet mode, or while in
+  // tablet mode.
+  if (chromeos::TabletState::Get()->state() ==
+      display::TabletState::kInClamshellMode) {
     return;
+  }
 
   // TODO(sophiewen): Update rounded corners and shadow.
 
