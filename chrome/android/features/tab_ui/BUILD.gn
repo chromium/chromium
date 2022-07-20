@@ -94,6 +94,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tasks/tab_management/ClosableTabGridView.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/CouponCardView.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoMessageService.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoViewModel.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageCardViewModel.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageService.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardView.java",

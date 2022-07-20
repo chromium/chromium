@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +67,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     private UserPrefs.Natives mUserPrefsJniMock;
     @Mock
     private PrefService mPrefServiceMock;
+    @Mock
+    private MessageService.MessageObserver mMessageObserverMock;
 
     private SharedPreferencesManager mSharedPreferenceManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
@@ -74,6 +81,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
+        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(null);
         mSharedPreferenceManager = SharedPreferencesManager.getInstance();
     }
 
@@ -86,6 +94,23 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @After
     public void tearDown() {
         verifyNoMoreInteractions(mProfileMock, mContextMock, mSnackbarManagerMock);
+    }
+
+    @Test
+    @SmallTest
+    public void testDismissMessage_SendsInvalidNotification_AndDisablesPromo() {
+        createIncognitoReauthPromoMessageService();
+        mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
+        assertTrue("Observer was not added.",
+                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
+                        mMessageObserverMock));
+        doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
+
+        mIncognitoReauthPromoMessageService.dismiss();
+
+        verify(mMessageObserverMock, times(1)).messageInvalidate(MessageType.FOR_TESTING);
+        assertFalse(
+                mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
     }
 
     @Test
@@ -133,7 +158,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     @Test
     @SmallTest
-    public void testPreparePromoMessage_Succeeds_And_IncreasesCount() {
+    public void testPreparePromoMessage_Succeeds() {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(false);
@@ -143,7 +168,26 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/true);
         assertTrue("Promo message should have been prepared.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
-        assertEquals(1, mSharedPreferenceManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0));
+    }
+
+    @Test
+    @SmallTest
+    public void testAddObserver_Succeeds_AndNotifiesObserverOfMessagePrepared() {
+        createIncognitoReauthPromoMessageService();
+        when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
+                .thenReturn(false);
+
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
+                /*isAvailable=*/true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/true);
+        doNothing().when(mMessageObserverMock).messageReady(eq(MessageType.FOR_TESTING), any());
+
+        mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
+
+        assertTrue("Observer was not added.",
+                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
+                        mMessageObserverMock));
+        verify(mMessageObserverMock, times(1)).messageReady(eq(MessageType.FOR_TESTING), any());
     }
 
     @Test
@@ -152,9 +196,31 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
 
         int currentCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
-        mIncognitoReauthPromoMessageService.increasePromoShowCount();
+        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         int newCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
         assertEquals("The count should be increased by only 1.", currentCount + 1, newCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testIncreasePromoCount_DisablesCardIfCountExceeds() {
+        createIncognitoReauthPromoMessageService();
+        mSharedPreferenceManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
+                mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit + 1);
+        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
+        assertFalse(
+                mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
+    }
+
+    @Test
+    @SmallTest
+    public void testIncreasePromoCount_DoesNotDisablesCardIfCountBelowThreshold() {
+        createIncognitoReauthPromoMessageService();
+        int currentCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
+        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
+        int newCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
+        assertEquals("The count should be increased by 1.", currentCount + 1, newCount);
+        assertTrue(mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
     }
 
     @Test
@@ -179,8 +245,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
             assertTrue("Promo message should have been prepared as the current count: " + i
                             + ", is less than the max count: " + maxShowCount,
                     mIncognitoReauthPromoMessageService.preparePromoMessage());
+            mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         }
-
         assertFalse(
                 "We shouldn't prepare the message since the max limit was reached in the previous step.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
@@ -209,10 +275,30 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
             assertTrue("Promo message should have been prepared as the current count: " + i
                             + ", is less than the max count: " + maxShowCount,
                     mIncognitoReauthPromoMessageService.preparePromoMessage());
+            mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         }
 
         assertFalse(
                 "We shouldn't prepare the message since the max limit was reached in the previous step.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
+    }
+
+    @Test
+    @SmallTest
+    public void testPreparePromoMessage_DismissesCard_WhenShowCountExceeds() {
+        createIncognitoReauthPromoMessageService();
+        // Exceed the max count.
+        mSharedPreferenceManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
+                mIncognitoReauthPromoMessageService.mMaximumPromoShowCountLimit + 1);
+        // Ensure that promo can be shown.
+        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
+
+        doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
+        // This calls the prepare message internally.
+        mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
+
+        verify(mMessageObserverMock, times(1)).messageInvalidate(MessageType.FOR_TESTING);
+        assertFalse(
+                mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
     }
 }

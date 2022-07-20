@@ -1826,7 +1826,8 @@ class TabListMediator {
      *         org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional
      *         identifier.
      */
-    void removeSpecialItemFromModel(@UiType int uiType, int itemIdentifier) {
+    void removeSpecialItemFromModel(
+            @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
         int index = TabModel.INVALID_TAB_INDEX;
         if (uiType == UiType.MESSAGE || uiType == UiType.LARGE_MESSAGE) {
             if (itemIdentifier == MessageService.MessageType.ALL) {
@@ -1845,7 +1846,8 @@ class TabListMediator {
         mModel.removeAt(index);
     }
 
-    private boolean validateItemAt(int index, @UiType int uiType, int itemIdentifier) {
+    private boolean validateItemAt(
+            int index, @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
         if (uiType == UiType.MESSAGE || uiType == UiType.LARGE_MESSAGE) {
             return mModel.get(index).type == uiType
                     && mModel.get(index).model.get(MESSAGE_TYPE) == itemIdentifier;

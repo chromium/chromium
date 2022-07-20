@@ -56,6 +56,10 @@ public class MessageCardProviderMediatorUnitTest {
     @Mock
     private IphMessageService.IphMessageData mIphMessageData;
 
+    @Mock
+    private IncognitoReauthPromoMessageService
+            .IncognitoReauthMessageData mIncognitoReauthMessageData;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -87,6 +91,9 @@ public class MessageCardProviderMediatorUnitTest {
                 when(mIphMessageData.getDismissActionProvider()).thenReturn((messageType) -> {});
                 when(mIphMessageData.getReviewActionProvider()).thenReturn(() -> {});
                 mMediator.messageReady(type, mIphMessageData);
+                break;
+            case MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE:
+                mMediator.messageReady(type, mIncognitoReauthMessageData);
                 break;
             default:
                 mMediator.messageReady(type, new MessageService.MessageData() {});
@@ -339,6 +346,19 @@ public class MessageCardProviderMediatorUnitTest {
                                       .model;
         Assert.assertEquals(
                 MessageService.MessageType.IPH, model.get(MessageCardViewProperties.MESSAGE_TYPE));
+    }
+
+    @Test
+    public void buildModel_ForIncognitoReauthPromoMessage() {
+        enqueueMessageItem(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE, -1);
+
+        PropertyModel model =
+                mMediator.getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
+                        .get(0)
+                        .model;
+        Assert.assertEquals(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                model.get(MessageCardViewProperties.MESSAGE_TYPE));
     }
 
     @Test

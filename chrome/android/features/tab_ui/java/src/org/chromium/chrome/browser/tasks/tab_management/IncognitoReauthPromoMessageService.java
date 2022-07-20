@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
@@ -27,6 +28,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
  * TODO(crbug.com/1227656): Add review logic and integrate this class.
  */
 public class IncognitoReauthPromoMessageService extends MessageService {
+    /**
+     * TODO(crbug.com/1227656): Remove this when we support all the Android versions.
+     */
+    @VisibleForTesting
+    public static Boolean sIsPromoEnabledForTesting;
+
     private final int mMaxPromoMessageCount = 10;
     /**
      *  TODO(crbug.com/1148020): Currently every time entering the tab switcher,
@@ -35,10 +42,7 @@ public class IncognitoReauthPromoMessageService extends MessageService {
      *  {@link TabSwitcherMediator#prepareOverview}.
      */
     private final int mPrepareMessageEnteringTabSwitcher;
-    /**
-     * This is NOT intended to be accessed by the outside world. This is made public for test
-     * purposes only.
-     */
+
     @VisibleForTesting
     public final int mMaximumPromoShowCountLimit;
 
@@ -82,27 +86,56 @@ public class IncognitoReauthPromoMessageService extends MessageService {
         mSnackBarManager = snackbarManager;
         mPrepareMessageEnteringTabSwitcher = isTabToGtsAnimationEnabledSupplier.get() ? 2 : 1;
         mMaximumPromoShowCountLimit = mMaxPromoMessageCount * mPrepareMessageEnteringTabSwitcher;
-        preparePromoMessage();
     }
 
     @VisibleForTesting
-    int getPromoShowCount() {
-        return mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0);
+    void dismiss() {
+        sendInvalidNotification();
+        disableIncognitoReauthPromoMessage();
     }
 
-    @VisibleForTesting
-    void increasePromoShowCount() {
+    void increasePromoShowCountAndMayDisableIfCountExceeds() {
+        if (getPromoShowCount() > mMaximumPromoShowCountLimit) {
+            dismiss();
+            return;
+        }
+
         mSharedPreferencesManager.writeInt(
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT, getPromoShowCount() + 1);
     }
 
-    private void disableIncognitoReauthPromoMessage() {
-        mSharedPreferencesManager.writeBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false);
+    int getPromoShowCount() {
+        return mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0);
     }
 
-    private void dismiss() {
-        sendInvalidNotification();
-        disableIncognitoReauthPromoMessage();
+    /**
+     * Prepares a re-auth promo message notifying a new message is available.
+     *
+     * @return A boolean indicating if the promo message was successfully prepared or not.
+     */
+    @VisibleForTesting
+    boolean preparePromoMessage() {
+        if (!isIncognitoReauthPromoMessageEnabled(mProfile)) return false;
+
+        // We also need to ensure an "equality" check because, we only increase the count of the
+        // promo when we actually show it in the tab switcher. At the |mMaximumPromoShowCountLimit|
+        // time (the last time) we show the promo, we haven't yet dismissed the dialog.
+        // Now, if the user recreates the Chrome Activity instance, the count will be read as
+        // |mMaximumPromoShowCountLimit| at this point, so we should dismiss the promo.
+        if (getPromoShowCount() >= mMaximumPromoShowCountLimit) {
+            dismiss();
+            return false;
+        }
+
+        sendAvailabilityNotification(
+                new IncognitoReauthMessageData(this::review, (int messageType) -> dismiss()));
+        return true;
+    }
+
+    @Override
+    public void addObserver(MessageObserver observer) {
+        super.addObserver(observer);
+        preparePromoMessage();
     }
 
     /**
@@ -119,6 +152,9 @@ public class IncognitoReauthPromoMessageService extends MessageService {
      * @return True, if the incognito re-auth promo message is enabled, false otherwise.
      */
     public boolean isIncognitoReauthPromoMessageEnabled(Profile profile) {
+        // To support lower android versions where we support running the render tests.
+        if (sIsPromoEnabledForTesting != null) return sIsPromoEnabledForTesting;
+
         // The Chrome level Incognito lock setting is already enabled, so no use to show a promo for
         // that.
         if (IncognitoReauthManager.isIncognitoReauthEnabled(profile)) return false;
@@ -136,22 +172,12 @@ public class IncognitoReauthPromoMessageService extends MessageService {
         return mSharedPreferencesManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true);
     }
 
-    /**
-     * Prepares a re-auth promo message notifying a new message is available.
-     *
-     * @return A boolean indicating if the promo message was successfully prepared or not.
-     */
     @VisibleForTesting
-    boolean preparePromoMessage() {
-        if (!isIncognitoReauthPromoMessageEnabled(mProfile)) return false;
-        increasePromoShowCount();
-        if (getPromoShowCount() > mMaximumPromoShowCountLimit) {
-            disableIncognitoReauthPromoMessage();
-            return false;
-        }
+    public static void setIsPromoEnabledForTesting(@Nullable Boolean enabled) {
+        sIsPromoEnabledForTesting = enabled;
+    }
 
-        sendAvailabilityNotification(
-                new IncognitoReauthMessageData(this::review, (int messageType) -> dismiss()));
-        return true;
+    private void disableIncognitoReauthPromoMessage() {
+        mSharedPreferencesManager.writeBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false);
     }
 }

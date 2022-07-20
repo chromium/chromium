@@ -9,14 +9,34 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.view.View.OnClickListener;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * List of properties used by TabGridSecondaryItem.
  */
 class MessageCardViewProperties {
+    /**
+     * An enum interface to specify where the message card can be shown.
+     */
+    @IntDef({MessageCardScope.REGULAR, MessageCardScope.INCOGNITO, MessageCardScope.BOTH})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MessageCardScope {
+        // Message card would only be shown inside regular mode.
+        int REGULAR = 0;
+        // Message card would only be shown inside incognito mode.
+        int INCOGNITO = 1;
+        // Message card would be shown in both regular and incognito mode.
+        int BOTH = 2;
+    }
+
+    /** This corresponds to the {@link MessageService.MessageType}. */
     public static final PropertyModel.ReadableIntPropertyKey MESSAGE_TYPE =
             new PropertyModel.ReadableIntPropertyKey();
     // Identifier is the subtype of message. For example, the message with type PRICE_MESSAGE may
@@ -66,8 +86,11 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_IN_INCOGNITO =
-            new PropertyModel.WritableBooleanPropertyKey();
+    /** By default, if nothing is specified, regular is assumed. */
+    public static final PropertyModel
+            .ReadableIntPropertyKey MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE =
+            new PropertyModel.ReadableIntPropertyKey();
+
     // TODO(crbug.com/1148020): Change to a more general property CUSTOM_INFO_OBJECT
     public static final PropertyModel
             .WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
@@ -79,6 +102,6 @@ class MessageCardViewProperties {
             SECONDARY_ACTION_BUTTON_CLICK_HANDLER, MESSAGE_SERVICE_ACTION_PROVIDER,
             MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, DISMISS_BUTTON_CONTENT_DESCRIPTION,
             SHOULD_KEEP_AFTER_REVIEW, IS_CLOSE_BUTTON_VISIBLE, IS_ICON_VISIBLE, ICON_WIDTH,
-            ICON_HEIGHT, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO, TITLE_TEXT, SHOULD_SHOW_IN_INCOGNITO,
-            PRICE_DROP};
+            ICON_HEIGHT, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO, TITLE_TEXT,
+            MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE, PRICE_DROP};
 }

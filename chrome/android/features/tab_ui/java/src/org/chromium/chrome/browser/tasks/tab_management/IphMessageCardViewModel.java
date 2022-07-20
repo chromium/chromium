@@ -52,7 +52,9 @@ public class IphMessageCardViewModel {
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, true)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, false)
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
-                .with(MessageCardViewProperties.SHOULD_SHOW_IN_INCOGNITO, true)
+                .with(MessageCardViewProperties
+                                .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
+                        MessageCardViewProperties.MessageCardScope.BOTH)
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();
