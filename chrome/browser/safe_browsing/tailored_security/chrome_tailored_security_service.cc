@@ -16,12 +16,16 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog.h"
 #endif
 
 namespace safe_browsing {
@@ -125,12 +129,45 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
                      // Unretained is safe because |this| owns |message_|.
                      base::Unretained(this)));
 #else
-  DisplayTailoredSecurityConsentedModalDesktop(profile_, is_enabled);
+  if (base::FeatureList::IsEnabled(kTailoredSecurityDesktopNotice)) {
+    Browser* browser = chrome::FindBrowserWithProfile(profile_);
+    if (!browser) {
+      RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kNoBrowserAvailable);
+      return;
+    }
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kNoWebContentsAvailable);
+      return;
+    }
+    SetSafeBrowsingState(profile_->GetPrefs(),
+                         is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
+                                    : SafeBrowsingState::STANDARD_PROTECTION,
+                         /*is_esb_enabled_in_sync=*/is_enabled);
+    DisplayDesktopDialog(web_contents, is_enabled);
+  } else {
+    DisplayTailoredSecurityConsentedModalDesktop(profile_, is_enabled);
+  }
 #endif
   if (is_enabled) {
     RecordEnabledNotificationResult(TailoredSecurityNotificationResult::kShown);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeTailoredSecurityService::DisplayDesktopDialog(
+    content::WebContents* web_contents,
+    bool show_enable_modal) {
+  if (show_enable_modal) {
+    ShowEnabledDialogForWebContents(web_contents);
+  } else {
+    ShowDisabledDialogForWebContents(web_contents);
+  }
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::MessageDismissed() {

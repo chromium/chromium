@@ -1962,6 +1962,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-10-01">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the result of displaying the Chrome enhanced protection
+    opt-in/disabled dialog to sync users. It is logged once each time Chrome is
+    informed that the account level enhanced protection bit has been disabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogEnabledOutcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-10-01">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the result of displaying the Chrome enhanced protection
+    opt-in/enabled dialog to sync users. It is logged once each time Chrome is
+    informed that the account level enhanced protection bit has been enabled.
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult"
     enum="SafeBrowsingTailoredSecurityNotificationResult"
     expires_after="2022-12-11">

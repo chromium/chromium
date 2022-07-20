@@ -17,7 +17,8 @@ enum class TailoredSecurityNotificationResult {
   kEnhancedProtectionAlreadyEnabled = 3,
   kNoWebContentsAvailable = 4,
   kSafeBrowsingControlledByPolicy = 5,
-  kMaxValue = kSafeBrowsingControlledByPolicy,
+  kNoBrowserAvailable = 6,
+  kMaxValue = kNoBrowserAvailable,
 };
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_TAILORED_SECURITY_NOTIFICATION_RESULT_H_
