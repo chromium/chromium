@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_scrim_manager.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
@@ -19,6 +20,7 @@
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -26,9 +28,12 @@
 using autofill_assistant::password_change::GenericPasswordChangeSpecification;
 
 ApcExternalActionDelegate::ApcExternalActionDelegate(
-    AssistantDisplayDelegate* display_delegate)
-    : display_delegate_(display_delegate) {
+    AssistantDisplayDelegate* display_delegate,
+    ApcScrimManager* apc_scrim_manager)
+    : display_delegate_(display_delegate),
+      apc_scrim_manager_(apc_scrim_manager) {
   DCHECK(display_delegate_);
+  DCHECK(apc_scrim_manager_);
 }
 
 ApcExternalActionDelegate::~ApcExternalActionDelegate() = default;
@@ -98,8 +103,18 @@ void ApcExternalActionDelegate::OnInterruptFinished() {
   model_before_interrupt_.reset();
 }
 
-// PasswordChangeRunController
+void ApcExternalActionDelegate::OnTouchableAreaChanged(
+    const autofill_assistant::RectF& visual_viewport,
+    const std::vector<autofill_assistant::RectF>& touchable_areas,
+    const std::vector<autofill_assistant::RectF>& restricted_areas) {
+  if (!touchable_areas.empty()) {
+    apc_scrim_manager_->Hide();
+  } else {
+    apc_scrim_manager_->Show();
+  }
+}
 
+// PasswordChangeRunController
 void ApcExternalActionDelegate::SetTopIcon(
     autofill_assistant::password_change::TopIcon top_icon) {
   DCHECK(password_change_run_display_);

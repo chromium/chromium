@@ -11,12 +11,14 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/mock_apc_scrim_manager.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_display.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -145,8 +147,8 @@ autofill_assistant::external::Action CreateAction(
 class ApcExternalActionDelegateTest : public ::testing::Test {
  public:
   ApcExternalActionDelegateTest() {
-    action_delegate_ =
-        std::make_unique<ApcExternalActionDelegate>(display_delegate());
+    action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
+        display_delegate(), apc_scrim_manager());
   }
 
   void SetUp() override {
@@ -158,6 +160,8 @@ class ApcExternalActionDelegateTest : public ::testing::Test {
     return &display_delegate_;
   }
 
+  MockApcScrimManager* apc_scrim_manager() { return &apc_scrim_manager_; }
+
   MockPasswordChangeRunDisplay* display() { return &display_; }
 
   ApcExternalActionDelegate* action_delegate() {
@@ -168,6 +172,7 @@ class ApcExternalActionDelegateTest : public ::testing::Test {
   // Supporting objects for testing.
   MockAssistantDisplayDelegate display_delegate_;
   MockPasswordChangeRunDisplay display_;
+  MockApcScrimManager apc_scrim_manager_;
 
   // The object to be tested.
   std::unique_ptr<ApcExternalActionDelegate> action_delegate_;
@@ -202,6 +207,24 @@ TEST_F(ApcExternalActionDelegateTest, StartAndFinishInterrupt) {
   EXPECT_CALL(*display(), SetTopIcon(kTopIcon));
 
   action_delegate()->OnInterruptFinished();
+}
+
+TEST_F(ApcExternalActionDelegateTest, OnTouchableAreaChangedShowAndHideScrim) {
+  autofill_assistant::RectF visual_viewport;
+  std::vector<autofill_assistant::RectF> touchable_areas;
+  std::vector<autofill_assistant::RectF> restricted_areas;
+
+  // Hides the scrim when `touchable_areas` is not empty.
+  touchable_areas.emplace_back();
+  EXPECT_CALL(*apc_scrim_manager(), Hide);
+  action_delegate()->OnTouchableAreaChanged(visual_viewport, touchable_areas,
+                                            restricted_areas);
+
+  // Shows the scrim when `touchable_areas` is not empty.
+  touchable_areas.clear();
+  EXPECT_CALL(*apc_scrim_manager(), Show);
+  action_delegate()->OnTouchableAreaChanged(visual_viewport, touchable_areas,
+                                            restricted_areas);
 }
 
 TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {

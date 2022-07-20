@@ -150,8 +150,8 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
         debug_run_information_.value().socket_id;
   }
 
-  external_script_controller_ = CreateHeadlessScriptController();
   scrim_manager_ = CreateApcScrimManager();
+  external_script_controller_ = CreateHeadlessScriptController();
   scrim_manager_->Show();
   external_script_controller_->StartScript(
       params_map,
@@ -185,8 +185,9 @@ ApcClientImpl::CreateSidePanel() {
 
 std::unique_ptr<autofill_assistant::HeadlessScriptController>
 ApcClientImpl::CreateHeadlessScriptController() {
+  DCHECK(scrim_manager_);
   apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
-      side_panel_coordinator_.get());
+      side_panel_coordinator_.get(), scrim_manager_.get());
   apc_external_action_delegate_->SetupDisplay();
   apc_external_action_delegate_->ShowStartingScreen(url_);
 

@@ -5749,6 +5749,8 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "autofill_assistant/password_change/mock_apc_scrim_manager.cc",
+      "autofill_assistant/password_change/mock_apc_scrim_manager.h",
       "autofill_assistant/password_change/mock_assistant_display_delegate.cc",
       "autofill_assistant/password_change/mock_assistant_display_delegate.h",
       "autofill_assistant/password_change/mock_assistant_onboarding_controller.cc",
@@ -5761,8 +5763,6 @@ static_library("test_support") {
       "autofill_assistant/password_change/mock_password_change_run_controller.h",
       "autofill_assistant/password_change/mock_password_change_run_display.cc",
       "autofill_assistant/password_change/mock_password_change_run_display.h",
-      "autofill_assistant/password_change/mock_scrim_manager.cc",
-      "autofill_assistant/password_change/mock_scrim_manager.h",
       "exclusive_access/exclusive_access_test.cc",
       "exclusive_access/exclusive_access_test.h",
       "exclusive_access/fullscreen_controller_state_test.cc",

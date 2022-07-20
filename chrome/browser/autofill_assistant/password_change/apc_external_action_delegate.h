@@ -16,6 +16,11 @@
 
 class PasswordChangeRunDisplay;
 class AssistantDisplayDelegate;
+class ApcScrimManager;
+
+namespace autofill_assistant {
+struct RectF;
+}
 
 // Receives actions from the `HeadlessScriptController` and passes them on an
 // implementation of a `PasswordChangeRunDisplay`.
@@ -26,8 +31,8 @@ class ApcExternalActionDelegate
     : public autofill_assistant::ExternalActionDelegate,
       public PasswordChangeRunController {
  public:
-  explicit ApcExternalActionDelegate(
-      AssistantDisplayDelegate* display_delegate);
+  explicit ApcExternalActionDelegate(AssistantDisplayDelegate* display_delegate,
+                                     ApcScrimManager* apc_scrim_manager);
   ApcExternalActionDelegate(const ApcExternalActionDelegate&) = delete;
   ApcExternalActionDelegate& operator=(const ApcExternalActionDelegate&) =
       delete;
@@ -45,6 +50,11 @@ class ApcExternalActionDelegate
                                   result)> end_action_callback) override;
   void OnInterruptStarted() override;
   void OnInterruptFinished() override;
+
+  void OnTouchableAreaChanged(
+      const autofill_assistant::RectF& visual_viewport,
+      const std::vector<autofill_assistant::RectF>& touchable_areas,
+      const std::vector<autofill_assistant::RectF>& restricted_areas) override;
 
   // PasswordChangeRunController:
   void SetTopIcon(
@@ -121,6 +131,9 @@ class ApcExternalActionDelegate
 
   // The display where we render the UI for a password change run.
   raw_ptr<AssistantDisplayDelegate> display_delegate_ = nullptr;
+
+  // The scrim manager to update the overlay and html elements showcasting.
+  raw_ptr<ApcScrimManager> apc_scrim_manager_ = nullptr;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<PasswordChangeRunController> weak_ptr_factory_{this};
