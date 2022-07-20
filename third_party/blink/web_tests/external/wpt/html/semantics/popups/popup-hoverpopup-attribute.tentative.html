@@ -83,17 +83,20 @@ function mouseOver(element) {
     .send();
 }
 function msSinceMouseOver() {
-  // The hover delay is kept low to avoid this test taking too long,
-  // but that means that sometimes on a slow bot, the hover delay can
-  // elapse before we check the pop-up status. That makes this test
-  // flaky. Use the time returned by this function to just skip checks
-  // in that case.
   return performance.now() - mouseOverStarted;
 }
 async function waitForHoverTime() {
   await new Promise(resolve => step_timeout(resolve,hoverWaitTime));
   await waitForRender();
 };
+
+// NOTE about testing methodology:
+// This test checks whether pop-ups are triggered *after* the appropriate hover
+// delay. The delay used for testing is kept low, to avoid this test taking too
+// long, but that means that sometimes on a slow bot/client, the hover delay can
+// elapse before we are able to check the pop-up status. And that can make this
+// test flaky. To avoid that, the msSinceMouseOver() function is used to check
+// that not-too-much time has passed, and if it has, the test is simply skipped.
 
 ["auto","hint","manual"].forEach(type => {
   ["plain","nested","nested-offset"].forEach(invokerType => {
@@ -102,6 +105,7 @@ async function waitForHoverTime() {
       assert_false(popUp.matches(':top-layer'));
       await mouseOver(invoker);
       let showing = popUp.matches(':top-layer');
+      // See NOTE above.
       if (msSinceMouseOver() < hoverPopUpDelay)
         assert_false(showing,'pop-up should not show immediately');
       await waitForHoverTime();
@@ -116,6 +120,7 @@ async function waitForHoverTime() {
       const {popUp,invoker} = await makePopUpAndInvoker(t,type,invokerType,longerHoverDelay);
       await mouseOver(invoker);
       let showing = popUp.matches(':top-layer');
+      // See NOTE above.
       if (msSinceMouseOver() >= longerHoverDelay)
         return; // The WPT runner was too slow.
       assert_false(showing,'pop-up should not show immediately');
@@ -142,6 +147,7 @@ async function waitForHoverTime() {
       await mouseOver(invoker);
       let showing = popUp.matches(':top-layer');
       popUp.remove();
+      // See NOTE above.
       if (msSinceMouseOver() >= hoverPopUpDelay)
         return; // The WPT runner was too slow.
       assert_false(showing,'pop-up should not show immediately');
@@ -161,6 +167,7 @@ async function waitForHoverTime() {
       await mouseOver(invoker);
       let eitherShowing = popUp.matches(':top-layer') || popUp2.matches(':top-layer');
       reassignPopupFn(popUp2);
+      // See NOTE above.
       if (msSinceMouseOver() >= hoverPopUpDelay)
         return; // The WPT runner was too slow.
       assert_false(eitherShowing,'pop-up should not show immediately');
