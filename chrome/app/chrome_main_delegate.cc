@@ -25,7 +25,6 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/scoped_add_feature_flags.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
@@ -904,16 +903,6 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #endif
 
 #endif  // BUILDFLAG(IS_WIN)
-
-  {
-    base::ScopedAddFeatureFlags features(
-        base::CommandLine::ForCurrentProcess());
-
-    // Disable Event.path on Canary and Dev to help the deprecation and removal.
-    // See crbug.com/1277431 for more details.
-    if (chrome::GetChannel() < version_info::Channel::BETA)
-      features.DisableIfNotSet(::blink::features::kEventPath);
-  }
 
   chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
