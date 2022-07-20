@@ -298,11 +298,24 @@ constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {chromeos::WelcomeView::kScreenId, "network"},
     {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
 
+std::string GetLegacyUmaOobeScreenName(const OobeScreenId& screen_id) {
+  // Make sure to use initial UMA name if the name has changed.
+  std::string uma_name = screen_id.name;
+  for (const auto& entry : kLegacyUmaOobeScreenNames) {
+    if (entry.screen.AsId() == screen_id) {
+      uma_name = entry.uma_name;
+      break;
+    }
+  }
+  uma_name[0] = std::toupper(uma_name[0]);
+  return uma_name;
+}
+
 void RecordUMAHistogramForOOBEStepShownStatus(
     OobeScreenId screen,
     WizardController::ScreenShownStatus status) {
-  std::string screen_name = screen.name;
-  screen_name[0] = std::toupper(screen_name[0]);
+  // Legacy histogram, requires old screen names.
+  std::string screen_name = GetLegacyUmaOobeScreenName(screen);
   std::string histogram_name = "OOBE.StepShownStatus." + screen_name;
   base::UmaHistogramEnumeration(histogram_name, status);
 }
@@ -310,23 +323,14 @@ void RecordUMAHistogramForOOBEStepShownStatus(
 void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
                                                  const std::string& exit_reason,
                                                  base::TimeDelta step_time) {
-  // Fetch screen name; make sure to use initial UMA name if the name has
-  // changed.
-  std::string screen_name = screen.name;
-  for (const auto& entry : kLegacyUmaOobeScreenNames) {
-    if (entry.screen.AsId() == screen) {
-      screen_name = entry.uma_name;
-      break;
-    }
-  }
-
-  screen_name[0] = std::toupper(screen_name[0]);
-  std::string histogram_name = "OOBE.StepCompletionTime." + screen_name;
+  // Legacy histogram, requires old screen names.
+  std::string uma_name = GetLegacyUmaOobeScreenName(screen);
+  std::string histogram_name = "OOBE.StepCompletionTime." + uma_name;
 
   base::UmaHistogramMediumTimes(histogram_name, step_time);
 
-  // Use for this Histogram real screen names.
-  screen_name = screen.name;
+  // Use for this histogram real screen names.
+  std::string screen_name = screen.name;
   screen_name[0] = std::toupper(screen_name[0]);
   std::string histogram_name_with_reason =
       "OOBE.StepCompletionTimeByExitReason." + screen_name + "." + exit_reason;
