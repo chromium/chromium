@@ -6527,7 +6527,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kStorageAccessAPI)},
+     FEATURE_VALUE_TYPE(net::features::kStorageAccessAPI)},
 
     {"enable-removing-all-third-party-cookies",
      flag_descriptions::kEnableRemovingAllThirdPartyCookiesName,

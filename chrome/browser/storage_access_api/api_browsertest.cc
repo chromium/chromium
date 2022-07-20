@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -52,7 +53,7 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
  protected:
   StorageAccessAPIBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_enable_.InitAndEnableFeature(blink::features::kStorageAccessAPI);
+    feature_enable_.InitAndEnableFeature(net::features::kStorageAccessAPI);
   }
 
   void SetUpOnMainThread() override {

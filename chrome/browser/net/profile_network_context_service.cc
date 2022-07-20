@@ -221,7 +221,7 @@ void UpdateLegacyCookieSettings(Profile* profile) {
 }
 
 void UpdateStorageAccessSettings(Profile* profile) {
-  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
     ContentSettingsForOneType settings;
     HostContentSettingsMapFactory::GetForProfile(profile)
         ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS, &settings);
@@ -548,7 +548,7 @@ ProfileNetworkContextService::CreateCookieManagerParams(
       std::move(settings_for_legacy_cookie_access);
 
   ContentSettingsForOneType settings_for_storage_access;
-  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
     host_content_settings_map->GetSettingsForOneType(
         ContentSettingsType::STORAGE_ACCESS, &settings_for_storage_access);
   }

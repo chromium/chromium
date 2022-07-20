@@ -18,26 +18,18 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
-
-// Set the default number of "automatic" implicit storage access grants per
-// third party origin that can be granted. This can be overridden via
-// experimentation to allow for field trials to validate the default setting.
-constexpr int kDefaultImplicitGrantLimit = 5;
 
 namespace {
 
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
 constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
 
-const base::FeatureParam<int> kImplicitGrantLimit{
-    &blink::features::kStorageAccessAPI,
-    "storage-access-api-implicit-grant-limit", kDefaultImplicitGrantLimit};
-
 int GetImplicitGrantLimit() {
-  return kImplicitGrantLimit.Get();
+  return net::features::kStorageAccessAPIImplicitGrantLimit.Get();
 }
 
 }  // namespace
@@ -66,7 +58,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!user_gesture ||
-      !base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
+      !base::FeatureList::IsEnabled(net::features::kStorageAccessAPI) ||
       !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
@@ -108,7 +100,7 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
     return CONTENT_SETTING_BLOCK;
   }
 
@@ -141,7 +133,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     bool implicit_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+  if (!base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
     return;
   }
 

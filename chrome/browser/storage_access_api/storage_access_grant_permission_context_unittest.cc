@@ -12,6 +12,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -71,7 +72,9 @@ class StorageAccessGrantPermissionContextTest
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
     DCHECK(manager);
-    for (int grant_id = 0; grant_id < kDefaultImplicitGrantLimit; grant_id++) {
+    for (int grant_id = 0;
+         grant_id < net::features::kStorageAccessAPIDefaultImplicitGrantLimit;
+         grant_id++) {
       const GURL embedding_origin(std::string(url::kHttpsScheme) +
                                   "://example_embedder_" +
                                   base::NumberToString(grant_id) + ".com");
@@ -126,7 +129,7 @@ class StorageAccessGrantPermissionContextAPIEnabledTest
     : public StorageAccessGrantPermissionContextTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kStorageAccessAPI};
+      net::features::kStorageAccessAPI};
 };
 
 // When the Storage Access API feature is enabled and we have a user gesture we

@@ -453,6 +453,16 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<int>
     kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
 
+// Enable the Storage Access API. https://crbug.com/989663.
+NET_EXPORT extern const base::Feature kStorageAccessAPI;
+
+// Set the default number of "automatic" implicit storage access grants per
+// third party origin that can be granted. This can be overridden via
+// experimentation to allow for field trials to validate the default setting.
+NET_EXPORT extern const int kStorageAccessAPIDefaultImplicitGrantLimit;
+NET_EXPORT extern const base::FeatureParam<int>
+    kStorageAccessAPIImplicitGrantLimit;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

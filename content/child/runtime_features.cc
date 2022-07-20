@@ -383,7 +383,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"SanitizerAPIv0", blink::features::kSanitizerAPIv0},
           {"SecureContextFixForWorkers",
            blink::features::kSecureContextFixForWorkers},
-          {"StorageAccessAPI", blink::features::kStorageAccessAPI},
+          {"StorageAccessAPI", net::features::kStorageAccessAPI},
           {"ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
            blink::features::
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},

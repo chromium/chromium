@@ -325,4 +325,10 @@ const base::FeatureParam<int>
         &kOptimizeNetworkBuffers, "filter_source_stream_buffer_size",
         32 * 1024};
 
+const base::Feature kStorageAccessAPI{"StorageAccessAPI",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+constexpr int kStorageAccessAPIDefaultImplicitGrantLimit = 5;
+const base::FeatureParam<int> kStorageAccessAPIImplicitGrantLimit{
+    &kStorageAccessAPI, "storage-access-api-implicit-grant-limit",
+    kStorageAccessAPIDefaultImplicitGrantLimit};
 }  // namespace net::features

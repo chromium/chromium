@@ -455,10 +455,6 @@ const base::Feature kStopInBackground {
 #endif
 };
 
-// Enable the Storage Access API. https://crbug.com/989663.
-const base::Feature kStorageAccessAPI{"StorageAccessAPI",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable text snippets in URL fragments. https://crbug.com/919204.
 const base::Feature kTextFragmentAnchor{"TextFragmentAnchor",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
