@@ -442,8 +442,8 @@ static ssize_t ReadFromOffset(const int fd, void *buf, const size_t count,
                               const off_t offset) {
   off_t off = lseek(fd, offset, SEEK_SET);
   if (off == (off_t)-1) {
-    ABSL_RAW_LOG(WARNING, "lseek(%d, %ju, SEEK_SET) failed: errno=%d", fd,
-                 static_cast<uintmax_t>(offset), errno);
+    ABSL_RAW_LOG(WARNING, "lseek(%d, %jd, SEEK_SET) failed: errno=%d", fd,
+                 static_cast<intmax_t>(offset), errno);
     return -1;
   }
   return ReadPersistent(fd, buf, count);
@@ -489,12 +489,19 @@ static ABSL_ATTRIBUTE_NOINLINE bool GetSectionHeaderByType(
         (buf_bytes > num_bytes_left) ? num_bytes_left : buf_bytes;
     const off_t offset = sh_offset + i * sizeof(buf[0]);
     const ssize_t len = ReadFromOffset(fd, buf, num_bytes_to_read, offset);
+    if (len < 0) {
+      ABSL_RAW_LOG(
+          WARNING,
+          "Reading %zd bytes from offset %ju returned %zd which is negative.",
+          num_bytes_to_read, static_cast<intmax_t>(offset), len);
+      return false;
+    }
     if (len % sizeof(buf[0]) != 0) {
       ABSL_RAW_LOG(
           WARNING,
-          "Reading %zd bytes from offset %ju returned %zd which is not a "
+          "Reading %zd bytes from offset %jd returned %zd which is not a "
           "multiple of %zu.",
-          num_bytes_to_read, static_cast<uintmax_t>(offset), len,
+          num_bytes_to_read, static_cast<intmax_t>(offset), len,
           sizeof(buf[0]));
       return false;
     }
@@ -693,6 +700,7 @@ static ABSL_ATTRIBUTE_NOINLINE FindSymbolResult FindSymbol(
     const int entries_in_chunk = std::min(num_remaining_symbols, buf_entries);
     const int bytes_in_chunk = entries_in_chunk * sizeof(buf[0]);
     const ssize_t len = ReadFromOffset(fd, buf, bytes_in_chunk, offset);
+    SAFE_ASSERT(len >= 0);
     SAFE_ASSERT(len % sizeof(buf[0]) == 0);
     const ssize_t num_symbols_in_buf = len / sizeof(buf[0]);
     SAFE_ASSERT(num_symbols_in_buf <= entries_in_chunk);

@@ -284,6 +284,19 @@ class Cord {
   //   }
   CordBuffer GetAppendBuffer(size_t capacity, size_t min_capacity = 16);
 
+  // Returns a CordBuffer, re-using potential existing capacity in this cord.
+  //
+  // This function is identical to `GetAppendBuffer`, except that in the case
+  // where a new `CordBuffer` is allocated, it is allocated using the provided
+  // custom limit instead of the default limit. `GetAppendBuffer` will default
+  // to `CordBuffer::CreateWithDefaultLimit(capacity)` whereas this method
+  // will default to `CordBuffer::CreateWithCustomLimit(block_size, capacity)`.
+  // This method is equivalent to `GetAppendBuffer` if `block_size` is zero.
+  // See the documentation for `CreateWithCustomLimit` for more details on the
+  // restrictions and legal values for `block_size`.
+  CordBuffer GetCustomAppendBuffer(size_t block_size, size_t capacity,
+                                   size_t min_capacity = 16);
+
   // Cord::Prepend()
   //
   // Prepends data to the Cord, which may come from another Cord or other string
@@ -861,9 +874,6 @@ class Cord {
     void PrependTreeToTree(CordRep* tree, MethodIdentifier method);
     void PrependTree(CordRep* tree, MethodIdentifier method);
 
-    template <bool has_length>
-    void GetAppendRegion(char** region, size_t* size, size_t length);
-
     bool IsSame(const InlineRep& other) const {
       return memcmp(&data_, &other.data_, sizeof(data_)) == 0;
     }
@@ -980,7 +990,8 @@ class Cord {
   void AppendPrecise(absl::string_view src, MethodIdentifier method);
   void PrependPrecise(absl::string_view src, MethodIdentifier method);
 
-  CordBuffer GetAppendBufferSlowPath(size_t capacity, size_t min_capacity);
+  CordBuffer GetAppendBufferSlowPath(size_t block_size, size_t capacity,
+                                     size_t min_capacity);
 
   // Prepends the provided data to this instance. `method` contains the public
   // API method for this action which is tracked for Cordz sampling purposes.
@@ -1360,7 +1371,17 @@ inline void Cord::Prepend(CordBuffer buffer) {
 
 inline CordBuffer Cord::GetAppendBuffer(size_t capacity, size_t min_capacity) {
   if (empty()) return CordBuffer::CreateWithDefaultLimit(capacity);
-  return GetAppendBufferSlowPath(capacity, min_capacity);
+  return GetAppendBufferSlowPath(0, capacity, min_capacity);
+}
+
+inline CordBuffer Cord::GetCustomAppendBuffer(size_t block_size,
+                                              size_t capacity,
+                                              size_t min_capacity) {
+  if (empty()) {
+    return block_size ? CordBuffer::CreateWithCustomLimit(block_size, capacity)
+                      : CordBuffer::CreateWithDefaultLimit(capacity);
+  }
+  return GetAppendBufferSlowPath(block_size, capacity, min_capacity);
 }
 
 extern template void Cord::Append(std::string&& src);

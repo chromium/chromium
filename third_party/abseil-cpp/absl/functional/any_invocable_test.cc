@@ -1246,12 +1246,9 @@ TYPED_TEST_P(AnyInvTestNoexceptTrue, ConversionConstructionConstraints) {
 #else
   using AnyInvType = typename TypeParam::AnyInvType;
 
-// TODO(b/217761454): Fix this and re-enable for MSVC.
-#ifndef _MSC_VER
   EXPECT_FALSE((std::is_constructible<
                 AnyInvType,
                 typename TypeParam::AnyInvocableFunTypeNotNoexcept*>::value));
-#endif
   EXPECT_FALSE((
       std::is_constructible<AnyInvType,
                             typename TypeParam::IncompatibleInvocable>::value));
@@ -1264,12 +1261,9 @@ TYPED_TEST_P(AnyInvTestNoexceptTrue, ConversionAssignConstraints) {
 #else
   using AnyInvType = typename TypeParam::AnyInvType;
 
-// TODO(b/217761454): Fix this and re-enable for MSVC.
-#ifndef _MSC_VER
   EXPECT_FALSE((std::is_assignable<
                 AnyInvType&,
                 typename TypeParam::AnyInvocableFunTypeNotNoexcept*>::value));
-#endif
   EXPECT_FALSE(
       (std::is_assignable<AnyInvType&,
                           typename TypeParam::IncompatibleInvocable>::value));

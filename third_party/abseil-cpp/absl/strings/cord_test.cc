@@ -733,18 +733,48 @@ TEST_P(CordTest, PrependLargeBuffer) {
   EXPECT_THAT(cord.Chunks(), ::testing::ElementsAre(s2, s1));
 }
 
-TEST_P(CordTest, GetAppendBufferOnEmptyCord) {
+class CordAppendBufferTest : public testing::TestWithParam<bool> {
+ public:
+  size_t is_default() const { return GetParam(); }
+
+  // Returns human readable string representation of the test parameter.
+  static std::string ToString(testing::TestParamInfo<bool> param) {
+    return param.param ? "DefaultLimit" : "CustomLimit";
+  }
+
+  size_t limit() const {
+    return is_default() ? absl::CordBuffer::kDefaultLimit
+                        : absl::CordBuffer::kCustomLimit;
+  }
+
+  size_t maximum_payload() const {
+    return is_default() ? absl::CordBuffer::MaximumPayload()
+                        : absl::CordBuffer::MaximumPayload(limit());
+  }
+
+  absl::CordBuffer GetAppendBuffer(absl::Cord& cord, size_t capacity,
+                                   size_t min_capacity = 16) {
+    return is_default()
+               ? cord.GetAppendBuffer(capacity, min_capacity)
+               : cord.GetCustomAppendBuffer(limit(), capacity, min_capacity);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(WithParam, CordAppendBufferTest, testing::Bool(),
+                         CordAppendBufferTest::ToString);
+
+TEST_P(CordAppendBufferTest, GetAppendBufferOnEmptyCord) {
   absl::Cord cord;
-  absl::CordBuffer buffer = cord.GetAppendBuffer(1000);
+  absl::CordBuffer buffer = GetAppendBuffer(cord, 1000);
   EXPECT_GE(buffer.capacity(), 1000);
   EXPECT_EQ(buffer.length(), 0);
 }
 
-TEST_P(CordTest, GetAppendBufferOnInlinedCord) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnInlinedCord) {
   static constexpr int kInlinedSize = sizeof(absl::CordBuffer) - 1;
   for (int size : {6, kInlinedSize - 3, kInlinedSize - 2, 1000}) {
     absl::Cord cord("Abc");
-    absl::CordBuffer buffer = cord.GetAppendBuffer(size, 1);
+    absl::CordBuffer buffer = GetAppendBuffer(cord, size, 1);
     EXPECT_GE(buffer.capacity(), 3 + size);
     EXPECT_EQ(buffer.length(), 3);
     EXPECT_EQ(absl::string_view(buffer.data(), buffer.length()), "Abc");
@@ -752,7 +782,7 @@ TEST_P(CordTest, GetAppendBufferOnInlinedCord) {
   }
 }
 
-TEST_P(CordTest, GetAppendBufferOnInlinedCordWithCapacityCloseToMax) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnInlinedCordCapacityCloseToMax) {
   // Cover the use case where we have a non empty inlined cord with some size
   // 'n', and ask for something like 'uint64_max - k', assuming internal logic
   // could overflow on 'uint64_max - k + size', and return a valid, but
@@ -760,30 +790,31 @@ TEST_P(CordTest, GetAppendBufferOnInlinedCordWithCapacityCloseToMax) {
   for (size_t dist_from_max = 0; dist_from_max <= 4; ++dist_from_max) {
     absl::Cord cord("Abc");
     size_t size = std::numeric_limits<size_t>::max() - dist_from_max;
-    absl::CordBuffer buffer = cord.GetAppendBuffer(size, 1);
-    EXPECT_EQ(buffer.capacity(), absl::CordBuffer::kDefaultLimit);
+    absl::CordBuffer buffer = GetAppendBuffer(cord, size, 1);
+    EXPECT_GE(buffer.capacity(), maximum_payload());
     EXPECT_EQ(buffer.length(), 3);
     EXPECT_EQ(absl::string_view(buffer.data(), buffer.length()), "Abc");
     EXPECT_TRUE(cord.empty());
   }
 }
 
-TEST_P(CordTest, GetAppendBufferOnFlat) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnFlat) {
   // Create a cord with a single flat and extra capacity
   absl::Cord cord;
   absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(500);
+  const size_t expected_capacity = buffer.capacity();
   buffer.SetLength(3);
   memcpy(buffer.data(), "Abc", 3);
   cord.Append(std::move(buffer));
 
-  buffer = cord.GetAppendBuffer(6);
-  EXPECT_GE(buffer.capacity(), 500);
+  buffer = GetAppendBuffer(cord, 6);
+  EXPECT_EQ(buffer.capacity(), expected_capacity);
   EXPECT_EQ(buffer.length(), 3);
   EXPECT_EQ(absl::string_view(buffer.data(), buffer.length()), "Abc");
   EXPECT_TRUE(cord.empty());
 }
 
-TEST_P(CordTest, GetAppendBufferOnFlatWithoutMinCapacity) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnFlatWithoutMinCapacity) {
   // Create a cord with a single flat and extra capacity
   absl::Cord cord;
   absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(500);
@@ -791,13 +822,13 @@ TEST_P(CordTest, GetAppendBufferOnFlatWithoutMinCapacity) {
   memset(buffer.data(), 'x', 30);
   cord.Append(std::move(buffer));
 
-  buffer = cord.GetAppendBuffer(1000, 900);
+  buffer = GetAppendBuffer(cord, 1000, 900);
   EXPECT_GE(buffer.capacity(), 1000);
   EXPECT_EQ(buffer.length(), 0);
   EXPECT_EQ(cord, std::string(30, 'x'));
 }
 
-TEST_P(CordTest, GetAppendBufferOnTree) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnTree) {
   RandomEngine rng;
   for (int num_flats : {2, 3, 100}) {
     // Create a cord with `num_flats` flats and extra capacity
@@ -812,7 +843,7 @@ TEST_P(CordTest, GetAppendBufferOnTree) {
       memcpy(buffer.data(), last.data(), 10);
       cord.Append(std::move(buffer));
     }
-    absl::CordBuffer buffer = cord.GetAppendBuffer(6);
+    absl::CordBuffer buffer = GetAppendBuffer(cord, 6);
     EXPECT_GE(buffer.capacity(), 500);
     EXPECT_EQ(buffer.length(), 10);
     EXPECT_EQ(absl::string_view(buffer.data(), buffer.length()), last);
@@ -820,7 +851,7 @@ TEST_P(CordTest, GetAppendBufferOnTree) {
   }
 }
 
-TEST_P(CordTest, GetAppendBufferOnTreeWithoutMinCapacity) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnTreeWithoutMinCapacity) {
   absl::Cord cord;
   for (int i = 0; i < 2; ++i) {
     absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(500);
@@ -828,13 +859,13 @@ TEST_P(CordTest, GetAppendBufferOnTreeWithoutMinCapacity) {
     memcpy(buffer.data(), i ? "def" : "Abc", 3);
     cord.Append(std::move(buffer));
   }
-  absl::CordBuffer buffer = cord.GetAppendBuffer(1000, 900);
+  absl::CordBuffer buffer = GetAppendBuffer(cord, 1000, 900);
   EXPECT_GE(buffer.capacity(), 1000);
   EXPECT_EQ(buffer.length(), 0);
   EXPECT_EQ(cord, "Abcdef");
 }
 
-TEST_P(CordTest, GetAppendBufferOnSubstring) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnSubstring) {
   // Create a large cord with a single flat and some extra capacity
   absl::Cord cord;
   absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(500);
@@ -844,12 +875,12 @@ TEST_P(CordTest, GetAppendBufferOnSubstring) {
   cord.RemovePrefix(1);
 
   // Deny on substring
-  buffer = cord.GetAppendBuffer(6);
+  buffer = GetAppendBuffer(cord, 6);
   EXPECT_EQ(buffer.length(), 0);
   EXPECT_EQ(cord, std::string(449, 'x'));
 }
 
-TEST_P(CordTest, GetAppendBufferOnSharedCord) {
+TEST_P(CordAppendBufferTest, GetAppendBufferOnSharedCord) {
   // Create a shared cord with a single flat and extra capacity
   absl::Cord cord;
   absl::CordBuffer buffer = absl::CordBuffer::CreateWithDefaultLimit(500);
@@ -859,7 +890,7 @@ TEST_P(CordTest, GetAppendBufferOnSharedCord) {
   absl::Cord shared_cord = cord;
 
   // Deny on flat
-  buffer = cord.GetAppendBuffer(6);
+  buffer = GetAppendBuffer(cord, 6);
   EXPECT_EQ(buffer.length(), 0);
   EXPECT_EQ(cord, "Abc");
 
@@ -870,7 +901,7 @@ TEST_P(CordTest, GetAppendBufferOnSharedCord) {
   shared_cord = cord;
 
   // Deny on tree
-  buffer = cord.GetAppendBuffer(6);
+  buffer = GetAppendBuffer(cord, 6);
   EXPECT_EQ(buffer.length(), 0);
   EXPECT_EQ(cord, "Abcdef");
 }

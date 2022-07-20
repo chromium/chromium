@@ -548,6 +548,7 @@ static bool ParseSpecialName(State *state);
 static bool ParseCallOffset(State *state);
 static bool ParseNVOffset(State *state);
 static bool ParseVOffset(State *state);
+static bool ParseAbiTags(State *state);
 static bool ParseCtorDtorName(State *state);
 static bool ParseDecltype(State *state);
 static bool ParseType(State *state);
@@ -601,7 +602,7 @@ static bool ParseSubstitution(State *state, bool accept_std);
 //
 // Reference:
 // - Itanium C++ ABI
-//   <https://mentorembedded.github.io/cxx-abi/abi.html#mangling>
+//   <https://itanium-cxx-abi.github.io/cxx-abi/abi.html#mangling>
 
 // <mangled-name> ::= _Z <encoding>
 static bool ParseMangledName(State *state) {
@@ -741,17 +742,42 @@ static bool ParsePrefix(State *state) {
   return true;
 }
 
-// <unqualified-name> ::= <operator-name>
-//                    ::= <ctor-dtor-name>
-//                    ::= <source-name>
-//                    ::= <local-source-name> // GCC extension; see below.
-//                    ::= <unnamed-type-name>
+// <unqualified-name> ::= <operator-name> [<abi-tags>]
+//                    ::= <ctor-dtor-name> [<abi-tags>]
+//                    ::= <source-name> [<abi-tags>]
+//                    ::= <local-source-name> [<abi-tags>]
+//                    ::= <unnamed-type-name> [<abi-tags>]
+//
+// <local-source-name> is a GCC extension; see below.
 static bool ParseUnqualifiedName(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
-  return (ParseOperatorName(state, nullptr) || ParseCtorDtorName(state) ||
-          ParseSourceName(state) || ParseLocalSourceName(state) ||
-          ParseUnnamedTypeName(state));
+  if (ParseOperatorName(state, nullptr) || ParseCtorDtorName(state) ||
+      ParseSourceName(state) || ParseLocalSourceName(state) ||
+      ParseUnnamedTypeName(state)) {
+    return ParseAbiTags(state);
+  }
+  return false;
+}
+
+// <abi-tags> ::= <abi-tag> [<abi-tags>]
+// <abi-tag>  ::= B <source-name>
+static bool ParseAbiTags(State *state) {
+  ComplexityGuard guard(state);
+  if (guard.IsTooComplex()) return false;
+
+  while (ParseOneCharToken(state, 'B')) {
+    ParseState copy = state->parse_state;
+    MaybeAppend(state, "[abi:");
+
+    if (!ParseSourceName(state)) {
+      state->parse_state = copy;
+      return false;
+    }
+    MaybeAppend(state, "]");
+  }
+
+  return true;
 }
 
 // <source-name> ::= <positive length number> <identifier>

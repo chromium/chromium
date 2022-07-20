@@ -773,7 +773,8 @@ bool Base64UnescapeInternal(const char* src, size_t slen, String* dest,
                             const signed char* unbase64) {
   // Determine the size of the output string.  Base64 encodes every 3 bytes into
   // 4 characters.  any leftover chars are added directly for good measure.
-  // This is documented in the base64 RFC: http://tools.ietf.org/html/rfc3548
+  // This is documented in the base64 RFC:
+  // https://datatracker.ietf.org/doc/html/rfc3548
   const size_t dest_len = 3 * (slen / 4) + (slen % 4);
 
   strings_internal::STLStringResizeUninitialized(dest, dest_len);
@@ -876,8 +877,8 @@ std::string Utf8SafeCHexEscape(absl::string_view src) {
 // WebSafeBase64Escape() - Google's variation of base64 encoder
 //
 // Check out
-// http://tools.ietf.org/html/rfc2045 for formal description, but what we
-// care about is that...
+// https://datatracker.ietf.org/doc/html/rfc2045 for formal description, but
+// what we care about is that...
 //   Take the encoded stuff in groups of 4 characters and turn each
 //   character into a code 0 to 63 thus:
 //           A-Z map to 0 to 25

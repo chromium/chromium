@@ -537,18 +537,23 @@ static CordRep::ExtractResult ExtractAppendBuffer(CordRep* rep,
   }
 }
 
-static CordBuffer CreateAppendBuffer(InlineData& data, size_t capacity) {
+static CordBuffer CreateAppendBuffer(InlineData& data, size_t block_size,
+                                     size_t capacity) {
   // Watch out for overflow, people can ask for size_t::max().
   const size_t size = data.inline_size();
-  capacity = (std::min)(std::numeric_limits<size_t>::max() - size, capacity);
-  CordBuffer buffer = CordBuffer::CreateWithDefaultLimit(size + capacity);
+  const size_t max_capacity = std::numeric_limits<size_t>::max() - size;
+  capacity = (std::min)(max_capacity, capacity) + size;
+  CordBuffer buffer =
+      block_size ? CordBuffer::CreateWithCustomLimit(block_size, capacity)
+                 : CordBuffer::CreateWithDefaultLimit(capacity);
   cord_internal::SmallMemmove(buffer.data(), data.as_chars(), size);
   buffer.SetLength(size);
   data = {};
   return buffer;
 }
 
-CordBuffer Cord::GetAppendBufferSlowPath(size_t capacity, size_t min_capacity) {
+CordBuffer Cord::GetAppendBufferSlowPath(size_t block_size, size_t capacity,
+                                         size_t min_capacity) {
   auto constexpr method = CordzUpdateTracker::kGetAppendBuffer;
   CordRep* tree = contents_.tree();
   if (tree != nullptr) {
@@ -558,9 +563,10 @@ CordBuffer Cord::GetAppendBufferSlowPath(size_t capacity, size_t min_capacity) {
       contents_.SetTreeOrEmpty(result.tree, scope);
       return CordBuffer(result.extracted->flat());
     }
-    return CordBuffer::CreateWithDefaultLimit(capacity);
+    return block_size ? CordBuffer::CreateWithCustomLimit(block_size, capacity)
+                      : CordBuffer::CreateWithDefaultLimit(capacity);
   }
-  return CreateAppendBuffer(contents_.data_, capacity);
+  return CreateAppendBuffer(contents_.data_, block_size, capacity);
 }
 
 void Cord::Append(const Cord& src) {

@@ -62,6 +62,7 @@ EXPORTS
     ??$Merge@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@0@Z
     ??$Merge@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@0@Z
     ??$NewImpl@$0BAAA@$$V@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
+    ??$NewImpl@$0EAAAA@$$V@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
     ??$NewLeaf@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$NewLeaf@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$ParseFloat@$09@strings_internal@absl@@YA?AUParsedFloat@01@PEBD0W4chars_format@1@@Z
@@ -467,7 +468,7 @@ EXPORTS
     ?GetAppendBuffer@CordRepBtree@cord_internal@absl@@QEAA?AV?$Span@D@3@_K@Z
     ?GetAppendBuffer@CordRepRing@cord_internal@absl@@QEAA?AV?$Span@D@3@_K@Z
     ?GetAppendBufferSlow@CordRepBtree@cord_internal@absl@@AEAA?AV?$Span@D@3@_K@Z
-    ?GetAppendBufferSlowPath@Cord@absl@@AEAA?AVCordBuffer@2@_K0@Z
+    ?GetAppendBufferSlowPath@Cord@absl@@AEAA?AVCordBuffer@2@_K00@Z
     ?GetCachedTID@base_internal@absl@@YAIXZ
     ?GetCharacter@CordRepBtree@cord_internal@absl@@QEBAD_K@Z
     ?GetCharacter@CordRepRing@cord_internal@absl@@QEBAD_K@Z

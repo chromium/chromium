@@ -96,7 +96,8 @@ static inline uintptr_t ComputeStackFrameSize(const T *low, const T *high) {
 template <bool STRICT_UNWINDING, bool WITH_CONTEXT>
 ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS  // May read random elements from stack.
 ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY   // May read random elements from stack.
-static void ** NextStackFrame(void **old_frame_pointer, const void *uc) {
+static void ** NextStackFrame(void **old_frame_pointer, const void *uc,
+                              const std::pair<size_t, size_t> range) {
   //               .
   //               .
   //               .
@@ -159,7 +160,11 @@ static void ** NextStackFrame(void **old_frame_pointer, const void *uc) {
     const uintptr_t max_size = STRICT_UNWINDING ? 100000 : 1000000;
     const uintptr_t frame_size =
         ComputeStackFrameSize(old_frame_pointer, new_frame_pointer);
-    if (frame_size == kUnknownFrameSize || frame_size > max_size)
+    if (frame_size == kUnknownFrameSize &&
+        (reinterpret_cast<uintptr_t>(new_frame_pointer) < range.first ||
+         reinterpret_cast<uintptr_t>(new_frame_pointer) > range.second))
+      return nullptr;
+    if (frame_size > max_size)
       return nullptr;
   }
 
@@ -180,6 +185,12 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
 #error reading stack pointer not yet supported on this platform
 #endif
 
+  std::pair<size_t, size_t> stack = {
+      // assume that the first page is not the stack.
+      static_cast<size_t>(sysconf(_SC_PAGESIZE)),
+      std::numeric_limits<size_t>::max() - sizeof(void *)
+  };
+
   int n = 0;
   void *return_address = nullptr;
   while (frame_pointer && n < max_depth) {
@@ -190,7 +201,8 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
     // non-strict unwinding rules to produce a stack trace that is as complete
     // as possible (even if it contains a few bogus entries in some rare cases).
     void **next_frame_pointer =
-        NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
+        NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp,
+                                                          stack);
 
     if (skip_count > 0) {
       skip_count--;
@@ -217,7 +229,8 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
         num_dropped_frames++;
       }
       frame_pointer =
-          NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
+          NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp,
+                                                            stack);
     }
     *min_dropped_frames = num_dropped_frames;
   }
