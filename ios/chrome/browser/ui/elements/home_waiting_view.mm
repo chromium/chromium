@@ -5,11 +5,9 @@
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
-#import <MaterialComponents/MaterialPalettes.h>
 
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/material_components/activity_indicator.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,8 +48,7 @@
         UIViewAutoresizingFlexibleBottomMargin;
     self.activityIndicator.center = CGPointMake(
         CGRectGetWidth(self.bounds) / 2, CGRectGetHeight(self.bounds) / 2);
-    self.activityIndicator.cycleColors =
-        @[ [[MDCPalette cr_bluePalette] tint500] ];
+    self.activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
     [self addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
   });

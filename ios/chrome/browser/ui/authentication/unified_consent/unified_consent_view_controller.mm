@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

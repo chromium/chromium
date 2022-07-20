@@ -18,7 +18,6 @@ source_set("open_in_ui") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/open_in",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

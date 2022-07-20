@@ -6,7 +6,6 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

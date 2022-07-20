@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 

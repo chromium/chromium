@@ -36,7 +36,6 @@ source_set("sync") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/collection_view/cells",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scoped_ui_blocker",

@@ -29,8 +29,6 @@ source_set("elements") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -81,7 +79,6 @@ source_set("elements_internal") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/scoped_ui_blocker:scoped_ui_blocker",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",

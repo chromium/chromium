@@ -66,7 +66,6 @@ source_set("cells") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors:colors",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/icons:item_icons",
     "//ios/chrome/browser/ui/icons:symbols",

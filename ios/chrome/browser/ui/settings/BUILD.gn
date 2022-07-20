@@ -146,7 +146,6 @@ source_set("settings") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions/cells",

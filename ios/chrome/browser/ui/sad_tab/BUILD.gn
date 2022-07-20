@@ -17,7 +17,6 @@ source_set("sad_tab") {
     "//components/ui_metrics",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util",

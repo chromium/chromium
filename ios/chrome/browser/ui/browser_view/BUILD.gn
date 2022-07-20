@@ -93,7 +93,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/browser_container",
     "//ios/chrome/browser/ui/browser_container:ui",
     "//ios/chrome/browser/ui/bubble",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",

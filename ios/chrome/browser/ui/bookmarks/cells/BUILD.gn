@@ -27,7 +27,6 @@ source_set("cells") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/table_view:styler",

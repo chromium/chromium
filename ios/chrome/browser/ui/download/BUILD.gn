@@ -49,7 +49,6 @@ source_set("download") {
     "//ios/chrome/browser/store_kit",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/download/activities",

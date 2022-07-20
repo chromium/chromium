@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "components/omnibox/common/omnibox_features.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"

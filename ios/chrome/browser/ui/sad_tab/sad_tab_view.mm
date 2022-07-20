@@ -13,7 +13,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/ui_metrics/sadtab_metrics_types.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"

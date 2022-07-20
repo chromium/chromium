@@ -147,7 +147,6 @@ source_set("reading_list_ui") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",

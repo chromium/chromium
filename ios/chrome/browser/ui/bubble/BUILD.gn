@@ -26,7 +26,6 @@ source_set("bubble") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/follow:utils",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/util",

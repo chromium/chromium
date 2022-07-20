@@ -28,7 +28,6 @@ source_set("cells") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/collection_view/cells",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",

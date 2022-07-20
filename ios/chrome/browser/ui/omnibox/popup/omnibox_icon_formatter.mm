@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "url/gurl.h"
 
