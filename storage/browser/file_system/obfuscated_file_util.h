@@ -226,13 +226,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // Returns an empty path if the directory is undefined.
   // If the directory is defined, it will be returned, even if
   // there is a file system error (e.g. the directory doesn't exist on disk and
-  // `create` is false). Callers should always check `error_code` to make sure
-  // the returned path is usable.
-  base::FilePath GetDirectoryForStorageKeyAndType(
+  // `create` is false).
+  base::FileErrorOr<base::FilePath> GetDirectoryForStorageKeyAndType(
       const blink::StorageKey& storage_key,
       const std::string& type_string,
-      bool create,
-      base::File::Error* error_code);
+      bool create);
 
   // Deletes the topmost directory specific to this StorageKey and type. This
   // will delete its directory database. Deletes the topmost StorageKey

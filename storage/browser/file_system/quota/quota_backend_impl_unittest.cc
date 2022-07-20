@@ -139,10 +139,10 @@ class QuotaBackendImplTest : public testing::Test,
 
     std::string type_string =
         SandboxFileSystemBackendDelegate::GetTypeString(type);
-    base::File::Error error = base::File::FILE_ERROR_FAILED;
-    base::FilePath path = file_util_->GetDirectoryForStorageKeyAndType(
-        blink::StorageKey(origin), type_string, true /* create */, &error);
-    ASSERT_EQ(base::File::FILE_OK, error);
+    base::FileErrorOr<base::FilePath> path =
+        file_util_->GetDirectoryForStorageKeyAndType(
+            blink::StorageKey(origin), type_string, true /* create */);
+    ASSERT_FALSE(path.is_error());
 
     ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(
         GetUsageCachePath(origin, type), 0));

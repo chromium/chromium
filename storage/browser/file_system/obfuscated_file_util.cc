@@ -913,12 +913,8 @@ ObfuscatedFileUtil::GetDirectoryForBucketAndType(const BucketLocator& bucket,
   // A default bucket in a first-party context uses
   // GetDirectoryForStorageKeyAndType() to determine its file path.
   if (bucket.storage_key.IsFirstPartyContext() && bucket.is_default) {
-    base::File::Error error = base::File::FILE_OK;
-    base::FilePath path = GetDirectoryForStorageKeyAndType(
-        bucket.storage_key, type_string, create, &error);
-    if (error != base::File::FILE_OK)
-      return error;
-    return path;
+    return GetDirectoryForStorageKeyAndType(bucket.storage_key, type_string,
+                                            create);
   }
   // All other contexts use the provided bucket information to construct the
   // file path.
@@ -933,33 +929,26 @@ ObfuscatedFileUtil::GetDirectoryForBucketAndType(const BucketLocator& bucket,
   return path;
 }
 
-// TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKeyAndType
-// and its callers to return a base::FileErrorOr<base::FilePath>.
-base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
+base::FileErrorOr<base::FilePath>
+ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
     const blink::StorageKey& storage_key,
     const std::string& type_string,
-    bool create,
-    base::File::Error* error_code) {
+    bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FileErrorOr<base::FilePath> origin_dir =
+  base::FileErrorOr<base::FilePath> dir =
       GetDirectoryForStorageKey(storage_key, create);
-  if (origin_dir.is_error()) {
-    *error_code = origin_dir.error();
-    return base::FilePath();
+  if (dir.is_error()) {
+    return dir;
   }
-  if (origin_dir->empty()) {
-    *error_code = base::File::FILE_OK;
-    return base::FilePath();
-  }
+  DCHECK(!dir->empty());
   if (type_string.empty()) {
-    *error_code = base::File::FILE_OK;
-    return origin_dir.value();
+    return dir;
   }
   // Append the file system type and verify the path is valid.
-  base::FilePath path = origin_dir->AppendASCII(type_string);
+  base::FilePath path = dir->AppendASCII(type_string);
   base::File::Error error = GetDirectoryHelper(path, create);
-  if (error_code)
-    *error_code = error;
+  if (error != base::File::FILE_OK)
+    return error;
   return path;
 }
 
@@ -976,13 +965,14 @@ bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
 
   if (!type_string.empty()) {
     // Delete the filesystem type directory.
-    base::File::Error error = base::File::FILE_OK;
-    const base::FilePath origin_type_path = GetDirectoryForStorageKeyAndType(
-        storage_key, type_string, false, &error);
-    if (error == base::File::FILE_ERROR_FAILED)
+    const base::FileErrorOr<base::FilePath> origin_type_path =
+        GetDirectoryForStorageKeyAndType(storage_key, type_string, false);
+    if (origin_type_path.is_error() &&
+        origin_type_path.error() == base::File::FILE_ERROR_FAILED) {
       return false;
-    if (error == base::File::FILE_OK && !origin_type_path.empty() &&
-        !delegate_->DeleteFileOrDirectory(origin_type_path,
+    }
+    if (!origin_type_path.is_error() && !origin_type_path->empty() &&
+        !delegate_->DeleteFileOrDirectory(origin_type_path.value(),
                                           true /* recursive */)) {
       return false;
     }
@@ -1151,14 +1141,8 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!url.bucket().has_value()) {
     // Access the SandboxDirectoryDatabase to construct the file path.
-    // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKey and
-    // its related functions to return a base::FileErrorOr<base::FilePath>.
-    base::File::Error error = base::File::FILE_OK;
-    base::FilePath path = GetDirectoryForStorageKeyAndType(
-        url.storage_key(), CallGetTypeStringForURL(url), create, &error);
-    if (error != base::File::FILE_OK)
-      return error;
-    return path;
+    return GetDirectoryForStorageKeyAndType(
+        url.storage_key(), CallGetTypeStringForURL(url), create);
   }
   // Construct the file path using the provided bucket information.
   return GetDirectoryForBucketAndType(url.bucket().value(),

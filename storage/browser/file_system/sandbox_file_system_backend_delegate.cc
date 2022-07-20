@@ -128,9 +128,11 @@ base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
             SandboxFileSystemBackendDelegate::GetTypeString(type), create);
     error = (path.is_error()) ? path.error() : base::File::FILE_OK;
   } else {
-    file_util->GetDirectoryForStorageKeyAndType(
-        blink::StorageKey(url::Origin::Create(origin_url)),
-        SandboxFileSystemBackendDelegate::GetTypeString(type), create, &error);
+    base::FileErrorOr<base::FilePath> path =
+        file_util->GetDirectoryForStorageKeyAndType(
+            blink::StorageKey(url::Origin::Create(origin_url)),
+            SandboxFileSystemBackendDelegate::GetTypeString(type), create);
+    error = (path.is_error()) ? path.error() : base::File::FILE_OK;
   }
   if (error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemLabel, kCreateDirectoryError,
@@ -242,13 +244,12 @@ SandboxFileSystemBackendDelegate::GetBaseDirectoryForStorageKeyAndType(
     const blink::StorageKey& storage_key,
     FileSystemType type,
     bool create) {
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath path =
+  base::FileErrorOr<base::FilePath> path =
       obfuscated_file_util()->GetDirectoryForStorageKeyAndType(
-          storage_key, GetTypeString(type), create, &error);
-  if (error != base::File::FILE_OK)
+          storage_key, GetTypeString(type), create);
+  if (path.is_error())
     return base::FilePath();
-  return path;
+  return path.value();
 }
 
 base::FilePath
@@ -687,6 +688,8 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
 }
 
 // static
+// TODO(https://crbug.com/1345419): refactor this functions to return
+// base::FileErrorOr<base::FilePath> and remove the `error_out` parameter.
 base::FilePath
 SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
     ObfuscatedFileUtil* sandbox_file_util,
@@ -695,12 +698,14 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
     base::File::Error* error_out) {
   DCHECK(error_out);
   *error_out = base::File::FILE_OK;
-  base::FilePath base_path =
+  base::FileErrorOr<base::FilePath> base_path =
       sandbox_file_util->GetDirectoryForStorageKeyAndType(
-          storage_key, GetTypeString(type), false /* create */, error_out);
-  if (*error_out != base::File::FILE_OK)
+          storage_key, GetTypeString(type), false /* create */);
+  if (base_path.is_error()) {
+    *error_out = base_path.error();
     return base::FilePath();
-  return base_path.Append(FileSystemUsageCache::kUsageFileName);
+  }
+  return base_path->Append(FileSystemUsageCache::kUsageFileName);
 }
 
 base::FilePath

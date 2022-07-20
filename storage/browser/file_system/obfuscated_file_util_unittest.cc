@@ -2639,24 +2639,28 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType) {
       NewFileSystem(storage_key2, kFileSystemTypePersistent);
 
   // Make sure directories for storage_key1 exist.
-  base::File::Error error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key1, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key1, GetTypeString(kFileSystemTypePersistent),
+                       /*create=*/false)
+                   .is_error());
 
   // Make sure directories for storage_key2 exist.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypePersistent),
+                       /*create=*/false)
+                   .is_error());
 
   // Delete a directory for storage_key1's persistent filesystem.
   ASSERT_TRUE(ofu()->DeleteDirectoryForStorageKeyAndType(
@@ -2664,36 +2668,45 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType) {
 
   // The directory for storage_key1's temporary filesystem should not be
   // removed.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key1, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
 
   // The directory for storage_key1's persistent filesystem should be removed.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
+  ASSERT_EQ(ofu()
+                ->GetDirectoryForStorageKeyAndType(
+                    storage_key1, GetTypeString(kFileSystemTypePersistent),
+                    /*create=*/false)
+                .error(),
+            base::File::FILE_ERROR_NOT_FOUND);
 
   // The directories for storage_key2 should not be removed.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypePersistent),
+                       /*create=*/false)
+                   .is_error());
 
   // Make sure storage_key3's directories don't exist.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key3, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key3, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
+  ASSERT_EQ(ofu()
+                ->GetDirectoryForStorageKeyAndType(
+                    storage_key3, GetTypeString(kFileSystemTypeTemporary),
+                    /*create=*/false)
+                .error(),
+            base::File::FILE_ERROR_NOT_FOUND);
+  ASSERT_EQ(ofu()
+                ->GetDirectoryForStorageKeyAndType(
+                    storage_key3, GetTypeString(kFileSystemTypePersistent),
+                    /*create=*/false)
+                .error(),
+            base::File::FILE_ERROR_NOT_FOUND);
 
   // Deleting directories which don't exist is not an error.
   ASSERT_TRUE(ofu()->DeleteDirectoryForStorageKeyAndType(
@@ -2791,47 +2804,57 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType_DeleteAll) {
       NewFileSystem(storage_key2, kFileSystemTypePersistent);
 
   // Make sure directories for storage_key1 exist.
-  base::File::Error error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key1, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key1, GetTypeString(kFileSystemTypePersistent),
+                       /*create=*/false)
+                   .is_error());
 
   // Make sure directories for storage_key2 exist.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypePersistent),
+                       /*create=*/false)
+                   .is_error());
 
   // Delete all directories for storage_key1.
   ofu()->DeleteDirectoryForStorageKeyAndType(storage_key1, std::string());
 
   // The directories for storage_key1 should be removed.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
+  ASSERT_EQ(ofu()
+                ->GetDirectoryForStorageKeyAndType(
+                    storage_key1, GetTypeString(kFileSystemTypeTemporary),
+                    /*create=*/false)
+                .error(),
+            base::File::FILE_ERROR_NOT_FOUND);
+  ASSERT_EQ(ofu()
+                ->GetDirectoryForStorageKeyAndType(
+                    storage_key1, GetTypeString(kFileSystemTypePersistent),
+                    /*create=*/false)
+                .error(),
+            base::File::FILE_ERROR_NOT_FOUND);
 
   // The directories for storage_key2 should not be removed.
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypeTemporary), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
-  error = base::File::FILE_ERROR_FAILED;
-  ofu()->GetDirectoryForStorageKeyAndType(
-      storage_key2, GetTypeString(kFileSystemTypePersistent), false, &error);
-  ASSERT_EQ(base::File::FILE_OK, error);
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypeTemporary),
+                       /*create=*/false)
+                   .is_error());
+  ASSERT_FALSE(ofu()
+                   ->GetDirectoryForStorageKeyAndType(
+                       storage_key2, GetTypeString(kFileSystemTypePersistent),
+                       /*create=*/false)
+                   .is_error());
 }
 
 }  // namespace storage
