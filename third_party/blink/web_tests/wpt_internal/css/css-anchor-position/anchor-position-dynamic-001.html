@@ -2,7 +2,9 @@
 <title>Tests `anchor` function when anchor positions are changed dynamically</title>
 <link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#propdef-anchor-name">
 <link rel="author" href="mailto:kojii@chromium.org">
-<link ref="match" href="reference/anchor-position-001-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
 <style>
 #container {
   position: relative;
@@ -10,9 +12,8 @@
 #a1 {
   anchor-name: --a1;
   background: orange;
-  position: absolute;
-  left: 100px;
-  top: 100px;
+  margin-left: 100px;
+  margin-top: 100px;
   width: 50px;
   height: 50px;
 }
@@ -23,15 +24,14 @@
 #a2 {
   anchor-name: --a2;
   background: purple;
-  position: absolute;
-  left: 250px;
-  top: 350px;
+  margin-left: 250px;
+  margin-top: 350px;
   width: 100px;
   height: 100px;
 }
 .after #a2 {
-  left: 500px;
-  top: 300px;
+  margin-left: 500px;
+  margin-top: 100px;
 }
 #target {
   background: green;
@@ -45,7 +45,7 @@
   background: red;
   position: absolute;
   left: 200px;
-  top: 200px;
+  top: 100px;
   width: 300px;
   height: 100px;
 }
@@ -54,9 +54,12 @@
   <div id="a1"></div>
   <div id="a2"></div>
   <div id="ref"></div>
-  <div id="target"></div>
+  <div id="target"
+       data-offset-x=200 data-offset-y=100
+       data-expected-width=300 data-expected-height=100></div>
 <script>
 document.body.offsetTop;  // Force layout.
 container.classList.add('after');
+checkLayout('#target');
 </script>
 </body>
