@@ -573,6 +573,7 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_BlockedByRequestHeaders) {
       {"cachE-control", "no-cache"},
       {"praGma", "no-cache"},
       {"Cache-Control", "max-age=0"},
+      {"Range", "bytes=0-"},
   };
 
   // Store a response to the in-memory cache first.

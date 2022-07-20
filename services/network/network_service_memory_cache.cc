@@ -60,6 +60,8 @@ constexpr HeaderNameAndValue kSpecialHeaders[] = {
     {"cache-control", "no-cache"},
     {"pragma", "no-cache"},
     {"cache-control", "max-age=0"},
+    // The in-memory cache doesn't support range requests.
+    {"range", nullptr},
 };
 
 // TODO(https://crbug.com/1339708): Adjust these parameters based on stats.
