@@ -106,7 +106,11 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
   }
 }
 
-Animation::~Animation() = default;
+Animation::~Animation() {
+  for (AnimationObserver& obs : observers_) {
+    obs.AnimationIsDeleting(this);
+  }
+}
 
 void Animation::AddObserver(AnimationObserver* observer) {
   observers_.AddObserver(observer);
