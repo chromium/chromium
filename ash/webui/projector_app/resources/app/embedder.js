@@ -11,14 +11,14 @@ import {AppTrustedCommFactory, UntrustedAppClient} from './trusted/trusted_app_c
 
 /**
  * Gets the query string from the URL.
- * For example, if the URL is chrome://projector/annotator/abc, then query
- * is "abc".
+ * For example, if the URL is chrome://projector/annotator/abc?resourceKey=xyz,
+ * then query is "abc?resourceKey=xyz".
  */
 function getQuery() {
-  if (!document.location.pathname) {
+  if (!document.location.href) {
     return '';
   }
-  const paths = document.location.pathname.split('/');
+  const paths = document.location.href.split('/');
   if (paths.length < 1) {
     return '';
   }

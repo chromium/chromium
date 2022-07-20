@@ -122,6 +122,11 @@ GURL RedirectUrlIfSwa(Profile* profile,
     // TODO(b/211787536): Remove the timestamp after we update the trusted URL
     // to match the user's navigations through the post message api.
     ss << override_url << "?timestamp=" << clock->NowTicks();
+
+    if (url.has_query()) {
+      ss << '&' << url.query();
+    }
+
     GURL result(ss.str());
     DCHECK(result.is_valid());
     return result;
