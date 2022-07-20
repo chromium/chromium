@@ -11,6 +11,8 @@ import datetime
 import os
 import typing
 
+from datetime import date
+
 from enum import Enum
 
 from gpu_tests import common_browser_args as cba
@@ -38,6 +40,13 @@ VERY_PERMISSIVE_SOBEL_ALGO = algo.SobelMatchingAlgorithm(
     pixel_delta_threshold=255,
     edge_threshold=0,
     ignored_border_thickness=1)
+
+# The optimizer script spat out pretty similar values for most MP4 tests, so
+# combine into a single set of parameters.
+GENERAL_MP4_ALGO = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
+                                               pixel_delta_threshold=35,
+                                               edge_threshold=80,
+                                               ignored_border_thickness=1)
 
 BrowserArgType = typing.List[str]
 
@@ -151,13 +160,6 @@ class PixelTestPages():
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
     browser_args_DXVA = [cba.DISABLE_FEATURES_D3D11_VIDEO_DECODER]
 
-    # The optimizer script spat out pretty similar values for most MP4 tests, so
-    # combine into a single set of parameters.
-    general_mp4_algo = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
-                                                   pixel_delta_threshold=35,
-                                                   edge_threshold=80,
-                                                   ignored_border_thickness=1)
-
     return [
         PixelTestPage('pixel_background_image.html',
                       base_name + '_BackgroundImage',
@@ -216,7 +218,7 @@ class PixelTestPages():
             # Most images are actually very similar, but Pixel 2
             # tends to produce images with all colors shifted by a
             # small amount.
-            matching_algorithm=general_mp4_algo),
+            matching_algorithm=GENERAL_MP4_ALGO),
         # Surprisingly stable, does not appear to require inexact matching.
         PixelTestPage('pixel_video_mp4.html?width=240&height=135&use_timer=1',
                       base_name + '_Video_MP4_DXVA',
@@ -237,19 +239,19 @@ class PixelTestPages():
             '?width=270&height=240&use_timer=1',
             base_name + '_Video_MP4_FourColors_Rot_90',
             test_rect=[0, 0, 270, 240],
-            matching_algorithm=general_mp4_algo),
+            matching_algorithm=GENERAL_MP4_ALGO),
         PixelTestPage(
             'pixel_video_mp4_four_colors_rot_180.html'
             '?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4_FourColors_Rot_180',
             test_rect=[0, 0, 240, 135],
-            matching_algorithm=general_mp4_algo),
+            matching_algorithm=GENERAL_MP4_ALGO),
         PixelTestPage(
             'pixel_video_mp4_four_colors_rot_270.htm'
             'l?width=270&height=240&use_timer=1',
             base_name + '_Video_MP4_FourColors_Rot_270',
             test_rect=[0, 0, 270, 240],
-            matching_algorithm=general_mp4_algo),
+            matching_algorithm=GENERAL_MP4_ALGO),
         PixelTestPage(
             'pixel_video_mp4_rounded_corner.html'
             '?width=240&height=135&use_timer=1',
@@ -488,6 +490,41 @@ class PixelTestPages():
     return (webgpu_pages_helper(base_name, mode=Mode.WEBGPU_DEFAULT) +
             webgpu_pages_helper(base_name, mode=Mode.WEBGPU_SWIFTSHADER) +
             webgpu_pages_helper(base_name, mode=Mode.VULKAN_SWIFTSHADER))
+
+  @staticmethod
+  def WebGPUCanvasCapturePages(base_name):
+    webgpu_args = [
+        cba.ENABLE_UNSAFE_WEBGPU, cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    ]
+
+    browser_args_canvas_one_copy_capture = webgpu_args + [
+        '--enable-features=OneCopyCanvasCapture'
+    ]
+    other_args_canvas_one_copy_capture = {'one_copy': True}
+
+    browser_args_canvas_disable_one_copy_capture = webgpu_args + [
+        '--disable-features=OneCopyCanvasCapture'
+    ]
+    other_args_canvas_disable_one_copy_capture = {'one_copy': False}
+
+    # Setting grace_period_end to monitor the affects on bots for 2 weeks
+    # without making the bots red unexpectedly.
+    return [
+        PixelTestPage('pixel_webgpu_canvas_capture_to_video.html',
+                      base_name + '_WebGPUCanvasOneCopyCapture',
+                      test_rect=[0, 0, 400, 200],
+                      matching_algorithm=GENERAL_MP4_ALGO,
+                      browser_args=browser_args_canvas_one_copy_capture,
+                      other_args=other_args_canvas_one_copy_capture,
+                      grace_period_end=date(2022, 7, 30)),
+        PixelTestPage('pixel_webgpu_canvas_capture_to_video.html',
+                      base_name + '_WebGPUCanvasDisableOneCopyCapture',
+                      test_rect=[0, 0, 400, 200],
+                      matching_algorithm=GENERAL_MP4_ALGO,
+                      browser_args=browser_args_canvas_disable_one_copy_capture,
+                      other_args=other_args_canvas_disable_one_copy_capture,
+                      grace_period_end=date(2022, 7, 30)),
+    ]
 
 
   # Pages that should be run with GPU rasterization enabled.

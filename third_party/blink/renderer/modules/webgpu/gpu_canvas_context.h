@@ -31,7 +31,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
  public:
   class Factory : public CanvasRenderingContextFactory {
-
    public:
     Factory() = default;
 
@@ -69,6 +68,11 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // be webgpu compatible. Returns true on success.
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) final;
+  bool CopyRenderingResultsToVideoFrame(
+      WebGraphicsContext3DVideoFramePool* frame_pool,
+      SourceDrawingBuffer src_buffer,
+      const gfx::ColorSpace& dst_color_space,
+      VideoFrameCopyCompletedCallback callback) override;
   void SetIsInHiddenPage(bool) override {}
   void SetIsBeingDisplayed(bool) override {}
   bool isContextLost() const override { return false; }

@@ -11,6 +11,8 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -29,7 +31,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   class Client {
    public:
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
-    // transfer to the compositor.
+    // transfer to the compositor/video frame
     virtual void OnTextureTransferred() = 0;
   };
 
@@ -48,6 +50,32 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void Neuter();
   void DiscardCurrentSwapBuffer();
   WGPUTexture GetNewTexture(const gfx::Size& size, SkAlphaType alpha_type);
+
+  // Copy swapchain's texture to a video frame.
+  // This happens at the end of an animation frame. Dawn's access to the
+  // texture will be released in order for the texture to be processed by
+  // WebGraphicsContext3DVideoFramePool context. Attempting to use the texture
+  // via WebGPU/Dawn API in JS after this point won't work.
+  //
+  // These are typical sequential steps of an animation frame:
+  // 1. start frame:
+  //     - WebGPUSwapBufferProvider::GetNewTexture()
+  // 2. client draws to the swap chain's texture using WebGPU APIs.
+  // 3. finalize frame:
+  //    (if client uses canvas.captureStream())
+  //     - WebGPUSwapBufferProvider::CopyToVideoFrame()
+  //         - ReleaseWGPUTextureAccessIfNeeded()
+  //         - copy swap chain's texture to a video frame using another graphics
+  //         context.
+  // 4. TextureLayer::Update()
+  //     - WebGPUSwapBufferProvider::PrepareTransferableResource()
+  //         - ReleaseWGPUTextureAccessIfNeeded() (if not already done)
+  //         - current_swap_buffer_'s ownership is transferred to caller.
+  bool CopyToVideoFrame(
+      WebGraphicsContext3DVideoFramePool* frame_pool,
+      SourceDrawingBuffer src_buffer,
+      const gfx::ColorSpace& dst_color_space,
+      WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
   struct WebGPUMailboxTextureAndSize {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
@@ -95,6 +123,10 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     gpu::SyncToken access_finished_token;
   };
 
+  std::tuple<uint32_t, bool> GetTextureTargetAndOverlayCandidacy() const;
+  uint32_t GetTextureTarget() const;
+  bool IsOverlayCandidate() const;
+
   std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
       gpu::SharedImageInterface* sii,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
@@ -106,6 +138,13 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void MailboxReleased(std::unique_ptr<SwapBuffer> swap_buffer,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
+
+  // This method will dissociate current Dawn Texture (produced by
+  // GetNewTexture()) from the mailbox so that the mailbox can be used by other
+  // components (Compositor/Skia).
+  // After this method returns, Dawn won't be able to access the mailbox
+  // anymore.
+  void ReleaseWGPUTextureAccessIfNeeded(bool for_transfer);
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   Client* client_;
