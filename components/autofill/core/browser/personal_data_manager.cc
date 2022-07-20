@@ -432,21 +432,23 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   DCHECK(pending_profiles_query_ || pending_server_profiles_query_ ||
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
-         pending_customer_data_query_ || pending_upi_ids_query_ ||
-         pending_offer_data_query_);
+         pending_ibans_query_ || pending_customer_data_query_ ||
+         pending_upi_ids_query_ || pending_offer_data_query_);
 
   if (!result) {
     // Error from the web database.
-    if (h == pending_creditcards_query_)
-      pending_creditcards_query_ = 0;
-    else if (h == pending_profiles_query_)
+    if (h == pending_profiles_query_)
       pending_profiles_query_ = 0;
-    else if (h == pending_server_creditcards_query_)
-      pending_server_creditcards_query_ = 0;
     else if (h == pending_server_profiles_query_)
       pending_server_profiles_query_ = 0;
+    else if (h == pending_creditcards_query_)
+      pending_creditcards_query_ = 0;
+    else if (h == pending_server_creditcards_query_)
+      pending_server_creditcards_query_ = 0;
     else if (h == pending_server_creditcard_cloud_token_data_query_)
       pending_server_creditcard_cloud_token_data_query_ = 0;
+    else if (h == pending_ibans_query_)
+      pending_ibans_query_ = 0;
     else if (h == pending_customer_data_query_)
       pending_customer_data_query_ = 0;
     else if (h == pending_upi_ids_query_)
@@ -486,6 +488,12 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
         ReceiveLoadedDbValues(
             h, result.get(), &pending_server_creditcard_cloud_token_data_query_,
             &server_credit_card_cloud_token_data_);
+        break;
+      case AUTOFILL_IBANS_RESULT:
+        DCHECK_EQ(h, pending_ibans_query_)
+            << "received ibans from invalid request.";
+        ReceiveLoadedDbValues(h, result.get(), &pending_ibans_query_,
+                              &local_ibans_);
         break;
       case AUTOFILL_CUSTOMERDATA_RESULT:
         DCHECK_EQ(h, pending_customer_data_query_)
@@ -766,6 +774,48 @@ AutofillProfile* PersonalDataManager::GetProfileFromProfilesByGUID(
   return iter != profiles.end() ? *iter : nullptr;
 }
 
+void PersonalDataManager::AddIban(const Iban& iban) {
+  if (is_off_the_record_ || FindByGUID(local_ibans_, iban.guid()) ||
+      !database_helper_->GetLocalDatabase() ||
+      FindByContents(local_ibans_, iban)) {
+    return;
+  }
+
+  // Add the new iban to the web database.
+  database_helper_->GetLocalDatabase()->AddIban(iban);
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
+void PersonalDataManager::UpdateIban(const Iban& iban) {
+  DCHECK_EQ(Iban::LOCAL_IBAN, iban.record_type());
+  if (is_off_the_record_) {
+    return;
+  }
+  Iban* existing_iban = GetIbanByGUID(iban.guid());
+  if (!existing_iban) {
+    return;
+  }
+
+  // Do not overwrite iban if it's existed already.
+  if (existing_iban->Compare(iban) == 0) {
+    return;
+  }
+
+  // Update the cached version.
+  *existing_iban = iban;
+  if (!database_helper_->GetLocalDatabase()) {
+    return;
+  }
+
+  // Make the update.
+  database_helper_->GetLocalDatabase()->UpdateIban(iban);
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   if (!IsAutofillCreditCardEnabled())
     return;
@@ -1007,14 +1057,23 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   if (!database_helper_->GetLocalDatabase())
     return;
 
-  bool is_credit_card = FindByGUID(local_credit_cards_, guid);
-  if (is_credit_card) {
+  if (FindByGUID(local_credit_cards_, guid)) {
     database_helper_->GetLocalDatabase()->RemoveCreditCard(guid);
+    // Refresh our local cache and send notifications to observers.
+    Refresh();
+  } else if (FindByGUID(local_ibans_, guid)) {
+    database_helper_->GetLocalDatabase()->RemoveIban(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else {
     RemoveAutofillProfileByGUIDAndBlankCreditCardReference(guid);
   }
+}
+
+Iban* PersonalDataManager::GetIbanByGUID(const std::string& guid) {
+  const std::vector<Iban*>& ibans = GetIbans();
+  auto iter = FindElementByGUID(ibans, guid);
+  return iter != ibans.end() ? *iter : nullptr;
 }
 
 CreditCard* PersonalDataManager::GetCreditCardByGUID(const std::string& guid) {
@@ -1107,7 +1166,6 @@ std::vector<CreditCard*> PersonalDataManager::GetServerCreditCards() const {
 
 std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
   std::vector<CreditCard*> result;
-
   result.reserve(local_credit_cards_.size() + server_credit_cards_.size());
   for (const auto& card : local_credit_cards_)
     result.push_back(card.get());
@@ -1115,6 +1173,15 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
     for (const auto& card : server_credit_cards_) {
       result.push_back(card.get());
     }
+  }
+  return result;
+}
+
+std::vector<Iban*> PersonalDataManager::GetIbans() const {
+  std::vector<Iban*> result;
+  result.reserve(local_ibans_.size());
+  for (const auto& iban : local_ibans_) {
+    result.push_back(iban.get());
   }
   return result;
 }
@@ -1199,6 +1266,7 @@ void PersonalDataManager::Refresh() {
   LoadProfiles();
   LoadCreditCards();
   LoadCreditCardCloudTokenData();
+  LoadIbans();
   LoadPaymentsCustomerData();
   LoadUpiIds();
   LoadAutofillOffers();
@@ -1715,9 +1783,22 @@ void PersonalDataManager::LoadCreditCardCloudTokenData() {
       database_helper_->GetServerDatabase()->GetCreditCardCloudTokenData(this);
 }
 
-void PersonalDataManager::LoadUpiIds() {
-  if (!database_helper_->GetLocalDatabase())
+void PersonalDataManager::LoadIbans() {
+  if (!database_helper_->GetLocalDatabase()) {
+    NOTREACHED();
     return;
+  }
+
+  CancelPendingLocalQuery(&pending_ibans_query_);
+
+  pending_ibans_query_ = database_helper_->GetLocalDatabase()->GetIbans(this);
+}
+
+void PersonalDataManager::LoadUpiIds() {
+  if (!database_helper_->GetLocalDatabase()) {
+    NOTREACHED();
+    return;
+  }
 
   CancelPendingLocalQuery(&pending_upi_ids_query_);
 

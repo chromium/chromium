@@ -214,8 +214,20 @@ void TestPersonalDataManager::LoadCreditCardCloudTokenData() {
   }
 }
 
+void TestPersonalDataManager::LoadIbans() {
+  pending_ibans_query_ = 128;
+  {
+    std::vector<std::unique_ptr<Iban>> ibans;
+    local_ibans_.swap(ibans);
+    std::unique_ptr<WDTypedResult> result =
+        std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
+            AUTOFILL_IBANS_RESULT, std::move(ibans));
+    OnWebDataServiceRequestDone(pending_ibans_query_, std::move(result));
+  }
+}
+
 void TestPersonalDataManager::LoadUpiIds() {
-  pending_upi_ids_query_ = 128;
+  pending_upi_ids_query_ = 129;
   {
     std::vector<std::string> upi_ids = {"vpa@indianbank"};
     std::unique_ptr<WDTypedResult> result =

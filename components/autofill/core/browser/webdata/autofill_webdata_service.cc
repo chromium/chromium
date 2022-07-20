@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -211,6 +212,32 @@ void AutofillWebDataService::AddFullServerCreditCard(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::AddFullServerCreditCard,
                      autofill_backend_, credit_card));
+}
+
+void AutofillWebDataService::AddIban(const Iban& iban) {
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        base::BindOnce(&AutofillWebDataBackendImpl::AddIban,
+                                       autofill_backend_, iban));
+}
+
+WebDataServiceBase::Handle AutofillWebDataService::GetIbans(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetIbans, autofill_backend_),
+      consumer);
+}
+
+void AutofillWebDataService::UpdateIban(const Iban& iban) {
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        base::BindOnce(&AutofillWebDataBackendImpl::UpdateIban,
+                                       autofill_backend_, iban));
+}
+
+void AutofillWebDataService::RemoveIban(const std::string& guid) {
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        base::BindOnce(&AutofillWebDataBackendImpl::RemoveIban,
+                                       autofill_backend_, guid));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetCreditCards(

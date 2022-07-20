@@ -18,13 +18,11 @@ TEST(IbanTest, AssignmentOperator) {
   std::string guid = base::GenerateGUID();
   Iban iban_0;
   iban_0.set_guid(guid);
-  iban_0.set_origin("https://www.example.com");
   iban_0.set_nickname(u"Nickname 0");
   iban_0.set_value(u"DE91 1000 0000 0123 4567 89");
   Iban iban_1;
   guid = base::GenerateGUID();
   iban_1.set_guid(guid);
-  iban_1.set_origin("https://www.google.com");
   iban_1.set_nickname(u"Nickname 1");
   iban_1.set_value(u"IE64 IRCE 9205 0112 3456 78");
   iban_1 = iban_0;
@@ -47,7 +45,7 @@ TEST(IbanTest, GetMetadata) {
 // and newlines with whitespace, replace multiple spaces into a single one
 // and trim leading/trailing whitespace.
 TEST(IbanTest, SetNickname) {
-  Iban iban(base::GenerateGUID(), "https://www.example.com/");
+  Iban iban(base::GenerateGUID());
 
   // Normal input nickname.
   iban.set_nickname(u"My doctor's IBAN");
@@ -75,7 +73,7 @@ TEST(IbanTest, SetNickname) {
 }
 
 TEST(IbanTest, SetValue) {
-  Iban iban(base::GenerateGUID(), "https://www.example.com/");
+  Iban iban(base::GenerateGUID());
 
   // Input value.
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
@@ -83,7 +81,7 @@ TEST(IbanTest, SetValue) {
 }
 
 TEST(IbanTest, SetRawData) {
-  Iban iban(base::GenerateGUID(), "https://www.example.com/");
+  Iban iban(base::GenerateGUID());
 
   // Verify RawInfo can be correctly set and read.
   iban.SetRawInfoWithVerificationStatus(

@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
@@ -200,6 +201,13 @@ class PersonalDataManager : public KeyedService,
       const std::string& guid,
       const std::vector<AutofillProfile*>& profiles);
 
+  // Adds |iban| to the web database as a local Iban.
+  virtual void AddIban(const Iban& iban);
+
+  // Updates |iban| which already exists in the web database. This
+  // can only be used on local ibans.
+  virtual void UpdateIban(const Iban& iban);
+
   // Adds |credit_card| to the web database as a local card.
   virtual void AddCreditCard(const CreditCard& credit_card);
 
@@ -245,6 +253,10 @@ class PersonalDataManager : public KeyedService,
   // the real database.
   void AddOfferDataForTest(std::unique_ptr<AutofillOfferData> offer_data);
 
+  // Returns the iban with the specified |guid|, or nullptr if there is no iban
+  // with the specified |guid|.
+  virtual Iban* GetIbanByGUID(const std::string& guid);
+
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
   virtual CreditCard* GetCreditCardByGUID(const std::string& guid);
@@ -279,6 +291,9 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<CreditCard*> GetServerCreditCards() const;
   // Returns all credit cards, server and local.
   virtual std::vector<CreditCard*> GetCreditCards() const;
+
+  // Returns local Ibans.
+  virtual std::vector<Iban*> GetIbans() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -330,12 +345,12 @@ class PersonalDataManager : public KeyedService,
   const std::vector<CreditCard*> GetCreditCardsToSuggest(
       bool include_server_cards) const;
 
-  // Re-loads profiles and credit cards from the WebDatabase asynchronously.
-  // In the general case, this is a no-op and will re-create the same
-  // in-memory model as existed prior to the call.  If any change occurred to
-  // profiles in the WebDatabase directly, as is the case if the browser sync
-  // engine processed a change from the cloud, we will learn of these as a
-  // result of this call.
+  // Re-loads profiles, credit cards, and IBANs from the WebDatabase
+  // asynchronously. In the general case, this is a no-op and will re-create
+  // the same in-memory model as existed prior to the call.  If any change
+  // occurred to profiles in the WebDatabase directly, as is the case if the
+  // browser sync engine processed a change from the cloud, we will learn of
+  // these as a result of this call.
   //
   // Also see SetProfile for more details.
   virtual void Refresh();
@@ -430,6 +445,9 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the value of the AutofillCreditCardEnabled pref.
   virtual bool IsAutofillCreditCardEnabled() const;
+
+  // TODO(crbug.com/1340310): Add IsAutofillIbanEnabled after adding
+  // kAutofillIbanEnabled which is related to Enterprise prefs.
 
   // Returns the value of the AutofillWalletImportEnabled pref.
   virtual bool IsAutofillWalletImportEnabled() const;
@@ -600,6 +618,9 @@ class PersonalDataManager : public KeyedService,
   // Loads the saved credit card cloud token data from the web database.
   virtual void LoadCreditCardCloudTokenData();
 
+  // Loads the saved IBANs from the web database.
+  virtual void LoadIbans();
+
   // Loads the payments customer data from the web database.
   virtual void LoadPaymentsCustomerData();
 
@@ -662,6 +683,9 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<CreditCard>> local_credit_cards_;
   std::vector<std::unique_ptr<CreditCard>> server_credit_cards_;
 
+  // Cached versions of the local Ibans.
+  std::vector<std::unique_ptr<Iban>> local_ibans_;
+
   // Cached UPI IDs.
   std::vector<std::string> upi_ids_;
 
@@ -686,6 +710,7 @@ class PersonalDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_server_creditcards_query_ = 0;
   WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =
       0;
+  WebDataServiceBase::Handle pending_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_upi_ids_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;

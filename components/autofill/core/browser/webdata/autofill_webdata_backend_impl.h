@@ -31,6 +31,7 @@ namespace autofill {
 class AutofillProfile;
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
+class Iban;
 
 // Backend implementation for the AutofillWebDataService. This class runs on the
 // DB sequence, as it handles reads and writes to the WebDatabase, and functions
@@ -176,6 +177,18 @@ class AutofillWebDataBackendImpl
   // Returns a vector of local/server credit cards from the web database.
   std::unique_ptr<WDTypedResult> GetCreditCards(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
+
+  // Returns a vector of local Ibans from the web database.
+  std::unique_ptr<WDTypedResult> GetIbans(WebDatabase* db);
+
+  // Adds an Iban to the web database. Valid only for local ibans.
+  WebDatabase::State AddIban(const Iban& iban, WebDatabase* db);
+
+  // Updates an Iban in the web database. Valid only for local ibans.
+  WebDatabase::State UpdateIban(const Iban& iban, WebDatabase* db);
+
+  // Removes an Iban from the web database. Valid only for local ibans.
+  WebDatabase::State RemoveIban(const std::string& guid, WebDatabase* db);
 
   // Server credit cards can be masked (only last 4 digits stored) or unmasked
   // (all data stored). These toggle between the two states.

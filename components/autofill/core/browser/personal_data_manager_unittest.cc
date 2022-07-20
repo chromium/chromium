@@ -999,6 +999,63 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   ExpectSameElements(profiles, personal_data_->GetProfiles());
 }
 
+TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
+  Iban iban0(base::GenerateGUID());
+  iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban0.set_nickname(u"Nickname 0");
+
+  Iban iban1(base::GenerateGUID());
+  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban1.set_nickname(u"Nickname 1");
+
+  Iban iban2(base::GenerateGUID());
+  iban2.set_value(u"ES79 2100 0813 6101 2345 6789");
+  iban2.set_nickname(u"Nickname 2");
+
+  // Add two test ibans to the database.
+  personal_data_->AddIban(iban0);
+  personal_data_->AddIban(iban1);
+
+  WaitForOnPersonalDataChanged();
+
+  std::vector<Iban*> ibans;
+  ibans.push_back(&iban0);
+  ibans.push_back(&iban1);
+  ExpectSameElements(ibans, personal_data_->GetIbans());
+
+  // Update iban0, remove iban1, and add iban2.
+  iban0.set_nickname(u"Nickname new 0");
+  iban0.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
+  personal_data_->UpdateIban(iban0);
+  RemoveByGUIDFromPersonalDataManager(iban1.guid());
+  personal_data_->AddIban(iban2);
+
+  WaitForOnPersonalDataChanged();
+
+  ibans.clear();
+  ibans.push_back(&iban0);
+  ibans.push_back(&iban2);
+  ExpectSameElements(ibans, personal_data_->GetIbans());
+
+  // Verify that a duplicate iban should not be added.
+  Iban iban0_dup = iban0;
+  personal_data_->AddIban(iban0_dup);
+  ibans.clear();
+  ibans.push_back(&iban0);
+  ibans.push_back(&iban2);
+  ExpectSameElements(ibans, personal_data_->GetIbans());
+
+  // Reset the PersonalDataManager. This tests that the personal data was saved
+  // to the web database, and that we can load the ibans from the web database.
+  ResetPersonalDataManager(USER_MODE_NORMAL);
+
+  // Verify that we've reloaded the ibans from the web database.
+  ibans.clear();
+  ibans.push_back(&iban0);
+  ibans.push_back(&iban2);
+  ExpectSameElements(ibans, personal_data_->GetIbans());
+}
+
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   CreditCard credit_card0(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card0, "John Dillinger",

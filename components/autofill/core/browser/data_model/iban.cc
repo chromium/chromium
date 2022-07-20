@@ -13,10 +13,11 @@
 
 namespace autofill {
 
-Iban::Iban(const std::string& guid, const std::string& origin)
-    : AutofillDataModel(guid, origin), record_type_(LOCAL_IBAN) {}
+Iban::Iban(const std::string& guid)
+    : AutofillDataModel(guid, /*origin=*/std::string()),
+      record_type_(LOCAL_IBAN) {}
 
-Iban::Iban() : Iban(base::GenerateGUID(), std::string()) {}
+Iban::Iban() : Iban(base::GenerateGUID()) {}
 
 Iban::Iban(const Iban& iban) : Iban() {
   operator=(iban);
@@ -27,16 +28,14 @@ Iban::~Iban() = default;
 void Iban::operator=(const Iban& iban) {
   set_use_count(iban.use_count());
   set_use_date(iban.use_date());
-  set_modification_date(iban.modification_date());
 
-  // Just overwrite use_count, use_date and modification_date fields
-  // as those fields will not be compared for == operator.
+  // Just overwrite use_count and use_date fields as those fields will
+  // not be compared for == operator.
   if (this == &iban) {
     return;
   }
 
   set_guid(iban.guid());
-  set_origin(iban.origin());
 
   server_id_ = iban.server_id_;
   record_type_ = iban.record_type_;
@@ -106,8 +105,8 @@ int Iban::Compare(const Iban& iban) const {
 }
 
 bool Iban::operator==(const Iban& iban) const {
-  return guid() == iban.guid() && origin() == iban.origin() &&
-         record_type() == iban.record_type() && Compare(iban) == 0;
+  return guid() == iban.guid() && record_type() == iban.record_type() &&
+         Compare(iban) == 0;
 }
 
 bool Iban::operator!=(const Iban& iban) const {

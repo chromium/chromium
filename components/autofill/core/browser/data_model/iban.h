@@ -27,7 +27,7 @@ class Iban : public AutofillDataModel {
     SERVER_IBAN,
   };
 
-  Iban(const std::string& guid, const std::string& origin);
+  explicit Iban(const std::string& guid);
 
   // For use in STL containers.
   Iban();

@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -212,6 +213,13 @@ constexpr base::StringPiece kServerCardMetadataTable = "server_card_metadata";
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 // kBillingAddressId = "billing_address_id"
+
+constexpr base::StringPiece kIbansTable = "ibans";
+// kGuid = "guid"
+// kUseCount = "use_count"
+// kUseDate = "use_date"
+// kValue = "value"
+// kNickname = "nickname"
 
 constexpr base::StringPiece kServerAddressesTable = "server_addresses";
 // kId = "id"
@@ -577,6 +585,20 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindString16(index++, credit_card.nickname());
 }
 
+void BindIbanToStatement(const Iban& iban,
+                         sql::Statement* s,
+                         const AutofillTableEncryptor& encryptor) {
+  DCHECK(base::IsValidGUID(iban.guid()));
+  int index = 0;
+  s->BindString(index++, iban.guid());
+
+  s->BindInt64(index++, iban.use_count());
+  s->BindInt64(index++, iban.use_date().ToTimeT());
+
+  s->BindString16(index++, iban.value());
+  s->BindString16(index++, iban.nickname());
+}
+
 std::u16string UnencryptedCardFromColumn(
     sql::Statement& s,
     int column_index,
@@ -612,6 +634,22 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   credit_card->set_billing_address_id(s.ColumnString(index++));
   credit_card->SetNickname(s.ColumnString16(index++));
   return credit_card;
+}
+
+std::unique_ptr<Iban> IbanFromStatement(
+    sql::Statement& s,
+    const AutofillTableEncryptor& encryptor) {
+  auto iban = std::make_unique<Iban>();
+
+  int index = 0;
+  iban->set_guid(s.ColumnString(index++));
+  DCHECK(base::IsValidGUID(iban->guid()));
+  iban->set_use_count(s.ColumnInt64(index++));
+  iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+
+  iban->SetRawInfo(IBAN_VALUE, s.ColumnString16(index++));
+  iban->set_nickname(s.ColumnString16(index++));
+  return iban;
 }
 
 bool AddAutofillProfileNames(const AutofillProfile& profile,
@@ -1002,14 +1040,15 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 }
 
 bool AutofillTable::CreateTablesIfNecessary() {
-  return InitMainTable() && InitCreditCardsTable() && InitProfilesTable() &&
-         InitProfileAddressesTable() && InitProfileNamesTable() &&
-         InitProfileEmailsTable() && InitProfilePhonesTable() &&
-         InitProfileBirthdatesTable() && InitMaskedCreditCardsTable() &&
-         InitUnmaskedCreditCardsTable() && InitServerCardMetadataTable() &&
-         InitServerAddressesTable() && InitServerAddressMetadataTable() &&
-         InitAutofillSyncMetadataTable() && InitModelTypeStateTable() &&
-         InitPaymentsCustomerDataTable() && InitPaymentsUPIVPATable() &&
+  return InitMainTable() && InitCreditCardsTable() && InitIbansTable() &&
+         InitProfilesTable() && InitProfileAddressesTable() &&
+         InitProfileNamesTable() && InitProfileEmailsTable() &&
+         InitProfilePhonesTable() && InitProfileBirthdatesTable() &&
+         InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
+         InitServerCardMetadataTable() && InitServerAddressesTable() &&
+         InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
+         InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
+         InitPaymentsUPIVPATable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable();
 }
@@ -1084,6 +1123,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 104:
       *update_compatible_version = false;
       return MigrateToVersion104AddProductDescriptionColumn();
+    case 105:
+      *update_compatible_version = false;
+      return MigrateToVersion105AddAutofillIbanTable();
   }
   return true;
 }
@@ -1666,6 +1708,78 @@ void AutofillTable::SetServerProfilesAndMetadata(
 void AutofillTable::SetServerProfiles(
     const std::vector<AutofillProfile>& profiles) {
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
+}
+
+bool AutofillTable::AddIban(const Iban& iban) {
+  sql::Statement s;
+  InsertBuilder(db_, s, kIbansTable,
+                {kGuid, kUseCount, kUseDate, kValue, kNickname});
+  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
+  if (!s.Run())
+    return false;
+
+  DCHECK_GT(db_->GetLastChangeCount(), 0);
+  return true;
+}
+
+bool AutofillTable::UpdateIban(const Iban& iban) {
+  DCHECK(base::IsValidGUID(iban.guid()));
+
+  std::unique_ptr<Iban> old_iban = GetIban(iban.guid());
+  if (!old_iban) {
+    return false;
+  }
+
+  if (*old_iban == iban) {
+    return true;
+  }
+
+  sql::Statement s(db_->GetUniqueStatement(
+      "UPDATE ibans "
+      "SET guid=?, use_count=?, use_date=?, value=?, nickname=? "
+      "WHERE guid=?1"));
+  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
+
+  bool result = s.Run();
+  DCHECK_GT(db_->GetLastChangeCount(), 0);
+  return result;
+}
+
+bool AutofillTable::RemoveIban(const std::string& guid) {
+  DCHECK(base::IsValidGUID(guid));
+  return DeleteWhereColumnEq(db_, kIbansTable, kGuid, guid);
+}
+
+std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
+  DCHECK(base::IsValidGUID(guid));
+  sql::Statement s;
+  SelectBuilder(db_, s, kIbansTable,
+                {kGuid, kUseCount, kUseDate, kValue, kNickname},
+                "WHERE guid = ?");
+  s.BindString(0, guid);
+
+  if (!s.Step())
+    return nullptr;
+
+  return IbanFromStatement(s, *autofill_table_encryptor_);
+}
+
+bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
+  DCHECK(ibans);
+  ibans->clear();
+
+  sql::Statement s;
+  SelectBuilder(db_, s, kIbansTable, {kGuid}, "ORDER BY use_date DESC, guid");
+
+  while (s.Step()) {
+    std::string guid = s.ColumnString(0);
+    std::unique_ptr<Iban> iban = GetIban(guid);
+    if (!iban)
+      return false;
+    ibans->push_back(std::move(iban));
+  }
+
+  return s.Succeeded();
 }
 
 bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
@@ -2955,6 +3069,18 @@ bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
   return transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion105AddAutofillIbanTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         CreateTable(db_, kIbansTable,
+                     {{kGuid, "VARCHAR"},
+                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
+                      {kValue, "VARCHAR"},
+                      {kNickname, "VARCHAR"}}) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3184,6 +3310,15 @@ bool AutofillTable::InitCreditCardsTable() {
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                                  {kBillingAddressId, "VARCHAR"},
+                                 {kNickname, "VARCHAR"}});
+}
+
+bool AutofillTable::InitIbansTable() {
+  return CreateTableIfNotExists(db_, kIbansTable,
+                                {{kGuid, "VARCHAR PRIMARY KEY"},
+                                 {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                                 {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
+                                 {kValue, "VARCHAR"},
                                  {kNickname, "VARCHAR"}});
 }
 
