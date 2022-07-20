@@ -2430,7 +2430,7 @@ Try to use a unique password for every site.
         Stay protected from dangerous websites
       </message>
       <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE" desc="Title for HTTPS-Only Mode toggle in settings">
-        Try to use secure connections
+        Always use secure connections
       </message>
       <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Description text of HTTPS-Only Mode in  settings">
         Upgrade to HTTPS, when possible. Secure sites might embed content that isn't secure.
