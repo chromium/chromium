@@ -294,7 +294,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   size_t output_buffer_byte_size_;
   uint32_t output_format_fourcc_;
 
-  uint32_t current_bitrate_;
+  Bitrate current_bitrate_;
   size_t current_framerate_;
 
   // Encoder state, owned and operated by |encoder_task_runner_|.
