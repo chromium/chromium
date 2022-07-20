@@ -60,13 +60,13 @@ class PLATFORM_EXPORT FetchParameters {
     kInDocument,  // The request was discovered in the main document
     kInserted     // The request was discovered in a document.write()
   };
-  enum ImageRequestBehavior {
-    kNone = 0,          // No optimization.
-    kDeferImageLoad,    // Defer loading the image from network. Full image
-                        // might still load if the request is already-loaded or
-                        // in memory cache.
-    kNonBlockingImage   // The image load may continue, but must be placed in
-                        // ResourceFetcher::non_blocking_loaders_.
+  enum class ImageRequestBehavior {
+    kNone = 0,         // No optimization.
+    kDeferImageLoad,   // Defer loading the image from network. Full image
+                       // might still load if the request is already-loaded or
+                       // in memory cache.
+    kNonBlockingImage  // The image load may continue, but must be placed in
+                       // ResourceFetcher::non_blocking_loaders_.
   };
 
   struct ResourceWidth {

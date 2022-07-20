@@ -82,10 +82,10 @@ class StyleImageLoader {
         pre_cached_container_sizes_(pre_cached_container_sizes),
         device_scale_factor_(device_scale_factor) {}
 
-  StyleImage* Load(
-      CSSValue&,
-      FetchParameters::ImageRequestBehavior = FetchParameters::kNone,
-      CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
+  StyleImage* Load(CSSValue&,
+                   FetchParameters::ImageRequestBehavior =
+                       FetchParameters::ImageRequestBehavior::kNone,
+                   CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
  private:
   StyleImage* CrossfadeArgument(CSSValue&, CrossOriginAttributeValue);
@@ -152,7 +152,8 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
   // a LayoutObject) that we can't meet with the current implementation.
   if (IsA<CSSPaintValue>(value))
     return nullptr;
-  return Load(value, FetchParameters::kNone, cross_origin);
+  return Load(value, FetchParameters::ImageRequestBehavior::kNone,
+              cross_origin);
 }
 
 }  // namespace
@@ -326,7 +327,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
           if (auto* pending_value =
                   PendingCssValue(background_layer->GetImage())) {
             FetchParameters::ImageRequestBehavior image_request_behavior =
-                FetchParameters::kNone;
+                FetchParameters::ImageRequestBehavior::kNone;
             StyleImage* new_image =
                 loader.Load(*pending_value, image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
@@ -393,9 +394,9 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
         for (FillLayer* mask_layer = &style.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
-            mask_layer->SetImage(loader.Load(*pending_value,
-                                             FetchParameters::kNone,
-                                             kCrossOriginAttributeAnonymous));
+            mask_layer->SetImage(loader.Load(
+                *pending_value, FetchParameters::ImageRequestBehavior::kNone,
+                kCrossOriginAttributeAnonymous));
           }
         }
         break;
@@ -403,9 +404,9 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       case CSSPropertyID::kShapeOutside:
         if (ShapeValue* shape_value = style.ShapeOutside()) {
           if (auto* pending_value = PendingCssValue(shape_value->GetImage())) {
-            shape_value->SetImage(loader.Load(*pending_value,
-                                              FetchParameters::kNone,
-                                              kCrossOriginAttributeAnonymous));
+            shape_value->SetImage(loader.Load(
+                *pending_value, FetchParameters::ImageRequestBehavior::kNone,
+                kCrossOriginAttributeAnonymous));
           }
         }
         break;

@@ -591,7 +591,8 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
   // - instructed to defer loading images from network
   if (resource->GetType() == ResourceType::kImage &&
       (ShouldDeferImageLoad(resource->Url()) ||
-       params.GetImageRequestBehavior() == FetchParameters::kDeferImageLoad)) {
+       params.GetImageRequestBehavior() ==
+           FetchParameters::ImageRequestBehavior::kDeferImageLoad)) {
     return false;
   }
   return policy != RevalidationPolicy::kUse || resource->StillNeedsLoad();
@@ -1207,7 +1208,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     image_resources_.insert(resource);
     not_loaded_image_resources_.insert(resource);
     if (params.GetImageRequestBehavior() ==
-        FetchParameters::kNonBlockingImage) {
+        FetchParameters::ImageRequestBehavior::kNonBlockingImage) {
       load_blocking_policy = ImageLoadBlockingPolicy::kForceNonBlockingLoad;
     }
   }

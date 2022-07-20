@@ -109,7 +109,7 @@ StyleImage* CSSImageSetValue::CacheImage(
     // TODO(fs): Forward the image request behavior when other code is prepared
     // to handle it.
     FetchParameters params = image_value.PrepareFetch(
-        document, FetchParameters::kNone, cross_origin);
+        document, FetchParameters::ImageRequestBehavior::kNone, cross_origin);
     cached_image_ = MakeGarbageCollected<StyleFetchedImageSet>(
         ImageResourceContent::Fetch(params, document.Fetcher()),
         image.scale_factor, this, params.Url());
