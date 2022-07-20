@@ -1059,6 +1059,7 @@
 <translation id="3807873520724684969">खतरनाक सामग्री ब्लॉक की गई.</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3816482573645936981">मान (इस मान की जगह लागू किया गया)</translation>
+<translation id="3823402221513322552">आपके ब्राउज़र को <ph name="BROWSER_DOMAIN" /> मैनेज करता है और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="382518646247711829">अगर आप प्रॉक्सी सर्वर का उपयोग करते हैं...</translation>
 <translation id="3826050100957962900">तीसरे पक्ष की सेवा के लिए, साइन इन करना</translation>
 <translation id="3827112369919217609">पूरा</translation>
@@ -1556,6 +1557,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> में नहीं है? इस गड़बड़ी की रिपोर्ट करें</translation>
 <translation id="518639307526414276">पालतू जानवरों का खाना और उनकी देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="5190835502935405962">बुकमार्क बार</translation>
+<translation id="5191315092027169558">आपकी प्रोफ़ाइल को <ph name="DOMAIN" /> मैनेज करता है</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> एक से ज़्यादा फ़ाइलें डाउनलोड करना चाहते हैं</translation>
 <translation id="519422657042045905">व्याख्या की सुविधा उपलब्ध नहीं है</translation>
 <translation id="5201306358585911203">इस पेज पर एम्बेड किए गए पेज का कहना है कि</translation>
@@ -2760,6 +2762,7 @@
 <translation id="8623885649813806493">पासवर्ड गलत है. सेव किए गए सभी पासवर्ड दिखाएं.</translation>
 <translation id="8624354461147303341">छूट पाएं</translation>
 <translation id="8625384913736129811">इस कार्ड को इस डिवाइस में सेव करें</translation>
+<translation id="8637577059508742477">आपकी प्रोफ़ाइल और ब्राउज़र को <ph name="DOMAIN" /> मैनेज करता है</translation>
 <translation id="865032292777205197">मोशन सेंसर</translation>
 <translation id="8663226718884576429">ऑर्डर की खास बातें, <ph name="TOTAL_LABEL" />, ज़्यादा जानकारी</translation>
 <translation id="8666678546361132282">अंग्रेज़ी</translation>

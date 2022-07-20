@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Mreža je odbila certifikat za autentifikaciju</translation>
 <translation id="255937426064304553">američka (međunarodna)</translation>
 <translation id="2563185590376525700">Žaba</translation>
+<translation id="2570012981255377263">Ovdje će se prikazati vaše nedavne datoteke</translation>
 <translation id="2578394532502990878">tamilski fonetski</translation>
 <translation id="2579959351793446050">orijski</translation>
 <translation id="2593644851255584939">Administrator zahtijeva da onemogućite zaključavanje SIM-a.</translation>
@@ -548,6 +549,7 @@
 <translation id="5625294776298156701">tamilski s tipkovnicom Tamil99</translation>
 <translation id="5633226425545095130">Ako premjestite tu stavku, podijelit ćete je sa svima koji mogu vidjeti dijeljenu mapu <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
+<translation id="5665074015635552640">Ovdje će se prikazivati vaši nedavni videozapisi</translation>
 <translation id="5669691691057771421">Unesite novi PIN</translation>
 <translation id="5678784840044122290">Linux aplikacija bit će dostupna na vašem terminalu, a možda će se i u Pokretaču prikazati ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Prekid veze s arhivom ili virtualnim diskom nije moguć<ph name="END_BOLD" />
@@ -692,6 +694,7 @@
     Pronađene su datoteke (ukupno <ph name="FILE_COUNT" />)</translation>
 <translation id="6935521024859866267">Naopako</translation>
 <translation id="6943836128787782965">HTTP GET neuspješan</translation>
+<translation id="6945604978460872381">Ovdje će se prikazivati vaši nedavni dokumenti</translation>
 <translation id="6949408524333579394">transliteracija za srpski</translation>
 <translation id="6954309393500027528">Administrator je blokirao ljepljenje te datoteke</translation>
 <translation id="6960565108681981554">Nije aktivirano. Obratite se mobilnom operateru.</translation>
@@ -739,6 +742,7 @@
 <translation id="7295662345261934369">Dijeli s drugima</translation>
 <translation id="7297443947353982503">Netočno korisničko ime/zaporka ili neuspjela EAP autentifikacija</translation>
 <translation id="7309413087278791451">njemački (Belgija)</translation>
+<translation id="7313374447885864533">Ovdje će se prikazivati vaše nedavne audiodatoteke</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7343393116438664539">vijetnamski teleks</translation>
 <translation id="7357762654218998920">Ta vrsta datoteke nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u Chrome OS-u.</translation>
@@ -872,6 +876,7 @@
 <translation id="8342318071240498787">Datoteka ili direktorij s istim imenom već postoje.</translation>
 <translation id="8372369524088641025">Neispravan WEP ključ</translation>
 <translation id="8372852072747894550">grčki</translation>
+<translation id="8384716930968677505">Ovdje će se prikazivati vaše nedavne slike</translation>
 <translation id="8386903983509584791">Traženje je dovršeno</translation>
 <translation id="8387733224523483503">Izdvojena je datoteka <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimenzije</translation>

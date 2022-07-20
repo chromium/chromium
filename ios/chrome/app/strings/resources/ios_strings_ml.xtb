@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
-<translation id="359441731697487922">Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ് ആയി സജ്ജീകരിച്ച്, അതിൽ ലിങ്കുകൾ സ്വയമേവ തുറക്കാം.
-      
-ചുവടെയുള്ള ഘട്ടങ്ങൾ പാലിക്കുക:</translation>
 <translation id="3603009562372709545">ലിങ്ക് URL പകർത്തുക</translation>
 <translation id="3607167657931203000">സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="3609785682760573515">സമന്വയിപ്പിക്കുന്നു...</translation>
@@ -441,6 +438,7 @@
 <translation id="4751645464639803239">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="4775879719735953715">സ്ഥിരസ്ഥിതി ബ്രൌസര്‍</translation>
 <translation id="4778644898150334464">മറ്റൊരു പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
+<translation id="478808905805139173">അദൃശ്യ മോഡിൽ തുറക്കണോ?</translation>
 <translation id="4802417911091824046">പാസ്‌ഫ്രെയ്‌സ് എൻക്രി‌പ്ഷനിൽ, Google Pay-ൽ നിന്നുള്ള പേയ്മെന്‍റ് രീതികളും വിലാസങ്ങളും ഉൾപ്പെടുന്നില്ല.
 
 ഈ ക്രമീകരണം മാറ്റാൻ, <ph name="BEGIN_LINK" />സമന്വയം പുനഃക്രമീകരിക്കുക<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> പിന്തുടരുന്നത് ഒഴിവാക്കി</translation>
 <translation id="6293101329759844770">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാക്കാൻ, <ph name="BEGIN_LINK" />Google സേവനങ്ങൾ<ph name="END_LINK" /> തുറന്ന് സുരക്ഷിത ബ്രൗസിംഗ് ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="6294610283659775533">ഒരേ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾ തമ്മിൽ നിങ്ങൾക്ക് ടാബുകൾ അയയ്ക്കാനാകും</translation>
 <translation id="6321526113093607004">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
 <translation id="6324669097367352121">സൈൻ ഇൻ ക്രമീകരണങ്ങൾ</translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
@@ -961,6 +960,7 @@
 <translation id="9055772144595778347">സൈൻ ഇൻ ചെയ്യാൻ കഴിയില്ല</translation>
 <translation id="9057972802061533987">പിന്തുടരാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="9068336935206019333">Chrome-ന്റെ അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
 <translation id="9079935439869366234">എല്ലാം വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> എന്നയാളുടെ പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="9083392325882095631">ഒരു ഇനം</translation>

@@ -3130,6 +3130,7 @@
 <translation id="4372704773119750918">不允許企業使用者使用多重設定檔 (主要或次要)</translation>
 <translation id="4377599627073874279">允許所有網站顯示所有圖片</translation>
 <translation id="437791893267799639">未設定政策，不允許資料遷移和 ARC</translation>
+<translation id="4380159792986204036">允許網頁 Kiosk 在任何畫面上開啟多個瀏覽器視窗</translation>
 <translation id="4381227367939912539">停用恐龍復活節彩蛋遊戲</translation>
 <translation id="4382413175336720282">已停用即時檢查網址的功能。</translation>
 <translation id="4387741272680827493">你可以透過這項政策，指定可略過預先載入 HTTP 嚴格傳輸安全性升級 (從 http 至 https) 的主機名稱清單。
@@ -3637,6 +3638,9 @@
 
           想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4978533099939732984">一律顯示磁碟空間不足的警告</translation>
+<translation id="4979714585847741269">如果將這項政策設為啟用，Kiosk 網頁應用程式將可在相同或不同畫面上另外開啟瀏覽器視窗。如要開啟新視窗，網頁應用程式應呼叫 <ph name="OPEN_NEW_WINDOW_JS" /> JavaScript 函式。
+
+      如果將這項政策設為停用或不設定，Kiosk 網頁應用程式就只能使用主要瀏覽器視窗而無法開啟新視窗。如果呼叫任何可開啟新視窗的 JavaScript 函式，系統將一律忽略。</translation>
 <translation id="4980635395568992380">資料類型：</translation>
 <translation id="4983201894483989687">允許執行過舊的外掛程式</translation>
 <translation id="4986560318567565414">從替代瀏覽器切換到 Chrome 所使用的路徑。</translation>
@@ -6048,6 +6052,7 @@
       請注意，這項政策取決於允許 SHA-1 簽名的作業系統憑證驗證堆疊。如果作業系統更新變更了作業系統的 SHA-1 憑證處理方式，這項政策可能就會失效。此外，這項政策是暫時性的解決方案，目的是讓使用 SHA-1 憑證的企業有更多時間尋找其他解決方案。我們將於 2019 年 1 月 1 日左右移除這項政策。
 
       如果未設定這項政策，或是將這項政策設為 false，<ph name="PRODUCT_NAME" /> 將會遵循公開宣佈的 SHA-1 淘汰時間表。</translation>
+<translation id="7577082478271919056">允許 Kiosk 網頁應用程式另外開啟瀏覽器視窗</translation>
 <translation id="7578142001795552218">這項政策可讓快速解答功能存取所選內容，並將相關資訊傳送給伺服器，進而取得單位轉換結果。
 
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的單位轉換功能。
@@ -7529,6 +7534,7 @@
 
       注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="957778406002650056">可下載 <ph name="PLUGIN_VM_NAME" /> 圖片的網址。</translation>
+<translation id="958285142322823422">禁止 Kiosk 網頁應用程式另外開啟瀏覽器視窗</translation>
 <translation id="958577147847681221">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 是否允許建立新的使用者帳戶。
 
       如果將這項政策設為 false，代表只有 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 中的使用者才能登入。

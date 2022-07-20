@@ -185,6 +185,7 @@
 <translation id="2544853746127077729">Իսկորոշման վկայագիրը մերժվել է ցանցի կողմից</translation>
 <translation id="255937426064304553">ԱՄՆ (միջազգային)</translation>
 <translation id="2563185590376525700">Գորտ</translation>
+<translation id="2570012981255377263">Ձեր վերջին ֆայլերը կհայտնվեն այստեղ</translation>
 <translation id="2578394532502990878">թամիլերեն (հնչյունային)</translation>
 <translation id="2579959351793446050">օրիյա</translation>
 <translation id="2593644851255584939">Ձեր ադմինիստրատորը պահանջում է, որ միացնեք SIM քարտի կողպումը։</translation>
@@ -547,6 +548,7 @@
 <translation id="5625294776298156701">թամիլերեն (Tamil99 ստեղնաշար)</translation>
 <translation id="5633226425545095130">Այս տարրը տեղափոխելու դեպքում այն հասանելի կդառնա բոլորին, ում տեսանելի է «<ph name="DESTINATION_NAME" />» ընդհանուր պանակը։</translation>
 <translation id="5649768706273821470">Լսել</translation>
+<translation id="5665074015635552640">Ձեր վերջին տեսանյութերը կհայտնվեն այստեղ</translation>
 <translation id="5669691691057771421">Մուտքագրեք նոր PIN կոդը</translation>
 <translation id="5678784840044122290">Լինուքսի հավելվածը հասանելի կլինի ձեր տերմինալում, և կարող է նաև պատկերակ ցուցադրվի ձեր գործարկիչում:</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Չհաջողվեց հեռացնել կրիչը կամ վիրտուալ սկավառակը<ph name="END_BOLD" />
@@ -691,6 +693,7 @@
     Գտնվել է <ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6935521024859866267">Գլխիվայր</translation>
 <translation id="6943836128787782965">HTTP GET-ի սխալ</translation>
+<translation id="6945604978460872381">Ձեր վերջին փաստաթղթերը կհայտնվեն այստեղ</translation>
 <translation id="6949408524333579394">սերբերեն (տառադարձություն)</translation>
 <translation id="6954309393500027528">Ադմինիստրատորն արգելափակել է այս ֆայլի տեղադրումը</translation>
 <translation id="6960565108681981554">Ակտիվացված չէ։ Դիմեք ձեր կապի օպերատորին։</translation>
@@ -738,6 +741,7 @@
 <translation id="7295662345261934369">Կիսվել այլ օգտատերերի հետ</translation>
 <translation id="7297443947353982503">Օգտանունը/գաղտնաբառը սխալ է կամ EAP իսկորոշումը չհաջողվեց</translation>
 <translation id="7309413087278791451">գերմաներեն (Բելգիա)</translation>
+<translation id="7313374447885864533">Ձեր վերջին աուդիո ֆայլերը կհայտնվեն այստեղ</translation>
 <translation id="7339898014177206373">Նոր պատուհան</translation>
 <translation id="7343393116438664539">վիետնամերեն (տելեքս)</translation>
 <translation id="7357762654218998920">Ֆայլի այս տեսակը չի աջակցվում։ <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել ChromeOS-ում։</translation>
@@ -871,6 +875,7 @@
 <translation id="8342318071240498787">Այս անունով ֆայլ կամ գրացուցակ արդեն առկա է:</translation>
 <translation id="8372369524088641025">WEP բանալին սխալ է</translation>
 <translation id="8372852072747894550">հունարեն</translation>
+<translation id="8384716930968677505">Ձեր վերջին պատկերները կհայտնվեն այստեղ</translation>
 <translation id="8386903983509584791">Որոնումն ավարտվեց</translation>
 <translation id="8387733224523483503">Ֆայլը (<ph name="FILE_NAME" />) դուրս բերվեց։</translation>
 <translation id="8395901698320285466">Չափեր</translation>

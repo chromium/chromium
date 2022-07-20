@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">Закрити вкладку</translation>
 <translation id="3581564640715911333">Пропозиція перекладати сторінки іншими мовами</translation>
 <translation id="3588820906588687999">Відкрити зображення в новій вкладці</translation>
-<translation id="359441731697487922">Щоб автоматично відкривати посилання в додатку Chrome, установіть його своїм веб-переглядачем за умовчанням.
-      
-Для цього виконайте кроки нижче.</translation>
 <translation id="3603009562372709545">Копіювати URL-адресу посилання</translation>
 <translation id="3607167657931203000">Дані автозаповнення</translation>
 <translation id="3609785682760573515">Синхронізація…</translation>
@@ -627,6 +624,7 @@
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ви скасували підписку на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
+<translation id="6294610283659775533">Ви можете надсилати вкладки між пристроями, на яких увійшли в той самий обліковий запис Google</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
 <translation id="6337234675334993532">Шифрування</translation>

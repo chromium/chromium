@@ -361,6 +361,7 @@
 <translation id="1347256498747320987">अपडेट आणि अ‍ॅप्स इंस्टॉल करा. पुढे सुरू ठेवून, तुम्ही सहमती देता की, हे डिव्हाइस शक्यतो मोबाइल डेटा वापरून Google, तुमचा वाहक आणि तुमच्या डिव्हाइसच्या निर्मात्याकडून अपडेट आणि ॲप्ससुद्धा आपोआप डाउनलोड आणि इंस्टॉल करू शकतो. यापैकी काही ॲप्स ॲपमधील खरेदी करण्याचा पर्याय देऊ शकतात. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux स्टोरेज</translation>
 <translation id="1347975661240122359">बॅटरी <ph name="BATTERY_LEVEL" />% पर्यंत पोहोचल्यावर अपडेट सुरू होईल.</translation>
+<translation id="1348966090521113558">माउसची अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="1353275871123211385">ॲपला मंजुरी देणे आणि स्क्रीन वेळ मर्यादा यांसारखी पालक नियंत्रणे वापरण्यासाठी, लहान मुलाकडे पालकाद्वारे व्यवस्थापित केलेले Google खाते असणे आवश्यक आहे. Google Classroom सारख्या टूलसाठी नंतर शाळेचे खाते जोडले जाऊ शकते.</translation>
 <translation id="135389172849514421">ऑफलाइन काम करते</translation>
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -1672,7 +1673,6 @@
 <translation id="2519517390894391510">सर्टिफिकेट प्रोफाइल नाव</translation>
 <translation id="2520644704042891903">उपलब्ध सॉकेटची प्रतीक्षा करत आहे...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> तुमच्या संस्थेच्या सुरक्षितता धोरणांनुसार तपासत आहे...</translation>
-<translation id="252219247728877310">घटक अद्ययावत केला नाही</translation>
 <translation id="2523184218357549926">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> हे इंस्टॉल करा</translation>
 <translation id="252502352004572774">Chrome तुमच्या कॉंप्युटरमधील हानिकारक सॉफ्टवेअर तपासत आहे...</translation>
@@ -1798,6 +1798,7 @@
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="265390580714150011">फील्ड मूल्य</translation>
 <translation id="2654553774144920065">प्रिंटची विनंती</translation>
+<translation id="2657612187216250073">पॉइंटरची अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="2658941648214598230">मूळ आशय दाखवायचा का?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />वैशिष्ट्ये डिव्हाइसनुसार बदलतात</translation>
 <translation id="2659971421398561408">Crostini डिस्कचा आकार बदला</translation>
@@ -1962,6 +1963,7 @@
 <translation id="2801954693771979815">स्क्रीनचा आकार</translation>
 <translation id="2802557211515765772">कोणतेही व्यवस्थापित केलेले प्रिंटर नाहीत.</translation>
 <translation id="2803313416453193357">फोल्डर उघडा</translation>
+<translation id="2803719750464280163">कृपया कंफर्म करा, की <ph name="DEVICE" /> या ब्लूटूथ डिव्‍हाइसवर दाखवलेली पासकी ही <ph name="PASSKEY" /> आहे.</translation>
 <translation id="2804043232879091219">पर्यायी ब्राउझर उघडता आला नाही</translation>
 <translation id="2804667941345577550">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल.</translation>
 <translation id="2804680522274557040">कॅमेरा बंद केला आहे</translation>
@@ -2807,6 +2809,7 @@
 <translation id="3635353578505343390">Google ला फीडबॅक पाठवा</translation>
 <translation id="3635960017746711110">Crostini ची USB प्राधान्ये</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> शिल्लक</translation>
+<translation id="3636940436873918441">प्राधान्य दिलेल्या भाषा</translation>
 <translation id="3637203148990213388">अतिरिक्त खाती</translation>
 <translation id="3639220004740062347">वाचक मोडमधून बाहेर पडा</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> साठी "<ph name="EXTENSION_NAME" />" जोडायचे?</translation>
@@ -2877,6 +2880,7 @@
 <translation id="370649949373421643">Wi-fi सक्षम करा</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3707163604290651814">सध्या <ph name="NAME" /> म्हणून साइन इन केले</translation>
+<translation id="3708295717182051206">सबटायटल</translation>
 <translation id="3708684582558000260">बंद केलेल्या साइटना डेटा पाठवण्याची किंवा मिळवण्याची प्रक्रिया पूर्ण करण्याची अनुमती देऊ नका</translation>
 <translation id="3709244229496787112">डाउनलोड पूर्ण होण्यापूर्वी ब्राउझर बंद करण्यात आला.</translation>
 <translation id="371174301504454251">तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी, आम्ही सूचीमधून चार आठवड्यांपेक्षा जुन्या साइट ऑटो-डिलीट करतो. तुम्ही पुन्हा भेट दिलेली साइट सूचीमध्ये परत दिसू शकते. किंवा त्या साइटने कधीही तुमच्यासाठी स्वारस्ये परिभाषित करू नये असे तुम्हाला वाटत असल्यास, तुम्ही ती साइट काढून टाकू शकता.</translation>
@@ -3226,6 +3230,7 @@
 <translation id="402211067068791756">यामुळे प्रदर्शित केलेल्या साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ होईल</translation>
 <translation id="4022426551683927403">शब्दकोशात &amp;जोडा</translation>
 <translation id="4025039777635956441">निवडलेली साइट म्यूट करा</translation>
+<translation id="4027958407426528157">तुमच्या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेल्या अ‍ॅप्समध्ये वेबसाइट उघडा</translation>
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेजवरून मागे जा</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
@@ -3957,6 +3962,7 @@
 <translation id="475088594373173692">प्रथम वापरकर्ता</translation>
 <translation id="4756378406049221019">थांबा/पुन्हा लोड करा</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4756671452988984333">ऑडिओसाठीचा मजकूर</translation>
 <translation id="4759202969060787081">उघडू नका</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4761104368405085019">तुमचा मायक्रोफोन वापरा</translation>
@@ -6583,6 +6589,7 @@
 <translation id="7377481913241237033">कोड वापरून कनेक्ट करा</translation>
 <translation id="7378611153938412599">कमकुवत पासवर्ड ओळखणे सोपे असते. तुम्ही क्लिष्ट पासवर्ड तयार करत असल्याची खात्री करा. <ph name="BEGIN_LINK" />आणखी सुरक्षा टिपा पहा.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome वेब स्टोअर उघडा</translation>
+<translation id="737938816678769289">जवळची डिव्हाइस सहजपणे कनेक्ट करा आणि जलद पेअर करा</translation>
 <translation id="7380459290951585794">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा</translation>
 <translation id="7380622428988553498">डिव्हाइसच्या नावामध्ये चुकीच्या वर्णांचा समावेश आहे</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> अपडेट केला</translation>
@@ -6891,6 +6898,7 @@
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> साठी Google पासवर्ड व्यवस्थापक मध्ये</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{चुकीचा पिन. तुमच्याकडे एक प्रयत्न शिल्लक आहे.}other{चुकीचा पिन. तुमच्याकडे # प्रयत्न शिल्लक आहेत.}}</translation>
 <translation id="7670434942695515800">सर्वोत्तम परफॉर्मन्ससाठी, नवीनतम आवृत्तीवर अपग्रेड करा. अपग्रेड पूर्ण करता न आल्यास, तुमच्या फाइलचा बॅकअप घेण्याची शिफारस केली जाते. अपग्रेड सुरू झाल्यानंतर, Linux बंद होईल. पुढे सुरू ठेवण्याआधी उघड्या असलेल्या फाइल सेव्ह करा. <ph name="LINK_START" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">सबटायटल</translation>
 <translation id="7671130400130574146">सिस्टम शीर्षक बार आणि किनारी वापरा</translation>
 <translation id="767127784612208024">रीसेटची खात्री करण्यासाठी स्पर्श करा</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> मध्ये <ph name="HUNG_IFRAME_URL" />.</translation>
@@ -7976,6 +7984,7 @@
 <translation id="8724859055372736596">फोल्डरमध्ये &amp;दर्शवा</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8725178340343806893">मनपसंत/बुकमार्क</translation>
+<translation id="87254326763805752">पासकी कंफर्म करा</translation>
 <translation id="8726206820263995930">सर्व्हरवरून धोरण सेटिंग्ज आणताना एरर: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">तुम्ही निवडलेल्या परवानग्या रीसेट केल्या जातील</translation>
 <translation id="8729133765463465108">QR कोड स्कॅन करण्यासाठी कॅमेरा वापरा</translation>

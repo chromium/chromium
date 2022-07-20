@@ -1675,7 +1675,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2519517390894391510">Nome do perfil de certificado</translation>
 <translation id="2520644704042891903">Aguardando soquete disponível...</translation>
 <translation id="2521854691574443804">Verificando <ph name="FILE_NAME" /> com as políticas de segurança da sua organização…</translation>
-<translation id="252219247728877310">Componente não atualizado</translation>
 <translation id="2523184218357549926">Envia URLs das páginas que você visita para o Google</translation>
 <translation id="252418934079508528">Instalar o <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">O Chrome está verificando o computador em busca de softwares nocivos…</translation>
@@ -2813,6 +2812,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3635353578505343390">Enviar feedback para o Google</translation>
 <translation id="3635960017746711110">Preferências de USB do Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> restantes</translation>
+<translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Contas adicionais</translation>
 <translation id="3639220004740062347">Sair do modo leitor</translation>
 <translation id="3640214691812501263">Adicionar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
@@ -4127,6 +4127,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4900392736118574277">Sua página de inicialização foi alterada para <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelaçado)</translation>
 <translation id="4900652253009739885">Não é possível remover o único interruptor atribuído à ação "Selecionar". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Mostrar guias fechadas recentemente</translation>
 <translation id="4901309472892185668">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política baixada do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Configurar ou gerenciar compartilhamentos de arquivos em rede. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -7018,6 +7019,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7768526219335215384"><ph name="ORIGIN" /> poderá ver arquivos na pasta <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Mudar</translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
+<translation id="7769748505895274502">Recolher guias fechadas recentemente</translation>
 <translation id="7770406201819593386">Executar testes de diagnóstico do ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Clique com o botão direito do mouse</translation>
 <translation id="7770612696274572992">Imagem copiada de outro dispositivo</translation>

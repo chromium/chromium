@@ -311,9 +311,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3551320343578183772">탭 닫기</translation>
 <translation id="3581564640715911333">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="3588820906588687999">새 탭에서 이미지 열기</translation>
-<translation id="359441731697487922">Chrome을 기본 브라우저 앱으로 설정하면 링크가 자동으로 Chrome에서 열립니다.
-      
-다음 단계를 따르세요.</translation>
 <translation id="3603009562372709545">링크 URL 복사</translation>
 <translation id="3607167657931203000">데이터 자동 완성</translation>
 <translation id="3609785682760573515">동기화 중...</translation>
@@ -627,6 +624,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> 팔로우를 해제했습니다.</translation>
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
+<translation id="6294610283659775533">동일한 Google 계정으로 로그인한 기기 간에 탭을 보낼 수 있습니다.</translation>
 <translation id="6321526113093607004">북마크에 추가</translation>
 <translation id="6324669097367352121">로그인 설정</translation>
 <translation id="6337234675334993532">암호화</translation>

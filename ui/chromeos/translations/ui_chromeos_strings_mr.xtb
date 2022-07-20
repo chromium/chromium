@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह पोर्तुगीज</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> वापरली</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="22085916256174561">कोरियन</translation>
 <translation id="2208919847696382164">Linux सह इंस्टॉल करा</translation>
@@ -187,6 +188,7 @@
 <translation id="2570012981255377263">तुमच्या अलीकडील फाइल येथे दिसतील</translation>
 <translation id="2578394532502990878">तमिळ फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
+<translation id="2593644851255584939">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार तुम्ही सिम लॉक बंद करणे आवश्यक आहे.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटर ने ब्लॉक केलेले नेटवर्क, तपशील</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> व्हिडिओ</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक केले आहे</translation>
@@ -202,6 +204,7 @@
 <translation id="2724954091494693138">F-कीबोर्डसह तुर्की</translation>
 <translation id="2732839045120506979">व्हिएतनामी VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
+<translation id="2764206540577097904">तुम्ही तुमचे पूर्ण वैयक्तिक Google Workspace स्टोरेज वापरले आहे.</translation>
 <translation id="2771816809568414714">चीज</translation>
 <translation id="2781645665747935084">बेल्जियन</translation>
 <translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
@@ -222,6 +225,7 @@
 <translation id="2943503720238418293">लहान नाव वापरा</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> फॉरमॅट करत आहे...</translation>
 <translation id="2951236788251446349">जेलिफिश</translation>
+<translation id="2958458230122209142">कमी स्टोरेज तुमच्या <ph name="TOTAL_SPACE" /> वैयक्तिक स्टोरेजपैकी <ph name="REMAINING_PERCENTAGE" />% शिल्लक</translation>
 <translation id="2977940621473452797">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या ChromeOS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. कृपया त्या जागी वापरण्यासाठी अनुरूप अ‍ॅप मिळवण्याकरिता Chrome वेब स्टोअर मध्ये शोधा.</translation>
 <translation id="2984337792991268709">आज <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> आयटम रिस्टोअर करत आहे...</translation>
@@ -671,6 +675,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6823166707458800069">या फोल्डरमध्ये सेव्ह केलेल्या सर्व फाइलचा आपोआप ऑनलाइन बॅकअप घेतला जातो.</translation>
 <translation id="6825883775269213504">रशियन</translation>
 <translation id="6847101934483209767">निवडीमधून <ph name="ENTRY_NAME" /> काढून टाकली/ले.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ने तिचे पूर्ण Google Workspace स्टोरेज वापरले आहे.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="6861394552169064235">पर्शियन</translation>
 <translation id="6862635236584086457">या फोल्डरमध्ये सेव्ह केलेल्या सर्व फायलींचा आपोआप ऑनलाइन बॅक अप घेतला जातो</translation>
@@ -703,6 +708,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डर निवडली</translation>
+<translation id="7008426324576352165">अपलोड पूर्ण करण्यासाठी तुमच्या संस्थेला आणखी स्टोरेजची आवश्यकता आहे.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">स्थापना अयशस्वी.</translation>
 <translation id="7031639531908619281">तुर्की</translation>
@@ -938,11 +944,13 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8919081441417203123">डॅनिश</translation>
 <translation id="8965697826696209160">पुरेशी जागा नाही.</translation>
 <translation id="8997962250644902079">चीनी (पारंपरिक) पिनयिन</translation>
+<translation id="8998871447376656508">अपलोड पूर्ण करण्यासाठी तुमच्या Google Drive मध्ये पुरेशी मोकळी जागा नाही.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="9017798300203431059">रशियन ध्वन्यात्मक</translation>
 <translation id="9034924485347205037">Linux फाइल</translation>
 <translation id="9035012421917565900">हे आयटम '<ph name="DESTINATION_NAME" />' मध्ये परत हलवणे शक्य नाही, म्हणून ही क्रिया पहिल्यासारखी केली जाणार नाही.</translation>
 <translation id="9035689366572880647">सध्याचा पिन एंटर करा</translation>
+<translation id="9037777873893411148">*संस्थेचे स्टोरेज पूर्ण भरले आहे</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. कृपया वेगळे नाव निवडा.</translation>
 <translation id="9046895021617826162">कनेक्ट करण्यात अयशस्वी</translation>
 <translation id="9065512565307033593">तुम्हाला पडताळणी करता न आल्यास, तुमचा नेटवर्क अ‍ॅक्सेस बंद केला जाईल.</translation>

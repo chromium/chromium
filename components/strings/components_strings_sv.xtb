@@ -1059,6 +1059,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3807873520724684969">Skadligt innehåll har blockerats.</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3816482573645936981">Värde (ersatt)</translation>
+<translation id="3823402221513322552">Webbläsaren hanteras av <ph name="BROWSER_DOMAIN" /> och profilen hanteras av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Om du använder en proxyserver ...</translation>
 <translation id="3826050100957962900">Inloggning hos tredje part</translation>
 <translation id="3827112369919217609">Absolut</translation>
@@ -1556,6 +1557,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5179510805599951267">Inte på <ph name="ORIGINAL_LANGUAGE" />? Rapportera felet</translation>
 <translation id="518639307526414276">Djurmat och djurvård</translation>
 <translation id="5190835502935405962">Bokmärkesfältet</translation>
+<translation id="5191315092027169558">Profilen hanteras av <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vill ladda ned flera filer</translation>
 <translation id="519422657042045905">Kommentering är inte tillgängligt</translation>
 <translation id="5201306358585911203">På en inbäddad sida på den här sidan står det</translation>
@@ -2760,6 +2762,7 @@ Mer information:
 <translation id="8623885649813806493">Inga matchande lösenord. Visa alla sparade lösenord.</translation>
 <translation id="8624354461147303341">Få erbjudanden</translation>
 <translation id="8625384913736129811">Spara kortet på enheten</translation>
+<translation id="8637577059508742477">Profilen och webbläsaren hanteras av <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">rörelsesensorer</translation>
 <translation id="8663226718884576429">Beställningsöversikt, <ph name="TOTAL_LABEL" />, mer information</translation>
 <translation id="8666678546361132282">engelska</translation>

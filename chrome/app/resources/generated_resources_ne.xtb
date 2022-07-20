@@ -1656,7 +1656,6 @@
 <translation id="2519517390894391510">सर्टिफिकेट प्रोफाइलको नाम</translation>
 <translation id="2520644704042891903">उपलब्ध सकेट प्रतिक्षा गर्दै...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...</translation>
-<translation id="252219247728877310">अवयव अपडेट गरिएको छैन</translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> इन्स्टल गर्नुहोस्</translation>
 <translation id="252502352004572774">Chrome ले तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर छन् कि छैनन् भनी जाँचिरहको छ...</translation>
@@ -2794,6 +2793,7 @@
 <translation id="3635353578505343390">Google लाई प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="3635960017746711110">Crostini मा USB सम्बन्धी प्राथमिकताहरू</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> बायाँ</translation>
+<translation id="3636940436873918441">रुचाइएका भाषाहरू</translation>
 <translation id="3637203148990213388">अतिरिक्त खाताहरू</translation>
 <translation id="3639220004740062347">पाठक मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="3640214691812501263">"<ph name="USER_NAME" />" का लागि <ph name="EXTENSION_NAME" /> थप्ने हो?</translation>

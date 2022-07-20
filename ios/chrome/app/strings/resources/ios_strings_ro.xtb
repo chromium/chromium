@@ -311,9 +311,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3551320343578183772">Închide fila</translation>
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
-<translation id="359441731697487922">Poți deschide automat linkuri în Chrome setând-o ca aplicație browser prestabilită.
-      
-Urmează pașii de mai jos:</translation>
 <translation id="3603009562372709545">Copiază adresa URL a linkului</translation>
 <translation id="3607167657931203000">Datele de completare automată</translation>
 <translation id="3609785682760573515">Se sincronizează...</translation>
@@ -441,6 +438,7 @@ Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru 
 <translation id="4751645464639803239">Filă incognito nouă</translation>
 <translation id="4775879719735953715">Browser prestabilit</translation>
 <translation id="4778644898150334464">Folosește altă parolă</translation>
+<translation id="478808905805139173">Deschizi în modul incognito?</translation>
 <translation id="4802417911091824046">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.
 
 Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ai anulat urmărirea pentru <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pentru a activa Navigarea sigură, deschide <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" /> și atinge Navigare sigură.</translation>
+<translation id="6294610283659775533">Poți să trimiți file între dispozitivele conectate cu același Cont Google.</translation>
 <translation id="6321526113093607004">Adaugă în Marcaje</translation>
 <translation id="6324669097367352121">Setări de conectare</translation>
 <translation id="6337234675334993532">Criptare</translation>
@@ -961,6 +960,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9055772144595778347">Conectare nereușită</translation>
 <translation id="9057972802061533987">Nu se poate urmări. A apărut o eroare.</translation>
 <translation id="9065203028668620118">Editează</translation>
+<translation id="9068336935206019333">Deschide în modul incognito din Chrome</translation>
 <translation id="9079935439869366234">Marchează-le pe toate ca necitite</translation>
 <translation id="9081058212938299310">Actualizezi parola pentru <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Un element</translation>

@@ -1675,7 +1675,6 @@
 <translation id="2519517390894391510">Име за профилот на сертификатот</translation>
 <translation id="2520644704042891903">Се чека достапен приклучок...</translation>
 <translation id="2521854691574443804">Ја проверуваме <ph name="FILE_NAME" /> согласно безбедносните правила на организацијата…</translation>
-<translation id="252219247728877310">Компонентата не е ажурирана</translation>
 <translation id="2523184218357549926">Испраќа URL-адреси од страници што ги посетувате до Google</translation>
 <translation id="252418934079508528">Инсталирајте <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome проверува дали има штетен софтвер на вашиот компјутер…</translation>
@@ -2812,6 +2811,7 @@
 <translation id="3635353578505343390">Испратете повратни информации до Google</translation>
 <translation id="3635960017746711110">Поставки за USB за Crostini</translation>
 <translation id="3636766455281737684">Останати се <ph name="PERCENTAGE" />% - <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Претпочитани јазици</translation>
 <translation id="3637203148990213388">Дополнителни сметки</translation>
 <translation id="3639220004740062347">Излезете од режим на читач</translation>
 <translation id="3640214691812501263">Да се додаде „<ph name="EXTENSION_NAME" />" за <ph name="USER_NAME" />?</translation>
@@ -3284,6 +3284,7 @@
 <translation id="4077919383365622693">Сите податоци и колачиња складирани од <ph name="SITE" /> ќе се избришат.</translation>
 <translation id="4078738236287221428">Агресивно</translation>
 <translation id="4079140982534148664">Користи подобрена проверка на правопис</translation>
+<translation id="4081203444152654304">Пребарајте во сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Не може да се емитува датотеката.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> испрати известување на вашиот телефон. За да потврдите дека сте вие, следете ги чекорите таму.</translation>
 <translation id="4084682180776658562">Обележувач</translation>
@@ -3680,6 +3681,7 @@
 <translation id="4476590490540813026">Атлетичарка</translation>
 <translation id="4476659815936224889">За да го скенирате кодов, може да користите апликација за QR-скенер на вашиот телефон или некои апликации за камера.</translation>
 <translation id="4477015793815781985">Опфатете Ctrl, Alt или ⌘</translation>
+<translation id="4477379360383751882">Пребарајте во сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Сними ја врс&amp;ката како…</translation>
 <translation id="4479424953165245642">Управување со киоск-апликации</translation>
 <translation id="4479639480957787382">Етернет</translation>

@@ -1658,7 +1658,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2519517390894391510">Naziv profila sertifikata</translation>
 <translation id="2520644704042891903">Čeka se dostupan priključak...</translation>
 <translation id="2521854691574443804">Proverava se da li je <ph name="FILE_NAME" /> u skladu sa bezbednosnim smernicama organizacije...</translation>
-<translation id="252219247728877310">Komponenta nije ažurirana</translation>
 <translation id="2523184218357549926">URL-ovi stranica koje posećujete se šalju Google-u</translation>
 <translation id="252418934079508528">Instalirajte <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome proverava da li na računaru ima štetnog softvera...</translation>
@@ -2795,6 +2794,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3635353578505343390">Pošaljite povratne informacije Google-u</translation>
 <translation id="3635960017746711110">Podešavanja USB-a za Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – preostalo je <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Željeni jezici</translation>
 <translation id="3637203148990213388">Dodatni nalozi</translation>
 <translation id="3639220004740062347">Izađi iz režima čitača</translation>
 <translation id="3640214691812501263">Dodaj „<ph name="EXTENSION_NAME" />“ za korisnika <ph name="USER_NAME" />?</translation>
@@ -3267,6 +3267,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4077919383365622693">Brišu se svi podaci i kolačići koje čuva <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">Agresivna</translation>
 <translation id="4079140982534148664">Koristite poboljšanu proveru pravopisa</translation>
+<translation id="4081203444152654304">Pretraži unutar slike uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Nije uspelo prebacivanje datoteke.</translation>
 <translation id="408223403876103285">Sajt <ph name="WEBSITE" /> vam je poslao obaveštenje na telefon. Da biste potvrdili da ste to vi, pratite korake koji se tamo prikazuju.</translation>
 <translation id="4084682180776658562">Obeleživač</translation>
@@ -3663,6 +3664,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4476590490540813026">Sportistkinja</translation>
 <translation id="4476659815936224889">Da biste skenirali ovaj kôd, možete da koristite aplikaciju skenera QR kodova na telefonu ili neke aplikacije za kameru.</translation>
 <translation id="4477015793815781985">Koristite Ctrl, Alt ili ⌘</translation>
+<translation id="4477379360383751882">Pretraži unutar slike uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Sačuvaj li&amp;nk kao...</translation>
 <translation id="4479424953165245642">Upravljaj kiosk aplikacijama</translation>
 <translation id="4479639480957787382">Eternet</translation>
@@ -4108,6 +4110,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4900392736118574277">Polazna stranica je promenjena u <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – prepleteno</translation>
 <translation id="4900652253009739885">Uklanjanje jedinog prekidača dodeljenog radnji Izaberi nije moguće. Pritisnite bilo koji taster za <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Proširi nedavno zatvoreno</translation>
 <translation id="4901309472892185668">Izaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Smernice preuzete sa servera su nevažeće: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Podesite deljenja datoteka na mreži ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -7000,6 +7003,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7768526219335215384"><ph name="ORIGIN" /> će moći da pregleda fajlove u folderu <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Promenite</translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
+<translation id="7769748505895274502">Skupi nedavno zatvoreno</translation>
 <translation id="7770406201819593386">Pokrenite Chrome OS Flex dijagnostičke testove.</translation>
 <translation id="7770450735129978837">Klik na desni taster miša</translation>
 <translation id="7770612696274572992">Slika je kopirana sa nekog drugog uređaja</translation>

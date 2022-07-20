@@ -2582,6 +2582,19 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3660562134618097814">Transferir las cookies del proveedor de identidad SAML durante el inicio de sesión</translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitud CORS sin comodín.</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) se suele usar para dividir tareas largas de JavaScript.
+          Si se habilita esta política, los valores de setTimeout y setInterval que tengan un intervalo inferior a 4 ms no se redondearán de forma tan agresiva.
+          Esto mejora el rendimiento a corto plazo. Sin embargo, en los sitios web que hagan un uso inadecuado de la API, se redondearán los valores de setTimeout de todos modos.
+
+          Si se inhabilita esta política, se redondearán los valores de setTimeout y setInterval que tengan un intervalo inferior a 4 ms.
+
+          Es posible que esto cambie el orden de las tareas en una página web, lo que podría provocar un comportamiento inesperado en sitios que dependan, de algún modo, de un orden determinado.
+          También puede afectar a sitios que usen mucho la función setTimeout() con un tiempo de espera de 0 ms (por ejemplo, podría aumentar la carga de la CPU).
+
+          Para los usuarios que no tengan esta política configurada, <ph name="PRODUCT_NAME" /> lanzará el cambio de forma gradual en el canal estable.
+
+          Se trata de una política temporal y se prevé que se elimine en la versión 107 de <ph name="PRODUCT_NAME" />. Este plazo puede ampliarse si lo necesitan las empresas.
+          </translation>
 <translation id="3685979383016152590">Si se establece esta política, se designará qué política de acceso se utiliza para configurar impresoras en bloque y controlará qué impresoras de la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> están disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas
@@ -5706,6 +5719,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7101550508196914704">No mostrar el acceso directo a aplicaciones en la barra de marcadores</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
+<translation id="7121046543122812054">Esta política está obsoleta. Te recomendamos que uses <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
+
+      Permite que el usuario inicie sesión en <ph name="PRODUCT_NAME" />.
+
+      Si se habilita esta política, el usuario podrá iniciar sesión en <ph name="PRODUCT_NAME" />.
+      Si se inhabilita esta política, se impedirá el inicio de sesión. También se impedirá que funcionen las aplicaciones y las extensiones que usen la API chrome.identity. Para evitarlo, utiliza <ph name="SYNC_DISABLED_POLICY_NAME" /> en su lugar.
+      </translation>
 <translation id="7122626777103192518">Si se le asigna el valor True a esta política, se podrán compartir texto o archivos de aplicaciones Android a aplicaciones web compatibles mediante el sistema para compartir integrado de Android.
       Si se habilita, se enviarán a Google metadatos de aplicaciones web instaladas para generar e instalar una aplicación Android correctora de compatibilidad.
       Si se le asigna el valor False, se inhabilitará esta función.</translation>

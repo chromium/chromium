@@ -311,9 +311,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3551320343578183772">Loka flipa</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
-<translation id="359441731697487922">Þú getur opnað tengla sjálfkrafa með Chrome ef þú gerir það að sjálfgefnu vafraforriti.
-      
-Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3603009562372709545">Afrita vefslóð tengils</translation>
 <translation id="3607167657931203000">Gögn sjálfvirkrar útfyllingar</translation>
 <translation id="3609785682760573515">Samstillir...</translation>
@@ -441,6 +438,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði samstillingar. Sláðu það in
 <translation id="4751645464639803239">Nýr huliðsflipi</translation>
 <translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4778644898150334464">Nota annað aðgangsorð</translation>
+<translation id="478808905805139173">Opna í huliðsstillingu?</translation>
 <translation id="4802417911091824046">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay.
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Hætti að fylgja <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
+<translation id="6294610283659775533">Þú getur sent flipa á milli tækja sem eru skráð inn á sama Google reikninginn</translation>
 <translation id="6321526113093607004">Bæta við bókamerki</translation>
 <translation id="6324669097367352121">Innskráningarstillingar</translation>
 <translation id="6337234675334993532">Dulkóðun</translation>
@@ -961,6 +960,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9055772144595778347">Innskráning tókst ekki</translation>
 <translation id="9057972802061533987">Ekki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="9065203028668620118">Breyta</translation>
+<translation id="9068336935206019333">Opna í huliðsstillingu Chrome</translation>
 <translation id="9079935439869366234">Merkja allt sem ólesið</translation>
 <translation id="9081058212938299310">Uppfæra aðgangsorð fyrir <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Eitt atriði</translation>

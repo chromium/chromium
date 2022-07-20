@@ -311,9 +311,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
-<translation id="359441731697487922">Vous pouvez définir Chrome comme votre navigateur par défaut pour y ouvrir des liens automatiquement.
-      
-Suivez les étapes ci-dessous :</translation>
 <translation id="3603009562372709545">Copier l'URL du lien</translation>
 <translation id="3607167657931203000">Saisie automatique</translation>
 <translation id="3609785682760573515">Synchronisation en cours…</translation>
@@ -441,6 +438,7 @@ Vos données sont chiffrées avec votre phrase secrète de synchronisation. Sais
 <translation id="4751645464639803239">Nouv. onglet nav. privée</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
+<translation id="478808905805139173">Ouvrir en navigation privée ?</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Vous ne suivez plus <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
+<translation id="6294610283659775533">Vous pouvez envoyer des onglets entre appareils connectés au même compte Google</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324669097367352121">Paramètres connexion</translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -962,6 +961,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9055772144595778347">Connexion impossible</translation>
 <translation id="9057972802061533987">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="9065203028668620118">Modifier</translation>
+<translation id="9068336935206019333">Ouvrir en navigation privée Chrome</translation>
 <translation id="9079935439869366234">Tout marquer comme non lu</translation>
 <translation id="9081058212938299310">Changer le mot de passe pour <ph name="USERNAME" /> ?</translation>
 <translation id="9083392325882095631">1 élément</translation>

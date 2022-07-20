@@ -1670,7 +1670,6 @@
 <translation id="2519517390894391510">Гэрчилгээний профайлын нэр</translation>
 <translation id="2520644704042891903">Бэлэн залгуурыг хүлээж байна ...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" />-г танай байгууллагын удирдамжуудад нийцэх эсэхийг шалгаж байна...</translation>
-<translation id="252219247728877310">Бүрэлдэхүүн хэсгийг шинэчлээгүй</translation>
 <translation id="2523184218357549926">Таны зочилсон хуудасны URL-г Google-д илгээдэг</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" />-г суулгах</translation>
 <translation id="252502352004572774">Chrome таны компьютерт хортой программ хангамж байгаа эсэхийг шалгаж байна...</translation>
@@ -2807,6 +2806,7 @@
 <translation id="3635353578505343390">Google-д санал хүсэлт илгээх</translation>
 <translation id="3635960017746711110">Crostini-н USB сонголт</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> зүүн</translation>
+<translation id="3636940436873918441">Сонгосон хэл</translation>
 <translation id="3637203148990213388">Нэмэлт бүртгэлүүд</translation>
 <translation id="3639220004740062347">Уншигчийн горимоос гарах</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />-д зориулсан "<ph name="EXTENSION_NAME" />"-ыг нэмэх үү?</translation>
@@ -3278,6 +3278,7 @@
 <translation id="4077919383365622693"><ph name="SITE" />-н хадгалсан бүх өгөгдөл болон күүкийг устгах болно.</translation>
 <translation id="4078738236287221428">Түрэмгий</translation>
 <translation id="4079140982534148664">Зөв бичгийн алдаа шалгах сайжруулсан онцлогийг ашиглах</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ашиглан дотор талын зураг хайх</translation>
 <translation id="4081242589061676262">Файлыг дамжуулах боломжгүй.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> таны утас руу мэдэгдэл илгээсэн. Та өөрийгөө мөн болохыг баталгаажуулахын тулд тэнд байгаа алхмуудыг дагана уу.</translation>
 <translation id="4084682180776658562">Хадгалах</translation>
@@ -3674,6 +3675,7 @@
 <translation id="4476590490540813026">Тамирчин</translation>
 <translation id="4476659815936224889">Энэ кодыг скан хийхийн тулд утасныхаа QR кодын сканнерын аппыг эсвэл камерын зарим аппыг ашиглана уу.</translation>
 <translation id="4477015793815781985">Ctrl, Alt эсвэл ⌘-р эхлүүлнэ үү</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> ашиглан дотор талын зураг хайх</translation>
 <translation id="4478664379124702289">Холбоосыг хадгалах хэлбэр...</translation>
 <translation id="4479424953165245642">Kiosk аппуудыг удирдах</translation>
 <translation id="4479639480957787382">Ethernet</translation>

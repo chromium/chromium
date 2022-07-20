@@ -1001,6 +1001,7 @@
 <translation id="1936157145127842922">在文件夹中显示</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
 <translation id="1937774647013465102">无法使用此设备（即 <ph name="ARCHITECTURE_DEVICE" />）导入容器架构类型 <ph name="ARCHITECTURE_CONTAINER" />。您既可尝试将此容器恢复到另一设备中，也可使用“文件”应用打开此容器映像内的文件以进行访问。</translation>
+<translation id="1938240902511979591">高对比度模式、放大镜和显示设置</translation>
 <translation id="1938320257168860255">出了点问题。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="1938351510777341717">外部命令</translation>
 <translation id="1940546824932169984">已连接的设备</translation>
@@ -1420,6 +1421,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">不支持以下按键：Tab、Shift、Ctrl、Esc、Caps Lock、音量按键</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
+<translation id="2310923358723722542">显示和放大</translation>
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
@@ -1649,7 +1651,6 @@
 <translation id="2519517390894391510">证书名称</translation>
 <translation id="2520644704042891903">正在等待可用的套接字…</translation>
 <translation id="2521854691574443804">正在检查 <ph name="FILE_NAME" /> 是否符合贵组织的安全政策…</translation>
-<translation id="252219247728877310">组件未更新</translation>
 <translation id="2523184218357549926">将您所访问的网页的网址发送给 Google</translation>
 <translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome 正在检查您的计算机上是否存在有害软件…</translation>
@@ -2782,6 +2783,7 @@
 <translation id="3635353578505343390">向 Google 发送反馈</translation>
 <translation id="3635960017746711110">Crostini USB 偏好设置</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 还可使用 <ph name="TIME" /></translation>
+<translation id="3636940436873918441">首选语言</translation>
 <translation id="3637203148990213388">其他帐号</translation>
 <translation id="3639220004740062347">退出阅读器模式</translation>
 <translation id="3640214691812501263">要为<ph name="USER_NAME" />添加“<ph name="EXTENSION_NAME" />”吗？</translation>
@@ -4151,6 +4153,7 @@
 <translation id="496446150016900060">将 Wi-Fi 网络配置同步到您的手机</translation>
 <translation id="4965808351167763748">确定要将此设备设为运行 Hangouts Meet 吗？</translation>
 <translation id="4966972803217407697">您正在使用无痕模式</translation>
+<translation id="4967227914555989138">添加备注</translation>
 <translation id="496742804571665842">停用 eSIM 卡配置文件</translation>
 <translation id="4971412780836297815">完成后打开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
@@ -4398,6 +4401,7 @@
 <translation id="5233231016133573565">进程 ID</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5233736638227740678">粘贴(&amp;P)</translation>
+<translation id="5233794855520048159">单声道音频、启动时的声音，以及字幕</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5235050375939235066">要卸载该应用吗？</translation>
 <translation id="523505283826916779">无障碍设置</translation>
@@ -4502,6 +4506,7 @@
 <translation id="5333896723098573627">如需移除应用，请依次转到“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
 <translation id="5334142896108694079">脚本缓存</translation>
 <translation id="5336688142483283574">此网页也将从您的历史记录和 <ph name="SEARCH_ENGINE" /> 活动记录中移除。</translation>
+<translation id="5336689872433667741">光标和触控板</translation>
 <translation id="5337771866151525739">由第三方安装。</translation>
 <translation id="5337926771328966926">当前设备名称是“<ph name="DEVICE_NAME" />”</translation>
 <translation id="5338338064218053691">无痕式窗口可让您进行私密浏览</translation>
@@ -4512,6 +4517,7 @@
 <translation id="5342091991439452114">PIN 码必须至少为 <ph name="MINIMUM" /> 位数</translation>
 <translation id="5344036115151554031">正在恢复 Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
+<translation id="534449933710420173">未命名的文件夹</translation>
 <translation id="5345916423802287046">在您登录时启动应用</translation>
 <translation id="5350293332385664455">关闭 Google 助理</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
@@ -5132,6 +5138,7 @@
 <translation id="5959471481388474538">网络不可用</translation>
 <translation id="595959584676692139">如果您想使用该扩展程序，请先重新加载网页</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 个（峰值：<ph name="NUM_KILOBYTES_LIVE" />）</translation>
+<translation id="5963620791620013026">粘滞键、屏幕键盘、语音输入、开关控制和增强型突出显示</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="5965661248935608907">它还能够控制您点击“主页”按钮后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5968022600320704045">无搜索结果</translation>
@@ -5942,6 +5949,7 @@
 <translation id="6770602306803890733">为您和网络上的所有人提供更好的安全保障</translation>
 <translation id="6771503742377376720">是证书授权中心</translation>
 <translation id="6775163072363532304">可用设备将会显示在此处。</translation>
+<translation id="677646486571529447">添加备注</translation>
 <translation id="6776729248872343918">启用快速配对</translation>
 <translation id="6777817260680419853">已禁止重定向</translation>
 <translation id="6778737459546443941">您的父亲/母亲尚未批准此网站</translation>
@@ -6090,6 +6098,7 @@
 <translation id="6900654715912436255">确定要删除此搜索引擎吗？</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">要试听的语音</translation>
+<translation id="6902219595840841518">自动点击、光标大小、光标颜色和突出显示光标</translation>
 <translation id="6902336033320348843">有区段不受支持：<ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">将设备加入网域</translation>
 <translation id="6903022061658753260">您的数据将在已为该帐号开启同步功能的所有 Chrome 浏览器之间同步。如需了解 Chrome 操作系统同步选项，请前往 <ph name="LINK_BEGIN" />Chrome 操作系统设置<ph name="LINK_END" />。</translation>
@@ -6868,6 +6877,7 @@
 <translation id="7681095912841365527">该网站可能会使用蓝牙</translation>
 <translation id="7681597159868843240">网站通常会使用您设备的移动传感器以实现某些功能（例如虚拟实境或健身跟踪）</translation>
 <translation id="7683373461016844951">要想继续，请点击“确定”，然后点击“添加用户”为您位于 <ph name="DOMAIN" /> 中的电子邮件地址创建一份新个人资料。</translation>
+<translation id="7683834360226457448">弱视显示工具</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>

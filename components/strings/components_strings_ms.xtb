@@ -1060,6 +1060,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3807873520724684969">Kandungan berbahaya disekat.</translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3816482573645936981">Nilai (digantikan)</translation>
+<translation id="3823402221513322552">Penyemak imbas anda diurus oleh <ph name="BROWSER_DOMAIN" /> dan profil anda diurus oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Jika anda menggunakan pelayan proksi...</translation>
 <translation id="3826050100957962900">Log masuk pihak ketiga</translation>
 <translation id="3827112369919217609">Mutlak</translation>
@@ -1557,6 +1558,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5179510805599951267">Bukan dalam <ph name="ORIGINAL_LANGUAGE" />? Laporkan ralat ini</translation>
 <translation id="518639307526414276">Makanan haiwan kesayangan &amp; bekalan penjagaan haiwan kesayangan</translation>
 <translation id="5190835502935405962">Bar Penanda Halaman</translation>
+<translation id="5191315092027169558">Profil anda diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> mahu memuat turun berbilang fail</translation>
 <translation id="519422657042045905">Anotasi tidak tersedia</translation>
 <translation id="5201306358585911203">Halaman terbenam pada halaman ini menyatakan</translation>
@@ -2761,6 +2763,7 @@ Butiran tambahan:
 <translation id="8623885649813806493">Tiada kata laluan yang sepadan. Tunjukkan semua kata laluan yang disimpan.</translation>
 <translation id="8624354461147303341">Dapatkan diskaun</translation>
 <translation id="8625384913736129811">Simpan Kad Ini pada Peranti Ini</translation>
+<translation id="8637577059508742477">Profil dan penyemak imbas anda diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">penderia gerakan</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Butiran Lanjut</translation>
 <translation id="8666678546361132282">Bahasa Inggeris</translation>

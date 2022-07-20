@@ -1659,7 +1659,6 @@
 <translation id="2519517390894391510">ชื่อโปรไฟล์ใบรับรอง</translation>
 <translation id="2520644704042891903">กำลังรอ Socket ที่ใช้งานได้...</translation>
 <translation id="2521854691574443804">กำลังตรวจสอบ <ph name="FILE_NAME" /> กับนโยบายความปลอดภัยขององค์กร...</translation>
-<translation id="252219247728877310">ไม่ได้อัปเดตคอมโพเนนต์</translation>
 <translation id="2523184218357549926">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
 <translation id="252418934079508528">ติดตั้ง <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome กำลังตรวจหาซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์...</translation>
@@ -2796,6 +2795,7 @@
 <translation id="3635353578505343390">ส่งความคิดเห็นไปยัง Google</translation>
 <translation id="3635960017746711110">ค่ากำหนด USB ใน Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - ใช้ได้อีก <ph name="TIME" /></translation>
+<translation id="3636940436873918441">ภาษาที่ต้องการ</translation>
 <translation id="3637203148990213388">บัญชีเสริม</translation>
 <translation id="3639220004740062347">ออกจากโหมดผู้อ่าน</translation>
 <translation id="3640214691812501263">เพิ่ม "<ph name="EXTENSION_NAME" />" สำหรับ <ph name="USER_NAME" /> ไหม</translation>
@@ -3268,6 +3268,7 @@
 <translation id="4077919383365622693">ระบบจะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="SITE" /> จัดเก็บไว้</translation>
 <translation id="4078738236287221428">เข้มงวด</translation>
 <translation id="4079140982534148664">ใช้ฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
+<translation id="4081203444152654304">ค้นหาภายในรูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">ไม่สามารถแคสต์ไฟล์</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> ได้ส่งการแจ้งเตือนไปยังโทรศัพท์ของคุณ โปรดทำตามขั้นตอนในข้อความแจ้งเตือนเพื่อยืนยันว่าเป็นคุณ</translation>
 <translation id="4084682180776658562">บุ๊กมาร์ก</translation>
@@ -3664,6 +3665,7 @@
 <translation id="4476590490540813026">นักกีฬา</translation>
 <translation id="4476659815936224889">หากต้องการสแกนโค้ดนี้ คุณใช้แอปสแกนคิวอาร์โค้ดในโทรศัพท์หรือแอปกล้องถ่ายรูปบางแอปสแกนได้</translation>
 <translation id="4477015793815781985">รวม Ctrl, Alt หรือ ⌘</translation>
+<translation id="4477379360383751882">ค้นหาภายในรูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">บันทึก&amp;ลิงก์เป็น...</translation>
 <translation id="4479424953165245642">จัดการแอปพลิเคชันคีออสก์</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>

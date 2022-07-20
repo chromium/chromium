@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
-<translation id="359441731697487922">將 Chrome 設為「預設瀏覽器應用程式」，即可自動以 Chrome 開啟連結。
-      
-請按以下步驟操作：</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中…</translation>
@@ -627,6 +624,7 @@
 <translation id="6284652193729350524">為<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6289501276895392862">已取消追蹤 <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">如要啟用「安全瀏覽」功能，請開啟「<ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />」，並輕按 [安全瀏覽]。</translation>
+<translation id="6294610283659775533">您可在已登入同一個 Google 帳戶的裝置之間傳送分頁</translation>
 <translation id="6321526113093607004">新增至「書籤」</translation>
 <translation id="6324669097367352121">登入設定</translation>
 <translation id="6337234675334993532">加密</translation>

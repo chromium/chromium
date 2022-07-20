@@ -361,6 +361,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1347256498747320987">Instal update &amp; aplikasi. Dengan melanjutkan, artinya Anda menyetujui bahwa perangkat ini juga dapat mendownload serta menginstal update dan aplikasi secara otomatis dari Google, operator, dan produsen perangkat, yang kemungkinan menggunakan kuota. Sebagian aplikasi ini mungkin menawarkan pembelian dalam aplikasi. <ph name="BEGIN_LINK1" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Penyimpanan Linux</translation>
 <translation id="1347975661240122359">Update akan dimulai jika baterai mencapai <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1348966090521113558">Setelan aksesibilitas mouse</translation>
 <translation id="1353275871123211385">Untuk menggunakan kontrol orang tua seperti persetujuan aplikasi dan batas waktu pemakaian perangkat, anak harus memiliki Akun Google yang dikelola oleh orang tua. Akun sekolah dapat ditambahkan nanti untuk alat seperti Google Classroom.</translation>
 <translation id="135389172849514421">Berfungsi secara offline</translation>
 <translation id="1353980523955420967">Tidak dapat menemukan PPD. Pastikan Chromebook sudah online dan coba lagi.</translation>
@@ -1673,7 +1674,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2519517390894391510">Nama Profil Sertifikat</translation>
 <translation id="2520644704042891903">Menunggu soket tersedia...</translation>
 <translation id="2521854691574443804">Memeriksa <ph name="FILE_NAME" /> berdasarkan kebijakan keamanan organisasi Anda ...</translation>
-<translation id="252219247728877310">Komponen tidak diperbarui</translation>
 <translation id="2523184218357549926">Mengirimkan URL halaman yang Anda buka ke Google</translation>
 <translation id="252418934079508528">Instal <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome sedang memeriksa software berbahaya di komputer Anda ...</translation>
@@ -1799,6 +1799,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="265390580714150011">Nilai Bidang</translation>
 <translation id="2654553774144920065">Permintaan cetak</translation>
+<translation id="2657612187216250073">Setelan aksesibilitas pointer</translation>
 <translation id="2658941648214598230">Tampilkan konten asli?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Fitur berbeda menurut perangkat</translation>
 <translation id="2659971421398561408">Ubah ukuran disk Crostini</translation>
@@ -1850,7 +1851,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2705736684557713153">Scroll ke bagian bawah layar dan aktifkan Tethering Instan, jika muncul. Jika tidak muncul, artinya Anda sudah siap.</translation>
 <translation id="2707024448553392710">Komponen sedang didownload</translation>
 <translation id="270921614578699633">Rata-rata Pemindahan</translation>
-<translation id="2709516037105925701">Isi-Otomatis</translation>
+<translation id="2709516037105925701">Isi otomatis</translation>
 <translation id="2710101514844343743">Data penggunaan dan diagnostik</translation>
 <translation id="271033894570825754">Baru</translation>
 <translation id="2711073837061989559">Uji coba</translation>
@@ -1963,6 +1964,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2801954693771979815">Ukuran layar</translation>
 <translation id="2802557211515765772">Tidak ada printer terkelola.</translation>
 <translation id="2803313416453193357">Buka folder</translation>
+<translation id="2803719750464280163">Konfirmasi bahwa <ph name="PASSKEY" /> adalah kunci sandi yang ditampilkan di perangkat Bluetooth <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">Browser alternatif tidak dapat dibuka</translation>
 <translation id="2804667941345577550">Anda akan logout dari situs ini, termasuk di tab yang terbuka</translation>
 <translation id="2804680522274557040">Kamera dinonaktifkan</translation>
@@ -2808,6 +2810,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3635353578505343390">Kirim masukan ke Google</translation>
 <translation id="3635960017746711110">Preferensi USB Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - Sisa <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Bahasa pilihan</translation>
 <translation id="3637203148990213388">Akun tambahan</translation>
 <translation id="3639220004740062347">Keluar dari Mode Pembaca</translation>
 <translation id="3640214691812501263">Tambahkan "<ph name="EXTENSION_NAME" />" untuk <ph name="USER_NAME" />?</translation>
@@ -2878,6 +2881,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="370649949373421643">Aktifkan Wi-Fi</translation>
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3707163604290651814">Saat ini login sebagai <ph name="NAME" /></translation>
+<translation id="3708295717182051206">Teks tertutup</translation>
 <translation id="3708684582558000260">Jangan izinkan situs yang ditutup untuk menyelesaikan pengiriman atau penerimaan data</translation>
 <translation id="3709244229496787112">Browser ditutup sebelum download selesai.</translation>
 <translation id="371174301504454251">Untuk melindungi privasi Anda, kami otomatis menghapus situs dari daftar yang tersimpan lebih dari 4 minggu. Situs yang Anda kunjungi lagi dapat kembali muncul di daftar. Atau Anda dapat menghapus situs jika tidak ingin situs tersebut menentukan minat Anda.</translation>
@@ -3961,6 +3965,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="475088594373173692">Pengguna pertama</translation>
 <translation id="4756378406049221019">Hentikan/Muat Ulang</translation>
 <translation id="4756388243121344051">&amp;Riwayat</translation>
+<translation id="4756671452988984333">Teks untuk audio</translation>
 <translation id="4759202969060787081">Jangan buka</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4761104368405085019">Menggunakan mikrofon Anda</translation>
@@ -6895,6 +6900,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7668423670802040666">Di Pengelola Sandi Google untuk <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN salah. Anda memiliki satu kesempatan lagi.}other{PIN salah. Anda memiliki # kesempatan lagi.}}</translation>
 <translation id="7670434942695515800">Untuk performa terbaik, upgrade ke versi terbaru. Sebaiknya cadangkan file jika upgrade tidak dapat diselesaikan. Setelah upgrade dimulai, Linux akan dimatikan. Simpan file yang terbuka sebelum melanjutkan. <ph name="LINK_START" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">Subtitel</translation>
 <translation id="7671130400130574146">Gunakan bilah judul dan batas sistem</translation>
 <translation id="767127784612208024">Sentuh untuk mengonfirmasi peresetan</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, di <ph name="PAGE_TITLE" />.</translation>
@@ -7982,6 +7988,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8724859055372736596">&amp;Tampilkan dalam Folder</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8725178340343806893">Favorit/Bookmark</translation>
+<translation id="87254326763805752">Konfirmasi kunci sandi</translation>
 <translation id="8726206820263995930">Terjadi kesalahan saat mengambil setelan kebijakan dari server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">Izin yang Anda pilih akan direset</translation>
 <translation id="8729133765463465108">Gunakan kamera untuk memindai Kode QR</translation>

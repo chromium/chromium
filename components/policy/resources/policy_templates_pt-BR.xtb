@@ -3185,6 +3185,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4372704773119750918">Não permitir que o usuário corporativo faça parte de diversos perfis (primários ou secundários)</translation>
 <translation id="4377599627073874279">Permitir que todos os sites exibam todas as imagens</translation>
 <translation id="437791893267799639">Política não definida. Bloquear migração de dados e ARC</translation>
+<translation id="4380159792986204036">Permitir que o quiosque da Web abra mais de uma janela do navegador em qualquer tela</translation>
 <translation id="4381227367939912539">Desativar o jogo easter egg de dinossauro</translation>
 <translation id="4382413175336720282">A verificação de URLs em tempo real está desativada.</translation>
 <translation id="4387741272680827493">A definição da política especifica uma lista de nomes de host que ignoram upgrades HSTS pré-carregados de HTTP para HTTPS.
@@ -3693,6 +3694,9 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 
           Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4978533099939732984">Sempre mostrar alertas de pouco espaço em disco</translation>
+<translation id="4979714585847741269">Se a política for ativada, apps da Web de quiosque vão poder abrir outra janela de navegador, que pode ser colocada na mesma tela ou em uma tela diferente. Para abrir uma nova janela, o app da Web precisa chamar a função JavaScript <ph name="OPEN_NEW_WINDOW_JS" />.
+
+      Se a política for desativada ou deixada sem definição, um app da Web de quiosque só vai poder usar a janela principal do navegador e não poderá abrir uma nova. Chamadas de funções JavaScript para abrir uma nova janela vão ser ignoradas.</translation>
 <translation id="4980635395568992380">Tipo do dado:</translation>
 <translation id="4983201894483989687">Permitir a execução de plug-ins que estão desatualizados</translation>
 <translation id="4986560318567565414">Caminho para mudar do navegador alternativo para o Chrome.</translation>
@@ -6153,6 +6157,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Esta política depende da permissão de assinaturas SHA-1 pela pilha de verificação de certificados do sistema operacional. Se a atualização de um SO alterar o modo como esse sistema lida com certificados SHA-1, talvez esta política deixe de ter efeito. Além disso, esta política é usada como alternativa temporária para dar às empresas mais tempo para deixar de usar SHA-1. Esta política será removida no dia 1 de janeiro de 2019 ou em uma data próxima a essa.
 
       Se esta política não estiver configurada ou estiver configurada como false, o <ph name="PRODUCT_NAME" /> seguirá a programação de suspensão de uso de SHA-1 anunciada publicamente.</translation>
+<translation id="7577082478271919056">Permitir que um app da Web de quiosque abra outra janela do navegador</translation>
 <translation id="7578142001795552218">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de conversão de unidades.
 
       Se ela estiver ativada ou for deixada sem definição, a conversão de unidades das Respostas rápidas ficará ativada.
@@ -7664,6 +7669,7 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
 
       Observação: bloquear URLs chrome://* internos pode causar erros inesperados.</translation>
 <translation id="957778406002650056">O URL no qual o download da imagem do <ph name="PLUGIN_VM_NAME" /> pode ser feito.</translation>
+<translation id="958285142322823422">Proibir que apps da Web de quiosque abram outra janela do navegador</translation>
 <translation id="958577147847681221">Controla se o <ph name="PRODUCT_OS_NAME" /> permite que novas contas de usuário sejam criadas.
 
       Se a política for definida como falsa, apenas os usuários presentes na <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> poderão fazer login.

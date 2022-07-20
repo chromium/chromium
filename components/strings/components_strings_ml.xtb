@@ -1058,6 +1058,7 @@
 <translation id="3807873520724684969">ദോഷകരമായ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
 <translation id="3816482573645936981">മൂല്യം (പകരം മറ്റൊന്ന് സജീവം)</translation>
+<translation id="3823402221513322552">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="BROWSER_DOMAIN" /> -ഉം നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_DOMAIN" /> -ഉം ആണ്</translation>
 <translation id="382518646247711829">നിങ്ങൾ ഒരു പ്രോക്‌സി സെർവർ ഉപയോഗിക്കുന്നെങ്കിൽ...</translation>
 <translation id="3826050100957962900">മൂന്നാം കക്ഷി സൈൻ ഇൻ</translation>
 <translation id="3827112369919217609">അബ്‌സല്യൂട്ട്</translation>
@@ -1555,6 +1556,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> എന്നതില്‍‌ ഇല്ലേ? ഈ പിശക് റിപ്പോര്‍‌ട്ട് ചെയ്യുക</translation>
 <translation id="518639307526414276">വളർത്തുമൃഗങ്ങളുടെ ഭക്ഷണവും വളർത്തുമൃഗ പരിചരണ സാമഗ്രികളും</translation>
 <translation id="5190835502935405962">ബുക്ക്‌മാര്‍‌ക്ക് ബാര്‍‌</translation>
+<translation id="5191315092027169558">നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />, ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="519422657042045905">കുറിപ്പ് ലഭ്യമല്ല</translation>
 <translation id="5201306358585911203">ഈ പേജിലെ ഉൾച്ചേർത്ത പേജ് പറയുന്നത്:</translation>
@@ -2756,6 +2758,7 @@
 <translation id="8623885649813806493">പൊരുത്തപ്പെടുന്ന പാസ്‌വേഡുകളൊന്നുമില്ല. സംരക്ഷിച്ച എല്ലാ പാസ്‌വേഡുകളും കാണിക്കുക.</translation>
 <translation id="8624354461147303341">ഡിസ്‌കൗണ്ടുകൾ നേടുക</translation>
 <translation id="8625384913736129811">ഈ ഉപകരണത്തിലേക്ക് ഈ കാർഡ് സംരക്ഷിക്കുക</translation>
+<translation id="8637577059508742477">നിങ്ങളുടെ പ്രൊഫൈലും ബ്രൗസറും മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="8666678546361132282">ഇംഗ്ലീഷ്</translation>

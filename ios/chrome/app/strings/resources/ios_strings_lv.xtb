@@ -311,9 +311,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3551320343578183772">Aizvērt cilni</translation>
 <translation id="3581564640715911333">Piedāvāt tulkot lapas citās valodās</translation>
 <translation id="3588820906588687999">Atvērt attēlu jaunā cilnē</translation>
-<translation id="359441731697487922">Varat automātiski atvērt saites pārlūkā Chrome, iestatot to kā savu noklusējuma pārlūka lietotni.
-      
-Veiciet tālāk norādītās darbības.</translation>
 <translation id="3603009562372709545">Kopēt saites URL</translation>
 <translation id="3607167657931203000">Aut. aizpildes dati</translation>
 <translation id="3609785682760573515">Notiek sinhronizēšana...</translation>
@@ -441,6 +438,7 @@ Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai s�
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
 <translation id="4775879719735953715">Noklusējuma pārlūks</translation>
 <translation id="4778644898150334464">Izmantot citu paroli</translation>
+<translation id="478808905805139173">Vai atvērt inkognito režīmā?</translation>
 <translation id="4802417911091824046">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay.
 
 Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6284652193729350524">Piedāvāt tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Sekošana kanālam <ph name="CHANNEL_NAME" /> ir pārtraukta.</translation>
 <translation id="6293101329759844770">Lai ieslēgtu drošo pārlūkošanu, atveriet sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" /> un pieskarieties vienumam Droša pārlūkošana.</translation>
+<translation id="6294610283659775533">Varat pārsūtīt cilnes starp ierīcēm, kurās esat pierakstījies vienā un tajā pašā Google kontā.</translation>
 <translation id="6321526113093607004">Pievienot grāmatzīmēm</translation>
 <translation id="6324669097367352121">Pierakst.iestatījumi</translation>
 <translation id="6337234675334993532">Šifrēšana</translation>
@@ -961,6 +960,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9055772144595778347">Nevar pierakstīties</translation>
 <translation id="9057972802061533987">Nevar sekot. Radās kļūda.</translation>
 <translation id="9065203028668620118">Labot</translation>
+<translation id="9068336935206019333">Atvērt Chrome inkognito režīmā</translation>
 <translation id="9079935439869366234">Atzīmēt visu kā nelasītu</translation>
 <translation id="9081058212938299310">Vai atjaunināt lietotājvārda <ph name="USERNAME" /> paroli?</translation>
 <translation id="9083392325882095631">1 vienums</translation>

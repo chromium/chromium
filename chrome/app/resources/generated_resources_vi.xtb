@@ -1674,7 +1674,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2519517390894391510">Tên hồ sơ chứng chỉ</translation>
 <translation id="2520644704042891903">Đang chờ cổng kết nối hiện có...</translation>
 <translation id="2521854691574443804">Đang kiểm tra để xem tệp <ph name="FILE_NAME" /> có tuân theo các chính sách bảo mật của tổ chức bạn hay không...</translation>
-<translation id="252219247728877310">Thành phần chưa được cập nhật</translation>
 <translation id="2523184218357549926">Gửi cho Google URL của các trang bạn truy cập</translation>
 <translation id="252418934079508528">Cài đặt <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome đang kiểm tra máy tính của bạn để tìm phần mềm gây hại...</translation>
@@ -2811,6 +2810,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3635353578505343390">Gửi ý kiến phản hồi cho Google</translation>
 <translation id="3635960017746711110">Các tùy chọn USB trong Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - còn lại <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Ngôn ngữ ưu tiên</translation>
 <translation id="3637203148990213388">Tài khoản bổ sung</translation>
 <translation id="3639220004740062347">Thoát khỏi Chế độ đọc</translation>
 <translation id="3640214691812501263">Thêm "<ph name="EXTENSION_NAME" />" cho <ph name="USER_NAME" />?</translation>
@@ -4125,6 +4125,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4900392736118574277">Trang khởi động của bạn đã được thay đổi thành <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – đan xen</translation>
 <translation id="4900652253009739885">Không thể xóa công tắc duy nhất đang được gán cho thao tác "Chọn". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Mở rộng thẻ đã đóng gần đây</translation>
 <translation id="4901309472892185668">Chọn trạng thái thử nghiệm cho quá trình thử nghiệm <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Chính sách được tải xuống từ máy chủ không hợp lệ: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Thiết lập hoặc quản lý tính năng chia sẻ tệp trong mạng. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -7013,6 +7014,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> sẽ xem được các tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Thay đổi</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
+<translation id="7769748505895274502">Thu gọn thẻ đã đóng gần đây</translation>
 <translation id="7770406201819593386">Chạy quá trình kiểm tra chẩn đoán ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Nhấn chuột phải</translation>
 <translation id="7770612696274572992">Hình ảnh được sao chép từ thiết bị khác</translation>

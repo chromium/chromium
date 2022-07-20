@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
-<translation id="359441731697487922">只需将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开链接。
-      
-请按照以下步骤操作：</translation>
 <translation id="3603009562372709545">复制链接网址</translation>
 <translation id="3607167657931203000">自动填充数据</translation>
 <translation id="3609785682760573515">正在同步…</translation>
@@ -441,6 +438,7 @@
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4778644898150334464">使用其他密码</translation>
+<translation id="478808905805139173">在无痕模式下打开？</translation>
 <translation id="4802417911091824046">密码加密不包括 Google Pay 中的付款方式和地址。
 
 要更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
+<translation id="6294610283659775533">您可在使用同一 Google 帐号登录的不同设备间发送标签页</translation>
 <translation id="6321526113093607004">添加到“书签”</translation>
 <translation id="6324669097367352121">登录设置</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -961,6 +960,7 @@
 <translation id="9055772144595778347">无法登录</translation>
 <translation id="9057972802061533987">无法关注。出了点问题。</translation>
 <translation id="9065203028668620118">编辑</translation>
+<translation id="9068336935206019333">在 Chrome 中以无痕模式打开</translation>
 <translation id="9079935439869366234">全部标为未读</translation>
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
 <translation id="9083392325882095631">有1个书签</translation>

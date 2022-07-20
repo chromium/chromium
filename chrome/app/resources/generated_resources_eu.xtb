@@ -359,6 +359,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1347256498747320987">Instalatu eguneratzeak eta aplikazioak. Aurrera eginez gero, onartu egingo duzu agian gailuak automatikoki deskargatu eta instalatuko dituela Google-ren, operadorearen edo fabrikatzailearen eguneratzeak eta aplikazioak ere, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea. <ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-en biltegiratzea</translation>
 <translation id="1347975661240122359">Bateriaren gutxienez % <ph name="BATTERY_LEVEL" /> duzunean hasiko da eguneratzen.</translation>
+<translation id="1348966090521113558">Saguaren erabilerraztasun-ezarpenak</translation>
 <translation id="1353275871123211385">Guraso-murriztapenak erabiltzeko (adibidez, aplikazioak onartzeko aukera eta erabilera-ordutegia), guraso batek kudeatu behar du haurraren Google-ko kontua. Ikastetxeko kontu bat gehi daiteke gero, Google Classroom-en eta antzeko tresnetan erabiltzeko.</translation>
 <translation id="135389172849514421">Interneteko konexiorik gabe funtzionatzen du</translation>
 <translation id="1353980523955420967">Ezin da aurkitu PPD fitxategia. Ziurtatu Chromebook-a Internetera konektatuta dagoela eta saiatu berriro.</translation>
@@ -1658,7 +1659,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2519517390894391510">Ziurtagiriaren profilaren izena</translation>
 <translation id="2520644704042891903">Socket bat erabilgarri egoteko zain…</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> zure erakundeko segurtasun-gidalerroekin egiaztatzen…</translation>
-<translation id="252219247728877310">Osagaia ez da eguneratu</translation>
 <translation id="2523184218357549926">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri</translation>
 <translation id="252418934079508528">Instalatu <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Ordenagailuan software kaltegarria bilatzen ari da Chrome…</translation>
@@ -1784,6 +1784,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="265390580714150011">Eremuaren balioa</translation>
 <translation id="2654553774144920065">Inprimatzeko eskaera</translation>
+<translation id="2657612187216250073">Erakuslearen erabilerraztasun-ezarpenak</translation>
 <translation id="2658941648214598230">Jatorrizko edukia ikusi nahi duzu?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Gailuaren araberakoak dira eginbideak</translation>
 <translation id="2659971421398561408">Crostini-ren diskoaren tamaina aldatzea</translation>
@@ -1947,6 +1948,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2801954693771979815">Pantailaren tamaina</translation>
 <translation id="2802557211515765772">Ez dago kudeatutako inprimagailurik.</translation>
 <translation id="2803313416453193357">Ireki karpeta</translation>
+<translation id="2803719750464280163">Berretsi <ph name="PASSKEY" /> sarbide.gakoa bistaratu dela Bluetooth bidezko <ph name="DEVICE" /> gailuan.</translation>
 <translation id="2804043232879091219">Ezin izan da ireki beste arakatzaile bat</translation>
 <translation id="2804667941345577550">Webguneko saioa amaituko da, baita irekita dauden fitxetakoa ere</translation>
 <translation id="2804680522274557040">Kamera erabiltzeko baimena desaktibatuta dago</translation>
@@ -2792,6 +2794,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3635353578505343390">Bidali oharrak Google-ri</translation>
 <translation id="3635960017746711110">Crostini-ren USB bidezko konexioaren hobespenak</translation>
 <translation id="3636766455281737684">% <ph name="PERCENTAGE" /> - <ph name="TIME" /> geratzen dira</translation>
+<translation id="3636940436873918441">Hizkuntza hobetsiak</translation>
 <translation id="3637203148990213388">Kontu gehigarriak</translation>
 <translation id="3639220004740062347">Irten irakurgailu modutik</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> erabiltzaileari "<ph name="EXTENSION_NAME" />" gehitu nahi diozu?</translation>
@@ -2862,6 +2865,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="370649949373421643">Gaitu Wi-Fi konexioa</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
 <translation id="3707163604290651814"><ph name="NAME" /> gisa hasi duzu saioa</translation>
+<translation id="3708295717182051206">Azpitituluak</translation>
 <translation id="3708684582558000260">Ez eman datuak bidaltzen edo jasotzen amaitzeko baimena itxitako webguneei</translation>
 <translation id="3709244229496787112">Arakatzailea deskarga itxi baino lehen itxi da.</translation>
 <translation id="371174301504454251">Zure pribatutasuna babesteko, lau aste baino gehiago dituzten webguneak automatikoki ezabatzen ditugu zerrendatik. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Bestela, webguneren batek zure interesak definitzerik nahi ez baduzu, webgune hori kendu egin dezakezu.</translation>
@@ -3944,6 +3948,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="475088594373173692">Lehen erabiltzailea</translation>
 <translation id="4756378406049221019">Gelditu / Kargatu berriro</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
+<translation id="4756671452988984333">Audio-ezarpenak atzitzeko testua</translation>
 <translation id="4759202969060787081">Ez ireki</translation>
 <translation id="4759238208242260848">Deskargak</translation>
 <translation id="4761104368405085019">Erabili mikrofonoa</translation>
@@ -6876,6 +6881,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7668423670802040666">Google-ren Pasahitz-kudeatzailea zerbitzuan (<ph name="ACCOUNT" /> kontuan)</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PINa okerra da. Saiakera bakarra geratzen zaizu.}other{PINa okerra da. # saiakera geratzen zaizkizu.}}</translation>
 <translation id="7670434942695515800">Errendimendurik onena lortzeko, berritu azken bertsiora. Fitxategien babeskopiak egitea gomendatzen dugu. Horrela, ez da daturik galduko bertsio-berritzea osatu ezin bada. Bertsio-berritzen hasi ondoren, Linux itzali egingo da. Aurrera egin aurretik, gorde irekita dauden fitxategiak. <ph name="LINK_START" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">Azpitituluak</translation>
 <translation id="7671130400130574146">Erabili sistemaren izenaren barra eta ertzak</translation>
 <translation id="767127784612208024">Ukitu berrezarri nahi duzula berresteko</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> orrian.</translation>
@@ -6966,7 +6972,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7753735457098489144">Ezin izan da instalatu ez dagoelako behar adina toki. Tokia egiteko, ezabatu gailuko memorian dauden fitxategiak.</translation>
 <translation id="7754347746598978109">Ezin dute erabili JavaScript</translation>
 <translation id="7754704193130578113">Galdetu fitxategi bakoitza non gorde behar den deskargatu aurretik</translation>
-<translation id="7755134875397410803">Zereginak osatzen laguntzeko, Laguntzailea eginbidearen bidez erabiltzen dituzun webguneen URLak eta edukia jasoko ditu Google-k, baita Laguntzailea erabilita bidaltzen duzun informazioa ere. Baliteke informazio hori Google-n duzun kontuan gordetzea. Laguntzailea desaktibatzeko, joan Chrome-ren ezarpenetara. <ph name="LEARN_MORE" /></translation>
+<translation id="7755134875397410803">Zereginak osatzen laguntzeko, Laguntzailea zerbitzuaren bidez erabiltzen dituzun webguneen URLak eta edukia jasoko ditu Google-k, baita Laguntzailea erabilita bidaltzen duzun informazioa ere. Baliteke informazio hori Google-n duzun kontuan gordetzea. Laguntzailea desaktibatzeko, joan Chrome-ren ezarpenetara. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Gurasoek desblokea diezazukete</translation>
 <translation id="7757592200364144203">Aldatu gailuaren izena</translation>
 <translation id="7757739382819740102">Inguruko kontaktuek parteka dezakete edukia zurekin. Edukia onartu egin beharko duzu.</translation>
@@ -7962,6 +7968,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8724859055372736596">&amp;Erakutsi karpetan</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8725178340343806893">Gogokoak/Laster-markak</translation>
+<translation id="87254326763805752">Berretsi sarbide-gakoa</translation>
 <translation id="8726206820263995930">Errore bat gertatu da gidalerroen ezarpenak zerbitzaritik eskuratzean: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">Aukeratu dituzun baimenak berrezarri egingo dira.</translation>
 <translation id="8729133765463465108">Erabili kamera QR kodea eskaneatzeko</translation>

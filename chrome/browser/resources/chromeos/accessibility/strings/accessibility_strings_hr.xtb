@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Izgovaranje URL-a veze</translation>
 <translation id="4322625298640984693">Oker</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{točka}=3{trotočka}one{# točka}few{# točke}other{# točaka}}</translation>
+<translation id="4352022650330571548">unesi <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Zaustavljanje govora</translation>
 <translation id="4376316291247992553">Prikazivanje slike kao uzorka ispisanog brajicom</translation>

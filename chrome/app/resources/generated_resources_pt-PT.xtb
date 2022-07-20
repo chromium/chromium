@@ -1659,7 +1659,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
 <translation id="2520644704042891903">A aguardar ligação disponível...</translation>
 <translation id="2521854691574443804">A verificar <ph name="FILE_NAME" /> com as políticas de segurança da sua entidade…</translation>
-<translation id="252219247728877310">Componente não atualizado</translation>
 <translation id="2523184218357549926">Envia para a Google os URLs das páginas que visita.</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">O Chrome está a verificar a existência de software prejudicial no seu computador…</translation>
@@ -2797,6 +2796,7 @@ Pretende pará-lo?</translation>
 <translation id="3635353578505343390">Enviar feedback para a Google</translation>
 <translation id="3635960017746711110">Preferências de USB do Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – <ph name="TIME" /> restantes</translation>
+<translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Contas adicionais</translation>
 <translation id="3639220004740062347">Sair do modo de leitor</translation>
 <translation id="3640214691812501263">Adicionar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>

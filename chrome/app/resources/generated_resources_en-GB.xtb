@@ -1674,7 +1674,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2519517390894391510">Certificate profile name</translation>
 <translation id="2520644704042891903">Waiting for available socket...</translation>
 <translation id="2521854691574443804">Checking <ph name="FILE_NAME" /> with your organisation's security policies…</translation>
-<translation id="252219247728877310">Component not updated</translation>
 <translation id="2523184218357549926">Sends URLs of pages that you visit to Google</translation>
 <translation id="252418934079508528">Install <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome is checking your computer for harmful software...</translation>
@@ -2811,6 +2810,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3635353578505343390">Send feedback to Google</translation>
 <translation id="3635960017746711110">Crostini USB preferences</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> left</translation>
+<translation id="3636940436873918441">Preferred languages</translation>
 <translation id="3637203148990213388">Additional accounts</translation>
 <translation id="3639220004740062347">Exit Reader Mode</translation>
 <translation id="3640214691812501263">Add "<ph name="EXTENSION_NAME" />" for <ph name="USER_NAME" />?</translation>
@@ -3231,6 +3231,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="402211067068791756">This will clear <ph name="TOTAL_USAGE" /> of data stored by displayed sites</translation>
 <translation id="4022426551683927403">&amp;Add to Dictionary</translation>
 <translation id="4025039777635956441">Mute Selected Site</translation>
+<translation id="4027958407426528157">Open websites in apps installed on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">Add input methods</translation>
 <translation id="4029556917477724407">Back from <ph name="PAGE_TITLE" /> page</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
@@ -3282,6 +3283,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4077919383365622693">All data and cookies stored by <ph name="SITE" /> will be cleared.</translation>
 <translation id="4078738236287221428">Aggressive</translation>
 <translation id="4079140982534148664">Use Enhanced Spell Check</translation>
+<translation id="4081203444152654304">Search inside image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Unable to cast file.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> sent a notification to your phone. To confirm that it's you, follow the steps there.</translation>
 <translation id="4084682180776658562">Bookmark</translation>
@@ -3678,6 +3680,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4476590490540813026">Athlete</translation>
 <translation id="4476659815936224889">To scan this code, you can use a QR scanner app on your phone, or some camera apps.</translation>
 <translation id="4477015793815781985">Include Ctrl, Alt or ⌘</translation>
+<translation id="4477379360383751882">Search inside image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Save Lin&amp;k As...</translation>
 <translation id="4479424953165245642">Manage kiosk applications</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -6591,6 +6594,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7377481913241237033">Connect with a code</translation>
 <translation id="7378611153938412599">Weak passwords are easy to guess. Make sure that you’re creating strong passwords. <ph name="BEGIN_LINK" />See more security tips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Open Chrome Web Store</translation>
+<translation id="737938816678769289">Easily connect and set up Fast Pair devices close by</translation>
 <translation id="7380459290951585794">Make sure that your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on</translation>
 <translation id="7380622428988553498">Device name contains invalid characters</translation>
 <translation id="7380768571499464492">Updated <ph name="PRINTER_NAME" /></translation>

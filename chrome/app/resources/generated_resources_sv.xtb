@@ -1020,6 +1020,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1936157145127842922">Visa i mapp</translation>
 <translation id="1936931585862840749">Använd ett nummer som anger hur många kopior som ska skrivas ut (1 till <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Det går inte att importera en behållararkitektur av typen <ph name="ARCHITECTURE_CONTAINER" /> med den här enheten, som är en <ph name="ARCHITECTURE_DEVICE" />. Du kan testa att återställa behållaren till en annan enhet, eller så kan du öppna filerna i behållarbilden via appen Filer.</translation>
+<translation id="1938240902511979591">Högkontrastläge, skärmförstoring och skärminställningar</translation>
 <translation id="1938320257168860255">Något gick fel. Kontrollera att telefonen är i närheten, olåst och att Bluetooth och wifi har aktiverats.</translation>
 <translation id="1938351510777341717">Extern kommandotangent</translation>
 <translation id="1940546824932169984">Anslutna enheter</translation>
@@ -1442,6 +1443,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Följande tangenter stöds inte: Tabb, Skift, Ctrl, Escape, Caps Lock, Volym</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
+<translation id="2310923358723722542">Skärm och förstoring</translation>
 <translation id="2312219318583366810">Sidans webbadress</translation>
 <translation id="2314165183524574721">Den aktuella synlighetsinställningen är Dold</translation>
 <translation id="2314774579020744484">Språk som sidor ska översättas till</translation>
@@ -1671,7 +1673,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2519517390894391510">Namn på certifikatprofil</translation>
 <translation id="2520644704042891903">Väntar på tillgänglig plats ...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> kontrolleras utifrån organisationens säkerhetspolicy …</translation>
-<translation id="252219247728877310">Komponenten har inte uppdaterats</translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
 <translation id="252418934079508528">Installera <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome söker efter skadlig programvara på datorn …</translation>
@@ -2806,6 +2807,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3635353578505343390">Skicka feedback till Google</translation>
 <translation id="3635960017746711110">USB-inställningar för Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> kvar</translation>
+<translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3637203148990213388">Ytterligare konton</translation>
 <translation id="3639220004740062347">Avsluta läsarläget</translation>
 <translation id="3640214691812501263">Vill du lägga till <ph name="EXTENSION_NAME" /> för <ph name="USER_NAME" />?</translation>
@@ -4179,6 +4181,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="496446150016900060">Synkronisera wifi-nätverk med telefonen</translation>
 <translation id="4965808351167763748">Vill du konfigurera den här enheten för Hangouts Meet?</translation>
 <translation id="4966972803217407697">Du använder inkognitoläget</translation>
+<translation id="4967227914555989138">Lägg till anteckning</translation>
 <translation id="496742804571665842">Inaktivera eSIM-profiler</translation>
 <translation id="4971412780836297815">Öppna när nedladdningen är klar</translation>
 <translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
@@ -4426,6 +4429,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5233231016133573565">Process-ID</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5233736638227740678">K&amp;listra in</translation>
+<translation id="5233794855520048159">Monoljud, ljud vid start och textning</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5235050375939235066">Vill du avinstallera appen?</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
@@ -4530,6 +4534,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5333896723098573627">Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.</translation>
 <translation id="5334142896108694079">Cacheminne för skript</translation>
 <translation id="5336688142483283574">Sidan tas även bort från din historik och <ph name="SEARCH_ENGINE" />-aktivitet.</translation>
+<translation id="5336689872433667741">Markör och styrplatta</translation>
 <translation id="5337771866151525739">Installerad av tredje part.</translation>
 <translation id="5337926771328966926">Enhetens nuvarande namn är <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Du kan surfa privat med ett inkognitofönster</translation>
@@ -4540,6 +4545,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5342091991439452114">Pinkoden måste bestå av minst <ph name="MINIMUM" /> siffror</translation>
 <translation id="5344036115151554031">Återställer Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
+<translation id="534449933710420173">Namnlös mapp</translation>
 <translation id="5345916423802287046">Starta appen när du loggar in</translation>
 <translation id="5350293332385664455">Inaktivera Google Assistent</translation>
 <translation id="535123479159372765">Text kopierad från en annan enhet</translation>
@@ -5163,6 +5169,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5959471481388474538">Nätverket är inte tillgängligt</translation>
 <translation id="595959584676692139">Läs in sidan igen om du vill använda det här tillägget</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> som mest)</translation>
+<translation id="5963620791620013026">Tröga tangenter, skärmtangentbord, diktering, brytarstyrning och förbättrad markering</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Öppna alla i ett &amp;nytt fönster}=1{Öppna i &amp;nytt fönster}other{Öppna alla ({COUNT}) i ett &amp;nytt fönster}}</translation>
 <translation id="5965661248935608907">Det styr också vilken sida som visas när du klickar på hemknappen eller söker i adressfältet.</translation>
 <translation id="5968022600320704045">Inga sökresultat</translation>
@@ -5973,6 +5980,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6770602306803890733">Förbättrar säkerheten för dig och alla andra på webben</translation>
 <translation id="6771503742377376720">Är en certifikatutfärdare</translation>
 <translation id="6775163072363532304">Tillgängliga enheter visas här.</translation>
+<translation id="677646486571529447">Lägg till anteckning</translation>
 <translation id="6776729248872343918">Aktivera Snabb parkoppling</translation>
 <translation id="6777817260680419853">Omdirigeringen blockerades</translation>
 <translation id="6778737459546443941">Din förälder har inte godkänt den ännu</translation>
@@ -6121,6 +6129,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6900654715912436255">Vill du radera den här sökmotorn?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Röst att förhandsgranska</translation>
+<translation id="6902219595840841518">Automatiskt klick, markörstorlek, markörfärg och markering av markören</translation>
 <translation id="6902336033320348843">Avsnittet stöds inte: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Anslut enheten till domänen</translation>
 <translation id="6903022061658753260">Din data synkroniseras i alla Chrome-webbläsare där du har aktiverat synkronisering för det här kontot. Synkroniseringsalternativen i Chrome OS hittar du i <ph name="LINK_BEGIN" />inställningarna för Chrome OS<ph name="LINK_END" />.</translation>
@@ -6899,6 +6908,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7681095912841365527">Webbplatsen har åtkomst till Bluetooth</translation>
 <translation id="7681597159868843240">Åtkomst till enhetens rörelsesensorer brukar kunna behövas för funktioner som virtuell verklighet eller att hålla koll på träningen</translation>
 <translation id="7683373461016844951">Fortsätt genom att klicka på OK. Skapa sedan en ny profil för e-postadressen på <ph name="DOMAIN" /> genom att klicka på Lägg till person.</translation>
+<translation id="7683834360226457448">Skärmverktyg för personer med nedsatt syn</translation>
 <translation id="7684212569183643648">Har installerats av administratören</translation>
 <translation id="7684559058815332124">Besök captive-portalens inloggningssida</translation>
 <translation id="7684718995427157417">Aktivera Androids felsökningsbrygga (ADB) om du vill skapa och testa appar. Observera att den här åtgärden tillåter att Android-appar som inte har verifierats av Google installeras. Du måste återställa enheten till standardinställningarna för att inaktivera detta.</translation>

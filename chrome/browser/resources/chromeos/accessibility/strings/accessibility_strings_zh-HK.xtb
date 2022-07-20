@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">朗讀連結的網址</translation>
 <translation id="4322625298640984693">啡黃色</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{1 個點}=3{3 個刪節號}other{# 個點}}</translation>
+<translation id="4352022650330571548">輸入「<ph name="PHRASE" />」</translation>
 <translation id="4372435075475052704">最小值：<ph name="X" /></translation>
 <translation id="4372705107434148843">停止語音</translation>
 <translation id="4376316291247992553">以點字方式查看圖形</translation>

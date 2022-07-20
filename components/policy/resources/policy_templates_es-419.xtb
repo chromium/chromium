@@ -2572,6 +2572,19 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3660562134618097814">Transferir cookies del IdP de SAML durante el acceso</translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitudes sin comodín CORS</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) se usa en general para desglosar tareas largas de JavaScript.
+          Si habilitas la política, los parámetros de setTimeout y setInterval con un intervalo inferior a 4 ms no se restringirán de forma tan agresiva.
+          Esto mejora el rendimiento a corto plazo, pero los sitios web que abusen de la API tendrán, con el tiempo, sus parámetros de setTimeout restringidos.
+
+          Si inhabilitas la política, se restringirán los parámetros de setTimeouts y setIntervals con un intervalo inferior a 4 ms.
+
+          Es posible que esto cambie el orden de las tareas en una página web, lo que puede provocar un comportamiento inesperado en los sitios que de alguna manera dependen de un determinado orden.
+          También puede afectar a los sitios que tienen muchas funciones setTimeout() con un tiempo de espera de 0 ms de uso; p. ej., puede aumentar la carga de CPU.
+
+          Para los usuarios que no establezcan esta política, <ph name="PRODUCT_NAME" /> lanzará el cambio gradualmente en el canal estable.
+
+          Esta es una política temporal que se planea quitar en <ph name="PRODUCT_NAME" /> 107. Es posible que se extienda la fecha límite si las empresas lo necesitan.
+          </translation>
 <translation id="3685979383016152590">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas.
@@ -5696,6 +5709,13 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7101550508196914704">No mostrar accesos directos a aplicaciones en la barra de favoritos</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
+<translation id="7121046543122812054">Esta política dejó de estar disponible. Puedes usar <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
+
+      Permite que el usuario acceda a <ph name="PRODUCT_NAME" />.
+
+      Si habilitas esta política, el usuario podrá acceder a <ph name="PRODUCT_NAME" />.
+      Si inhabilitas esta política, no se podrá acceder. También bloquea el funcionamiento de las apps y las extensiones que usan la API de chrome.identity. Para evitarlo, usa <ph name="SYNC_DISABLED_POLICY_NAME" />.
+      </translation>
 <translation id="7122626777103192518">Si estableces la política como verdadera, se podrá compartir texto y archivos de apps para Android a aplicaciones web compatibles, mediante el sistema integrado de uso compartido de Android.
       Si la habilitas, se enviarán los metadatos de las aplicaciones web instaladas a Google para generar e instalar una app para Android con corrección de compatibilidad.
       Si la estableces como falsa, se inhabilitará esta funcionalidad.</translation>

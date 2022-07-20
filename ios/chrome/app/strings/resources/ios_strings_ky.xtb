@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
-<translation id="359441731697487922">Chrome'ду демейки серепчиңиз кылып алып, шилтемелерди автоматтык түрдө ачыңыз.
-      
-Төмөнкү кадамдарды аткарыңыз:</translation>
 <translation id="3603009562372709545">Шилтеменин URL көчүрүү</translation>
 <translation id="3607167657931203000">Дайындарды автотолтуруу</translation>
 <translation id="3609785682760573515">Шайкештештирилүүдө…</translation>
@@ -627,6 +624,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тилин которууну сунуштоо</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> каналына жазылуу токтотулду</translation>
 <translation id="6293101329759844770">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>
+<translation id="6294610283659775533">Бир Google аккаунту менен кирип турган түзмөктөрдө өтмөктөрдү жөнөтсөңүз болот</translation>
 <translation id="6321526113093607004">Кыстармаларга кошуу</translation>
 <translation id="6324669097367352121">Жөндөөлөргө кирүү</translation>
 <translation id="6337234675334993532">Шифрлөө</translation>

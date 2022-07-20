@@ -1011,6 +1011,7 @@
 <translation id="1936157145127842922">Паказаць у папцы</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
+<translation id="1938240902511979591">Налады рэжыму высокай кантраснасці, лупы і дысплэя</translation>
 <translation id="1938320257168860255">Нешта пайшло не так. Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і што на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
@@ -1430,6 +1431,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Клавішы Tab, Shift, Ctrl, Esc, Caps Lock і клавішы гучнасці выкарыстоўваць нельга</translation>
 <translation id="2309620859903500144">Гэтаму сайту заблакіраваны доступ да датчыкаў руху або святла.</translation>
+<translation id="2310923358723722542">Дысплэй і павелічэнне</translation>
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
@@ -1659,7 +1661,6 @@
 <translation id="2519517390894391510">Назва профілю сертыфіката</translation>
 <translation id="2520644704042891903">Чакаецца даступны сокет...</translation>
 <translation id="2521854691574443804">Файл "<ph name="FILE_NAME" />" правяраецца на адпаведнасць палітыкам бяспекі вашай арганізацыі...</translation>
-<translation id="252219247728877310">Кампанент не абноўлены</translation>
 <translation id="2523184218357549926">Адпраўка URL-адрасоў наведаных вамі старонак у Google</translation>
 <translation id="252418934079508528">Усталяваць <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome правярае ваш камп'ютар на наяўнасць шкоднага праграмнага забеспячэння...</translation>
@@ -2793,6 +2794,7 @@
 <translation id="3635353578505343390">Адправіць водгук у Google</translation>
 <translation id="3635960017746711110">Налады USB у Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – яшчэ <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Прыярытэтныя мовы</translation>
 <translation id="3637203148990213388">Дадатковыя ўліковыя запісы</translation>
 <translation id="3639220004740062347">Выйсці з рэжыму чытання</translation>
 <translation id="3640214691812501263">Дадаць пашырэнне "<ph name="EXTENSION_NAME" />" для карыстальніка <ph name="USER_NAME" />?</translation>
@@ -4165,6 +4167,7 @@
 <translation id="496446150016900060">Сінхранізаваць параметры сетак Wi-Fi з вашым тэлефонам</translation>
 <translation id="4965808351167763748">Сапраўды наладзіць на гэтай прыладзе Hangouts Meet?</translation>
 <translation id="4966972803217407697">Вы ў рэжыме інкогніта</translation>
+<translation id="4967227914555989138">Дадаць нататку</translation>
 <translation id="496742804571665842">Адключэнне профіляў eSIM-карт</translation>
 <translation id="4971412780836297815">Адкрыць пасля спампоўвання</translation>
 <translation id="4971735654804503942">Больш хуткая актыўная абарона ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Папярэджвае пра ўцечкі пароляў. Патрабуе адпраўкі даных прагляду сайтаў у Google.</translation>
@@ -4412,6 +4415,7 @@
 <translation id="5233231016133573565">Ідэнтыфікатар працэсу</translation>
 <translation id="5233638681132016545">Новая ўкладка</translation>
 <translation id="5233736638227740678">&amp;Уставіць</translation>
+<translation id="5233794855520048159">Монафанічны гук, гукі пры запуску і субцітры</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
 <translation id="5235050375939235066">Выдаліць праграму?</translation>
 <translation id="523505283826916779">Налады спецыяльных магчымасцей</translation>
@@ -4516,6 +4520,7 @@
 <translation id="5333896723098573627">Каб выдаліць праграмы, перайдзіце ў раздзел "Налады &gt; Праграмы &gt; Крама Google Play &gt; Кіраванне параметрамі Android" і адкрыйце "Праграмы" або "Менеджар праграм". Там націсніце на значок праграмы, якую хочаце выдаліць (каб знайсці патрэбную праграму, магчыма, трэба будзе прагартаць экран управа ці ўлева). Затым націсніце "Выдаліць" або "Адключыць".</translation>
 <translation id="5334142896108694079">Кэш сцэнарыяў</translation>
 <translation id="5336688142483283574">Гэта старонка таксама будзе выдалена з вашай гісторыі і дзеянняў у пошуку <ph name="SEARCH_ENGINE" />.</translation>
+<translation id="5336689872433667741">Курсор і сэнсарная панэль</translation>
 <translation id="5337771866151525739">Усталявана староннім пастаўшчыком.</translation>
 <translation id="5337926771328966926">Бягучая назва прылады – <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Прыватны прагляд вэб-старонак магчымы ў акне ў рэжыме інкогніта</translation>
@@ -4526,6 +4531,7 @@
 <translation id="5342091991439452114">Мінімальная колькасць лічбаў PIN-кода: <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Ідзе аднаўленне Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (правы)</translation>
+<translation id="534449933710420173">Папка без назвы</translation>
 <translation id="5345916423802287046">Запускаць праграму пры ўваходзе</translation>
 <translation id="5350293332385664455">Выключыць Памочніка Google</translation>
 <translation id="535123479159372765">Тэкст скапіраваны з іншай прылады</translation>
@@ -5149,6 +5155,7 @@
 <translation id="5959471481388474538">Сетка недаступная</translation>
 <translation id="595959584676692139">Каб выкарыстоўваць гэта пашырэнне, перазагрузіце старонку</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> максімум)</translation>
+<translation id="5963620791620013026">Заліпанне клавіш, экранная клавіятура, галасавы ўвод, доступ праз пераключальнікі і палепшанае вылучэнне</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
 <translation id="5965661248935608907">Таксама вызначае, якая старонка паказваецца пры націсканні кнопкі галоўнай старонкі або пошуку праз амнібокс.</translation>
 <translation id="5968022600320704045">Няма вынікаў пошуку</translation>
@@ -5965,6 +5972,7 @@
 <translation id="6770602306803890733">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце</translation>
 <translation id="6771503742377376720">З'яўляецца цэнтрам сертыфікацыі</translation>
 <translation id="6775163072363532304">Тут будуць з'яўляцца даступныя прылады.</translation>
+<translation id="677646486571529447">Дадаць нататку</translation>
 <translation id="6776729248872343918">Уключыць Хуткае спалучэнне</translation>
 <translation id="6777817260680419853">Перанакіраванне заблакіравана</translation>
 <translation id="6778737459546443941">Бацькі яшчэ не ўхвалілі гэты сайт</translation>
@@ -6113,6 +6121,7 @@
 <translation id="6900654715912436255">Вы ўпэўненыя, што хочаце выдаліць гэту пошукавую сістэму?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Голас для праслухоўвання</translation>
+<translation id="6902219595840841518">Аўтаматычнае націсканне кнопкі мышы, памер, колер і вылучэнне курсора</translation>
 <translation id="6902336033320348843">Раздзел не падтрымліваецца: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Далучэнне прылады да дамена</translation>
 <translation id="6903022061658753260">Вашы даныя будуць сінхранізаваны ва ўсіх браўзерах Chrome, у якіх для гэтага ўліковага запісу ўключана сінхранізацыя. Параметры сінхранізацыі Chrome OS можна задаць у <ph name="LINK_BEGIN" />наладах Chrome OS<ph name="LINK_END" />.</translation>
@@ -6891,6 +6900,7 @@
 <translation id="7681095912841365527">Сайт можа выкарыстоўваць Bluetooth</translation>
 <translation id="7681597159868843240">Сайты звычайна выкарыстоўваюць датчыкі руху прылады для работы такіх функцый, як віртуальная рэальнасць або адсочванне фізічнага стану</translation>
 <translation id="7683373461016844951">Каб працягнуць, націсніце "OK", затым "Дадаць карыстальніка" – так вы створыце новы профіль для свайго адраса электроннай пошты ў дамене <ph name="DOMAIN" />.</translation>
+<translation id="7683834360226457448">Інструменты дысплэя для людзей з парушэннямі зроку</translation>
 <translation id="7684212569183643648">Усталявана адміністратарам</translation>
 <translation id="7684559058815332124">Адкрыць старонку ўваходу ў партал узаемадзеяння</translation>
 <translation id="7684718995427157417">Каб ствараць і тэсціраваць праграмы, уключыце Android Debug Bridge (ADB). Звярніце ўвагу, што, уключыўшы ADB, вы дазваляеце ўсталёўваць праграмы для Android, якія не былі спраўджаны Google, а для выключэння ADB патрабуецца скід налад да заводскіх значэнняў.</translation>

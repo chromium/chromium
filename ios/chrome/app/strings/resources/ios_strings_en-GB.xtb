@@ -311,9 +311,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
-<translation id="359441731697487922">You can open links in Chrome automatically by making it your default browser app.
-      
-Follow the steps below:</translation>
 <translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3609785682760573515">Syncing...</translation>
@@ -627,6 +624,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Unfollowed <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
+<translation id="6294610283659775533">You can send tabs between devices that are signed in with the same Google Account</translation>
 <translation id="6321526113093607004">Add to Bookmarks</translation>
 <translation id="6324669097367352121">Sign in settings</translation>
 <translation id="6337234675334993532">Encryption</translation>

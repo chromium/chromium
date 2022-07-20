@@ -360,6 +360,7 @@
 <translation id="1347256498747320987">અપડેટ અને ઍપ ઇન્સ્ટૉલ કરો. આગળ વધીને, તમે સંમત થાઓ છો કે આ ડિવાઇસ સંભવતઃ મોબાઇલ ડેટાનો ઉપયોગ કરીને Google, તમારા કૅરિઅર અને તમારા ડિવાઇસના નિર્માતાના અપડેટ અને ઍપ ઑટોમૅટિક રીતે ડાઉનલોડ અને ઇન્સ્ટૉલ પણ કરી શકે છે. આમાંની અમુક ઍપ ઍપમાંથી ખરીદીની ઑફર કરી શકે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux સ્ટોરેજ</translation>
 <translation id="1347975661240122359">જ્યારે બૅટરી <ph name="BATTERY_LEVEL" />% પર પહોંચી જાય ત્યારે અપડેટ શરૂ થશે.</translation>
+<translation id="1348966090521113558">માઉસના ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="1353275871123211385">ઍપની મંજૂરી અને સ્ક્રીન સમયની મર્યાદાઓ જેવા માતાપિતાના યોગ્ય નિયંત્રણોનો ઉપયોગ કરવા માટે, બાળકનું માતાપિતા દ્વારા મેનેજ કરવામાં આવતું હોય એવું Google એકાઉન્ટ હોવું આવશ્યક છે. Google Classroom જેવા સાધનો માટે પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરી શકાશે.</translation>
 <translation id="135389172849514421">ઑફલાઇન કાર્ય કરે છે</translation>
 <translation id="1353980523955420967">PPD શોધી શકતાં નથી. ખાતરી કરશો કે તમારી Chromebook ઑનલાઇન છે અને ફરી પ્રયાસ કરો.</translation>
@@ -1656,7 +1657,6 @@
 <translation id="2519517390894391510">પ્રમાણપત્ર પ્રોફાઇલનું નામ</translation>
 <translation id="2520644704042891903">ઉપલબ્ધ સોકેટ માટે રાહ જુએ છે ...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" />ને તમારી સંસ્થાની સુરક્ષા નીતિઓના પાલન સંબંધે ચેક કરીએ છીએ...</translation>
-<translation id="252219247728877310">ઘટકો અપડેટ થયેલાં નથી</translation>
 <translation id="2523184218357549926">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="252502352004572774">Chrome હાનિકારક સૉફ્ટવેર માટે તમારું કમ્પ્યુટર ચેક કરી રહ્યું છે...</translation>
@@ -1782,6 +1782,7 @@
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="265390580714150011">ફીલ્ડ મૂલ્ય</translation>
 <translation id="2654553774144920065">પ્રિન્ટ કરવાની વિનંતી</translation>
+<translation id="2657612187216250073">પૉઇન્ટરના ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="2658941648214598230">ઑરિજિનલ કન્ટેન્ટ બતાવીએ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ઉપકરણ અનુસાર સુવિધાઓ બદલાય છે</translation>
 <translation id="2659971421398561408">Crostini ડિસ્કનું કદ બદલો</translation>
@@ -1946,6 +1947,7 @@
 <translation id="2801954693771979815">સ્ક્રીનનું કદ</translation>
 <translation id="2802557211515765772">અહીં મેનેજ કરેલા કોઈ પ્રિન્ટર ઉપલબ્ધ નથી.</translation>
 <translation id="2803313416453193357">ફોલ્ડર ખોલો</translation>
+<translation id="2803719750464280163">કૃપા કરીને કન્ફર્મ કરો કે બ્લૂટૂથ ડિવાઇસ <ph name="DEVICE" /> પર બતાવેલી પાસકી <ph name="PASSKEY" /> છે.</translation>
 <translation id="2804043232879091219">વૈકલ્પિક બ્રાઉઝર ખોલી શકાયું નથી</translation>
 <translation id="2804667941345577550">ખુલ્લા ટૅબ સહિત, આ સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="2804680522274557040">કૅમેરા બંધ કર્યો</translation>
@@ -2791,6 +2793,7 @@
 <translation id="3635353578505343390">Googleને પ્રતિસાદ મોકલો</translation>
 <translation id="3635960017746711110">Crostiniના USBની પસંદગી માટેના સેટિંગ</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> બાકી</translation>
+<translation id="3636940436873918441">પસંદગીની ભાષાઓ</translation>
 <translation id="3637203148990213388">વધારાના એકાઉન્ટ</translation>
 <translation id="3639220004740062347">રીડર મોડમાંથી બહાર નીકળો</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> માટે "<ph name="EXTENSION_NAME" />" ઉમેરીએ?</translation>
@@ -2861,6 +2864,7 @@
 <translation id="370649949373421643">Wi-Fi સક્ષમ કરો</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
 <translation id="3707163604290651814">હાલમાં <ph name="NAME" /> તરીકે સાઇન ઇન કર્યું છે</translation>
+<translation id="3708295717182051206">ઉપશીર્ષક</translation>
 <translation id="3708684582558000260">બંધ કરેલી સાઇટને ડેટા મોકલવાનું કે પ્રાપ્ત કરવાનું કાર્ય પૂર્ણ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3709244229496787112">ડાઉનલોડ પૂર્ણ થાય તે પહેલાં આ બ્રાઉઝર બંધ થયું હતું.</translation>
 <translation id="371174301504454251">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, અમે સૂચિમાંથી 4 અઠવાડિયા કરતાં જૂની હોય એવી સાઇટ ઑટોમૅટિક રીતે ડિલીટ કરીએ છીએ. તમે ફરી વાર જે સાઇટની મુલાકાત લો, તે સૂચિમાં ફરીથી દેખાઈ શકે છે. અથવા જો તમે ઇચ્છતા ન હો કે કોઈ સાઇટ તમારા માટે તમારી રુચિઓનું ક્યારે પણ અનુમાન લગાવે, તો તમે તે સાઇટને કાઢી નાખી શકો છો.</translation>
@@ -3943,6 +3947,7 @@
 <translation id="475088594373173692">પ્રથમ વપરાશકર્તા</translation>
 <translation id="4756378406049221019">રોકો/ફરીથી લોડ કરો</translation>
 <translation id="4756388243121344051">&amp;ઇતિહાસ</translation>
+<translation id="4756671452988984333">ઑડિયો માટેની ટેક્સ્ટ</translation>
 <translation id="4759202969060787081">ખોલશો નહીં</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
@@ -6881,6 +6886,7 @@ USB ડિવાઇસ</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> માટે Google પાસવર્ડ મેનેજરમાં</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{ખોટો પિન. તમારી પાસે હવે એક પ્રયાસ બાકી છે.}one{ખોટો પિન. તમારી પાસે હવે # પ્રયાસ બાકી છે.}other{ખોટો પિન. તમારી પાસે હવે # પ્રયાસ બાકી છે.}}</translation>
 <translation id="7670434942695515800">શ્રેષ્ઠ કાર્યપ્રદર્શન માટે, એકદમ નવા વર્ઝન પર અપગ્રેડ કરો. અપગ્રેડ કરવાનું પૂર્ણ ન થઈ શકવાના કિસ્સામાં, તમારી ફાઇલોનું બૅકઅપ લેવાનો સુઝાવ આપવામાં આવે છે. એક વાર અપગ્રેડ થવાનું શરૂ થશે કે Linux શટ ડાઉન થઈ જશે. આગળ વધતા પહેલાં ખુલી ફાઇલો સાચવો. <ph name="LINK_START" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">સબટાઇટલ</translation>
 <translation id="7671130400130574146">સિસ્ટમ શીર્ષક બાર અને બોર્ડર્સનો ઉપયોગ કરો</translation>
 <translation id="767127784612208024">રીસેટ કન્ફર્મ કરવા માટે ટચ કરો</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />માં <ph name="HUNG_IFRAME_URL" />.</translation>
@@ -7962,6 +7968,7 @@ USB ડિવાઇસ</translation>
 <translation id="8724859055372736596">ફોલ્ડરમાં બતાવો</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8725178340343806893">પસંદગીઓ/બુકમાર્ક</translation>
+<translation id="87254326763805752">પાસકી કન્ફર્મ કરો</translation>
 <translation id="8726206820263995930">સર્વરમાંથી પૉલિસી સેટિંગ લાવતી વખતે ભૂલ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">તમારી પસંદ કરેલી પરવાનગીઓને રીસેટ કરવામાં આવશે</translation>
 <translation id="8729133765463465108">QR કોડ સ્કૅન કરવા માટે કૅમેરાનો ઉપયોગ કરો</translation>

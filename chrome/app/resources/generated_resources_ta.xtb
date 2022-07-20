@@ -1673,7 +1673,6 @@
 <translation id="2519517390894391510">சான்றிதழின் சுயவிவரப் பெயர்</translation>
 <translation id="2520644704042891903">சாக்கெட் கிடைப்பதற்காகக் காத்திருக்கிறது...</translation>
 <translation id="2521854691574443804">உங்கள் நிறுவனத்தின் பாதுகாப்புக் கொள்கைகளுடன் <ph name="FILE_NAME" /> இணங்குகிறதா என்பதைச் சரிபார்க்கிறது...</translation>
-<translation id="252219247728877310">உறுப்பு புதுப்பிக்கப்படவில்லை</translation>
 <translation id="2523184218357549926">நீங்கள் பார்வையிடும் பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ஐ நிறுவுங்கள்</translation>
 <translation id="252502352004572774">தீங்கிழைக்கும் மென்பொருள் உள்ளதா என உங்கள் கம்ப்யூட்டரை Chrome சரிபார்க்கிறது...</translation>
@@ -2808,6 +2807,7 @@
 <translation id="3635353578505343390">உங்கள் கருத்தை Googleளுக்கு அனுப்புங்கள்</translation>
 <translation id="3635960017746711110">Crostini USB விருப்பத்தேர்வுகள்</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> மீதமுள்ளது</translation>
+<translation id="3636940436873918441">விருப்பமான மொழிகள்</translation>
 <translation id="3637203148990213388">கூடுதல் கணக்குகள்</translation>
 <translation id="3639220004740062347">படித்தல் பயன்முறையிலிருந்து வெளியேறு</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />க்கு "<ph name="EXTENSION_NAME" />"ஐச் சேர்க்கவா?</translation>
@@ -3227,6 +3227,7 @@
 <translation id="402211067068791756">காட்டப்படும் தளங்கள் சேமித்த <ph name="TOTAL_USAGE" /> தரவை இது அழிக்கும்</translation>
 <translation id="4022426551683927403">அகராதியில் &amp;சேர்</translation>
 <translation id="4025039777635956441">தேர்வுசெய்துள்ள இணையதளத்தை முடக்கு</translation>
+<translation id="4027958407426528157">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் நிறுவியுள்ள ஆப்ஸில் இணையதளங்களைத் திறக்கும்</translation>
 <translation id="4028467762035011525">உள்ளீட்டு முறைகளைச் சேர்</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> பக்கத்தில் இருந்து முந்தைய பக்கத்திற்குச் செல்</translation>
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
@@ -6586,6 +6587,7 @@
 <translation id="7377481913241237033">குறியீடு மூலம் இணை</translation>
 <translation id="7378611153938412599">வலுவற்ற கடவுச்சொற்களை யூகிப்பது எளிது என்பதால் வலிமையான கடவுச்சொற்களை உருவாக்குங்கள். <ph name="BEGIN_LINK" />கூடுதல் உதவிக்குறிப்புகளைக் காண்க.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome இணைய அங்காடியைத் திற</translation>
+<translation id="737938816678769289">அருகிலுள்ள சாதனங்களைத் துரித இணைப்பு அம்சம் மூலம் எளிதாக இணைத்து அமைக்கலாம்</translation>
 <translation id="7380459290951585794">மொபைல் அன்லாக் செய்யப்பட்டு அருகில் இருப்பதையும் அதில் புளூடூத், வைஃபை இயக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="7380622428988553498">சாதனத்தின் பெயரில் தவறான எழுத்துகள் உள்ளன</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> புதுப்பிக்கப்பட்டது</translation>

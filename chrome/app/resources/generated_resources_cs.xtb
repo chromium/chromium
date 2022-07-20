@@ -1661,7 +1661,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2519517390894391510">Název profilu certifikátu</translation>
 <translation id="2520644704042891903">Čeká se na dostupný soket...</translation>
 <translation id="2521854691574443804">Kontroluje se, zda soubor <ph name="FILE_NAME" /> odpovídá bezpečnostním zásadám organizace…</translation>
-<translation id="252219247728877310">Komponenta nebyla aktualizována</translation>
 <translation id="2523184218357549926">Odesílá do Googlu adresy URL stránek, které navštěvujete</translation>
 <translation id="252418934079508528">Nainstalovat systém <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Prohlížeč Chrome kontroluje, zda v počítači nemáte škodlivý software…</translation>
@@ -2797,6 +2796,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3635353578505343390">Odeslat Googlu zpětnou vazbu</translation>
 <translation id="3635960017746711110">Předvolby USB pro Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> %, zbývá <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Preferované jazyky</translation>
 <translation id="3637203148990213388">Další účty</translation>
 <translation id="3639220004740062347">Ukončit režim čtečky</translation>
 <translation id="3640214691812501263">Přidat aplikaci <ph name="EXTENSION_NAME" /> pro uživatele <ph name="USER_NAME" />?</translation>
@@ -3268,6 +3268,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4077919383365622693">Veškerá data a soubory cookie uložené webem <ph name="SITE" /> budou vymazány.</translation>
 <translation id="4078738236287221428">Agresivní</translation>
 <translation id="4079140982534148664">Použít vylepšenou kontrolu pravopisu</translation>
+<translation id="4081203444152654304">Hledat v obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Soubor nelze odeslat.</translation>
 <translation id="408223403876103285">Web <ph name="WEBSITE" /> vám do telefonu poslal oznámení. Potvrďte svou identitu podle uvedených pokynů.</translation>
 <translation id="4084682180776658562">Záložka</translation>
@@ -3664,6 +3665,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4476590490540813026">Sportovkyně</translation>
 <translation id="4476659815936224889">K naskenování tohoto kódu můžete použít aplikaci na skenování QR kódů na telefonu nebo některé aplikace pro fotografování.</translation>
 <translation id="4477015793815781985">Zahrňte klávesu Ctrl, Alt, nebo ⌘</translation>
+<translation id="4477379360383751882">Hledat v obrázku pomocí služby <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Uložit od&amp;kaz jako...</translation>
 <translation id="4479424953165245642">Spravovat aplikace pro režim veřejného terminálu</translation>
 <translation id="4479639480957787382">Ethernet</translation>

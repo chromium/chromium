@@ -13,6 +13,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
+<translation id="1385859895174722837">Google Assistant in Chromium</translation>
 <translation id="1396446129537741364">Chromium is trying to show passwords.</translation>
 <translation id="1414495520565016063">You're signed in to Chromium!</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
@@ -103,6 +104,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> can switch between Chromium profiles</translation>
 <translation id="3509308970982693815">Please close all Chromium windows and try again.</translation>
+<translation id="3518180795744733843">Google Assistant in Chromium can complete actions across websites for you</translation>
 <translation id="3533435340678213462">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests you don't want Chromium to consider.</translation>
 <translation id="3567254597502212821">Your browsing history, a record of sites that you've visited using Chromium on this device.</translation>
 <translation id="3575459661164320785">There's harmful software on your computer. Chromium can remove it, restore your settings and disable extensions to make your browser work normally again.</translation>

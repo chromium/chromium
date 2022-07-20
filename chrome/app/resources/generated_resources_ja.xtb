@@ -359,6 +359,7 @@
 <translation id="1347256498747320987">アップデートとアプリをインストールします。続行すると、このデバイスで Google、携帯通信会社、デバイスの製造元からのアップデートやアプリが自動的にダウンロードおよびインストールされることについても同意したと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。また、こうしたアプリの一部ではアプリ内購入をすすめられる場合があります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux ストレージ</translation>
 <translation id="1347975661240122359">更新は、<ph name="BATTERY_LEVEL" />% まで充電されたときに開始されます。</translation>
+<translation id="1348966090521113558">マウスのユーザー補助設定</translation>
 <translation id="1353275871123211385">アプリの許可や利用時間の上限など、保護者による使用制限を設定するには、保護者が管理するお子様用の Google アカウントが必要です。Google Classroom などのツールを使用するための学校用アカウントは、後で追加できます。</translation>
 <translation id="135389172849514421">オフラインで利用可能</translation>
 <translation id="1353980523955420967">PPD が見つかりません。Chromebook がオンラインになっていることを確認して、もう一度お試しください。</translation>
@@ -1653,7 +1654,6 @@
 <translation id="2519517390894391510">証明書プロファイル名</translation>
 <translation id="2520644704042891903">使用できるソケットを待機しています...</translation>
 <translation id="2521854691574443804">組織のセキュリティ ポリシーに沿って <ph name="FILE_NAME" /> をチェックしています...</translation>
-<translation id="252219247728877310">コンポーネント未更新</translation>
 <translation id="2523184218357549926">アクセスしたページの URL を Google に送信します</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> をインストール</translation>
 <translation id="252502352004572774">お使いのパソコンに有害なソフトウェアがないか確認しています...</translation>
@@ -1778,6 +1778,7 @@
 <translation id="2653659639078652383">送信</translation>
 <translation id="265390580714150011">フィールド値</translation>
 <translation id="2654553774144920065">印刷リクエスト</translation>
+<translation id="2657612187216250073">ポインタのユーザー補助設定</translation>
 <translation id="2658941648214598230">元のコンテンツを表示しますか？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />機能はデバイスによって異なります</translation>
 <translation id="2659971421398561408">Crostini のディスクサイズ変更</translation>
@@ -1942,6 +1943,7 @@
 <translation id="2801954693771979815">画面サイズ</translation>
 <translation id="2802557211515765772">管理対象プリンタはありません。</translation>
 <translation id="2803313416453193357">フォルダを開く</translation>
+<translation id="2803719750464280163"><ph name="PASSKEY" /> が Bluetooth デバイス <ph name="DEVICE" /> に表示されているパスキーと一致していることを確認してください。</translation>
 <translation id="2804043232879091219">代替ブラウザを開けませんでした</translation>
 <translation id="2804667941345577550">開いているすべてのタブで、このサイトからログアウトします</translation>
 <translation id="2804680522274557040">カメラがオフになっています</translation>
@@ -2786,6 +2788,7 @@
 <translation id="3635353578505343390">Google にフィードバックを送信</translation>
 <translation id="3635960017746711110">Crostini の USB 設定</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 残り <ph name="TIME" /></translation>
+<translation id="3636940436873918441">優先言語</translation>
 <translation id="3637203148990213388">追加のアカウント</translation>
 <translation id="3639220004740062347">リーダーモードを終了</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> さんのアイテムとして「<ph name="EXTENSION_NAME" />」を追加しますか？</translation>
@@ -2856,6 +2859,7 @@
 <translation id="370649949373421643">Wi-Fi を有効にする</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3707163604290651814">現在、<ph name="NAME" /> としてログインしています</translation>
+<translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">閉じたサイトにデータの送受信の完了を許可しない</translation>
 <translation id="3709244229496787112">ダウンロードの完了前に、ブラウザがシャットダウンされました。</translation>
 <translation id="371174301504454251">ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>
@@ -3933,6 +3937,7 @@
 <translation id="475088594373173692">最初のユーザー</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
+<translation id="4756671452988984333">音声のテキスト変換</translation>
 <translation id="4759202969060787081">開かない</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4761104368405085019">マイクを使用する</translation>
@@ -6859,6 +6864,7 @@
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN が正しくありません。あと 1 回試行できます。}other{PIN が正しくありません。あと # 回試行できます。}}</translation>
 <translation id="7670434942695515800">最適なパフォーマンスで使用するには、最新バージョンにアップグレードしてください。アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードが始まると、Linux はシャットダウンされます。続行する前に開いているファイルを保存してください。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">システム タイトル バーと枠線の使用</translation>
 <translation id="767127784612208024">リセットを確定するにはタップしてください</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> 内の <ph name="HUNG_IFRAME_URL" /> が停止しています。</translation>
@@ -7944,6 +7950,7 @@
 <translation id="8724859055372736596">フォルダを開く(&amp;S)</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8725178340343806893">お気に入り/ブックマーク</translation>
+<translation id="87254326763805752">パスキーの確認</translation>
 <translation id="8726206820263995930">サーバーからポリシー設定を取得するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="8728351286589123703">選択した権限がリセットされます</translation>
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>

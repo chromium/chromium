@@ -3135,6 +3135,7 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
 <translation id="4372704773119750918">Zakelijke gebruikers niet toestaan deel uit te maken van multiprofielen (primair of secundair)</translation>
 <translation id="4377599627073874279">Alle sites toestaan afbeeldingen te tonen</translation>
 <translation id="437791893267799639">Beleid niet ingesteld, gegevensmigratie en ARC niet toestaan</translation>
+<translation id="4380159792986204036">Toestaan dat Web Kiosk meerdere browservensters op elk willekeurig scherm kan openen</translation>
 <translation id="4381227367939912539">Easter egg-dinosaurusgame uitzetten</translation>
 <translation id="4382413175336720282">Realtime URL-check staat uit.</translation>
 <translation id="4387741272680827493">Als je het beleid instelt, geef je een lijst op met hostnamen die de vooraf geladen HSTS-upgrades van http naar https omzeilen.
@@ -3640,6 +3641,9 @@ Volgens planning wordt dit beleid verwijderd vanaf <ph name="PRODUCT_NAME" /> vo
 
           Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="4978533099939732984">Waarschuwingen voor weinig schijfruimte altijd tonen</translation>
+<translation id="4979714585847741269">Als je het beleid aanzet, kan een kiosk-web-app een ander browservenster openen dat op hetzelfde scherm of op een ander scherm kan worden geplaatst. De web-app moet de JavaScript-functie <ph name="OPEN_NEW_WINDOW_JS" /> aanroepen om een nieuw venster te openen.
+
+      Als je het beleid uitzet of niet instelt, kan een kiosk-web-app alleen het hoofdbrowservenster gebruiken en kan de app geen nieuw venster openen. Als er JavaScript-functies worden aangeroepen om een nieuw venster te openen, wordt dit genegeerd.</translation>
 <translation id="4980635395568992380">Gegevenstype:</translation>
 <translation id="4983201894483989687">Verouderde plug-ins toestaan die actief zijn</translation>
 <translation id="4986560318567565414">Pad naar Chrome voor overschakeling vanaf de alternatieve browser.</translation>
@@ -6067,6 +6071,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Opmerking: Dit beleid is afhankelijk van de uitgevoerde verificatiestack voor het certificaat van het besturingssysteem en of hiermee SHA-1-handtekeningen zijn toegestaan. Als door een update van het besturingssysteem een wijziging wordt aangebracht in de verwerking van het besturingssysteem ten aanzien van SHA-1-certificaten, is dit beleid wellicht niet meer van toepassing. Daarnaast is dit beleid bedoeld als tijdelijke oplossing voor bedrijven om af te stappen van SHA-1. Dit beleid wordt op of rond 1 januari 2019 verwijderd.
 
       Als dit beleid niet is ingesteld of is ingesteld op False, volgt <ph name="PRODUCT_NAME" /> het openbaar aangekondigde verwijderingsschema voor SHA-1.</translation>
+<translation id="7577082478271919056">Toestaan dat een kiosk-web-app een ander browservenster opent</translation>
 <translation id="7578142001795552218">Dit beleid geeft Snelle antwoorden toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen om eenheidsconversieresultaten te krijgen.
 
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
@@ -7579,6 +7584,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Opmerking: Als je interne URL's met chrome://* blokkeert, kan dit tot onverwachte fouten leiden.</translation>
 <translation id="957778406002650056">De URL waar de <ph name="PLUGIN_VM_NAME" />-afbeelding kan worden gedownload.</translation>
+<translation id="958285142322823422">Voorkomen dat een kiosk-web-app een ander browservenster opent</translation>
 <translation id="958577147847681221">Bepaalt of <ph name="PRODUCT_OS_NAME" /> het maken van nieuwe gebruikersaccounts toestaat.
 
       Als dit beleid is ingesteld op False, kunnen alleen gebruikers inloggen die zijn opgenomen in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.

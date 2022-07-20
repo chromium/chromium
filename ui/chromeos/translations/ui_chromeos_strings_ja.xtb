@@ -188,6 +188,7 @@
 <translation id="2570012981255377263">最近使用したファイルがここに表示されます</translation>
 <translation id="2578394532502990878">タミル語（表音）</translation>
 <translation id="2579959351793446050">オディア語</translation>
+<translation id="2593644851255584939">管理者が SIM ロックを無効にするよう求めています。</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="2614589611416690597">動画（<ph name="VIDEO_TYPE" />）</translation>
 <translation id="2617342710774726426">SIM カードはロックされています</translation>

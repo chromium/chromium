@@ -359,6 +359,7 @@
 <translation id="1347256498747320987">განახლებებისა და აპების ინსტალაცია. გაგრძელებით თანახმა ხართ, ამ მოწყობილობამ ავტომატურად ჩამოტვირთოს და დააინსტალიროს Google-ის, თქვენი ოპერატორის და მოწყობილობის მწარმოებლის განახლებები/აპები (მათ შორის, მობილური ინტერნეტის მეშვეობით). ზოგიერთი ზემოაღნიშნული აპი შეიძლება გთავაზობდეთ კონტენტის აპიდან შეძენის შესაძლებლობას. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-ის მეხსიერება</translation>
 <translation id="1347975661240122359">განახლება დაიწყება მაშინ, როცა ბატარეა <ph name="BATTERY_LEVEL" />%-ს მიაღწევს.</translation>
+<translation id="1348966090521113558">მაუსზე მარტივი წვდომის პარამეტრები</translation>
 <translation id="1353275871123211385">მშობელთა კონტროლის (მაგ. აპების დადასტურებისა და ეკრანთან გატარებული დროის შეზღუდვების) გამოსაყენებლად ბავშვს უნდა ჰქონდეს მშობლის მიერ მართული Google ანგარიში. მოგვიანებით შესაძლებელი იქნება სასწავლებლის ანგარიშის დამატებაც, Google Classroom-ის მსგავს ხელსაწყოებთან გამოსაყენებლად.</translation>
 <translation id="135389172849514421">მუშაობს ხაზგარეშე</translation>
 <translation id="1353980523955420967">PPD ვერ მოიძებნა. დარწმუნდით, რომ თქვენი Chromebook ონლაინ რეჟიმშია და ცადეთ ხელახლა.</translation>
@@ -1658,7 +1659,6 @@
 <translation id="2519517390894391510">სერტიფიკატის პროფილის სახელი</translation>
 <translation id="2520644704042891903">ხელმისაწვდომი სოკეტის ლოდინი…</translation>
 <translation id="2521854691574443804">მიმდინარეობს „<ph name="FILE_NAME" />“-ის თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება...</translation>
-<translation id="252219247728877310">კომპონენტი არ არის განახლებული</translation>
 <translation id="2523184218357549926">Google-ს უგზავნის თქვენ მიერ მონახულებული გვერდების URL-ებს</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" />-ის ინსტალაცია</translation>
 <translation id="252502352004572774">Chrome ამოწმებს საზიანო პროგრამულ უზრუნველყოფას თქვენს კომპიუტერში...</translation>
@@ -1784,6 +1784,7 @@
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="265390580714150011">ველის მნიშვნელობა</translation>
 <translation id="2654553774144920065">ბეჭდვის მოთხოვნა</translation>
+<translation id="2657612187216250073">მიმთითებელზე მარტივი წვდომის პარამეტრები</translation>
 <translation id="2658941648214598230">გსურთ ორიგინალი კონტენტის ჩვენება?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ფუნქციები განსხვავდება მოწყობილობების მიხედვით</translation>
 <translation id="2659971421398561408">Crostini-ს დისკის ზომის შეცვლა</translation>
@@ -1948,6 +1949,7 @@
 <translation id="2801954693771979815">ეკრანის ზომა</translation>
 <translation id="2802557211515765772">მართული პრინტერები არ არის.</translation>
 <translation id="2803313416453193357">გახსენით საქაღალდე</translation>
+<translation id="2803719750464280163">დაადასტურეთ, რომ <ph name="PASSKEY" /> წვდომის ის გასაღებია, რომელიც ნაჩვენებია Bluetooth მოწყობილობაზე <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">ალტერნატიული ბრაუზერის გახსნა ვერ მოხერხდა</translation>
 <translation id="2804667941345577550">თქვენ გამოხვალთ ამ საიტიდან, მათ შორის, გახსნილ ჩანართებზე</translation>
 <translation id="2804680522274557040">კამერა გამორთულია</translation>
@@ -2793,6 +2795,7 @@
 <translation id="3635353578505343390">გამოხმაურების გაგზავნა Google-ში</translation>
 <translation id="3635960017746711110">Crostini-ს USB-ის პარამეტრები</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% — დარჩენილია <ph name="TIME" /></translation>
+<translation id="3636940436873918441">უპირატესი ენები</translation>
 <translation id="3637203148990213388">დამატებითი ანგარიშები</translation>
 <translation id="3639220004740062347">წამკითხველის რეჟიმიდან გასვლა</translation>
 <translation id="3640214691812501263">გსურთ, დაამატოთ „<ph name="EXTENSION_NAME" />“ <ph name="USER_NAME" />-სთვის?</translation>
@@ -2863,6 +2866,7 @@
 <translation id="370649949373421643">ჩართეთ Wi-Fi</translation>
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3707163604290651814">ამჟამად სისტემაში შესული ხართ, როგორც <ph name="NAME" /></translation>
+<translation id="3708295717182051206">დახურული სუბტიტრები</translation>
 <translation id="3708684582558000260">დახურული საიტებისთვის მონაცემთა გაგზავნისა თუ მიღების დასრულების აკრძალვა</translation>
 <translation id="3709244229496787112">ბრაუზერი გაითიშა ჩამოტვირთვის დასრულებამდე.</translation>
 <translation id="371174301504454251">თქვენი კონფიდენციალურობის დაცვის მიზნით, ჩვენ ავტომატურად ვშლით სიიდან საიტებს, რომლებიც 4 კვირაზე ძველია. საიტი, რომელსაც ხელახლა მოინახულებთ, შესაძლოა, კვლავ გამოჩნდეს სიაში. სურვილისამებრ, შეგიძლიათ ამოშალოთ საიტი, თუ არ გსურთ, მან ოდესმე განსაზღვროს თქვენი ინტერესები.</translation>
@@ -3945,6 +3949,7 @@
 <translation id="475088594373173692">პირველი მომხმარებელი</translation>
 <translation id="4756378406049221019">შეწყვეტა/გადატვირთვა</translation>
 <translation id="4756388243121344051">&amp;ისტორია</translation>
+<translation id="4756671452988984333">ტექსტი აუდიოსთვის</translation>
 <translation id="4759202969060787081">არ გაიხსნას</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4761104368405085019">გამოიყენეთ თქვენი მიკროფონი</translation>
@@ -4104,6 +4109,7 @@
 <translation id="4900392736118574277">თქვენი გაშვების გვერდი გახდა <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> ჰც — ინტერლეისით</translation>
 <translation id="4900652253009739885">„არჩევისთვის“ მიკუთვნებული ერთადერთი გადამრთველის გაუქმება ვერ მოხერხდება. <ph name="RESPONSE" /> რომ შესრულდეს, დააჭირეთ ნებისმიერ კლავიშს.</translation>
+<translation id="4901154724271753917">ბოლო დროს დახურულის გაფართოება</translation>
 <translation id="4901309472892185668">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="49027928311173603">სერვერზე გადმოწერილი პოლიტიკა არასწორია: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">ქსელში ფაილების გაზიარების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -6879,6 +6885,7 @@
 <translation id="7668423670802040666">Google პაროლების მმართველში <ph name="ACCOUNT" />-ისთვის</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN-კოდი არასწორია. დაგრჩათ ერთი მცდელობა.}other{PIN-კოდი არასწორია. დაგრჩათ # მცდელობა.}}</translation>
 <translation id="7670434942695515800">საუკეთესო წარმადობისთვის საჭიროა ახალ ვერსიაზე გადასვლა. რეკომენდებულია თქვენი ფაილების სარეზერვო ასლების შექმნა, რომ არაფერი დაგეკარგოთ, თუ ვერსიის განახლება ვერ მოხერხდება. ახალ ვერსიაზე გასვლის დაწყების შემდეგ Linux გამოირთვება. გაგრძელებამდე შეინახეთ გახსნილი ფაილები. <ph name="LINK_START" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">სუბტიტრები</translation>
 <translation id="7671130400130574146">სისტემის სათაურის ზოლის და საზღვრების გამოყენება</translation>
 <translation id="767127784612208024">შეეხეთ გადაყენების დასადასტურებლად</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" />-ზე.</translation>
@@ -6991,6 +6998,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> შეძლებს, ნახოს ფაილები „<ph name="FOLDERNAME" />“-ში</translation>
 <translation id="7768770796815395237">შეცვლა</translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
+<translation id="7769748505895274502">ბოლო დროს დახურულის ჩაკეცვა</translation>
 <translation id="7770406201819593386">ChromeOS Flex-ის დიაგნოსტიკური ტესტების გაშვება.</translation>
 <translation id="7770450735129978837">მაუსზე მარჯვენა დაწკაპუნება</translation>
 <translation id="7770612696274572992">სხვა მოწყობილობიდან დაკოპირდა სურათი</translation>
@@ -7964,6 +7972,7 @@
 <translation id="8724859055372736596">საქაღალდეში ჩ&amp;ვენება</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
 <translation id="8725178340343806893">რჩეულები/სანიშნეები</translation>
+<translation id="87254326763805752">დაადასტურეთ წვდომის გასაღები</translation>
 <translation id="8726206820263995930">სერვერიდან წესის პარამეტრების შერჩევისას შეცდომა მოხდა: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">თქვენ მიერ არჩეული ნებართვები გადაყენებული იქნება</translation>
 <translation id="8729133765463465108">QR კოდის სკანირება კამერით</translation>

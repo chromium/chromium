@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
-<translation id="359441731697487922">Դուք կարող եք Chrome-ը դարձնել ձեր կանխադրված դիտարկիչը և կայքերը բացել այնտեղ ավտոմատ կերպով։
-      
-Կատարեք հետևյալ քայլերը՝</translation>
 <translation id="3603009562372709545">Պատճենել հղման հասցեն</translation>
 <translation id="3607167657931203000">Ինքնալցման տվյալները</translation>
 <translation id="3609785682760573515">Համաժամացում…</translation>
@@ -441,6 +438,7 @@
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4775879719735953715">Կանխադրված դիտարկիչ</translation>
 <translation id="4778644898150334464">Օգտագործել այլ գաղտնաբառ</translation>
+<translation id="478808905805139173">Բացե՞լ ինկոգնիտո ռեժիմում</translation>
 <translation id="4802417911091824046">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։
 
 Այս կարգավորումը փոփոխելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6284652193729350524">Առաջարկել թարգմանել <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">«<ph name="CHANNEL_NAME" />» ալիքի բաժանորդագրությունը չեղարկվեց</translation>
 <translation id="6293101329759844770">Անվտանգ դիտարկումը միացնելու համար բացեք <ph name="BEGIN_LINK" />Google-ի ծառայությունները<ph name="END_LINK" /> և սեղմեք «Անվտանգ դիտարկում»։</translation>
+<translation id="6294610283659775533">Դուք կարող եք ուղարկել ներդիրները մի սարքից մյուսը, եթե դրանցում մտել եք հաշիվ միևնույն Google հաշվով</translation>
 <translation id="6321526113093607004">Ավելացնել «Էջանիշներ» բաժնում</translation>
 <translation id="6324669097367352121">Մուտքի կարգավորումներ</translation>
 <translation id="6337234675334993532">Գաղտնագրում</translation>
@@ -961,6 +960,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9055772144595778347">Հնարավոր չէ մուտք գործել</translation>
 <translation id="9057972802061533987">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
+<translation id="9068336935206019333">Բացել Chrome-ի ինկոգնիտո ներդիրում</translation>
 <translation id="9079935439869366234">Բոլորը նշել որպես չկարդացված</translation>
 <translation id="9081058212938299310">Թարմացնե՞լ օգտանվան (<ph name="USERNAME" />) գաղտնաբառը։</translation>
 <translation id="9083392325882095631">1 տարր</translation>

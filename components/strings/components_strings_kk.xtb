@@ -1058,6 +1058,7 @@
 <translation id="3807873520724684969">Зиянды мазмұнға тыйым салынды.</translation>
 <translation id="3810973564298564668">Басқару</translation>
 <translation id="3816482573645936981">Мән (ауыстырылған)</translation>
+<translation id="3823402221513322552">Браузеріңізді <ph name="BROWSER_DOMAIN" />, ал профиліңізді <ph name="PROFILE_DOMAIN" /> басқарады.</translation>
 <translation id="382518646247711829">Прокси серверді пайдалансаңыз…</translation>
 <translation id="3826050100957962900">Үшінші тараптың кіруі</translation>
 <translation id="3827112369919217609">Абсолютті</translation>
@@ -1555,6 +1556,7 @@
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тілінде емес пе? Бұл қате туралы хабарлау</translation>
 <translation id="518639307526414276">Үй жануарларының азығы және оларды күту өнімдері</translation>
 <translation id="5190835502935405962">Бетбелгілер жолағы</translation>
+<translation id="5191315092027169558">Профиліңізді <ph name="DOMAIN" /> басқарады.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> бірнеше файл жүктеп алғысы келеді</translation>
 <translation id="519422657042045905">Аннотация жоқ</translation>
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
@@ -2758,6 +2760,7 @@
 <translation id="8623885649813806493">Сәйкес құпия сөздер жоқ. Барлық сақталған құпия сөздерді көрсету.</translation>
 <translation id="8624354461147303341">Жеңілдіктер алу</translation>
 <translation id="8625384913736129811">Картаны осы құрылғыға сақтау</translation>
+<translation id="8637577059508742477">Профиліңіз бен браузеріңізді <ph name="DOMAIN" /> басқарады.</translation>
 <translation id="865032292777205197">қозғалыс датчиктері</translation>
 <translation id="8663226718884576429">Тапсырыс қорытындысы, <ph name="TOTAL_LABEL" />, толығырақ деректер</translation>
 <translation id="8666678546361132282">ағылшын</translation>

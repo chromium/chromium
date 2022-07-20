@@ -1661,7 +1661,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2519517390894391510">Sertifikat profili nomi</translation>
 <translation id="2520644704042891903">Mavjud soket kutilmoqda...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> fayli tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...</translation>
-<translation id="252219247728877310">Komponent yangilanmadi</translation>
 <translation id="2523184218357549926">Siz tashrif buyurgan URL manzillarni Google serverlariga yuboradi</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ilovasini oʻrnating</translation>
 <translation id="252502352004572774">Chrome kompyuteringizni zararli dasturlar uchun tekshirmoqda...</translation>
@@ -2798,6 +2797,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3635353578505343390">Googlega fikr-mulohaza yuborish</translation>
 <translation id="3635960017746711110">Crostini tizimida USB parametrlari</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> qoldi</translation>
+<translation id="3636940436873918441">Afzal tillar</translation>
 <translation id="3637203148990213388">Qoʻshimcha hisoblar</translation>
 <translation id="3639220004740062347">Mutolaa rejimidan chiqish</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> uchun “<ph name="EXTENSION_NAME" />” kengaytmasi qo‘shilsinmi?</translation>
@@ -3270,6 +3270,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4077919383365622693"><ph name="SITE" /> joylashtirgan barcha maʼlumot va cookie fayllar tozalab tashlanadi.</translation>
 <translation id="4078738236287221428">Har doim</translation>
 <translation id="4079140982534148664">Kengaytirilgan imlo tekshiruvini ishlatish</translation>
+<translation id="4081203444152654304">Ichki rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="4081242589061676262">Fayl translatsiya qilinmadi.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> telefoningizga bildirishnoma yubordi. Shaxsingizni tasdiqlash uchun shu yerdagi qadamlarni bajaring.</translation>
 <translation id="4084682180776658562">Xatcho‘p</translation>
@@ -3666,6 +3667,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4476590490540813026">Sportchi</translation>
 <translation id="4476659815936224889">QR kodni telefoningizdagi mos autentifikator yoki kamera ilovasi yordamida skanerlang.</translation>
 <translation id="4477015793815781985">Birikma Ctrl, Alt yoki ⌘ tugmalaridan iborat bo‘lishi zarur</translation>
+<translation id="4477379360383751882">Ichki rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="4478664379124702289">&amp;Havolani saqlab olish...</translation>
 <translation id="4479424953165245642">Kiosk dasturlarni boshqarish</translation>
 <translation id="4479639480957787382">Ethernet</translation>

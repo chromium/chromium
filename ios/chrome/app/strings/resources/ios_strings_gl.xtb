@@ -311,9 +311,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3551320343578183772">Pechar pestana</translation>
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
-<translation id="359441731697487922">Podes abrir ligazóns en Chrome automaticamente configurándoo como o teu navegador predeterminado.
-
-Sigue os pasos indicados a continuación:</translation>
 <translation id="3603009562372709545">Copiar URL da ligazón</translation>
 <translation id="3607167657931203000">Autocompletar datos</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
@@ -441,6 +438,7 @@ Os teus datos están encriptados co teu contrasinal de sincronización. Introdú
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Utilizar outro contrasinal</translation>
+<translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
 
 Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixaches de seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>
+<translation id="6294610283659775533">Podes enviar pestanas entre dispositivos nos que teñas a sesión iniciada coa mesma Conta de Google</translation>
 <translation id="6321526113093607004">Engadir aos marcadores</translation>
 <translation id="6324669097367352121">Conf. inicio sesión</translation>
 <translation id="6337234675334993532">Encriptado</translation>
@@ -961,6 +960,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9055772144595778347">Imposible in. sesión</translation>
 <translation id="9057972802061533987">Non se puido seguir o contido. Produciuse un erro.</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9068336935206019333">Abrir no modo de incógnito de Chrome</translation>
 <translation id="9079935439869366234">Marcar todo como non lido</translation>
 <translation id="9081058212938299310">Queres actualizar o contrasinal do usuario <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Un elemento</translation>

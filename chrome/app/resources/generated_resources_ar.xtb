@@ -363,6 +363,7 @@
 <translation id="1347256498747320987">‏يمكنك تثبيت التحديثات والتطبيقات. وبالمتابعة، أنت توافق على تنزيل هذا الجهاز للتحديثات والتطبيقات وتثبيتها تلقائيًا من Google ومشغِّل شبكة الجوَّال والشركة المصنِّعة للجهاز، وأنّ ذلك قد يتم باستخدام بيانات شبكة الجوَّال. وقد توفّر بعض هذه التطبيقات ميزة الشراء داخل التطبيق. <ph name="BEGIN_LINK1" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">‏مساحة تخزين نظام التشغيل Linux</translation>
 <translation id="1347975661240122359">سيبدأ التحديث عندما يصل مستوى البطارية إلى <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1348966090521113558">إعدادات تسهيل استخدام الماوس</translation>
 <translation id="1353275871123211385">‏لاستخدام أدوات الرقابة الأبوية، مثل الموافقة على التطبيقات وحدود وقت النظر إلى الشاشة، يجب أن يتوفّر لدى الطفل حساب على Google يديره أحد الوالدَين. يمكن إضافة حساب تديره المؤسسة التعليمية لاحقًا لاستخدامه في أدوات مثل Google Classroom.</translation>
 <translation id="135389172849514421">تعمل بدون اتصال بالإنترنت</translation>
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
@@ -1661,7 +1662,6 @@
 <translation id="2519517390894391510">اسم نموذج الشهادة</translation>
 <translation id="2520644704042891903">في انتظار توفر منفذ...</translation>
 <translation id="2521854691574443804">جارِ التحقُّق من توافق ملف <ph name="FILE_NAME" /> مع سياسات أمان مؤسستك...</translation>
-<translation id="252219247728877310">لم يتم تحديث المُكوّن</translation>
 <translation id="2523184218357549926">‏يتم إرسال عناوين URL للصفحات التي تزورها إلى Google.</translation>
 <translation id="252418934079508528">تثبيت نظام التشغيل <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">‏يتحقّق متصفِّح Chrome حاليًا من البرامج الضارّة على جهاز الكمبيوتر...</translation>
@@ -1787,6 +1787,7 @@
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="265390580714150011">قيمة الحقل</translation>
 <translation id="2654553774144920065">طلب طباعة</translation>
+<translation id="2657612187216250073">إعدادات تسهيل استخدام المؤشر</translation>
 <translation id="2658941648214598230">هل تريد عرض محتوى الصفحة الأصلي؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />تختلف الميزات حسب الجهاز</translation>
 <translation id="2659971421398561408">‏تغيير حجم قرص نظام التشغيل Crostini</translation>
@@ -1952,6 +1953,7 @@
 <translation id="2801954693771979815">حجم الشاشة</translation>
 <translation id="2802557211515765772">ما مِن طابعات مُدارة.</translation>
 <translation id="2803313416453193357">فتح المجلد</translation>
+<translation id="2803719750464280163">يُرجى التأكيد أنّ <ph name="PASSKEY" /> هو مفتاح المرور المعروض على جهاز البلوتوث "<ph name="DEVICE" />".</translation>
 <translation id="2804043232879091219">تعذَّر فتح المتصفّح البديل</translation>
 <translation id="2804667941345577550">سيتم تسجيل خروجك من هذا الموقع الإلكتروني، بما في ذلك ضمن علامات التبويب المفتوحة.</translation>
 <translation id="2804680522274557040">تم إيقاف الكاميرا</translation>
@@ -2798,6 +2800,7 @@
 <translation id="3635353578505343390">‏إرسال تعليقات إلى Google</translation>
 <translation id="3635960017746711110">‏إعدادات USB المُفضَّلة في نظام التشغيل Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> وقت متبقٍ</translation>
+<translation id="3636940436873918441">اللغات المفضّلة</translation>
 <translation id="3637203148990213388">حسابات إضافية</translation>
 <translation id="3639220004740062347">الخروج من وضع القارئ</translation>
 <translation id="3640214691812501263">هل تريد إضافة "<ph name="EXTENSION_NAME" />" لـ <ph name="USER_NAME" />؟</translation>
@@ -2868,6 +2871,7 @@
 <translation id="370649949373421643">‏تفعيل Wi-Fi</translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3707163604290651814">تم تسجيل الدخول حاليًا باسم <ph name="NAME" /></translation>
+<translation id="3708295717182051206">الترجمة والشرح</translation>
 <translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية بإكمال عمليات إرسال البيانات أو تلقيّها</translation>
 <translation id="3709244229496787112">تم إيقاف المتصفح قبل انتهاء التنزيل.</translation>
 <translation id="371174301504454251">لحماية خصوصيتك، نحذف تلقائيًا المواقع الإلكترونية التي يمر أكثر من أربعة أسابيع على إضافتها إلى القائمة. وقد يظهر في القائمة مرة أخرى أي موقع إلكتروني تتكرّر زيارته. يمكنك إزالة أي موقع إلكتروني إذا كنت لا تريد مطلقًا أن يحدّد لك اهتماماتك.</translation>
@@ -3947,6 +3951,7 @@
 <translation id="475088594373173692">المستخدم الأول</translation>
 <translation id="4756378406049221019">إيقاف/تحديث</translation>
 <translation id="4756388243121344051">ال&amp;سجل</translation>
+<translation id="4756671452988984333">تحويل النص إلى صوت</translation>
 <translation id="4759202969060787081">عدم فتح الملف</translation>
 <translation id="4759238208242260848">الملفات التي تم تنزيلها</translation>
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
@@ -6890,6 +6895,7 @@
 <translation id="7668423670802040666">‏تعديل كلمة المرور في "مدير كلمات المرور" من Google للحساب <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{رقم التعريف الشخصي غير صحيح. يتبقى لديك محاولة واحدة.}zero{رقم التعريف الشخصي غير صحيح. لم يتبقَّ لديك أي محاولة.}two{رقم التعريف الشخصي غير صحيح. يتبقى لديك محاولتان (#).}few{رقم التعريف الشخصي غير صحيح. يتبقى لديك # محاولات.}many{رقم التعريف الشخصي غير صحيح. يتبقى لديك # محاولةً.}other{رقم التعريف الشخصي غير صحيح. يتبقى لديك # محاولة.}}</translation>
 <translation id="7670434942695515800">‏للحصول على أفضل أداء، يُرجى الترقية لأحدث إصدار. ننصحك بالاحتفاظ بنسخة احتياطية من الملفات في حال تعذُر اكتمال عملية الترقية. سيتوقف نظام التشغيل Linux عند بدء ترقيته. عليك حفظ الملفات المفتوحة قبل المتابعة. <ph name="LINK_START" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">الترجمة</translation>
 <translation id="7671130400130574146">استخدام شريط عناوين النظام والحدود</translation>
 <translation id="767127784612208024">اللمس لتأكيد إعادة الضبط</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، في <ph name="PAGE_TITLE" />.</translation>
@@ -7978,6 +7984,7 @@
 <translation id="8724859055372736596">&amp;عرض في المجلد</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8725178340343806893">المفضّلة/الإشارات</translation>
+<translation id="87254326763805752">تأكيد مفتاح المرور</translation>
 <translation id="8726206820263995930">حدث خطأ عند جلب إعدادات السياسة من الخادم: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">ستتم إعادة ضبط الأذونات المختارة.</translation>
 <translation id="8729133765463465108">استخدام الكاميرا لمسح رمز الاستجابة السريعة ضوئيًا</translation>

@@ -2523,6 +2523,19 @@
 <translation id="3660562134618097814">在用户登录期间转移 SAML IdP Cookie</translation>
 <translation id="3665437376055221832">仅当没有任何证书与自动选择政策匹配时才提示用户。</translation>
 <translation id="3674010627788940405">不支持 CORS 非通配符式请求标头。</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) 通常用于中断耗时较长的 JavaScript 任务。
+          如果此政策已启用，系统不会主动将时间间隔小于 4 毫秒的 setTimeout 和 setInterval 强制设为下限值。
+          这可以提升短时间内的性能，但如果网站滥用该 API，其 setTimeout 最终仍会被强制设为下限值。
+
+          如果此政策已停用，时间间隔小于 4 毫秒的 setTimeout 和 setInterval 会被强制设为下限值。
+
+          这可能会改变网页上的任务排序，从而导致以某种方式依赖于特定顺序的网站上出现意外行为。
+          这可能还会影响大量使用超时设为 0 毫秒的 setTimeout() 的网站，例如增加 CPU 负载。
+
+          对于未设置此政策的用户，<ph name="PRODUCT_NAME" /> 将在稳定渠道上逐步推出相应变更。
+
+          这是一项暂时性政策，我们计划在 <ph name="PRODUCT_NAME" /> 107 中将其移除。若有很多企业需要此政策，这个期限可能会延长。
+          </translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
@@ -5590,6 +5603,13 @@
 <translation id="7101550508196914704">不在书签栏中显示应用快捷方式</translation>
 <translation id="7109384070286741861">停用 CECPQ2</translation>
 <translation id="7114169791477667553">停用默认搜索服务提供商</translation>
+<translation id="7121046543122812054">此政策已被弃用，请考虑改用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />。
+
+      用于允许用户登录 <ph name="PRODUCT_NAME" />。
+
+      如果此政策已启用，用户将能够登录 <ph name="PRODUCT_NAME" />。
+      如果此政策已停用，系统将禁止登录。那些使用 chrome.identity API 的应用和扩展程序也将无法正常运行。为避免出现这种情况，请改用 <ph name="SYNC_DISABLED_POLICY_NAME" />。
+      </translation>
 <translation id="7122626777103192518">如果此政策设为 True，系统将允许使用内置 Android 分享系统将 Android 应用中的文本/文件分享给受支持的 Web 应用。
       启用后，该功能会将已安装的 Web 应用的元数据发送给 Google，以生成和安装 shim Android 应用。
       如果此政策设为 False，系统将停用该功能。</translation>

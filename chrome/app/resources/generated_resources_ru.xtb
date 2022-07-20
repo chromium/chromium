@@ -1660,7 +1660,6 @@
 <translation id="2519517390894391510">Название сертификата</translation>
 <translation id="2520644704042891903">Ожидание доступного сокета...</translation>
 <translation id="2521854691574443804">Проверка файла <ph name="FILE_NAME" /> на соответствие правилам безопасности вашей организации…</translation>
-<translation id="252219247728877310">Компонент не обновлен</translation>
 <translation id="2523184218357549926">Отправлять URL посещенных страниц в Google</translation>
 <translation id="252418934079508528">Установить <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Браузер Chrome проверяет компьютер на наличие вредоносного ПО…</translation>
@@ -2794,6 +2793,7 @@
 <translation id="3635353578505343390">Отправка отзыва в Google</translation>
 <translation id="3635960017746711110">Настройки USB в Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% (ещё <ph name="TIME" />)</translation>
+<translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637203148990213388">Дополнительные аккаунты</translation>
 <translation id="3639220004740062347">Выйти из режима чтения</translation>
 <translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
@@ -4105,6 +4105,7 @@
 <translation id="4900392736118574277">Стартовая страница изменена на <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – чересстрочная развертка</translation>
 <translation id="4900652253009739885">Нельзя отменить назначение единственного переключателя для действия "Выбрать". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Развернуть список недавно закрытых страниц</translation>
 <translation id="4901309472892185668">Выберите статус для эксперимента "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="49027928311173603">Скачанная с сервера политика недействительна: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Настройте общие папки сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -6998,6 +6999,7 @@
 <translation id="7768526219335215384">Сайт <ph name="ORIGIN" /> сможет просматривать файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="7768770796815395237">Изменить</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
+<translation id="7769748505895274502">Свернуть список недавно закрытых страниц</translation>
 <translation id="7770406201819593386">Запуск диагностики Chrome OS Flex</translation>
 <translation id="7770450735129978837">Нажатие правой кнопки мыши</translation>
 <translation id="7770612696274572992">Изображение скопировано с другого устройства</translation>

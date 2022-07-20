@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Obvestilo o URL-ju povezave</translation>
 <translation id="4322625298640984693">Rjavordeča</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{pika}=3{tropičje}one{# pika}two{# piki}few{# pike}other{# pik}}</translation>
+<translation id="4352022650330571548">vnesi <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">najmanj:<ph name="X" /></translation>
 <translation id="4372705107434148843">Ustavitev govora</translation>
 <translation id="4376316291247992553">Ogled grafike v brailovi pisavi</translation>

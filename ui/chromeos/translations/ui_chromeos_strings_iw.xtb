@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">היום</translation>
 <translation id="2163152940313951844">תו לא חוקי: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">‏פורטוגזית עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
+<translation id="2193661397560634290">נעשה שימוש ב-<ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">סינית פשוטה</translation>
 <translation id="22085916256174561">קוריאנית</translation>
 <translation id="2208919847696382164">‏התקנה עם Linux</translation>
@@ -186,6 +187,7 @@
 <translation id="2563185590376525700">צפרדע</translation>
 <translation id="2578394532502990878">טמילית פונטית</translation>
 <translation id="2579959351793446050">אודיה</translation>
+<translation id="2593644851255584939">‏יש דרישה מהאדמין להשבית את נעילת ה-SIM.</translation>
 <translation id="2602810353103180630">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי מנהל המערכת, פרטים</translation>
 <translation id="2614589611416690597">קובץ וידאו בפורמט <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">‏כרטיס ה-SIM נעול</translation>
@@ -201,6 +203,7 @@
 <translation id="2724954091494693138">‏טורקית עם מקלדת F</translation>
 <translation id="2732839045120506979">‏וייטנאמית VNI</translation>
 <translation id="2735623501230989521">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">‏השתמשת בכל נפח האחסון לשימוש פרטי שלך ב-Google Workspace.</translation>
 <translation id="2771816809568414714">גבינה</translation>
 <translation id="2781645665747935084">בלגית</translation>
 <translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
@@ -221,6 +224,7 @@
 <translation id="2943503720238418293">השם צריך להיות קצר יותר</translation>
 <translation id="2949781154072577687">מתבצע פרמוט של <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">מדוזה</translation>
+<translation id="2958458230122209142">נפח האחסון כמעט ריק. יש עוד <ph name="REMAINING_PERCENTAGE" />% מתוך האחסון לשימוש פרטי בנפח <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">‏הקובץ הזה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">בתהליך שחזור של <ph name="COUNT" /> פריטים…</translation>
@@ -670,6 +674,7 @@
 <translation id="6823166707458800069">כל הקבצים השמורים בתיקייה זו מגובים באופן אוטומטי באינטרנט.</translation>
 <translation id="6825883775269213504">רוסית</translation>
 <translation id="6847101934483209767">הסרת את <ph name="ENTRY_NAME" /> מהבחירה.</translation>
+<translation id="6848194403851638089">‏נפח האחסון של <ph name="ORGANIZATION_NAME" /> ב-Google Workspace נגמר.</translation>
 <translation id="6856459657722366306">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="6861394552169064235">פרסית</translation>
 <translation id="6862635236584086457">כל הקבצים השמורים בתיקיה זו מגובים באופן אוטומטי באינטרנט</translation>
@@ -701,6 +706,7 @@
 <translation id="6989942356279143254">שוודית</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> תיקיות נבחרו</translation>
+<translation id="7008426324576352165">על פי דרישת הארגון שלך, יש צורך בנפח אחסון נוסף כדי להשלים את ההעלאה.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ההתקנה נכשלה.</translation>
 <translation id="7031639531908619281">טורקית</translation>
@@ -934,11 +940,13 @@
 <translation id="8919081441417203123">דנית</translation>
 <translation id="8965697826696209160">אין מספיק שטח.</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
+<translation id="8998871447376656508">‏אין מספיק מקום פנוי ב-Google Drive כדי להשלים את ההעלאה.</translation>
 <translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="9017798300203431059">רוסית פונטית</translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9035012421917565900">לא ניתן להחזיר את הפריטים אל '<ph name="DESTINATION_NAME" />', ולא ניתן לבטל את הפעולה.</translation>
 <translation id="9035689366572880647">יש להזין את קוד האימות הנוכחי</translation>
+<translation id="9037777873893411148">*נפח האחסון של הארגון מלא</translation>
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>

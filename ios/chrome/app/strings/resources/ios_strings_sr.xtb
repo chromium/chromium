@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">Затвори картицу</translation>
 <translation id="3581564640715911333">Понуди превод страница на другим језицима</translation>
 <translation id="3588820906588687999">Отвори слику на новој картици</translation>
-<translation id="359441731697487922">Можете да аутоматски отварате линкове у Chrome-у тако што ћете га подесити као подразумевану апликацију за прегледање.
-      
-Пратите кораке у наставку:</translation>
 <translation id="3603009562372709545">Копирај URL адресу линка</translation>
 <translation id="3607167657931203000">Подаци аутоматског попуњавања</translation>
 <translation id="3609785682760573515">Синхронизовање...</translation>
@@ -627,6 +624,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
+<translation id="6294610283659775533">Можете да шаљете картице с једног уређаја на други ако сте на њих пријављени помоћу истог Google налога</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
 <translation id="6324669097367352121">Подешавања пријављивања</translation>
 <translation id="6337234675334993532">Шифровање</translation>

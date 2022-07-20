@@ -311,9 +311,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3551320343578183772">Cerrar pestaña</translation>
 <translation id="3581564640715911333">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagen en nueva pestaña</translation>
-<translation id="359441731697487922">Para que los vínculos se abran de forma automática en Chrome, elígelo como app de navegador predeterminada.
-      
-Realiza los siguientes pasos:</translation>
 <translation id="3603009562372709545">Copiar URL del vínculo</translation>
 <translation id="3607167657931203000">Autocompletar datos</translation>
 <translation id="3609785682760573515">Sincronizando…</translation>
@@ -441,6 +438,7 @@ Tus datos están encriptados con tu frase de contraseña para sincronización. D
 <translation id="4751645464639803239">Nueva pestaña de incógnito</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Usar otra contraseña</translation>
+<translation id="478808905805139173">¿Quieres abrirlo en Incógnito?</translation>
 <translation id="4802417911091824046">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
 
 Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6284652193729350524">Ofrecer traducción al <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Dejaste de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Si quieres activar la Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y, luego, presiona Navegación segura.</translation>
+<translation id="6294610283659775533">Puedes enviar pestañas entre dispositivos en los que se haya accedido a la misma Cuenta de Google.</translation>
 <translation id="6321526113093607004">Agregar a Favoritos</translation>
 <translation id="6324669097367352121">Config. acceso</translation>
 <translation id="6337234675334993532">Encriptación</translation>
@@ -961,6 +960,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9055772144595778347">Error al acceder</translation>
 <translation id="9057972802061533987">No se puede seguir. Se produjo un error.</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9068336935206019333">Abrir en modo Incógnito en Chrome</translation>
 <translation id="9079935439869366234">Marcar todas como no leídas</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña para <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 elemento</translation>

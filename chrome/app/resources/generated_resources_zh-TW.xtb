@@ -1659,7 +1659,6 @@
 <translation id="2519517390894391510">憑證設定檔名稱</translation>
 <translation id="2520644704042891903">正在等待可用的通訊端...</translation>
 <translation id="2521854691574443804">正在檢查 <ph name="FILE_NAME" /> 是否符合貴機構的安全性政策...</translation>
-<translation id="252219247728877310">元件未更新</translation>
 <translation id="2523184218357549926">將你造訪的網頁網址傳送給 Google</translation>
 <translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome 正在對電腦進行有害軟體檢測…</translation>
@@ -2796,6 +2795,7 @@
 <translation id="3635353578505343390">提供意見給 Google</translation>
 <translation id="3635960017746711110">Crostini USB 偏好設定</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 還可以使用 <ph name="TIME" /></translation>
+<translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637203148990213388">其他帳戶</translation>
 <translation id="3639220004740062347">結束閱讀器模式</translation>
 <translation id="3640214691812501263">為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」？</translation>
@@ -3267,6 +3267,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> 儲存的所有資料和 Cookie 都將遭到清除。</translation>
 <translation id="4078738236287221428">積極</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
+<translation id="4081203444152654304">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 在圖片內搜尋</translation>
 <translation id="4081242589061676262">無法投放檔案。</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> 已傳送通知到你的手機。如要確認自己的身分，請按照手機上的步驟操作。</translation>
 <translation id="4084682180776658562">書籤</translation>
@@ -3663,6 +3664,7 @@
 <translation id="4476590490540813026">運動員</translation>
 <translation id="4476659815936224889">如要掃描這個圖碼，你可以使用手機上的 QR 掃描器或相機應用程式。</translation>
 <translation id="4477015793815781985">必須包含 Ctrl、Alt 或 ⌘ 鍵</translation>
+<translation id="4477379360383751882">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 在圖片內搜尋</translation>
 <translation id="4478664379124702289">另存連結(&amp;K)...</translation>
 <translation id="4479424953165245642">管理 Kiosk 應用程式</translation>
 <translation id="4479639480957787382">乙太網路</translation>
@@ -4108,6 +4110,7 @@
 <translation id="4900392736118574277">你的起始網頁已變更為 <ph name="URL" />。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
 <translation id="4900652253009739885">這是唯一指派為代表「選取」的外接切換裝置，因此無法移除。按下任意鍵即可<ph name="RESPONSE" />。</translation>
+<translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4906490889887219338">設定或管理網路檔案共用。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -6993,6 +6996,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> 將可查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7768770796815395237">變更</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
+<translation id="7769748505895274502">收合最近關閉的分頁</translation>
 <translation id="7770406201819593386">執行 ChromeOS Flex 診斷測試。</translation>
 <translation id="7770450735129978837">按一下滑鼠右鍵</translation>
 <translation id="7770612696274572992">從其他裝置複製的圖片</translation>

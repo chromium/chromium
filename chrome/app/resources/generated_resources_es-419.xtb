@@ -1005,6 +1005,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1936157145127842922">Mostrar en carpeta</translation>
 <translation id="1936931585862840749">Usa un número para indicar la cantidad de copias que deseas imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">No se puede importar el tipo de arquitectura de contenedores <ph name="ARCHITECTURE_CONTAINER" /> con este dispositivo porque es <ph name="ARCHITECTURE_DEVICE" />. Puedes intentar restablecer este contenedor en otro dispositivo o acceder a los archivos en su interior con la app de Archivos.</translation>
+<translation id="1938240902511979591">Configuración de modo de contraste alto, lupa y pantalla</translation>
 <translation id="1938320257168860255">Se produjo un error. Asegúrate de que el teléfono esté cerca y desbloqueado, y que el Bluetooth y el Wi-Fi estén encendidos.</translation>
 <translation id="1938351510777341717">Tecla externa Comando</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
@@ -1424,6 +1425,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">No se admiten las siguientes teclas: Tab, Mayúsculas, Control, Escape, Bloq Mayús, Volumen</translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
+<translation id="2310923358723722542">Pantalla y ampliación</translation>
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">Se estableció la configuración de visibilidad actual en Oculta</translation>
 <translation id="2314774579020744484">El idioma que se usa cuando se traducen páginas</translation>
@@ -1653,7 +1655,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
 <translation id="2520644704042891903">Esperando el socket disponible…</translation>
 <translation id="2521854691574443804">Controlando <ph name="FILE_NAME" /> respecto de las políticas de seguridad de tu organización…</translation>
-<translation id="252219247728877310">Componente no actualizado</translation>
 <translation id="2523184218357549926">Envía a Google las URL de las páginas que visitas</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome está buscando software dañino en la computadora…</translation>
@@ -2788,6 +2789,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3635353578505343390">Enviar comentarios a Google</translation>
 <translation id="3635960017746711110">Preferencias de USB para Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - Queda(n) <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Cuentas adicionales</translation>
 <translation id="3639220004740062347">Salir del modo de lectura</translation>
 <translation id="3640214691812501263">¿Quieres agregar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
@@ -4160,6 +4162,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="496446150016900060">Sincronizar las redes Wi-Fi con tu teléfono</translation>
 <translation id="4965808351167763748">¿Seguro que deseas configurar este dispositivo para ejecutar Meet de Hangouts?</translation>
 <translation id="4966972803217407697">Estás en modo Incógnito</translation>
+<translation id="4967227914555989138">Agregar nota</translation>
 <translation id="496742804571665842">Inhabilitar perfiles de eSIM</translation>
 <translation id="4971412780836297815">Abrir al finalizar</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva contra descargas, extensiones y sitios web peligrosos. Te advierte sobre violaciones de la seguridad de las contraseñas. Requiere que se envíen datos de navegación a Google.</translation>
@@ -4407,6 +4410,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5233231016133573565">ID de proceso</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5233736638227740678">&amp;Pegar</translation>
+<translation id="5233794855520048159">Audio mono, sonidos al inicio y subtítulos</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5235050375939235066">¿Desinstalar la app?</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
@@ -4511,6 +4515,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5333896723098573627">Para quitar apps, ve a Configuración &gt; Apps &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.</translation>
 <translation id="5334142896108694079">Caché de la secuencia de comandos</translation>
 <translation id="5336688142483283574">Esta página también se quitará de tu historial y actividad de <ph name="SEARCH_ENGINE" />.</translation>
+<translation id="5336689872433667741">Cursor y panel táctil</translation>
 <translation id="5337771866151525739">Instalada por un tercero</translation>
 <translation id="5337926771328966926">El nombre actual del dispositivo es <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Puedes navegar de forma privada con una ventana de incógnito</translation>
@@ -4521,6 +4526,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5342091991439452114">El PIN debe tener al menos <ph name="MINIMUM" /> dígitos</translation>
 <translation id="5344036115151554031">Restaurando Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (derecho)</translation>
+<translation id="534449933710420173">Carpeta sin nombre</translation>
 <translation id="5345916423802287046">Iniciar la app al acceder</translation>
 <translation id="5350293332385664455">Desactivar el Asistente de Google</translation>
 <translation id="535123479159372765">Texto copiado de otro dispositivo</translation>
@@ -5144,6 +5150,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="595959584676692139">Vuelve a cargar la página para usar esta extensión</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> máximo)</translation>
+<translation id="5963620791620013026">Teclas especiales, teclado en pantalla, dictado, accesibilidad con interruptores y resaltado mejorado</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="5965661248935608907">También controla qué página se muestra al hacer clic en el botón de página principal o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="5968022600320704045">La búsqueda no arrojó resultados.</translation>
@@ -5954,6 +5961,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6770602306803890733">Mejora la seguridad para ti y todos los usuarios de la Web</translation>
 <translation id="6771503742377376720">Es una Entidad de certificación</translation>
 <translation id="6775163072363532304">Aquí aparecerán los dispositivos disponibles.</translation>
+<translation id="677646486571529447">Agregar nota</translation>
 <translation id="6776729248872343918">Habilitar Vinculación rápida</translation>
 <translation id="6777817260680419853">Se bloqueó el redireccionamiento</translation>
 <translation id="6778737459546443941">Uno de tus padres aún no lo aprobó</translation>
@@ -6102,6 +6110,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6900654715912436255">¿Estás seguro de que deseas borrar este motor de búsqueda?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voz de prueba</translation>
+<translation id="6902219595840841518">Clic automático, tamaño del cursor, color del cursor y cursor de resaltado</translation>
 <translation id="6902336033320348843">La sección no es compatible: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Une el dispositivo al dominio</translation>
 <translation id="6903022061658753260">Tu información se sincronizará en todos los navegadores Chrome donde hayas activado la sincronización con esta cuenta. Para acceder a las opciones de sincronización de Chrome OS, ve a la <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" />.</translation>
@@ -6880,6 +6889,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7681095912841365527">El sitio puede usar la conexión Bluetooth</translation>
 <translation id="7681597159868843240">Por lo general, los sitios utilizan los sensores de movimiento del dispositivo en funciones, como el seguimiento de la actividad física o la realidad virtual.</translation>
 <translation id="7683373461016844951">Para continuar, haz clic en Aceptar y, luego, en Agregar un usuario para crear un perfil nuevo para tu dirección de correo electrónico de <ph name="DOMAIN" />.</translation>
+<translation id="7683834360226457448">Herramientas de pantalla para personas con visión reducida</translation>
 <translation id="7684212569183643648">Instalado por el administrador</translation>
 <translation id="7684559058815332124">Visitar la página de acceso al portal cautivo</translation>
 <translation id="7684718995427157417">Si quieres crear y probar apps, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permite la instalación de apps para Android que Google no verificó. Si quieres inhabilitar ADB, deberás restablecer la configuración de fábrica.</translation>

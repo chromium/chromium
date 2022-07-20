@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
-<translation id="359441731697487922">Chrome をデフォルトのブラウザアプリに設定すると、自動的に Chrome でリンクを開くことができます。
-      
-次の手順で設定してください。</translation>
 <translation id="3603009562372709545">リンクのURLをコピー</translation>
 <translation id="3607167657931203000">自動入力のデータ</translation>
 <translation id="3609785682760573515">同期しています...</translation>
@@ -627,6 +624,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> のフォローを解除しました</translation>
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
+<translation id="6294610283659775533">同じ Google アカウントでログインしているデバイス間でタブを送信できます</translation>
 <translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6324669097367352121">ログインの設定</translation>
 <translation id="6337234675334993532">暗号化</translation>

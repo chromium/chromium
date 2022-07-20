@@ -311,9 +311,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3551320343578183772">Maak oortjie toe</translation>
 <translation id="3581564640715911333">Aanbieding om bladsye in ander tale te vertaal</translation>
 <translation id="3588820906588687999">Maak prent in nuwe oortjie oop</translation>
-<translation id="359441731697487922">Jy kan skakels outomaties in Chrome oopmaak deur dit jou verstekblaaierprogram te maak.
-      
-Volg die stappe hieronder:</translation>
 <translation id="3603009562372709545">Kopieer skakel se URL</translation>
 <translation id="3607167657931203000">Outovuldata</translation>
 <translation id="3609785682760573515">Sinkroniseer tans …</translation>
@@ -441,6 +438,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4751645464639803239">Nuwe incognito-oortjie</translation>
 <translation id="4775879719735953715">Verstekblaaier</translation>
 <translation id="4778644898150334464">Gebruik ander wagwoord</translation>
+<translation id="478808905805139173">Maak in Incognito oop?</translation>
 <translation id="4802417911091824046">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
 
 <ph name="BEGIN_LINK" />Stel sinkronisering terug<ph name="END_LINK" /> om hierdie instelling te verander</translation>
@@ -626,6 +624,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6289501276895392862">Het <ph name="CHANNEL_NAME" /> ontvolg</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
+<translation id="6294610283659775533">Jy kan oortjies stuur tussen toestelle wat met dieselfde Google-rekening aangemeld is</translation>
 <translation id="6321526113093607004">Voeg by Boekmerke</translation>
 <translation id="6324669097367352121">Aanmeldinstellings</translation>
 <translation id="6337234675334993532">Enkriptering</translation>
@@ -961,6 +960,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9055772144595778347">Kan nie aanmeld nie</translation>
 <translation id="9057972802061533987">Kan nie volg nie. Iets was fout.</translation>
 <translation id="9065203028668620118">Wysig</translation>
+<translation id="9068336935206019333">Maak in Chrome Incognito oop</translation>
 <translation id="9079935439869366234">Merk alles as ongelees</translation>
 <translation id="9081058212938299310">Dateer wagwoord op vir <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>

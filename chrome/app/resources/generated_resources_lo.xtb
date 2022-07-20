@@ -1672,7 +1672,6 @@
 <translation id="2519517390894391510">ຊື່ໂປຣໄຟລ໌ໃບຮັບຮອງ</translation>
 <translation id="2520644704042891903">ກໍາລັງລໍຖ້າເຕົ້າຮັບທີ່ມີຢູ່...</translation>
 <translation id="2521854691574443804">ກຳລັງກວດສອບ <ph name="FILE_NAME" /> ນຳນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
-<translation id="252219247728877310">ອົງ​ປະ​ກອບ​ບໍ່ໄດ້ຮັບການອັບເດດ</translation>
 <translation id="2523184218357549926">ສົ່ງ URL ຂອງໜ້າຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google</translation>
 <translation id="252418934079508528">ຕິດຕັ້ງ <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome ກຳລັງກວດຄອມພິວເຕີຂອງທ່ານສຳລັບຊອບແວອັນຕະລາຍ...</translation>
@@ -2807,6 +2806,7 @@
 <translation id="3635353578505343390">ສົ່ງຄຳຕິຊົມຫາ Google</translation>
 <translation id="3635960017746711110">ການຕັ້ງຄ່າ USB ໃນ Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ຊ້າຍ</translation>
+<translation id="3636940436873918441">ພາສາທີ່ຕ້ອງການ</translation>
 <translation id="3637203148990213388">ບັນຊີເພີ່ມເຕີມ</translation>
 <translation id="3639220004740062347">ອອກຈາກໂໝດຜູ້ອ່ານ</translation>
 <translation id="3640214691812501263">ເພີ່ມ "<ph name="EXTENSION_NAME" />" ສຳ​ລັບ <ph name="USER_NAME" /> ບໍ?</translation>

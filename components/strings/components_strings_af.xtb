@@ -1059,6 +1059,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3807873520724684969">Skadelike inhoud is geblokkeer.</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="3816482573645936981">Waarde (vervang)</translation>
+<translation id="3823402221513322552">Jou blaaier word deur <ph name="BROWSER_DOMAIN" /> bestuur en jou profiel word deur <ph name="PROFILE_DOMAIN" /> bestuur</translation>
 <translation id="382518646247711829">As jy 'n instaanbediener gebruik …</translation>
 <translation id="3826050100957962900">Derdeparty-aanmelding</translation>
 <translation id="3827112369919217609">Absoluut</translation>
@@ -1556,6 +1557,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5179510805599951267">Nie in <ph name="ORIGINAL_LANGUAGE" /> nie? Meld hierdie fout aan</translation>
 <translation id="518639307526414276">Troeteldierkos en troeteldiersorgbenodigdhede</translation>
 <translation id="5190835502935405962">Boekmerkebalk</translation>
+<translation id="5191315092027169558">Jou profiel word deur <ph name="DOMAIN" /> bestuur</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wil veelvuldige lêers aflaai</translation>
 <translation id="519422657042045905">Annotasie is nie beskikbaar nie</translation>
 <translation id="5201306358585911203">'n Ingebedde bladsy op hierdie bladsy sê</translation>
@@ -2759,6 +2761,7 @@ Bykomende besonderhede:
 <translation id="8623885649813806493">Geen passende wagwoorde nie. Wys alle gestoorde wagwoorde.</translation>
 <translation id="8624354461147303341">Kry afslag</translation>
 <translation id="8625384913736129811">Stoor hierdie kaart op hierdie toestel</translation>
+<translation id="8637577059508742477">Jou profiel en blaaier word deur <ph name="DOMAIN" /> bestuur</translation>
 <translation id="865032292777205197">bewegingsensors</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
 <translation id="8666678546361132282">Engels</translation>

@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">Цонхыг хаах</translation>
 <translation id="3581564640715911333">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
-<translation id="359441731697487922">Та Chrome-г Өгөгдмөл хөтчийн аппаа болгосноор холбооснуудыг үүн дээр автоматаар нээх боломжтой.
-      
-Доорх алхмуудыг дагана уу:</translation>
 <translation id="3603009562372709545">Холбоосын URL-ыг хуулах</translation>
 <translation id="3607167657931203000">Автоматаар бөглөх хэсгийн өгөгдөл</translation>
 <translation id="3609785682760573515">Sync хийж байна ...</translation>
@@ -626,6 +623,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6284652193729350524"><ph name="LANGUAGE" />-г орчуулахыг санал болгох</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />-г дагахаа больсон</translation>
 <translation id="6293101329759844770">Аюулгүй үзэлтийг асаахын тулд <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдийг<ph name="END_LINK" /> нээж, Аюулгүй үзэлт дээр товшино уу.</translation>
+<translation id="6294610283659775533">Та ижил Google Бүртгэлээр нэвтэрсэн төхөөрөмжүүдийн хооронд таб илгээх боломжтой</translation>
 <translation id="6321526113093607004">Хавчуургaд нэмэх</translation>
 <translation id="6324669097367352121">Нэвтрэх тохиргоонууд</translation>
 <translation id="6337234675334993532">Шифрлэх</translation>

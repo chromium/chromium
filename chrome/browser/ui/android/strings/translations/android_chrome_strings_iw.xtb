@@ -108,6 +108,7 @@
 <translation id="1488775391433859242">‏יש לך אפשרות להשתמש בטלפון הזה כדי להיכנס לחשבון במחשב שמוצג בו קוד ה-QR הזה.</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1493287004536771723">בחרת לעקוב אחר <ph name="SITE_NAME" /></translation>
+<translation id="1502010315804028179">‏כדי לנהל את הסיסמאות, צריך לעדכן את Google Play Services</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
 <translation id="1513352483775369820">סימניות והיסטוריית אתרים</translation>
 <translation id="1513814250881909472">אפשר לבצע סנכרון כדי להציג את הכרטיסיות מהמכשירים האחרים שלך</translation>
@@ -486,6 +487,7 @@
 <translation id="3622349720008044802">ניהול החלונות</translation>
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
+<translation id="3636940436873918441">השפות המועדפות</translation>
 <translation id="3677911431265050325">בקשת אתר לנייד</translation>
 <translation id="3687645719033307815">מוצגת לך תצוגה מקדימה של הדף הזה</translation>
 <translation id="3690369331356918524">במצב הזה המערכת מזהירה אותך אם סיסמאות נחשפות כתוצאה מפרצה באבטחת המידע</translation>
@@ -1272,6 +1274,7 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> אינו מעודכן.</translation>
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
+<translation id="7957413488482743710">כרטיס וירטואלי מסתיר את הכרטיס שלך בפועל כדי להגן עליך מפני תרמיות פוטנציאליות. <ph name="BEGIN_LINK1" />כאן מפורט מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>
 <translation id="7963646190083259054">ספק:</translation>

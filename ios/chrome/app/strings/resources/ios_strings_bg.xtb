@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">Затваряне на раздела</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
-<translation id="359441731697487922">Можете да отваряте връзките автоматично в Chrome, като го направите стандартното си приложение за браузър.
-      
-Изпълнете стъпките по-долу:</translation>
 <translation id="3603009562372709545">Копиране на URL адреса на връзката</translation>
 <translation id="3607167657931203000">Автоматично попълване на данни</translation>
 <translation id="3609785682760573515">Синхронизира се...</translation>
@@ -441,6 +438,7 @@
 <translation id="4751645464639803239">Нов раздел в режим „инкогнито“</translation>
 <translation id="4775879719735953715">Браузър по подразбиране</translation>
 <translation id="4778644898150334464">Използване на друга парола</translation>
+<translation id="478808905805139173">Да се отвори ли в режим „инкогнито“?</translation>
 <translation id="4802417911091824046">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay.
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
@@ -626,6 +624,7 @@
 <translation id="6284652193729350524">Предлагане на превод от <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Следенето на <ph name="CHANNEL_NAME" /> бе прекратено</translation>
 <translation id="6293101329759844770">За да включите „Безопасно сърфиране“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и докоснете съответната опция.</translation>
+<translation id="6294610283659775533">Можете да изпращате раздели до други устройства, на които сте влезли в един и същ профил в Google</translation>
 <translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6324669097367352121">Настройки за вход</translation>
 <translation id="6337234675334993532">Шифроване</translation>
@@ -961,6 +960,7 @@
 <translation id="9055772144595778347">Не може да се влезе</translation>
 <translation id="9057972802061533987">Следенето не е възможно. Нещо се обърка.</translation>
 <translation id="9065203028668620118">Редактиране</translation>
+<translation id="9068336935206019333">Отваряне в режим „инкогнито“ в Chrome</translation>
 <translation id="9079935439869366234">Означаване на всичко като непрочетено</translation>
 <translation id="9081058212938299310">Да се актуализира ли паролата за <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 елемент</translation>

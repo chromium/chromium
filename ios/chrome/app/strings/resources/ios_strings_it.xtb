@@ -311,9 +311,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3551320343578183772">Chiudi scheda</translation>
 <translation id="3581564640715911333">Proponi di tradurre le pagine in altre lingue</translation>
 <translation id="3588820906588687999">Apri immagine in un'altra scheda</translation>
-<translation id="359441731697487922">Puoi aprire automaticamente i link in Chrome impostandolo come app browser predefinita.
-      
-Svolgi i passaggi che seguono:</translation>
 <translation id="3603009562372709545">Copia URL link</translation>
 <translation id="3607167657931203000">Dati della Compilazione automatica</translation>
 <translation id="3609785682760573515">Sincronizzazione in corso...</translation>
@@ -441,6 +438,7 @@ I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inserisc
 <translation id="4751645464639803239">Nuova scheda in incognito</translation>
 <translation id="4775879719735953715">Browser predefinito</translation>
 <translation id="4778644898150334464">Utilizza un'altra password</translation>
+<translation id="478808905805139173">Aprire in modalità di navigazione in incognito?</translation>
 <translation id="4802417911091824046">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay.
 
 Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
@@ -626,6 +624,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Non segui più <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
+<translation id="6294610283659775533">Puoi inviare schede tra dispositivi su cui è stato eseguito l'accesso con lo stesso Account Google</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
 <translation id="6324669097367352121">Impostazioni accesso</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -961,6 +960,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9055772144595778347">Impossibile accedere</translation>
 <translation id="9057972802061533987">Non è possibile seguire questi contenuti. Si è verificato un errore.</translation>
 <translation id="9065203028668620118">Modifica</translation>
+<translation id="9068336935206019333">Apri in modalità di navigazione in incognito di Chrome</translation>
 <translation id="9079935439869366234">Segna tutti come da leggere</translation>
 <translation id="9081058212938299310">Aggiornare la password per <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 elemento</translation>

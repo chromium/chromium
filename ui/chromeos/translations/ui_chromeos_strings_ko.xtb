@@ -188,6 +188,7 @@
 <translation id="2570012981255377263">최근 파일이 여기에 표시됩니다.</translation>
 <translation id="2578394532502990878">타밀어(표음)</translation>
 <translation id="2579959351793446050">오리야어</translation>
+<translation id="2593644851255584939">관리자의 요청에 따라 SIM 잠금을 사용 중지해야 합니다.</translation>
 <translation id="2602810353103180630">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 동영상</translation>
 <translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>

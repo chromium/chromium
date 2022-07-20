@@ -361,6 +361,7 @@
 <translation id="1347256498747320987">업데이트 및 앱을 설치합니다. 계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데에도 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux 저장용량</translation>
 <translation id="1347975661240122359">배터리 잔량이 <ph name="BATTERY_LEVEL" />%가 되면 업데이트가 시작됩니다.</translation>
+<translation id="1348966090521113558">마우스 접근성 설정</translation>
 <translation id="1353275871123211385">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 도구를 사용할 수 있습니다.</translation>
 <translation id="135389172849514421">오프라인에서 사용 가능</translation>
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
@@ -1674,7 +1675,6 @@
 <translation id="2519517390894391510">인증서 프로필 이름</translation>
 <translation id="2520644704042891903">사용 가능한 소켓 대기 중...</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> 파일이 조직 보안 정책을 준수하는지 확인하는 중입니다.</translation>
-<translation id="252219247728877310">구성요소가 업데이트되지 않음</translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> 설치</translation>
 <translation id="252502352004572774">Chrome이 컴퓨터에 유해 소프트웨어가 있는지 확인하고 있습니다...</translation>
@@ -1800,6 +1800,7 @@
 <translation id="2653659639078652383">제출</translation>
 <translation id="265390580714150011">필드 값</translation>
 <translation id="2654553774144920065">인쇄 요청</translation>
+<translation id="2657612187216250073">포인팅 장치 접근성 설정</translation>
 <translation id="2658941648214598230">원본 콘텐츠를 표시하시겠습니까?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />기기에 따라 기능이 다를 수 있습니다.</translation>
 <translation id="2659971421398561408">Crostini 디스크 크기 조절</translation>
@@ -1964,6 +1965,7 @@
 <translation id="2801954693771979815">화면 크기</translation>
 <translation id="2802557211515765772">관리되는 프린터가 없습니다.</translation>
 <translation id="2803313416453193357">폴더 열기</translation>
+<translation id="2803719750464280163"><ph name="PASSKEY" />이(가) 블루투스 기기 <ph name="DEVICE" />에 표시된 패스키인지 확인하세요.</translation>
 <translation id="2804043232879091219">대체 브라우저를 열 수 없습니다.</translation>
 <translation id="2804667941345577550">열려 있는 탭을 포함하여 이 사이트에서 로그아웃됩니다.</translation>
 <translation id="2804680522274557040">카메라 사용 중지됨</translation>
@@ -2809,6 +2811,7 @@
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
 <translation id="3635960017746711110">Crostini USB 환경설정</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> 남음</translation>
+<translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637203148990213388">추가 계정</translation>
 <translation id="3639220004740062347">읽기 모드 종료</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />님에 대하여 '<ph name="EXTENSION_NAME" />'을(를) 추가할까요?</translation>
@@ -2879,6 +2882,7 @@
 <translation id="370649949373421643">Wi-Fi 사용</translation>
 <translation id="370665806235115550">로드 중...</translation>
 <translation id="3707163604290651814">현재 <ph name="NAME" />님으로 로그인한 사용자</translation>
+<translation id="3708295717182051206">자막</translation>
 <translation id="3708684582558000260">닫힌 사이트에서 데이터 전송 또는 수신을 완료하도록 허용하지 않음</translation>
 <translation id="3709244229496787112">다운로드가 완료되기 전에 브라우저가 종료되었습니다.</translation>
 <translation id="371174301504454251">개인 정보를 보호하기 위해 Chromium에서는 방문한 지 4주 이상 된 사이트를 목록에서 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 사이트에서 관심분야를 정의하는 것을 원치 않으면 해당 사이트를 삭제하면 됩니다.</translation>
@@ -3960,6 +3964,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
+<translation id="4756671452988984333">오디오 스크립트</translation>
 <translation id="4759202969060787081">열지 않음</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4761104368405085019">마이크 사용</translation>
@@ -6894,6 +6899,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" />의 Google 비밀번호 관리자에서</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{잘못된 PIN입니다. 앞으로 1번 더 시도할 수 있습니다.}other{잘못된 PIN입니다. 앞으로 #번 더 시도할 수 있습니다.}}</translation>
 <translation id="7670434942695515800">최상의 성능을 위해 최신 버전으로 업그레이드하세요. 업그레이드를 완료할 수 없는 경우에 대비해 파일을 백업해 두는 것이 좋습니다. 업그레이드가 시작되면 Linux가 종료됩니다. 열려 있는 파일을 저장한 후 계속 진행하세요. <ph name="LINK_START" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="7670483791111801022">자막</translation>
 <translation id="7671130400130574146">시스템 제목 표시줄 및 테두리 사용</translation>
 <translation id="767127784612208024">터치하여 초기화 여부 확인</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />에 포함된 <ph name="HUNG_IFRAME_URL" /></translation>
@@ -7982,6 +7988,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8724859055372736596">폴더 열기(&amp;S)</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8725178340343806893">즐겨찾기/북마크</translation>
+<translation id="87254326763805752">패스키 확인</translation>
 <translation id="8726206820263995930">서버에서 정책 설정을 가져오는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">선택한 권한이 재설정됩니다.</translation>
 <translation id="8729133765463465108">카메라를 사용하여 QR 코드 스캔</translation>

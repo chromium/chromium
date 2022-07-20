@@ -1675,7 +1675,6 @@
 <translation id="2519517390894391510">সার্টিফিকেট প্রোফাইলের নাম</translation>
 <translation id="2520644704042891903">উপলব্ধ সকেটের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="2521854691574443804">আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে <ph name="FILE_NAME" /> চেক করা হচ্ছে…</translation>
-<translation id="252219247728877310">কম্পোনেন্ট আপডেট করা নেই</translation>
 <translation id="2523184218357549926">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ইনস্টল করুন</translation>
 <translation id="252502352004572774">আপনার কম্পিউটারে ক্ষতিকারক সফ্টওয়্যার আছে কিনা তা Chrome চেক করছে…</translation>
@@ -2811,6 +2810,7 @@
 <translation id="3635353578505343390">Google-এ মতামত জানান</translation>
 <translation id="3635960017746711110">Crostini ইউএসবি সংক্রান্ত পছন্দ</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> বাকি আছে</translation>
+<translation id="3636940436873918441">পছন্দের ভাষা</translation>
 <translation id="3637203148990213388">অতিরিক্ত অ্যাকাউন্ট</translation>
 <translation id="3639220004740062347">রিডার মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> এর জন্য "<ph name="EXTENSION_NAME" />" জুড়বেন?</translation>

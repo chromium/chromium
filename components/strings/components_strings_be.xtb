@@ -1058,6 +1058,7 @@
 <translation id="3807873520724684969">Заблакіравана шкоднае змесціва.</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3816482573645936981">Значэнне (замененае)</translation>
+<translation id="3823402221513322552">Вашым браўзерам кіруе <ph name="BROWSER_DOMAIN" />, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Калі вы выкарыстоўваеце проксі-сервер...</translation>
 <translation id="3826050100957962900">Уваход праз староннія сэрвісы</translation>
 <translation id="3827112369919217609">Абсалютны</translation>
@@ -1555,6 +1556,7 @@
 <translation id="5179510805599951267">Мова старонкі – не <ph name="ORIGINAL_LANGUAGE" />? Паведаміце пра памылку</translation>
 <translation id="518639307526414276">Тавары і корм для хатніх жывёл</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
+<translation id="5191315092027169558">Вашым профілем кіруе <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> запытвае дазвол на спампоўку некалькіх файлаў</translation>
 <translation id="519422657042045905">Анатацыя недаступная</translation>
 <translation id="5201306358585911203">Убудаваная старонка на гэтай старонцы паведамляе</translation>
@@ -2759,6 +2761,7 @@
 <translation id="8623885649813806493">Пароль для гэтага сайта не знойдзены. Паказаць усе захаваныя паролі.</translation>
 <translation id="8624354461147303341">Атрымаць скідкі</translation>
 <translation id="8625384913736129811">Захаваць гэту картку на гэту прыладу</translation>
+<translation id="8637577059508742477">Вашым профілем і браўзерам кіруе <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">датчыкі руху</translation>
 <translation id="8663226718884576429">Зводка па заказе, <ph name="TOTAL_LABEL" />, дадатковая інфармацыя</translation>
 <translation id="8666678546361132282">Англійская</translation>

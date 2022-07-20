@@ -311,9 +311,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3551320343578183772">Lap bezárása</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
-<translation id="359441731697487922">Ha az alapértelmezett böngészővé teszi, beállíthatja, hogy a linkek automatikusan a Chrome-ban nyíljanak meg.
-      
-Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="3603009562372709545">Link URL-jének másolása</translation>
 <translation id="3607167657931203000">Automatikus kitöltés adatai</translation>
 <translation id="3609785682760573515">Szinkronizálás...</translation>
@@ -627,6 +624,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6284652193729350524">A(z) <ph name="LANGUAGE" /> nyelvű oldalak lefordításának felajánlása</translation>
 <translation id="6289501276895392862">Felhagyott a(z) <ph name="CHANNEL_NAME" /> követésével</translation>
 <translation id="6293101329759844770">A Biztonságos Böngészés bekapcsolásához nyissa meg a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> szakaszt, majd koppintson a Biztonságos Böngészés lehetőségre.</translation>
+<translation id="6294610283659775533">Átküldheti a lapokat ugyanazzal a Google-fiókkal bejelentkezett eszközei között</translation>
 <translation id="6321526113093607004">Hozzáadás a könyvjelzőkhöz</translation>
 <translation id="6324669097367352121">Bejelentkezési beállítások</translation>
 <translation id="6337234675334993532">Titkosítás</translation>

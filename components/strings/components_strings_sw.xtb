@@ -1059,6 +1059,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3807873520724684969">Imezuia maudhui hatari.</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
 <translation id="3816482573645936981">Thamani (nafasi yake imechukuliwa)</translation>
+<translation id="3823402221513322552">Kivinjari chako kinadhibitiwa na <ph name="BROWSER_DOMAIN" /> na wasifu wako unadhibitiwa na <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ukitumia seva mbadala...</translation>
 <translation id="3826050100957962900">Kuingia katika akaunti kwenye huduma nyingine</translation>
 <translation id="3827112369919217609">Kamili</translation>
@@ -1556,6 +1557,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5179510805599951267">Haiko katika <ph name="ORIGINAL_LANGUAGE" />? Ripoti hitilafu hii</translation>
 <translation id="518639307526414276">Vyakula na bidhaa za utunzaji wa wanyama vipenzi</translation>
 <translation id="5190835502935405962">Sehemu ya Alamisho</translation>
+<translation id="5191315092027169558">Wasifu wako unadhibitiwa na <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> inataka kupakua faili kadhaa</translation>
 <translation id="519422657042045905">Vidokezi havipatikani</translation>
 <translation id="5201306358585911203">Ukurasa uliopachikwa kwenye ukurasa huu unasema</translation>
@@ -2756,6 +2758,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8623885649813806493">Hakuna manenosiri yanayolingana. Onyesha manenosiri yote yaliyohifadhiwa.</translation>
 <translation id="8624354461147303341">Pata punguzo</translation>
 <translation id="8625384913736129811">Hifadhi Maelezo ya Kadi Hii kwenye Kifaa Hiki</translation>
+<translation id="8637577059508742477">Wasifu na kivinjari chako vinadhibitiwa na <ph name="DOMAIN" /></translation>
 <translation id="865032292777205197">vitambuzi vya mwendo</translation>
 <translation id="8663226718884576429">Muhtasari wa Agizo, <ph name="TOTAL_LABEL" />, Maelezo Zaidi</translation>
 <translation id="8666678546361132282">Kiingereza</translation>

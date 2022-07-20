@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">แจ้ง URL ของลิงก์</translation>
 <translation id="4322625298640984693">สีน้ำตาลดิน</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{จุด}=3{จุดไข่ปลา}other{# จุด}}</translation>
+<translation id="4352022650330571548">พิมพ์ <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">ขั้นต่ำ: <ph name="X" /></translation>
 <translation id="4372705107434148843">หยุดการพูด</translation>
 <translation id="4376316291247992553">ดูภาพเป็นอักษรเบรลล์</translation>

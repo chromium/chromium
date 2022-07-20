@@ -1060,6 +1060,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3807873520724684969">Haitallinen sisältö estetty</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
 <translation id="3816482573645936981">Arvo (korvattu)</translation>
+<translation id="3823402221513322552"><ph name="BROWSER_DOMAIN" /> ylläpitää selaintasi ja <ph name="PROFILE_DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="382518646247711829">Jos käytät välityspalvelinta…</translation>
 <translation id="3826050100957962900">Kolmannen osapuolen sisäänkirjautuminen</translation>
 <translation id="3827112369919217609">Absoluuttinen</translation>
@@ -1557,6 +1558,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5179510805599951267">Eikö kieli ole <ph name="ORIGINAL_LANGUAGE" />? Ilmoita virheestä</translation>
 <translation id="518639307526414276">Lemmikkien ruoka ja tarvikkeet</translation>
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
+<translation id="5191315092027169558"><ph name="DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> haluaa ladata useita tiedostoja</translation>
 <translation id="519422657042045905">Merkintää ei saatavilla</translation>
 <translation id="5201306358585911203">Viesti tälle sivulle upotetulta sivulta</translation>
@@ -2761,6 +2763,7 @@ Lisätietoja:
 <translation id="8623885649813806493">Ei salasanaosumia. Näytä kaikki tallennetut salasanat.</translation>
 <translation id="8624354461147303341">Hyödynnä alennukset</translation>
 <translation id="8625384913736129811">Tallenna kortti tälle laitteelle</translation>
+<translation id="8637577059508742477"><ph name="DOMAIN" /> ylläpitää profiiliasi ja selaintasi</translation>
 <translation id="865032292777205197">liiketunnistimet</translation>
 <translation id="8663226718884576429">Tilauksen yhteenveto, <ph name="TOTAL_LABEL" />, lisätietoja</translation>
 <translation id="8666678546361132282">englanti</translation>

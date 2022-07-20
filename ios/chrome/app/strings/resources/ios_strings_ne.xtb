@@ -311,9 +311,6 @@
 <translation id="3551320343578183772">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="3581564640715911333">पृष्ठहरू अन्य भाषामा अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="3588820906588687999">छविलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
-<translation id="359441731697487922">तपाईं Chrome लाई आफ्नो डिफल्ट ब्राउजर एप बनाएर लिंकहरू स्वतः Chrome मा खोल्न सक्नुहुन्छ।
-      
-निम्न चरणहरूको पालना गर्नुहोस्:</translation>
 <translation id="3603009562372709545">लिंक URL प्रतिलिपि गर्नुहोस्</translation>
 <translation id="3607167657931203000">स्वतः भरणको डेटा</translation>
 <translation id="3609785682760573515">समक्रमण हुँदै...</translation>
@@ -627,6 +624,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> अनफलो गरियो</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
+<translation id="6294610283659775533">तपाईं उही Google खातामार्फत साइन इन गरिएका एउटा डिभाइसबाट अर्को डिभाइसमा ट्याबहरू पठाउन सक्नुहुन्छ</translation>
 <translation id="6321526113093607004">'बुकमार्कहरू' मा हाल्नुहोस्</translation>
 <translation id="6324669097367352121">सेटिङहरूमा साइन इन गर्नुहोस्</translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>

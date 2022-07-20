@@ -1658,7 +1658,6 @@
 <translation id="2519517390894391510">Назив профила сертификата</translation>
 <translation id="2520644704042891903">Чека се доступан прикључак...</translation>
 <translation id="2521854691574443804">Проверава се да ли је <ph name="FILE_NAME" /> у складу са безбедносним смерницама организације...</translation>
-<translation id="252219247728877310">Компонента није ажурирана</translation>
 <translation id="2523184218357549926">URL-ови страница које посећујете се шаљу Google-у</translation>
 <translation id="252418934079508528">Инсталирајте <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome проверава да ли на рачунару има штетног софтвера...</translation>
@@ -2795,6 +2794,7 @@
 <translation id="3635353578505343390">Пошаљите повратне информације Google-у</translation>
 <translation id="3635960017746711110">Подешавања USB-а за Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – преостало је <ph name="TIME" /></translation>
+<translation id="3636940436873918441">Жељени језици</translation>
 <translation id="3637203148990213388">Додатни налози</translation>
 <translation id="3639220004740062347">Изађи из режима читача</translation>
 <translation id="3640214691812501263">Додај „<ph name="EXTENSION_NAME" />“ за корисника <ph name="USER_NAME" />?</translation>
@@ -3267,6 +3267,7 @@
 <translation id="4077919383365622693">Бришу се сви подаци и колачићи које чува <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">Агресивна</translation>
 <translation id="4079140982534148664">Користите побољшану проверу правописа</translation>
+<translation id="4081203444152654304">Претражи унутар слике уз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Није успело пребацивање датотеке.</translation>
 <translation id="408223403876103285">Сајт <ph name="WEBSITE" /> вам је послао обавештење на телефон. Да бисте потврдили да сте то ви, пратите кораке који се тамо приказују.</translation>
 <translation id="4084682180776658562">Обележивач</translation>
@@ -3663,6 +3664,7 @@
 <translation id="4476590490540813026">Спортисткиња</translation>
 <translation id="4476659815936224889">Да бисте скенирали овај кôд, можете да користите апликацију скенера QR кодова на телефону или неке апликације за камеру.</translation>
 <translation id="4477015793815781985">Користите Ctrl, Alt или ⌘</translation>
+<translation id="4477379360383751882">Претражи унутар слике уз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Сачувај ли&amp;нк као...</translation>
 <translation id="4479424953165245642">Управљај киоск апликацијама</translation>
 <translation id="4479639480957787382">Етернет</translation>
@@ -4108,6 +4110,7 @@
 <translation id="4900392736118574277">Полазна страница је промењена у <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – преплетено</translation>
 <translation id="4900652253009739885">Уклањање јединог прекидача додељеног радњи Изабери није могуће. Притисните било који тастер за <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Прошири недавно затворено</translation>
 <translation id="4901309472892185668">Изаберите стање за експеримент <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Смернице преузете са сервера су неважеће: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Подесите дељења датотека на мрежи или управљајте њима. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -7000,6 +7003,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> ће моћи да прегледа фајлове у фолдеру <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Промените</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
+<translation id="7769748505895274502">Скупи недавно затворено</translation>
 <translation id="7770406201819593386">Покрените Chrome OS Flex дијагностичке тестове.</translation>
 <translation id="7770450735129978837">Клик на десни тастер миша</translation>
 <translation id="7770612696274572992">Слика је копирана са неког другог уређаја</translation>

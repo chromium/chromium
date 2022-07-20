@@ -457,6 +457,14 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Remarque : Cette règle s'applique également aux extensions de composant telles que l'extension Hangout Services.</translation>
 <translation id="148194404518916594">Activer Appuyer pour rechercher</translation>
+<translation id="1482155585027825793">Permet de contrôler l'installation d'extensions externes.
+
+      Si cette règle est activée, les extensions externes ne pourront pas être installées.
+
+      Si cette règle est désactivée ou si elle n'est pas configurée, les extensions externes pourront être installées.
+
+      Le fonctionnement des extensions externes ainsi que leur installation sont décrits à la page https://developer.chrome.com/apps/external_extensions.
+      </translation>
 <translation id="1486021504508098388">Transmettre les informations concernant le rétroéclairage</translation>
 <translation id="1487916040416013623">Permet de spécifier les serveurs autorisés pour l'authentification intégrée qui n'est activée que lorsque <ph name="PRODUCT_NAME" /> reçoit une demande d'authentification d'un proxy ou d'un serveur figurant sur la liste des serveurs autorisés.
 
@@ -1078,6 +1086,10 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2076158466157390917">Contrôler le nettoyage automatique lors de la connexion</translation>
 <translation id="2077129598763517140">Utiliser l'accélération matérielle si disponible</translation>
 <translation id="2077273864382355561">Délai d'arrêt de l'écran (batterie)</translation>
+<translation id="2081969239334697268">
+        Si cette règle est désactivée, la mise à jour des applications Chrome Kiosk en cours de session (qui utilise l'URL de mise à jour provenant du fichier manifeste de l'extension) sera désactivée. Le préchargement CRX sera alors le seul mécanisme de mise à jour.
+        Si cette règle est activée ou si elle n'est pas configurée, la mise à jour des applications Chrome Kiosk en cours de session sera autorisée.
+        </translation>
 <translation id="2082205219176343977">Configurer la version Chrome minimale autorisée de l'appareil.</translation>
 <translation id="208566302163036794">Bloquer les fonctionnalités désactivées</translation>
 <translation id="208623333578980446">Autoriser les wakelocks forçant l'activation de l'écran pour la gestion de l'alimentation</translation>
@@ -2556,6 +2568,19 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3660562134618097814">Transférer des cookies de fournisseurs d'identité SAML lors de la connexion</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
+<translation id="3675303748198647471">setTimeout(…, 0) est souvent utilisée pour décomposer les longues tâches JavaScript.
+          Lorsque cette règle est activée, les fonctions setTimeouts et setIntervals ayant un intervalle inférieur à 4 ms ne sont pas limitées de façon aussi agressive.
+          Les performances à court terme sont alors meilleures, mais les fonctions setTimeouts des sites abusant de l'API seront finalement encore limitées.
+
+          Si cette règle est désactivée, les fonctions setTimeouts et setIntervals dont l'intervalle est inférieur à 4 ms seront limitées.
+
+          Cela peut modifier l'ordre d'exécution des tâches sur une page Web et provoquer ainsi un comportement inattendu sur les sites qui dépendent de cet ordre.
+          Les sites qui emploient de nombreuses fonctions setTimeout() avec un délai d'expiration de 0 ms peuvent aussi être affectés (par exemple, ils peuvent davantage solliciter le processeur).
+
+          Le changement sera déployé graduellement sur la version stable de <ph name="PRODUCT_NAME" /> pour les utilisateurs chez qui cette règle n'est pas configurée.
+
+          Cette règle est temporaire et devrait être supprimée dans <ph name="PRODUCT_NAME" /> 107. Néanmoins, cette échéance peut être repoussée si des entreprises le requièrent.
+          </translation>
 <translation id="3685979383016152590">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valeur  0) utilise <ph name="PRINTERS_BULK_BLOCKLIST" /> pour limiter l'accès aux imprimantes spécifiées
@@ -5638,6 +5663,13 @@ Si vous sélectionnez les options suivantes :
 <translation id="7101550508196914704">Ne pas afficher de raccourcis d'applications dans la barre de favoris</translation>
 <translation id="7109384070286741861">Désactiver CECPQ2</translation>
 <translation id="7114169791477667553">Désactiver le moteur de recherche par défaut</translation>
+<translation id="7121046543122812054">Cette règle étant obsolète, vous pouvez utiliser <ph name="BROWSER_SIGNIN_POLICY_NAME" /> à la place.
+
+      Permet à l'utilisateur de se connecter à <ph name="PRODUCT_NAME" />.
+
+      Si cette règle est activée, l'utilisateur peut se connecter à <ph name="PRODUCT_NAME" />.
+      Si elle est désactivée, la connexion est impossible. Elle empêche également les applis et les extensions utilisant l'API chrome.identity de fonctionner. Pour éviter cela, utilisez plutôt la règle <ph name="SYNC_DISABLED_POLICY_NAME" />.
+      </translation>
 <translation id="7122626777103192518">Si cette règle est définie sur "True", les utilisateurs peuvent partager des fichiers ou du texte provenant d'applis Android avec des applis Web compatibles, à l'aide du système de partage Android intégré.
       Si cette règle est activée, les métadonnées des applis Web installées sont envoyées à Google afin de générer et d'installer un shim pour applis Android.
       Si cette règle est définie sur "False", cette fonctionnalité est désactivée.</translation>
@@ -5777,7 +5809,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="7258250780552783197">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est déplacé dans <ph name="PRODUCT_OS_NAME" />.
 
-      Les champs "<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsqu'il est déplacé entre une source et une destination, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à une règle "enable" sera inclus dans la demande d'analyse si la source et la destination correspondent à la règle associée à ce tag, à condition qu'aucune règle "disable" associée à ce même tag ne corresponde au transfert. L'analyse a lieu si au moins un tag doit être inclus dans la demande. Une règle "<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />" consiste en une liste de paires, où chaque paire contient une liste de sources et une liste de destinations. "<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" />" définit le système de fichiers auquel une règle doit s'appliquer.
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier pour analyse lorsqu'il est transféré entre une source et une destination, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à une règle "enable" sera inclus dans la demande d'analyse si la source et la destination correspondent à la règle associée à ce tag, à condition qu'aucune règle "disable" associée à ce même tag ne corresponde au transfert. L'analyse a lieu si au moins un tag doit être inclus dans la demande. Une règle "<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />" consiste en une liste de paires, où chaque paire contient une liste de sources et une liste de destinations. "<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" />" définit le système de fichiers auquel une règle doit s'appliquer.
 
       Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
 
