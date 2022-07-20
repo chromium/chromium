@@ -110,8 +110,7 @@
             "--use-dynamic-shards"
           ],
           "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py",
-          "trigger_in_py3": true
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
         }
       }
     ]
@@ -400,8 +399,7 @@
             "True"
           ],
           "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py",
-          "trigger_in_py3": true
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
         }
       }
     ]
@@ -451,8 +449,7 @@
             "True"
           ],
           "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py",
-          "trigger_in_py3": true
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
         }
       }
     ]

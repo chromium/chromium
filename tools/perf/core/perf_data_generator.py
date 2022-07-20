@@ -111,11 +111,6 @@ DYNAMIC_SHARDING_TESTERS = [
     'android-pixel2-perf-calibration', 'linux-perf-calibration'
 ]
 
-TESTERS_OPT_IN_FOR_PY3 = [
-    'linux-perf-fyi', 'android-pixel2-perf-fyi',
-    'win-10_laptop_low_end-perf_HP-Candidate'
-]
-
 CALIBRATION_BUILDERS = {
     'linux-perf-calibration': {
         'tests': [
@@ -1888,8 +1883,6 @@ def generate_performance_test(tester_config, test, builder_name):
     }
     if builder_name in DYNAMIC_SHARDING_TESTERS:
       result['trigger_script']['args'].append('--use-dynamic-shards')
-    if builder_name in TESTERS_OPT_IN_FOR_PY3:
-      result['trigger_script']['trigger_in_py3'] = True
 
   result['merge'] = {
       'script': '//tools/perf/process_perf_results.py',
