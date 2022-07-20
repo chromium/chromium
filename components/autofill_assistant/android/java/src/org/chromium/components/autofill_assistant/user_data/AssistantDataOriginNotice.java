@@ -57,7 +57,7 @@ public class AssistantDataOriginNotice {
 
         mLinkToDataOriginDialog.setText(text);
         ApiCompatibilityUtils.setTextAppearance(
-                mLinkToDataOriginDialog, R.style.TextAppearance_TextSmall_Link);
+                mLinkToDataOriginDialog, R.style.TextAppearance_TextMedium_Link);
         mLinkToDataOriginDialog.setOnClickListener(this::showDataOriginDialog);
     }
 

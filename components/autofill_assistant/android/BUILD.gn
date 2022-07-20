@@ -387,7 +387,6 @@ android_resources("java_resources") {
     "internal/java/res/drawable/ic_airline_seat_recline_normal_black_24dp.xml",
     "internal/java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml",
     "internal/java/res/drawable/ic_autofill_assistant_default_progress_start_black_24dp.xml",
-    "internal/java/res/drawable/ic_baseline_help_24dp.xml",
     "internal/java/res/drawable/ic_check_circle_black_24dp.xml",
     "internal/java/res/drawable/ic_clear_black_chrome_24dp.xml",
     "internal/java/res/drawable/ic_confirmation_number_black_24dp.xml",
