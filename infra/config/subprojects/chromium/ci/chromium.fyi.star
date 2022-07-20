@@ -1673,7 +1673,7 @@ fyi_ios_builder(
         category = "iOS|iOSM1",
         short_name = "iosM1",
     ),
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     schedule = "0 1,5,9,13,17,21 * * *",
     triggered_by = [],
