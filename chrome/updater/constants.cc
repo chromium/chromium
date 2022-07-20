@@ -68,6 +68,7 @@ const char kAppGuidSwitch[] = "appguid";
 
 const char kHealthCheckSwitch[] = "healthcheck";
 
+const char kEnterpriseSwitch[] = "enterprise";  // needs backward-compatibility
 const char kHandoffSwitch[] = "handoff";        // needs backward-compatibility
 const char kOfflineDirSwitch[] = "offlinedir";  // needs backward-compatibility
 

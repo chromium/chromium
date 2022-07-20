@@ -67,6 +67,7 @@ class AppInstallControllerImpl : public AppInstallController {
   void InstallAppOffline(const std::string& app_id,
                          const std::string& app_name,
                          const base::FilePath& offline_dir,
+                         bool enterprise,
                          base::OnceCallback<void(int)> callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
@@ -262,6 +263,7 @@ void AppInstall::MaybeInstallApp() {
     // install.
     app_install_controller_->InstallAppOffline(
         app_id_, app_name_, cmd_line->GetSwitchValuePath(kOfflineDirSwitch),
+        cmd_line->HasSwitch(kEnterpriseSwitch),
         base::BindOnce(&AppInstall::Shutdown, this));
 
   } else {

@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,6 +38,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -445,6 +447,7 @@ class AppInstallControllerImpl : public AppInstallController,
   void InstallAppOffline(const std::string& app_id,
                          const std::string& app_name,
                          const base::FilePath& offline_dir,
+                         bool enterprise,
                          base::OnceCallback<void(int)> callback) override;
 
  private:
@@ -477,7 +480,8 @@ class AppInstallControllerImpl : public AppInstallController,
   void DoInstallApp();
   void DoInstallAppOffline(const base::FilePath& installer_path,
                            const std::string& install_args,
-                           const std::string& install_data);
+                           const std::string& install_data,
+                           bool enterprise);
   void InstallComplete(UpdateService::Result result);
   void HandleInstallResult(const UpdateService::UpdateState& update_state);
 
@@ -585,6 +589,7 @@ void AppInstallControllerImpl::InstallAppOffline(
     const std::string& app_id,
     const std::string& app_name,
     const base::FilePath& offline_dir,
+    bool enterprise,
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
@@ -597,7 +602,7 @@ void AppInstallControllerImpl::InstallAppOffline(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::InitializeUI, this),
       base::BindOnce(
           [](scoped_refptr<AppInstallControllerImpl> self,
-             const base::FilePath& offline_dir) {
+             const base::FilePath& offline_dir, bool enterprise) {
             base::ThreadPool::PostTaskAndReplyWithResult(
                 FROM_HERE, {base::MayBlock()},
                 base::BindOnce(
@@ -622,22 +627,24 @@ void AppInstallControllerImpl::InstallAppOffline(
                     offline_dir, self->app_id_),
                 base::BindOnce(
                     [](scoped_refptr<AppInstallControllerImpl> self,
+                       bool enterprise,
                        const std::tuple<base::FilePath /*installer_path*/,
                                         std::string /*arguments*/,
                                         std::string /*install_data*/>& result) {
-                      self->DoInstallAppOffline(std::get<0>(result),
-                                                std::get<1>(result),
-                                                std::get<2>(result));
+                      self->DoInstallAppOffline(
+                          std::get<0>(result), std::get<1>(result),
+                          std::get<2>(result), enterprise);
                     },
-                    self));
+                    self, enterprise));
           },
-          base::WrapRefCounted(this), offline_dir));
+          base::WrapRefCounted(this), offline_dir, enterprise));
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
     const base::FilePath& installer_path,
     const std::string& install_args,
-    const std::string& install_data) {
+    const std::string& install_data,
+    bool enterprise) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // At this point, the UI has been initialized, which means the UI can be
   // used from now on as an observer of the application install. The task
@@ -649,10 +656,17 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   install_progress_observer_ipc_ =
       std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());
 
-  // TODO(crbug.com/1286581, crbug.com/1286582): fine-tune installation
-  // behavior by serializing other related command line options, such as
-  // "/sessionid <sid>" and "/enterprise" into `install_settings`.
+  // TODO(crbug.com/1286581): fine-tune installation behavior by serializing
+  // other related command line options, such as "/sessionid <sid>" into
+  // `install_settings`.
+  base::Value::Dict install_settings_dict;
+  install_settings_dict.Set(kEnterpriseSwitch, enterprise);
+
   std::string install_settings;
+  if (!JSONStringValueSerializer(&install_settings)
+           .Serialize(install_settings_dict)) {
+    VLOG(1) << "Failed to serialize install settings.";
+  }
 
   absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
@@ -678,8 +692,12 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                  const std::string& install_data,
                  const std::string& install_settings,
                  const RegistrationResponse& response) {
-                DCHECK(response.status_code == kRegistrationSuccess ||
-                       response.status_code == kRegistrationAlreadyRegistered);
+                if (response.status_code != kRegistrationSuccess &&
+                    response.status_code != kRegistrationAlreadyRegistered) {
+                  VLOG(1) << "Registration failed: " << response.status_code;
+                  self->InstallComplete(UpdateService::Result::kServiceFailed);
+                  return;
+                }
                 self->update_service_->RunInstaller(
                     self->app_id_, installer_path, install_args, install_data,
                     install_settings,

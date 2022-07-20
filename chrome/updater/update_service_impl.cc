@@ -512,7 +512,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             VLOG(1) << app_id << " installation completed: " << result.error;
 
             // TODO(crbug.com/1286574): Perform post-install actions, such as
-            // send pings.
+            // send pings (if `enterprise` is not set in install_settings).
 
             // TODO(crbug.com/1286574): Expand arguments in `Callback` to take
             // more installation result details.

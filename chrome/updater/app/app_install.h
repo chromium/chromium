@@ -40,6 +40,7 @@ class AppInstallController
   virtual void InstallAppOffline(const std::string& app_id,
                                  const std::string& app_name,
                                  const base::FilePath& offline_dir,
+                                 bool enterprise,
                                  base::OnceCallback<void(int)> callback) = 0;
 
  protected:

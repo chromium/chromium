@@ -106,7 +106,7 @@ process is determined by command-line arguments:
         *   If --tag is specified, --install is assumed.
     *   --handoff=...
         *   As --tag.
-    *  --offlinedir=...
+    *   --offlinedir=...
         *   Performs offline install, which means no update check or file
             download is performed against the server during installation.
             All data is read from the files in the directory instead.
@@ -115,6 +115,8 @@ process is determined by command-line arguments:
               The file contains the update check response in XML format.
             * App installer.
         *   The switch can be combined with `--handoff` above.
+        *   --enterprise
+            *   Suppresses transmission of pings from the offline install.
 *   --uninstall
     *   Uninstall all versions of the updater.
 *   --uninstall-self
