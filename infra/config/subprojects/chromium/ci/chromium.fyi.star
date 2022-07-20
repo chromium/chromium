@@ -840,6 +840,10 @@ ci.builder(
         category = "android",
         short_name = "cmp",
     ),
+    description_html = """\
+This builder measures Android build performance with goma vs reclient.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Deterministic%20Android%20(dbg)">Deterministic Android (dbg)</a>.\
+""",
     goma_jobs = 250,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 15 * time.hour,
@@ -847,6 +851,9 @@ ci.builder(
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
     os = os.LINUX_DEFAULT,
+    # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
+    ssd = True,
+    cores = 16,
 )
 
 ci.builder(
