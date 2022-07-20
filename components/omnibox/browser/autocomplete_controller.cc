@@ -392,7 +392,8 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(voice_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
-    providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
+    providers_.push_back(new HistoryFuzzyProvider(
+        provider_client_.get(), history_quick_provider_, bookmark_provider_));
   }
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
     providers_.push_back(new OpenTabProvider(provider_client_.get()));

@@ -16,7 +16,6 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,8 +29,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/bookmark_provider.h"
-#include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/url_formatter/elide_url.h"
@@ -496,8 +493,13 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
 }  // namespace fuzzy
 
-HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
-    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
+HistoryFuzzyProvider::HistoryFuzzyProvider(
+    AutocompleteProviderClient* client,
+    HistoryQuickProvider* history_quick_provider,
+    BookmarkProvider* bookmark_provider)
+    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client),
+      history_quick_provider_(history_quick_provider),
+      bookmark_provider_(bookmark_provider) {
   history_service_observation_.Observe(client->GetHistoryService());
   client->GetHistoryService()->ScheduleDBTask(
       FROM_HERE,
@@ -518,6 +520,11 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
   }
 
   if (!urls_loaded_event_.IsSignaled()) {
+    return;
+  }
+
+  // When there are no sub-providers, bypass fuzzy search completely.
+  if (history_quick_provider_ == nullptr && bookmark_provider_ == nullptr) {
     return;
   }
 
@@ -566,11 +573,6 @@ void HistoryFuzzyProvider::DoAutocomplete() {
     DVLOG(1) << "Trie contains input; no fuzzy results needed";
   }
   if (!corrections.empty()) {
-    // Use of `scoped_refptr` is required here because destructor is private.
-    scoped_refptr<HistoryQuickProvider> history_quick_provider =
-        new HistoryQuickProvider(client());
-    scoped_refptr<BookmarkProvider> bookmark_provider =
-        new BookmarkProvider(client());
     int count_history_quick = 0;
     int count_bookmark = 0;
     for (const auto& correction : corrections) {
@@ -588,14 +590,17 @@ void HistoryFuzzyProvider::DoAutocomplete() {
           autocomplete_input_.current_page_classification(),
           client()->GetSchemeClassifier());
 
-      history_quick_provider->Start(corrected_input, false);
-      DCHECK(history_quick_provider->done());
-      bookmark_provider->Start(corrected_input, false);
-      DCHECK(bookmark_provider->done());
-
-      count_history_quick +=
-          AddConvertedMatches(history_quick_provider->matches());
-      count_bookmark += AddConvertedMatches(bookmark_provider->matches());
+      if (history_quick_provider_) {
+        history_quick_provider_->Start(corrected_input, false);
+        DCHECK(history_quick_provider_->done());
+        count_history_quick +=
+            AddConvertedMatches(history_quick_provider_->matches());
+      }
+      if (bookmark_provider_) {
+        bookmark_provider_->Start(corrected_input, false);
+        DCHECK(bookmark_provider_->done());
+        count_bookmark += AddConvertedMatches(bookmark_provider_->matches());
+      }
     }
     if (matches_.size() > provider_max_matches_) {
       // When too many matches are generated, take only the most relevant
@@ -604,10 +609,11 @@ void HistoryFuzzyProvider::DoAutocomplete() {
                         matches_.begin() + provider_max_matches_,
                         matches_.end(), AutocompleteMatch::MoreRelevant);
       for (size_t i = provider_max_matches_; i < matches_.size(); i++) {
-        DCHECK(matches_[i].provider == history_quick_provider ||
-               matches_[i].provider == bookmark_provider)
+        DCHECK(matches_[i].provider != nullptr &&
+                   matches_[i].provider == history_quick_provider_ ||
+               matches_[i].provider == bookmark_provider_)
             << matches_[i].provider->GetName();
-        if (matches_[i].provider == history_quick_provider) {
+        if (matches_[i].provider == history_quick_provider_) {
           count_history_quick--;
         } else {
           count_bookmark--;
