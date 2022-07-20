@@ -151,9 +151,10 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
-        const int max_color_diff = IsSoftwareCompositingTest()
-                                       ? kVeryLooseMaxColorDifference
-                                       : kMaxColorDifference;
+        const int max_color_diff =
+            (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled())
+                ? kVeryLooseMaxColorDifference
+                : kMaxColorDifference;
 
         // Determine the average RGB color in the three regions-of-interest in
         // the frame.
@@ -232,7 +233,10 @@ class WebContentsVideoCaptureDeviceBrowserTest
           // point, it means the frame we got did not match both expected and
           // tolerated colors.
           ADD_FAILURE() << "Observed frame that did not match both expected "
-                           "and tolerated colors. PNG dump:\n"
+                           "and tolerated colors. color="
+                        << color_string
+                        << ", tolerated_color=" << tolerated_color_string
+                        << ", PNG dump:\n"
                         << cc::GetPNGDataUrl(rgb_frame);
           return;
         }
@@ -616,14 +620,8 @@ INSTANTIATE_TEST_SUITE_P(
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
-// TODO the test is flaky on Mac. See https://crbug.com/1345663.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
-#else
-#define MAYBE_CapturesContentChanges CapturesContentChanges
-#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       MAYBE_CapturesContentChanges) {
+                       CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
   if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
