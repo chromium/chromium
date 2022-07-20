@@ -243,19 +243,19 @@ std::string PortalStatusString(
   using PortalState = chromeos::NetworkState::PortalState;
   switch (portal_state) {
     case PortalState::kUnknown:
-      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
-          chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
+      return ash::NetworkPortalDetector::CaptivePortalStatusString(
+          ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
     case PortalState::kOnline:
-      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
-          chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+      return ash::NetworkPortalDetector::CaptivePortalStatusString(
+          ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
     case PortalState::kPortalSuspected:
     case PortalState::kPortal:
     case PortalState::kNoInternet:
-      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
-          chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      return ash::NetworkPortalDetector::CaptivePortalStatusString(
+          ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
     case PortalState::kProxyAuthRequired:
-      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
-          chromeos::NetworkPortalDetector::
+      return ash::NetworkPortalDetector::CaptivePortalStatusString(
+          ash::NetworkPortalDetector::
               CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
   }
   return "Unrecognized";
@@ -573,8 +573,8 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
   }
   if (!network->IsConnectedState()) {
     std::move(success_callback)
-        .Run(chromeos::NetworkPortalDetector::CaptivePortalStatusString(
-            chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE));
+        .Run(ash::NetworkPortalDetector::CaptivePortalStatusString(
+            ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE));
     return;
   }
   chromeos::NetworkState::PortalState portal_state = network->portal_state();

@@ -8,7 +8,7 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockNetworkPortalDetector : public NetworkPortalDetector {
  public:
@@ -20,26 +20,18 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
 
   ~MockNetworkPortalDetector() override;
 
-  MOCK_METHOD1(AddObserver,
-               void(chromeos::NetworkPortalDetector::Observer* observer));
-  MOCK_METHOD1(RemoveObserver,
-               void(chromeos::NetworkPortalDetector::Observer* observer));
+  MOCK_METHOD1(AddObserver, void(NetworkPortalDetector::Observer* observer));
+  MOCK_METHOD1(RemoveObserver, void(NetworkPortalDetector::Observer* observer));
   MOCK_METHOD1(AddAndFireObserver,
-               void(chromeos::NetworkPortalDetector::Observer* observer));
+               void(NetworkPortalDetector::Observer* observer));
   MOCK_METHOD0(GetCaptivePortalStatus,
-               chromeos::NetworkPortalDetector::CaptivePortalStatus());
+               NetworkPortalDetector::CaptivePortalStatus());
   MOCK_METHOD0(IsEnabled, bool());
   MOCK_METHOD0(Enable, void());
   MOCK_METHOD0(StartPortalDetection, void());
-  MOCK_METHOD1(SetStrategy,
-               void(chromeos::PortalDetectorStrategy::StrategyId id));
+  MOCK_METHOD1(SetStrategy, void(PortalDetectorStrategy::StrategyId id));
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/network moved to ash.
-namespace ash {
-using ::chromeos::MockNetworkPortalDetector;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_MOCK_NETWORK_PORTAL_DETECTOR_H_

@@ -59,7 +59,7 @@ void InitNetwork() {
       ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
 
   // Takes ownership.
-  chromeos::network_portal_detector::InitializeForTesting(portal_detector);
+  ash::network_portal_detector::InitializeForTesting(portal_detector);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

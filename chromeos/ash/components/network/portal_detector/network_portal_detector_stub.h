@@ -7,7 +7,7 @@
 
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
     : public NetworkPortalDetector {
@@ -32,11 +32,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::NetworkPortalDetectorStub;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STUB_H_

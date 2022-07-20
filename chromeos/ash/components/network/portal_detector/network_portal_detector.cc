@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -87,4 +87,4 @@ void SetNetworkPortalDetector(NetworkPortalDetector* network_portal_detector) {
 
 }  // namespace network_portal_detector
 
-}  // namespace chromeos
+}  // namespace ash

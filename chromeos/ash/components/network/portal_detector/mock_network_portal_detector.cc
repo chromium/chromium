@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 
-namespace chromeos {
+namespace ash {
 
 MockNetworkPortalDetector::MockNetworkPortalDetector() = default;
 
 MockNetworkPortalDetector::~MockNetworkPortalDetector() = default;
 
-}  // namespace chromeos
+}  // namespace ash

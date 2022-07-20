@@ -13,13 +13,7 @@
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 
-// TODO(https://crbug.com/1164001): remove after moving to ash/.
 namespace ash {
-class NetworkPortalDetectorImplTest;
-class NetworkPortalDetectorImplBrowserTest;
-}  // namespace ash
-
-namespace chromeos {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) PortalDetectorStrategy {
  public:
@@ -83,8 +77,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) PortalDetectorStrategy {
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
  private:
-  friend class ash::NetworkPortalDetectorImplTest;
-  friend class ash::NetworkPortalDetectorImplBrowserTest;
+  friend class NetworkPortalDetectorImplTest;
+  friend class NetworkPortalDetectorImplBrowserTest;
 
   static void set_delay_till_next_attempt_for_testing(
       const base::TimeDelta& timeout) {
@@ -116,12 +110,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) PortalDetectorStrategy {
   static bool next_attempt_timeout_for_testing_initialized_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::PortalDetectorStrategy;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STRATEGY_H_

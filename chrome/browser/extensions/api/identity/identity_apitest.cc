@@ -128,7 +128,7 @@ void InitNetwork() {
       default_network->guid(),
       ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
 
-  chromeos::network_portal_detector::InitializeForTesting(portal_detector);
+  ash::network_portal_detector::InitializeForTesting(portal_detector);
 }
 #endif
 
