@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -75,6 +76,50 @@ constexpr apps::InstanceState kActiveInstanceState =
 constexpr apps::InstanceState kInactiveInstanceState =
     static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
                                      apps::InstanceState::kRunning);
+
+// Mock observer that observes app platform metrics event callbacks for testing
+// purposes.
+class MockAppPlatformMetricsObserver : public AppPlatformMetrics::Observer {
+ public:
+  MockAppPlatformMetricsObserver() = default;
+  MockAppPlatformMetricsObserver(const MockAppPlatformMetricsObserver&) =
+      delete;
+  MockAppPlatformMetricsObserver& operator=(
+      const MockAppPlatformMetricsObserver&) = delete;
+  ~MockAppPlatformMetricsObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnAppInstalled,
+              (const std::string& app_id,
+               AppType app_type,
+               InstallSource app_install_source,
+               InstallReason app_install_reason,
+               InstallTime app_install_time),
+              (override));
+
+  MOCK_METHOD(void,
+              OnAppLaunched,
+              (const std::string& app_id,
+               AppType app_type,
+               apps::LaunchSource launch_source),
+              (override));
+
+  MOCK_METHOD(void,
+              OnAppUninstalled,
+              (const std::string& app_id,
+               AppType app_type,
+               apps::mojom::UninstallSource app_uninstall_source),
+              (override));
+
+  MOCK_METHOD(void,
+              OnAppUsage,
+              (const std::string& app_id,
+               AppType app_type,
+               base::TimeDelta running_time),
+              (override));
+
+  MOCK_METHOD(void, OnAppPlatformMetricsDestroyed, (), (override));
+};
 
 void SetScreenOff(bool is_screen_off) {
   power_manager::ScreenIdleState screen_idle_state;
@@ -2713,6 +2758,132 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformInputMetricsTest,
+                         testing::Bool() /* IsLacrosPrimary */);
+
+// Tests for app platform metrics observers.
+class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
+ protected:
+  void SetUp() override {
+    AppPlatformMetricsServiceTest::SetUp();
+
+    // We transfer ownership of the unique_ptr for the app platform metrics
+    // service in some test scenarios. Therefore, we save a copy of the raw
+    // pointer so it can be used during teardown.
+    app_platform_metrics_service_ = app_platform_metrics_service();
+    app_platform_metrics_service_->AppPlatformMetrics()->AddObserver(
+        &observer_);
+  }
+
+  void TearDown() override {
+    // App platform metrics component has not been destructed yet, so we
+    // unregister the observer to reduce noise (observer is destructed before
+    // the component is).
+    app_platform_metrics_service_->AppPlatformMetrics()->RemoveObserver(
+        &observer_);
+    AppPlatformMetricsServiceTest::TearDown();
+  }
+
+  MockAppPlatformMetricsObserver observer_;
+  raw_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
+};
+
+TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
+  const std::string app_id(borealis::FakeAppId("borealis-fake"));
+  EXPECT_CALL(
+      observer_,
+      OnAppInstalled(app_id, AppType::kBorealis, InstallSource::kUnknown,
+                     InstallReason::kUser, InstallTime::kRunning))
+      .Times(1);
+  InstallOneApp(app_id, AppType::kBorealis,
+                /*publisher_id=*/"", Readiness::kReady, InstallSource::kUnknown,
+                /*is_platform_app=*/false, WindowMode::kBrowser);
+}
+
+TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
+  // Launch a pre-installed app and verify the observer is notified.
+  const std::string& app_id = "a";
+  EXPECT_CALL(observer_, OnAppLaunched(app_id, AppType::kArc,
+                                       apps::LaunchSource::kFromChromeInternal))
+      .Times(1);
+
+  auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  proxy->Launch(app_id, ui::EF_NONE,
+                apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
+  // Uninstall a pre-installed app and verify the observer is notified.
+  const std::string& app_id = "a";
+  EXPECT_CALL(observer_,
+              OnAppUninstalled(app_id, AppType::kArc,
+                               apps::mojom::UninstallSource::kAppList))
+      .Times(1);
+
+  auto* const proxy = AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kAppList);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
+  // Create a new window for the app.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  // Set the window active state and verify the observer is notified
+  // after a certain period.
+  const std::string& app_id = "a";
+  ModifyInstance(base::UnguessableToken::Create(), app_id, window.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(2));
+
+  // Set app inactive.
+  ModifyInstance(app_id, window.get(), kInactiveInstanceState);
+  EXPECT_CALL(observer_, OnAppUsage(app_id, AppType::kArc, base::Minutes(2)))
+      .Times(1);
+
+  // Usage metrics recorded every 5 minutes, so we fast forward.
+  task_environment_.FastForwardBy(base::Minutes(3));
+}
+
+TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
+  auto* const proxy = AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  proxy->AppPlatformMetrics()->RemoveObserver(&observer_);
+
+  // Uninstall a pre-installed app and verify the unregistered observer
+  // is not notified.
+  const std::string& app_id = "a";
+  EXPECT_CALL(observer_,
+              OnAppUninstalled(app_id, AppType::kArc,
+                               apps::mojom::UninstallSource::kAppList))
+      .Times(0);
+  proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kAppList);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnDestruction) {
+  // Create a new instance of `AppPlatformMetricsService` here so we can
+  // test destruction lifecycle without affecting pre-existing test teardown
+  // fixtures.
+  auto app_platform_metrics_service =
+      std::make_unique<AppPlatformMetricsService>(profile());
+  app_platform_metrics_service->Start(
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache(),
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->InstanceRegistry());
+  app_platform_metrics_service->AppPlatformMetrics()->AddObserver(&observer_);
+
+  EXPECT_CALL(observer_, OnAppPlatformMetricsDestroyed()).Times(1);
+  app_platform_metrics_service.reset();
+  task_environment_.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppPlatformMetricsObserverTest,
                          testing::Bool() /* IsLacrosPrimary */);
 
 }  // namespace apps

@@ -9,6 +9,8 @@
 #include <set>
 #include <string>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
@@ -66,6 +68,43 @@ void RecordAppLaunchMetrics(Profile* profile,
 class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
                            public apps::InstanceRegistry::Observer {
  public:
+  // Observer that is notified on certain app related events like install,
+  // launch, uninstall, etc.
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    // Invoked when app install metrics are being reported.
+    virtual void OnAppInstalled(const std::string& app_id,
+                                AppType app_type,
+                                InstallSource app_install_source,
+                                InstallReason app_install_reason,
+                                InstallTime app_install_time) {}
+
+    // Invoked when app launch metrics are being reported.
+    virtual void OnAppLaunched(const std::string& app_id,
+                               AppType app_type,
+                               apps::LaunchSource launch_source) {}
+
+    // Invoked when app uninstall metrics are being reported.
+    virtual void OnAppUninstalled(
+        const std::string& app_id,
+        AppType app_type,
+        apps::mojom::UninstallSource app_uninstall_source) {}
+
+    // Invoked when app usage metrics are being recorded (every 5 mins).
+    virtual void OnAppUsage(const std::string& app_id,
+                            AppType app_type,
+                            base::TimeDelta running_time) {}
+
+    // Invoked when the `AppPlatformMetrics` component (being observed) is being
+    // destroyed.
+    virtual void OnAppPlatformMetricsDestroyed() {}
+  };
+
   explicit AppPlatformMetrics(Profile* profile,
                               apps::AppRegistryCache& app_registry_cache,
                               InstanceRegistry& instance_registry);
@@ -134,6 +173,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void RecordAppUninstallUkm(AppType app_type,
                              const std::string& app_id,
                              apps::mojom::UninstallSource uninstall_source);
+
+  void AddObserver(Observer* observer);
+
+  void RemoveObserver(Observer* observer);
 
  private:
   struct RunningStartTime {
@@ -267,6 +310,8 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   // The app usage time loaded from the user pref during the init phase.
   std::vector<std::unique_ptr<UsageTime>> usage_times_from_pref_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace apps

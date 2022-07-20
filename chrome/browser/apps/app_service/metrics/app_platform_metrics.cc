@@ -23,6 +23,7 @@
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/ukm/app_source_url_recorder.h"
@@ -403,6 +404,11 @@ AppPlatformMetrics::~AppPlatformMetrics() {
 
   OnTenMinutes();
   RecordAppsUsageTime();
+
+  // Notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnAppPlatformMetricsDestroyed();
+  }
 }
 
 // static
@@ -654,6 +660,11 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
       .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
       .Record(ukm::UkmRecorder::Get());
   RemoveSourceId(source_id);
+
+  // Also notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnAppLaunched(app_id, app_type, launch_source);
+  }
 }
 
 void AppPlatformMetrics::RecordAppUninstallUkm(
@@ -674,6 +685,19 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
   RemoveSourceId(source_id);
+
+  // Also notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnAppUninstalled(app_id, app_type, uninstall_source);
+  }
+}
+
+void AppPlatformMetrics::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AppPlatformMetrics::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void AppPlatformMetrics::OnAppTypeInitialized(AppType app_type) {
@@ -1116,6 +1140,13 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
   RemoveSourceId(source_id);
+
+  // Also notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnAppInstalled(update.AppId(), update.AppType(),
+                            update.InstallSource(), update.InstallReason(),
+                            install_time);
+  }
 }
 
 void AppPlatformMetrics::UpdateUsageTime(
@@ -1143,6 +1174,13 @@ void AppPlatformMetrics::SaveUsageTime() {
   usage_time_update->GetDict().clear();
   for (auto it : usage_time_per_two_hours_) {
     usage_time_update->SetPath(it.first.ToString(), it.second.ConvertToValue());
+
+    // Also notify registered observers.
+    for (auto& observer : observers_) {
+      observer.OnAppUsage(it.second.app_id,
+                          GetAppType(profile_, it.second.app_id),
+                          it.second.running_time);
+    }
   }
 }
 
