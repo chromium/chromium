@@ -1349,7 +1349,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B1 = A1->child_at(0)->current_frame_host();
 
-  A1->DoNotDeleteForTesting();
+  B1->DoNotDeleteForTesting();
   RenderFrameDeletedObserver delete_B1(B1);
   shell()->LoadURL(A3_url);
   delete_B1.WaitUntilDeleted();
