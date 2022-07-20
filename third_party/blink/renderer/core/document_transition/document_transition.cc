@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -205,7 +206,8 @@ void DocumentTransition::NotifyHasChangesToCommit() {
 
   // Ensure paint artifact compositor does an update, since that's the mechanism
   // we use to pass transition requests to the compositor.
-  document_->View()->SetPaintArtifactCompositorNeedsUpdate();
+  document_->View()->SetPaintArtifactCompositorNeedsUpdate(
+      PaintArtifactCompositorUpdateReason::kDocumentTransitionNotifyChanges);
 }
 
 void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {

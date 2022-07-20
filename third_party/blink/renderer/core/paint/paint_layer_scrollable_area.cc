@@ -469,8 +469,11 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   }
 
   if (auto* scrolling_coordinator = GetScrollingCoordinator()) {
-    if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this))
-      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+    if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this)) {
+      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
+          PaintArtifactCompositorUpdateReason::
+              kPaintLayerScrollableAreaUpdateScrollOffset);
+    }
   }
 
   // The ScrollOffsetTranslation paint property depends on the scroll offset.

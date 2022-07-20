@@ -97,7 +97,8 @@ void PaintArtifactCompositor::WillBeRemovedFromFrame() {
 void PaintArtifactCompositor::SetPrefersLCDText(bool prefers) {
   if (prefers_lcd_text_ == prefers)
     return;
-  SetNeedsUpdate();
+  SetNeedsUpdate(PaintArtifactCompositorUpdateReason::
+                     kPaintArtifactCompositorPrefersLCDText);
   prefers_lcd_text_ = prefers;
 }
 
@@ -262,7 +263,8 @@ void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
 
   // Adding or removing chunks requires a full update to add/remove cc::layers.
   if (previous.size() != repainted.size()) {
-    SetNeedsUpdate();
+    SetNeedsUpdate(PaintArtifactCompositorUpdateReason::
+                       kPaintArtifactCompositorNeedsFullUpdateChunksChanged);
     return;
   }
 
@@ -276,7 +278,9 @@ void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
     if (NeedsFullUpdateAfterPaintingChunk(
             previous_chunk, previous.GetPaintArtifact(), repainted_chunk,
             repainted.GetPaintArtifact())) {
-      SetNeedsUpdate();
+      SetNeedsUpdate(
+          PaintArtifactCompositorUpdateReason::
+              kPaintArtifactCompositorNeedsFullUpdateAfterPaintingChunk);
       return;
     }
   }

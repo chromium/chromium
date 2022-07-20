@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -1515,8 +1516,11 @@ void InspectorOverlayAgent::DisableFrameOverlay() {
   client.SetCursorOverridden(false);
   client.SetCursor(PointerCursor(), GetFrame());
 
-  if (auto* frame_view = frame_impl_->GetFrameView())
-    frame_view->SetPaintArtifactCompositorNeedsUpdate();
+  if (auto* frame_view = frame_impl_->GetFrameView()) {
+    frame_view->SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::
+            kInspectorOverlayAgentDisableFrameOverlay);
+  }
 }
 
 void InspectorOverlayAgent::EnsureEnableFrameOverlay() {

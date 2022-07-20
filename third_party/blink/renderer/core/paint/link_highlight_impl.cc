@@ -392,7 +392,9 @@ void LinkHighlightImpl::SetNeedsRepaintAndCompositingUpdate() {
   DCHECK(node_);
   if (auto* frame_view = node_->GetDocument().View()) {
     frame_view->SetVisualViewportOrOverlayNeedsRepaint();
-    frame_view->SetPaintArtifactCompositorNeedsUpdate();
+    frame_view->SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::
+            kLinkHighlightImplNeedsCompositingUpdate);
   }
 }
 

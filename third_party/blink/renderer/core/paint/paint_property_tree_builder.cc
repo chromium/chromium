@@ -162,7 +162,9 @@ void VisualViewportPaintPropertyTreeBuilder::Update(
 
   if (property_changed >
       PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-    main_frame_view.SetPaintArtifactCompositorNeedsUpdate();
+    main_frame_view.SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::
+            kVisualViewportPaintPropertyTreeBuilderUpdate);
   }
 
 #if DCHECK_IS_ON()
@@ -4129,8 +4131,11 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     }
   }
 
-  if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues)
-    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+  if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues) {
+    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::
+            kPaintPropertyTreeBuilderPaintPropertyChanged);
+  }
 
   if (auto* box = DynamicTo<LayoutBox>(object_)) {
     if (auto* scrollable_area = box->GetScrollableArea()) {
@@ -4157,7 +4162,9 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
         auto* frame_view = object_.GetFrameView();
         if (frame_view->HasFixedPositionObjects() &&
             !object_.View()->FirstFragment().PaintProperties()->Scroll()) {
-          frame_view->SetPaintArtifactCompositorNeedsUpdate();
+          frame_view->SetPaintArtifactCompositorNeedsUpdate(
+              PaintArtifactCompositorUpdateReason::
+                  kPaintPropertyTreeBuilderHasFixedPositionObjects);
         } else if (!object_.IsStackingContext() &&
                    To<LayoutBoxModelObject>(object_)
                        .Layer()
@@ -4169,7 +4176,9 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
           // TODO(crbug.com/1310586): We can avoid this if we expand the visual
           // rect to the bounds of the scroller when we map a visual rect under
           // the scroller to outside of the scroller.
-          frame_view->SetPaintArtifactCompositorNeedsUpdate();
+          frame_view->SetPaintArtifactCompositorNeedsUpdate(
+              PaintArtifactCompositorUpdateReason::
+                  kPaintPropertyTreeBulderNonStackingContextScroll);
         }
       }
     }
