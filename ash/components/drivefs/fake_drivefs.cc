@@ -534,15 +534,8 @@ void FakeDriveFs::GetQuotaUsage(
 
 void FakeDriveFs::GetPooledQuotaUsage(
     drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) {
-  auto usage = mojom::PooledQuotaUsage::New();
-
-  usage->user_type = mojom::UserType::kUnmanaged;
-  usage->used_user_bytes = 1 * 1024 * 1024;
-  usage->total_user_bytes = 2 * 1024 * 1024;
-  usage->organization_limit_exceeded = false;
-  usage->organization_name = "Test Organization";
-
-  std::move(callback).Run(drive::FileError::FILE_ERROR_OK, std::move(usage));
+  std::move(callback).Run(drive::FileError::FILE_ERROR_SERVICE_UNAVAILABLE,
+                          mojom::PooledQuotaUsage::New());
 }
 
 void FakeDriveFs::ToggleMirroring(
