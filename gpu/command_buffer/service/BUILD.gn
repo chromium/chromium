@@ -224,40 +224,42 @@ target(link_target_type, "gles2_sources") {
     "shader_translator_cache.h",
     "shared_context_state.cc",
     "shared_context_state.h",
-    "shared_image_backing.cc",
-    "shared_image_backing.h",
-    "shared_image_backing_compound.cc",
-    "shared_image_backing_compound.h",
-    "shared_image_backing_factory.cc",
-    "shared_image_backing_factory.h",
-    "shared_image_backing_factory_gl_common.cc",
-    "shared_image_backing_factory_gl_common.h",
-    "shared_image_backing_factory_gl_image.cc",
-    "shared_image_backing_factory_gl_image.h",
-    "shared_image_backing_factory_gl_texture.cc",
-    "shared_image_backing_factory_gl_texture.h",
-    "shared_image_backing_factory_raw_draw.cc",
-    "shared_image_backing_factory_raw_draw.h",
-    "shared_image_backing_factory_shared_memory.cc",
-    "shared_image_backing_factory_shared_memory.h",
-    "shared_image_backing_gl_common.cc",
-    "shared_image_backing_gl_common.h",
-    "shared_image_backing_gl_image.cc",
-    "shared_image_backing_gl_image.h",
-    "shared_image_backing_gl_texture.cc",
-    "shared_image_backing_gl_texture.h",
-    "shared_image_backing_raw_draw.cc",
-    "shared_image_backing_raw_draw.h",
-    "shared_image_backing_shared_memory.cc",
-    "shared_image_backing_shared_memory.h",
-    "shared_image_factory.cc",
-    "shared_image_factory.h",
-    "shared_image_manager.cc",
-    "shared_image_manager.h",
-    "shared_image_representation.cc",
-    "shared_image_representation.h",
-    "shared_image_representation_skia_gl.cc",
-    "shared_image_representation_skia_gl.h",
+    "shared_image/compound_image_backing.cc",
+    "shared_image/compound_image_backing.h",
+    "shared_image/gl_common_image_backing_factory.cc",
+    "shared_image/gl_common_image_backing_factory.h",
+    "shared_image/gl_image_backing.cc",
+    "shared_image/gl_image_backing.h",
+    "shared_image/gl_image_backing_factory.cc",
+    "shared_image/gl_image_backing_factory.h",
+    "shared_image/gl_texture_image_backing.cc",
+    "shared_image/gl_texture_image_backing.h",
+    "shared_image/gl_texture_image_backing_factory.cc",
+    "shared_image/gl_texture_image_backing_factory.h",
+    "shared_image/gl_texture_image_backing_helper.cc",
+    "shared_image/gl_texture_image_backing_helper.h",
+    "shared_image/raw_draw_image_backing.cc",
+    "shared_image/raw_draw_image_backing.h",
+    "shared_image/raw_draw_image_backing_factory.cc",
+    "shared_image/raw_draw_image_backing_factory.h",
+    "shared_image/shared_image_backing.cc",
+    "shared_image/shared_image_backing.h",
+    "shared_image/shared_image_backing_factory.cc",
+    "shared_image/shared_image_backing_factory.h",
+    "shared_image/shared_image_factory.cc",
+    "shared_image/shared_image_factory.h",
+    "shared_image/shared_image_manager.cc",
+    "shared_image/shared_image_manager.h",
+    "shared_image/shared_image_representation.cc",
+    "shared_image/shared_image_representation.h",
+    "shared_image/shared_memory_image_backing.cc",
+    "shared_image/shared_memory_image_backing.h",
+    "shared_image/shared_memory_image_backing_factory.cc",
+    "shared_image/shared_memory_image_backing_factory.h",
+    "shared_image/skia_gl_image_representation.cc",
+    "shared_image/skia_gl_image_representation.h",
+    "shared_image/wrapped_sk_image_backing_factory.cc",
+    "shared_image/wrapped_sk_image_backing_factory.h",
     "shared_memory_region_wrapper.cc",
     "shared_memory_region_wrapper.h",
     "skia_utils.cc",
@@ -279,8 +281,6 @@ target(link_target_type, "gles2_sources") {
     "webgpu_cmd_validation_implementation_autogen.h",
     "webgpu_decoder.cc",
     "webgpu_decoder.h",
-    "wrapped_sk_image.cc",
-    "wrapped_sk_image.h",
   ]
 
   if (use_dawn) {
@@ -372,8 +372,8 @@ target(link_target_type, "gles2_sources") {
     ]
 
     sources += [
-      "shared_image_backing_factory_angle_vulkan.cc",
-      "shared_image_backing_factory_angle_vulkan.h",
+      "shared_image/angle_vulkan_image_backing_factory.cc",
+      "shared_image/angle_vulkan_image_backing_factory.h",
     ]
 
     if (is_linux || is_chromeos || is_fuchsia || is_android || is_win ||
@@ -383,43 +383,43 @@ target(link_target_type, "gles2_sources") {
         "external_semaphore.h",
         "external_semaphore_pool.cc",
         "external_semaphore_pool.h",
-        "external_vk_image_backing.cc",
-        "external_vk_image_backing.h",
-        "external_vk_image_factory.cc",
-        "external_vk_image_factory.h",
-        "external_vk_image_gl_representation.cc",
-        "external_vk_image_gl_representation.h",
-        "external_vk_image_overlay_representation.cc",
-        "external_vk_image_overlay_representation.h",
-        "external_vk_image_skia_representation.cc",
-        "external_vk_image_skia_representation.h",
+        "shared_image/external_vk_image_backing.cc",
+        "shared_image/external_vk_image_backing.h",
+        "shared_image/external_vk_image_backing_factory.cc",
+        "shared_image/external_vk_image_backing_factory.h",
+        "shared_image/external_vk_image_gl_representation.cc",
+        "shared_image/external_vk_image_gl_representation.h",
+        "shared_image/external_vk_image_overlay_representation.cc",
+        "shared_image/external_vk_image_overlay_representation.h",
+        "shared_image/external_vk_image_skia_representation.cc",
+        "shared_image/external_vk_image_skia_representation.h",
       ]
     }
 
     if (use_ozone) {
       sources += [
-        "shared_image_backing_factory_ozone.cc",
-        "shared_image_backing_factory_ozone.h",
-        "shared_image_backing_ozone.cc",
-        "shared_image_backing_ozone.h",
-        "shared_image_representation_gl_ozone.cc",
-        "shared_image_representation_gl_ozone.h",
-        "shared_image_representation_skia_vk_ozone.cc",
-        "shared_image_representation_skia_vk_ozone.h",
+        "shared_image/gl_ozone_image_representation.cc",
+        "shared_image/gl_ozone_image_representation.h",
+        "shared_image/ozone_image_backing.cc",
+        "shared_image/ozone_image_backing.h",
+        "shared_image/ozone_image_backing_factory.cc",
+        "shared_image/ozone_image_backing_factory.h",
+        "shared_image/skia_vk_ozone_image_representation.cc",
+        "shared_image/skia_vk_ozone_image_representation.h",
       ]
     }
 
     if ((is_linux || is_chromeos) && use_dawn) {
       sources += [
-        "external_vk_image_dawn_representation.cc",
-        "external_vk_image_dawn_representation.h",
+        "shared_image/external_vk_image_dawn_representation.cc",
+        "shared_image/external_vk_image_dawn_representation.h",
       ]
     }
 
     if (use_ozone && use_dawn) {
       sources += [
-        "shared_image_representation_dawn_ozone.cc",
-        "shared_image_representation_dawn_ozone.h",
+        "shared_image/dawn_ozone_image_representation.cc",
+        "shared_image/dawn_ozone_image_representation.h",
       ]
     }
   }
@@ -433,8 +433,8 @@ target(link_target_type, "gles2_sources") {
     ]
     if (dawn_enable_opengles) {
       sources += [
-        "shared_image_representation_dawn_egl_image.cc",
-        "shared_image_representation_dawn_egl_image.h",
+        "shared_image/dawn_egl_image_representation.cc",
+        "shared_image/dawn_egl_image_representation.h",
       ]
     }
   }
@@ -442,8 +442,8 @@ target(link_target_type, "gles2_sources") {
   if (is_mac) {
     deps += [ "//components/viz/common:metal_context_provider" ]
     sources += [
-      "shared_image_backing_factory_iosurface.h",
-      "shared_image_backing_factory_iosurface.mm",
+      "shared_image/iosurface_image_backing_factory.h",
+      "shared_image/iosurface_image_backing_factory.mm",
     ]
 
     # Required by gles2_cmd_decoder.cc on Mac.
@@ -476,26 +476,26 @@ target(link_target_type, "gles2_sources") {
       "image_reader_gl_owner.h",
       "ref_counted_lock.cc",
       "ref_counted_lock.h",
-      "shared_image_backing_android.cc",
-      "shared_image_backing_android.h",
-      "shared_image_backing_egl_image.cc",
-      "shared_image_backing_egl_image.h",
-      "shared_image_backing_factory_ahardwarebuffer.cc",
-      "shared_image_backing_factory_ahardwarebuffer.h",
-      "shared_image_backing_factory_egl.cc",
-      "shared_image_backing_factory_egl.h",
-      "shared_image_representation_gl_texture_android.cc",
-      "shared_image_representation_gl_texture_android.h",
-      "shared_image_representation_gl_texture_passthrough_android.cc",
-      "shared_image_representation_gl_texture_passthrough_android.h",
-      "shared_image_representation_skia_vk_android.cc",
-      "shared_image_representation_skia_vk_android.h",
-      "shared_image_video.cc",
-      "shared_image_video.h",
-      "shared_image_video_image_reader.cc",
-      "shared_image_video_image_reader.h",
-      "shared_image_video_surface_texture.cc",
-      "shared_image_video_surface_texture.h",
+      "shared_image/ahardwarebuffer_image_backing_factory.cc",
+      "shared_image/ahardwarebuffer_image_backing_factory.h",
+      "shared_image/android_image_backing.cc",
+      "shared_image/android_image_backing.h",
+      "shared_image/android_video_image_backing.cc",
+      "shared_image/android_video_image_backing.h",
+      "shared_image/egl_image_backing.cc",
+      "shared_image/egl_image_backing.h",
+      "shared_image/egl_image_backing_factory.cc",
+      "shared_image/egl_image_backing_factory.h",
+      "shared_image/gl_texture_android_image_representation.cc",
+      "shared_image/gl_texture_android_image_representation.h",
+      "shared_image/gl_texture_passthrough_android_image_representation.cc",
+      "shared_image/gl_texture_passthrough_android_image_representation.h",
+      "shared_image/skia_vk_android_image_representation.cc",
+      "shared_image/skia_vk_android_image_representation.h",
+      "shared_image/video_image_reader_image_backing.cc",
+      "shared_image/video_image_reader_image_backing.h",
+      "shared_image/video_surface_texture_image_backing.cc",
+      "shared_image/video_surface_texture_image_backing.h",
       "stream_texture_shared_image_interface.h",
       "surface_texture_gl_owner.cc",
       "surface_texture_gl_owner.h",
@@ -523,12 +523,12 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "dxgi_shared_handle_manager.cc",
       "dxgi_shared_handle_manager.h",
-      "shared_image_backing_d3d.cc",
-      "shared_image_backing_d3d.h",
-      "shared_image_backing_factory_d3d.cc",
-      "shared_image_backing_factory_d3d.h",
-      "shared_image_representation_d3d.cc",
-      "shared_image_representation_d3d.h",
+      "shared_image/d3d_image_backing.cc",
+      "shared_image/d3d_image_backing.h",
+      "shared_image/d3d_image_backing_factory.cc",
+      "shared_image/d3d_image_backing_factory.h",
+      "shared_image/d3d_image_representation.cc",
+      "shared_image/d3d_image_representation.h",
     ]
     libs = [ "dxguid.lib" ]
   }

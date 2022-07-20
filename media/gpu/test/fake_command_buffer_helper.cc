@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
 namespace media {
 

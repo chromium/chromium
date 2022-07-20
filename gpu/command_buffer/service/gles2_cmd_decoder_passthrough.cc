@@ -23,14 +23,14 @@
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/program_cache.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/progress_reporter.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace gpu {

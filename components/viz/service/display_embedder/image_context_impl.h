@@ -15,7 +15,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"

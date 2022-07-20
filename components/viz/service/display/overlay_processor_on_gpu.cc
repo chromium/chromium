@@ -5,8 +5,8 @@
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
 
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 

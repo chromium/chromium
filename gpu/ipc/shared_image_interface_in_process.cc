@@ -12,7 +12,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/common/gpu_client_ids.h"

@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
-#include "gpu/command_buffer/service/shared_image_video.h"
+#include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"

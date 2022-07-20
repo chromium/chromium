@@ -57,10 +57,10 @@
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/command_buffer/service/wrapped_sk_image.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -91,7 +91,7 @@
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 // Local versions of the SET_GL_ERROR macros

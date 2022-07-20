@@ -14,7 +14,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "gpu/command_buffer/service/shared_image_backing_d3d.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/win/mf_helpers.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

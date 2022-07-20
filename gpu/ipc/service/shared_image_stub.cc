@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/service/gpu_channel.h"

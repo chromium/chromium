@@ -11,7 +11,7 @@
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
