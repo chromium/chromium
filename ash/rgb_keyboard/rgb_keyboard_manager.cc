@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/rgb_keyboard/histogram_util.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -117,6 +118,7 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
   }
 
   capabilities_ = reply.value();
+  ash::rgb_keyboard::metrics::EmitRgbKeyboardCapabilityType(capabilities_);
   VLOG(1) << "RGB Keyboard capabilities="
           << static_cast<uint32_t>(capabilities_);
 

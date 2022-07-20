@@ -83634,6 +83634,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Revoke tokens for primary and secondary accounts"/>
 </enum>
 
+<!--
+  This must be kept current with RgbKeyboardCapabilities located in
+  third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h.
+-->
+
+<enum name="RgbKeyboardCapabilityType">
+  <int value="0" label="None"/>
+  <int value="1" label="IndividualKey"/>
+  <int value="2" label="FourZoneFortyLed"/>
+  <int value="3" label="FourZoneTwelveLed"/>
+  <int value="4" label="FourZoneFifteenLed"/>
+</enum>
+
 <enum name="RoamingUserDataDirectoryDeletionResult">
   <obsolete>
     Removed in 2020-08 (M86).

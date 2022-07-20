@@ -9,7 +9,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/rgb_keyboard/histogram_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
@@ -67,6 +69,51 @@ TEST_F(RgbKeyboardManagerTest, GetKeyboardCapabilities) {
   // kIndividualKey is the default for this test suite.
   EXPECT_EQ(rgbkbd::RgbKeyboardCapabilities::kIndividualKey,
             client_->get_rgb_keyboard_capabilities());
+}
+
+class KeyboardCapabilityHistogramEmittedTest
+    : public RgbKeyboardManagerTest,
+      public testing::WithParamInterface<
+          std::pair<rgbkbd::RgbKeyboardCapabilities,
+                    ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType>> {
+ public:
+  KeyboardCapabilityHistogramEmittedTest() {
+    std::tie(capability_, metric_) = GetParam();
+  }
+
+ protected:
+  rgbkbd::RgbKeyboardCapabilities capability_;
+  ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType metric_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KeyboardCapabilityHistogramEmittedTest,
+    testing::Values(
+        std::make_pair(
+            rgbkbd::RgbKeyboardCapabilities::kNone,
+            ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::kNone),
+        std::make_pair(rgbkbd::RgbKeyboardCapabilities::kIndividualKey,
+                       ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::
+                           kIndividualKey),
+        std::make_pair(rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed,
+                       ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::
+                           kFourZoneFortyLed),
+        std::make_pair(rgbkbd::RgbKeyboardCapabilities::kFourZoneTwelveLed,
+                       ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::
+                           kFourZoneTwelveLed),
+        std::make_pair(rgbkbd::RgbKeyboardCapabilities::kFourZoneFifteenLed,
+                       ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::
+                           kFourZoneFifteenLed)));
+
+TEST_P(KeyboardCapabilityHistogramEmittedTest,
+       KeyboardCapabilityHistogramEmitted) {
+  base::HistogramTester histogram_tester;
+  InitializeManagerWithCapability(capability_);
+  EXPECT_EQ(capability_, client_->get_rgb_keyboard_capabilities());
+  histogram_tester.ExpectBucketCount(
+      rgb_keyboard::metrics::kRgbKeyboardCapabilityTypeHistogramName, metric_,
+      1);
 }
 
 TEST_F(RgbKeyboardManagerTest, SetStaticRgbValues) {
