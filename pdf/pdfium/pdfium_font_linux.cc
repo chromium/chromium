@@ -139,21 +139,19 @@ void* MapFont(FPDF_SYSFONTINFO*,
               int pitch_family,
               const char* face,
               int* exact) {
-  if (PDFiumEngine::GetFontMappingMode() == FontMappingMode::kNoMapping)
+  // The code below is Blink-specific, return early in non-Blink mode to avoid
+  // crashing.
+  if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
+    DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
     return nullptr;
+  }
 
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
   if (strcmp(face, "Symbol") == 0)
     return nullptr;
 
-  // TODO(crbug.com/702993): `blink::WebFontDescription::family` is a
-  // `blink::WebString`, which can only be used if Blink is initialized. Store
-  // the field in `font_family` for now, but remove the variable when this code
-  // will only execute in a renderer process.
   blink::WebFontDescription desc;
-  std::string font_family;
-
   if (pitch_family & FXFONT_FF_FIXEDPITCH) {
     desc.generic_family = blink::WebFontDescription::kGenericFamilyMonospace;
   } else if (pitch_family & FXFONT_FF_ROMAN) {
@@ -211,7 +209,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
   size_t i;
   for (i = 0; i < std::size(kPdfFontSubstitutions); ++i) {
     if (strcmp(face, kPdfFontSubstitutions[i].pdf_name) == 0) {
-      font_family = kPdfFontSubstitutions[i].face;
+      desc.family = blink::WebString::FromUTF8(kPdfFontSubstitutions[i].face);
       if (kPdfFontSubstitutions[i].bold)
         desc.weight = blink::WebFontDescription::kWeightBold;
       if (kPdfFontSubstitutions[i].italic)
@@ -236,13 +234,11 @@ void* MapFont(FPDF_SYSFONTINFO*,
     if (face_utf8.empty())
       return nullptr;
 
-    font_family = face_utf8;
+    desc.family = blink::WebString::FromUTF8(face_utf8);
     desc.weight = WeightToBlinkWeight(weight);
     desc.italic = italic > 0;
   }
 
-  DCHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kBlink);
-  desc.family = blink::WebString::FromUTF8(font_family);
   return GetBlinkFontMapper().MapFont(desc, charset);
 }
 
