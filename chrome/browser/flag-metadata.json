@@ -5051,6 +5051,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "password-strength-indicator",
+    "owners": ["mtimbur@google.com", "rgod@google.com", "mamir@chromium.org"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "password-view-page-in-settings",
     "owners": ["mamir", "derinel@google.com"],
     "expiry_milestone": 108

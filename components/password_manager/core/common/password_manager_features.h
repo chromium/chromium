@@ -52,6 +52,7 @@ extern const base::Feature kPasswordImport;
 extern const base::Feature kPasswordReuseDetectionEnabled;
 extern const base::Feature kPasswordsAccountStorageRevisedOptInFlow;
 extern const base::Feature kPasswordScriptsFetching;
+extern const base::Feature kPasswordStrengthIndicator;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kSecondaryServerFieldPredictions;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

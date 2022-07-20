@@ -8033,6 +8033,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(::features::kFocusFollowsCursor)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"password-strength-indicator",
+     flag_descriptions::kPasswordStrengthIndicatorName,
+     flag_descriptions::kPasswordStrengthIndicatorDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordStrengthIndicator)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"partial-split", flag_descriptions::kPartialSplit,
      flag_descriptions::kPartialSplitDescription, kOsCrOS,
