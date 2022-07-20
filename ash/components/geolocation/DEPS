@@ -3,7 +3,6 @@ noparent = True
 include_rules = [
   "+base",
   "+chromeos/ash/components/network",
-  "+chromeos/network",
   "+google_apis",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

@@ -21,8 +21,8 @@ static_library("cellular_setup") {
   deps = [
     "//ash/services/cellular_setup/public/mojom",
     "//base",
+    "//chromeos/ash/components/network",
     "//chromeos/dbus/shill",
-    "//chromeos/network",
     "//dbus",
     "//url",
   ]
@@ -45,7 +45,7 @@ static_library("esim_manager") {
     "//ash/services/cellular_setup/public/mojom",
     "//base",
     "//chromeos/ash/components/dbus/hermes",
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//components/device_event_log",
     "//components/qr_code_generator",
     "//components/user_manager",

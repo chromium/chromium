@@ -31,7 +31,7 @@ component("core") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/network" ]
+    deps += [ "//chromeos/ash/components/network" ]
   }
 }
 

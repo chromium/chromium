@@ -103,7 +103,7 @@ source_set("geolocation") {
       "wifi_data_provider_chromeos.cc",
       "wifi_data_provider_chromeos.h",
     ]
-    deps += [ "//chromeos/network" ]
+    deps += [ "//chromeos/ash/components/network" ]
   } else if (is_linux && use_dbus) {
     sources += [
       "wifi_data_provider_linux.cc",

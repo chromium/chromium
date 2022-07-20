@@ -32,7 +32,7 @@ source_set("scanning") {
     "//ash/services/quick_pair",
     "//ash/services/quick_pair/public/cpp",
     "//base",
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
   ]

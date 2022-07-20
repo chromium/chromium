@@ -90,7 +90,7 @@ source_set("onc") {
       "//ash/components/tpm",
       "//ash/constants:constants",
       "//base",
-      "//chromeos/network:network",
+      "//chromeos/ash/components/network",
       "//chromeos/system:system",
       "//components/policy/core/common:common_constants",
       "//components/user_manager:user_manager",

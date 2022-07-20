@@ -81,8 +81,6 @@ include_rules = [
   # create subtle inconsistencies based on when observers are called.
   "-chromeos/login/login_state",
   "+chromeos/ash/components/network",
-  # TODO(https://crbug.com/1164001): remove when chromeos/network have migrated.
-  "+chromeos/network",
   # //ash can use the public interfaces of various services.
   "+chromeos/ash/services/assistant/public/cpp" ,
   "+chromeos/ash/services/assistant/test_support",

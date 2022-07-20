@@ -1,6 +1,6 @@
 include_rules = [
+  "+chromeos/ash/components/network",
   "+chromeos/login",
-  "+chromeos/network",
   "+components/device_event_log",
   "+components/onc",
   "+components/user_manager",

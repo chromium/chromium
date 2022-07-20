@@ -3081,10 +3081,10 @@ source_set("browser") {
       "//ash/components/audio",
       "//ash/constants",
       "//chromeos/ash/components/assistant:buildflags",
+      "//chromeos/ash/components/network",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
-      "//chromeos/network",
       "//chromeos/system",
       "//components/session_manager/core",
     ]

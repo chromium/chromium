@@ -6,12 +6,12 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
-source_set("network") {
-  # TODO(https://crbug.com/1164001): Allow circular dependency during the
-  # migration and others should depend on via chromeos/network.
-  visibility = [ "//chromeos/network" ]
+config("network_config") {
+  defines = [ "IS_CHROMEOS_NETWORK_IMPL" ]
+}
 
-  configs += [ "//chromeos/network:network_config" ]
+component("network") {
+  configs += [ ":network_config" ]
   deps = [
     "//ash/constants",
     "//base",
@@ -38,6 +38,12 @@ source_set("network") {
     "//net",
     "//services/preferences/public/cpp",
     "//url",
+  ]
+
+  public_deps = [
+    "//chromeos/ash/components/network/metrics",
+    "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
   ]
 
   # Allow circular dependency from sub-directories of
@@ -177,9 +183,9 @@ source_set("network") {
 source_set("test_support") {
   testonly = true
   public_deps = [
+    ":network",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/components/onc",
-    "//chromeos/network",
     "//dbus",
   ]
   deps = [
@@ -227,19 +233,22 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":network",
     ":test_support",
     "//ash/constants",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
     "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/network/metrics:unit_tests",
+    "//chromeos/ash/components/network/onc:unit_tests",
+    "//chromeos/ash/components/network/proxy:unit_tests",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
-    "//chromeos/network",
     "//components/onc",
     "//components/prefs",
     "//components/prefs:test_support",

@@ -123,7 +123,6 @@ test("chromeos_unittests") {
       "//chromeos/dbus:unit_tests",
       "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/login_state:unit_tests",
-      "//chromeos/network:unit_tests",
       "//chromeos/printing:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",

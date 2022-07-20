@@ -40,7 +40,7 @@ source_set("socket") {
     ]
 
     deps += [
-      "//chromeos/network",
+      "//chromeos/ash/components/network",
       "//components/keyed_service/content",
     ]
   }

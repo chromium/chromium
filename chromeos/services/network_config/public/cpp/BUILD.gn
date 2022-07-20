@@ -36,7 +36,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//chromeos/services/network_config",
     "//chromeos/services/network_config:in_process_instance",
   ]

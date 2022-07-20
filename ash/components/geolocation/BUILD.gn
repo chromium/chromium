@@ -11,7 +11,7 @@ component("geolocation") {
   defines = [ "IS_ASH_GEOLOCATION_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",

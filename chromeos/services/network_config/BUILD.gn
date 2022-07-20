@@ -14,10 +14,10 @@ static_library("network_config") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/network",
     "//chromeos/components/sync_wifi:network_eligibility_checker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
-    "//chromeos/network",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/device_event_log",
@@ -44,7 +44,7 @@ component("in_process_instance") {
 
   deps = [
     ":network_config",
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/bindings",
   ]

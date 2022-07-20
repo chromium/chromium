@@ -8,14 +8,14 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 source_set("onc") {
-  # Due to circular dependency, others should depend on via chromeos/network.
+  # Due to circular dependency, others should depend on via
+  # chromeos/ash/components/network.
   visibility = [
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/proxy",
-    "//chromeos/network",
   ]
 
-  configs += [ "//chromeos/network:network_config" ]
+  configs += [ "//chromeos/ash/components/network:network_config" ]
   deps = [
     "//base",
     "//chromeos/components/onc",
@@ -54,9 +54,9 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//chromeos:test_utils",
+    "//chromeos/ash/components/network",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
-    "//chromeos/network",
     "//components/onc",
     "//crypto:test_support",
     "//net:test_support",
@@ -77,7 +77,7 @@ fuzzer_test("onc_normalizer_fuzzer") {
   sources = [ "onc_normalizer_fuzzer.cc" ]
   deps = [
     "//base",
+    "//chromeos/ash/components/network",
     "//chromeos/components/onc",
-    "//chromeos/network",
   ]
 }

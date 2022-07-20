@@ -7,10 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 source_set("portal_detector") {
-  configs += [ "//chromeos/network:network_config" ]
+  configs += [ "//chromeos/ash/components/network:network_config" ]
   deps = [
     "//base",
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//components/device_event_log",
     "//net",
   ]
