@@ -6763,10 +6763,11 @@ def make_is_exposed(cg_context, function_name):
     assert function_name == "IsExposed"
     class_like = cg_context.class_like
 
-    is_exposed_decl = CxxFuncDeclNode(name=function_name,
-                                      arg_decls=["ExecutionContext*"],
-                                      return_type="bool",
-                                      static=True)
+    is_exposed_decl = CxxFuncDeclNode(
+        name=function_name,
+        arg_decls=["ExecutionContext* execution_context"],
+        return_type="bool",
+        static=True)
     is_exposed_decl.accumulate(
         CodeGenAccumulator.require_class_decls(["ExecutionContext"]))
 
@@ -6775,12 +6776,20 @@ def make_is_exposed(cg_context, function_name):
         arg_decls=["ExecutionContext* execution_context"],
         return_type="bool",
         class_name=cg_context.class_name)
-    is_exposed_def.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/core/execution_context/execution_context.h"
-        ]))
-    is_exposed_def.body.add_template_vars(
-        {"execution_context": "execution_context"})
+
+    def define_execution_context(symbol_node):
+        # execution_context doesn't really need a definition because it's a
+        # function argument, but needs to require ".../execution_context.h".
+        node = SymbolDefinitionNode(symbol_node)
+        node.accumulate(
+            CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/core/execution_context/execution_context.h"
+            ]))
+        return node
+
+    is_exposed_def.body.register_code_symbol(
+        SymbolNode("execution_context",
+                   definition_constructor=define_execution_context))
     bind_installer_local_vars(is_exposed_def.body, cg_context)
     # If [Exposed] exists at all, then this exposure condition should be valid.
     # Otherwise, it is not an exposed interface at all.
