@@ -571,8 +571,10 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     return nullptr;
 
   const bool maximized = window_state->IsMaximized();
-  if (!window_state->IsNormalOrSnapped() && !maximized)
+  if (!maximized && !window_state->IsNormalOrSnapped() &&
+      !window_state->IsFloated()) {
     return nullptr;
+  }
 
   // TODO(https://crbug.com/1084695): Disable dragging maximized ARC windows
   // from the caption. This is because ARC does not currently handle setting
@@ -969,6 +971,11 @@ void WorkspaceWindowResizer::CompleteDrag() {
     // disable the animation here.
     ScopedAnimationDisabler disabler(window_state()->window());
     window_state()->Restore();
+    return;
+  }
+
+  // Drag/Resize a floated window won't change window restore bounds.
+  if (window_state()->IsFloated()) {
     return;
   }
 

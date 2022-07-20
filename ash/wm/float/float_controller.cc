@@ -4,6 +4,8 @@
 
 #include "ash/wm/float/float_controller.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -22,7 +24,6 @@
 #include "ui/display/screen.h"
 
 namespace ash {
-
 namespace {
 
 // The ideal dimensions of a float window before factoring in its minimum size
@@ -144,6 +145,49 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   }
 
   return gfx::Rect(origin, gfx::Size(width, height));
+}
+
+// static
+gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
+    aura::Window* window) {
+  DCHECK(CanFloatWindowInClamshell(window));
+  auto* work_area_insets = WorkAreaInsets::ForWindow(window->GetRootWindow());
+  const gfx::Rect work_area = work_area_insets->user_work_area_bounds();
+
+  gfx::Rect preferred_bounds =
+      WindowState::Get(window)->HasRestoreBounds()
+          ? WindowState::Get(window)->GetRestoreBoundsInParent()
+          : window->bounds();
+
+  // Float bounds should not be smaller than min bounds.
+  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
+  DCHECK_GE(preferred_bounds.height(), minimum_size.height());
+  DCHECK_GE(preferred_bounds.width(), minimum_size.width());
+
+  int preferred_width = std::min(preferred_bounds.width(),
+                                 work_area.width() - 2 * kFloatWindowPaddingDp);
+  int preferred_height =
+      std::min(preferred_bounds.height(),
+               work_area.height() - 2 * kFloatWindowPaddingDp);
+
+  gfx::Rect float_init_bounds(
+      work_area.width() - preferred_width - kFloatWindowPaddingDp,
+      work_area.height() - preferred_height - kFloatWindowPaddingDp,
+      preferred_width, preferred_height);
+
+  return float_init_bounds;
+}
+
+// static
+bool FloatController::CanFloatWindowInClamshell(aura::Window* window) {
+  const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                                  ->user_work_area_bounds();
+  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
+  if (minimum_size.width() > work_area.width() - 2 * kFloatWindowPaddingDp ||
+      minimum_size.height() > work_area.height() - 2 * kFloatWindowPaddingDp) {
+    return false;
+  }
+  return true;
 }
 
 // static
@@ -288,6 +332,11 @@ void FloatController::Float(aura::Window* window) {
   ResetFloatedWindow();
   DCHECK(!float_window_);
   float_window_ = window;
+  // Save the window position auto-management status.
+  position_auto_managed_ = WindowState::Get(window)->GetWindowPositionManaged();
+  // Floated window position should not be auto-managed.
+  if (position_auto_managed_)
+    WindowState::Get(window)->SetWindowPositionManaged(false);
   float_window_observation_.Observe(float_window_);
   aura::Window* float_container =
       window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
@@ -302,9 +351,18 @@ void FloatController::Float(aura::Window* window) {
 void FloatController::Unfloat(aura::Window* window) {
   if (window != float_window_)
     return;
-  //  Re-parent window to active desk container.
+  // When a window is moved in/out from active desk container to float
+  // container, it gets reparented and will use
+  // `pre_added_to_workspace_window_bounds_` to update it's bounds, here we
+  // update `pre_added_to_workspace_window_bounds_` as window is re-added to
+  // active desk container from float container.
+  WindowState::Get(window)->SetPreAddedToWorkspaceWindowBounds(
+      window->bounds());
+  // Re-parent window to active desk container.
   desks_util::GetActiveDeskContainerForRoot(float_window_->GetRootWindow())
       ->AddChild(float_window_);
+  // Reset the window position auto-managed status.
+  WindowState::Get(window)->SetWindowPositionManaged(position_auto_managed_);
   float_window_observation_.Reset();
   float_window_ = nullptr;
 

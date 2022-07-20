@@ -43,6 +43,12 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // area when it is floated.
   static constexpr int kFloatWindowPaddingDp = 8;
 
+  // Returns float window bounds in clamshell mode.
+  static gfx::Rect GetPreferredFloatWindowClamshellBounds(aura::Window* window);
+
+  // Determines if a window can be floated in clamshell mode.
+  static bool CanFloatWindowInClamshell(aura::Window* window);
+
   // Determines if a window can be floated in tablet mode.
   static bool CanFloatWindowInTablet(aura::Window* window);
 
@@ -107,6 +113,10 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // Only one floating window is allowed, updated when a new window
   // is floated.
   aura::Window* float_window_ = nullptr;
+
+  // When a window is floated, the window position should not be auto-managed.
+  // Use this value to reset the auto-managed state when unfloat a window.
+  bool position_auto_managed_ = false;
 
   // The corner a floated window should be magnetized to. It persists throughout
   // the session; if you drag a window to the bottom left and float another

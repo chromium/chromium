@@ -14,8 +14,13 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -113,6 +118,82 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
   EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
 }
 
+// Test when float a window in clamshell mode, window will change to default
+// float bounds in certain conditions.
+TEST_F(WindowFloatTest, WindowFloatingResize) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetBounds(gfx::Rect(0, 0, 200, 200));
+  FloatController* controller = Shell::Get()->float_controller();
+
+  // Float Maximized window.
+  widget->Maximize();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  gfx::Rect default_float_bounds =
+      controller->GetPreferredFloatWindowClamshellBounds(
+          widget->GetNativeWindow());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), default_float_bounds);
+  // Unfloat.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  EXPECT_TRUE(widget->IsMaximized());
+
+  // Float Full screen window.
+  widget->SetFullscreen(true);
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), default_float_bounds);
+  // Unfloat.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  // TODO(crbug.com/1330999): This should return to Fullscreen state after
+  // the change.
+
+  // Minimize floated window.
+  // Minimized window can't be floated, but when a floated window enter/exit
+  // minimized state, it remains floated.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+  gfx::Rect curr_bounds = widget->GetWindowBoundsInScreen();
+  widget->Minimize();
+  widget->Restore();
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), curr_bounds);
+  EXPECT_TRUE(WindowState::Get(widget->GetNativeWindow())->IsFloated());
+
+  // Float Snapped window.
+  // Create a snap enabled window.
+  auto window = CreateAppWindow(default_float_bounds, AppType::BROWSER);
+  AcceleratorControllerImpl* acc_controller =
+      Shell::Get()->accelerator_controller();
+
+  // Snap Left.
+  acc_controller->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+  ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get()));
+  EXPECT_EQ(window->bounds(), default_float_bounds);
+  // Unfloat.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  // Window back to snapped state.
+  ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+
+  // Snap Right.
+  acc_controller->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_RIGHT, {});
+  ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get()));
+  EXPECT_EQ(window->bounds(), default_float_bounds);
+  // Unfloat.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  // Window back to snapped state.
+  ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+}
+
 using TabletWindowFloatTest = WindowFloatTest;
 
 TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
@@ -164,8 +245,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsEnterTablet) {
 
   aura::test::TestWindowDelegate window_delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
-  window_delegate.set_minimum_size(gfx::Size(600, 600));
+      &window_delegate, /*id=*/-1, gfx::Rect(850, 850)));
+  window_delegate.set_minimum_size(gfx::Size(500, 500));
   wm::ActivateWindow(window.get());
 
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);

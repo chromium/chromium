@@ -368,6 +368,12 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   }
 
   const WMEventType type = event->type();
+  // Not all windows can be floated.
+  if (type == WM_EVENT_FLOAT &&
+      !FloatController::CanFloatWindowInClamshell(window_state->window())) {
+    return;
+  }
+
   if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY)
     HandleWindowSnapping(window_state, type);
 
@@ -633,13 +639,22 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
 
     case WindowStateType::kMinimized:
       break;
+    case WindowStateType::kFloated: {
+      // TODO(shidi): This needs to be updated if we decide to have float window
+      // for overview mode.
+      // When a floated window is previously minimized, un-minimize will restore
+      // the float state with previous floated bounds, without re-calculating
+      // preferred bounds.
+      bounds_in_parent =
+          previous_state_type == WindowStateType::kMinimized
+              ? window->bounds()
+              : Shell::Get()
+                    ->float_controller()
+                    ->GetPreferredFloatWindowClamshellBounds(window);
+      break;
+    }
     case WindowStateType::kInactive:
     case WindowStateType::kAutoPositioned:
-    case WindowStateType::kFloated:
-      // TODO(crbug.com/1331078): Handle Float Size and Position requirement.
-      // Temporarily set to current bounds.
-      bounds_in_parent = window->bounds();
-      break;
     case WindowStateType::kPip:
       return;
   }
