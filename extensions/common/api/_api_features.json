@@ -569,7 +569,7 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       // Allow only terminal_ssh.html in Terminal System Web App.
-      "chrome-untrusted://terminal/html/terminal_ssh.html"
+      "chrome-untrusted://terminal/html/terminal_ssh.html*"
     ]
   }],
   "runtime.sendNativeMessage": {
