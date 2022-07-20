@@ -433,7 +433,7 @@ TEST_F(RenderViewContextMenuExtensionsTest,
   const ui::MenuModel& model = menu->menu_model();
   std::u16string expected_title = u"Added by an extension";
   int num_items_found = 0;
-  for (int i = 0; i < model.GetItemCount(); ++i) {
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
     if (expected_title == model.GetLabelAt(i))
       ++num_items_found;
   }

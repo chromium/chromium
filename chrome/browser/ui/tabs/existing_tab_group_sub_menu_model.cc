@@ -59,7 +59,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
   // `target_index_to_group_mapping_`.
   CHECK_EQ(menu_item_infos.size(), groups.size());
   for (const auto& group : groups) {
-    int index = target_index_to_group_mapping_.size();
+    size_t index = target_index_to_group_mapping_.size();
     menu_item_infos[index].target_index = index;
     target_index_to_group_mapping_.emplace(index, group);
   }
@@ -82,7 +82,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
       CHECK_EQ(menu_item_infos.size(),
                groups.size() + target_index_to_group_mapping_.size());
       for (const auto& group : groups) {
-        int index = target_index_to_group_mapping_.size();
+        size_t index = target_index_to_group_mapping_.size();
         menu_item_infos[index].target_index = index;
         target_index_to_group_mapping_.emplace(index, group);
       }
@@ -159,12 +159,12 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(TabStripModel* model,
   return false;
 }
 
-std::u16string ExistingTabGroupSubMenuModel::GetLabelAt(int index) const {
+std::u16string ExistingTabGroupSubMenuModel::GetLabelAt(size_t index) const {
   return ui::EscapeMenuLabelAmpersands(
       ExistingBaseSubMenuModel::GetLabelAt(index));
 }
 
-void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
+void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   DCHECK_LE(size_t(target_index), target_index_to_group_mapping_.size());
   TabGroupModel* group_model = model()->group_model();
   if (!group_model)
@@ -180,7 +180,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
     return;
   }
 
-  int browser_index = -1;
+  absl::optional<size_t> browser_index;
   std::vector<Browser*> browsers =
       tab_menu_model_delegate_->GetExistingWindowsForMoveMenu();
   for (size_t i = 0; i < browsers.size(); ++i) {
@@ -192,7 +192,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
     }
   }
 
-  if (browser_index < 0)
+  if (!browser_index.has_value())
     return;
 
   std::vector<int> selected_indices;
@@ -204,7 +204,8 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
     selected_indices =
         std::vector<int>(selection_indices.begin(), selection_indices.end());
   }
-  TabStripModel* found_model = browsers[browser_index]->tab_strip_model();
+  TabStripModel* found_model =
+      browsers[browser_index.value()]->tab_strip_model();
   std::vector<int> selected_indices_in_found_model;
   const ui::ListSelectionModel::SelectedIndices selection_indices =
       found_model->selection_model().selected_indices();
@@ -214,7 +215,8 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
   // At the time this was written, all tabs moved to a new window via
   // MoveToExistingWindow() are placed at the end of the tabstrip, and any
   // previously selected tabs in the new window are unselected.
-  model()->delegate()->MoveToExistingWindow(selected_indices, browser_index);
+  model()->delegate()->MoveToExistingWindow(selected_indices,
+                                            browser_index.value());
 
   // DCHECK that previously selected indices in the new model are now
   // unselected.
@@ -255,6 +257,6 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
 }
 
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommandForTesting(
-    int target_index) {
+    size_t target_index) {
   ExecuteExistingCommand(target_index);
 }

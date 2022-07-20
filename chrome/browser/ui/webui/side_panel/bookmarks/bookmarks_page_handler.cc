@@ -98,10 +98,11 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
 
  private:
   void AddItem(int command_id) {
-    ui::SimpleMenuModel::AddItem(
-        command_id,
-        controller_->menu_model()->GetLabelAt(
-            controller_->menu_model()->GetIndexOfCommandId(command_id)));
+    ui::SimpleMenuModel::AddItem(command_id,
+                                 controller_->menu_model()->GetLabelAt(
+                                     controller_->menu_model()
+                                         ->GetIndexOfCommandId(command_id)
+                                         .value()));
   }
   base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder_;
   std::unique_ptr<BookmarkContextMenuController> controller_;

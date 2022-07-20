@@ -31,7 +31,7 @@ class DbusProperties;
 class COMPONENT_EXPORT(DBUS) DbusMenu {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
-  using MenuItemReference = std::pair<ui::MenuModel*, int>;
+  using MenuItemReference = std::pair<ui::MenuModel*, size_t>;
 
   // The exported DBus object will not be unregistered upon deletion.  It is the
   // responsibility of the caller to remove it after |this| is deleted.
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
              std::vector<int32_t>&& children,
              ui::MenuModel* menu,
              ui::MenuModel* containing_menu,
-             int containing_menu_index);
+             size_t containing_menu_index);
 
     MenuItem(const MenuItem&) = delete;
     MenuItem& operator=(const MenuItem&) = delete;
@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
     // |containing_menu| will be null for the root item.  If it's null, then
     // |containing_menu_index| is meaningless.
     const raw_ptr<ui::MenuModel> containing_menu;
-    const int containing_menu_index;
+    const size_t containing_menu_index;
   };
 
   class ScopedMethodResponse {

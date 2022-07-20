@@ -28,23 +28,24 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
 
   // Overridden from MenuModel:
   bool HasIcons() const override;
-  int GetItemCount() const override;
-  ui::MenuModel::ItemType GetTypeAt(int index) const override;
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override;
-  int GetCommandIdAt(int index) const override;
-  std::u16string GetLabelAt(int index) const override;
-  std::u16string GetSecondaryLabelAt(int index) const override;
-  bool IsItemDynamicAt(int index) const override;
-  const gfx::FontList* GetLabelFontListAt(int index) const override;
-  bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
+  size_t GetItemCount() const override;
+  ui::MenuModel::ItemType GetTypeAt(size_t index) const override;
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
+  int GetCommandIdAt(size_t index) const override;
+  std::u16string GetLabelAt(size_t index) const override;
+  std::u16string GetSecondaryLabelAt(size_t index) const override;
+  bool IsItemDynamicAt(size_t index) const override;
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
+  bool GetAcceleratorAt(size_t index,
+                        ui::Accelerator* accelerator) const override;
   bool IsItemCheckedAt(size_t index) const override;
-  int GetGroupIdAt(int index) const override;
-  ui::ImageModel GetIconAt(int index) const override;
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override;
-  bool IsEnabledAt(int index) const override;
-  void ActivatedAt(int index) override;
-  void ActivatedAt(int index, int event_flags) override;
-  ui::MenuModel* GetSubmenuModelAt(int index) const override;
+  int GetGroupIdAt(size_t index) const override;
+  ui::ImageModel GetIconAt(size_t index) const override;
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override;
+  bool IsEnabledAt(size_t index) const override;
+  void ActivatedAt(size_t index) override;
+  void ActivatedAt(size_t index, int event_flags) override;
+  ui::MenuModel* GetSubmenuModelAt(size_t index) const override;
 
   raw_ptr<views::Combobox> owner_;    // Weak. Owns this.
   raw_ptr<ui::ComboboxModel> model_;  // Weak.

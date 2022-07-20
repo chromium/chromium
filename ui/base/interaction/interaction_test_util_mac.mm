@@ -44,7 +44,7 @@ bool InteractionTestUtilSimulatorMac::SelectMenuItem(
   if (!model)
     return false;
 
-  for (int i = 0; i < model->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
     if (model->GetElementIdentifierAt(i) == element->identifier()) {
       NSMenuItem* item = [menu itemWithTag:i];
       if (item) {

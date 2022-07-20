@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
       BrowserView::GetBrowserViewForBrowser(settings_browser);
   ui::MenuModel* menu = browser_view->frame()->GetSystemMenuModel();
   std::set<int> commands;
-  for (int i = 0; i < menu->GetItemCount(); i++)
+  for (size_t i = 0; i < menu->GetItemCount(); ++i)
     commands.insert(menu->GetCommandIdAt(i));
 
   // Standard WebUI commands are available.

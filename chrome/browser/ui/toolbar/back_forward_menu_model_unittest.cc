@@ -77,10 +77,11 @@ class BackFwdMenuModelTest : public ChromeRenderViewHostTestHarness {
              FaviconServiceFactory::GetDefaultFactory()}};
   }
 
-  void ValidateModel(BackForwardMenuModel* model, int history_items,
-                     int chapter_stops) {
-    int h = std::min(BackForwardMenuModel::kMaxHistoryItems, history_items);
-    int c = std::min(BackForwardMenuModel::kMaxChapterStops, chapter_stops);
+  void ValidateModel(BackForwardMenuModel* model,
+                     size_t history_items,
+                     size_t chapter_stops) {
+    size_t h = std::min(BackForwardMenuModel::kMaxHistoryItems, history_items);
+    size_t c = std::min(BackForwardMenuModel::kMaxChapterStops, chapter_stops);
     EXPECT_EQ(h, model->GetHistoryItemCount());
     EXPECT_EQ(c, model->GetChapterStopCount(h));
     if (h > 0)
@@ -142,8 +143,8 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
       browser.get(), BackForwardMenuModel::ModelType::kForward));
   forward_model->set_test_web_contents(web_contents());
 
-  EXPECT_EQ(0, back_model->GetItemCount());
-  EXPECT_EQ(0, forward_model->GetItemCount());
+  EXPECT_EQ(0u, back_model->GetItemCount());
+  EXPECT_EQ(0u, forward_model->GetItemCount());
   EXPECT_FALSE(back_model->ItemHasCommand(1));
 
   // Seed the controller with a few URLs
@@ -157,8 +158,8 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
   LoadURLAndUpdateState("http://www.c.com/3", "C3");
 
   // There're two more items here: a separator and a "Show Full History".
-  EXPECT_EQ(9, back_model->GetItemCount());
-  EXPECT_EQ(0, forward_model->GetItemCount());
+  EXPECT_EQ(9u, back_model->GetItemCount());
+  EXPECT_EQ(0u, forward_model->GetItemCount());
   EXPECT_EQ(u"C2", back_model->GetLabelAt(0));
   EXPECT_EQ(u"A1", back_model->GetLabelAt(6));
   EXPECT_EQ(back_model->GetShowFullHistoryLabel(),
@@ -173,8 +174,8 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
 
   NavigateToOffset(-7);
 
-  EXPECT_EQ(0, back_model->GetItemCount());
-  EXPECT_EQ(9, forward_model->GetItemCount());
+  EXPECT_EQ(0u, back_model->GetItemCount());
+  EXPECT_EQ(9u, forward_model->GetItemCount());
   EXPECT_EQ(u"A2", forward_model->GetLabelAt(0));
   EXPECT_EQ(u"C3", forward_model->GetLabelAt(6));
   EXPECT_EQ(forward_model->GetShowFullHistoryLabel(),
@@ -189,8 +190,8 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
 
   NavigateToOffset(4);
 
-  EXPECT_EQ(6, back_model->GetItemCount());
-  EXPECT_EQ(5, forward_model->GetItemCount());
+  EXPECT_EQ(6u, back_model->GetItemCount());
+  EXPECT_EQ(5u, forward_model->GetItemCount());
   EXPECT_EQ(u"B1", back_model->GetLabelAt(0));
   EXPECT_EQ(u"A1", back_model->GetLabelAt(3));
   EXPECT_EQ(back_model->GetShowFullHistoryLabel(),
@@ -249,10 +250,10 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
   LoadURLAndUpdateState("http://www.k.com/2", "K2");
 
   // Also there're two more for a separator and a "Show Full History".
-  int chapter_stop_offset = 6;
+  size_t chapter_stop_offset = 6;
   EXPECT_EQ(BackForwardMenuModel::kMaxHistoryItems + 2 + chapter_stop_offset,
             back_model->GetItemCount());
-  EXPECT_EQ(0, forward_model->GetItemCount());
+  EXPECT_EQ(0u, forward_model->GetItemCount());
   EXPECT_EQ(u"K1", back_model->GetLabelAt(0));
   EXPECT_EQ(back_model->GetShowFullHistoryLabel(),
       back_model->GetLabelAt(BackForwardMenuModel::kMaxHistoryItems + 1 +
@@ -271,7 +272,7 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
 
   EXPECT_EQ(BackForwardMenuModel::kMaxHistoryItems + 2 + chapter_stop_offset,
             forward_model->GetItemCount());
-  EXPECT_EQ(0, back_model->GetItemCount());
+  EXPECT_EQ(0u, back_model->GetItemCount());
   EXPECT_EQ(u"A2", forward_model->GetLabelAt(0));
   EXPECT_EQ(forward_model->GetShowFullHistoryLabel(),
       forward_model->GetLabelAt(BackForwardMenuModel::kMaxHistoryItems + 1 +
@@ -301,7 +302,7 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   forward_model->set_test_web_contents(web_contents());
 
   // Seed the controller with 32 URLs.
-  int i = 0;
+  size_t i = 0;
   LoadURLAndUpdateState("http://www.a.com/1", "A1");
   ValidateModel(back_model.get(), i++, 0);
   LoadURLAndUpdateState("http://www.a.com/2", "A2");
@@ -380,7 +381,7 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   // browsed to within the same domain.
 
   // Check to see if the chapter stops have the right labels.
-  int index = BackForwardMenuModel::kMaxHistoryItems;
+  size_t index = BackForwardMenuModel::kMaxHistoryItems;
   // Empty string indicates item is a separator.
   EXPECT_EQ(std::u16string(), back_model->GetLabelAt(index++));
   EXPECT_EQ(u"F3", back_model->GetLabelAt(index++));
@@ -413,7 +414,7 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   NavigateToOffset(6);
 
   // Go back enough to make sure no chapter stops should appear.
-  NavigateToOffset(-BackForwardMenuModel::kMaxHistoryItems);
+  NavigateToOffset(-static_cast<int>(BackForwardMenuModel::kMaxHistoryItems));
   ValidateModel(forward_model.get(), BackForwardMenuModel::kMaxHistoryItems, 0);
   // Go forward (still no chapter stop)
   NavigationSimulator::GoForward(web_contents());
@@ -457,23 +458,23 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   EXPECT_EQ(u"K3", forward_model->GetLabelAt(index));
 
   // Now test the boundary cases by using the chapter stop function directly.
-  // Out of bounds, first too far right (incrementing), then too far left.
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(33, false));
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(-1, true));
+  // Out of bounds, first decrementing, then incrementing.
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(33, false).has_value());
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(33, true).has_value());
   // Test being at end and going right, then at beginning going left.
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(32, true));
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(0, false));
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(32, true).has_value());
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(0, false).has_value());
   // Test success: beginning going right and end going left.
-  EXPECT_EQ(2,  back_model->GetIndexOfNextChapterStop(0, true));
-  EXPECT_EQ(29, back_model->GetIndexOfNextChapterStop(32, false));
+  EXPECT_EQ(2u, back_model->GetIndexOfNextChapterStop(0, true));
+  EXPECT_EQ(29u, back_model->GetIndexOfNextChapterStop(32, false));
   // Now see when the chapter stops begin to show up.
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(1, false));
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(2, false));
-  EXPECT_EQ(2,  back_model->GetIndexOfNextChapterStop(3, false));
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(1, false).has_value());
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(2, false).has_value());
+  EXPECT_EQ(2u, back_model->GetIndexOfNextChapterStop(3, false));
   // Now see when the chapter stops end.
-  EXPECT_EQ(32, back_model->GetIndexOfNextChapterStop(30, true));
-  EXPECT_EQ(32, back_model->GetIndexOfNextChapterStop(31, true));
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(32, true));
+  EXPECT_EQ(32u, back_model->GetIndexOfNextChapterStop(30, true));
+  EXPECT_EQ(32u, back_model->GetIndexOfNextChapterStop(31, true));
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(32, true).has_value());
 
   if (content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
     // The case below currently fails on the linux-bfcache-rel bot with
@@ -487,8 +488,8 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   // Go to A1;
   NavigateToIndex(0);
   LoadURLAndUpdateState("http://www.b.com/1", "B1");
-  EXPECT_EQ(0, back_model->GetIndexOfNextChapterStop(1, false));
-  EXPECT_EQ(1, back_model->GetIndexOfNextChapterStop(0, true));
+  EXPECT_EQ(0u, back_model->GetIndexOfNextChapterStop(1, false));
+  EXPECT_EQ(1u, back_model->GetIndexOfNextChapterStop(0, true));
 
   // Now see if it counts 'www.x.com' and 'mail.x.com' as same domain, which
   // it should.
@@ -498,15 +499,15 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   LoadURLAndUpdateState("http://www.b.com/1", "B1");
   LoadURLAndUpdateState("http://mail.b.com/2", "B2-mai");
   LoadURLAndUpdateState("http://new.site.com", "new");
-  EXPECT_EQ(1, back_model->GetIndexOfNextChapterStop(0, true));
-  EXPECT_EQ(3, back_model->GetIndexOfNextChapterStop(1, true));
-  EXPECT_EQ(3, back_model->GetIndexOfNextChapterStop(2, true));
-  EXPECT_EQ(4, back_model->GetIndexOfNextChapterStop(3, true));
+  EXPECT_EQ(1u, back_model->GetIndexOfNextChapterStop(0, true));
+  EXPECT_EQ(3u, back_model->GetIndexOfNextChapterStop(1, true));
+  EXPECT_EQ(3u, back_model->GetIndexOfNextChapterStop(2, true));
+  EXPECT_EQ(4u, back_model->GetIndexOfNextChapterStop(3, true));
   // And try backwards as well.
-  EXPECT_EQ(3, back_model->GetIndexOfNextChapterStop(4, false));
-  EXPECT_EQ(1, back_model->GetIndexOfNextChapterStop(3, false));
-  EXPECT_EQ(1, back_model->GetIndexOfNextChapterStop(2, false));
-  EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(1, false));
+  EXPECT_EQ(3u, back_model->GetIndexOfNextChapterStop(4, false));
+  EXPECT_EQ(1u, back_model->GetIndexOfNextChapterStop(3, false));
+  EXPECT_EQ(1u, back_model->GetIndexOfNextChapterStop(2, false));
+  EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(1, false).has_value());
 }
 
 TEST_F(BackFwdMenuModelTest, EscapeLabel) {
@@ -518,7 +519,7 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
       browser.get(), BackForwardMenuModel::ModelType::kBackward));
   back_model->set_test_web_contents(web_contents());
 
-  EXPECT_EQ(0, back_model->GetItemCount());
+  EXPECT_EQ(0u, back_model->GetItemCount());
   EXPECT_FALSE(back_model->ItemHasCommand(1));
 
   LoadURLAndUpdateState("http://www.a.com/1", "A B");
@@ -527,7 +528,7 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
   LoadURLAndUpdateState("http://www.a.com/4", "A &&& B");
   LoadURLAndUpdateState("http://www.a.com/5", "");
 
-  EXPECT_EQ(6, back_model->GetItemCount());
+  EXPECT_EQ(6u, back_model->GetItemCount());
 
   EXPECT_EQ(u"A B", back_model->GetLabelAt(3));
   EXPECT_EQ(u"A && B", back_model->GetLabelAt(2));
@@ -609,7 +610,7 @@ TEST_F(BackFwdMenuModelIncognitoTest, IncognitoCaseTest) {
 
   back_model->set_test_web_contents(web_contents());
 
-  EXPECT_EQ(0, back_model->GetItemCount());
+  EXPECT_EQ(0u, back_model->GetItemCount());
   EXPECT_FALSE(back_model->ItemHasCommand(1));
 
   // Seed the controller with a few URLs
@@ -619,7 +620,7 @@ TEST_F(BackFwdMenuModelIncognitoTest, IncognitoCaseTest) {
 
   // There're should be only the visited pages but not "Show Full History" item
   // and its separator.
-  EXPECT_EQ(2, back_model->GetItemCount());
+  EXPECT_EQ(2u, back_model->GetItemCount());
   EXPECT_EQ(u"A2", back_model->GetLabelAt(0));
   EXPECT_EQ(u"A1", back_model->GetLabelAt(1));
 

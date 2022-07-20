@@ -329,10 +329,11 @@ IN_PROC_BROWSER_TEST_F(
       visible_actions[0]->view_controller()->GetContextMenu(
           extensions::ExtensionContextMenuModel::ContextMenuSource::
               kToolbarAction));
-  int visibility_index = context_menu->GetIndexOfCommandId(
+  absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
-  ASSERT_GE(visibility_index, 0);
-  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
+  ASSERT_TRUE(visibility_index.has_value());
+  std::u16string visibility_label =
+      context_menu->GetLabelAt(visibility_index.value());
   EXPECT_EQ(visibility_label, u"Unpin");
 
   // Trigger the pinned extension.
@@ -366,10 +367,11 @@ IN_PROC_BROWSER_TEST_F(
       visible_actions[0]->view_controller()->GetContextMenu(
           extensions::ExtensionContextMenuModel::ContextMenuSource::
               kToolbarAction));
-  int visibility_index = context_menu->GetIndexOfCommandId(
+  absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
-  ASSERT_GE(visibility_index, 0);
-  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
+  ASSERT_TRUE(visibility_index.has_value());
+  std::u16string visibility_label =
+      context_menu->GetLabelAt(visibility_index.value());
   EXPECT_EQ(visibility_label, u"Pin");
 }
 

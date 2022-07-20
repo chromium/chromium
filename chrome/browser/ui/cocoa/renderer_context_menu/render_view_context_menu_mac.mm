@@ -102,15 +102,14 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
     // In case the user has selected a word that triggers spelling suggestions,
     // show the dictionary lookup under the group that contains the command to
     // “Add to Dictionary.”
-    int index =
+    const absl::optional<size_t> index_opt =
         menu_model_.GetIndexOfCommandId(IDC_SPELLCHECK_ADD_TO_DICTIONARY);
-    if (index < 0) {
-      index = 0;
-    } else {
+    size_t index = index_opt.value_or(0);
+    if (index_opt.has_value()) {
       while (menu_model_.GetTypeAt(index) != ui::MenuModel::TYPE_SEPARATOR) {
         index++;
       }
-      index += 1; // Place it below the separator.
+      ++index;  // Place it below the separator.
     }
 
     std::u16string printable_selection_text = PrintableSelectionText();

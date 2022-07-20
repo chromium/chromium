@@ -202,7 +202,7 @@ class AppContextMenuTest : public AppListTestBase {
   };
 
   void ValidateItemState(const ui::MenuModel* menu_model,
-                         int index,
+                         size_t index,
                          const MenuState& state) {
     EXPECT_EQ(state.command_id, menu_model->GetCommandIdAt(index));
     if (state.command_id == -1)
@@ -215,7 +215,7 @@ class AppContextMenuTest : public AppListTestBase {
                          const std::vector<MenuState>& states) {
     ASSERT_NE(nullptr, menu_model);
     size_t state_index = 0;
-    for (int i = 0; i < menu_model->GetItemCount(); ++i) {
+    for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
       ASSERT_LT(state_index, states.size());
       ValidateItemState(menu_model, i, states[state_index++]);
     }
@@ -425,10 +425,10 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   // Separators are not added to touchable app context menus. For touchable app
   // context menus, arc app has double separator, three more app shortcuts
   // provided by arc::FakeAppInstance and two separators between shortcuts.
-  const int expected_items = 10;
+  const size_t expected_items = 10;
 
   ASSERT_EQ(expected_items, menu->GetItemCount());
-  int index = 0;
+  size_t index = 0;
   ValidateItemState(menu.get(), index++, MenuState(ash::LAUNCH_NEW));
   ValidateItemState(menu.get(), index++, MenuState(ash::TOGGLE_PIN));
   ValidateItemState(menu.get(), index++, MenuState(ash::UNINSTALL));
@@ -455,7 +455,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   // Separators are not added to touchable app context menus except for arc app
   // shortcuts, which have double separator, three more app shortcuts provided
   // by arc::FakeAppInstance and two separators between shortcuts.
-  const int expected_items_app_open = 9;
+  const size_t expected_items_app_open = 9;
   ASSERT_EQ(expected_items_app_open, menu->GetItemCount());
   index = 0;
   ValidateItemState(menu.get(), index++, MenuState(ash::TOGGLE_PIN));
@@ -491,7 +491,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   // menus. For touchable app context menus, arc app has double separator,
   // three more app shortcuts provided by arc::FakeAppInstance and two
   // separators between shortcuts.
-  const int expected_items_reopen = 8;
+  const size_t expected_items_reopen = 8;
   ASSERT_EQ(expected_items_reopen, menu->GetItemCount());
   index = 0;
   ValidateItemState(menu.get(), index++, MenuState(ash::LAUNCH_NEW));
@@ -537,8 +537,8 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   // Separators are not added to touchable app context menus. For touchable app
   // context menus, arc app has double separator, three more app shortcuts
   // provided by arc::FakeAppInstance and two separators between shortcuts.
-  const int expected_items = 10;
-  int index = 0;
+  const size_t expected_items = 10;
+  size_t index = 0;
   ASSERT_EQ(expected_items, menu->GetItemCount());
   ValidateItemState(menu.get(), index++, MenuState(ash::LAUNCH_NEW));
   ValidateItemState(menu.get(), index++, MenuState(ash::TOGGLE_PIN));
@@ -564,7 +564,7 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   // menus. For touchable app context menus, arc app has double separator,
   // three more app shortcuts provided by arc::FakeAppInstance and two
   // separators between shortcuts.
-  const int expected_items_non_ready = 9;
+  const size_t expected_items_non_ready = 9;
   ASSERT_EQ(expected_items_non_ready, menu->GetItemCount());
   index = 0;
   ValidateItemState(menu.get(), index++, MenuState(ash::LAUNCH_NEW));
@@ -604,9 +604,9 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
     // Separators are not added to touchable app context menus. For touchable
     // app context menus, arc app has double separator, three more app shortcuts
     // provided by arc::FakeAppInstance and two separators between shortcuts.
-    int expected_items = 9;
+    size_t expected_items = 9;
     ASSERT_EQ(expected_items, menu->GetItemCount());
-    int index = 0;
+    size_t index = 0;
     ValidateItemState(menu.get(), index++, MenuState(ash::LAUNCH_NEW));
     ValidateItemState(menu.get(), index++, MenuState(ash::TOGGLE_PIN));
     ValidateItemState(menu.get(), index++, MenuState(ash::SHOW_APP_INFO));
@@ -643,9 +643,9 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   // Separators are not added to touchable app context menus. For touchable
   // app context menus, arc app has double separator, three more app shortcuts
   // provided by arc::FakeAppInstance and two separators between shortcuts.
-  int expected_items = 8;
+  size_t expected_items = 8;
   ASSERT_EQ(expected_items, menu->GetItemCount());
-  int index = 0;
+  size_t index = 0;
   ValidateItemState(menu.get(), index++, MenuState(ash::TOGGLE_PIN));
   ValidateItemState(menu.get(), index++, MenuState(ash::SHOW_APP_INFO));
 
@@ -690,7 +690,7 @@ TEST_F(AppContextMenuTest, InternalAppMenu) {
         GetAppListItem(profile(), internal_app.app_id);
     std::unique_ptr<ui::MenuModel> menu = GetContextMenuModel(item.get());
     ASSERT_NE(nullptr, menu);
-    EXPECT_EQ(1, menu->GetItemCount());
+    EXPECT_EQ(1u, menu->GetItemCount());
     ValidateItemState(menu.get(), 0, MenuState(ash::TOGGLE_PIN));
   }
 }
@@ -744,7 +744,7 @@ TEST_F(AppContextMenuLacrosTest, LacrosApp) {
 
   // Verify expected menu items.
   // It should have, Open new window, Open incognito window, and app info.
-  EXPECT_EQ(menu_model->GetItemCount(), 3);
+  EXPECT_EQ(menu_model->GetItemCount(), 3u);
   std::vector<MenuState> states;
   AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_WINDOW), &states);
   AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW),

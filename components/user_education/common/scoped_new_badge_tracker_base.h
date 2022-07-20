@@ -44,7 +44,7 @@ namespace user_education {
 //
 //   // In OnMenuWillShow(menu):
 //   menu->SetIsNewFeatureAt(
-//       menu->GetIndexOfCommandId(IDC_MY_FEATURE),
+//       menu->GetIndexOfCommandId(IDC_MY_FEATURE).value(),
 //       new_badge_tracker_.TryShowNewBadge(
 //           feature_engagement::kIPHMyFeatureNewBadge,
 //           &ui_features::kMyFeature));

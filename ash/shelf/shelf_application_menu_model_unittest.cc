@@ -53,7 +53,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
   std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, {}, nullptr);
   // Expect the title and a separator.
-  ASSERT_EQ(2, menu.GetItemCount());
+  ASSERT_EQ(2u, menu.GetItemCount());
   EXPECT_EQ(ui::MenuModel::TYPE_TITLE, menu.GetTypeAt(0));
   EXPECT_EQ(title, menu.GetLabelAt(0));
   EXPECT_FALSE(menu.IsEnabledAt(0));
@@ -75,7 +75,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
 
   // Expect the title and the enabled items.
-  ASSERT_EQ(static_cast<int>(5), menu.GetItemCount());
+  ASSERT_EQ(5u, menu.GetItemCount());
 
   // The label title should not be enabled.
   EXPECT_EQ(ui::MenuModel::TYPE_TITLE, menu.GetTypeAt(0));

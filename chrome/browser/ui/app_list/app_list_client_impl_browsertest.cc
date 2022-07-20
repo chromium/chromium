@@ -357,10 +357,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowContextMenu) {
   run_loop.Run();
   EXPECT_TRUE(menu_model);
 
-  int num_items = menu_model->GetItemCount();
-  EXPECT_LT(0, num_items);
+  size_t num_items = menu_model->GetItemCount();
+  EXPECT_GT(num_items, 0u);
 
-  for (int i = 0; i < num_items; i++) {
+  for (size_t i = 0; i < num_items; i++) {
     if (menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SEPARATOR)
       continue;
 

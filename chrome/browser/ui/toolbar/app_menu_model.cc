@@ -198,21 +198,22 @@ class HelpMenuModel : public ui::SimpleMenuModel {
     if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu)) {
       AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
       if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenuNewBadge))
-        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS), true);
+        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS).value(), true);
     }
     if (base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
       AddItem(IDC_CHROME_WHATS_NEW,
               l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW));
       if (base::FeatureList::IsEnabled(
               features::kChromeWhatsNewInMainMenuNewBadge)) {
-        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_WHATS_NEW), true);
+        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_WHATS_NEW).value(),
+                          true);
       }
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
     if (browser_defaults::kShowHelpMenuItemIcon) {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      SetIcon(GetIndexOfCommandId(IDC_HELP_PAGE_VIA_MENU),
+      SetIcon(GetIndexOfCommandId(IDC_HELP_PAGE_VIA_MENU).value(),
               ui::ImageModel::FromImage(rb.GetNativeImageNamed(IDR_HELP_MENU)));
     }
     if (browser->profile()->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed))
@@ -820,7 +821,7 @@ void AppMenuModel::LogMenuAction(AppMenuAction action_id) {
 // - Browser relaunch, quit.
 void AppMenuModel::Build() {
   // Build (and, by extension, Init) should only be called once.
-  DCHECK_EQ(0, GetItemCount());
+  DCHECK_EQ(0u, GetItemCount());
 
   bool need_separator = false;
   if (IsCommandIdVisible(IDC_UPGRADE_DIALOG)) {
@@ -854,11 +855,11 @@ void AppMenuModel::Build() {
         std::make_unique<RecentTabsSubMenuModel>(provider_, browser_));
     AddSubMenuWithStringId(IDC_RECENT_TABS_MENU, IDS_HISTORY_MENU,
                            sub_menus_.back().get());
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_RECENT_TABS_MENU),
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_RECENT_TABS_MENU).value(),
                            kHistoryMenuItem);
   }
   AddItemWithStringId(IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_DOWNLOADS),
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_DOWNLOADS).value(),
                          kDownloadsMenuItem);
   if (!browser_->profile()->IsGuestSession()) {
     bookmark_sub_menu_model_ =
@@ -1017,7 +1018,7 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
     DCHECK(error);
     if (error->HasMenuItem()) {
       AddItem(error->MenuItemCommandID(), error->MenuItemLabel());
-      SetIcon(GetIndexOfCommandId(error->MenuItemCommandID()),
+      SetIcon(GetIndexOfCommandId(error->MenuItemCommandID()).value(),
               error->MenuItemIcon());
       menu_items_added = true;
     }
@@ -1037,23 +1038,23 @@ void AppMenuModel::UpdateSettingsItemState() {
           policy::SystemFeature::kBrowserSettings,
           g_browser_process->local_state());
 
-  int index = GetIndexOfCommandId(IDC_OPTIONS);
-  if (index != -1)
-    SetEnabledAt(index, !is_disabled);
+  absl::optional<size_t> index = GetIndexOfCommandId(IDC_OPTIONS);
+  if (index.has_value())
+    SetEnabledAt(index.value(), !is_disabled);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   index = GetIndexOfCommandId(IDC_HELP_MENU);
-  if (index != -1) {
+  if (index.has_value()) {
     ui::SimpleMenuModel* help_menu =
-        static_cast<ui::SimpleMenuModel*>(GetSubmenuModelAt(index));
+        static_cast<ui::SimpleMenuModel*>(GetSubmenuModelAt(index.value()));
     index = help_menu->GetIndexOfCommandId(IDC_ABOUT);
-    if (index != -1)
-      help_menu->SetEnabledAt(index, !is_disabled);
+    if (index.has_value())
+      help_menu->SetEnabledAt(index.value(), !is_disabled);
   }
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   index = GetIndexOfCommandId(IDC_ABOUT);
-  if (index != -1)
-    SetEnabledAt(index, !is_disabled);
+  if (index.has_value())
+    SetEnabledAt(index.value(), !is_disabled);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

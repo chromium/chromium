@@ -199,7 +199,7 @@ int CountExtensionItems(const ExtensionContextMenuModel& model) {
   std::u16string expected_label = base::ASCIIToUTF16(kTestExtensionItemLabel);
   int num_items_found = 0;
   int num_custom_found = 0;
-  for (int i = 0; i < model.GetItemCount(); ++i) {
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
     std::u16string actual_label = model.GetLabelAt(i);
     int command_id = model.GetCommandIdAt(i);
     // If the command id is not visible, it should not be counted.
@@ -226,7 +226,7 @@ int CountExtensionItems(const ExtensionContextMenuModel& model) {
 void VerifyItems(const ExtensionContextMenuModel& model,
                  std::vector<std::string> item_number) {
   size_t j = 0;
-  for (int i = 0; i < model.GetItemCount(); i++) {
+  for (size_t i = 0; i < model.GetItemCount(); i++) {
     int command_id = model.GetCommandIdAt(i);
     if (ContextMenuMatcher::IsExtensionsCustomCommandId(command_id) &&
         model.IsCommandIdVisible(command_id)) {
@@ -377,7 +377,7 @@ ExtensionContextMenuModelTest::CommandState
 ExtensionContextMenuModelTest::GetCommandState(
     const ExtensionContextMenuModel& menu,
     int command_id) const {
-  bool is_present = menu.GetIndexOfCommandId(command_id) != -1;
+  bool is_present = menu.GetIndexOfCommandId(command_id).has_value();
   bool is_visible = menu.IsCommandIdVisible(command_id);
 
   // The command is absent if the menu entry is not present, or the entry is
@@ -408,11 +408,12 @@ ExtensionContextMenuModelTest::GetPageAccessCommandState(
     return CommandState::kAbsent;
 
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(
-      menu.GetIndexOfCommandId(ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU));
+      menu.GetIndexOfCommandId(ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU)
+          .value());
   DCHECK(submenu);
 
   ui::MenuModel** menu_to_search = &submenu;
-  int index_unused = 0;
+  size_t index_unused = 0;
   if (!ui::MenuModel::GetModelAndIndexForCommandId(command, menu_to_search,
                                                    &index_unused)) {
     return CommandState::kAbsent;
@@ -493,8 +494,8 @@ TEST_F(ExtensionContextMenuModelTest, RequiredInstallationsDisablesItems) {
   // uninstallation should be disabled.
   EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::UNINSTALL),
             CommandState::kDisabled);
-  int uninstall_index =
-      menu.GetIndexOfCommandId(ExtensionContextMenuModel::UNINSTALL);
+  size_t uninstall_index =
+      menu.GetIndexOfCommandId(ExtensionContextMenuModel::UNINSTALL).value();
   // There should also be an icon to visually indicate why uninstallation is
   // forbidden.
   ui::ImageModel icon = menu.GetIconAt(uninstall_index);
@@ -608,8 +609,9 @@ TEST_F(ExtensionContextMenuModelTest,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    /* can_show_icon_in_toolbar=*/true,
                                    ContextMenuSource::kMenuItem);
-    EXPECT_EQ(-1, menu.GetIndexOfCommandId(
-                      ExtensionContextMenuModel::TOGGLE_VISIBILITY));
+    EXPECT_FALSE(
+        menu.GetIndexOfCommandId(ExtensionContextMenuModel::TOGGLE_VISIBILITY)
+            .has_value());
     EXPECT_EQ(
         GetCommandState(menu, ExtensionContextMenuModel::TOGGLE_VISIBILITY),
         CommandState::kAbsent);
@@ -750,18 +752,18 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(page_action, browser,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
-    int index = menu.GetIndexOfCommandId(visibility_command);
-    EXPECT_NE(-1, index);
-    EXPECT_EQ(unpin_string, menu.GetLabelAt(index));
+    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
   }
 
   {
     ExtensionContextMenuModel menu(browser_action, browser,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
-    int index = menu.GetIndexOfCommandId(visibility_command);
-    EXPECT_NE(-1, index);
-    EXPECT_EQ(unpin_string, menu.GetLabelAt(index));
+    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
 
     // Pin before unpinning.
     ToolbarActionsModel::Get(profile())->SetActionVisibility(
@@ -774,9 +776,9 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     ExtensionContextMenuModel menu(browser_action, browser,
                                    ExtensionContextMenuModel::UNPINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
-    int index = menu.GetIndexOfCommandId(visibility_command);
-    EXPECT_NE(-1, index);
-    EXPECT_EQ(pin_string, menu.GetLabelAt(index));
+    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(pin_string, menu.GetLabelAt(index.value()));
   }
 
   {
@@ -786,9 +788,9 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
         browser_action, browser,
         ExtensionContextMenuModel::TRANSITIVELY_VISIBLE, nullptr, true,
         ContextMenuSource::kToolbarAction);
-    int index = menu.GetIndexOfCommandId(visibility_command);
-    EXPECT_NE(-1, index);
-    EXPECT_EQ(pin_string, menu.GetLabelAt(index));
+    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_EQ(pin_string, menu.GetLabelAt(index.value()));
   }
 }
 
@@ -831,10 +833,10 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
     ExtensionContextMenuModel menu(extension, browser,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
-    int index = menu.GetIndexOfCommandId(visibility_command);
-    EXPECT_NE(-1, index);
-    EXPECT_TRUE(menu.IsEnabledAt(index));
-    EXPECT_EQ(unpin_string, menu.GetLabelAt(index));
+    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_TRUE(menu.IsEnabledAt(index.value()));
+    EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
   }
 
   {
@@ -842,10 +844,10 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
     ExtensionContextMenuModel menu(force_pinned_extension, browser,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
-    int index = menu.GetIndexOfCommandId(visibility_command);
-    EXPECT_NE(-1, index);
-    EXPECT_FALSE(menu.IsEnabledAt(index));
-    EXPECT_EQ(force_pinned_string, menu.GetLabelAt(index));
+    absl::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_FALSE(menu.IsEnabledAt(index.value()));
+    EXPECT_EQ(force_pinned_string, menu.GetLabelAt(index.value()));
   }
 }
 
@@ -1119,8 +1121,10 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   ExtensionContextMenuModel single_host_menu(
       single_host_extension, GetBrowser(), ExtensionContextMenuModel::PINNED,
       nullptr, true, ContextMenuSource::kToolbarAction);
-  EXPECT_NE(-1, single_host_menu.GetIndexOfCommandId(
-                    ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU));
+  EXPECT_TRUE(
+      single_host_menu
+          .GetIndexOfCommandId(ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU)
+          .has_value());
 }
 
 // Tests different permission patterns when the site setting is set to

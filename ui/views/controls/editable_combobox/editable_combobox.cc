@@ -176,8 +176,8 @@ class EditableCombobox::EditableComboboxMenuModel
     return MenuConfig::instance().check_selected_combobox_item;
   }
 
-  std::u16string GetItemTextAt(int index, bool showing_password_text) const {
-    int index_in_model = items_shown_[index].index;
+  std::u16string GetItemTextAt(size_t index, bool showing_password_text) const {
+    size_t index_in_model = items_shown_[index].index;
     std::u16string text = combobox_model_->GetItemAt(index_in_model);
     return showing_password_text
                ? text
@@ -185,7 +185,7 @@ class EditableCombobox::EditableComboboxMenuModel
                                 gfx::RenderText::kPasswordReplacementChar);
   }
 
-  ui::ImageModel GetIconAt(int index) const override {
+  ui::ImageModel GetIconAt(size_t index) const override {
     return combobox_model_->GetDropDownIconAt(items_shown_[index].index);
   }
 
@@ -198,7 +198,7 @@ class EditableCombobox::EditableComboboxMenuModel
     observation_.Reset();
   }
 
-  int GetItemCount() const override { return items_shown_.size(); }
+  size_t GetItemCount() const override { return items_shown_.size(); }
 
  private:
   struct ShownItem {
@@ -206,39 +206,39 @@ class EditableCombobox::EditableComboboxMenuModel
     bool enabled;
   };
   bool HasIcons() const override {
-    for (int i = 0; i < GetItemCount(); ++i) {
+    for (size_t i = 0; i < GetItemCount(); ++i) {
       if (!GetIconAt(i).IsEmpty())
         return true;
     }
     return false;
   }
 
-  ItemType GetTypeAt(int index) const override {
+  ItemType GetTypeAt(size_t index) const override {
     return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
   }
 
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override {
     return ui::NORMAL_SEPARATOR;
   }
 
-  int GetCommandIdAt(int index) const override {
+  int GetCommandIdAt(size_t index) const override {
     constexpr int kFirstMenuItemId = 1000;
-    return index + kFirstMenuItemId;
+    return static_cast<int>(index) + kFirstMenuItemId;
   }
 
-  std::u16string GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(size_t index) const override {
     std::u16string text = GetItemTextAt(index, owner_->showing_password_text_);
     base::i18n::AdjustStringForLocaleDirection(&text);
     return text;
   }
 
-  bool IsItemDynamicAt(int index) const override { return false; }
+  bool IsItemDynamicAt(size_t index) const override { return false; }
 
-  const gfx::FontList* GetLabelFontListAt(int index) const override {
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
     return &owner_->GetFontList();
   }
 
-  bool GetAcceleratorAt(int index,
+  bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override {
     return false;
   }
@@ -249,19 +249,19 @@ class EditableCombobox::EditableComboboxMenuModel
                owner_->GetText();
   }
 
-  int GetGroupIdAt(int index) const override { return -1; }
+  int GetGroupIdAt(size_t index) const override { return -1; }
 
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override {
     return nullptr;
   }
 
-  bool IsEnabledAt(int index) const override {
+  bool IsEnabledAt(size_t index) const override {
     return items_shown_[index].enabled;
   }
 
-  void ActivatedAt(int index) override { owner_->OnItemSelected(index); }
+  void ActivatedAt(size_t index) override { owner_->OnItemSelected(index); }
 
-  MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
+  MenuModel* GetSubmenuModelAt(size_t index) const override { return nullptr; }
 
   raw_ptr<EditableCombobox> owner_;            // Weak. Owns |this|.
   raw_ptr<ui::ComboboxModel> combobox_model_;  // Weak.

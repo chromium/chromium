@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -131,92 +132,99 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
                                                const ui::ImageModel& icon);
 
   // Methods for inserting items into the model.
-  void InsertItemAt(int index, int command_id, const std::u16string& label);
-  void InsertItemWithStringIdAt(int index, int command_id, int string_id);
-  void InsertSeparatorAt(int index, MenuSeparatorType separator_type);
-  void InsertCheckItemAt(int index,
+  void InsertItemAt(size_t index, int command_id, const std::u16string& label);
+  void InsertItemWithStringIdAt(size_t index, int command_id, int string_id);
+  void InsertSeparatorAt(size_t index, MenuSeparatorType separator_type);
+  void InsertCheckItemAt(size_t index,
                          int command_id,
                          const std::u16string& label);
-  void InsertCheckItemWithStringIdAt(int index, int command_id, int string_id);
-  void InsertRadioItemAt(int index,
+  void InsertCheckItemWithStringIdAt(size_t index,
+                                     int command_id,
+                                     int string_id);
+  void InsertRadioItemAt(size_t index,
                          int command_id,
                          const std::u16string& label,
                          int group_id);
-  void InsertRadioItemWithStringIdAt(
-      int index, int command_id, int string_id, int group_id);
-  void InsertSubMenuAt(int index,
+  void InsertRadioItemWithStringIdAt(size_t index,
+                                     int command_id,
+                                     int string_id,
+                                     int group_id);
+  void InsertSubMenuAt(size_t index,
                        int command_id,
                        const std::u16string& label,
                        MenuModel* model);
-  void InsertSubMenuWithStringIdAt(
-      int index, int command_id, int string_id, MenuModel* model);
+  void InsertSubMenuWithStringIdAt(size_t index,
+                                   int command_id,
+                                   int string_id,
+                                   MenuModel* model);
 
   // Remove item at specified index from the model.
-  void RemoveItemAt(int index);
+  void RemoveItemAt(size_t index);
 
   // Sets the icon for the item at |index|.
-  void SetIcon(int index, const ui::ImageModel& icon);
+  void SetIcon(size_t index, const ui::ImageModel& icon);
 
   // Sets the label for the item at |index|.
-  void SetLabel(int index, const std::u16string& label);
+  void SetLabel(size_t index, const std::u16string& label);
 
   // Sets the minor text for the item at |index|.
-  void SetMinorText(int index, const std::u16string& minor_text);
+  void SetMinorText(size_t index, const std::u16string& minor_text);
 
   // Sets the minor icon for the item at |index|.
-  void SetMinorIcon(int index, const ui::ImageModel& minor_icon);
+  void SetMinorIcon(size_t index, const ui::ImageModel& minor_icon);
 
   // Sets whether the item at |index| is enabled.
-  void SetEnabledAt(int index, bool enabled);
+  void SetEnabledAt(size_t index, bool enabled);
 
   // Sets whether the item at |index| is visible.
-  void SetVisibleAt(int index, bool visible);
+  void SetVisibleAt(size_t index, bool visible);
 
   // Sets whether the item at |index| is new.
-  void SetIsNewFeatureAt(int index, bool is_new_feature);
+  void SetIsNewFeatureAt(size_t index, bool is_new_feature);
 
   // Sets whether the item at |index| is may have mnemonics.
-  void SetMayHaveMnemonicsAt(int index, bool may_have_mnemonics);
+  void SetMayHaveMnemonicsAt(size_t index, bool may_have_mnemonics);
 
   // Sets the accessible name of item at |index|.
-  void SetAccessibleNameAt(int index, std::u16string accessible_name);
+  void SetAccessibleNameAt(size_t index, std::u16string accessible_name);
 
   // Sets an application-window unique identifier associated with this menu item
   // allowing it to be tracked without knowledge of menu-specific command IDs.
-  void SetElementIdentifierAt(int index, ElementIdentifier unique_id);
+  void SetElementIdentifierAt(size_t index, ElementIdentifier unique_id);
 
   // Clears all items. Note that it does not free MenuModel of submenu.
   void Clear();
 
   // Returns the index of the item that has the given |command_id|. Returns
-  // -1 if not found.
-  int GetIndexOfCommandId(int command_id) const;
+  // nullopt if not found.
+  absl::optional<size_t> GetIndexOfCommandId(int command_id) const;
 
   // Overridden from MenuModel:
   bool HasIcons() const override;
-  int GetItemCount() const override;
-  ItemType GetTypeAt(int index) const override;
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override;
-  int GetCommandIdAt(int index) const override;
-  std::u16string GetLabelAt(int index) const override;
-  std::u16string GetMinorTextAt(int index) const override;
-  ImageModel GetMinorIconAt(int index) const override;
-  bool IsItemDynamicAt(int index) const override;
-  bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
+  size_t GetItemCount() const override;
+  ItemType GetTypeAt(size_t index) const override;
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
+  int GetCommandIdAt(size_t index) const override;
+  std::u16string GetLabelAt(size_t index) const override;
+  std::u16string GetMinorTextAt(size_t index) const override;
+  ImageModel GetMinorIconAt(size_t index) const override;
+  bool IsItemDynamicAt(size_t index) const override;
+  bool GetAcceleratorAt(size_t index,
+                        ui::Accelerator* accelerator) const override;
   bool IsItemCheckedAt(size_t index) const override;
-  int GetGroupIdAt(int index) const override;
-  ImageModel GetIconAt(int index) const override;
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override;
-  bool IsEnabledAt(int index) const override;
-  bool IsVisibleAt(int index) const override;
-  bool IsAlertedAt(int index) const override;
-  bool IsNewFeatureAt(int index) const override;
-  bool MayHaveMnemonicsAt(int index) const override;
-  std::u16string GetAccessibleNameAt(int index) const override;
-  ElementIdentifier GetElementIdentifierAt(int index) const override;
-  void ActivatedAt(int index) override;
-  void ActivatedAt(int index, int event_flags) override;
-  MenuModel* GetSubmenuModelAt(int index) const override;
+  int GetGroupIdAt(size_t index) const override;
+  ImageModel GetIconAt(size_t index) const override;
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override;
+  bool IsEnabledAt(size_t index) const override;
+  bool IsVisibleAt(size_t index) const override;
+  bool IsAlertedAt(size_t index) const override;
+  bool IsNewFeatureAt(size_t index) const override;
+  bool MayHaveMnemonicsAt(size_t index) const override;
+  std::u16string GetAccessibleNameAt(size_t index) const override;
+  ElementIdentifier GetElementIdentifierAt(size_t index) const override;
+  void ActivatedAt(size_t index) override;
+  void ActivatedAt(size_t index, int event_flags) override;
+  MenuModel* GetSubmenuModelAt(size_t index) const override;
   void MenuWillShow() override;
   void MenuWillClose() override;
 
@@ -253,14 +261,14 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     ElementIdentifier unique_id;
   };
 
-  typedef std::vector<Item> ItemVector;
+  using ItemVector = std::vector<Item>;
 
   // Returns |index|.
-  int ValidateItemIndex(int index) const;
+  size_t ValidateItemIndex(size_t index) const;
 
   // Functions for inserting items into |items_|.
   void AppendItem(Item item);
-  void InsertItemAtIndex(Item item, int index);
+  void InsertItemAtIndex(Item item, size_t index);
   void ValidateItem(const Item& item);
 
   // Notify the delegate that the menu is closed.

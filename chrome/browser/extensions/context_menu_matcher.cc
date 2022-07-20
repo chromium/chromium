@@ -149,7 +149,7 @@ void ContextMenuMatcher::AppendExtensionItems(
 }
 
 bool ContextMenuMatcher::HasVisibleItems(ui::MenuModel* menu_model) const {
-  for (int index = 0; index < menu_model->GetItemCount(); index++) {
+  for (size_t index = 0; index < menu_model->GetItemCount(); ++index) {
     if (!menu_model->IsVisibleAt(index))
       continue;
 
@@ -209,13 +209,13 @@ bool ContextMenuMatcher::IsCommandIdVisible(int command_id) const {
   // be displayed only if it has an invisible submenu item.
   if (!item && ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
     ui::MenuModel* model = menu_model_;
-    int index = 0;
+    size_t index = 0;
     if (ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
                                                     &index)) {
       ui::MenuModel* submenu_model = model->GetSubmenuModelAt(index);
       // TODO(ghazale): Find out why submenu_model might be null. In other
       // words, in which circumstance it can be an extensions custom command ID
-      // which does not have an associated item, but it's submenu_model is null.
+      // which does not have an associated item, but its submenu_model is null.
       if (submenu_model)
         return HasVisibleItems(submenu_model);
     }
@@ -379,13 +379,13 @@ MenuItem* ContextMenuMatcher::GetExtensionMenuItem(int id) const {
 void ContextMenuMatcher::SetExtensionIcon(const std::string& extension_id) {
   MenuManager* menu_manager = MenuManager::Get(browser_context_);
 
-  int index = menu_model_->GetItemCount() - 1;
-  DCHECK_GE(index, 0);
+  size_t count = menu_model_->GetItemCount();
+  DCHECK_GT(count, 0u);
 
   gfx::Image icon = menu_manager->GetIconForExtension(extension_id);
   DCHECK_EQ(gfx::kFaviconSize, icon.Width());
   DCHECK_EQ(gfx::kFaviconSize, icon.Height());
-  menu_model_->SetIcon(index, ui::ImageModel::FromImage(icon));
+  menu_model_->SetIcon(count - 1, ui::ImageModel::FromImage(icon));
 }
 
 }  // namespace extensions

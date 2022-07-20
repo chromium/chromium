@@ -96,7 +96,7 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 void WebAppMenuModel::Build() {
   AddItemWithStringId(IDC_WEB_APP_MENU_APP_INFO,
                       IDS_APP_CONTEXT_MENU_SHOW_INFO);
-  int app_info_index = GetItemCount() - 1;
+  size_t app_info_index = GetItemCount() - 1;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (web_contents) {

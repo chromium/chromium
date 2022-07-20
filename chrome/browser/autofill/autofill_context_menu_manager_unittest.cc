@@ -105,7 +105,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   std::vector<std::u16string> all_added_strings;
 
   // Check for top level menu with autofill options.
-  ASSERT_EQ(2, menu_model()->GetItemCount());
+  ASSERT_EQ(2u, menu_model()->GetItemCount());
   ASSERT_EQ(u"Fill Address Info", menu_model()->GetLabelAt(0));
   ASSERT_EQ(u"Fill Payment", menu_model()->GetLabelAt(1));
   ASSERT_EQ(menu_model()->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_SUBMENU);
@@ -113,7 +113,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with address descriptions.
   auto* address_menu_model = menu_model()->GetSubmenuModelAt(0);
-  ASSERT_EQ(address_menu_model->GetItemCount(), 3);
+  ASSERT_EQ(address_menu_model->GetItemCount(), 3u);
   ASSERT_EQ(u"John H. Doe, 666 Erebus St.", address_menu_model->GetLabelAt(0));
   ASSERT_EQ(address_menu_model->GetTypeAt(0),
             ui::MenuModel::ItemType::TYPE_SUBMENU);
@@ -123,7 +123,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with address details.
   auto* address_details_submenu = address_menu_model->GetSubmenuModelAt(0);
-  ASSERT_EQ(address_details_submenu->GetItemCount(), 8);
+  ASSERT_EQ(address_details_submenu->GetItemCount(), 8u);
   static constexpr std::array expected_address_values = {
       u"John H. Doe", u"", u"666 Erebus St.\nApt 8", u"Elysium",
       u"91111",       u"", u"16502111111",           u"johndoe@hades.com"};
@@ -135,7 +135,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with credit card descriptions.
   auto* card_menu_model = menu_model()->GetSubmenuModelAt(1);
-  ASSERT_EQ(card_menu_model->GetItemCount(), 3);
+  ASSERT_EQ(card_menu_model->GetItemCount(), 3u);
   ASSERT_EQ(
       u"Visa  "
       u"\x202A\x2022\x2060\x2006\x2060\x2022\x2060\x2006\x2060\x2022\x2060"
@@ -150,7 +150,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with credit card details.
   auto* card_details_submenu = card_menu_model->GetSubmenuModelAt(0);
-  ASSERT_EQ(card_details_submenu->GetItemCount(), 5);
+  ASSERT_EQ(card_details_submenu->GetItemCount(), 5u);
   static constexpr std::array expected_credit_card_values = {
       u"Test User", u"4111111111111111", u""};
   for (size_t i = 0; i < expected_credit_card_values.size(); i++) {

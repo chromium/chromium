@@ -123,7 +123,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ShelfContextMenuModelTest, Basic) {
   ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
 
-  ASSERT_EQ(3, menu.GetItemCount());
+  ASSERT_EQ(3u, menu.GetItemCount());
   EXPECT_EQ(CommandId::MENU_AUTO_HIDE, menu.GetCommandIdAt(0));
   EXPECT_EQ(CommandId::MENU_ALIGNMENT_MENU, menu.GetCommandIdAt(1));
   if (IsPersonalizationHubParamEnabled()) {
@@ -131,7 +131,7 @@ TEST_P(ShelfContextMenuModelTest, Basic) {
   } else {
     EXPECT_EQ(CommandId::MENU_CHANGE_WALLPAPER, menu.GetCommandIdAt(2));
   }
-  for (int i = 0; i < menu.GetItemCount(); ++i) {
+  for (size_t i = 0; i < menu.GetItemCount(); ++i) {
     EXPECT_TRUE(menu.IsEnabledAt(i));
     EXPECT_TRUE(menu.IsVisibleAt(i));
   }
@@ -140,7 +140,7 @@ TEST_P(ShelfContextMenuModelTest, Basic) {
   EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, menu.GetTypeAt(1));
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(1);
   ASSERT_TRUE(submenu);
-  ASSERT_EQ(3, submenu->GetItemCount());
+  ASSERT_EQ(3u, submenu->GetItemCount());
   EXPECT_EQ(CommandId::MENU_ALIGNMENT_LEFT, submenu->GetCommandIdAt(0));
   EXPECT_EQ(CommandId::MENU_ALIGNMENT_BOTTOM, submenu->GetCommandIdAt(1));
   EXPECT_EQ(CommandId::MENU_ALIGNMENT_RIGHT, submenu->GetCommandIdAt(2));
@@ -205,7 +205,7 @@ TEST_P(ShelfContextMenuModelTest, CustomItems) {
 
   // Because the delegate is valid, the context menu will not have the desktop
   // menu options (autohide, shelf position, and wallpaper picker).
-  ASSERT_EQ(0, menu.GetItemCount());
+  ASSERT_EQ(0u, menu.GetItemCount());
 
   // Add some custom items.
   menu.AddItem(203, u"item");
@@ -215,7 +215,7 @@ TEST_P(ShelfContextMenuModelTest, CustomItems) {
   menu.AddSubMenu(55, u"submenu", &submenu);
 
   // Ensure the menu contents match the items above.
-  ASSERT_EQ(4, menu.GetItemCount());
+  ASSERT_EQ(4u, menu.GetItemCount());
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu.GetTypeAt(0));
   EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu.GetTypeAt(1));
   EXPECT_EQ(ui::MenuModel::TYPE_RADIO, menu.GetTypeAt(2));
@@ -239,8 +239,10 @@ TEST_P(ShelfContextMenuModelTest, AutohideShelfOptionOnExternalDisplay) {
 
   ShelfContextMenuModel primary_menu(nullptr, primary_id);
   ShelfContextMenuModel secondary_menu(nullptr, secondary_id);
-  EXPECT_EQ(-1, primary_menu.GetIndexOfCommandId(CommandId::MENU_AUTO_HIDE));
-  EXPECT_NE(-1, secondary_menu.GetIndexOfCommandId(CommandId::MENU_AUTO_HIDE));
+  EXPECT_FALSE(
+      primary_menu.GetIndexOfCommandId(CommandId::MENU_AUTO_HIDE).has_value());
+  EXPECT_TRUE(secondary_menu.GetIndexOfCommandId(CommandId::MENU_AUTO_HIDE)
+                  .has_value());
 }
 
 // Tests that the autohide and alignment menu options are not included in tablet
@@ -254,7 +256,7 @@ TEST_P(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
   // options because other options are disabled.
   tablet_mode_controller->SetEnabledForTest(true);
   ShelfContextMenuModel menu1(nullptr, primary_id);
-  EXPECT_EQ(2, menu1.GetItemCount());
+  EXPECT_EQ(2u, menu1.GetItemCount());
   EXPECT_EQ(ShelfContextMenuModel::MENU_AUTO_HIDE, menu1.GetCommandIdAt(0));
   if (IsPersonalizationHubParamEnabled()) {
     EXPECT_EQ(ShelfContextMenuModel::MENU_PERSONALIZATION_HUB,
@@ -268,7 +270,7 @@ TEST_P(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
   // MENU_AUTO_HIDE, MENU_ALIGNMENT_MENU, and MENU_CHANGE_WALLPAPER.
   tablet_mode_controller->SetEnabledForTest(false);
   ShelfContextMenuModel menu2(nullptr, primary_id);
-  EXPECT_EQ(3, menu2.GetItemCount());
+  EXPECT_EQ(3u, menu2.GetItemCount());
 
   // Test the auto hide option.
   EXPECT_EQ(ShelfContextMenuModel::MENU_AUTO_HIDE, menu2.GetCommandIdAt(0));
@@ -321,7 +323,7 @@ TEST_P(ShelfContextMenuModelTest, ShelfContextMenuOptions) {
   // tools/metrics/enums.xml and that you haven't modified the order of the
   // existing enums.
   ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
-  EXPECT_EQ(3, menu.GetItemCount());
+  EXPECT_EQ(3u, menu.GetItemCount());
 }
 
 TEST_P(ShelfContextMenuModelTest, NotificationContainerEnabled) {

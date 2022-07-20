@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
@@ -85,8 +85,8 @@ TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
   EXPECT_EQ(first_item_label, menu->GetLabelAt(i++));
   EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(i++));
   // There is a separator between each app shortcut.
-  for (int shortcut_index = 0; i < menu->GetItemCount(); ++i) {
-    EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
+  for (size_t shortcut_index = 0; i < menu->GetItemCount(); ++i) {
+    EXPECT_EQ("ShortLabel " + base::NumberToString(shortcut_index++),
               base::UTF16ToUTF8(menu->GetLabelAt(i++)));
     if (i < menu->GetItemCount())
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(i));

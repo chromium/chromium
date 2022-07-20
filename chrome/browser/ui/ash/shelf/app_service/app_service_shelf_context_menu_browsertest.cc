@@ -40,7 +40,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
   struct MenuSection {
     std::unique_ptr<ui::SimpleMenuModel> menu_model;
     ui::MenuModel* sub_model = nullptr;
-    int command_index = -1;
+    size_t command_index = 0;
   };
 
   absl::optional<MenuSection> GetContextMenuSectionForAppCommand(
@@ -62,7 +62,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
     run_loop.Run();
 
     result.sub_model = result.menu_model.get();
-    result.command_index = -1;
+    result.command_index = 0;
     if (!ui::MenuModel::GetModelAndIndexForCommandId(
             command_id, &result.sub_model, &result.command_index)) {
       return absl::nullopt;

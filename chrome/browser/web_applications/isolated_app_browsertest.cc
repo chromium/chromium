@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, NoOpenInChrome) {
       /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
+  size_t index = 0;
   const bool found = app_menu_model->GetModelAndIndexForCommandId(
       IDC_OPEN_IN_CHROME, &model, &index);
   EXPECT_FALSE(found);

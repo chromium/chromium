@@ -37,7 +37,7 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
 
 MoveToDesksMenuModel::~MoveToDesksMenuModel() {}
 
-bool MoveToDesksMenuModel::MayHaveMnemonicsAt(int index) const {
+bool MoveToDesksMenuModel::MayHaveMnemonicsAt(size_t index) const {
   // If the label is a user-created desk name, the user might have ampersands so
   // don't process mnemonics for them.
   return (index == assign_to_all_desks_item_index_);

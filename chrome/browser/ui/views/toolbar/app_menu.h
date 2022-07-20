@@ -108,7 +108,7 @@ class AppMenu : public views::MenuDelegate,
   class RecentTabsMenuModelDelegate;
   class ZoomView;
 
-  typedef std::pair<ui::MenuModel*,int> Entry;
+  typedef std::pair<ui::MenuModel*, size_t> Entry;
   typedef std::map<int,Entry> CommandIDToEntry;
 
   // Populates |parent| with all the child menus in |model|. Recursively invokes
@@ -124,14 +124,14 @@ class AppMenu : public views::MenuDelegate,
   // The returned item's MenuItemView::GetCommand() is the same as that of
   // |model|->GetCommandIdAt(|model_index|).
   views::MenuItemView* AddMenuItem(views::MenuItemView* parent,
-                                   int menu_index,
+                                   size_t menu_index,
                                    ui::MenuModel* model,
-                                   int model_index,
+                                   size_t model_index,
                                    ui::MenuModel::ItemType menu_type);
 
   // Invoked from the cut/copy/paste menus. Cancels the current active menu and
   // activates the menu item in |model| at |index|.
-  void CancelAndEvaluate(ui::ButtonMenuItemModel* model, int index);
+  void CancelAndEvaluate(ui::ButtonMenuItemModel* model, size_t index);
 
   // Creates the bookmark menu if necessary. Does nothing if already created or
   // the bookmark model isn't loaded.
@@ -139,7 +139,7 @@ class AppMenu : public views::MenuDelegate,
 
   // Returns the index of the MenuModel/index pair representing the |command_id|
   // in |command_id_to_entry_|.
-  int ModelIndexFromCommandId(int command_id) const;
+  size_t ModelIndexFromCommandId(int command_id) const;
 
   // The views menu. Owned by |menu_runner_|.
   raw_ptr<views::MenuItemView> root_ = nullptr;
@@ -158,7 +158,7 @@ class AppMenu : public views::MenuDelegate,
   // ActivatedAt is invoked. This is done so that ActivatedAt isn't invoked
   // while the message loop is nested.
   raw_ptr<ui::ButtonMenuItemModel> selected_menu_model_ = nullptr;
-  int selected_index_ = 0;
+  size_t selected_index_ = 0;
 
   // Used for managing the bookmark menu items.
   std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;

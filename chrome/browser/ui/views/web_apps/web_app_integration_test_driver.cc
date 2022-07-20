@@ -1423,7 +1423,7 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
       std::make_unique<WebAppMenuModel>(/*provider=*/nullptr, app_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
+  size_t index = 0;
   const bool found = app_menu_model->GetModelAndIndexForCommandId(
       WebAppMenuModel::kUninstallAppCommandId, &model, &index);
   EXPECT_TRUE(found);

@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopOutDisabledInIncognito) {
       std::make_unique<AppMenuModel>(nullptr, incognito_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
+  size_t index = 0;
   ASSERT_TRUE(app_menu_model->GetModelAndIndexForCommandId(
       IDC_OPEN_IN_PWA_WINDOW, &model, &index));
   EXPECT_FALSE(model->IsEnabledAt(index));
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_UninstallMenuOption) {
       /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
+  size_t index = 0;
   const bool found = app_menu_model->GetModelAndIndexForCommandId(
       WebAppMenuModel::kUninstallAppCommandId, &model, &index);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1494,7 +1494,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallToShelfContainsAppName) {
   auto app_menu_model = std::make_unique<AppMenuModel>(nullptr, browser());
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
+  size_t index = 0;
   EXPECT_TRUE(app_menu_model->GetModelAndIndexForCommandId(IDC_INSTALL_PWA,
                                                            &model, &index));
   EXPECT_EQ(app_menu_model.get(), model);

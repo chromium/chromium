@@ -391,7 +391,7 @@ void TestControllerAsh::OnGetContextMenuForShelfItem(
     std::unique_ptr<ui::SimpleMenuModel> model) {
   std::vector<std::string> items;
   items.reserve(model->GetItemCount());
-  for (int i = 0; i < model->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
     items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
   }
   std::move(callback).Run(std::move(items));
@@ -400,7 +400,7 @@ void TestControllerAsh::OnGetContextMenuForShelfItem(
 void TestControllerAsh::OnSelectContextMenuForShelfItem(
     SelectContextMenuForShelfItemCallback callback,
     const std::string& item_id,
-    uint32_t index,
+    size_t index,
     std::unique_ptr<ui::SimpleMenuModel> model) {
   if (index < model->GetItemCount()) {
     model->ActivatedAt(index, /*event_flags=*/0);

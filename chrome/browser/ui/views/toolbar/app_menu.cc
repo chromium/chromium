@@ -198,7 +198,7 @@ class InMenuButtonBackground : public views::Background {
 };
 
 std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
-                                               int item_index,
+                                               size_t item_index,
                                                int accessible_string_id,
                                                bool add_accelerator_text) {
   std::u16string accessible_name =
@@ -284,7 +284,7 @@ class AppMenuView : public views::View {
       views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
-      int index) {
+      size_t index) {
     return CreateButtonWithAccessibleName(
         std::move(callback), string_id, type, index, string_id,
         /*add_accelerator_text=*/true,
@@ -295,7 +295,7 @@ class AppMenuView : public views::View {
       views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
-      int index,
+      size_t index,
       int accessible_name_id,
       bool add_accelerator_text,
       bool use_accessible_name_as_tooltip_text) {
@@ -342,7 +342,7 @@ class FullscreenButton : public ImageButton {
   METADATA_HEADER(FullscreenButton);
   explicit FullscreenButton(PressedCallback callback,
                             ButtonMenuItemModel* menu_model,
-                            int fullscreen_index,
+                            size_t fullscreen_index,
                             bool is_in_fullscreen)
       : ImageButton(std::move(callback)) {
     // Since |fullscreen_button_| will reside in a menu, make it ALWAYS
@@ -400,12 +400,12 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
   METADATA_HEADER(CutCopyPasteView);
   CutCopyPasteView(AppMenu* menu,
                    ButtonMenuItemModel* menu_model,
-                   int cut_index,
-                   int copy_index,
-                   int paste_index)
+                   size_t cut_index,
+                   size_t copy_index,
+                   size_t paste_index)
       : AppMenuView(menu, menu_model) {
     const auto cancel_and_evaluate =
-        [](AppMenu* menu, ButtonMenuItemModel* menu_model, int index) {
+        [](AppMenu* menu, ButtonMenuItemModel* menu_model, size_t index) {
           menu->CancelAndEvaluate(menu_model, index);
         };
     CreateAndConfigureButton(
@@ -467,9 +467,9 @@ class AppMenu::ZoomView : public AppMenuView {
   METADATA_HEADER(ZoomView);
   ZoomView(AppMenu* menu,
            ButtonMenuItemModel* menu_model,
-           int decrement_index,
-           int increment_index,
-           int fullscreen_index)
+           size_t decrement_index,
+           size_t increment_index,
+           size_t fullscreen_index)
       : AppMenuView(menu, menu_model),
         increment_button_(nullptr),
         zoom_label_(nullptr),
@@ -483,7 +483,7 @@ class AppMenu::ZoomView : public AppMenuView {
                 base::BindRepeating(&AppMenu::ZoomView::OnZoomLevelChanged,
                                     base::Unretained(this)));
 
-    const auto activate = [](ButtonMenuItemModel* menu_model, int index) {
+    const auto activate = [](ButtonMenuItemModel* menu_model, size_t index) {
       menu_model->ActivatedAt(index);
     };
     decrement_button_ = CreateButtonWithAccessibleName(
@@ -518,7 +518,7 @@ class AppMenu::ZoomView : public AppMenuView {
 
     fullscreen_button_ = new FullscreenButton(
         base::BindRepeating(
-            [](AppMenu* menu, ButtonMenuItemModel* menu_model, int index) {
+            [](AppMenu* menu, ButtonMenuItemModel* menu_model, size_t index) {
               menu->CancelAndEvaluate(menu_model, index);
             },
             menu, menu_model, fullscreen_index),
@@ -713,9 +713,8 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
   const gfx::FontList* GetLabelFontListForCommandId(int command_id) const {
     ui::MenuModel* model = model_;
-    int index = -1;
+    size_t index = 0;
     AppMenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
-    DCHECK_GT(index, -1);
     return model->GetLabelFontListAt(index);
   }
 
@@ -723,7 +722,7 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
   void OnIconChanged(int command_id) override {
     ui::MenuModel* model = model_;
-    int index;
+    size_t index;
     model_->GetModelAndIndexForCommandId(command_id, &model, &index);
     views::MenuItemView* item = menu_item_->GetMenuItemByID(command_id);
     DCHECK(item);
@@ -768,8 +767,8 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   void BuildMenu(MenuItemView* menu, ui::MenuModel* model) {
     DCHECK(menu);
     DCHECK(model);
-    const int item_count = model->GetItemCount();
-    for (int i = 0; i < item_count; ++i) {
+    const size_t item_count = model->GetItemCount();
+    for (size_t i = 0; i < item_count; ++i) {
       MenuItemView* const item =
           app_menu_->AddMenuItem(menu, i, model, i, model->GetTypeAt(i));
       if (model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU ||
@@ -785,8 +784,8 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   // Populates out_set with all command ids referenced by the model, including
   // those referenced by sub menu models.
   void GetDescendantCommandIds(MenuModel* model, base::flat_set<int>* out_set) {
-    const int item_count = model->GetItemCount();
-    for (int i = 0; i < item_count; i++) {
+    const size_t item_count = model->GetItemCount();
+    for (size_t i = 0; i < item_count; ++i) {
       out_set->insert(model->GetCommandIdAt(i));
       if (model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU ||
           model->GetTypeAt(i) == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU) {
@@ -1101,12 +1100,11 @@ void AppMenu::OnGlobalErrorsChanged() {
 }
 
 void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
-  for (int i = 0, max = model->GetItemCount(); i < max; ++i) {
+  for (size_t i = 0, max = model->GetItemCount(); i < max; ++i) {
     // Add the menu item at the end.
-    int menu_index =
-        parent->HasSubmenu()
-            ? static_cast<int>(parent->GetSubmenu()->children().size())
-            : 0;
+    size_t menu_index = parent->HasSubmenu()
+                            ? parent->GetSubmenu()->children().size()
+                            : size_t{0};
     MenuItemView* item =
         AddMenuItem(parent, menu_index, model, i, model->GetTypeAt(i));
 
@@ -1181,9 +1179,9 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
 }
 
 MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
-                                   int menu_index,
+                                   size_t menu_index,
                                    MenuModel* model,
-                                   int model_index,
+                                   size_t model_index,
                                    MenuModel::ItemType menu_type) {
   int command_id = model->GetCommandIdAt(model_index);
   DCHECK(command_id > -1 ||
@@ -1226,7 +1224,7 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
   return menu_item;
 }
 
-void AppMenu::CancelAndEvaluate(ButtonMenuItemModel* model, int index) {
+void AppMenu::CancelAndEvaluate(ButtonMenuItemModel* model, size_t index) {
   selected_menu_model_ = model;
   selected_index_ = index;
   root_->Cancel();
@@ -1258,7 +1256,7 @@ void AppMenu::CreateBookmarkMenu() {
                                 BOOKMARK_LAUNCH_LOCATION_APP_MENU);
 }
 
-int AppMenu::ModelIndexFromCommandId(int command_id) const {
+size_t AppMenu::ModelIndexFromCommandId(int command_id) const {
   auto ix = command_id_to_entry_.find(command_id);
   DCHECK(ix != command_id_to_entry_.end());
   return ix->second.second;

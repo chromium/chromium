@@ -78,7 +78,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
 std::unique_ptr<base::ListValue> ChromeWebViewGuestDelegate::MenuModelToValue(
     const ui::SimpleMenuModel& menu_model) {
   std::unique_ptr<base::ListValue> items(new base::ListValue());
-  for (int i = 0; i < menu_model.GetItemCount(); ++i) {
+  for (size_t i = 0; i < menu_model.GetItemCount(); ++i) {
     base::Value::Dict item_value;
     // TODO(lazyboy): We need to expose some kind of enum equivalent of
     // |command_id| instead of plain integers.

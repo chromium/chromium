@@ -435,7 +435,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
                                            : IDS_EXTENSIONS_UNINSTALL;
     AddItem(UNINSTALL, l10n_util::GetStringUTF16(message_id));
     if (is_required_by_policy) {
-      int uninstall_index = GetIndexOfCommandId(UNINSTALL);
+      size_t uninstall_index = GetIndexOfCommandId(UNINSTALL).value();
       // TODO (kylixrd): Investigate the usage of the hard-coded color.
       SetIcon(uninstall_index,
               ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
@@ -450,7 +450,8 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     DCHECK_NE(-1, visibility_string_id);
     AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
     if (IsExtensionForcePinned(*extension, profile_)) {
-      int toggle_visibility_index = GetIndexOfCommandId(TOGGLE_VISIBILITY);
+      size_t toggle_visibility_index =
+          GetIndexOfCommandId(TOGGLE_VISIBILITY).value();
       SetIcon(toggle_visibility_index,
               ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
                                              ui::kColorIcon, 16));

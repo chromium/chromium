@@ -24,7 +24,7 @@ void MenuModelTest::Delegate::ExecuteCommand(int command_id, int event_flags) {
 // match the number of times the delegate is called to ensure every item works.
 void MenuModelTest::CountEnabledExecutable(ui::MenuModel* model,
                                            int* count) {
-  for (int i = 0; i < model->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
     ui::MenuModel::ItemType type = model->GetTypeAt(i);
     switch (type) {
       case ui::MenuModel::TYPE_SEPARATOR:

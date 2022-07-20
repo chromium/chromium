@@ -1124,10 +1124,10 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   // Remove any redundant trailing separator.
-  int index = menu_model_.GetItemCount() - 1;
-  if (index >= 0 &&
-      menu_model_.GetTypeAt(index) == ui::MenuModel::TYPE_SEPARATOR) {
-    menu_model_.RemoveItemAt(index);
+  size_t count = menu_model_.GetItemCount();
+  if (count > 0 &&
+      menu_model_.GetTypeAt(count - 1) == ui::MenuModel::TYPE_SEPARATOR) {
+    menu_model_.RemoveItemAt(count - 1);
   }
 
   // If there is only one item and it is the Accessibility labels item, remove
@@ -1984,7 +1984,8 @@ void RenderViewContextMenu::AppendEditableItems() {
   if (!IsDevToolsURL(params_.page_url) &&
       !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PRINT) &&
       (!menu_model_.GetItemCount() ||
-       menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_EMOJI) != -1)) {
+       menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_EMOJI)
+           .has_value())) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_UNDO,
                                     IDS_CONTENT_CONTEXT_UNDO);
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_REDO,
@@ -2014,7 +2015,8 @@ void RenderViewContextMenu::AppendEditableItems() {
   if (clipboard_history_controller &&
       clipboard_history_controller->ShouldShowNewFeatureBadge()) {
     menu_model_.SetIsNewFeatureAt(
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU),
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU)
+            .value(),
         true);
     clipboard_history_controller->MarkNewFeatureBadgeShown();
   }
@@ -2136,10 +2138,10 @@ void RenderViewContextMenu::AppendPictureInPictureItem() {
 }
 
 void RenderViewContextMenu::AppendSharingItems() {
-  int items_initial = menu_model_.GetItemCount();
+  size_t items_initial = menu_model_.GetItemCount();
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   // Check if the starting separator got added.
-  int items_before_sharing = menu_model_.GetItemCount();
+  size_t items_before_sharing = menu_model_.GetItemCount();
   bool starting_separator_added = items_before_sharing > items_initial;
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -2148,7 +2150,7 @@ void RenderViewContextMenu::AppendSharingItems() {
 
   // Add an ending separator if there are sharing items, otherwise remove the
   // starting separator iff we added one above.
-  int sharing_items = menu_model_.GetItemCount() - items_before_sharing;
+  size_t sharing_items = menu_model_.GetItemCount() - items_before_sharing;
   if (sharing_items > 0)
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   else if (starting_separator_added)

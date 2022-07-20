@@ -46,7 +46,7 @@ class RenderViewContextMenuMacTest : public testing::Test {
 };
 
 bool MenuHasItemWithCommand(const ui::MenuModel& menu, int command) {
-  for (int i = 0; i < menu.GetItemCount(); ++i) {
+  for (size_t i = 0; i < menu.GetItemCount(); ++i) {
     if (menu.GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
       ui::MenuModel* submenu = menu.GetSubmenuModelAt(i);
       if (MenuHasItemWithCommand(*submenu, command))

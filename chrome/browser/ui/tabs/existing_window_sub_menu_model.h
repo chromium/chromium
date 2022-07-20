@@ -66,7 +66,7 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
 
  private:
   // ExistingBaseSubMenuModel:
-  void ExecuteExistingCommand(int target_index) override;
+  void ExecuteExistingCommand(size_t target_index) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_EXISTING_WINDOW_SUB_MENU_MODEL_H_
