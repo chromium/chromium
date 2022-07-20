@@ -21,11 +21,7 @@
     }
     window.onload = e => {
       const actualOrder = logs.join(";");
-      // The following expectedOrder expects that the
-      // "DelayAsyncScriptExecution" feature is enabled with
-      // "delay_type:first_paint_or_finished_parsing" feature parameter.
-      const expectedOrder =
-        "async_preload;async_blocking_render;inline1;external;inline2;defer;DOMContentLoaded;async";
+      const expectedOrder = "async_preload;async_blocking_render;async;inline1;external;inline2;defer;DOMContentLoaded";
       assert_equals(actualOrder, expectedOrder);
       done();
     };
