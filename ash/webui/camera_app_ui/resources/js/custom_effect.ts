@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as animation from './animation.js';
-import {assert, assertExists, assertNotReached} from './assert.js';
+import {assertExists, assertInstanceof, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -255,21 +255,36 @@ class IndicatorToast extends Toast {
   }
 }
 
-let showing: {
-  ripple: RippleEffect|null,
-  toast: Toast,
-  timeout: number,
-}|null = null;
+interface EffectPayload {
+  ripple: RippleEffect|null;
+  toast: Toast;
+  timeout: number;
+}
+
+interface EffectHandle {
+  hide: () => void;
+  focusToast: () => void;
+}
+
+let globalEffectPayload: EffectPayload|null = null;
 
 /**
- * Hides the new feature toast.
+ * Hides the specified effect or the effect being showing.
  */
-export function hide(): void {
-  if (showing === null) {
-    return;
+export function hide(effectPayload?: EffectPayload): void {
+  if (effectPayload !== undefined) {
+    stopEffect(effectPayload);
+    if (effectPayload === globalEffectPayload) {
+      globalEffectPayload = null;
+    }
+  } else if (globalEffectPayload !== null) {
+    stopEffect(globalEffectPayload);
+    globalEffectPayload = null;
   }
-  const {ripple, toast, timeout} = showing;
-  showing = null;
+}
+
+function stopEffect(effectPayload: EffectPayload) {
+  const {ripple, toast, timeout} = effectPayload;
   if (ripple !== null) {
     ripple.stop();
   }
@@ -278,16 +293,18 @@ export function hide(): void {
 }
 
 /**
- * Timeout for showing new feature toast.
+ * Timeout for effects.
  */
-const SHOWING_TIMEOUT_MS = 10000;
+const EFFECT_TIMEOUT_MS = 10000;
 
 /**
- * Shows the new feature toast message around the `anchor` element. The message
- * to show is defined in HTML attribute and the relative position is defined in
- * CSS.
+ * Shows the new feature toast message and ripple around the `anchor` element.
+ * The message to show is defined in HTML attribute and the relative position is
+ * defined in CSS.
+ *
+ * @return Functions to hide the effect or focus the toast.
  */
-export function showNewFeatureToast(anchor: HTMLElement): void {
+export function showNewFeature(anchor: HTMLElement): EffectHandle {
   return show(new NewFeatureToast(anchor), new RippleEffect(anchor));
 }
 
@@ -295,37 +312,81 @@ export function showNewFeatureToast(anchor: HTMLElement): void {
  * Shows the indicator toast message and an indicator dot around the `anchor`
  * element. The message to show is given by `indicatorType` and the relative
  * position of the toast and dot are defined in CSS.
+ *
+ * @return Functions to hide the effect or focus the toast.
  */
-export function showIndicatorToast(
-    anchor: HTMLElement, indicatorType: IndicatorType): void {
-  assert(indicatorType !== undefined);
+export function showIndicator(
+    anchor: HTMLElement, indicatorType: IndicatorType): EffectHandle {
   return show(new IndicatorToast(anchor, indicatorType));
 }
 
 /**
- * Shows the toast on the given element.
+ * Shows the effects.
+ *
+ * @return Functions to hide the effect or focus the toast.
  */
-function show(toast: Toast, ripple: RippleEffect|null = null): void {
+function show(toast: Toast, ripple: RippleEffect|null = null): EffectHandle {
   hide();
 
-  const timeout = setTimeout(hide, SHOWING_TIMEOUT_MS);
-  showing = {ripple, toast, timeout};
+  const timeout = setTimeout(hide, EFFECT_TIMEOUT_MS);
+  globalEffectPayload = {ripple, toast, timeout};
   toast.show();
+  const originalEffectPayload = globalEffectPayload;
+  return {
+    hide: () => hide(originalEffectPayload),
+    focusToast: () => toast.focus(),
+  };
 }
 
 /**
- * @return If toast is showing.
+ * @return If effect is showing.
  */
 export function isShowing(): boolean {
-  return showing !== null;
+  return globalEffectPayload !== null;
 }
 
 /**
  * Focuses to toast.
  */
 export function focus(): void {
-  if (showing === null) {
+  if (globalEffectPayload === null) {
     return;
   }
-  showing.toast.focus();
+  globalEffectPayload.toast.focus();
+}
+
+/**
+ * Shows feature visual effect for PTZ options entry.
+ */
+export function showPtzToast(): void {
+  const ptzPanelEntry = dom.get('#open-ptz-panel', HTMLButtonElement);
+  const {hide, focusToast} = showNewFeature(ptzPanelEntry);
+  focusToast();
+  ptzPanelEntry.addEventListener('click', hide, {once: true});
+}
+
+/**
+ * Shows feature visual effect for document mode entry.
+ */
+export function showDocToast(): void {
+  const scanModeButton = dom.get('input[data-mode="scan"]', HTMLInputElement);
+  const scanModeItem =
+      assertInstanceof(scanModeButton.parentElement, HTMLDivElement);
+  // aria-owns don't work on HTMLInputElement, show toast on parent div
+  // instead.
+  const {hide} = showNewFeature(scanModeItem);
+  scanModeButton.addEventListener('click', hide, {once: true});
+}
+
+/**
+ * Shows loading indicator toast for document mode when it's supported but not
+ * yet ready.
+ */
+export function showDocIndicator(): void {
+  const scanModeButton = dom.get('input[data-mode="scan"]', HTMLInputElement);
+  const scanModeItem =
+      assertInstanceof(scanModeButton.parentElement, HTMLDivElement);
+  const {hide} =
+      showIndicator(scanModeItem, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
+  scanModeButton.addEventListener('click', hide, {once: true});
 }

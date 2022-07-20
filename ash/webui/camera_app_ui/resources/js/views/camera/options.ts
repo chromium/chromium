@@ -4,7 +4,6 @@
 
 import * as animate from '../../animation.js';
 import {assert} from '../../assert.js';
-import * as customToast from '../../custom_toast.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -234,36 +233,6 @@ export class Options implements CameraUI {
                  vidPid: this.cameraManager.getVidPid(),
                  resetPTZ: () => this.cameraManager.resetPTZ(),
                }));
-      highlight(false);
-    });
-
-    // Highlight effect for PTZ button.
-    let toastShown = false;
-    const highlight = (enabled: boolean) => {
-      if (!enabled) {
-        if (toastShown) {
-          customToast.hide();
-          toastShown = false;
-        }
-        return;
-      }
-      toastShown = true;
-      customToast.showNewFeatureToast(this.openPTZPanel);
-      customToast.focus();
-    };
-
-    this.cameraManager.registerCameraUI({
-      onUpdateConfig: () => {
-        if (!state.get(state.State.ENABLE_PTZ) ||
-            state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
-            localStorage.getBool(LocalStorageKey.PTZ_TOAST_SHOWN)) {
-          highlight(false);
-          return;
-        }
-        localStorage.set(LocalStorageKey.PTZ_TOAST_SHOWN, true);
-        state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
-        highlight(true);
-      },
     });
   }
 

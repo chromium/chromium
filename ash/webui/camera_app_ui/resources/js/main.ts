@@ -6,6 +6,7 @@ import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
+import * as customEffect from './custom_effect.js';
 import {DEPLOYED_VERSION} from './deployed_version.js';
 import {CameraManager} from './device/index.js';
 import {ModeConstraints} from './device/type.js';
@@ -186,6 +187,71 @@ export class App {
   }
 
   /**
+   * Sets up visual effects, toasts, and dialogs for the new features.
+   */
+  async setupFeatureEffectsAndDialogs(): Promise<void> {
+    const registerDocDialog = () => {
+      this.cameraManager.registerCameraUI({
+        onUpdateConfig: () => {
+          if (localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN) ||
+              !state.get(Mode.SCAN) ||
+              // TODO(b/238403258): Remove this line after
+              // camera.CCAUIDocumentScanning.manual_crop is able to close the
+              // dialog.
+              appWindow !== null) {
+            return;
+          }
+          localStorage.set(LocalStorageKey.DOC_MODE_DIALOG_SHOWN, true);
+          const message = loadTimeData.getI18nMessage(
+              I18nString.DOCUMENT_MODE_DIALOG_INTRO_TITLE);
+          nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
+        },
+      });
+    };
+    const registerPtzToast = () => {
+      this.cameraManager.registerCameraUI({
+        onUpdateConfig: () => {
+          if (state.get(state.State.ENABLE_PTZ) &&
+              !localStorage.getBool(LocalStorageKey.PTZ_TOAST_SHOWN)) {
+            localStorage.set(LocalStorageKey.PTZ_TOAST_SHOWN, true);
+            customEffect.showPtzToast();
+          }
+        },
+      });
+    };
+
+    const {supported, ready} =
+        await ChromeHelper.getInstance().getDocumentScannerReadyState();
+    // TODO(chuhsuan): Separate loading indicators and feature toasts in
+    // order to provide more control like showing them at the same time.
+    if (supported) {
+      if (!ready) {
+        customEffect.showDocIndicator();
+      }
+      const loaded =
+          await ChromeHelper.getInstance().waitUntilDocumentModeReady();
+      if (loaded) {
+        if (!localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN)) {
+          registerDocDialog();
+        }
+        if (!localStorage.getBool(LocalStorageKey.DOC_MODE_TOAST_SHOWN)) {
+          localStorage.set(LocalStorageKey.DOC_MODE_TOAST_SHOWN, true);
+          customEffect.showDocToast();
+          return;
+        }
+      }
+    }
+    if (!localStorage.getBool(LocalStorageKey.PTZ_TOAST_SHOWN)) {
+      if (state.get(state.State.ENABLE_PTZ)) {
+        localStorage.set(LocalStorageKey.PTZ_TOAST_SHOWN, true);
+        customEffect.showPtzToast();
+      } else {
+        registerPtzToast();
+      }
+    }
+  }
+
+  /**
    * Sets up visual effect for all applicable elements.
    */
   private setupEffect() {
@@ -318,6 +384,7 @@ export class App {
 
     metrics.sendLaunchEvent({launchType});
     await Promise.all([showWindow, startCamera, preloadImages]);
+    await this.setupFeatureEffectsAndDialogs();
   }
 
   /**

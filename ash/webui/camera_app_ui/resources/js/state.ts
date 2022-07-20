@@ -31,7 +31,6 @@ export enum State {
   HAS_TILT_SUPPORT = 'has-tilt-support',
   HAS_ZOOM_SUPPORT = 'has-zoom-support',
   INTENT = 'intent',
-  IS_NEW_FEATURE_TOAST_SHOWN = 'is-new-feature-toast-shown',
   KEYBOARD_NAVIGATION = 'keyboard-navigation',
   MAX_WND = 'max-wnd',
   MIC = 'mic',

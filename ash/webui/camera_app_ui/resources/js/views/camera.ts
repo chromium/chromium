@@ -7,7 +7,7 @@ import {
   assert,
   assertInstanceof,
 } from '../assert.js';
-import * as customToast from '../custom_toast.js';
+import * as customToast from '../custom_effect.js';
 import {
   CameraConfig,
   CameraManager,
@@ -25,8 +25,6 @@ import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
-import * as loadTimeData from '../models/load_time_data.js';
-import * as localStorage from '../models/local_storage.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -43,7 +41,6 @@ import {
   ErrorType,
   Facing,
   ImageBlob,
-  LocalStorageKey,
   MimeType,
   Mode,
   PerfEvent,
@@ -321,58 +318,10 @@ export class Camera extends View implements CameraViewUI {
   }
 
   private async initScanMode() {
-    const {supported, ready} =
-        await ChromeHelper.getInstance().getDocumentScannerReadyState();
-    if (!supported) {
+    const isLoaded = await this.scanOptions.waitUntilDocumentModeReady();
+    if (!isLoaded) {
       return;
     }
-
-    const scanModeBtn = dom.get('input[data-mode="scan"]', HTMLInputElement);
-    const scanModeItem =
-        assertInstanceof(scanModeBtn.parentElement, HTMLDivElement);
-    if (!ready) {
-      customToast.showIndicatorToast(
-          scanModeItem, customToast.IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
-      scanModeBtn.addEventListener('click', () => {
-        customToast.hide();
-      });
-      const isLoaded = await this.scanOptions.waitUntilDocumentModeReady();
-      if (!isLoaded) {
-        return;
-      }
-    } else {
-      this.scanOptions.onDocumentModeReady();
-    }
-
-    // Check show toast.
-    if (!state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) &&
-        !localStorage.getBool(LocalStorageKey.DOC_MODE_TOAST_SHOWN)) {
-      state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
-      localStorage.set(LocalStorageKey.DOC_MODE_TOAST_SHOWN, true);
-      // aria-owns don't work on HTMLInputElement, show toast on parent div
-      // instead.
-      customToast.showNewFeatureToast(scanModeItem);
-      scanModeBtn.addEventListener('click', () => {
-        customToast.hide();
-      });
-    }
-
-    if (!localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN)) {
-      this.cameraManager.registerCameraUI({
-        onUpdateConfig: () => {
-          if (localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN) ||
-              !state.get(Mode.SCAN) ||
-              !this.scanOptions.isDocumentModeEnabled()) {
-            return;
-          }
-          localStorage.set(LocalStorageKey.DOC_MODE_DIALOG_SHOWN, true);
-          const message = loadTimeData.getI18nMessage(
-              I18nString.DOCUMENT_MODE_DIALOG_INTRO_TITLE);
-          nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
-        },
-      });
-    }
-
     // When entering document mode, refocus to shutter button for letting user
     // to take document photo with space key as shortcut. See b/196907822.
     const checkRefocus = () => {
