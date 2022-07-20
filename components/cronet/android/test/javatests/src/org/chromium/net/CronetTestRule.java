@@ -209,10 +209,9 @@ public class CronetTestRule implements TestRule {
                     setTestingSystemHttpURLConnection(false);
                     base.evaluate();
                 } catch (Throwable e) {
-                    throw new AssertionError("CronetTestBase#runTest failed for "
-                                    + (testingSystemHttpURLConnection() ? "System" : "Cronet")
-                                    + " implementation.",
-                            e);
+                    Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.",
+                            testingSystemHttpURLConnection() ? "System" : "Cronet");
+                    throw e;
                 }
             } else {
                 // For all other tests.
@@ -230,9 +229,9 @@ public class CronetTestRule implements TestRule {
                     base.evaluate();
                 }
             } catch (Throwable e) {
-                throw new AssertionError("CronetTestBase#runTest failed for "
-                                + (testingJavaImpl() ? "Java" : "Native") + " implementation.",
-                        e);
+                Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.",
+                        testingJavaImpl() ? "Java" : "Native");
+                throw e;
             }
         } else {
             base.evaluate();
