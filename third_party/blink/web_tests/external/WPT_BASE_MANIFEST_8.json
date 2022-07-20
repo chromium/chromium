@@ -128042,8 +128042,8 @@
       ]
      ],
      "gradient": {
-      "gradient-eval-001.tentative.html": [
-       "384f46da293777f7aa52c37eb673188da742df65",
+      "gradient-eval-001.html": [
+       "98a9d9234588e5de74a66c09d638d1448814e3fd",
        [
         null,
         [
@@ -128071,13 +128071,216 @@
         }
        ]
       ],
-      "gradient-eval-002.tentative.html": [
-       "e393c4c69d0858e856833cf30ba4f68722fbeed3",
+      "gradient-eval-002.html": [
+       "5a0790ab0d71f8a2fca25e8b3fcda59f4681f186",
        [
         null,
         [
          [
           "/css/css-images/gradient/gradient-eval-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-003.html": [
+       "86f76a7365cd83a38445487d618f9e8fb44aa710",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-003-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-004.html": [
+       "ada406fd2a0ec8bea1af74daeafc95563174ac1f",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-004-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-005.html": [
+       "1165fcb5a69e1e37694f5daeb84f6bae265d62ef",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-005-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-006.html": [
+       "e719d2e110a3cdfda5d7f08ec10237bc0fb02dc8",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-006-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-007.html": [
+       "e85fec2b4de87c12e7d895fe98a774adee5940e9",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-007-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-008.html": [
+       "5201062f8e3dfdeed5ca88173bf29eb61a011064",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-008-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-009.html": [
+       "d361bdc3f1c4969b316820eaa431b76be7e1c354",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-009-ref.html",
           "=="
          ]
         ],
@@ -278535,11 +278738,39 @@
      ],
      "gradient": {
       "gradient-eval-001-ref.html": [
-       "37c9cf8d8be5d5f59227722e560adb0713e439cb",
+       "8f3070fcbe40bf1f8c591de59c76da149cbeaddd",
        []
       ],
       "gradient-eval-002-ref.html": [
-       "199cf5a369d35fcb53cf5bc990f20da685ec5edb",
+       "0a374154af6cc527f69c9ab44ab2ef8423c98d6a",
+       []
+      ],
+      "gradient-eval-003-ref.html": [
+       "0a374154af6cc527f69c9ab44ab2ef8423c98d6a",
+       []
+      ],
+      "gradient-eval-004-ref.html": [
+       "f197386bcfb4af5bc084fd262cc29a73f2329ffe",
+       []
+      ],
+      "gradient-eval-005-ref.html": [
+       "cb2a4ed65c9abd9b141283f0b3f6c42205f4d35a",
+       []
+      ],
+      "gradient-eval-006-ref.html": [
+       "c2a9500ad5cb19a2f03c6e36d7e59e60b31f4f75",
+       []
+      ],
+      "gradient-eval-007-ref.html": [
+       "cb2a4ed65c9abd9b141283f0b3f6c42205f4d35a",
+       []
+      ],
+      "gradient-eval-008-ref.html": [
+       "cb2a4ed65c9abd9b141283f0b3f6c42205f4d35a",
+       []
+      ],
+      "gradient-eval-009-ref.html": [
+       "cb2a4ed65c9abd9b141283f0b3f6c42205f4d35a",
        []
       ]
      },
@@ -362984,105 +363215,105 @@
    },
    "compute-pressure": {
     "compute_pressure_arguments.tentative.https.window.js": [
-     "6f680eb8cdf5ddfdbc4d58fd2354d7bb8cfe8061",
+     "0c391a2ae104e19d3e17211c0e3318ecabed171b",
      [
       "compute-pressure/compute_pressure_arguments.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_basic.tentative.https.window.js": [
-     "0b916a13e28aa6b3ce79f83d503ea1bd75b76b90",
+     "657ff634e7ac0d514e484b4f1dec404df9b008ea",
      [
       "compute-pressure/compute_pressure_basic.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_detached_iframe.tentative.https.html": [
-     "4ca11112c3e2d520ff128ee383c334b20190a96d",
+     "e9c6b440ca7af1901e7bf16ee279b96150ad7e08",
      [
       null,
       {}
      ]
     ],
     "compute_pressure_different_quantizations.tentative.https.window.js": [
-     "1ded5a9452c6aac370599f179e7435e8dcaa9a1c",
+     "8fe2794c973880298b380532d9ac644050268a7f",
      [
       "compute-pressure/compute_pressure_different_quantizations.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_different_quantizations_across_iframes.tentative.https.window.js": [
-     "fd7a9625db456f7a19f2d85da2087b5cb5b78ee9",
+     "e1816a1502e1936f71eaec649ee4c90fa61e09ed",
      [
       "compute-pressure/compute_pressure_different_quantizations_across_iframes.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_disconnect.tentative.https.window.js": [
-     "95a44669d344da4fda6f8a6373b580046f8a5dd0",
+     "b39af20ff34669962d1520c01e6d497c291d3ac3",
      [
       "compute-pressure/compute_pressure_disconnect.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_disconnect_idempotent.tentative.https.window.js": [
-     "b14b3705f541a8f5df210db9bceead926c72a226",
+     "10e3ad6e44f3dedbf12952d1ad885156e6e803e0",
      [
       "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_disconnect_immediately.tentative.https.window.js": [
-     "b14b3705f541a8f5df210db9bceead926c72a226",
+     "10e3ad6e44f3dedbf12952d1ad885156e6e803e0",
      [
       "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_multiple.tentative.https.window.js": [
-     "0efca3098d944479e93b87678b802b49dac5fe73",
+     "fef47e3733dcac54f4b9825112f90551321d442c",
      [
       "compute-pressure/compute_pressure_multiple.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_multiple_across_iframes.tentative.https.window.js": [
-     "c9f97a108a91ed9627a863e7d397772e1051db1e",
+     "dff994c84fd69e49448c9691dcafc863a0303554",
      [
       "compute-pressure/compute_pressure_multiple_across_iframes.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_observe_idempotent.tentative.https.window.js": [
-     "dd215023fa8e835c61f2127ea12dec895d97e307",
+     "925f73a37bcf1b96f524d27fb0358447fee26e91",
      [
       "compute-pressure/compute_pressure_observe_idempotent.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_observe_unobserve_failure.tentative.https.window.js": [
-     "478ef79ed20df539bb1d73ea1e73ca3cd841b901",
+     "7d6e94cdedb9b7fb06b59357a73adbcbb75d6598",
      [
       "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_supported_sources.tentative.https.window.js": [
-     "692a92c52db3ad119b3f143d1d822ae1ea9cd6f1",
+     "2a69e731e7f9f7c5c0b54ea3b7bc9202bda57f16",
      [
       "compute-pressure/compute_pressure_supported_sources.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_take_records.tentative.https.window.js": [
-     "b0baf999e49fa84f335e0b75708c94d928a01502",
+     "c6da8f6190d6158c06101cd2a43b4b8bcee60972",
      [
       "compute-pressure/compute_pressure_take_records.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_values.tentative.https.window.js": [
-     "7377253f8140e554a047e1fb9add7a9738efe534",
+     "b51a3e372c8999de5c8bcada7efde861ef7ce40b",
      [
       "compute-pressure/compute_pressure_values.tentative.https.window.html",
       {}

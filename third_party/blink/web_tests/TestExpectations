@@ -858,7 +858,7 @@ crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004i.html [ Fa
 crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004p.html [ Failure ]
 
 # Minor color differences but it fails on all browsers. Probably a test issue.
-crbug.com/1345248 external/wpt/css/css-images/gradient/gradient-eval-001.tentative.html [ Failure ]
+crbug.com/1345248 external/wpt/css/css-images/gradient/gradient-eval-001.html [ Failure ]
 
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
@@ -3415,6 +3415,8 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
+crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-data-sanitization.sub.https.html?source-type=navigation [ Timeout Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/credential-management/fedcm-network-requests.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
