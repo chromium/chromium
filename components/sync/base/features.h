@@ -128,6 +128,12 @@ inline constexpr base::Feature kSyncTrustedVaultVerifyDeviceRegistration{
     "SyncTrustedVaultVerifyDeviceRegistration",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Triggers another device registration attempt if the device was registered
+// before this feature was introduced.
+inline constexpr base::Feature kSyncTrustedVaultRedoDeviceRegistration{
+    "SyncTrustedVaultRedoDeviceRegistration",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the device will register with FCM and listen to new
 // invalidations. Also, FCM token will be set in DeviceInfo, which signals to
 // the server that device listens to new invalidations.

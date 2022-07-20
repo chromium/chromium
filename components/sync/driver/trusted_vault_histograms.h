@@ -17,7 +17,8 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kAttemptingRegistrationWithNewKeyPair = 3,
   kAttemptingRegistrationWithExistingKeyPair = 4,
   kAttemptingRegistrationWithPersistentAuthError = 5,
-  kMaxValue = kAttemptingRegistrationWithPersistentAuthError,
+  kAlreadyRegisteredV1 = 6,
+  kMaxValue = kAlreadyRegisteredV1,
 };
 
 // Used to provide UMA metric breakdowns.
