@@ -306,6 +306,28 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
+    @Feature({"AssistantVoiceSearch"})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+            ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH})
+    @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
+    public void
+    testAutofillAssistantSubsection_NonPersonalizedAssistant() {
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull(googleServicesSettings.findPreference(
+                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT));
+
+            Assert.assertFalse(
+                    googleServicesSettings
+                            .findPreference(
+                                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT_SUBSECTION)
+                            .isVisible());
+        });
+    }
+
+    @Test
+    @LargeTest
     @Feature({"Preference"})
     @DisableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
     public void testMetricsSettingsHiddenFlagOff() {

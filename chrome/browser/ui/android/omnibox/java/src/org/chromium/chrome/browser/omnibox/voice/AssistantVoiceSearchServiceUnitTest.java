@@ -66,6 +66,7 @@ import java.util.List;
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+@Features.DisableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class AssistantVoiceSearchServiceUnitTest {
     private static final int AGSA_VERSION_NUMBER = 11007;
@@ -175,6 +176,20 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    @Features.EnableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
+    public void testStartVoiceRecognition_StartsAssistantVoiceSearch_PrefCanBeIgnored() {
+        mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
+        Assert.assertTrue(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
+
+        List<Integer> reasons = new ArrayList<>();
+        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
+                /* returnImmediately= */ false, /* outList= */ reasons);
+        Assert.assertEquals(0, reasons.size());
+        Assert.assertTrue(eligible);
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch_ChromeNotSigned() {
         doReturn(false).when(mExternalAuthUtils).isChromeGoogleSigned();
 
@@ -244,6 +259,19 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    @Features.EnableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
+    public void testAssistantEligibility_NoChromeAccountNeeded() {
+        doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
+
+        List<Integer> reasons = new ArrayList<>();
+        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
+                /* returnImmediately= */ false, /* outList= */ reasons);
+        Assert.assertEquals(0, reasons.size());
+        Assert.assertTrue(eligible);
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     public void testAssistantEligibility_LowEndDevice() {
         SysUtils.resetForTesting();
@@ -268,6 +296,19 @@ public class AssistantVoiceSearchServiceUnitTest {
         Assert.assertEquals(
                 EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE, (int) reasons.get(0));
         Assert.assertFalse(eligible);
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    @Features.EnableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
+    public void testAssistantEligibility_MutlipleAccountsDontMatter() {
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL2);
+
+        List<Integer> reasons = new ArrayList<>();
+        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
+                /* returnImmediately= */ false, /* outList= */ reasons);
+        Assert.assertEquals(0, reasons.size());
+        Assert.assertTrue(eligible);
     }
 
     @Test
@@ -361,6 +402,29 @@ public class AssistantVoiceSearchServiceUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
                         AssistantVoiceSearchService.EligibilityFailureReason.NO_CHROME_ACCOUNT));
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    @Features.EnableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
+    public void testReportUserEligibility_NonPersonalizedRecognition() {
+        mAssistantVoiceSearchService.reportMicPressUserEligibility();
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
+
+        doReturn(true).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
+        doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
+        mAssistantVoiceSearchService.reportMicPressUserEligibility();
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 1));
+        Assert.assertEquals(2,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
     }
 
     @Test

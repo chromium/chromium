@@ -8960,6 +8960,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardUnsanitizedContentDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kClipboardUnsanitizedContent)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"assistant-non-personalized-voice-search",
+     flag_descriptions::kAssistantNonPersonalizedVoiceSearchName,
+     flag_descriptions::kAssistantNonPersonalizedVoiceSearchDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAssistantNonPersonalizedVoiceSearch)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

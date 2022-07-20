@@ -126,7 +126,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         // Assistant autofill/voicesearch both live in the sub-section. If either one of them is
         // enabled, then the subsection should show.
         if (AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP.isEnabled()
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)) {
+                || shouldShowAssistantVoiceSearchSetting()) {
             removePreference(getPreferenceScreen(), mAutofillAssistant);
             mAutofillAssistant = null;
             autofillAssistantSubsection.setVisible(true);
@@ -287,6 +287,15 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     private boolean shouldShowAutofillAssistantPreference() {
         return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
                 && AutofillAssistantPreferencesUtil.containsAssistantEnabledPreference();
+    }
+
+    /**
+     * Whether or not the Assistant voice search section with a toggle should be shown.
+     */
+    public boolean shouldShowAssistantVoiceSearchSetting() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
     }
 
     public boolean isAutofillAssistantSwitchOn() {

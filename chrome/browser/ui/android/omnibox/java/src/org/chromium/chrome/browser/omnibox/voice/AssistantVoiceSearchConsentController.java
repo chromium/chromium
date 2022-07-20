@@ -53,6 +53,8 @@ class AssistantVoiceSearchConsentController
             @Nullable ModalDialogManager modalDialogManager,
             @NonNull Callback<Boolean> completionCallback) {
         AssistantVoiceSearchConsentUi consentUi;
+        assert (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH));
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_CONSENT_MODAL)) {
             // If the modal manager isn't available, bail out of the consent flow and fallback to

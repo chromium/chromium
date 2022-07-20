@@ -184,6 +184,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     /** @return Whether the user has had a chance to enable the feature. */
     public boolean needsEnabledCheck() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            return false;
+        }
         return !mSharedPrefsManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED);
     }
 
@@ -191,14 +195,13 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * Checks if the client is eligible Assistant for voice search. It's
      * {@link canRequestAssistantVoiceSearch} with additional conditions:
      * - The feature must be enabled.
-     * - The consent flow must be accepted.
+     * - The consent flow must be accepted for personalized queries.
      */
     public boolean shouldRequestAssistantVoiceSearch() {
         if (sAlwaysUseAssistantVoiceSearchForTesting != null) {
             return sAlwaysUseAssistantVoiceSearchForTesting;
         }
-        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch()
-                && isEnabledByPreference();
+        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch() && isEnabled();
     }
 
     /**
@@ -234,6 +237,15 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     /** Called from {@link VoiceRecognitionHandler} after the consent flow has completed. */
     public void onAssistantConsentDialogComplete(boolean useAssistant) {
         if (useAssistant) updateColorfulMicState();
+    }
+
+    /** For requests that require it - checks if the user enabled the feature. */
+    private boolean isEnabled() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            return true;
+        }
+        return isEnabledByPreference();
     }
 
     /**
@@ -282,7 +294,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.AGSA_CANT_HANDLE_INTENT);
         }
-
         if (mGsaState.isAgsaVersionBelowMinimum(
                     mGsaState.getAgsaVersionName(), getAgsaMinVersion())) {
             if (returnImmediately) return false;
@@ -294,6 +305,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED);
         }
+
         if (!mExternalAuthUtils.isGoogleSigned(GSAState.PACKAGE_NAME)) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED);
@@ -304,21 +316,24 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             outList.add(EligibilityFailureReason.NON_GOOGLE_SEARCH_ENGINE);
         }
 
-        if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
-            if (returnImmediately) return false;
-            outList.add(EligibilityFailureReason.NO_CHROME_ACCOUNT);
-        }
-
+        // TODO(crbug/1344574): verify if we can support low end devices too with the new flow.
         if (SysUtils.isLowEndDevice()) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.LOW_END_DEVICE);
         }
 
-        if (mIsMultiAccountCheckEnabled && doesViolateMultiAccountCheck()) {
-            if (returnImmediately) return false;
-            outList.add(EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE);
-        }
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+                if (returnImmediately) return false;
+                outList.add(EligibilityFailureReason.NO_CHROME_ACCOUNT);
+            }
 
+            if (mIsMultiAccountCheckEnabled && doesViolateMultiAccountCheck()) {
+                if (returnImmediately) return false;
+                outList.add(EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE);
+            }
+        }
         // Either we would have failed already or we have some errors on the list.
         // Otherwise this client is eligible for assistant.
         return returnImmediately || outList.size() == 0;

@@ -56681,6 +56681,8 @@ from previous Chrome versions.
   <int value="-1342039126" label="AshNewSystemMenu:enabled"/>
   <int value="-1341685799" label="AutofillAssistantDirectActions:enabled"/>
   <int value="-1341092934" label="enable-accelerated-overflow-scroll"/>
+  <int value="-1340518055"
+      label="AssistantNonPersonalizedVoiceSearch:disabled"/>
   <int value="-1340460869" label="ShutdownSupportForKeepalive:enabled"/>
   <int value="-1340055960" label="enable-streamlined-hosted-apps"/>
   <int value="-1338701593"
@@ -57063,6 +57065,7 @@ from previous Chrome versions.
   <int value="-1104914981" label="frame-throttle-fps"/>
   <int value="-1104746914" label="CrostiniVirtualKeyboardSupport:enabled"/>
   <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
+  <int value="-1104006220" label="AssistantNonPersonalizedVoiceSearch:enabled"/>
   <int value="-1103400515" label="VirtualKeyboardDarkMode:enabled"/>
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>

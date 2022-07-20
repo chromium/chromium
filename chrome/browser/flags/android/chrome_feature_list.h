@@ -25,6 +25,7 @@ extern const base::Feature kAssistantConsentV2;
 extern const base::Feature kAssistantIntentExperimentId;
 extern const base::Feature kAssistantIntentPageUrl;
 extern const base::Feature kAssistantIntentTranslateInfo;
+extern const base::Feature kAssistantNonPersonalizedVoiceSearch;
 extern const base::Feature kAppLaunchpad;
 extern const base::Feature kAppMenuMobileSiteOption;
 extern const base::Feature kAppToWebAttribution;

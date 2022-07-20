@@ -179,6 +179,9 @@ extern const char kAssistantConsentSimplifiedTextDescription[];
 extern const char kAssistantConsentV2Name[];
 extern const char kAssistantConsentV2Description[];
 
+extern const char kAssistantNonPersonalizedVoiceSearchName[];
+extern const char kAssistantNonPersonalizedVoiceSearchDescription[];
+
 extern const char kEnableAutoDisableAccessibilityName[];
 extern const char kEnableAutoDisableAccessibilityDescription[];
 

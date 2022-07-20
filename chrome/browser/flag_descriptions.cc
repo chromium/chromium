@@ -310,6 +310,12 @@ const char kAssistantConsentSimplifiedTextDescription[] =
     "Enables simplified consent copy in the Assistant voice search consent "
     "dialog.";
 
+const char kAssistantNonPersonalizedVoiceSearchName[] =
+    "AssistantNonPersonalizedVoiceSearch";
+const char kAssistantNonPersonalizedVoiceSearchDescription[] =
+    "Enables the Assistant voice recognition and search without any "
+    "personalization.";
+
 const char kAssistantConsentV2Name[] = "AssistanConsentV2";
 const char kAssistantConsentV2Description[] =
     "Enables different strategies for handling backing off from the consent "

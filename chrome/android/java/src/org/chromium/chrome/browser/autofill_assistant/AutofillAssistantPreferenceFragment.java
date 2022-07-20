@@ -102,7 +102,8 @@ public class AutofillAssistantPreferenceFragment extends PreferenceFragmentCompa
                 findPreference(PREF_ASSISTANT_VOICE_SEARCH_CATEGORY);
         mAssistantVoiceSearchEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)) {
             mAssistantVoiceSearchEnabledPref.setOnPreferenceChangeListener((preference,
                                                                                    newValue) -> {
                 SharedPreferencesManager.getInstance().writeBoolean(

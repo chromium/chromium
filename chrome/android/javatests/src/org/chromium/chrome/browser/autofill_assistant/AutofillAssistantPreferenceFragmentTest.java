@@ -269,6 +269,29 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Test
     @LargeTest
     @Feature({"AssistantVoiceSearch"})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+            ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH})
+    public void
+    testEnhancedVoiceSearch_DisabledForNonPersonalizedSearch() {
+        final AutofillAssistantPreferenceFragment prefs =
+                startAutofillAssistantPreferenceFragment();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PreferenceCategory assistantVoiceSearchCategory = prefs.findPreference(
+                    AutofillAssistantPreferenceFragment.PREF_ASSISTANT_VOICE_SEARCH_CATEGORY);
+            assertFalse(assistantVoiceSearchCategory.isVisible());
+
+            ChromeSwitchPreference assistantVoiceSearchEnabledSwitch =
+                    (ChromeSwitchPreference) prefs.findPreference(
+                            AutofillAssistantPreferenceFragment
+                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
+            assertFalse(assistantVoiceSearchEnabledSwitch.isVisible());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AssistantVoiceSearch"})
     @DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
     public void testEnhancedVoiceSearch_Disabled() {
         final AutofillAssistantPreferenceFragment prefs =

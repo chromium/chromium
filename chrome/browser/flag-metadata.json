@@ -367,6 +367,15 @@
     "expiry_milestone": 110
   },
   {
+    "name": "assistant-non-personalized-voice-search",
+    "owners": [
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "audio-settings-page",
     "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 113

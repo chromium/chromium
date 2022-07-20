@@ -855,8 +855,9 @@ public class VoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     @Feature({"OmniboxAssistantVoiceSearch"})
-    public void testStartVoiceRecognition_StartsAssistantVoiceSearch() {
+    public void testStartVoiceRecognition_StartsPersonalizedAssistantVoiceSearch() {
         enableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH);
+        disableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
@@ -871,6 +872,28 @@ public class VoiceRecognitionHandlerTest {
                 VoiceRecognitionHandler.EXTRA_VOICE_ENTRYPOINT, VoiceInteractionSource.OMNIBOX);
         verify(mIntent).putExtra(
                 VoiceRecognitionHandler.EXTRA_INTENT_USER_EMAIL, DEFAULT_USER_EMAIL);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OmniboxAssistantVoiceSearch"})
+    public void testStartVoiceRecognition_StartsNonPersonalizedAssistantVoiceSearch() {
+        enableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
+        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
+        Assert.assertEquals(VoiceIntentTarget.ASSISTANT, mHandler.getVoiceSearchStartEventTarget());
+        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
+        verify(mIntent).putExtra(
+                eq(VoiceRecognitionHandler.EXTRA_INTENT_SENT_TIMESTAMP), anyLong());
+        verify(mIntent).putExtra(
+                VoiceRecognitionHandler.EXTRA_VOICE_ENTRYPOINT, VoiceInteractionSource.OMNIBOX);
+        verify(mIntent, never())
+                .putExtra(VoiceRecognitionHandler.EXTRA_INTENT_USER_EMAIL, DEFAULT_USER_EMAIL);
     }
 
     @Test
@@ -941,7 +964,7 @@ public class VoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     @Feature("AssistantIntentPageUrl")
-    public void testStartVoiceRecognition_ToolbarButtonIncludesPageUrl() {
+    public void testStartVoiceRecognition_ToolbarButtonIncludesPageUrlForPersonalizedVoiceSearch() {
         enableFeatures(ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
@@ -950,6 +973,21 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
         Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
         verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_PAGE_URL, DEFAULT_URL);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("AssistantIntentPageUrl")
+    public void testStartVoiceRecognition_OmitPageUrlForNonPersonalizedVoiceSearch() {
+        enableFeatures(ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL,
+                ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
+        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
+        verify(mIntent, never()).putExtra(VoiceRecognitionHandler.EXTRA_PAGE_URL, DEFAULT_URL);
     }
 
     @Test
@@ -1081,6 +1119,28 @@ public class VoiceRecognitionHandlerTest {
         verify(mIntent, never())
                 .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
         verify(mIntent, never()).putExtra(eq(VoiceRecognitionHandler.EXTRA_PAGE_URL), anyString());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("AssistantIntentTranslateInfo")
+    public void testStartVoiceRecognition_NoTranslateExtrasForNonPersonalizedSearch() {
+        enableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH,
+                ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_ORIGINAL_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(
+                        eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_CURRENT_LANGUAGE), anyString());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_TRANSLATE_TARGET_LANGUAGE), anyString());
     }
 
     @Test

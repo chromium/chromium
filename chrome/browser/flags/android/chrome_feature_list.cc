@@ -170,6 +170,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAssistantIntentExperimentId,
     &kAssistantIntentPageUrl,
     &kAssistantIntentTranslateInfo,
+    &kAssistantNonPersonalizedVoiceSearch,
     &kAppLaunchpad,
     &kAppMenuMobileSiteOption,
     &kAppToWebAttribution,
@@ -463,6 +464,9 @@ const base::Feature kAssistantIntentPageUrl{"AssistantIntentPageUrl",
 
 const base::Feature kAssistantIntentTranslateInfo{
     "AssistantIntentTranslateInfo", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAssistantNonPersonalizedVoiceSearch{
+    "AssistantNonPersonalizedVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAppLaunchpad{"AppLaunchpad",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

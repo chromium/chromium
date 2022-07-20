@@ -718,13 +718,11 @@ public class VoiceRecognitionHandler {
     public void startVoiceRecognition(@VoiceInteractionSource int source) {
         ThreadUtils.assertOnUiThread();
         startTrackingQueryDuration();
-
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
         if (windowAndroid == null) {
             mDelegate.notifyVoiceRecognitionCanceled();
             return;
         }
-
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             mDelegate.notifyVoiceRecognitionCanceled();
@@ -873,31 +871,36 @@ public class VoiceRecognitionHandler {
         intent.putExtra(EXTRA_VOICE_ENTRYPOINT, source);
         // Allows Assistant to track intent latency.
         intent.putExtra(EXTRA_INTENT_SENT_TIMESTAMP, System.currentTimeMillis());
-        intent.putExtra(EXTRA_INTENT_USER_EMAIL, assistantVoiceSearchService.getUserEmail());
 
         if (FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID)) {
             attachAssistantExperimentId(intent);
         }
 
-        if (shouldAddPageUrl(source)) {
-            String url = getUrl();
-            if (url != null) {
-                intent.putExtra(EXTRA_PAGE_URL, url);
+        if (FeatureList.isInitialized()
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
+            // TODO(crbug.com/1344574): This is currently still needed by AGSA.
+            intent.putExtra(EXTRA_INTENT_USER_EMAIL, assistantVoiceSearchService.getUserEmail());
+
+            if (shouldAddPageUrl(source)) {
+                String url = getUrl();
+                if (url != null) {
+                    intent.putExtra(EXTRA_PAGE_URL, url);
+                }
+            }
+
+            if (source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO)) {
+                boolean attached = attachTranslateExtras(intent);
+                recordTranslateExtrasAttachResult(attached);
             }
         }
-
-        if (source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO)) {
-            boolean attached = attachTranslateExtras(intent);
-            recordTranslateExtrasAttachResult(attached);
-        }
-
         if (!showSpeechRecognitionIntent(
                     windowAndroid, intent, source, VoiceIntentTarget.ASSISTANT)) {
             notifyVoiceAvailabilityImpacted();
             recordVoiceSearchFailureEvent(source, VoiceIntentTarget.ASSISTANT);
-
             return false;
         }
 
