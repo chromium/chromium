@@ -21,7 +21,6 @@ js_library("os_search_result_row") {
     "..:os_icons",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:open_window_proxy",
     "../..:router",
     "//ash/webui/personalization_app/search:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -31,7 +30,9 @@ js_library("os_search_result_row") {
   ]
   externs_list = [
     "$externs_path/metrics_private.js",
+    "$externs_path/settings_private.js",
     "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js",
+    "../settings_controls_types.js",
   ]
 }
 

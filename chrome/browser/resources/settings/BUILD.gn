@@ -106,49 +106,7 @@ if (is_chromeos_ash) {
   js_type_check("closure_compile_local") {
     is_polymer3 = true
     closure_flags = settings_closure_flags
-    deps = [
-      ":extension_control_browser_proxy",
-      ":i18n_setup",
-      ":lifetime_browser_proxy",
-      ":router",
-      ":setting_id_param_util",
-      ":settings",
-    ]
-  }
-
-  js_library("settings") {
-    sources =
-        [ "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.js" ]
-    deps = [
-      ":i18n_setup",
-      ":lifetime_browser_proxy",
-    ]
-    extra_deps = [ ":build_ts" ]
-  }
-
-  js_library("extension_control_browser_proxy") {
-    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/extension_control_browser_proxy.js" ]
-    deps = [ "//ui/webui/resources/js:cr.m" ]
-    externs_list = [ "$externs_path/chrome_send.js" ]
-    extra_deps = [ ":build_ts" ]
-  }
-
-  js_library("i18n_setup") {
-    sources =
-        [ "$root_gen_dir/chrome/browser/resources/settings/tsc/i18n_setup.js" ]
-    deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-    extra_deps = [ ":build_ts" ]
-  }
-
-  js_library("lifetime_browser_proxy") {
-    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lifetime_browser_proxy.js" ]
-    deps = [ "//ui/webui/resources/js:cr.m" ]
-    extra_deps = [ ":build_ts" ]
-  }
-
-  js_library("open_window_proxy") {
-    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/open_window_proxy.js" ]
-    extra_deps = [ ":build_ts" ]
+    deps = [ ":router" ]
   }
 
   js_library("router") {
@@ -157,15 +115,6 @@ if (is_chromeos_ash) {
       "//ui/webui/resources/js:load_time_data.m",
     ]
     externs_list = [ "$externs_path/metrics_private.js" ]
-  }
-
-  js_library("setting_id_param_util") {
-    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/setting_id_param_util.js" ]
-    deps = [
-      ":router",
-      "//ui/webui/resources/js:load_time_data.m",
-    ]
-    extra_deps = [ ":build_ts" ]
   }
 }
 

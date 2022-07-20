@@ -108,11 +108,13 @@ js_library("add_spellcheck_languages_dialog") {
 js_library("change_device_language_dialog") {
   deps = [
     ":languages",
-    "../..:lifetime_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
   ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js",
+    "../settings_controls_types.js",
+  ]
 }
 
 js_library("cr_checkbox_with_policy") {
@@ -155,7 +157,6 @@ js_library("input_page") {
     "..:deep_linking_behavior",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:i18n_setup",
     "../..:router",
     "../keyboard_shortcut_banner:keyboard_shortcut_banner",
     "//ui/webui/resources/js:assert.m",
@@ -199,7 +200,6 @@ js_library("os_languages_page_v2") {
     "..:metrics_recorder",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:i18n_setup",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",

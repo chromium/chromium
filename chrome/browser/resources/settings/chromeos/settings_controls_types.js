@@ -196,3 +196,16 @@ function ProfileInfoBrowserProxy() {}
 
 /** @return {!Promise<!ProfileInfo>} */
 ProfileInfoBrowserProxy.prototype.getProfileInfo = function() {};
+
+/** @interface */
+function OpenWindowProxy() {}
+
+/** @param {string} url */
+OpenWindowProxy.prototype.openURL = function(url) {};
+
+/** @interface */
+function LifetimeBrowserProxy() {}
+
+LifetimeBrowserProxy.prototype.factoryReset = function() {};
+LifetimeBrowserProxy.prototype.relaunch = function() {};
+LifetimeBrowserProxy.prototype.signOutAndRestart = function() {};
