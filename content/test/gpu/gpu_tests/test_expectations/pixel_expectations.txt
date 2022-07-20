@@ -426,6 +426,9 @@ crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270
 # Flaking on Linux FYI Release (AMD RX 5500 XT)
 crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
 
+crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Skip ]
+crbug.com/1333633 Pixel_VideoStreamFrom* [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

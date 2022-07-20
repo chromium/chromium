@@ -1125,6 +1125,47 @@ class PixelTestPages():
     ]
 
   @staticmethod
+  def VideoFromCanvasPages(base_name: str) -> typing.List[PixelTestPage]:
+    # Tests for <video> element rendering results of <canvas> capture.
+    # It's important for video conference software.
+
+    # All these tests contain 4 or 8 solid colored rectangles
+    # around 50x100 pixels, this should account for possible antialiasing and
+    # color cenversion during RGB<->YUV conversions.
+    match_algo = algo.FuzzyMatchingAlgorithm(max_different_pixels=3000,
+                                             pixel_delta_threshold=50)
+    return [
+        PixelTestPage('pixel_video_from_canvas_2d.html',
+                      base_name + '_VideoStreamFrom2DCanvas',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=[],
+                      matching_algorithm=match_algo),
+        PixelTestPage('pixel_video_from_canvas_2d_alpha.html',
+                      base_name + '_VideoStreamFrom2DAlphaCanvas',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=[],
+                      matching_algorithm=match_algo),
+        PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
+                      base_name + '_VideoStreamFromWebGLCanvas',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=[],
+                      matching_algorithm=match_algo),
+        PixelTestPage('pixel_video_from_canvas_webgl2.html',
+                      base_name + '_VideoStreamFromWebGLAlphaCanvas',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=[],
+                      matching_algorithm=match_algo),
+
+        # Safeguard against repeating crbug.com/1337101
+        PixelTestPage(
+            'pixel_video_from_canvas_2d_alpha.html',
+            base_name + '_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster',
+            test_rect=[0, 0, 200, 200],
+            browser_args=['--disable-features=CanvasOopRasterization'],
+            matching_algorithm=match_algo),
+    ]
+
+  @staticmethod
   def HdrTestPages(base_name: str) -> typing.List[PixelTestPage]:
     return [
         PixelTestPage(
