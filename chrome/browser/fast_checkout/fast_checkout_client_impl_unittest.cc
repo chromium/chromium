@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 constexpr char kUrl[] = "https://www.example.com";
@@ -30,6 +31,7 @@ class MockFastCheckoutController : public FastCheckoutController {
                std::unique_ptr<autofill::CreditCard> credit_card),
               (override));
   MOCK_METHOD(void, OnDismiss, (), (override));
+  MOCK_METHOD(gfx::NativeView, GetNativeView, (), (override));
 };
 
 class MockFastCheckoutExternalActionDelegate

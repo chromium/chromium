@@ -46,9 +46,7 @@ class FastCheckoutControllerImpl : public FastCheckoutController {
       std::unique_ptr<autofill::AutofillProfile> profile,
       std::unique_ptr<autofill::CreditCard> credit_card) override;
   void OnDismiss() override;
-
-  // The web page view containing the focused field.
-  gfx::NativeView GetNativeView();
+  gfx::NativeView GetNativeView() override;
 
  private:
   // Weak pointer to the WebContents this class is tied to.

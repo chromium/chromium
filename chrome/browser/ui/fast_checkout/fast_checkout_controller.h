@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace autofill {
 class AutofillProfile;
@@ -28,6 +29,9 @@ class FastCheckoutController {
 
   // Informs the controller that the user has dismissed the sheet.
   virtual void OnDismiss() = 0;
+
+  // The web page view containing the focused field.
+  virtual gfx::NativeView GetNativeView() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_H_
