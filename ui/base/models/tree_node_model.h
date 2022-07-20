@@ -149,6 +149,15 @@ class TreeNode : public TreeModelNode {
   // TreeModelNode:
   const std::u16string& GetTitle() const override { return title_; }
 
+  const std::u16string& GetAccessibleTitle() const override {
+    return title_.empty() ? placeholder_accessible_title_ : title_;
+  }
+
+  void SetPlaceholderAccessibleTitle(
+      std::u16string placeholder_accessible_title) {
+    placeholder_accessible_title_ = placeholder_accessible_title;
+  }
+
   // Returns true if this == ancestor, or one of this nodes parents is
   // ancestor.
   bool HasAncestor(const NodeType* ancestor) const {
@@ -188,6 +197,10 @@ class TreeNode : public TreeModelNode {
  private:
   // Title displayed in the tree.
   std::u16string title_;
+
+  // If set, a placeholder accessible title to fall back to if there is no
+  // title.
+  std::u16string placeholder_accessible_title_;
 
   // This node's parent.
   raw_ptr<NodeType> parent_;

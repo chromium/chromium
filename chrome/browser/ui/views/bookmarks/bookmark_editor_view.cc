@@ -376,10 +376,11 @@ void BookmarkEditorView::NewFolder(EditorNode* parent) {
 
 BookmarkEditorView::EditorNode* BookmarkEditorView::AddNewFolder(
     EditorNode* parent) {
-  return tree_model_->Add(
-      parent,
-      std::make_unique<EditorNode>(
-          l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME), 0));
+  auto new_folder_node = std::make_unique<EditorNode>(
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME), 0);
+  new_folder_node->SetPlaceholderAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
+  return tree_model_->Add(parent, std::move(new_folder_node));
 }
 
 void BookmarkEditorView::ExpandAndSelect() {
@@ -426,6 +427,8 @@ void BookmarkEditorView::CreateNodes(const BookmarkNode* bb_node,
         bb_model_->client()->CanBeEditedByUser(child_bb_node.get())) {
       EditorNode* new_b_node = b_node->Add(std::make_unique<EditorNode>(
           child_bb_node->GetTitle(), child_bb_node->id()));
+      new_b_node->SetPlaceholderAccessibleTitle(
+          l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
       CreateNodes(child_bb_node.get(), new_b_node);
     }
   }

@@ -26,6 +26,9 @@ class TreeModelNode {
   // Returns the title for the node.
   virtual const std::u16string& GetTitle() const = 0;
 
+  // Returns the accessible title for the node.
+  virtual const std::u16string& GetAccessibleTitle() const = 0;
+
  protected:
   virtual ~TreeModelNode() {}
 };
