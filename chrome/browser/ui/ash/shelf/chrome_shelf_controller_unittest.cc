@@ -105,6 +105,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -426,6 +428,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
 
     chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+
+    web_app::PreinstalledWebAppManager::SkipStartupForTesting();
 
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
@@ -1133,6 +1137,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     web_app::AppId installed_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     ASSERT_EQ(installed_app_id, web_app_id);
+    web_app::AppRegistrationWaiter(profile(), web_app_id).Await();
     app_service_test_.FlushMojoCalls();
   }
 
@@ -1729,14 +1734,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
   EXPECT_EQ("Chrome, Play Store, Android Settings", GetPinnedAppStatus());
 }
 
-// crbug.com/1312611 Test Failing on linux-cfm-rel
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ArcAppPinCrossPlatformWorkflow \
-  DISABLED_ArcAppPinCrossPlatformWorkflow
-#else
-#define MAYBE_ArcAppPinCrossPlatformWorkflow ArcAppPinCrossPlatformWorkflow
-#endif
-TEST_F(ChromeShelfControllerWithArcTest, MAYBE_ArcAppPinCrossPlatformWorkflow) {
+TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   // Work on ARC disabled platform first.
   const std::string arc_app_id1 =
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[0]);
