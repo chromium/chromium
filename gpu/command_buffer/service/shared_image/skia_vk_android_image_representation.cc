@@ -31,20 +31,19 @@
 
 namespace gpu {
 
-SharedImageRepresentationSkiaVkAndroid::SharedImageRepresentationSkiaVkAndroid(
+SkiaVkAndroidImageRepresentation::SkiaVkAndroidImageRepresentation(
     SharedImageManager* manager,
-    SharedImageBackingAndroid* backing,
+    AndroidImageBacking* backing,
     scoped_refptr<SharedContextState> context_state,
     MemoryTypeTracker* tracker)
-    : SharedImageRepresentationSkia(manager, backing, tracker),
+    : SkiaImageRepresentation(manager, backing, tracker),
       context_state_(std::move(context_state)) {
   DCHECK(backing);
   DCHECK(context_state_);
   DCHECK(context_state_->vk_context_provider());
 }
 
-SharedImageRepresentationSkiaVkAndroid::
-    ~SharedImageRepresentationSkiaVkAndroid() {
+SkiaVkAndroidImageRepresentation::~SkiaVkAndroidImageRepresentation() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   surface_.reset();
   if (vulkan_image_) {
@@ -56,7 +55,7 @@ SharedImageRepresentationSkiaVkAndroid::
   }
 }
 
-sk_sp<SkSurface> SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
+sk_sp<SkSurface> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -94,8 +93,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
   return surface_;
 }
 
-sk_sp<SkPromiseImageTexture>
-SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
+sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -110,7 +108,7 @@ SharedImageRepresentationSkiaVkAndroid::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SharedImageRepresentationSkiaVkAndroid::EndWriteAccess(
+void SkiaVkAndroidImageRepresentation::EndWriteAccess(
     sk_sp<SkSurface> surface) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
   if (surface) {
@@ -128,8 +126,7 @@ void SharedImageRepresentationSkiaVkAndroid::EndWriteAccess(
   EndAccess(false /* readonly */);
 }
 
-sk_sp<SkPromiseImageTexture>
-SharedImageRepresentationSkiaVkAndroid::BeginReadAccess(
+sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -145,7 +142,7 @@ SharedImageRepresentationSkiaVkAndroid::BeginReadAccess(
   return promise_texture_;
 }
 
-void SharedImageRepresentationSkiaVkAndroid::EndReadAccess() {
+void SkiaVkAndroidImageRepresentation::EndReadAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kRead);
   DCHECK(!surface_);
 
@@ -153,29 +150,29 @@ void SharedImageRepresentationSkiaVkAndroid::EndReadAccess() {
 }
 
 gpu::VulkanImplementation*
-SharedImageRepresentationSkiaVkAndroid::vk_implementation() {
+SkiaVkAndroidImageRepresentation::vk_implementation() {
   return context_state_->vk_context_provider()->GetVulkanImplementation();
 }
 
-VkDevice SharedImageRepresentationSkiaVkAndroid::vk_device() {
+VkDevice SkiaVkAndroidImageRepresentation::vk_device() {
   return context_state_->vk_context_provider()
       ->GetDeviceQueue()
       ->GetVulkanDevice();
 }
 
-VkPhysicalDevice SharedImageRepresentationSkiaVkAndroid::vk_phy_device() {
+VkPhysicalDevice SkiaVkAndroidImageRepresentation::vk_phy_device() {
   return context_state_->vk_context_provider()
       ->GetDeviceQueue()
       ->GetVulkanPhysicalDevice();
 }
 
-VkQueue SharedImageRepresentationSkiaVkAndroid::vk_queue() {
+VkQueue SkiaVkAndroidImageRepresentation::vk_queue() {
   return context_state_->vk_context_provider()
       ->GetDeviceQueue()
       ->GetVulkanQueue();
 }
 
-bool SharedImageRepresentationSkiaVkAndroid::BeginAccess(
+bool SkiaVkAndroidImageRepresentation::BeginAccess(
     bool readonly,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
@@ -235,7 +232,7 @@ bool SharedImageRepresentationSkiaVkAndroid::BeginAccess(
   return true;
 }
 
-void SharedImageRepresentationSkiaVkAndroid::EndAccess(bool readonly) {
+void SkiaVkAndroidImageRepresentation::EndAccess(bool readonly) {
   base::ScopedFD sync_fd;
   if (end_access_semaphore_ != VK_NULL_HANDLE) {
     SemaphoreHandle semaphore_handle = vk_implementation()->GetSemaphoreHandle(
@@ -272,7 +269,7 @@ void SharedImageRepresentationSkiaVkAndroid::EndAccess(bool readonly) {
 }
 
 std::unique_ptr<GrBackendSurfaceMutableState>
-SharedImageRepresentationSkiaVkAndroid::GetEndAccessState() {
+SkiaVkAndroidImageRepresentation::GetEndAccessState() {
   // There is no layout to change if there is no image.
   if (!vulkan_image_)
     return nullptr;

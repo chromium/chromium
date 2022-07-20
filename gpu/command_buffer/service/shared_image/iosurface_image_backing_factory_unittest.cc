@@ -40,7 +40,7 @@
 namespace gpu {
 namespace {
 
-class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
+class IOSurfaceImageBackingFactoryTest : public testing::Test {
  public:
   void SetUp() override {
     surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
@@ -66,7 +66,7 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
     context_state_->InitializeGL(preferences, std::move(feature_info));
 
-    backing_factory_ = std::make_unique<SharedImageBackingFactoryGLImage>(
+    backing_factory_ = std::make_unique<GLImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(),
         &image_factory_,
         /*progress_reporter=*/nullptr, /*for_shared_memory_gmbs=*/false);
@@ -83,7 +83,7 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageBackingFactoryGLImage> backing_factory_;
+  std::unique_ptr<GLImageBackingFactory> backing_factory_;
   gles2::MailboxManagerImpl mailbox_manager_;
   SharedImageManager shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
@@ -99,7 +99,7 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
                                                           context_state_);
     ASSERT_NE(skia_representation, nullptr);
 
-    std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+    std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
         scoped_read_access =
             skia_representation->BeginScopedReadAccess(nullptr, nullptr);
     EXPECT_TRUE(scoped_read_access);
@@ -139,7 +139,7 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
 };
 
 // Basic test to check creation and deletion of IOSurface backed shared image.
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, Basic) {
+TEST_F(IOSurfaceImageBackingFactoryTest, Basic) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100980)
   gpu::GPUTestBotConfig bot_config;
@@ -187,7 +187,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Basic) {
   EXPECT_EQ(width, size.width());
   EXPECT_EQ(height, size.height());
 
-  // Next validate via a SharedImageRepresentationGLTexture.
+  // Next validate via a GLTextureImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
@@ -202,13 +202,13 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Basic) {
   EXPECT_EQ(usage, gl_representation->usage());
   gl_representation.reset();
 
-  // Finally, validate a SharedImageRepresentationSkia.
+  // Finally, validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       mailbox, context_state_);
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
 
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
@@ -222,8 +222,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Basic) {
   EXPECT_TRUE(end_semaphores.empty());
   scoped_write_access.reset();
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access =
       skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   auto* promise_texture = scoped_read_access->promise_image_texture();
@@ -242,7 +241,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Basic) {
 // Test to check interaction between Gl and skia GL representations.
 // We write to a GL texture using gl representation and then read from skia
 // representation.
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_SkiaGL) {
+TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100980)
   gpu::GPUTestBotConfig bot_config;
@@ -270,7 +269,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_SkiaGL) {
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
 
-  // Create a SharedImageRepresentationGLTexture.
+  // Create a GLTextureImageRepresentation.
   {
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexture(mailbox);
@@ -309,7 +308,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_SkiaGL) {
 
 // Test which ensures that legacy texture clear status is kept in sync with the
 // SharedImageBacking.
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, LegacyClearing) {
+TEST_F(IOSurfaceImageBackingFactoryTest, LegacyClearing) {
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
   viz::ResourceFormat format = viz::ResourceFormat::RGBA_8888;
   gfx::Size size(256, 256);
@@ -372,7 +371,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, LegacyClearing) {
 
 #if BUILDFLAG(USE_DAWN)
 // Test to check interaction between Dawn and skia GL representations.
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, Dawn_SkiaGL) {
+TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   // Create a Dawn Metal device
   dawn::native::Instance instance;
   instance.DiscoverDefaultAdapters();
@@ -414,7 +413,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Dawn_SkiaGL) {
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
 
-  // Create a SharedImageRepresentationDawn.
+  // Create a DawnImageRepresentation.
   auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
       mailbox, device.Get(), WGPUBackendType_Metal);
   EXPECT_TRUE(dawn_representation);
@@ -462,7 +461,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Dawn_SkiaGL) {
 // 2. Do not call SetCleared so we can test Dawn Lazy clear
 // 3. Begin render pass in Dawn, but do not do anything
 // 4. Verify through CheckSkiaPixel that GL drawn color not seen
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_Dawn_Skia_UnclearTexture) {
+TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100980)
   gpu::GPUTestBotConfig bot_config;
@@ -492,13 +491,13 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_Dawn_Skia_UnclearTexture) {
                                      memory_type_tracker_.get());
 
   {
-    // Create a SharedImageRepresentationGLTexture.
+    // Create a GLTextureImageRepresentation.
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexture(mailbox);
     EXPECT_TRUE(gl_representation);
     EXPECT_EQ(expected_target, gl_representation->GetTexture()->target());
 
-    std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+    std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
         gl_scoped_access = gl_representation->BeginScopedAccess(
             GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
             SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -594,7 +593,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_Dawn_Skia_UnclearTexture) {
 // 3. Texture in Dawn will stay as uninitialized
 // 3. Expect skia to fail to access the texture because texture is not
 // initialized
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, UnclearDawn_SkiaFails) {
+TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = viz::ResourceFormat::RGBA_8888;
@@ -681,7 +680,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, UnclearDawn_SkiaFails) {
   ASSERT_NE(skia_representation, nullptr);
 
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       scoped_read_access =
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_EQ(scoped_read_access, nullptr);
@@ -689,7 +688,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, UnclearDawn_SkiaFails) {
 #endif  // BUILDFLAG(USE_DAWN)
 
 // Test that Skia trying to access uninitialized SharedImage will fail
-TEST_F(SharedImageBackingFactoryIOSurfaceTest, SkiaAccessFirstFails) {
+TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   // Create a mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = viz::ResourceFormat::RGBA_8888;
@@ -713,7 +712,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, SkiaAccessFirstFails) {
   ASSERT_NE(skia_representation, nullptr);
   EXPECT_FALSE(skia_representation->IsCleared());
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       scoped_read_access =
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized

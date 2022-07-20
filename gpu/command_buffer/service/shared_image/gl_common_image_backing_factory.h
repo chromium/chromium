@@ -28,8 +28,8 @@ class GpuDriverBugWorkarounds;
 struct GpuPreferences;
 
 // Common constructor and helper functions for
-// SharedImageBackingFactoryGLTexture and SharedImageBackingFactoryGLImage.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
+// GLTextureImageBackingFactory and GLImageBackingFactory.
+class GPU_GLES2_EXPORT GLCommonImageBackingFactory
     : public SharedImageBackingFactory {
  public:
   struct FormatInfo {
@@ -61,11 +61,11 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
   };
 
  protected:
-  SharedImageBackingFactoryGLCommon(const GpuPreferences& gpu_preferences,
-                                    const GpuDriverBugWorkarounds& workarounds,
-                                    const gles2::FeatureInfo* feature_info,
-                                    gl::ProgressReporter* progress_reporter);
-  ~SharedImageBackingFactoryGLCommon() override;
+  GLCommonImageBackingFactory(const GpuPreferences& gpu_preferences,
+                              const GpuDriverBugWorkarounds& workarounds,
+                              const gles2::FeatureInfo* feature_info,
+                              gl::ProgressReporter* progress_reporter);
+  ~GLCommonImageBackingFactory() override;
 
   bool CanCreateSharedImage(const gfx::Size& size,
                             base::span<const uint8_t> pixel_data,
@@ -79,7 +79,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
   FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
   int32_t max_texture_size_ = 0;
   bool texture_usage_angle_ = false;
-  SharedImageBackingGLCommon::UnpackStateAttribs attribs_;
+  GLTextureImageBackingHelper::UnpackStateAttribs attribs_;
   GpuDriverBugWorkarounds workarounds_;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
 

@@ -39,7 +39,7 @@
 namespace gpu {
 namespace {
 
-class SharedImageBackingFactoryAHBTest : public testing::Test {
+class AHardwareBufferImageBackingFactoryTest : public testing::Test {
  public:
   void SetUp() override {
     // AHardwareBuffer is only supported on ANDROID O+. Hence these tests
@@ -66,7 +66,7 @@ class SharedImageBackingFactoryAHBTest : public testing::Test {
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
     context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
 
-    backing_factory_ = std::make_unique<SharedImageBackingFactoryAHB>(
+    backing_factory_ = std::make_unique<AHardwareBufferImageBackingFactory>(
         context_state_->feature_info());
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
@@ -81,7 +81,7 @@ class SharedImageBackingFactoryAHBTest : public testing::Test {
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageBackingFactoryAHB> backing_factory_;
+  std::unique_ptr<AHardwareBufferImageBackingFactory> backing_factory_;
   gles2::MailboxManagerImpl mailbox_manager_;
   SharedImageManager shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
@@ -92,7 +92,7 @@ class SharedImageBackingFactoryAHBTest : public testing::Test {
 class GlLegacySharedImage {
  public:
   GlLegacySharedImage(
-      SharedImageBackingFactoryAHB* backing_factory,
+      AHardwareBufferImageBackingFactory* backing_factory,
       bool is_thread_safe,
       gles2::MailboxManagerImpl* mailbox_manager,
       SharedImageManager* shared_image_manager,
@@ -112,7 +112,7 @@ class GlLegacySharedImage {
 };
 
 // Basic test to check creation and deletion of AHB backed shared image.
-TEST_F(SharedImageBackingFactoryAHBTest, Basic) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, Basic) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -121,13 +121,13 @@ TEST_F(SharedImageBackingFactoryAHBTest, Basic) {
       &mailbox_manager_,          &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
-  // Finally, validate a SharedImageRepresentationSkia.
+  // Finally, validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
@@ -141,8 +141,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, Basic) {
   EXPECT_EQ(0u, end_semaphores.size());
   scoped_write_access.reset();
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   EXPECT_TRUE(scoped_read_access);
@@ -161,7 +160,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, Basic) {
 // Test to check interaction between Gl and skia GL representations.
 // We write to a GL texture using gl representation and then read from skia
 // representation.
-TEST_F(SharedImageBackingFactoryAHBTest, GLSkiaGL) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -184,7 +183,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, GLSkiaGL) {
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
 
-  // Create a SharedImageRepresentationGLTexture.
+  // Create a GLTextureImageRepresentation.
   auto gl_representation =
       shared_image_representation_factory_->ProduceGLTexture(mailbox);
   EXPECT_TRUE(gl_representation);
@@ -223,7 +222,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, GLSkiaGL) {
   EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 }
 
-TEST_F(SharedImageBackingFactoryAHBTest, InitialData) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -262,7 +261,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, InitialData) {
 }
 
 // Test to check invalid format support.
-TEST_F(SharedImageBackingFactoryAHBTest, InvalidFormat) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -281,7 +280,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, InvalidFormat) {
 }
 
 // Test to check invalid size support.
-TEST_F(SharedImageBackingFactoryAHBTest, InvalidSize) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -305,7 +304,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, InvalidSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_F(SharedImageBackingFactoryAHBTest, EstimatedSize) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -335,7 +334,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, EstimatedSize) {
 
 // TODO(crbug/994720): Failing on Android builders.
 // Test to check that only one context can write at a time
-TEST_F(SharedImageBackingFactoryAHBTest, DISABLED_OnlyOneWriter) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -349,7 +348,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, DISABLED_OnlyOneWriter) {
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
@@ -362,7 +361,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, DISABLED_OnlyOneWriter) {
       gl_legacy_shared_image.mailbox(), context_state_.get());
   std::vector<GrBackendSemaphore> begin_semaphores2;
   std::vector<GrBackendSemaphore> end_semaphores2;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access2;
   scoped_write_access2 = skia_representation2->BeginScopedWriteAccess(
       &begin_semaphores2, &end_semaphores2,
@@ -377,7 +376,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, DISABLED_OnlyOneWriter) {
 }
 
 // Test to check that multiple readers are allowed
-TEST_F(SharedImageBackingFactoryAHBTest, CanHaveMultipleReaders) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -393,15 +392,14 @@ TEST_F(SharedImageBackingFactoryAHBTest, CanHaveMultipleReaders) {
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   EXPECT_TRUE(scoped_read_access);
   EXPECT_EQ(0u, begin_semaphores.size());
   EXPECT_EQ(0u, end_semaphores.size());
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       scoped_read_access2;
   scoped_read_access2 = skia_representation2->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
@@ -416,7 +414,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CanHaveMultipleReaders) {
 }
 
 // Test to check that a context cannot write while another context is reading
-TEST_F(SharedImageBackingFactoryAHBTest, CannotWriteWhileReading) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -431,8 +429,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CannotWriteWhileReading) {
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   EXPECT_TRUE(scoped_read_access);
@@ -445,7 +442,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CannotWriteWhileReading) {
   std::vector<GrBackendSemaphore> begin_semaphores2;
   std::vector<GrBackendSemaphore> end_semaphores2;
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation2->BeginScopedWriteAccess(
       &begin_semaphores2, &end_semaphores2,
@@ -460,7 +457,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CannotWriteWhileReading) {
 }
 
 // Test to check that a context cannot read while another context is writing
-TEST_F(SharedImageBackingFactoryAHBTest, CannotReadWhileWriting) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -473,7 +470,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CannotReadWhileWriting) {
       gl_legacy_shared_image.mailbox(), context_state_.get());
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
@@ -486,8 +483,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CannotReadWhileWriting) {
       gl_legacy_shared_image.mailbox(), context_state_.get());
   std::vector<GrBackendSemaphore> begin_semaphores2;
   std::vector<GrBackendSemaphore> end_semaphores2;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation2->BeginScopedReadAccess(
       &begin_semaphores2, &end_semaphores2);
   EXPECT_FALSE(scoped_read_access);
@@ -501,7 +497,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, CannotReadWhileWriting) {
 
 // Test to check that setting/unsetting legacy shared image mailboxes works as
 // expected.
-TEST_F(SharedImageBackingFactoryAHBTest, LegacyClearing) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, LegacyClearing) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 
@@ -557,7 +553,7 @@ TEST_F(SharedImageBackingFactoryAHBTest, LegacyClearing) {
 }
 
 GlLegacySharedImage::GlLegacySharedImage(
-    SharedImageBackingFactoryAHB* backing_factory,
+    AHardwareBufferImageBackingFactory* backing_factory,
     bool is_thread_safe,
     gles2::MailboxManagerImpl* mailbox_manager,
     SharedImageManager* shared_image_manager,
@@ -634,7 +630,7 @@ GlLegacySharedImage::~GlLegacySharedImage() {
   EXPECT_FALSE(mailbox_manager_->ConsumeTexture(mailbox_));
 }
 
-TEST_F(SharedImageBackingFactoryAHBTest, Overlay) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
     return;
 

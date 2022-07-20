@@ -142,8 +142,8 @@ class OverlayProcessorWebView::Manager
    private:
     gfx::Rect crop_rect_;
     base::ScopedClosureRunner return_resource;
-    std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation_;
-    std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
+    std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
+    std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
         read_access_;
     base::ScopedFD begin_read_fence_;
   };

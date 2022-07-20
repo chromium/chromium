@@ -24,13 +24,13 @@ GLenum ToSharedImageAccessGLMode(WGPUTextureUsage usage) {
 
 namespace gpu {
 
-SharedImageRepresentationDawnEGLImage::SharedImageRepresentationDawnEGLImage(
-    std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation,
+DawnEGLImageRepresentation::DawnEGLImageRepresentation(
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     WGPUDevice device)
-    : SharedImageRepresentationDawn(manager, backing, tracker),
+    : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       device_(device),
       dawn_procs_(dawn::native::GetProcs()) {
@@ -40,15 +40,13 @@ SharedImageRepresentationDawnEGLImage::SharedImageRepresentationDawnEGLImage(
   dawn_procs_.deviceReference(device_);
 }
 
-SharedImageRepresentationDawnEGLImage::
-    ~SharedImageRepresentationDawnEGLImage() {
+DawnEGLImageRepresentation::~DawnEGLImageRepresentation() {
   EndAccess();
 
   dawn_procs_.deviceRelease(device_);
 }
 
-WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
-    WGPUTextureUsage usage) {
+WGPUTexture DawnEGLImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
@@ -80,7 +78,7 @@ WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
   return texture_;
 }
 
-void SharedImageRepresentationDawnEGLImage::EndAccess() {
+void DawnEGLImageRepresentation::EndAccess() {
   if (!texture_) {
     return;
   }

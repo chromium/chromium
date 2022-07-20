@@ -15,24 +15,23 @@ namespace gpu {
 
 // Implementation of SharedImageBacking that creates a GL Texture that is not
 // backed by a GLImage.
-class SharedImageBackingGLTexture : public ClearTrackingSharedImageBacking {
+class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  SharedImageBackingGLTexture(const Mailbox& mailbox,
-                              viz::ResourceFormat format,
-                              const gfx::Size& size,
-                              const gfx::ColorSpace& color_space,
-                              GrSurfaceOrigin surface_origin,
-                              SkAlphaType alpha_type,
-                              uint32_t usage,
-                              bool is_passthrough);
-  SharedImageBackingGLTexture(const SharedImageBackingGLTexture&) = delete;
-  SharedImageBackingGLTexture& operator=(const SharedImageBackingGLTexture&) =
-      delete;
-  ~SharedImageBackingGLTexture() override;
+  GLTextureImageBacking(const Mailbox& mailbox,
+                        viz::ResourceFormat format,
+                        const gfx::Size& size,
+                        const gfx::ColorSpace& color_space,
+                        GrSurfaceOrigin surface_origin,
+                        SkAlphaType alpha_type,
+                        uint32_t usage,
+                        bool is_passthrough);
+  GLTextureImageBacking(const GLTextureImageBacking&) = delete;
+  GLTextureImageBacking& operator=(const GLTextureImageBacking&) = delete;
+  ~GLTextureImageBacking() override;
 
   void InitializeGLTexture(
       GLuint service_id,
-      const SharedImageBackingGLCommon::InitializeGLTextureParams& params);
+      const GLTextureImageBackingHelper::InitializeGLTextureParams& params);
   void SetCompatibilitySwizzle(
       const gles2::Texture::CompatibilitySwizzle* swizzle);
 
@@ -50,18 +49,18 @@ class SharedImageBackingGLTexture : public ClearTrackingSharedImageBacking {
   gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) final;
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) final;
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) final;
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type) final;
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

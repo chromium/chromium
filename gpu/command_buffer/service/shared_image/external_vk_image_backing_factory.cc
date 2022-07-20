@@ -74,7 +74,7 @@ VulkanImageUsageCache CreateImageUsageCache(
 
 }  // namespace
 
-ExternalVkImageFactory::ExternalVkImageFactory(
+ExternalVkImageBackingFactory::ExternalVkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
     : context_state_(std::move(context_state)),
       command_pool_(context_state_->vk_context_provider()
@@ -85,7 +85,7 @@ ExternalVkImageFactory::ExternalVkImageFactory(
                                     ->GetDeviceQueue()
                                     ->GetVulkanPhysicalDevice())) {}
 
-ExternalVkImageFactory::~ExternalVkImageFactory() {
+ExternalVkImageBackingFactory::~ExternalVkImageBackingFactory() {
   if (command_pool_) {
     context_state_->vk_context_provider()
         ->GetDeviceQueue()
@@ -94,7 +94,8 @@ ExternalVkImageFactory::~ExternalVkImageFactory() {
   }
 }
 
-std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
+std::unique_ptr<SharedImageBacking>
+ExternalVkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -111,7 +112,8 @@ std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
       base::span<const uint8_t>());
 }
 
-std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
+std::unique_ptr<SharedImageBacking>
+ExternalVkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -125,7 +127,8 @@ std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
       surface_origin, alpha_type, usage, &image_usage_cache_, pixel_data);
 }
 
-std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
+std::unique_ptr<SharedImageBacking>
+ExternalVkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -148,7 +151,7 @@ std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
       &image_usage_cache_);
 }
 
-bool ExternalVkImageFactory::CanImportGpuMemoryBuffer(
+bool ExternalVkImageBackingFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
   return context_state_->vk_context_provider()
@@ -157,13 +160,14 @@ bool ExternalVkImageFactory::CanImportGpuMemoryBuffer(
          memory_buffer_type == gfx::SHARED_MEMORY_BUFFER;
 }
 
-bool ExternalVkImageFactory::IsSupported(uint32_t usage,
-                                         viz::ResourceFormat format,
-                                         bool thread_safe,
-                                         gfx::GpuMemoryBufferType gmb_type,
-                                         GrContextType gr_context_type,
-                                         bool* allow_legacy_mailbox,
-                                         bool is_pixel_used) {
+bool ExternalVkImageBackingFactory::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    bool* allow_legacy_mailbox,
+    bool is_pixel_used) {
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
   }
@@ -176,7 +180,7 @@ bool ExternalVkImageFactory::IsSupported(uint32_t usage,
     return false;
   }
   if (thread_safe) {
-    LOG(ERROR) << "ExternalVkImageFactory currently do not support "
+    LOG(ERROR) << "ExternalVkImageBackingFactory currently do not support "
                   "cross-thread usage.";
     return false;
   }

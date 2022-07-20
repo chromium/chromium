@@ -43,15 +43,15 @@ class MailboxManager;
 class SharedContextState;
 class SharedImageManager;
 class SharedImageRepresentation;
-class SharedImageRepresentationGLTexture;
-class SharedImageRepresentationGLTexturePassthrough;
-class SharedImageRepresentationSkia;
-class SharedImageRepresentationDawn;
-class SharedImageRepresentationLegacyOverlay;
-class SharedImageRepresentationOverlay;
-class SharedImageRepresentationMemory;
-class SharedImageRepresentationVaapi;
-class SharedImageRepresentationRaster;
+class GLTextureImageRepresentation;
+class GLTexturePassthroughImageRepresentation;
+class SkiaImageRepresentation;
+class DawnImageRepresentation;
+class LegacyOverlayImageRepresentation;
+class OverlayImageRepresentation;
+class MemoryImageRepresentation;
+class VaapiImageRepresentation;
+class RasterImageRepresentation;
 class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
@@ -60,8 +60,8 @@ enum class SharedImageBackingType {
   kTest = 0,
   kExternalVkImage = 1,
   kD3D = 2,
-  kEglImage = 3,
-  kAHB = 4,
+  kEGLImage = 3,
+  kAHardwareBuffer = 4,
   kAngleVulkan = 5,
   kGLImage = 6,
   kGLTexture = 7,
@@ -179,48 +179,48 @@ class GPU_GLES2_EXPORT SharedImageBacking {
  protected:
   // Used by SharedImageManager.
   friend class SharedImageManager;
-  friend class SharedImageBackingCompound;
+  friend class CompoundImageBacking;
 
-  virtual std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  virtual std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<SharedImageRepresentationGLTexture>
+  virtual std::unique_ptr<GLTextureImageRepresentation>
   ProduceRGBEmulationGLTexture(SharedImageManager* manager,
                                MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  virtual std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  virtual std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state);
-  virtual std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  virtual std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type);
-  virtual std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  virtual std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<SharedImageRepresentationVaapi> ProduceVASurface(
+  virtual std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory);
-  virtual std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+  virtual std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
+  virtual std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
 #if BUILDFLAG(IS_ANDROID)
-  virtual std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+  virtual std::unique_ptr<LegacyOverlayImageRepresentation>
   ProduceLegacyOverlay(SharedImageManager* manager, MemoryTypeTracker* tracker);
 #endif
 
   // Used by subclasses during destruction.
   bool have_context() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Used by SharedImageBackingFactoryGLTexture to get register factory.
+  // Used by GLTextureImageBackingFactory to get register factory.
   SharedImageFactory* factory() {
     DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
     return factory_;

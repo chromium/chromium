@@ -28,8 +28,7 @@ std::vector<uint8_t> ReadPixels(
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   auto* promise_texture = scoped_read_access->promise_image_texture();

@@ -270,9 +270,10 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
   image_info.fAlloc = alloc;
   // TODO(hitawala, https://crbug.com/1310028): Skia assumes that all VkImages
   // with DRM modifier extensions are only for reads. When using Vulkan with
-  // OzoneBackings on Skia, when importing buffer we create SkSurface and write
-  // to it which fails. To fix this, we add checks for tiling with DRM modifiers
-  // and set it to optimal. This will be removed once skia adds write support.
+  // OzoneImageBackings on Skia, when importing buffer we create SkSurface and
+  // write to it which fails. To fix this, we add checks for tiling with DRM
+  // modifiers and set it to optimal. This will be removed once skia adds write
+  // support.
   if (image->image_tiling() == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT &&
       (image->format() == VK_FORMAT_R8G8B8A8_UNORM ||
        image->format() == VK_FORMAT_R8G8B8_UNORM ||

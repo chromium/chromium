@@ -2134,7 +2134,7 @@ void TextureRef::ForceContextLost() {
 }
 
 void TextureRef::SetSharedImageRepresentation(
-    std::unique_ptr<SharedImageRepresentationGLTexture> shared_image) {
+    std::unique_ptr<GLTextureImageRepresentation> shared_image) {
   shared_image_ = std::move(shared_image);
 }
 
@@ -2402,7 +2402,7 @@ TextureRef* TextureManager::Consume(
 
 TextureRef* TextureManager::ConsumeSharedImage(
     GLuint client_id,
-    std::unique_ptr<SharedImageRepresentationGLTexture> shared_image) {
+    std::unique_ptr<GLTextureImageRepresentation> shared_image) {
   DCHECK(client_id);
   Texture* texture = shared_image->GetTexture();
   TextureRef* ref = Consume(client_id, texture);

@@ -3254,14 +3254,14 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
     gl::GLImageDXGI* gl_image_dxgi =
         gl::GLImageDXGI::FromGLImage(picture_buffer->gl_image().get());
     if (gl_image_dxgi) {
-      shared_image = gpu::SharedImageBackingD3D::CreateFromGLTexture(
+      shared_image = gpu::D3DImageBacking::CreateFromGLTexture(
           mailbox, viz_formats[texture_idx],
           picture_buffer->texture_size(texture_idx),
           picture_buffer->color_space(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, shared_image_usage, gl_image_dxgi->texture(),
           std::move(gl_texture));
     } else {
-      shared_image = gpu::SharedImageBackingGLImage::CreateFromGLTexture(
+      shared_image = gpu::GLImageBacking::CreateFromGLTexture(
           picture_buffer->gl_image(), mailbox, viz_formats[texture_idx],
           picture_buffer->size(), picture_buffer->color_space(),
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,

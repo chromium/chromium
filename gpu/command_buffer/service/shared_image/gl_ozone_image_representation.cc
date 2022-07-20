@@ -27,14 +27,13 @@
 
 namespace gpu {
 
-bool SharedImageRepresentationGLOzoneShared::BeginAccess(
+bool GLOzoneImageRepresentationShared::BeginAccess(
     GLenum mode,
-    SharedImageBackingOzone* ozone_backing,
+    OzoneImageBacking* ozone_backing,
     bool& need_end_fence) {
   bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   std::vector<gfx::GpuFenceHandle> fences;
-  ozone_backing->BeginAccess(readonly,
-                             SharedImageBackingOzone::AccessStream::kGL,
+  ozone_backing->BeginAccess(readonly, OzoneImageBacking::AccessStream::kGL,
                              &fences, need_end_fence);
 
   // ChromeOS VMs don't support gpu fences, so there is no good way to
@@ -53,10 +52,10 @@ bool SharedImageRepresentationGLOzoneShared::BeginAccess(
   return ozone_backing->VaSync();
 }
 
-void SharedImageRepresentationGLOzoneShared::EndAccess(
+void GLOzoneImageRepresentationShared::EndAccess(
     bool need_end_fence,
     GLenum mode,
-    SharedImageBackingOzone* ozone_backing) {
+    OzoneImageBacking* ozone_backing) {
   gfx::GpuFenceHandle fence;
   // ChromeOS VMs don't support gpu fences, so there is no good way to
   // synchronize with GL.
@@ -66,12 +65,12 @@ void SharedImageRepresentationGLOzoneShared::EndAccess(
     fence = gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone();
   }
   bool readonly = mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  ozone_backing->EndAccess(readonly, SharedImageBackingOzone::AccessStream::kGL,
+  ozone_backing->EndAccess(readonly, OzoneImageBacking::AccessStream::kGL,
                            std::move(fence));
 }
 
 std::unique_ptr<ui::NativePixmapGLBinding>
-SharedImageRepresentationGLOzoneShared::GetBinding(
+GLOzoneImageRepresentationShared::GetBinding(
     SharedImageBacking* backing,
     scoped_refptr<gfx::NativePixmap> pixmap,
     gfx::BufferPlane plane,
@@ -108,8 +107,8 @@ SharedImageRepresentationGLOzoneShared::GetBinding(
 }
 
 // static
-std::unique_ptr<SharedImageRepresentationGLTextureOzone>
-SharedImageRepresentationGLTextureOzone::Create(
+std::unique_ptr<GLTextureOzoneImageRepresentation>
+GLTextureOzoneImageRepresentation::Create(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
@@ -118,7 +117,7 @@ SharedImageRepresentationGLTextureOzone::Create(
   GLenum target;
   GLuint gl_texture_service_id;
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-      SharedImageRepresentationGLOzoneShared::GetBinding(
+      GLOzoneImageRepresentationShared::GetBinding(
           backing, std::move(pixmap), plane, gl_texture_service_id, target);
   if (!np_gl_binding) {
     return nullptr;
@@ -135,44 +134,43 @@ SharedImageRepresentationGLTextureOzone::Create(
                         backing->ClearedRect());
   texture->SetImmutable(true, true);
 
-  return base::WrapUnique<SharedImageRepresentationGLTextureOzone>(
-      new SharedImageRepresentationGLTextureOzone(manager, backing, tracker,
-                                                  texture));
+  return base::WrapUnique<GLTextureOzoneImageRepresentation>(
+      new GLTextureOzoneImageRepresentation(manager, backing, tracker,
+                                            texture));
 }
 
-SharedImageRepresentationGLTextureOzone::
-    SharedImageRepresentationGLTextureOzone(SharedImageManager* manager,
-                                            SharedImageBacking* backing,
-                                            MemoryTypeTracker* tracker,
-                                            gles2::Texture* texture)
-    : SharedImageRepresentationGLTexture(manager, backing, tracker),
+GLTextureOzoneImageRepresentation::GLTextureOzoneImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    gles2::Texture* texture)
+    : GLTextureImageRepresentation(manager, backing, tracker),
       texture_(texture) {}
 
-SharedImageRepresentationGLTextureOzone::
-    ~SharedImageRepresentationGLTextureOzone() {
+GLTextureOzoneImageRepresentation::~GLTextureOzoneImageRepresentation() {
   texture_->RemoveLightweightRef(has_context());
 }
 
-gles2::Texture* SharedImageRepresentationGLTextureOzone::GetTexture() {
+gles2::Texture* GLTextureOzoneImageRepresentation::GetTexture() {
   return texture_;
 }
 
-bool SharedImageRepresentationGLTextureOzone::BeginAccess(GLenum mode) {
+bool GLTextureOzoneImageRepresentation::BeginAccess(GLenum mode) {
   DCHECK(!current_access_mode_);
   current_access_mode_ = mode;
-  return SharedImageRepresentationGLOzoneShared::BeginAccess(
+  return GLOzoneImageRepresentationShared::BeginAccess(
       current_access_mode_, ozone_backing(), need_end_fence_);
 }
 
-void SharedImageRepresentationGLTextureOzone::EndAccess() {
-  SharedImageRepresentationGLOzoneShared::EndAccess(
+void GLTextureOzoneImageRepresentation::EndAccess() {
+  GLOzoneImageRepresentationShared::EndAccess(
       need_end_fence_, current_access_mode_, ozone_backing());
   current_access_mode_ = 0;
 }
 
 // static
-std::unique_ptr<SharedImageRepresentationGLTexturePassthroughOzone>
-SharedImageRepresentationGLTexturePassthroughOzone::Create(
+std::unique_ptr<GLTexturePassthroughOzoneImageRepresentation>
+GLTexturePassthroughOzoneImageRepresentation::Create(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
@@ -181,7 +179,7 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
   GLenum target;
   GLuint gl_texture_service_id;
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-      SharedImageRepresentationGLOzoneShared::GetBinding(
+      GLOzoneImageRepresentationShared::GetBinding(
           backing, std::move(pixmap), plane, gl_texture_service_id, target);
   if (!np_gl_binding) {
     return nullptr;
@@ -197,38 +195,37 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
           backing->size().width(), backing->size().height(),
           /*depth=*/1, /*border=*/0, gl_format, gl_type);
 
-  return base::WrapUnique<SharedImageRepresentationGLTexturePassthroughOzone>(
-      new SharedImageRepresentationGLTexturePassthroughOzone(
+  return base::WrapUnique<GLTexturePassthroughOzoneImageRepresentation>(
+      new GLTexturePassthroughOzoneImageRepresentation(
           manager, backing, tracker, texture_passthrough));
 }
 
-SharedImageRepresentationGLTexturePassthroughOzone::
-    SharedImageRepresentationGLTexturePassthroughOzone(
+GLTexturePassthroughOzoneImageRepresentation::
+    GLTexturePassthroughOzoneImageRepresentation(
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
         scoped_refptr<gles2::TexturePassthrough> texture_passthrough)
-    : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
+    : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       texture_passthrough_(texture_passthrough) {}
 
-SharedImageRepresentationGLTexturePassthroughOzone::
-    ~SharedImageRepresentationGLTexturePassthroughOzone() = default;
+GLTexturePassthroughOzoneImageRepresentation::
+    ~GLTexturePassthroughOzoneImageRepresentation() = default;
 
 const scoped_refptr<gles2::TexturePassthrough>&
-SharedImageRepresentationGLTexturePassthroughOzone::GetTexturePassthrough() {
+GLTexturePassthroughOzoneImageRepresentation::GetTexturePassthrough() {
   return texture_passthrough_;
 }
 
-bool SharedImageRepresentationGLTexturePassthroughOzone::BeginAccess(
-    GLenum mode) {
+bool GLTexturePassthroughOzoneImageRepresentation::BeginAccess(GLenum mode) {
   DCHECK(!current_access_mode_);
   current_access_mode_ = mode;
-  return SharedImageRepresentationGLOzoneShared::BeginAccess(
+  return GLOzoneImageRepresentationShared::BeginAccess(
       current_access_mode_, ozone_backing(), need_end_fence_);
 }
 
-void SharedImageRepresentationGLTexturePassthroughOzone::EndAccess() {
-  SharedImageRepresentationGLOzoneShared::EndAccess(
+void GLTexturePassthroughOzoneImageRepresentation::EndAccess() {
+  GLOzoneImageRepresentationShared::EndAccess(
       need_end_fence_, current_access_mode_, ozone_backing());
   current_access_mode_ = 0;
 }

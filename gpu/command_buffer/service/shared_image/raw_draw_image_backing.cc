@@ -29,14 +29,14 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
 
 }  // namespace
 
-class SharedImageBackingRawDraw::RepresentationRaster
-    : public SharedImageRepresentationRaster {
+class RawDrawImageBacking::RasterRawDrawImageRepresentation
+    : public RasterImageRepresentation {
  public:
-  RepresentationRaster(SharedImageManager* manager,
-                       SharedImageBacking* backing,
-                       MemoryTypeTracker* tracker)
-      : SharedImageRepresentationRaster(manager, backing, tracker) {}
-  ~RepresentationRaster() override = default;
+  RasterRawDrawImageRepresentation(SharedImageManager* manager,
+                                   SharedImageBacking* backing,
+                                   MemoryTypeTracker* tracker)
+      : RasterImageRepresentation(manager, backing, tracker) {}
+  ~RasterRawDrawImageRepresentation() override = default;
 
   cc::PaintOpBuffer* BeginWriteAccess(
       scoped_refptr<SharedContextState> context_state,
@@ -61,18 +61,18 @@ class SharedImageBackingRawDraw::RepresentationRaster
   void EndReadAccess() override { raw_draw_backing()->EndReadAccess(); }
 
  private:
-  SharedImageBackingRawDraw* raw_draw_backing() {
-    return static_cast<SharedImageBackingRawDraw*>(backing());
+  RawDrawImageBacking* raw_draw_backing() {
+    return static_cast<RawDrawImageBacking*>(backing());
   }
 };
 
-class SharedImageBackingRawDraw::RepresentationSkia
-    : public SharedImageRepresentationSkia {
+class RawDrawImageBacking::SkiaRawDrawImageRepresentation
+    : public SkiaImageRepresentation {
  public:
-  RepresentationSkia(SharedImageManager* manager,
-                     SharedImageBacking* backing,
-                     MemoryTypeTracker* tracker)
-      : SharedImageRepresentationSkia(manager, backing, tracker) {}
+  SkiaRawDrawImageRepresentation(SharedImageManager* manager,
+                                 SharedImageBacking* backing,
+                                 MemoryTypeTracker* tracker)
+      : SkiaImageRepresentation(manager, backing, tracker) {}
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
@@ -96,19 +96,18 @@ class SharedImageBackingRawDraw::RepresentationSkia
   void EndReadAccess() override { raw_draw_backing()->EndReadAccess(); }
 
  private:
-  SharedImageBackingRawDraw* raw_draw_backing() {
-    return static_cast<SharedImageBackingRawDraw*>(backing());
+  RawDrawImageBacking* raw_draw_backing() {
+    return static_cast<RawDrawImageBacking*>(backing());
   }
 };
 
-SharedImageBackingRawDraw::SharedImageBackingRawDraw(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage)
+RawDrawImageBacking::RawDrawImageBacking(const Mailbox& mailbox,
+                                         viz::ResourceFormat format,
+                                         const gfx::Size& size,
+                                         const gfx::ColorSpace& color_space,
+                                         GrSurfaceOrigin surface_origin,
+                                         SkAlphaType alpha_type,
+                                         uint32_t usage)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -119,7 +118,7 @@ SharedImageBackingRawDraw::SharedImageBackingRawDraw(
                                       /*estimated_size=*/0,
                                       /*is_thread_safe=*/true) {}
 
-SharedImageBackingRawDraw::~SharedImageBackingRawDraw() {
+RawDrawImageBacking::~RawDrawImageBacking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
   DCHECK_EQ(read_count_, 0);
@@ -128,22 +127,21 @@ SharedImageBackingRawDraw::~SharedImageBackingRawDraw() {
   DestroyBackendTexture();
 }
 
-SharedImageBackingType SharedImageBackingRawDraw::GetType() const {
+SharedImageBackingType RawDrawImageBacking::GetType() const {
   return SharedImageBackingType::kRawDraw;
 }
 
-bool SharedImageBackingRawDraw::ProduceLegacyMailbox(
+bool RawDrawImageBacking::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   NOTIMPLEMENTED();
   return false;
 }
 
-void SharedImageBackingRawDraw::Update(
-    std::unique_ptr<gfx::GpuFence> in_fence) {
+void RawDrawImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTIMPLEMENTED();
 }
 
-void SharedImageBackingRawDraw::OnMemoryDump(
+void RawDrawImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDump* dump,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -171,14 +169,14 @@ void SharedImageBackingRawDraw::OnMemoryDump(
   }
 }
 
-std::unique_ptr<SharedImageRepresentationRaster>
-SharedImageBackingRawDraw::ProduceRaster(SharedImageManager* manager,
-                                         MemoryTypeTracker* tracker) {
-  return std::make_unique<RepresentationRaster>(manager, this, tracker);
+std::unique_ptr<RasterImageRepresentation> RawDrawImageBacking::ProduceRaster(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  return std::make_unique<RasterRawDrawImageRepresentation>(manager, this,
+                                                            tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingRawDraw::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> RawDrawImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -186,10 +184,11 @@ SharedImageBackingRawDraw::ProduceSkia(
   if (!context_state_)
     context_state_ = context_state;
   DCHECK(context_state_ == context_state);
-  return std::make_unique<RepresentationSkia>(manager, this, tracker);
+  return std::make_unique<SkiaRawDrawImageRepresentation>(manager, this,
+                                                          tracker);
 }
 
-void SharedImageBackingRawDraw::ResetPaintOpBuffer() {
+void RawDrawImageBacking::ResetPaintOpBuffer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!paint_op_buffer_) {
     DCHECK(!clear_color_);
@@ -206,8 +205,7 @@ void SharedImageBackingRawDraw::ResetPaintOpBuffer() {
     std::move(paint_op_release_callback_).Run();
 }
 
-bool SharedImageBackingRawDraw::CreateBackendTextureAndFlushPaintOps(
-    bool flush) {
+bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!backend_texture_.isValid());
   DCHECK(!promise_texture_);
@@ -262,7 +260,7 @@ bool SharedImageBackingRawDraw::CreateBackendTextureAndFlushPaintOps(
   return true;
 }
 
-void SharedImageBackingRawDraw::DestroyBackendTexture() {
+void RawDrawImageBacking::DestroyBackendTexture() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (backend_texture_.isValid()) {
     DCHECK(context_state_);
@@ -272,7 +270,7 @@ void SharedImageBackingRawDraw::DestroyBackendTexture() {
   }
 }
 
-cc::PaintOpBuffer* SharedImageBackingRawDraw::BeginRasterWriteAccess(
+cc::PaintOpBuffer* RawDrawImageBacking::BeginRasterWriteAccess(
     scoped_refptr<SharedContextState> context_state,
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
@@ -310,8 +308,7 @@ cc::PaintOpBuffer* SharedImageBackingRawDraw::BeginRasterWriteAccess(
   return paint_op_buffer_.get();
 }
 
-void SharedImageBackingRawDraw::EndRasterWriteAccess(
-    base::OnceClosure callback) {
+void RawDrawImageBacking::EndRasterWriteAccess(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
   DCHECK_EQ(read_count_, 0);
@@ -340,7 +337,7 @@ void SharedImageBackingRawDraw::EndRasterWriteAccess(
   }
 }
 
-cc::PaintOpBuffer* SharedImageBackingRawDraw::BeginRasterReadAccess(
+cc::PaintOpBuffer* RawDrawImageBacking::BeginRasterReadAccess(
     absl::optional<SkColor4f>& clear_color) {
   // paint ops will be read on compositor thread, so do not check thread with
   // DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -377,7 +374,7 @@ cc::PaintOpBuffer* SharedImageBackingRawDraw::BeginRasterReadAccess(
   return paint_op_buffer_.get();
 }
 
-sk_sp<SkPromiseImageTexture> SharedImageBackingRawDraw::BeginSkiaReadAccess() {
+sk_sp<SkPromiseImageTexture> RawDrawImageBacking::BeginSkiaReadAccess() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
   if (!backend_texture_.isValid() &&
@@ -389,7 +386,7 @@ sk_sp<SkPromiseImageTexture> SharedImageBackingRawDraw::BeginSkiaReadAccess() {
   return promise_texture_;
 }
 
-void SharedImageBackingRawDraw::EndReadAccess() {
+void RawDrawImageBacking::EndReadAccess() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
   DCHECK_GE(read_count_, 0);

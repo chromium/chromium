@@ -280,7 +280,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
 
   // Even with Vulkan/Dawn compositing, the SharedImageFactory constructor
   // always initializes a GL-backed SharedImage factory to fall back on.
-  // Creating the SharedImageBackingFactoryGLTexture invokes GL API calls, so
+  // Creating the GLTextureImageBackingFactory invokes GL API calls, so
   // we need to ensure there is a current GL context.
   if (!context_state->MakeCurrent(nullptr, true /* need_gl */)) {
     LOG(ERROR) << "Failed to make current during initialization.";
@@ -719,7 +719,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   }
 }
 
-std::unique_ptr<gpu::SharedImageRepresentationSkia>
+std::unique_ptr<gpu::SkiaImageRepresentation>
 SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
     ResourceFormat resource_format,
     const gfx::Size& size,
@@ -941,7 +941,7 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
 
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
-    std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+    std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
         scoped_write = representation->BeginScopedWriteAccess(
             /*final_msaa_count=*/1, surface_props, &plane_data.begin_semaphores,
             &plane_data.end_semaphores,
@@ -983,7 +983,7 @@ bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
 
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
-    std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+    std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
         scoped_write = representation->BeginScopedWriteAccess(
             /*final_msaa_count=*/1, surface_props, &plane_data.begin_semaphores,
             &plane_data.end_semaphores,
@@ -1339,7 +1339,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
 ReleaseCallback
 SkiaOutputSurfaceImplOnGpu::CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
-    std::unique_ptr<gpu::SharedImageRepresentationSkia> representation) {
+    std::unique_ptr<gpu::SkiaImageRepresentation> representation) {
   copy_output_images_.push_back(std::move(representation));
 
   auto closure_on_gpu_thread = base::BindOnce(
@@ -1399,8 +1399,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
   SkSurface* surface;
-  std::unique_ptr<gpu::SharedImageRepresentationSkia> backing_representation;
-  std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<gpu::SkiaImageRepresentation> backing_representation;
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
       scoped_access;
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;

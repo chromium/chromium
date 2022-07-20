@@ -22,13 +22,14 @@
 
 namespace gpu {
 
-SharedImageVideo::SharedImageVideo(const Mailbox& mailbox,
-                                   const gfx::Size& size,
-                                   const gfx::ColorSpace color_space,
-                                   GrSurfaceOrigin surface_origin,
-                                   SkAlphaType alpha_type,
-                                   bool is_thread_safe)
-    : SharedImageBackingAndroid(
+AndroidVideoImageBacking::AndroidVideoImageBacking(
+    const Mailbox& mailbox,
+    const gfx::Size& size,
+    const gfx::ColorSpace color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    bool is_thread_safe)
+    : AndroidImageBacking(
           mailbox,
           viz::RGBA_8888,
           size,
@@ -41,10 +42,10 @@ SharedImageVideo::SharedImageVideo(const Mailbox& mailbox,
           is_thread_safe,
           base::ScopedFD()) {}
 
-SharedImageVideo::~SharedImageVideo() {}
+AndroidVideoImageBacking::~AndroidVideoImageBacking() {}
 
 // Static.
-std::unique_ptr<SharedImageVideo> SharedImageVideo::Create(
+std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
     const Mailbox& mailbox,
     const gfx::Size& size,
     const gfx::ColorSpace color_space,
@@ -54,20 +55,20 @@ std::unique_ptr<SharedImageVideo> SharedImageVideo::Create(
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock) {
   if (features::IsAImageReaderEnabled()) {
-    return std::make_unique<SharedImageVideoImageReader>(
+    return std::make_unique<VideoImageReaderImageBacking>(
         mailbox, size, color_space, surface_origin, alpha_type,
         std::move(stream_texture_sii), std::move(context_state),
         std::move(drdc_lock));
   } else {
     DCHECK(!drdc_lock);
-    return std::make_unique<SharedImageVideoSurfaceTexture>(
+    return std::make_unique<VideoSurfaceTextureImageBacking>(
         mailbox, size, color_space, surface_origin, alpha_type,
         std::move(stream_texture_sii), std::move(context_state));
   }
 }
 
 // Static.
-absl::optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
+absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
     TextureOwner* texture_owner,
     viz::VulkanContextProvider* vulkan_context_provider) {
   if (!vulkan_context_provider)
@@ -93,8 +94,8 @@ absl::optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
   return absl::optional<VulkanYCbCrInfo>(ycbcr_info);
 }
 
-std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
-    const bool passthrough) {
+std::unique_ptr<gles2::AbstractTexture>
+AndroidVideoImageBacking::GenAbstractTexture(const bool passthrough) {
   std::unique_ptr<gles2::AbstractTexture> texture;
   if (passthrough) {
     texture = std::make_unique<gles2::AbstractTextureImplPassthrough>(
@@ -108,24 +109,25 @@ std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
   return texture;
 }
 
-SharedImageBackingType SharedImageVideo::GetType() const {
+SharedImageBackingType AndroidVideoImageBacking::GetType() const {
   return SharedImageBackingType::kVideo;
 }
 
-gfx::Rect SharedImageVideo::ClearedRect() const {
-  // SharedImageVideo objects are always created from pre-initialized textures
-  // provided by the media decoder. Always treat these as cleared (return the
-  // full rectangle).
+gfx::Rect AndroidVideoImageBacking::ClearedRect() const {
+  // AndroidVideoImageBacking objects are always created from pre-initialized
+  // textures provided by the media decoder. Always treat these as cleared
+  // (return the full rectangle).
   return gfx::Rect(size());
 }
 
-void SharedImageVideo::SetClearedRect(const gfx::Rect& cleared_rect) {}
+void AndroidVideoImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
-void SharedImageVideo::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void AndroidVideoImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
 }
 
-bool SharedImageVideo::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
+bool AndroidVideoImageBacking::ProduceLegacyMailbox(
+    MailboxManager* mailbox_manager) {
   // Android does not use legacy mailbox anymore. Hence marking this as
   // NOTREACHED() now. Once all platform stops using legacy mailbox, this
   // method can be removed.

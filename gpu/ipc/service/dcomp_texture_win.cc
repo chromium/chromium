@@ -44,8 +44,8 @@ std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
 }
 
 using InitializeGLTextureParams =
-    SharedImageBackingGLCommon::InitializeGLTextureParams;
-using UnpackStateAttribs = SharedImageBackingGLCommon::UnpackStateAttribs;
+    GLTextureImageBackingHelper::InitializeGLTextureParams;
+using UnpackStateAttribs = GLTextureImageBackingHelper::UnpackStateAttribs;
 
 }  // namespace
 
@@ -158,9 +158,9 @@ gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   auto scoped_make_current = MakeCurrent(context_state_.get());
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
 
-  // Use SharedImageBackingGLImage as the backing to hold GLImageDCOMPSurface
+  // Use GLImageBacking as the backing to hold GLImageDCOMPSurface
   // and be able to retrieve it later via ProduceOverlay.
-  // Use some reasonable defaults for params to create SharedImageBackingGLImage
+  // Use some reasonable defaults for params to create GLImageBacking
   // since params are only used when the backing is accessed for GL.
   // Note: this backing shouldn't be accessed via GL at all.
   InitializeGLTextureParams params;
@@ -171,7 +171,7 @@ gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   params.is_rgb_emulation = false;
   params.framebuffer_attachment_angle = false;
   UnpackStateAttribs attribs;
-  auto shared_image = std::make_unique<SharedImageBackingGLImage>(
+  auto shared_image = std::make_unique<GLImageBacking>(
       this, mailbox, viz::BGRA_8888, GetSize(), gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       /*usage=*/SHARED_IMAGE_USAGE_DISPLAY, params, attribs,

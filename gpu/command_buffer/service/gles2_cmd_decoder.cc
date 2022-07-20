@@ -18485,7 +18485,7 @@ void GLES2DecoderImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
     return;
   }
 
-  std::unique_ptr<SharedImageRepresentationGLTexture> shared_image;
+  std::unique_ptr<GLTextureImageRepresentation> shared_image;
   if (internal_format == GL_RGB) {
     shared_image = group_->shared_image_representation_factory()
                        ->ProduceRGBEmulationGLTexture(mailbox);
@@ -18523,8 +18523,7 @@ void GLES2DecoderImpl::DoBeginSharedImageAccessDirectCHROMIUM(GLuint client_id,
     return;
   }
 
-  SharedImageRepresentationGLTexture* shared_image =
-      texture_ref->shared_image();
+  GLTextureImageRepresentation* shared_image = texture_ref->shared_image();
   if (!shared_image) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoBeginSharedImageAccessCHROMIUM",
                        "bound texture is not a shared image");
@@ -18552,8 +18551,7 @@ void GLES2DecoderImpl::DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id) {
     return;
   }
 
-  SharedImageRepresentationGLTexture* shared_image =
-      texture_ref->shared_image();
+  GLTextureImageRepresentation* shared_image = texture_ref->shared_image();
   if (!shared_image) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoEndSharedImageAccessCHROMIUM",
                        "bound texture is not a shared image");

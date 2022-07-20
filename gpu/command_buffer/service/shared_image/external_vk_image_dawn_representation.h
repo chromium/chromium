@@ -10,21 +10,21 @@
 
 namespace gpu {
 
-class ExternalVkImageDawnRepresentation : public SharedImageRepresentationDawn {
+class ExternalVkImageDawnImageRepresentation : public DawnImageRepresentation {
  public:
-  ExternalVkImageDawnRepresentation(SharedImageManager* manager,
-                                    SharedImageBacking* backing,
-                                    MemoryTypeTracker* tracker,
-                                    WGPUDevice device,
-                                    WGPUTextureFormat dawn_format,
-                                    base::ScopedFD memory_fd);
+  ExternalVkImageDawnImageRepresentation(SharedImageManager* manager,
+                                         SharedImageBacking* backing,
+                                         MemoryTypeTracker* tracker,
+                                         WGPUDevice device,
+                                         WGPUTextureFormat dawn_format,
+                                         base::ScopedFD memory_fd);
 
-  ExternalVkImageDawnRepresentation(const ExternalVkImageDawnRepresentation&) =
-      delete;
-  ExternalVkImageDawnRepresentation& operator=(
-      const ExternalVkImageDawnRepresentation&) = delete;
+  ExternalVkImageDawnImageRepresentation(
+      const ExternalVkImageDawnImageRepresentation&) = delete;
+  ExternalVkImageDawnImageRepresentation& operator=(
+      const ExternalVkImageDawnImageRepresentation&) = delete;
 
-  ~ExternalVkImageDawnRepresentation() override;
+  ~ExternalVkImageDawnImageRepresentation() override;
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
   void EndAccess() override;

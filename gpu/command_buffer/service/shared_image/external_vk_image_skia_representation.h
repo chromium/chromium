@@ -13,14 +13,14 @@
 
 namespace gpu {
 
-class ExternalVkImageSkiaRepresentation : public SharedImageRepresentationSkia {
+class ExternalVkImageSkiaImageRepresentation : public SkiaImageRepresentation {
  public:
-  ExternalVkImageSkiaRepresentation(SharedImageManager* manager,
-                                    SharedImageBacking* backing,
-                                    MemoryTypeTracker* tracker);
-  ~ExternalVkImageSkiaRepresentation() override;
+  ExternalVkImageSkiaImageRepresentation(SharedImageManager* manager,
+                                         SharedImageBacking* backing,
+                                         MemoryTypeTracker* tracker);
+  ~ExternalVkImageSkiaImageRepresentation() override;
 
-  // SharedImageRepresentationSkia implementation.
+  // SkiaImageRepresentation implementation.
   sk_sp<SkSurface> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,

@@ -71,12 +71,12 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
   context_state->InitializeGL(GpuPreferences(), feature_info);
 }
 
-class SharedImageBackingFactoryEGLThreadSafeTest
+class EGLImageBackingFactoryThreadSafeTest
     : public testing::TestWithParam<std::tuple<bool, viz::ResourceFormat>> {
  public:
-  SharedImageBackingFactoryEGLThreadSafeTest()
+  EGLImageBackingFactoryThreadSafeTest()
       : shared_image_manager_(std::make_unique<SharedImageManager>(true)) {}
-  ~SharedImageBackingFactoryEGLThreadSafeTest() {
+  ~EGLImageBackingFactoryThreadSafeTest() override {
     // |context_state_| and |context_state2_| must be destroyed on its own
     // context.
     context_state2_->MakeCurrent(surface2_.get(), true /* needs_gl */);
@@ -94,7 +94,7 @@ class SharedImageBackingFactoryEGLThreadSafeTest
 
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = use_passthrough();
-    backing_factory_ = std::make_unique<SharedImageBackingFactoryEGL>(
+    backing_factory_ = std::make_unique<EGLImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info());
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
@@ -120,7 +120,7 @@ class SharedImageBackingFactoryEGLThreadSafeTest
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageBackingFactoryEGL> backing_factory_;
+  std::unique_ptr<EGLImageBackingFactory> backing_factory_;
   gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
@@ -136,7 +136,7 @@ class SharedImageBackingFactoryEGLThreadSafeTest
 class CreateAndValidateSharedImageRepresentations {
  public:
   CreateAndValidateSharedImageRepresentations(
-      SharedImageBackingFactoryEGL* backing_factory,
+      EGLImageBackingFactory* backing_factory,
       viz::ResourceFormat format,
       bool is_thread_safe,
       gles2::MailboxManagerImpl* mailbox_manager,
@@ -160,7 +160,7 @@ class CreateAndValidateSharedImageRepresentations {
 
 // Intent of this test is to create at thread safe backing and test if all
 // representations are working.
-TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, BasicThreadSafe) {
+TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
       &mailbox_manager_, shared_image_manager_.get(),
@@ -170,7 +170,7 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, BasicThreadSafe) {
 
 // Intent of this test is to create at thread safe backing with initial pixel
 // data and test if all representations are working.
-TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, BasicInitialData) {
+TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
       &mailbox_manager_, shared_image_manager_.get(),
@@ -182,7 +182,7 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, BasicInitialData) {
 // threads each running their own GL context which are not part of same shared
 // group. One thread will be writing to the backing and other thread will be
 // reading from it.
-TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, OneWriterOneReader) {
+TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   // Create it on 1st SharedContextState |context_state_|.
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
@@ -200,7 +200,7 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, OneWriterOneReader) {
   EXPECT_TRUE(gl_representation);
 
   // Begin writing to the underlying texture of the backing via ScopedAccess.
-  std::unique_ptr<SharedImageRepresentationGLTexture::ScopedAccess>
+  std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>
       writer_scoped_access = gl_representation->BeginScopedAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kNo);
@@ -230,10 +230,11 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, OneWriterOneReader) {
   gl_representation.reset();
 
   // Read from the backing in a separate thread. Read is done via
-  // SkiaGLRepresentation. ReadPixels() creates/produces a SkiaGLRepresentation
-  // which in turn wraps a GLTextureRepresentation when for GL mode. Hence
-  // testing reading via SkiaGLRepresentation is equivalent to testing via
-  // GLTextureRepresentation.
+  // SkiaGLImageRepresentation. ReadPixels() creates/produces a
+  // SkiaGLImageRepresentation which in turn wraps a
+  // GLTextureImageRepresentation when for GL mode. Hence testing reading via
+  // SkiaGLImageRepresentation is equivalent to testing via
+  // GLTextureImageRepresentation.
   std::vector<uint8_t> dst_pixels;
 
   // Launch 2nd thread.
@@ -255,7 +256,7 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, OneWriterOneReader) {
 
 CreateAndValidateSharedImageRepresentations::
     CreateAndValidateSharedImageRepresentations(
-        SharedImageBackingFactoryEGL* backing_factory,
+        EGLImageBackingFactory* backing_factory,
         viz::ResourceFormat format,
         bool is_thread_safe,
         gles2::MailboxManagerImpl* mailbox_manager,
@@ -339,7 +340,7 @@ CreateAndValidateSharedImageRepresentations::
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
@@ -364,8 +365,7 @@ CreateAndValidateSharedImageRepresentations::
   EXPECT_TRUE(end_semaphores.empty());
   scoped_write_access.reset();
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   auto* promise_texture = scoped_read_access->promise_image_texture();
@@ -400,7 +400,7 @@ std::string TestParamToString(
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,
-                         SharedImageBackingFactoryEGLThreadSafeTest,
+                         EGLImageBackingFactoryThreadSafeTest,
                          ::testing::Combine(::testing::Bool(),
                                             kResourceFormats),
                          TestParamToString);

@@ -11,14 +11,12 @@ namespace gpu {
 
 class SharedContextState;
 
-class SharedImageBackingFactoryAngleVulkan
-    : public SharedImageBackingFactoryGLCommon {
+class AngleVulkanImageBackingFactory : public GLCommonImageBackingFactory {
  public:
-  SharedImageBackingFactoryAngleVulkan(
-      const GpuPreferences& gpu_preferences,
-      const GpuDriverBugWorkarounds& workarounds,
-      SharedContextState* context_state);
-  ~SharedImageBackingFactoryAngleVulkan() override;
+  AngleVulkanImageBackingFactory(const GpuPreferences& gpu_preferences,
+                                 const GpuDriverBugWorkarounds& workarounds,
+                                 SharedContextState* context_state);
+  ~AngleVulkanImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation:
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -61,7 +59,7 @@ class SharedImageBackingFactoryAngleVulkan
                    bool is_pixel_used) override;
 
  private:
-  bool CanUseAngleVulkanBacking(uint32_t usage) const;
+  bool CanUseAngleVulkanImageBacking(uint32_t usage) const;
 
   raw_ptr<SharedContextState> context_state_;
 };

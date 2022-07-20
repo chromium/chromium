@@ -158,7 +158,7 @@ ExternalVkImageGLRepresentation::ExternalVkImageGLRepresentation(
     MemoryTypeTracker* tracker,
     gles2::Texture* texture,
     GLuint texture_service_id)
-    : SharedImageRepresentationGLTexture(manager, backing, tracker),
+    : GLTextureImageRepresentation(manager, backing, tracker),
       texture_(texture),
       representation_shared_(backing, texture_service_id) {
   DCHECK(texture_);
@@ -182,7 +182,7 @@ ExternalVkImageGLPassthroughRepresentation::
                                                SharedImageBacking* backing,
                                                MemoryTypeTracker* tracker,
                                                GLuint texture_service_id)
-    : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
+    : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       representation_shared_(backing, texture_service_id) {
   DCHECK(representation_shared_.backing_impl()->GetTexturePassthrough());
 }

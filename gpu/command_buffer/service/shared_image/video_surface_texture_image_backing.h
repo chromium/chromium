@@ -18,17 +18,17 @@
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
-class SharedImageRepresentationGLTexture;
-class SharedImageRepresentationSkia;
+class GLTextureImageRepresentation;
+class SkiaImageRepresentation;
 struct Mailbox;
 
 // Implementation of SharedImageBacking that renders MediaCodec buffers to a
 // TextureOwner or overlay as needed in order to draw them.
-class GPU_GLES2_EXPORT SharedImageVideoSurfaceTexture
-    : public SharedImageVideo,
+class GPU_GLES2_EXPORT VideoSurfaceTextureImageBacking
+    : public AndroidVideoImageBacking,
       public SharedContextState::ContextLostObserver {
  public:
-  SharedImageVideoSurfaceTexture(
+  VideoSurfaceTextureImageBacking(
       const Mailbox& mailbox,
       const gfx::Size& size,
       const gfx::ColorSpace color_space,
@@ -37,13 +37,13 @@ class GPU_GLES2_EXPORT SharedImageVideoSurfaceTexture
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> shared_context_state);
 
-  ~SharedImageVideoSurfaceTexture() override;
+  ~VideoSurfaceTextureImageBacking() override;
 
   // Disallow copy and assign.
-  SharedImageVideoSurfaceTexture(const SharedImageVideoSurfaceTexture&) =
+  VideoSurfaceTextureImageBacking(const VideoSurfaceTextureImageBacking&) =
       delete;
-  SharedImageVideoSurfaceTexture& operator=(
-      const SharedImageVideoSurfaceTexture&) = delete;
+  VideoSurfaceTextureImageBacking& operator=(
+      const VideoSurfaceTextureImageBacking&) = delete;
 
   // SharedImageBacking implementation.
   size_t EstimatedSizeForMemTracking() const override;
@@ -52,27 +52,27 @@ class GPU_GLES2_EXPORT SharedImageVideoSurfaceTexture
   void OnContextLost() override;
 
  protected:
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
-  std::unique_ptr<gpu::SharedImageRepresentationLegacyOverlay>
-  ProduceLegacyOverlay(gpu::SharedImageManager* manager,
-                       gpu::MemoryTypeTracker* tracker) override;
+  std::unique_ptr<gpu::LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
+      gpu::SharedImageManager* manager,
+      gpu::MemoryTypeTracker* tracker) override;
 
  private:
-  class SharedImageRepresentationGLTextureVideo;
-  class SharedImageRepresentationGLTexturePassthroughVideo;
-  class SharedImageRepresentationOverlayVideo;
+  class GLTextureVideoImageRepresentation;
+  class GLTexturePassthroughVideoImageRepresentation;
+  class OverlayVideoImageRepresentation;
 
   void BeginGLReadAccess(const GLuint service_id);
 

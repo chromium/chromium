@@ -13,7 +13,7 @@
 namespace gpu {
 namespace gles2 {
 namespace {
-std::unique_ptr<TestSharedImageBacking> AllocateTextureAndCreateSharedImage(
+std::unique_ptr<TestImageBacking> AllocateTextureAndCreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -27,9 +27,9 @@ std::unique_ptr<TestSharedImageBacking> AllocateTextureAndCreateSharedImage(
   glTexImage2D(GL_TEXTURE_2D, 0, GLInternalFormat(format), size.width(),
                size.height(), 0, GLDataFormat(format), GLDataType(format),
                nullptr /* data */);
-  return std::make_unique<TestSharedImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      0 /* estimated_size */, service_id);
+  return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
+                                            surface_origin, alpha_type, usage,
+                                            0 /* estimated_size */, service_id);
 }
 
 }  // namespace

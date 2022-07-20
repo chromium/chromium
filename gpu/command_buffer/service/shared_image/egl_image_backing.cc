@@ -18,8 +18,7 @@
 
 namespace gpu {
 
-class SharedImageBackingEglImage::TextureHolder
-    : public base::RefCounted<TextureHolder> {
+class EGLImageBacking::TextureHolder : public base::RefCounted<TextureHolder> {
  public:
   explicit TextureHolder(gles2::Texture* texture) : texture_(texture) {}
   explicit TextureHolder(
@@ -50,19 +49,19 @@ class SharedImageBackingEglImage::TextureHolder
   bool context_lost_ = false;
 };
 
-// Implementation of SharedImageRepresentationGLTexture which uses GL texture
+// Implementation of GLTextureImageRepresentation which uses GL texture
 // which is an EGLImage sibling.
-class SharedImageBackingEglImage::RepresentationGLShared {
+class EGLImageBacking::GLRepresentationShared {
  public:
-  using TextureHolder = SharedImageBackingEglImage::TextureHolder;
-  RepresentationGLShared(SharedImageBackingEglImage* backing,
+  using TextureHolder = EGLImageBacking::TextureHolder;
+  GLRepresentationShared(EGLImageBacking* backing,
                          scoped_refptr<TextureHolder> texture_holder)
       : backing_(backing), texture_holder_(std::move(texture_holder)) {}
 
-  RepresentationGLShared(const RepresentationGLShared&) = delete;
-  RepresentationGLShared& operator=(const RepresentationGLShared&) = delete;
+  GLRepresentationShared(const GLRepresentationShared&) = delete;
+  GLRepresentationShared& operator=(const GLRepresentationShared&) = delete;
 
-  ~RepresentationGLShared() {
+  ~GLRepresentationShared() {
     EndAccess();
     if (!backing_->have_context())
       texture_holder_->MarkContextLost();
@@ -105,25 +104,27 @@ class SharedImageBackingEglImage::RepresentationGLShared {
   }
 
  private:
-  const raw_ptr<SharedImageBackingEglImage> backing_;
+  const raw_ptr<EGLImageBacking> backing_;
   scoped_refptr<TextureHolder> texture_holder_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };
 
-class SharedImageBackingEglImage::RepresentationGLTexture
-    : public SharedImageRepresentationGLTexture {
+class EGLImageBacking::GLTextureEGLImageRepresentation
+    : public GLTextureImageRepresentation {
  public:
-  RepresentationGLTexture(SharedImageManager* manager,
-                          SharedImageBackingEglImage* backing,
-                          MemoryTypeTracker* tracker,
-                          scoped_refptr<TextureHolder> texture_holder)
-      : SharedImageRepresentationGLTexture(manager, backing, tracker),
+  GLTextureEGLImageRepresentation(SharedImageManager* manager,
+                                  EGLImageBacking* backing,
+                                  MemoryTypeTracker* tracker,
+                                  scoped_refptr<TextureHolder> texture_holder)
+      : GLTextureImageRepresentation(manager, backing, tracker),
         shared_(backing, std::move(texture_holder)) {}
 
-  RepresentationGLTexture(const RepresentationGLTexture&) = delete;
-  RepresentationGLTexture& operator=(const RepresentationGLTexture&) = delete;
+  GLTextureEGLImageRepresentation(const GLTextureEGLImageRepresentation&) =
+      delete;
+  GLTextureEGLImageRepresentation& operator=(
+      const GLTextureEGLImageRepresentation&) = delete;
 
-  ~RepresentationGLTexture() override = default;
+  ~GLTextureEGLImageRepresentation() override = default;
 
   bool BeginAccess(GLenum mode) override { return shared_.BeginAccess(mode); }
 
@@ -136,28 +137,26 @@ class SharedImageBackingEglImage::RepresentationGLTexture
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
  private:
-  RepresentationGLShared shared_;
+  GLRepresentationShared shared_;
 };
 
-class SharedImageBackingEglImage::RepresentationGLTexturePassthrough
-    : public SharedImageRepresentationGLTexturePassthrough {
+class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
-  RepresentationGLTexturePassthrough(
+  GLTexturePassthroughEGLImageRepresentation(
       SharedImageManager* manager,
-      SharedImageBackingEglImage* backing,
+      EGLImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<TextureHolder> texture_holder)
-      : SharedImageRepresentationGLTexturePassthrough(manager,
-                                                      backing,
-                                                      tracker),
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         shared_(backing, std::move(texture_holder)) {}
 
-  RepresentationGLTexturePassthrough(
-      const RepresentationGLTexturePassthrough&) = delete;
-  RepresentationGLTexturePassthrough& operator=(
-      const RepresentationGLTexturePassthrough&) = delete;
+  GLTexturePassthroughEGLImageRepresentation(
+      const GLTexturePassthroughEGLImageRepresentation&) = delete;
+  GLTexturePassthroughEGLImageRepresentation& operator=(
+      const GLTexturePassthroughEGLImageRepresentation&) = delete;
 
-  ~RepresentationGLTexturePassthrough() override = default;
+  ~GLTexturePassthroughEGLImageRepresentation() override = default;
 
   bool BeginAccess(GLenum mode) override { return shared_.BeginAccess(mode); }
 
@@ -173,10 +172,10 @@ class SharedImageBackingEglImage::RepresentationGLTexturePassthrough
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
  private:
-  RepresentationGLShared shared_;
+  GLRepresentationShared shared_;
 };
 
-SharedImageBackingEglImage::SharedImageBackingEglImage(
+EGLImageBacking::EGLImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -185,9 +184,9 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     size_t estimated_size,
-    const SharedImageBackingFactoryGLCommon::FormatInfo format_info,
+    const GLCommonImageBackingFactory::FormatInfo format_info,
     const GpuDriverBugWorkarounds& workarounds,
-    const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
+    const GLTextureImageBackingHelper::UnpackStateAttribs& attribs,
     bool use_passthrough,
     base::span<const uint8_t> pixel_data)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -215,27 +214,25 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
     auto texture_holder = GenEGLImageSibling(pixel_data);
 }
 
-SharedImageBackingEglImage::~SharedImageBackingEglImage() {
+EGLImageBacking::~EGLImageBacking() {
   DCHECK(!source_texture_holder_);
 }
 
-SharedImageBackingType SharedImageBackingEglImage::GetType() const {
-  return SharedImageBackingType::kEglImage;
+SharedImageBackingType EGLImageBacking::GetType() const {
+  return SharedImageBackingType::kEGLImage;
 }
 
-void SharedImageBackingEglImage::Update(
-    std::unique_ptr<gfx::GpuFence> in_fence) {
+void EGLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTREACHED();
 }
 
-bool SharedImageBackingEglImage::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
+bool EGLImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
   // This backing doe not support legacy mailbox system.
   return false;
 }
 
 template <class T>
-std::unique_ptr<T> SharedImageBackingEglImage::ProduceGLTextureInternal(
+std::unique_ptr<T> EGLImageBacking::ProduceGLTextureInternal(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   // On some GPUs (Mali, mostly Android 9, like J7) glTexSubImage fails on egl
@@ -256,22 +253,21 @@ std::unique_ptr<T> SharedImageBackingEglImage::ProduceGLTextureInternal(
   return std::make_unique<T>(manager, this, tracker, std::move(texture_holder));
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingEglImage::ProduceGLTexture(SharedImageManager* manager,
-                                             MemoryTypeTracker* tracker) {
-  return ProduceGLTextureInternal<RepresentationGLTexture>(manager, tracker);
-}
-
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingEglImage::ProduceGLTexturePassthrough(
+std::unique_ptr<GLTextureImageRepresentation> EGLImageBacking::ProduceGLTexture(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  return ProduceGLTextureInternal<RepresentationGLTexturePassthrough>(manager,
-                                                                      tracker);
+  return ProduceGLTextureInternal<GLTextureEGLImageRepresentation>(manager,
+                                                                   tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingEglImage::ProduceSkia(
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+EGLImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                             MemoryTypeTracker* tracker) {
+  return ProduceGLTextureInternal<GLTexturePassthroughEGLImageRepresentation>(
+      manager, tracker);
+}
+
+std::unique_ptr<SkiaImageRepresentation> EGLImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -279,20 +275,20 @@ SharedImageBackingEglImage::ProduceSkia(
     auto gl_representation = ProduceGLTexturePassthrough(manager, tracker);
     if (!gl_representation)
       return nullptr;
-    return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
-                                                   std::move(context_state),
-                                                   manager, this, tracker);
+    return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                             std::move(context_state), manager,
+                                             this, tracker);
   } else {
     auto gl_representation = ProduceGLTexture(manager, tracker);
     if (!gl_representation)
       return nullptr;
-    return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
-                                                   std::move(context_state),
-                                                   manager, this, tracker);
+    return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                             std::move(context_state), manager,
+                                             this, tracker);
   }
 }
 
-bool SharedImageBackingEglImage::BeginWrite() {
+bool EGLImageBacking::BeginWrite() {
   AutoLock auto_lock(this);
 
   if (is_writing_ || !active_readers_.empty()) {
@@ -320,7 +316,7 @@ bool SharedImageBackingEglImage::BeginWrite() {
   return true;
 }
 
-void SharedImageBackingEglImage::EndWrite() {
+void EGLImageBacking::EndWrite() {
   AutoLock auto_lock(this);
 
   if (!is_writing_) {
@@ -333,8 +329,7 @@ void SharedImageBackingEglImage::EndWrite() {
   write_fence_ = gl::GLFenceEGL::Create();
 }
 
-bool SharedImageBackingEglImage::BeginRead(
-    const RepresentationGLShared* reader) {
+bool EGLImageBacking::BeginRead(const GLRepresentationShared* reader) {
   AutoLock auto_lock(this);
 
   if (is_writing_) {
@@ -353,7 +348,7 @@ bool SharedImageBackingEglImage::BeginRead(
   return true;
 }
 
-void SharedImageBackingEglImage::EndRead(const RepresentationGLShared* reader) {
+void EGLImageBacking::EndRead(const GLRepresentationShared* reader) {
   {
     AutoLock auto_lock(this);
 
@@ -370,9 +365,8 @@ void SharedImageBackingEglImage::EndRead(const RepresentationGLShared* reader) {
       base::MakeRefCounted<gl::SharedGLFenceEGL>();
 }
 
-scoped_refptr<SharedImageBackingEglImage::TextureHolder>
-SharedImageBackingEglImage::GenEGLImageSibling(
-    base::span<const uint8_t> pixel_data) {
+scoped_refptr<EGLImageBacking::TextureHolder>
+EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
   // Create a gles2::texture.
   GLenum target = GL_TEXTURE_2D;
   gl::GLApi* api = gl::g_current_gl_context;
@@ -410,7 +404,7 @@ SharedImageBackingEglImage::GenEGLImageSibling(
                                  size().width(), size().height());
 
         if (!pixel_data.empty()) {
-          SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+          GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
               scoped_unpack_state(api, gl_unpack_attribs_,
                                   true /* uploading_data */);
           api->glTexSubImage2DFn(target, 0, 0, 0, size().width(),
@@ -418,13 +412,13 @@ SharedImageBackingEglImage::GenEGLImageSibling(
                                  format_info_.gl_type, pixel_data.data());
         }
       } else if (format_info_.is_compressed) {
-        SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+        GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
             scoped_unpack_state(api, gl_unpack_attribs_, !pixel_data.empty());
         api->glCompressedTexImage2DFn(
             target, 0, format_info_.image_internal_format, size().width(),
             size().height(), 0, pixel_data.size(), pixel_data.data());
       } else {
-        SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+        GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
             scoped_unpack_state(api, gl_unpack_attribs_, !pixel_data.empty());
 
         api->glTexImage2DFn(target, 0, format_info_.image_internal_format,
@@ -483,13 +477,13 @@ SharedImageBackingEglImage::GenEGLImageSibling(
   return base::MakeRefCounted<TextureHolder>(std::move(texture));
 }
 
-void SharedImageBackingEglImage::SetEndReadFence(
+void EGLImageBacking::SetEndReadFence(
     scoped_refptr<gl::SharedGLFenceEGL> shared_egl_fence) {
   AutoLock auto_lock(this);
   read_fences_[gl::g_current_gl_context] = std::move(shared_egl_fence);
 }
 
-void SharedImageBackingEglImage::MarkForDestruction() {
+void EGLImageBacking::MarkForDestruction() {
   AutoLock auto_lock(this);
   DCHECK(!have_context() || created_on_context_ == gl::g_current_gl_context);
 

@@ -21,16 +21,17 @@ class VulkanCommandPool;
 // can be exported out of Vulkan and be used in GL. Synchronization between
 // Vulkan and GL is done using VkSemaphores that are created with special flags
 // that allow it to be exported out and shared with GL.
-class GPU_GLES2_EXPORT ExternalVkImageFactory
+class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  explicit ExternalVkImageFactory(
+  explicit ExternalVkImageBackingFactory(
       scoped_refptr<SharedContextState> context_state);
 
-  ExternalVkImageFactory(const ExternalVkImageFactory&) = delete;
-  ExternalVkImageFactory& operator=(const ExternalVkImageFactory&) = delete;
+  ExternalVkImageBackingFactory(const ExternalVkImageBackingFactory&) = delete;
+  ExternalVkImageBackingFactory& operator=(
+      const ExternalVkImageBackingFactory&) = delete;
 
-  ~ExternalVkImageFactory() override;
+  ~ExternalVkImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

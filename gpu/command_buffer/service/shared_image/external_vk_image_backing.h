@@ -153,22 +153,22 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   void EndAccessInternal(bool readonly, ExternalSemaphore external_semaphore);
 
   // SharedImageBacking implementation.
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice dawnDevice,
       WGPUBackendType backend_type) override;
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 

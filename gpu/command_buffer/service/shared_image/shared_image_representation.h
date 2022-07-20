@@ -164,16 +164,16 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   }
 };
 
-class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
+class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
     : public SharedImageRepresentation {
  public:
   static constexpr GLenum kReadAccessMode = 0x8AF6;
 
   class ScopedAccess
-      : public ScopedAccessBase<SharedImageRepresentationGLTextureBase> {
+      : public ScopedAccessBase<GLTextureImageRepresentationBase> {
    public:
-    ScopedAccess(base::PassKey<SharedImageRepresentationGLTextureBase> pass_key,
-                 SharedImageRepresentationGLTextureBase* representation)
+    ScopedAccess(base::PassKey<GLTextureImageRepresentationBase> pass_key,
+                 GLTextureImageRepresentationBase* representation)
         : ScopedAccessBase(representation) {}
     ~ScopedAccess() {
       representation()->UpdateClearedStateOnEndAccess();
@@ -181,9 +181,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
     }
   };
 
-  SharedImageRepresentationGLTextureBase(SharedImageManager* manager,
-                                         SharedImageBacking* backing,
-                                         MemoryTypeTracker* tracker)
+  GLTextureImageRepresentationBase(SharedImageManager* manager,
+                                   SharedImageBacking* backing,
+                                   MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   std::unique_ptr<ScopedAccess> BeginScopedAccess(
@@ -193,9 +193,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
   virtual gpu::TextureBase* GetTextureBase() = 0;
 
  protected:
-  friend class SharedImageRepresentationSkiaGL;
-  friend class SharedImageRepresentationDawnEGLImage;
-  friend class SharedImageRepresentationGLTextureImpl;
+  friend class SkiaGLImageRepresentation;
+  friend class DawnEGLImageRepresentation;
+  friend class GLTextureGLCommonRepresentation;
 
   // Can be overridden to handle clear state tracking when GL access begins or
   // ends.
@@ -210,13 +210,13 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
   virtual bool SupportsMultipleConcurrentReadAccess();
 };
 
-class GPU_GLES2_EXPORT SharedImageRepresentationGLTexture
-    : public SharedImageRepresentationGLTextureBase {
+class GPU_GLES2_EXPORT GLTextureImageRepresentation
+    : public GLTextureImageRepresentationBase {
  public:
-  SharedImageRepresentationGLTexture(SharedImageManager* manager,
-                                     SharedImageBacking* backing,
-                                     MemoryTypeTracker* tracker)
-      : SharedImageRepresentationGLTextureBase(manager, backing, tracker) {}
+  GLTextureImageRepresentation(SharedImageManager* manager,
+                               SharedImageBacking* backing,
+                               MemoryTypeTracker* tracker)
+      : GLTextureImageRepresentationBase(manager, backing, tracker) {}
 
   // TODO(ericrk): Move this to the ScopedAccess object. crbug.com/1003686
   virtual gles2::Texture* GetTexture() = 0;
@@ -224,19 +224,19 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTexture
   gpu::TextureBase* GetTextureBase() override;
 
  protected:
-  friend class WrappedGLTextureRepresentation;
+  friend class WrappedGLTextureCompoundImageRepresentation;
 
   void UpdateClearedStateOnBeginAccess() override;
   void UpdateClearedStateOnEndAccess() override;
 };
 
-class GPU_GLES2_EXPORT SharedImageRepresentationGLTexturePassthrough
-    : public SharedImageRepresentationGLTextureBase {
+class GPU_GLES2_EXPORT GLTexturePassthroughImageRepresentation
+    : public GLTextureImageRepresentationBase {
  public:
-  SharedImageRepresentationGLTexturePassthrough(SharedImageManager* manager,
-                                                SharedImageBacking* backing,
-                                                MemoryTypeTracker* tracker)
-      : SharedImageRepresentationGLTextureBase(manager, backing, tracker) {}
+  GLTexturePassthroughImageRepresentation(SharedImageManager* manager,
+                                          SharedImageBacking* backing,
+                                          MemoryTypeTracker* tracker)
+      : GLTextureImageRepresentationBase(manager, backing, tracker) {}
 
   // TODO(ericrk): Move this to the ScopedAccess object. crbug.com/1003686
   virtual const scoped_refptr<gles2::TexturePassthrough>&
@@ -245,21 +245,21 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTexturePassthrough
   gpu::TextureBase* GetTextureBase() override;
 
  private:
-  friend class WrappedGLTexturePassthroughRepresentation;
+  friend class WrappedGLTexturePassthroughCompoundImageRepresentation;
 };
 
-class GPU_GLES2_EXPORT SharedImageRepresentationSkia
+class GPU_GLES2_EXPORT SkiaImageRepresentation
     : public SharedImageRepresentation {
  public:
   class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<SharedImageRepresentationSkia> {
+      : public ScopedAccessBase<SkiaImageRepresentation> {
    public:
-    ScopedWriteAccess(base::PassKey<SharedImageRepresentationSkia> pass_key,
-                      SharedImageRepresentationSkia* representation,
+    ScopedWriteAccess(base::PassKey<SkiaImageRepresentation> pass_key,
+                      SkiaImageRepresentation* representation,
                       sk_sp<SkSurface> surface,
                       std::unique_ptr<GrBackendSurfaceMutableState> end_state);
-    ScopedWriteAccess(base::PassKey<SharedImageRepresentationSkia> pass_key,
-                      SharedImageRepresentationSkia* representation,
+    ScopedWriteAccess(base::PassKey<SkiaImageRepresentation> pass_key,
+                      SkiaImageRepresentation* representation,
                       sk_sp<SkPromiseImageTexture> promise_image_texture,
                       std::unique_ptr<GrBackendSurfaceMutableState> end_state);
     ~ScopedWriteAccess();
@@ -277,10 +277,10 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
   };
 
   class GPU_GLES2_EXPORT ScopedReadAccess
-      : public ScopedAccessBase<SharedImageRepresentationSkia> {
+      : public ScopedAccessBase<SkiaImageRepresentation> {
    public:
-    ScopedReadAccess(base::PassKey<SharedImageRepresentationSkia> pass_key,
-                     SharedImageRepresentationSkia* representation,
+    ScopedReadAccess(base::PassKey<SkiaImageRepresentation> pass_key,
+                     SkiaImageRepresentation* representation,
                      sk_sp<SkPromiseImageTexture> promise_image_texture,
                      std::unique_ptr<GrBackendSurfaceMutableState> end_state);
     ~ScopedReadAccess();
@@ -296,9 +296,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
     std::unique_ptr<GrBackendSurfaceMutableState> end_state_;
   };
 
-  SharedImageRepresentationSkia(SharedImageManager* manager,
-                                SharedImageBacking* backing,
-                                MemoryTypeTracker* tracker)
+  SkiaImageRepresentation(SharedImageManager* manager,
+                          SharedImageBacking* backing,
+                          MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   // Note: See BeginWriteAccess below for a description of the semaphore
@@ -326,7 +326,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
   virtual bool SupportsMultipleConcurrentReadAccess();
 
  protected:
-  friend class WrappedSkiaRepresentation;
+  friend class WrappedSkiaCompoundImageRepresentation;
 
   // Begin the write access. The implementations should insert semaphores into
   // begin_semaphores vector which client will wait on before writing the
@@ -376,22 +376,22 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
   virtual void EndReadAccess() = 0;
 };
 
-class GPU_GLES2_EXPORT SharedImageRepresentationDawn
+class GPU_GLES2_EXPORT DawnImageRepresentation
     : public SharedImageRepresentation {
  public:
   static constexpr uint32_t kWriteUsage =
       WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment;
 
-  SharedImageRepresentationDawn(SharedImageManager* manager,
-                                SharedImageBacking* backing,
-                                MemoryTypeTracker* tracker)
+  DawnImageRepresentation(SharedImageManager* manager,
+                          SharedImageBacking* backing,
+                          MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   class GPU_GLES2_EXPORT ScopedAccess
-      : public ScopedAccessBase<SharedImageRepresentationDawn> {
+      : public ScopedAccessBase<DawnImageRepresentation> {
    public:
-    ScopedAccess(base::PassKey<SharedImageRepresentationDawn> pass_key,
-                 SharedImageRepresentationDawn* representation,
+    ScopedAccess(base::PassKey<DawnImageRepresentation> pass_key,
+                 DawnImageRepresentation* representation,
                  WGPUTexture texture);
     ~ScopedAccess();
 
@@ -411,7 +411,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationDawn
       AllowUnclearedAccess allow_uncleared);
 
  private:
-  friend class WrappedDawnRepresentation;
+  friend class WrappedDawnCompoundImageRepresentation;
 
   // This can return null in case of a Dawn validation error, for example if
   // usage is invalid.
@@ -419,19 +419,19 @@ class GPU_GLES2_EXPORT SharedImageRepresentationDawn
   virtual void EndAccess() = 0;
 };
 
-class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
+class GPU_GLES2_EXPORT OverlayImageRepresentation
     : public SharedImageRepresentation {
  public:
-  SharedImageRepresentationOverlay(SharedImageManager* manager,
-                                   SharedImageBacking* backing,
-                                   MemoryTypeTracker* tracker)
+  OverlayImageRepresentation(SharedImageManager* manager,
+                             SharedImageBacking* backing,
+                             MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   class GPU_GLES2_EXPORT ScopedReadAccess
-      : public ScopedAccessBase<SharedImageRepresentationOverlay> {
+      : public ScopedAccessBase<OverlayImageRepresentation> {
    public:
-    ScopedReadAccess(base::PassKey<SharedImageRepresentationOverlay> pass_key,
-                     SharedImageRepresentationOverlay* representation,
+    ScopedReadAccess(base::PassKey<OverlayImageRepresentation> pass_key,
+                     OverlayImageRepresentation* representation,
                      gl::GLImage* gl_image,
                      gfx::GpuFenceHandle acquire_fence);
     ~ScopedReadAccess();
@@ -466,7 +466,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(bool needs_gl_image);
 
  protected:
-  friend class WrappedOverlayRepresentation;
+  friend class WrappedOverlayCompoundImageRepresentation;
 
   // Notifies the backing that an access will start. Returns false if there is a
   // conflict. Otherwise, returns true and:
@@ -493,12 +493,12 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
 };
 
 #if BUILDFLAG(IS_ANDROID)
-class GPU_GLES2_EXPORT SharedImageRepresentationLegacyOverlay
+class GPU_GLES2_EXPORT LegacyOverlayImageRepresentation
     : public SharedImageRepresentation {
  public:
-  SharedImageRepresentationLegacyOverlay(SharedImageManager* manager,
-                                         SharedImageBacking* backing,
-                                         MemoryTypeTracker* tracker)
+  LegacyOverlayImageRepresentation(SharedImageManager* manager,
+                                   SharedImageBacking* backing,
+                                   MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   // Renders shared image to SurfaceView/Dialog overlay. Should only be called
@@ -511,14 +511,14 @@ class GPU_GLES2_EXPORT SharedImageRepresentationLegacyOverlay
 };
 #endif
 
-class GPU_GLES2_EXPORT SharedImageRepresentationMemory
+class GPU_GLES2_EXPORT MemoryImageRepresentation
     : public SharedImageRepresentation {
  public:
   class GPU_GLES2_EXPORT ScopedReadAccess
-      : public ScopedAccessBase<SharedImageRepresentationMemory> {
+      : public ScopedAccessBase<MemoryImageRepresentation> {
    public:
-    ScopedReadAccess(base::PassKey<SharedImageRepresentationMemory> pass_key,
-                     SharedImageRepresentationMemory* representation,
+    ScopedReadAccess(base::PassKey<MemoryImageRepresentation> pass_key,
+                     MemoryImageRepresentation* representation,
                      SkPixmap pixmap);
     ~ScopedReadAccess();
 
@@ -528,9 +528,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationMemory
     SkPixmap pixmap_;
   };
 
-  SharedImageRepresentationMemory(SharedImageManager* manager,
-                                  SharedImageBacking* backing,
-                                  MemoryTypeTracker* tracker)
+  MemoryImageRepresentation(SharedImageManager* manager,
+                            SharedImageBacking* backing,
+                            MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
@@ -559,7 +559,7 @@ class VaapiDependenciesFactory {
 };
 
 // Representation of a SharedImageBacking as a VA-API surface.
-// This representation is currently only supported by SharedImageBackingOzone.
+// This representation is currently only supported by OzoneImageBacking.
 //
 // Synchronized access is currently not required in this representation because:
 //
@@ -572,24 +572,24 @@ class VaapiDependenciesFactory {
 // decoding work until we're sure that the destination buffer is not being used
 // by the rest of the pipeline. However, we still need to keep track of write
 // accesses so that other representations can synchronize with the decoder.
-class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
+class GPU_GLES2_EXPORT VaapiImageRepresentation
     : public SharedImageRepresentation {
  public:
   class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<SharedImageRepresentationVaapi> {
+      : public ScopedAccessBase<VaapiImageRepresentation> {
    public:
-    ScopedWriteAccess(base::PassKey<SharedImageRepresentationVaapi> pass_key,
-                      SharedImageRepresentationVaapi* representation);
+    ScopedWriteAccess(base::PassKey<VaapiImageRepresentation> pass_key,
+                      VaapiImageRepresentation* representation);
 
     ~ScopedWriteAccess();
 
     const media::VASurface* va_surface();
   };
-  SharedImageRepresentationVaapi(SharedImageManager* manager,
-                                 SharedImageBacking* backing,
-                                 MemoryTypeTracker* tracker,
-                                 VaapiDependencies* vaapi_dependency);
-  ~SharedImageRepresentationVaapi() override;
+  VaapiImageRepresentation(SharedImageManager* manager,
+                           SharedImageBacking* backing,
+                           MemoryTypeTracker* tracker,
+                           VaapiDependencies* vaapi_dependency);
+  ~VaapiImageRepresentation() override;
 
   std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
 
@@ -606,14 +606,14 @@ class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
 // will be converted to a cc::PaintOpBuffer and stored in the
 // SharedImageBacking. And then the the compositor will access the stored
 // cc::PaintOpBuffer and execute paint ops in it.
-class GPU_GLES2_EXPORT SharedImageRepresentationRaster
+class GPU_GLES2_EXPORT RasterImageRepresentation
     : public SharedImageRepresentation {
  public:
   class GPU_GLES2_EXPORT ScopedReadAccess
-      : public ScopedAccessBase<SharedImageRepresentationRaster> {
+      : public ScopedAccessBase<RasterImageRepresentation> {
    public:
-    ScopedReadAccess(base::PassKey<SharedImageRepresentationRaster> pass_key,
-                     SharedImageRepresentationRaster* representation,
+    ScopedReadAccess(base::PassKey<RasterImageRepresentation> pass_key,
+                     RasterImageRepresentation* representation,
                      const cc::PaintOpBuffer* paint_op_buffer,
                      const absl::optional<SkColor4f>& clear_color);
     ~ScopedReadAccess();
@@ -631,10 +631,10 @@ class GPU_GLES2_EXPORT SharedImageRepresentationRaster
   };
 
   class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<SharedImageRepresentationRaster> {
+      : public ScopedAccessBase<RasterImageRepresentation> {
    public:
-    ScopedWriteAccess(base::PassKey<SharedImageRepresentationRaster> pass_key,
-                      SharedImageRepresentationRaster* representation,
+    ScopedWriteAccess(base::PassKey<RasterImageRepresentation> pass_key,
+                      RasterImageRepresentation* representation,
                       cc::PaintOpBuffer* paint_op_buffer);
     ~ScopedWriteAccess();
 
@@ -652,9 +652,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationRaster
     base::OnceClosure callback_;
   };
 
-  SharedImageRepresentationRaster(SharedImageManager* manager,
-                                  SharedImageBacking* backing,
-                                  MemoryTypeTracker* tracker)
+  RasterImageRepresentation(SharedImageManager* manager,
+                            SharedImageBacking* backing,
+                            MemoryTypeTracker* tracker)
       : SharedImageRepresentation(manager, backing, tracker) {}
 
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();

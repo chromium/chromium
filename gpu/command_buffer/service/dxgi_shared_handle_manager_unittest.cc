@@ -22,7 +22,7 @@ class DXGISharedHandleManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     // Using DXGI NT handles is universally supported only on Win8 and above.
-    // TODO(sunnyps): Unify this with the check in SharedImageBackingFactoryD3D.
+    // TODO(sunnyps): Unify this with the check in D3DImageBackingFactory.
     const bool shared_handles_supported =
         base::win::GetVersion() >= base::win::Version::WIN8;
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();

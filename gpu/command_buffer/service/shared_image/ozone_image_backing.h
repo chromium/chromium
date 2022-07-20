@@ -35,9 +35,9 @@ class VaapiDependencies;
 // Implementation of SharedImageBacking that uses a NativePixmap created via
 // an Ozone surface factory. The memory associated with the pixmap can be
 // aliased by both GL and Vulkan for use in rendering or compositing.
-class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
+class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
  public:
-  SharedImageBackingOzone(
+  OzoneImageBacking(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       gfx::BufferPlane plane,
@@ -51,10 +51,10 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
       const GpuDriverBugWorkarounds& workarounds);
 
-  SharedImageBackingOzone(const SharedImageBackingOzone&) = delete;
-  SharedImageBackingOzone& operator=(const SharedImageBackingOzone&) = delete;
+  OzoneImageBacking(const OzoneImageBacking&) = delete;
+  OzoneImageBacking& operator=(const OzoneImageBacking&) = delete;
 
-  ~SharedImageBackingOzone() override;
+  ~OzoneImageBacking() override;
 
   // gpu::SharedImageBacking:
   SharedImageBackingType GetType() const override;
@@ -66,35 +66,35 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   enum class AccessStream { kGL, kVulkan, kWebGPU, kOverlay, kLast };
 
  protected:
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type) override;
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationVaapi> ProduceVASurface(
+  std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory) override;
 
  private:
-  friend class SharedImageRepresentationGLOzoneShared;
-  friend class SharedImageRepresentationDawnOzone;
-  friend class SharedImageRepresentationSkiaVkOzone;
-  class SharedImageRepresentationVaapiOzone;
-  class SharedImageRepresentationOverlayOzone;
+  friend class GLOzoneImageRepresentationShared;
+  friend class DawnOzoneImageRepresentation;
+  friend class SkiaVkOzoneImageRepresentation;
+  class VaapiOzoneImageRepresentation;
+  class OverlayOzoneImageRepresentation;
 
   bool VaSync();
 

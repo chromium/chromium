@@ -1245,7 +1245,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // TODO(crbug.com/1241537): Always add the flag once the
-      // SharedImageBackingOzone is by default turned on.
+      // OzoneImageBacking is by default turned on.
       if (base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kEnableUnsafeWebGPU)) {
         usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;

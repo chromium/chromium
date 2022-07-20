@@ -30,9 +30,9 @@ class AbstractTexture;
 
 // Implementation of SharedImageBacking that renders MediaCodec buffers to a
 // TextureOwner or overlay as needed in order to draw them.
-class GPU_GLES2_EXPORT SharedImageVideo : public SharedImageBackingAndroid {
+class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
  public:
-  static std::unique_ptr<SharedImageVideo> Create(
+  static std::unique_ptr<AndroidVideoImageBacking> Create(
       const Mailbox& mailbox,
       const gfx::Size& size,
       const gfx::ColorSpace color_space,
@@ -48,11 +48,11 @@ class GPU_GLES2_EXPORT SharedImageVideo : public SharedImageBackingAndroid {
       TextureOwner* texture_owner,
       viz::VulkanContextProvider* vulkan_context_provider);
 
-  ~SharedImageVideo() override;
+  ~AndroidVideoImageBacking() override;
 
   // Disallow copy and assign.
-  SharedImageVideo(const SharedImageVideo&) = delete;
-  SharedImageVideo& operator=(const SharedImageVideo&) = delete;
+  AndroidVideoImageBacking(const AndroidVideoImageBacking&) = delete;
+  AndroidVideoImageBacking& operator=(const AndroidVideoImageBacking&) = delete;
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -62,12 +62,12 @@ class GPU_GLES2_EXPORT SharedImageVideo : public SharedImageBackingAndroid {
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
 
  protected:
-  SharedImageVideo(const Mailbox& mailbox,
-                   const gfx::Size& size,
-                   const gfx::ColorSpace color_space,
-                   GrSurfaceOrigin surface_origin,
-                   SkAlphaType alpha_type,
-                   bool is_thread_safe);
+  AndroidVideoImageBacking(const Mailbox& mailbox,
+                           const gfx::Size& size,
+                           const gfx::ColorSpace color_space,
+                           GrSurfaceOrigin surface_origin,
+                           SkAlphaType alpha_type,
+                           bool is_thread_safe);
 
   std::unique_ptr<gles2::AbstractTexture> GenAbstractTexture(
       const bool passthrough);

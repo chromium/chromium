@@ -20,18 +20,18 @@
 namespace gpu {
 
 // Implementation of SharedImageBacking that uses Shared Memory GMB.
-class SharedImageBackingSharedMemory : public SharedImageBacking {
+class SharedMemoryImageBacking : public SharedImageBacking {
  public:
-  SharedImageBackingSharedMemory(const Mailbox& mailbox,
-                                 viz::ResourceFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 SharedMemoryRegionWrapper wrapper);
+  SharedMemoryImageBacking(const Mailbox& mailbox,
+                           viz::ResourceFormat format,
+                           const gfx::Size& size,
+                           const gfx::ColorSpace& color_space,
+                           GrSurfaceOrigin surface_origin,
+                           SkAlphaType alpha_type,
+                           uint32_t usage,
+                           SharedMemoryRegionWrapper wrapper);
 
-  ~SharedImageBackingSharedMemory() override;
+  ~SharedMemoryImageBacking() override;
 
   // gpu::SharedImageBacking:
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
@@ -43,35 +43,33 @@ class SharedImageBackingSharedMemory : public SharedImageBacking {
   const SharedMemoryRegionWrapper& shared_memory_wrapper();
 
  protected:
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type) override;
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationVaapi> ProduceVASurface(
+  std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory) override;
-  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
  private:
-  class SharedImageRepresentationSharedMemory;
-
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDump* dump,
                     base::trace_event::ProcessMemoryDump* pmd,

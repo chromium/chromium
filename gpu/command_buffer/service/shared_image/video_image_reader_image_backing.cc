@@ -111,7 +111,7 @@ class VideoImage : public gl::GLImage {
 
 }  // namespace
 
-SharedImageVideoImageReader::SharedImageVideoImageReader(
+VideoImageReaderImageBacking::VideoImageReaderImageBacking(
     const Mailbox& mailbox,
     const gfx::Size& size,
     const gfx::ColorSpace color_space,
@@ -120,12 +120,12 @@ SharedImageVideoImageReader::SharedImageVideoImageReader(
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock)
-    : SharedImageVideo(mailbox,
-                       size,
-                       color_space,
-                       surface_origin,
-                       alpha_type,
-                       !!drdc_lock),
+    : AndroidVideoImageBacking(mailbox,
+                               size,
+                               color_space,
+                               surface_origin,
+                               alpha_type,
+                               !!drdc_lock),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
       stream_texture_sii_(std::move(stream_texture_sii)),
       gpu_main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
@@ -136,7 +136,7 @@ SharedImageVideoImageReader::SharedImageVideoImageReader(
       GetDrDcLock());
 }
 
-SharedImageVideoImageReader::~SharedImageVideoImageReader() {
+VideoImageReaderImageBacking::~VideoImageReaderImageBacking() {
   // This backing is created on gpu main thread but can be destroyed on DrDc
   // thread if the last representation was on DrDc thread.
   // |context_lost_helper_| is destroyed here by posting task to the
@@ -159,7 +159,7 @@ SharedImageVideoImageReader::~SharedImageVideoImageReader() {
   }
 }
 
-size_t SharedImageVideoImageReader::EstimatedSizeForMemTracking() const {
+size_t VideoImageReaderImageBacking::EstimatedSizeForMemTracking() const {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
   // This backing contributes to gpu memory only if its bound to the texture
@@ -167,26 +167,26 @@ size_t SharedImageVideoImageReader::EstimatedSizeForMemTracking() const {
   return stream_texture_sii_->IsUsingGpuMemory() ? estimated_size() : 0;
 }
 
-// Representation of SharedImageVideoImageReader as a GL Texture.
-class SharedImageVideoImageReader::SharedImageRepresentationGLTextureVideo
-    : public SharedImageRepresentationGLTexture,
+// Representation of VideoImageReaderImageBacking as a GL Texture.
+class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
+    : public GLTextureImageRepresentation,
       public RefCountedLockHelperDrDc {
  public:
-  SharedImageRepresentationGLTextureVideo(
+  GLTextureVideoImageRepresentation(
       SharedImageManager* manager,
-      SharedImageVideoImageReader* backing,
+      VideoImageReaderImageBacking* backing,
       MemoryTypeTracker* tracker,
       std::unique_ptr<gles2::AbstractTexture> texture,
       scoped_refptr<RefCountedLock> drdc_lock)
-      : SharedImageRepresentationGLTexture(manager, backing, tracker),
+      : GLTextureImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
         texture_(std::move(texture)) {}
 
   // Disallow copy and assign.
-  SharedImageRepresentationGLTextureVideo(
-      const SharedImageRepresentationGLTextureVideo&) = delete;
-  SharedImageRepresentationGLTextureVideo& operator=(
-      const SharedImageRepresentationGLTextureVideo&) = delete;
+  GLTextureVideoImageRepresentation(const GLTextureVideoImageRepresentation&) =
+      delete;
+  GLTextureVideoImageRepresentation& operator=(
+      const GLTextureVideoImageRepresentation&) = delete;
 
   gles2::Texture* GetTexture() override {
     auto* texture = gles2::Texture::CheckedCast(texture_->GetTextureBase());
@@ -199,7 +199,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationGLTextureVideo
     // This representation should only be called for read.
     DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
-    auto* video_backing = static_cast<SharedImageVideoImageReader*>(backing());
+    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
     {
       base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
       scoped_hardware_buffer_ =
@@ -231,21 +231,18 @@ class SharedImageVideoImageReader::SharedImageRepresentationGLTextureVideo
       scoped_hardware_buffer_;
 };
 
-// Representation of SharedImageVideoImageReader as a GL Texture.
-class SharedImageVideoImageReader::
-    SharedImageRepresentationGLTexturePassthroughVideo
-    : public SharedImageRepresentationGLTexturePassthrough,
+// Representation of VideoImageReaderImageBacking as a GL Texture.
+class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
+    : public GLTexturePassthroughImageRepresentation,
       public RefCountedLockHelperDrDc {
  public:
-  SharedImageRepresentationGLTexturePassthroughVideo(
+  GLTexturePassthroughVideoImageRepresentation(
       SharedImageManager* manager,
-      SharedImageVideoImageReader* backing,
+      VideoImageReaderImageBacking* backing,
       MemoryTypeTracker* tracker,
       std::unique_ptr<gles2::AbstractTexture> abstract_texture,
       scoped_refptr<RefCountedLock> drdc_lock)
-      : SharedImageRepresentationGLTexturePassthrough(manager,
-                                                      backing,
-                                                      tracker),
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
         abstract_texture_(std::move(abstract_texture)),
         passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
@@ -255,10 +252,10 @@ class SharedImageVideoImageReader::
   }
 
   // Disallow copy and assign.
-  SharedImageRepresentationGLTexturePassthroughVideo(
-      const SharedImageRepresentationGLTexturePassthroughVideo&) = delete;
-  SharedImageRepresentationGLTexturePassthroughVideo& operator=(
-      const SharedImageRepresentationGLTexturePassthroughVideo&) = delete;
+  GLTexturePassthroughVideoImageRepresentation(
+      const GLTexturePassthroughVideoImageRepresentation&) = delete;
+  GLTexturePassthroughVideoImageRepresentation& operator=(
+      const GLTexturePassthroughVideoImageRepresentation&) = delete;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override {
@@ -269,7 +266,7 @@ class SharedImageVideoImageReader::
     // This representation should only be called for read.
     DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
-    auto* video_backing = static_cast<SharedImageVideoImageReader*>(backing());
+    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
 
     {
       base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
@@ -303,20 +300,20 @@ class SharedImageVideoImageReader::
       scoped_hardware_buffer_;
 };
 
-class SharedImageVideoImageReader::SharedImageRepresentationVideoSkiaVk
-    : public SharedImageRepresentationSkiaVkAndroid,
+class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
+    : public SkiaVkAndroidImageRepresentation,
       public RefCountedLockHelperDrDc {
  public:
-  SharedImageRepresentationVideoSkiaVk(
+  SkiaVkVideoImageRepresentation(
       SharedImageManager* manager,
-      SharedImageBackingAndroid* backing,
+      AndroidImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
       MemoryTypeTracker* tracker,
       scoped_refptr<RefCountedLock> drdc_lock)
-      : SharedImageRepresentationSkiaVkAndroid(manager,
-                                               backing,
-                                               std::move(context_state),
-                                               tracker),
+      : SkiaVkAndroidImageRepresentation(manager,
+                                         backing,
+                                         std::move(context_state),
+                                         tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
 
   sk_sp<SkSurface> BeginWriteAccess(
@@ -339,7 +336,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationVideoSkiaVk
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
     DCHECK(!scoped_hardware_buffer_);
-    auto* video_backing = static_cast<SharedImageVideoImageReader*>(backing());
+    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
     DCHECK(video_backing);
     auto* stream_texture_sii = video_backing->stream_texture_sii_.get();
 
@@ -391,7 +388,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationVideoSkiaVk
       DCHECK(promise_texture_);
     }
 
-    auto result = SharedImageRepresentationSkiaVkAndroid::BeginReadAccess(
+    auto result = SkiaVkAndroidImageRepresentation::BeginReadAccess(
         begin_semaphores, end_semaphores, end_state);
     if (!result) {
       Bug1307307Tracker::SetLastAccessError(
@@ -405,7 +402,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationVideoSkiaVk
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     DCHECK(scoped_hardware_buffer_);
 
-    SharedImageRepresentationSkiaVkAndroid::EndReadAccess();
+    SkiaVkAndroidImageRepresentation::EndReadAccess();
 
     // Pass the end read access sync fd to the scoped hardware buffer. This
     // will make sure that the AImage associated with the hardware buffer will
@@ -420,9 +417,9 @@ class SharedImageVideoImageReader::SharedImageRepresentationVideoSkiaVk
       scoped_hardware_buffer_;
 };
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageVideoImageReader::ProduceGLTexture(SharedImageManager* manager,
-                                              MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTextureImageRepresentation>
+VideoImageReaderImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                               MemoryTypeTracker* tracker) {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
   // For (old) overlays, we don't have a texture owner, but overlay promotion
@@ -436,12 +433,12 @@ SharedImageVideoImageReader::ProduceGLTexture(SharedImageManager* manager,
   if (!texture)
     return nullptr;
 
-  return std::make_unique<SharedImageRepresentationGLTextureVideo>(
+  return std::make_unique<GLTextureVideoImageRepresentation>(
       manager, this, tracker, std::move(texture), GetDrDcLock());
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageVideoImageReader::ProduceGLTexturePassthrough(
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+VideoImageReaderImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
@@ -457,12 +454,12 @@ SharedImageVideoImageReader::ProduceGLTexturePassthrough(
   if (!texture)
     return nullptr;
 
-  return std::make_unique<SharedImageRepresentationGLTexturePassthroughVideo>(
+  return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
       manager, this, tracker, std::move(texture), GetDrDcLock());
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageVideoImageReader::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+VideoImageReaderImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -479,7 +476,7 @@ SharedImageVideoImageReader::ProduceSkia(
     return nullptr;
   }
   if (context_state->GrContextIsVulkan()) {
-    return std::make_unique<SharedImageRepresentationVideoSkiaVk>(
+    return std::make_unique<SkiaVkVideoImageRepresentation>(
         manager, this, std::move(context_state), tracker, GetDrDcLock());
   }
 
@@ -496,18 +493,16 @@ SharedImageVideoImageReader::ProduceSkia(
     return nullptr;
   }
 
-  std::unique_ptr<gpu::SharedImageRepresentationGLTextureBase>
-      gl_representation;
+  std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
     gl_representation =
-        std::make_unique<SharedImageRepresentationGLTexturePassthroughVideo>(
+        std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
             manager, this, tracker, std::move(texture), GetDrDcLock());
   } else {
-    gl_representation =
-        std::make_unique<SharedImageRepresentationGLTextureVideo>(
-            manager, this, tracker, std::move(texture), GetDrDcLock());
+    gl_representation = std::make_unique<GLTextureVideoImageRepresentation>(
+        manager, this, tracker, std::move(texture), GetDrDcLock());
   }
-  auto skia_representation = SharedImageRepresentationSkiaGL::Create(
+  auto skia_representation = SkiaGLImageRepresentation::Create(
       std::move(gl_representation), std::move(context_state), manager, this,
       tracker);
 
@@ -519,29 +514,29 @@ SharedImageVideoImageReader::ProduceSkia(
   return skia_representation;
 }
 
-// Representation of SharedImageVideoImageReader as an overlay plane.
-class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
-    : public gpu::SharedImageRepresentationOverlay,
+// Representation of VideoImageReaderImageBacking as an overlay plane.
+class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
+    : public gpu::OverlayImageRepresentation,
       public RefCountedLockHelperDrDc {
  public:
-  SharedImageRepresentationOverlayVideo(gpu::SharedImageManager* manager,
-                                        SharedImageVideoImageReader* backing,
-                                        gpu::MemoryTypeTracker* tracker,
-                                        scoped_refptr<RefCountedLock> drdc_lock)
-      : gpu::SharedImageRepresentationOverlay(manager, backing, tracker),
+  OverlayVideoImageRepresentation(gpu::SharedImageManager* manager,
+                                  VideoImageReaderImageBacking* backing,
+                                  gpu::MemoryTypeTracker* tracker,
+                                  scoped_refptr<RefCountedLock> drdc_lock)
+      : gpu::OverlayImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
 
   // Disallow copy and assign.
-  SharedImageRepresentationOverlayVideo(
-      const SharedImageRepresentationOverlayVideo&) = delete;
-  SharedImageRepresentationOverlayVideo& operator=(
-      const SharedImageRepresentationOverlayVideo&) = delete;
+  OverlayVideoImageRepresentation(const OverlayVideoImageRepresentation&) =
+      delete;
+  OverlayVideoImageRepresentation& operator=(
+      const OverlayVideoImageRepresentation&) = delete;
 
  protected:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     // A |CodecImage| must have TextureOwner() for SurfaceControl overlays.
-    // Legacy overlays are handled by SharedImageRepresentationLegacyOverlay.
+    // Legacy overlays are handled by LegacyOverlayImageRepresentation.
     DCHECK(stream_image()->HasTextureOwner());
     scoped_hardware_buffer_ = stream_image()->GetAHardwareBuffer();
 
@@ -601,30 +596,28 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
   scoped_refptr<VideoImage> gl_image_;
 
   StreamTextureSharedImageInterface* stream_image() {
-    auto* video_backing = static_cast<SharedImageVideoImageReader*>(backing());
+    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
     DCHECK(video_backing);
     return video_backing->stream_texture_sii_.get();
   }
 };
 
-// Representation of SharedImageVideoImageReader as an SurfaceView overlay
+// Representation of VideoImageReaderImageBacking as an SurfaceView overlay
 // plane.
-class SharedImageVideoImageReader::SharedImageRepresentationLegacyOverlayVideo
-    : public gpu::SharedImageRepresentationLegacyOverlay,
+class VideoImageReaderImageBacking::LegacyOverlayVideoImageRepresentation
+    : public gpu::LegacyOverlayImageRepresentation,
       public RefCountedLockHelperDrDc {
  public:
-  SharedImageRepresentationLegacyOverlayVideo(
-      gpu::SharedImageManager* manager,
-      SharedImageVideoImageReader* backing,
-      gpu::MemoryTypeTracker* tracker,
-      scoped_refptr<RefCountedLock> drdc_lock)
-      : gpu::SharedImageRepresentationLegacyOverlay(manager, backing, tracker),
+  LegacyOverlayVideoImageRepresentation(gpu::SharedImageManager* manager,
+                                        VideoImageReaderImageBacking* backing,
+                                        gpu::MemoryTypeTracker* tracker,
+                                        scoped_refptr<RefCountedLock> drdc_lock)
+      : gpu::LegacyOverlayImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
 
   void RenderToOverlay() override {
-    TRACE_EVENT0(
-        "media",
-        "SharedImageRepresentationLegacyOverlayVideo::RenderToOverlay");
+    TRACE_EVENT0("media",
+                 "LegacyOverlayVideoImageRepresentation::RenderToOverlay");
 
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     auto* stream_texture_sii = stream_image();
@@ -640,28 +633,28 @@ class SharedImageVideoImageReader::SharedImageRepresentationLegacyOverlayVideo
   }
 
   StreamTextureSharedImageInterface* stream_image() {
-    auto* video_backing = static_cast<SharedImageVideoImageReader*>(backing());
+    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
     DCHECK(video_backing);
     return video_backing->stream_texture_sii_.get();
   }
 };
 
-std::unique_ptr<gpu::SharedImageRepresentationOverlay>
-SharedImageVideoImageReader::ProduceOverlay(gpu::SharedImageManager* manager,
-                                            gpu::MemoryTypeTracker* tracker) {
-  return std::make_unique<SharedImageRepresentationOverlayVideo>(
+std::unique_ptr<gpu::OverlayImageRepresentation>
+VideoImageReaderImageBacking::ProduceOverlay(gpu::SharedImageManager* manager,
+                                             gpu::MemoryTypeTracker* tracker) {
+  return std::make_unique<OverlayVideoImageRepresentation>(
       manager, this, tracker, GetDrDcLock());
 }
 
-std::unique_ptr<gpu::SharedImageRepresentationLegacyOverlay>
-SharedImageVideoImageReader::ProduceLegacyOverlay(
+std::unique_ptr<gpu::LegacyOverlayImageRepresentation>
+VideoImageReaderImageBacking::ProduceLegacyOverlay(
     gpu::SharedImageManager* manager,
     gpu::MemoryTypeTracker* tracker) {
-  return std::make_unique<SharedImageRepresentationLegacyOverlayVideo>(
+  return std::make_unique<LegacyOverlayVideoImageRepresentation>(
       manager, this, tracker, GetDrDcLock());
 }
 
-SharedImageVideoImageReader::ContextLostObserverHelper::
+VideoImageReaderImageBacking::ContextLostObserverHelper::
     ContextLostObserverHelper(
         scoped_refptr<SharedContextState> context_state,
         scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
@@ -677,7 +670,7 @@ SharedImageVideoImageReader::ContextLostObserverHelper::
   context_state_->AddContextLostObserver(this);
 }
 
-SharedImageVideoImageReader::ContextLostObserverHelper::
+VideoImageReaderImageBacking::ContextLostObserverHelper::
     ~ContextLostObserverHelper() {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
 
@@ -691,7 +684,7 @@ SharedImageVideoImageReader::ContextLostObserverHelper::
 }
 
 // SharedContextState::ContextLostObserver implementation.
-void SharedImageVideoImageReader::ContextLostObserverHelper::OnContextLost() {
+void VideoImageReaderImageBacking::ContextLostObserverHelper::OnContextLost() {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 

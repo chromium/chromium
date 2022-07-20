@@ -130,7 +130,7 @@ void SharedImageManager::OnContextLost(const Mailbox& mailbox) {
   (*found)->OnContextLost();
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
                                      MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
@@ -154,7 +154,7 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 SharedImageManager::ProduceRGBEmulationGLTexture(const Mailbox& mailbox,
                                                  MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
@@ -177,7 +177,7 @@ SharedImageManager::ProduceRGBEmulationGLTexture(const Mailbox& mailbox,
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
 SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
                                                 MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
@@ -200,7 +200,7 @@ SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationSkia> SharedImageManager::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> SharedImageManager::ProduceSkia(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -224,7 +224,7 @@ std::unique_ptr<SharedImageRepresentationSkia> SharedImageManager::ProduceSkia(
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
+std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
@@ -250,9 +250,9 @@ std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageManager::ProduceOverlay(const gpu::Mailbox& mailbox,
-                                   gpu::MemoryTypeTracker* tracker) {
+std::unique_ptr<OverlayImageRepresentation> SharedImageManager::ProduceOverlay(
+    const gpu::Mailbox& mailbox,
+    gpu::MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -273,10 +273,10 @@ SharedImageManager::ProduceOverlay(const gpu::Mailbox& mailbox,
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationVaapi>
-SharedImageManager::ProduceVASurface(const Mailbox& mailbox,
-                                     MemoryTypeTracker* tracker,
-                                     VaapiDependenciesFactory* dep_factory) {
+std::unique_ptr<VaapiImageRepresentation> SharedImageManager::ProduceVASurface(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker,
+    VaapiDependenciesFactory* dep_factory) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -297,9 +297,9 @@ SharedImageManager::ProduceVASurface(const Mailbox& mailbox,
   return representation;
 }
 
-std::unique_ptr<SharedImageRepresentationMemory>
-SharedImageManager::ProduceMemory(const Mailbox& mailbox,
-                                  MemoryTypeTracker* tracker) {
+std::unique_ptr<MemoryImageRepresentation> SharedImageManager::ProduceMemory(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -315,9 +315,9 @@ SharedImageManager::ProduceMemory(const Mailbox& mailbox,
   return (*found)->ProduceMemory(this, tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationRaster>
-SharedImageManager::ProduceRaster(const Mailbox& mailbox,
-                                  MemoryTypeTracker* tracker) {
+std::unique_ptr<RasterImageRepresentation> SharedImageManager::ProduceRaster(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -334,7 +334,7 @@ SharedImageManager::ProduceRaster(const Mailbox& mailbox,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
                                          MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();

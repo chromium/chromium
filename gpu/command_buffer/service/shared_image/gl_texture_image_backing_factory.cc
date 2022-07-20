@@ -21,33 +21,32 @@ namespace gpu {
 namespace {
 
 using ScopedResetAndRestoreUnpackState =
-    SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState;
+    GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState;
 
-using ScopedRestoreTexture = SharedImageBackingGLCommon::ScopedRestoreTexture;
+using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
 using InitializeGLTextureParams =
-    SharedImageBackingGLCommon::InitializeGLTextureParams;
+    GLTextureImageBackingHelper::InitializeGLTextureParams;
 
 }  // anonymous namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// SharedImageBackingFactoryGLTexture
+// GLTextureImageBackingFactory
 
-SharedImageBackingFactoryGLTexture::SharedImageBackingFactoryGLTexture(
+GLTextureImageBackingFactory::GLTextureImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter)
-    : SharedImageBackingFactoryGLCommon(gpu_preferences,
-                                        workarounds,
-                                        feature_info,
-                                        progress_reporter) {}
+    : GLCommonImageBackingFactory(gpu_preferences,
+                                  workarounds,
+                                  feature_info,
+                                  progress_reporter) {}
 
-SharedImageBackingFactoryGLTexture::~SharedImageBackingFactoryGLTexture() =
-    default;
+GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryGLTexture::CreateSharedImage(
+GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -64,7 +63,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryGLTexture::CreateSharedImage(
+GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -79,7 +78,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryGLTexture::CreateSharedImage(
+GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -96,7 +95,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryGLTexture::CreateSharedImageForTest(
+GLTextureImageBackingFactory::CreateSharedImageForTest(
     const Mailbox& mailbox,
     GLenum target,
     GLuint service_id,
@@ -104,7 +103,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageForTest(
     viz::ResourceFormat format,
     const gfx::Size& size,
     uint32_t usage) {
-  auto result = std::make_unique<SharedImageBackingGLTexture>(
+  auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, usage, false /* is_passthrough */);
   InitializeGLTextureParams params;
@@ -117,7 +116,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageForTest(
   return std::move(result);
 }
 
-bool SharedImageBackingFactoryGLTexture::IsSupported(
+bool GLTextureImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
     bool thread_safe,
@@ -167,7 +166,7 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
+GLTextureImageBackingFactory::CreateSharedImageInternal(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -200,7 +199,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
   params.framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
-  auto result = std::make_unique<SharedImageBackingGLTexture>(
+  auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       use_passthrough_);
   result->InitializeGLTexture(0, params);

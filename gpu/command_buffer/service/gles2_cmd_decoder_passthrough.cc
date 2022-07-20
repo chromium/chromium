@@ -398,8 +398,7 @@ void PassthroughResources::Destroy(gl::GLApi* api,
 
 PassthroughResources::SharedImageData::SharedImageData() = default;
 PassthroughResources::SharedImageData::SharedImageData(
-    std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-        representation,
+    std::unique_ptr<GLTexturePassthroughImageRepresentation> representation,
     gl::GLApi* api)
     : representation_(std::move(representation)) {
   DCHECK(representation_);
@@ -1697,12 +1696,10 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.protected_video_swap_chain = surface_->SupportsProtectedVideo();
   caps.gpu_vsync = surface_->SupportsGpuVSync();
 #if BUILDFLAG(IS_WIN)
-  caps.shared_image_d3d =
-      SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
-          group_->gpu_preferences());
+  caps.shared_image_d3d = D3DImageBackingFactory::IsD3DSharedImageSupported(
+      group_->gpu_preferences());
   caps.shared_image_swap_chain =
-      caps.shared_image_d3d &&
-      SharedImageBackingFactoryD3D::IsSwapChainSupported();
+      caps.shared_image_d3d && D3DImageBackingFactory::IsSwapChainSupported();
 #endif  // BUILDFLAG(IS_WIN)
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.texture_storage_image =

@@ -242,10 +242,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     }
   }
 
-  auto shared_image_backings =
-      gpu::SharedImageBackingD3D::CreateFromVideoTexture(
-          mailboxes, dxgi_format, size, usage, texture, array_slice,
-          std::move(dxgi_shared_handle_state));
+  auto shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
+      mailboxes, dxgi_format, size, usage, texture, array_slice,
+      std::move(dxgi_shared_handle_state));
   if (shared_image_backings.empty()) {
     std::move(on_error_cb)
         .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));

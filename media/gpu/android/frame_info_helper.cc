@@ -103,7 +103,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
           info.emplace();
           info->coded_size = coded_size;
           info->visible_rect = visible_rect;
-          info->ycbcr_info = gpu::SharedImageVideo::GetYcbcrInfo(
+          info->ycbcr_info = gpu::AndroidVideoImageBacking::GetYcbcrInfo(
               texture_owner.get(), vulkan_context_provider_);
         }
       }

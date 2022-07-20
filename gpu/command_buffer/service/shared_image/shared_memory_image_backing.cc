@@ -36,13 +36,12 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   return estimated_size;
 }
 
-class SharedImageRepresentationMemorySharedMemory
-    : public SharedImageRepresentationMemory {
+class MemoryImageRepresentationImpl : public MemoryImageRepresentation {
  public:
-  SharedImageRepresentationMemorySharedMemory(SharedImageManager* manager,
-                                              SharedImageBacking* backing,
-                                              MemoryTypeTracker* tracker)
-      : SharedImageRepresentationMemory(manager, backing, tracker) {}
+  MemoryImageRepresentationImpl(SharedImageManager* manager,
+                                SharedImageBacking* backing,
+                                MemoryTypeTracker* tracker)
+      : MemoryImageRepresentation(manager, backing, tracker) {}
 
  protected:
   SkPixmap BeginReadAccess() override {
@@ -53,71 +52,68 @@ class SharedImageRepresentationMemorySharedMemory
   }
 
  private:
-  SharedImageBackingSharedMemory* shared_image_shared_memory() {
-    return static_cast<SharedImageBackingSharedMemory*>(backing());
+  SharedMemoryImageBacking* shared_image_shared_memory() {
+    return static_cast<SharedMemoryImageBacking*>(backing());
   }
 };
 
 }  // namespace
 
-SharedImageBackingSharedMemory::~SharedImageBackingSharedMemory() = default;
+SharedMemoryImageBacking::~SharedMemoryImageBacking() = default;
 
-void SharedImageBackingSharedMemory::Update(
-    std::unique_ptr<gfx::GpuFence> in_fence) {
+void SharedMemoryImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   // Intentionally no-op for now. Will be called by clients later
 }
 
 const SharedMemoryRegionWrapper&
-SharedImageBackingSharedMemory::shared_memory_wrapper() {
+SharedMemoryImageBacking::shared_memory_wrapper() {
   return shared_memory_wrapper_;
 }
 
-bool SharedImageBackingSharedMemory::ProduceLegacyMailbox(
+bool SharedMemoryImageBacking::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   NOTREACHED();
   return false;
 }
 
-SharedImageBackingType SharedImageBackingSharedMemory::GetType() const {
+SharedImageBackingType SharedMemoryImageBacking::GetType() const {
   return SharedImageBackingType::kSharedMemory;
 }
 
-gfx::Rect SharedImageBackingSharedMemory::ClearedRect() const {
+gfx::Rect SharedMemoryImageBacking::ClearedRect() const {
   NOTREACHED();
   return gfx::Rect();
 }
 
-void SharedImageBackingSharedMemory::SetClearedRect(
-    const gfx::Rect& cleared_rect) {
+void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   NOTREACHED();
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingSharedMemory::ProduceDawn(SharedImageManager* manager,
-                                            MemoryTypeTracker* tracker,
-                                            WGPUDevice device,
-                                            WGPUBackendType backend_type) {
+std::unique_ptr<DawnImageRepresentation> SharedMemoryImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingSharedMemory::ProduceGLTexture(SharedImageManager* manager,
-                                                 MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTextureImageRepresentation>
+SharedMemoryImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                           MemoryTypeTracker* tracker) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingSharedMemory::ProduceGLTexturePassthrough(
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+SharedMemoryImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingSharedMemory::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> SharedMemoryImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -125,15 +121,15 @@ SharedImageBackingSharedMemory::ProduceSkia(
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageBackingSharedMemory::ProduceOverlay(SharedImageManager* manager,
-                                               MemoryTypeTracker* tracker) {
+std::unique_ptr<OverlayImageRepresentation>
+SharedMemoryImageBacking::ProduceOverlay(SharedImageManager* manager,
+                                         MemoryTypeTracker* tracker) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationVaapi>
-SharedImageBackingSharedMemory::ProduceVASurface(
+std::unique_ptr<VaapiImageRepresentation>
+SharedMemoryImageBacking::ProduceVASurface(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     VaapiDependenciesFactory* dep_factory) {
@@ -141,17 +137,17 @@ SharedImageBackingSharedMemory::ProduceVASurface(
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationMemory>
-SharedImageBackingSharedMemory::ProduceMemory(SharedImageManager* manager,
-                                              MemoryTypeTracker* tracker) {
+std::unique_ptr<MemoryImageRepresentation>
+SharedMemoryImageBacking::ProduceMemory(SharedImageManager* manager,
+                                        MemoryTypeTracker* tracker) {
   if (!shared_memory_wrapper_.IsValid())
     return nullptr;
 
-  return std::make_unique<SharedImageRepresentationMemorySharedMemory>(
-      manager, this, tracker);
+  return std::make_unique<MemoryImageRepresentationImpl>(manager, this,
+                                                         tracker);
 }
 
-void SharedImageBackingSharedMemory::OnMemoryDump(
+void SharedMemoryImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDump* dump,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -166,7 +162,7 @@ void SharedImageBackingSharedMemory::OnMemoryDump(
   }
 }
 
-SharedImageBackingSharedMemory::SharedImageBackingSharedMemory(
+SharedMemoryImageBacking::SharedMemoryImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,

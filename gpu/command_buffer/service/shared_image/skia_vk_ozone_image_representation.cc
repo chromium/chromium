@@ -27,14 +27,14 @@
 
 namespace gpu {
 
-// Vk backed Skia representation of SharedImageBackingOzone.
-SharedImageRepresentationSkiaVkOzone::SharedImageRepresentationSkiaVkOzone(
+// Vk backed Skia representation of OzoneImageBacking.
+SkiaVkOzoneImageRepresentation::SkiaVkOzoneImageRepresentation(
     SharedImageManager* manager,
-    SharedImageBackingOzone* backing,
+    OzoneImageBacking* backing,
     scoped_refptr<SharedContextState> context_state,
     std::unique_ptr<VulkanImage> vulkan_image,
     MemoryTypeTracker* tracker)
-    : SharedImageRepresentationSkia(manager, backing, tracker),
+    : SkiaImageRepresentation(manager, backing, tracker),
       vulkan_image_(std::move(vulkan_image)),
       context_state_(std::move(context_state)) {
   DCHECK(backing);
@@ -48,7 +48,7 @@ SharedImageRepresentationSkiaVkOzone::SharedImageRepresentationSkiaVkOzone(
   DCHECK(promise_texture_);
 }
 
-SharedImageRepresentationSkiaVkOzone::~SharedImageRepresentationSkiaVkOzone() {
+SkiaVkOzoneImageRepresentation::~SkiaVkOzoneImageRepresentation() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   surface_.reset();
   if (vulkan_image_) {
@@ -60,7 +60,7 @@ SharedImageRepresentationSkiaVkOzone::~SharedImageRepresentationSkiaVkOzone() {
   }
 }
 
-sk_sp<SkSurface> SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
+sk_sp<SkSurface> SkiaVkOzoneImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -76,7 +76,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
   if (gr_context->abandoned()) {
     LOG(ERROR) << "GrContext is abandoned.";
     ozone_backing()->EndAccess(/*readonly=*/false,
-                               SharedImageBackingOzone::AccessStream::kVulkan,
+                               OzoneImageBacking::AccessStream::kVulkan,
                                gfx::GpuFenceHandle());
     return nullptr;
   }
@@ -92,7 +92,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
     if (!surface_) {
       LOG(ERROR) << "MakeFromBackendTexture() failed.";
       ozone_backing()->EndAccess(/*readonly=*/false,
-                                 SharedImageBackingOzone::AccessStream::kVulkan,
+                                 OzoneImageBacking::AccessStream::kVulkan,
                                  gfx::GpuFenceHandle());
       return nullptr;
     }
@@ -103,8 +103,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
   return surface_;
 }
 
-sk_sp<SkPromiseImageTexture>
-SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
+sk_sp<SkPromiseImageTexture> SkiaVkOzoneImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -118,8 +117,7 @@ SharedImageRepresentationSkiaVkOzone::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SharedImageRepresentationSkiaVkOzone::EndWriteAccess(
-    sk_sp<SkSurface> surface) {
+void SkiaVkOzoneImageRepresentation::EndWriteAccess(sk_sp<SkSurface> surface) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
   if (surface) {
     DCHECK_EQ(surface.get(), surface_.get());
@@ -130,8 +128,7 @@ void SharedImageRepresentationSkiaVkOzone::EndWriteAccess(
   EndAccess(false /* readonly */);
 }
 
-sk_sp<SkPromiseImageTexture>
-SharedImageRepresentationSkiaVkOzone::BeginReadAccess(
+sk_sp<SkPromiseImageTexture> SkiaVkOzoneImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -146,25 +143,24 @@ SharedImageRepresentationSkiaVkOzone::BeginReadAccess(
   return promise_texture_;
 }
 
-void SharedImageRepresentationSkiaVkOzone::EndReadAccess() {
+void SkiaVkOzoneImageRepresentation::EndReadAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kRead);
   DCHECK(!surface_);
 
   EndAccess(true /* readonly */);
 }
 
-gpu::VulkanImplementation*
-SharedImageRepresentationSkiaVkOzone::vk_implementation() {
+gpu::VulkanImplementation* SkiaVkOzoneImageRepresentation::vk_implementation() {
   return context_state_->vk_context_provider()->GetVulkanImplementation();
 }
 
-VkDevice SharedImageRepresentationSkiaVkOzone::vk_device() {
+VkDevice SkiaVkOzoneImageRepresentation::vk_device() {
   return context_state_->vk_context_provider()
       ->GetDeviceQueue()
       ->GetVulkanDevice();
 }
 
-bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
+bool SkiaVkOzoneImageRepresentation::BeginAccess(
     bool readonly,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
@@ -172,9 +168,9 @@ bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
   DCHECK(end_access_semaphore_ == VK_NULL_HANDLE);
 
   std::vector<gfx::GpuFenceHandle> fences;
-  if (!ozone_backing()->BeginAccess(
-          readonly, SharedImageBackingOzone::AccessStream::kVulkan, &fences,
-          need_end_fence_))
+  if (!ozone_backing()->BeginAccess(readonly,
+                                    OzoneImageBacking::AccessStream::kVulkan,
+                                    &fences, need_end_fence_))
     return false;
 
   VkDevice device = vk_device();
@@ -196,7 +192,7 @@ bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
     if (end_access_semaphore_ == VK_NULL_HANDLE) {
       DLOG(ERROR) << "Failed to create the external semaphore.";
       ozone_backing()->EndAccess(readonly,
-                                 SharedImageBackingOzone::AccessStream::kVulkan,
+                                 OzoneImageBacking::AccessStream::kVulkan,
                                  gfx::GpuFenceHandle());
       return false;
     }
@@ -210,7 +206,7 @@ bool SharedImageRepresentationSkiaVkOzone::BeginAccess(
   return true;
 }
 
-void SharedImageRepresentationSkiaVkOzone::EndAccess(bool readonly) {
+void SkiaVkOzoneImageRepresentation::EndAccess(bool readonly) {
   gfx::GpuFenceHandle fence;
   if (end_access_semaphore_ != VK_NULL_HANDLE) {
     SemaphoreHandle semaphore_handle = vk_implementation()->GetSemaphoreHandle(
@@ -219,8 +215,7 @@ void SharedImageRepresentationSkiaVkOzone::EndAccess(bool readonly) {
     DCHECK(!fence.is_null());
   }
 
-  ozone_backing()->EndAccess(readonly,
-                             SharedImageBackingOzone::AccessStream::kVulkan,
+  ozone_backing()->EndAccess(readonly, OzoneImageBacking::AccessStream::kVulkan,
                              std::move(fence));
 
   std::vector<VkSemaphore> semaphores = std::move(begin_access_semaphores_);
@@ -241,7 +236,7 @@ void SharedImageRepresentationSkiaVkOzone::EndAccess(bool readonly) {
 }
 
 std::unique_ptr<GrBackendSurfaceMutableState>
-SharedImageRepresentationSkiaVkOzone::GetEndAccessState() {
+SkiaVkOzoneImageRepresentation::GetEndAccessState() {
   // There is no layout to change if there is no image.
   if (!vulkan_image_)
     return nullptr;

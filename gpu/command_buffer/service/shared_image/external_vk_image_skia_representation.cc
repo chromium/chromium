@@ -17,19 +17,20 @@
 
 namespace gpu {
 
-ExternalVkImageSkiaRepresentation::ExternalVkImageSkiaRepresentation(
+ExternalVkImageSkiaImageRepresentation::ExternalVkImageSkiaImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
-    : SharedImageRepresentationSkia(manager, backing, tracker) {}
+    : SkiaImageRepresentation(manager, backing, tracker) {}
 
-ExternalVkImageSkiaRepresentation::~ExternalVkImageSkiaRepresentation() {
+ExternalVkImageSkiaImageRepresentation::
+    ~ExternalVkImageSkiaImageRepresentation() {
   DCHECK_EQ(access_mode_, kNone) << "Previous access hasn't end yet.";
   DCHECK(!end_access_semaphore_);
   backing_impl()->context_state()->EraseCachedSkSurface(this);
 }
 
-sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
+sk_sp<SkSurface> ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -91,7 +92,7 @@ sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
 }
 
 sk_sp<SkPromiseImageTexture>
-ExternalVkImageSkiaRepresentation::BeginWriteAccess(
+ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -120,7 +121,7 @@ ExternalVkImageSkiaRepresentation::BeginWriteAccess(
   return promise_texture;
 }
 
-void ExternalVkImageSkiaRepresentation::EndWriteAccess(
+void ExternalVkImageSkiaImageRepresentation::EndWriteAccess(
     sk_sp<SkSurface> surface) {
   if (access_mode_ != kWrite) {
     LOG(DFATAL) << "BeginWriteAccess is not called mode=" << access_mode_;
@@ -135,7 +136,8 @@ void ExternalVkImageSkiaRepresentation::EndWriteAccess(
   access_mode_ = kNone;
 }
 
-sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginReadAccess(
+sk_sp<SkPromiseImageTexture>
+ExternalVkImageSkiaImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -163,7 +165,7 @@ sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginReadAccess(
   return promise_texture;
 }
 
-void ExternalVkImageSkiaRepresentation::EndReadAccess() {
+void ExternalVkImageSkiaImageRepresentation::EndReadAccess() {
   if (access_mode_ != kRead) {
     LOG(DFATAL) << "BeginReadAccess is not called. mode=" << access_mode_;
     return;
@@ -173,7 +175,8 @@ void ExternalVkImageSkiaRepresentation::EndReadAccess() {
   access_mode_ = kNone;
 }
 
-sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginAccess(
+sk_sp<SkPromiseImageTexture>
+ExternalVkImageSkiaImageRepresentation::BeginAccess(
     bool readonly,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
@@ -209,7 +212,7 @@ sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginAccess(
   return SkPromiseImageTexture::Make(backing_impl()->backend_texture());
 }
 
-void ExternalVkImageSkiaRepresentation::EndAccess(bool readonly) {
+void ExternalVkImageSkiaImageRepresentation::EndAccess(bool readonly) {
   DCHECK_NE(access_mode_, kNone);
   DCHECK(backing_impl()->need_synchronization() || !end_access_semaphore_);
 

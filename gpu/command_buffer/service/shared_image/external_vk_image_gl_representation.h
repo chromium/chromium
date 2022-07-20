@@ -50,8 +50,7 @@ class ExternalVkImageGLRepresentationShared {
   std::vector<ExternalSemaphore> begin_access_semaphores_;
 };
 
-class ExternalVkImageGLRepresentation
-    : public SharedImageRepresentationGLTexture {
+class ExternalVkImageGLRepresentation : public GLTextureImageRepresentation {
  public:
   ExternalVkImageGLRepresentation(SharedImageManager* manager,
                                   SharedImageBacking* backing,
@@ -66,7 +65,7 @@ class ExternalVkImageGLRepresentation
 
   ~ExternalVkImageGLRepresentation() override;
 
-  // SharedImageRepresentationGLTexture implementation.
+  // GLTextureImageRepresentation implementation.
   gles2::Texture* GetTexture() override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
@@ -77,7 +76,7 @@ class ExternalVkImageGLRepresentation
 };
 
 class ExternalVkImageGLPassthroughRepresentation
-    : public SharedImageRepresentationGLTexturePassthrough {
+    : public GLTexturePassthroughImageRepresentation {
  public:
   ExternalVkImageGLPassthroughRepresentation(SharedImageManager* manager,
                                              SharedImageBacking* backing,
@@ -91,7 +90,7 @@ class ExternalVkImageGLPassthroughRepresentation
 
   ~ExternalVkImageGLPassthroughRepresentation() override;
 
-  // SharedImageRepresentationGLTexturePassthrough implementation.
+  // GLTexturePassthroughImageRepresentation implementation.
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override;
   bool BeginAccess(GLenum mode) override;

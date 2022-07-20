@@ -11,23 +11,23 @@ typedef void* EGLImage;
 
 namespace gpu {
 
-class GPU_GLES2_EXPORT SharedImageRepresentationDawnEGLImage
-    : public SharedImageRepresentationDawn {
+class GPU_GLES2_EXPORT DawnEGLImageRepresentation
+    : public DawnImageRepresentation {
  public:
-  SharedImageRepresentationDawnEGLImage(
-      std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation,
+  DawnEGLImageRepresentation(
+      std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       WGPUDevice device);
-  ~SharedImageRepresentationDawnEGLImage() override;
+  ~DawnEGLImageRepresentation() override;
 
  private:
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
   void EndAccess() override;
 
  private:
-  std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation_;
+  std::unique_ptr<GLTextureImageRepresentationBase> gl_representation_;
   WGPUDevice device_;
   DawnProcTable dawn_procs_;
   WGPUTexture texture_ = nullptr;

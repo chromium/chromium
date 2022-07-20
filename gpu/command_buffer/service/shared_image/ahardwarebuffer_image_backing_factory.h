@@ -26,16 +26,18 @@ struct Mailbox;
 
 // Implementation of SharedImageBackingFactory that produces AHardwareBuffer
 // backed SharedImages. This is meant to be used on Android only.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
+class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  explicit SharedImageBackingFactoryAHB(const gles2::FeatureInfo* feature_info);
+  explicit AHardwareBufferImageBackingFactory(
+      const gles2::FeatureInfo* feature_info);
 
-  SharedImageBackingFactoryAHB(const SharedImageBackingFactoryAHB&) = delete;
-  SharedImageBackingFactoryAHB& operator=(const SharedImageBackingFactoryAHB&) =
-      delete;
+  AHardwareBufferImageBackingFactory(
+      const AHardwareBufferImageBackingFactory&) = delete;
+  AHardwareBufferImageBackingFactory& operator=(
+      const AHardwareBufferImageBackingFactory&) = delete;
 
-  ~SharedImageBackingFactoryAHB() override;
+  ~AHardwareBufferImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

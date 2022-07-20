@@ -102,7 +102,7 @@ bool ShouldUseExternalVulkanImageFactory() {
 
 #endif  // defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 
-bool ShouldUseOzoneFactory() {
+bool ShouldUseOzoneImageBackingFactory() {
 #if defined(USE_OZONE)
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformRuntimeProperties()
@@ -262,7 +262,7 @@ SharedImageFactory::SharedImageFactory(
   }
 
   if (!set_dmabuf_supported_metric_) {
-    bool pixmap_supported = ShouldUseOzoneFactory();
+    bool pixmap_supported = ShouldUseOzoneImageBackingFactory();
     bool vulkan_ext_supported = false;
     GLExtType gl_ext_type = GLExtType::kNone;
 
@@ -303,17 +303,17 @@ SharedImageFactory::SharedImageFactory(
   }
 
   auto shared_memory_backing_factory =
-      std::make_unique<SharedImageBackingFactorySharedMemory>();
+      std::make_unique<SharedMemoryImageBackingFactory>();
   factories_.push_back(std::move(shared_memory_backing_factory));
 
   if (context_state) {
     auto wrapped_sk_image_factory =
-        std::make_unique<raster::WrappedSkImageFactory>(context_state);
+        std::make_unique<WrappedSkImageBackingFactory>(context_state);
     factories_.push_back(std::move(wrapped_sk_image_factory));
   }
 
   if (features::IsUsingRawDraw() && context_state) {
-    auto factory = std::make_unique<SharedImageBackingFactoryRawDraw>();
+    auto factory = std::make_unique<RawDrawImageBackingFactory>();
     factories_.push_back(std::move(factory));
   }
 
@@ -322,7 +322,7 @@ SharedImageFactory::SharedImageFactory(
       (!is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL);
   if (use_gl) {
     auto gl_texture_backing_factory =
-        std::make_unique<SharedImageBackingFactoryGLTexture>(
+        std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
             shared_context_state_ ? shared_context_state_->progress_reporter()
                                   : nullptr);
@@ -330,10 +330,9 @@ SharedImageFactory::SharedImageFactory(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
-          gpu_preferences)) {
+  if (D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences)) {
     // TODO(sunnyps): Should we get the device from SharedContextState instead?
-    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>(
+    auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
         shared_image_manager_->dxgi_shared_handle_manager());
     d3d_backing_factory_ = d3d_factory.get();
@@ -343,12 +342,11 @@ SharedImageFactory::SharedImageFactory(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (use_gl) {
-    auto gl_image_backing_factory =
-        std::make_unique<SharedImageBackingFactoryGLImage>(
-            gpu_preferences, workarounds, feature_info.get(), image_factory,
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
-            /*for_shared_memory_gmbs=*/true);
+    auto gl_image_backing_factory = std::make_unique<GLImageBackingFactory>(
+        gpu_preferences, workarounds, feature_info.get(), image_factory,
+        shared_context_state_ ? shared_context_state_->progress_reporter()
+                              : nullptr,
+        /*for_shared_memory_gmbs=*/true);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
 #endif
@@ -358,7 +356,7 @@ SharedImageFactory::SharedImageFactory(
   // backing will be used for interop.
   if ((gr_context_type_ == GrContextType::kVulkan) &&
       (base::FeatureList::IsEnabled(features::kVulkanFromANGLE))) {
-    auto factory = std::make_unique<SharedImageBackingFactoryAngleVulkan>(
+    auto factory = std::make_unique<AngleVulkanImageBackingFactory>(
         gpu_preferences, workarounds, context_state);
     factories_.push_back(std::move(factory));
   }
@@ -367,12 +365,12 @@ SharedImageFactory::SharedImageFactory(
 #if BUILDFLAG(IS_WIN)
   if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #elif BUILDFLAG(IS_ANDROID)
   if (use_gl) {
-    auto egl_backing_factory = std::make_unique<SharedImageBackingFactoryEGL>(
+    auto egl_backing_factory = std::make_unique<EGLImageBackingFactory>(
         gpu_preferences, workarounds, feature_info.get());
     factories_.push_back(std::move(egl_backing_factory));
   }
@@ -389,43 +387,44 @@ SharedImageFactory::SharedImageFactory(
             VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
   }
   if (is_ahb_supported) {
-    auto ahb_factory =
-        std::make_unique<SharedImageBackingFactoryAHB>(feature_info.get());
+    auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
+        feature_info.get());
     factories_.push_back(std::move(ahb_factory));
   }
   if (gr_context_type_ == GrContextType::kVulkan &&
       !base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #elif defined(USE_OZONE)
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
   // Desktop Linux, not ChromeOS.
-  if (ShouldUseOzoneFactory()) {
-    auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
-        context_state, workarounds);
+  if (ShouldUseOzoneImageBackingFactory()) {
+    auto ozone_factory =
+        std::make_unique<OzoneImageBackingFactory>(context_state, workarounds);
     factories_.push_back(std::move(ozone_factory));
   }
   if (gr_context_type_ == GrContextType::kVulkan &&
-      (!ShouldUseOzoneFactory() || ShouldUseExternalVulkanImageFactory())) {
+      (!ShouldUseOzoneImageBackingFactory() ||
+       ShouldUseExternalVulkanImageFactory())) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   if (gr_context_type_ == GrContextType::kVulkan) {
-    auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
-        context_state, workarounds);
+    auto ozone_factory =
+        std::make_unique<OzoneImageBackingFactory>(context_state, workarounds);
     factories_.push_back(std::move(ozone_factory));
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageFactory>(context_state);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
   vulkan_context_provider_ = context_state->vk_context_provider();
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
-      context_state, workarounds);
+  auto ozone_factory =
+      std::make_unique<OzoneImageBackingFactory>(context_state, workarounds);
   factories_.push_back(std::move(ozone_factory));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // defined(USE_OZONE)
@@ -434,12 +433,11 @@ SharedImageFactory::SharedImageFactory(
   // TODO(hitawala): Temporary factory that will be replaced with Ozone and
   // other backings
   if (use_gl) {
-    auto gl_image_backing_factory =
-        std::make_unique<SharedImageBackingFactoryGLImage>(
-            gpu_preferences, workarounds, feature_info.get(), image_factory,
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
-            /*for_shared_memory_gmbs=*/false);
+    auto gl_image_backing_factory = std::make_unique<GLImageBackingFactory>(
+        gpu_preferences, workarounds, feature_info.get(), image_factory,
+        shared_context_state_ ? shared_context_state_->progress_reporter()
+                              : nullptr,
+        /*for_shared_memory_gmbs=*/false);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
 #endif
@@ -541,7 +539,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
-    backing = SharedImageBackingCompound::CreateSharedMemory(
+    backing = CompoundImageBacking::CreateSharedMemory(
         factory, mailbox, std::move(handle), format, plane, surface_handle,
         size, color_space, surface_origin, alpha_type, usage);
   } else {
@@ -605,7 +603,7 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          GrSurfaceOrigin surface_origin,
                                          SkAlphaType alpha_type,
                                          uint32_t usage) {
-  if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
+  if (!D3DImageBackingFactory::IsSwapChainSupported())
     return false;
 
   bool allow_legacy_mailbox = true;
@@ -618,7 +616,7 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
 }
 
 bool SharedImageFactory::PresentSwapChain(const Mailbox& mailbox) {
-  if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
+  if (!D3DImageBackingFactory::IsSwapChainSupported())
     return false;
   auto it = shared_images_.find(mailbox);
   if (it == shared_images_.end()) {
@@ -831,54 +829,54 @@ SharedImageRepresentationFactory::~SharedImageRepresentationFactory() {
   DCHECK_EQ(0u, tracker_->GetMemRepresented());
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 SharedImageRepresentationFactory::ProduceGLTexture(const Mailbox& mailbox) {
   return manager_->ProduceGLTexture(mailbox, tracker_.get());
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 SharedImageRepresentationFactory::ProduceRGBEmulationGLTexture(
     const Mailbox& mailbox) {
   return manager_->ProduceRGBEmulationGLTexture(mailbox, tracker_.get());
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
 SharedImageRepresentationFactory::ProduceGLTexturePassthrough(
     const Mailbox& mailbox) {
   return manager_->ProduceGLTexturePassthrough(mailbox, tracker_.get());
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
+std::unique_ptr<SkiaImageRepresentation>
 SharedImageRepresentationFactory::ProduceSkia(
     const Mailbox& mailbox,
     scoped_refptr<SharedContextState> context_state) {
   return manager_->ProduceSkia(mailbox, tracker_.get(), context_state);
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
+std::unique_ptr<DawnImageRepresentation>
 SharedImageRepresentationFactory::ProduceDawn(const Mailbox& mailbox,
                                               WGPUDevice device,
                                               WGPUBackendType backend_type) {
   return manager_->ProduceDawn(mailbox, tracker_.get(), device, backend_type);
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
+std::unique_ptr<OverlayImageRepresentation>
 SharedImageRepresentationFactory::ProduceOverlay(const gpu::Mailbox& mailbox) {
   return manager_->ProduceOverlay(mailbox, tracker_.get());
 }
 
-std::unique_ptr<SharedImageRepresentationMemory>
+std::unique_ptr<MemoryImageRepresentation>
 SharedImageRepresentationFactory::ProduceMemory(const gpu::Mailbox& mailbox) {
   return manager_->ProduceMemory(mailbox, tracker_.get());
 }
 
-std::unique_ptr<SharedImageRepresentationRaster>
+std::unique_ptr<RasterImageRepresentation>
 SharedImageRepresentationFactory::ProduceRaster(const Mailbox& mailbox) {
   return manager_->ProduceRaster(mailbox, tracker_.get());
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageRepresentationFactory::ProduceLegacyOverlay(
     const gpu::Mailbox& mailbox) {
   return manager_->ProduceLegacyOverlay(mailbox, tracker_.get());

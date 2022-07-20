@@ -18,18 +18,17 @@ namespace gpu {
 
 class SharedContextState;
 
-namespace raster {
-
-class GPU_GLES2_EXPORT WrappedSkImageFactory
+class GPU_GLES2_EXPORT WrappedSkImageBackingFactory
     : public gpu::SharedImageBackingFactory {
  public:
-  explicit WrappedSkImageFactory(
+  explicit WrappedSkImageBackingFactory(
       scoped_refptr<SharedContextState> context_state);
 
-  WrappedSkImageFactory(const WrappedSkImageFactory&) = delete;
-  WrappedSkImageFactory& operator=(const WrappedSkImageFactory&) = delete;
+  WrappedSkImageBackingFactory(const WrappedSkImageBackingFactory&) = delete;
+  WrappedSkImageBackingFactory& operator=(const WrappedSkImageBackingFactory&) =
+      delete;
 
-  ~WrappedSkImageFactory() override;
+  ~WrappedSkImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation:
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -79,7 +78,6 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
   const bool is_drdc_enabled_;
 };
 
-}  // namespace raster
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_WRAPPED_SK_IMAGE_BACKING_FACTORY_H_

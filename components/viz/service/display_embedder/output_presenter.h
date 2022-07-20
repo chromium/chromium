@@ -43,7 +43,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
         const gpu::Mailbox& mailbox,
         SkiaOutputSurfaceDependency* deps);
 
-    gpu::SharedImageRepresentationSkia* skia_representation() {
+    gpu::SkiaImageRepresentation* skia_representation() {
       return skia_representation_.get();
     }
 
@@ -62,8 +62,8 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 
    private:
     base::ScopedClosureRunner shared_image_deleter_;
-    std::unique_ptr<gpu::SharedImageRepresentationSkia> skia_representation_;
-    std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+    std::unique_ptr<gpu::SkiaImageRepresentation> skia_representation_;
+    std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
         scoped_skia_write_access_;
 
     std::vector<GrBackendSemaphore> end_semaphores_;
@@ -115,8 +115,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
   // Default.
   using OverlayPlaneCandidate = OverlayCandidate;
 #endif
-  using ScopedOverlayAccess =
-      gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
+  using ScopedOverlayAccess = gpu::OverlayImageRepresentation::ScopedReadAccess;
   virtual void ScheduleOverlayPlane(
       const OverlayPlaneCandidate& overlay_plane_candidate,
       ScopedOverlayAccess* access,

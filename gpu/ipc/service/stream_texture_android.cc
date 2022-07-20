@@ -228,8 +228,8 @@ void StreamTexture::OnFrameAvailable() {
     if (context_state_->GrContextIsVulkan()) {
       vulkan_context_provider = context_state_->vk_context_provider();
     }
-    auto ycbcr_info = SharedImageVideo::GetYcbcrInfo(texture_owner_.get(),
-                                                     vulkan_context_provider);
+    auto ycbcr_info = AndroidVideoImageBacking::GetYcbcrInfo(
+        texture_owner_.get(), vulkan_context_provider);
 
     client_->OnFrameWithInfoAvailable(mailbox, coded_size, visible_rect,
                                       ycbcr_info);
@@ -279,7 +279,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
 
   // TODO(vikassoni): Hardcoding colorspace to SRGB. Figure how if we have a
   // colorspace and wire it here.
-  auto shared_image = SharedImageVideo::Create(
+  auto shared_image = AndroidVideoImageBacking::Create(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
       /*lock=*/nullptr);

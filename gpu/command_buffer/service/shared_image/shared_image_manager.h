@@ -50,14 +50,15 @@ class GPU_GLES2_EXPORT SharedImageManager {
   // Accessors which return a SharedImageRepresentation. Representations also
   // take a ref on the mailbox, releasing it when the representation is
   // destroyed.
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
-  std::unique_ptr<SharedImageRepresentationGLTexture>
-  ProduceRGBEmulationGLTexture(const Mailbox& mailbox, MemoryTypeTracker* ref);
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTextureImageRepresentation> ProduceRGBEmulationGLTexture(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(const Mailbox& mailbox, MemoryTypeTracker* ref);
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       scoped_refptr<SharedContextState> context_state);
@@ -68,27 +69,27 @@ class GPU_GLES2_EXPORT SharedImageManager {
   // associate with the representation.
   // TODO(crbug.com/1147184): Revisit this in the future for WebGPU
   // multi-adapter support.
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       WGPUDevice device,
       WGPUBackendType backend_type);
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
-  std::unique_ptr<SharedImageRepresentationVaapi> ProduceVASurface(
+  std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       VaapiDependenciesFactory* dep_factory);
-  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
-  std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
+  std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<SharedImageRepresentationLegacyOverlay> ProduceLegacyOverlay(
+  std::unique_ptr<LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 #endif

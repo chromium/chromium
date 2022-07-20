@@ -12,12 +12,12 @@ namespace gpu {
 
 // Implementation of SharedImageBackingFactory that produces
 // SharedMemory GMB backed SharedImages.
-class GPU_GLES2_EXPORT SharedImageBackingFactorySharedMemory
+class GPU_GLES2_EXPORT SharedMemoryImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  explicit SharedImageBackingFactorySharedMemory();
+  explicit SharedMemoryImageBackingFactory();
 
-  ~SharedImageBackingFactorySharedMemory() override;
+  ~SharedMemoryImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

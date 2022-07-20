@@ -40,10 +40,10 @@ struct Mailbox;
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
 // buffer of swap chain) texture (as gles2::Texture/gles2::TexturePassthrough)
 // and a reference to created swap chain.
-class GPU_GLES2_EXPORT SharedImageBackingD3D
+class GPU_GLES2_EXPORT D3DImageBacking
     : public ClearTrackingSharedImageBacking {
  public:
-  static std::unique_ptr<SharedImageBackingD3D> CreateFromSwapChainBuffer(
+  static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -55,7 +55,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
       bool is_back_buffer);
 
-  static std::unique_ptr<SharedImageBackingD3D> CreateFromDXGISharedHandle(
+  static std::unique_ptr<D3DImageBacking> CreateFromDXGISharedHandle(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -67,7 +67,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state);
 
   // TODO(sunnyps): Remove this after migrating DXVA decoder to EGLImage.
-  static std::unique_ptr<SharedImageBackingD3D> CreateFromGLTexture(
+  static std::unique_ptr<D3DImageBacking> CreateFromGLTexture(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -88,7 +88,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       unsigned array_slice,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr);
 
-  static std::unique_ptr<SharedImageBackingD3D> CreateFromSharedMemoryHandle(
+  static std::unique_ptr<D3DImageBacking> CreateFromSharedMemoryHandle(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -99,10 +99,10 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       gfx::GpuMemoryBufferHandle shared_memory_handle);
 
-  SharedImageBackingD3D(const SharedImageBackingD3D&) = delete;
-  SharedImageBackingD3D& operator=(const SharedImageBackingD3D&) = delete;
+  D3DImageBacking(const D3DImageBacking&) = delete;
+  D3DImageBacking& operator=(const D3DImageBacking&) = delete;
 
-  ~SharedImageBackingD3D() override;
+  ~D3DImageBacking() override;
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -110,7 +110,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   bool CopyToGpuMemoryBuffer() override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   bool PresentSwapChain() override;
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
@@ -136,21 +136,21 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   }
 
  protected:
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  SharedImageBackingD3D(
+  D3DImageBacking(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,

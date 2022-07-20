@@ -14,22 +14,21 @@
 
 namespace gpu {
 class SharedContextState;
-class SharedImageBackingOzone;
+class OzoneImageBacking;
 class VulkanImage;
 class VulkanImplementation;
 
 // A generic Skia vulkan representation which can be used by Ozone backing.
-class SharedImageRepresentationSkiaVkOzone
-    : public SharedImageRepresentationSkia {
+class SkiaVkOzoneImageRepresentation : public SkiaImageRepresentation {
  public:
-  SharedImageRepresentationSkiaVkOzone(
+  SkiaVkOzoneImageRepresentation(
       SharedImageManager* manager,
-      SharedImageBackingOzone* backing,
+      OzoneImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
       std::unique_ptr<VulkanImage> vulkan_image,
       MemoryTypeTracker* tracker);
 
-  ~SharedImageRepresentationSkiaVkOzone() override;
+  ~SkiaVkOzoneImageRepresentation() override;
 
   sk_sp<SkSurface> BeginWriteAccess(
       int final_msaa_count,
@@ -49,8 +48,8 @@ class SharedImageRepresentationSkiaVkOzone
   void EndReadAccess() override;
 
  protected:
-  SharedImageBackingOzone* ozone_backing() const {
-    return static_cast<SharedImageBackingOzone*>(backing());
+  OzoneImageBacking* ozone_backing() const {
+    return static_cast<OzoneImageBacking*>(backing());
   }
 
   SharedContextState* context_state() const { return context_state_.get(); }

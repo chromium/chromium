@@ -15,17 +15,17 @@
 
 namespace gpu {
 
-ExternalVkImageOverlayRepresentation::ExternalVkImageOverlayRepresentation(
-    SharedImageManager* manager,
-    ExternalVkImageBacking* backing,
-    MemoryTypeTracker* tracker)
-    : gpu::SharedImageRepresentationOverlay(manager, backing, tracker),
+ExternalVkImageOverlayImageRepresentation::
+    ExternalVkImageOverlayImageRepresentation(SharedImageManager* manager,
+                                              ExternalVkImageBacking* backing,
+                                              MemoryTypeTracker* tracker)
+    : gpu::OverlayImageRepresentation(manager, backing, tracker),
       vk_image_backing_(backing) {}
 
-ExternalVkImageOverlayRepresentation::~ExternalVkImageOverlayRepresentation() =
-    default;
+ExternalVkImageOverlayImageRepresentation::
+    ~ExternalVkImageOverlayImageRepresentation() = default;
 
-bool ExternalVkImageOverlayRepresentation::BeginReadAccess(
+bool ExternalVkImageOverlayImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
   DCHECK(read_begin_semaphores_.empty());
   if (!vk_image_backing_->BeginAccess(/*readonly=*/true,
@@ -38,7 +38,7 @@ bool ExternalVkImageOverlayRepresentation::BeginReadAccess(
   return true;
 }
 
-void ExternalVkImageOverlayRepresentation::EndReadAccess(
+void ExternalVkImageOverlayImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   ExternalSemaphore read_end_semaphore;
 
@@ -61,12 +61,12 @@ void ExternalVkImageOverlayRepresentation::EndReadAccess(
   read_begin_semaphores_.clear();
 }
 
-gl::GLImage* ExternalVkImageOverlayRepresentation::GetGLImage() {
+gl::GLImage* ExternalVkImageOverlayImageRepresentation::GetGLImage() {
   NOTREACHED();
   return nullptr;
 }
 
-void ExternalVkImageOverlayRepresentation::GetAcquireFence(
+void ExternalVkImageOverlayImageRepresentation::GetAcquireFence(
     gfx::GpuFenceHandle& fence) {
   const VkDevice& device = vk_image_backing_->context_provider()
                                ->GetDeviceQueue()

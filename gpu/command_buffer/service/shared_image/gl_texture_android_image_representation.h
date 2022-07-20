@@ -10,18 +10,23 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
 namespace gpu {
-class SharedImageBackingAndroid;
+class AndroidImageBacking;
 
 // A generic GL Texture representation which can be used by any backing on
 // Android.
-class SharedImageRepresentationGLTextureAndroid
-    : public SharedImageRepresentationGLTexture {
+class GLTextureAndroidImageRepresentation
+    : public GLTextureImageRepresentation {
  public:
-  SharedImageRepresentationGLTextureAndroid(SharedImageManager* manager,
-                                            SharedImageBackingAndroid* backing,
-                                            MemoryTypeTracker* tracker,
-                                            gles2::Texture* texture);
-  ~SharedImageRepresentationGLTextureAndroid() override;
+  GLTextureAndroidImageRepresentation(SharedImageManager* manager,
+                                      AndroidImageBacking* backing,
+                                      MemoryTypeTracker* tracker,
+                                      gles2::Texture* texture);
+  ~GLTextureAndroidImageRepresentation() override;
+
+  GLTextureAndroidImageRepresentation(
+      const GLTextureAndroidImageRepresentation&) = delete;
+  GLTextureAndroidImageRepresentation& operator=(
+      const GLTextureAndroidImageRepresentation&) = delete;
 
   gles2::Texture* GetTexture() override;
 
@@ -29,17 +34,12 @@ class SharedImageRepresentationGLTextureAndroid
   void EndAccess() override;
 
  private:
-  SharedImageBackingAndroid* android_backing() {
-    return static_cast<SharedImageBackingAndroid*>(backing());
+  AndroidImageBacking* android_backing() {
+    return static_cast<AndroidImageBacking*>(backing());
   }
 
   const raw_ptr<gles2::Texture> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
-
-  SharedImageRepresentationGLTextureAndroid(
-      const SharedImageRepresentationGLTextureAndroid&) = delete;
-  SharedImageRepresentationGLTextureAndroid& operator=(
-      const SharedImageRepresentationGLTextureAndroid&) = delete;
 };
 
 }  // namespace gpu

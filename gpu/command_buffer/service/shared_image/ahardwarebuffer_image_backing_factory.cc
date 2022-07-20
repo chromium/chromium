@@ -119,24 +119,25 @@ class OverlayImage final : public gl::GLImage {
 // Implementation of SharedImageBacking that holds an AHardwareBuffer. This
 // can be used to create a GL texture or a VK Image from the AHardwareBuffer
 // backing.
-class SharedImageBackingAHB : public SharedImageBackingAndroid {
+class AHardwareBufferImageBacking : public AndroidImageBacking {
  public:
-  SharedImageBackingAHB(const Mailbox& mailbox,
-                        viz::ResourceFormat format,
-                        const gfx::Size& size,
-                        const gfx::ColorSpace& color_space,
-                        GrSurfaceOrigin surface_origin,
-                        SkAlphaType alpha_type,
-                        uint32_t usage,
-                        base::android::ScopedHardwareBufferHandle handle,
-                        size_t estimated_size,
-                        bool is_thread_safe,
-                        base::ScopedFD initial_upload_fd);
+  AHardwareBufferImageBacking(const Mailbox& mailbox,
+                              viz::ResourceFormat format,
+                              const gfx::Size& size,
+                              const gfx::ColorSpace& color_space,
+                              GrSurfaceOrigin surface_origin,
+                              SkAlphaType alpha_type,
+                              uint32_t usage,
+                              base::android::ScopedHardwareBufferHandle handle,
+                              size_t estimated_size,
+                              bool is_thread_safe,
+                              base::ScopedFD initial_upload_fd);
 
-  SharedImageBackingAHB(const SharedImageBackingAHB&) = delete;
-  SharedImageBackingAHB& operator=(const SharedImageBackingAHB&) = delete;
+  AHardwareBufferImageBacking(const AHardwareBufferImageBacking&) = delete;
+  AHardwareBufferImageBacking& operator=(const AHardwareBufferImageBacking&) =
+      delete;
 
-  ~SharedImageBackingAHB() override;
+  ~AHardwareBufferImageBacking() override;
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -152,20 +153,20 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
   void EndOverlayAccess();
 
  protected:
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
@@ -178,20 +179,18 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
 };
 
-// Vk backed Skia representation of SharedImageBackingAHB.
-class SharedImageRepresentationSkiaVkAHB
-    : public SharedImageRepresentationSkiaVkAndroid {
+// Vk backed Skia representation of AHardwareBufferImageBacking.
+class SkiaVkAHBImageRepresentation : public SkiaVkAndroidImageRepresentation {
  public:
-  SharedImageRepresentationSkiaVkAHB(
-      SharedImageManager* manager,
-      SharedImageBackingAndroid* backing,
-      scoped_refptr<SharedContextState> context_state,
-      std::unique_ptr<VulkanImage> vulkan_image,
-      MemoryTypeTracker* tracker)
-      : SharedImageRepresentationSkiaVkAndroid(manager,
-                                               backing,
-                                               std::move(context_state),
-                                               tracker) {
+  SkiaVkAHBImageRepresentation(SharedImageManager* manager,
+                               AndroidImageBacking* backing,
+                               scoped_refptr<SharedContextState> context_state,
+                               std::unique_ptr<VulkanImage> vulkan_image,
+                               MemoryTypeTracker* tracker)
+      : SkiaVkAndroidImageRepresentation(manager,
+                                         backing,
+                                         std::move(context_state),
+                                         tracker) {
     DCHECK(vulkan_image);
 
     vulkan_image_ = std::move(vulkan_image);
@@ -204,19 +203,18 @@ class SharedImageRepresentationSkiaVkAHB
   }
 };
 
-class SharedImageRepresentationOverlayAHB
-    : public SharedImageRepresentationOverlay {
+class OverlayAHBImageRepresentation : public OverlayImageRepresentation {
  public:
-  SharedImageRepresentationOverlayAHB(SharedImageManager* manager,
-                                      SharedImageBacking* backing,
-                                      MemoryTypeTracker* tracker)
-      : SharedImageRepresentationOverlay(manager, backing, tracker) {}
+  OverlayAHBImageRepresentation(SharedImageManager* manager,
+                                SharedImageBacking* backing,
+                                MemoryTypeTracker* tracker)
+      : OverlayImageRepresentation(manager, backing, tracker) {}
 
-  ~SharedImageRepresentationOverlayAHB() override { EndReadAccess({}); }
+  ~OverlayAHBImageRepresentation() override { EndReadAccess({}); }
 
  private:
-  SharedImageBackingAHB* ahb_backing() {
-    return static_cast<SharedImageBackingAHB*>(backing());
+  AHardwareBufferImageBacking* ahb_backing() {
+    return static_cast<AHardwareBufferImageBacking*>(backing());
   }
 
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
@@ -242,7 +240,7 @@ class SharedImageRepresentationOverlayAHB
   raw_ptr<gl::GLImage> gl_image_ = nullptr;
 };
 
-SharedImageBackingAHB::SharedImageBackingAHB(
+AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -254,21 +252,21 @@ SharedImageBackingAHB::SharedImageBackingAHB(
     size_t estimated_size,
     bool is_thread_safe,
     base::ScopedFD initial_upload_fd)
-    : SharedImageBackingAndroid(mailbox,
-                                format,
-                                size,
-                                color_space,
-                                surface_origin,
-                                alpha_type,
-                                usage,
-                                estimated_size,
-                                is_thread_safe,
-                                std::move(initial_upload_fd)),
+    : AndroidImageBacking(mailbox,
+                          format,
+                          size,
+                          color_space,
+                          surface_origin,
+                          alpha_type,
+                          usage,
+                          estimated_size,
+                          is_thread_safe,
+                          std::move(initial_upload_fd)),
       hardware_buffer_handle_(std::move(handle)) {
   DCHECK(hardware_buffer_handle_.is_valid());
 }
 
-SharedImageBackingAHB::~SharedImageBackingAHB() {
+AHardwareBufferImageBacking::~AHardwareBufferImageBacking() {
   // Locking here in destructor since we are accessing member variable
   // |have_context_| via have_context().
   AutoLock auto_lock(this);
@@ -279,11 +277,11 @@ SharedImageBackingAHB::~SharedImageBackingAHB() {
   }
 }
 
-SharedImageBackingType SharedImageBackingAHB::GetType() const {
-  return SharedImageBackingType::kAHB;
+SharedImageBackingType AHardwareBufferImageBacking::GetType() const {
+  return SharedImageBackingType::kAHardwareBuffer;
 }
 
-gfx::Rect SharedImageBackingAHB::ClearedRect() const {
+gfx::Rect AHardwareBufferImageBacking::ClearedRect() const {
   AutoLock auto_lock(this);
   // If a |legacy_texture_| exists, defer to that. Once created,
   // |legacy_texture_| is never destroyed, so no need to synchronize with
@@ -295,7 +293,8 @@ gfx::Rect SharedImageBackingAHB::ClearedRect() const {
   }
 }
 
-void SharedImageBackingAHB::SetClearedRect(const gfx::Rect& cleared_rect) {
+void AHardwareBufferImageBacking::SetClearedRect(
+    const gfx::Rect& cleared_rect) {
   AutoLock auto_lock(this);
   // If a |legacy_texture_| exists, defer to that. Once created,
   // |legacy_texture_| is never destroyed, so no need to synchronize with
@@ -308,11 +307,12 @@ void SharedImageBackingAHB::SetClearedRect(const gfx::Rect& cleared_rect) {
   }
 }
 
-void SharedImageBackingAHB::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void AHardwareBufferImageBacking::Update(
+    std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
 }
 
-bool SharedImageBackingAHB::ProduceLegacyMailbox(
+bool AHardwareBufferImageBacking::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   // Legacy mailboxes cannot be used safely in threadsafe mode.
   if (is_thread_safe())
@@ -335,14 +335,14 @@ bool SharedImageBackingAHB::ProduceLegacyMailbox(
   return true;
 }
 
-base::android::ScopedHardwareBufferHandle SharedImageBackingAHB::GetAhbHandle()
-    const {
+base::android::ScopedHardwareBufferHandle
+AHardwareBufferImageBacking::GetAhbHandle() const {
   return hardware_buffer_handle_.Clone();
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingAHB::ProduceGLTexture(SharedImageManager* manager,
-                                        MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTextureImageRepresentation>
+AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                              MemoryTypeTracker* tracker) {
   // Use same texture for all the texture representations generated from same
   // backing.
   DCHECK(hardware_buffer_handle_.is_valid());
@@ -358,13 +358,14 @@ SharedImageBackingAHB::ProduceGLTexture(SharedImageManager* manager,
   if (!texture)
     return nullptr;
 
-  return std::make_unique<SharedImageRepresentationGLTextureAndroid>(
+  return std::make_unique<GLTextureAndroidImageRepresentation>(
       manager, this, tracker, std::move(texture));
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingAHB::ProduceGLTexturePassthrough(SharedImageManager* manager,
-                                                   MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+AHardwareBufferImageBacking::ProduceGLTexturePassthrough(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
   // Use same texture for all the texture representations generated from same
   // backing.
   DCHECK(hardware_buffer_handle_.is_valid());
@@ -380,12 +381,12 @@ SharedImageBackingAHB::ProduceGLTexturePassthrough(SharedImageManager* manager,
   if (!texture)
     return nullptr;
 
-  return std::make_unique<SharedImageRepresentationGLTexturePassthroughAndroid>(
+  return std::make_unique<GLTexturePassthroughAndroidImageRepresentation>(
       manager, this, tracker, std::move(texture));
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingAHB::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+AHardwareBufferImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -406,7 +407,7 @@ SharedImageBackingAHB::ProduceSkia(
     if (!vulkan_image)
       return nullptr;
 
-    return std::make_unique<SharedImageRepresentationSkiaVkAHB>(
+    return std::make_unique<SkiaVkAHBImageRepresentation>(
         manager, this, std::move(context_state), std::move(vulkan_image),
         tracker);
   }
@@ -418,21 +419,21 @@ SharedImageBackingAHB::ProduceSkia(
   if (!texture)
     return nullptr;
   auto gl_representation =
-      std::make_unique<SharedImageRepresentationGLTextureAndroid>(
+      std::make_unique<GLTextureAndroidImageRepresentation>(
           manager, this, tracker, std::move(texture));
-  return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
-                                                 std::move(context_state),
-                                                 manager, this, tracker);
+  return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                           std::move(context_state), manager,
+                                           this, tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageBackingAHB::ProduceOverlay(SharedImageManager* manager,
-                                      MemoryTypeTracker* tracker) {
-  return std::make_unique<SharedImageRepresentationOverlayAHB>(manager, this,
-                                                               tracker);
+std::unique_ptr<OverlayImageRepresentation>
+AHardwareBufferImageBacking::ProduceOverlay(SharedImageManager* manager,
+                                            MemoryTypeTracker* tracker) {
+  return std::make_unique<OverlayAHBImageRepresentation>(manager, this,
+                                                         tracker);
 }
 
-gl::GLImage* SharedImageBackingAHB::BeginOverlayAccess(
+gl::GLImage* AHardwareBufferImageBacking::BeginOverlayAccess(
     gfx::GpuFenceHandle& begin_read_fence) {
   AutoLock auto_lock(this);
 
@@ -461,7 +462,7 @@ gl::GLImage* SharedImageBackingAHB::BeginOverlayAccess(
   return overlay_image_.get();
 }
 
-void SharedImageBackingAHB::EndOverlayAccess() {
+void AHardwareBufferImageBacking::EndOverlayAccess() {
   AutoLock auto_lock(this);
 
   DCHECK(is_overlay_accessing_);
@@ -471,7 +472,7 @@ void SharedImageBackingAHB::EndOverlayAccess() {
   read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
 }
 
-SharedImageBackingFactoryAHB::SharedImageBackingFactoryAHB(
+AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const gles2::FeatureInfo* feature_info) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
   const gles2::Validators* validators = feature_info->validators();
@@ -536,9 +537,10 @@ SharedImageBackingFactoryAHB::SharedImageBackingFactoryAHB(
   max_gl_texture_size_ = std::min(max_gl_texture_size_, INT_MAX - 1);
 }
 
-SharedImageBackingFactoryAHB::~SharedImageBackingFactoryAHB() = default;
+AHardwareBufferImageBackingFactory::~AHardwareBufferImageBackingFactory() =
+    default;
 
-bool SharedImageBackingFactoryAHB::ValidateUsage(
+bool AHardwareBufferImageBackingFactory::ValidateUsage(
     uint32_t usage,
     const gfx::Size& size,
     viz::ResourceFormat format) const {
@@ -587,7 +589,8 @@ bool SharedImageBackingFactoryAHB::ValidateUsage(
   return true;
 }
 
-std::unique_ptr<SharedImageBacking> SharedImageBackingFactoryAHB::MakeBacking(
+std::unique_ptr<SharedImageBacking>
+AHardwareBufferImageBackingFactory::MakeBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -681,7 +684,7 @@ std::unique_ptr<SharedImageBacking> SharedImageBackingFactoryAHB::MakeBacking(
     initial_upload_fd = base::ScopedFD(fence);
   }
 
-  auto backing = std::make_unique<SharedImageBackingAHB>(
+  auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle), estimated_size, is_thread_safe,
       std::move(initial_upload_fd));
@@ -694,7 +697,7 @@ std::unique_ptr<SharedImageBacking> SharedImageBackingFactoryAHB::MakeBacking(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryAHB::CreateSharedImage(
+AHardwareBufferImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -709,7 +712,7 @@ SharedImageBackingFactoryAHB::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryAHB::CreateSharedImage(
+AHardwareBufferImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -722,12 +725,12 @@ SharedImageBackingFactoryAHB::CreateSharedImage(
                      alpha_type, usage, false, pixel_data);
 }
 
-bool SharedImageBackingFactoryAHB::CanImportGpuMemoryBuffer(
+bool AHardwareBufferImageBackingFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
   return memory_buffer_type == gfx::ANDROID_HARDWARE_BUFFER;
 }
 
-bool SharedImageBackingFactoryAHB::IsSupported(
+bool AHardwareBufferImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
     bool thread_safe,
@@ -753,7 +756,7 @@ bool SharedImageBackingFactoryAHB::IsSupported(
   return true;
 }
 
-bool SharedImageBackingFactoryAHB::IsFormatSupported(
+bool AHardwareBufferImageBackingFactory::IsFormatSupported(
     viz::ResourceFormat format) {
   DCHECK_GE(format, 0);
   DCHECK_LE(format, viz::RESOURCE_FORMAT_MAX);
@@ -761,11 +764,11 @@ bool SharedImageBackingFactoryAHB::IsFormatSupported(
   return format_info_[format].ahb_supported;
 }
 
-SharedImageBackingFactoryAHB::FormatInfo::FormatInfo() = default;
-SharedImageBackingFactoryAHB::FormatInfo::~FormatInfo() = default;
+AHardwareBufferImageBackingFactory::FormatInfo::FormatInfo() = default;
+AHardwareBufferImageBackingFactory::FormatInfo::~FormatInfo() = default;
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryAHB::CreateSharedImage(
+AHardwareBufferImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -800,7 +803,7 @@ SharedImageBackingFactoryAHB::CreateSharedImage(
     return nullptr;
   }
 
-  auto backing = std::make_unique<SharedImageBackingAHB>(
+  auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, resource_format, size, color_space, surface_origin, alpha_type,
       usage, std::move(handle.android_hardware_buffer), estimated_size, false,
       base::ScopedFD());

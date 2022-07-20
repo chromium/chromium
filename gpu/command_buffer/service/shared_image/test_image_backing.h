@@ -12,28 +12,28 @@
 namespace gpu {
 
 // Test implementation of a gles2::Texture backed backing.
-class TestSharedImageBacking : public SharedImageBacking {
+class TestImageBacking : public SharedImageBacking {
  public:
   // Constructor which uses a dummy GL texture ID for the backing.
-  TestSharedImageBacking(const Mailbox& mailbox,
-                         viz::ResourceFormat format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         size_t estimated_size);
+  TestImageBacking(const Mailbox& mailbox,
+                   viz::ResourceFormat format,
+                   const gfx::Size& size,
+                   const gfx::ColorSpace& color_space,
+                   GrSurfaceOrigin surface_origin,
+                   SkAlphaType alpha_type,
+                   uint32_t usage,
+                   size_t estimated_size);
   // Constructor which uses a provided GL texture ID for the backing.
-  TestSharedImageBacking(const Mailbox& mailbox,
-                         viz::ResourceFormat format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         size_t estimated_size,
-                         GLuint texture_id);
-  ~TestSharedImageBacking() override;
+  TestImageBacking(const Mailbox& mailbox,
+                   viz::ResourceFormat format,
+                   const gfx::Size& size,
+                   const gfx::ColorSpace& color_space,
+                   GrSurfaceOrigin surface_origin,
+                   SkAlphaType alpha_type,
+                   uint32_t usage,
+                   size_t estimated_size,
+                   GLuint texture_id);
+  ~TestImageBacking() override;
 
   bool GetUploadFromMemoryCalledAndReset();
 
@@ -55,25 +55,25 @@ class TestSharedImageBacking : public SharedImageBacking {
   bool can_access() const { return can_access_; }
 
  protected:
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
   // ProduceSkia/Dawn/Overlay all create dummy representations that
   // don't link up to a real texture.
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type) override;
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 

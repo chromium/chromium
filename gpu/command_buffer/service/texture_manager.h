@@ -759,16 +759,16 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   // TODO(ericrk): Remove this once the Texture itself is generated from and
   // owns the SharedImageRepresentation.
   void SetSharedImageRepresentation(
-      std::unique_ptr<SharedImageRepresentationGLTexture> shared_image);
+      std::unique_ptr<GLTextureImageRepresentation> shared_image);
   const Texture* texture() const { return texture_; }
   Texture* texture() { return texture_; }
   GLuint client_id() const { return client_id_; }
   GLuint service_id() const { return texture_->service_id(); }
   GLint num_observers() const { return num_observers_; }
-  SharedImageRepresentationGLTexture* shared_image() const {
+  GLTextureImageRepresentation* shared_image() const {
     return shared_image_.get();
   }
-  const std::unique_ptr<SharedImageRepresentationGLTexture::ScopedAccess>&
+  const std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>&
   shared_image_scoped_access() const {
     return shared_image_scoped_access_;
   }
@@ -796,8 +796,8 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   GLint num_observers_;
   bool force_context_lost_;
 
-  std::unique_ptr<SharedImageRepresentationGLTexture> shared_image_;
-  std::unique_ptr<SharedImageRepresentationGLTexture::ScopedAccess>
+  std::unique_ptr<GLTextureImageRepresentation> shared_image_;
+  std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>
       shared_image_scoped_access_;
 };
 
@@ -979,7 +979,7 @@ class GPU_GLES2_EXPORT TextureManager
   // ID.
   TextureRef* ConsumeSharedImage(
       GLuint client_id,
-      std::unique_ptr<SharedImageRepresentationGLTexture> shared_image);
+      std::unique_ptr<GLTextureImageRepresentation> shared_image);
 
   // Sets |rect| of mip as cleared.
   void SetLevelClearedRect(TextureRef* ref,

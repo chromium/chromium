@@ -16,13 +16,13 @@ namespace gpu {
 
 // Helper functions used used by SharedImageRepresentationGLImage to do
 // IOSurface-specific sharing.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryIOSurface {
+class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory {
  public:
   static sk_sp<SkPromiseImageTexture> ProduceSkiaPromiseTextureMetal(
       SharedImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gl::GLImage> image);
-  static std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  static std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,

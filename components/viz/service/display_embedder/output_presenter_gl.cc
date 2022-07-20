@@ -72,9 +72,8 @@ class PresenterImageGL : public OutputPresenter::Image {
   }
 
  private:
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay>
-      overlay_representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
+  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_representation_;
+  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
       scoped_overlay_read_access_;
 
   int present_count_ = 0;

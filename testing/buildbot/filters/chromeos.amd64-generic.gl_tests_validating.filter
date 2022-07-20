@@ -21,8 +21,8 @@
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3GettersArray*
 
 # crbug.com/1314124
--ExternalVkImageFactoryTest.SkiaVulkanWrite_DawnRead
--ExternalVkImageFactoryTest.DawnWrite_SkiaVulkanRead
+-ExternalVkImageBackingFactoryTest.SkiaVulkanWrite_DawnRead
+-ExternalVkImageBackingFactoryTest.DawnWrite_SkiaVulkanRead
 
 # crbug.com/1314468
 -GpuMemoryBufferTestEGL.GLCreateImageCHROMIUMFromNativePixmap

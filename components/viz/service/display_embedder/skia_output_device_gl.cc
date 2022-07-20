@@ -70,7 +70,7 @@ class SkiaOutputDeviceGL::OverlayData {
       : texture_(std::move(texture)) {}
 
   explicit OverlayData(
-      std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation)
+      std::unique_ptr<gpu::OverlayImageRepresentation> representation)
       : representation_(std::move(representation)) {}
 
   ~OverlayData() = default;
@@ -95,9 +95,8 @@ class SkiaOutputDeviceGL::OverlayData {
   void EndOverlayAccess() { access_.reset(); }
 
  private:
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
-      access_;
+  std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
+  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess> access_;
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_;
 };
 

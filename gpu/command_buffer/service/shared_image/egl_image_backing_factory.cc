@@ -23,21 +23,20 @@
 namespace gpu {
 
 ///////////////////////////////////////////////////////////////////////////////
-// SharedImageBackingFactoryEGL
+// EGLImageBackingFactory
 
-SharedImageBackingFactoryEGL::SharedImageBackingFactoryEGL(
+EGLImageBackingFactory::EGLImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info)
-    : SharedImageBackingFactoryGLCommon(gpu_preferences,
-                                        workarounds,
-                                        feature_info,
-                                        /*progress_reporter=*/nullptr) {}
+    : GLCommonImageBackingFactory(gpu_preferences,
+                                  workarounds,
+                                  feature_info,
+                                  /*progress_reporter=*/nullptr) {}
 
-SharedImageBackingFactoryEGL::~SharedImageBackingFactoryEGL() = default;
+EGLImageBackingFactory::~EGLImageBackingFactory() = default;
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryEGL::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -51,8 +50,7 @@ SharedImageBackingFactoryEGL::CreateSharedImage(
                              alpha_type, usage, base::span<const uint8_t>());
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryEGL::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -65,8 +63,7 @@ SharedImageBackingFactoryEGL::CreateSharedImage(
                              alpha_type, usage, pixel_data);
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryEGL::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -82,14 +79,13 @@ SharedImageBackingFactoryEGL::CreateSharedImage(
   return nullptr;
 }
 
-bool SharedImageBackingFactoryEGL::IsSupported(
-    uint32_t usage,
-    viz::ResourceFormat format,
-    bool thread_safe,
-    gfx::GpuMemoryBufferType gmb_type,
-    GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
-    bool is_pixel_used) {
+bool EGLImageBackingFactory::IsSupported(uint32_t usage,
+                                         viz::ResourceFormat format,
+                                         bool thread_safe,
+                                         gfx::GpuMemoryBufferType gmb_type,
+                                         GrContextType gr_context_type,
+                                         bool* allow_legacy_mailbox,
+                                         bool is_pixel_used) {
   if (is_pixel_used && gr_context_type != GrContextType::kGL) {
     return false;
   }
@@ -115,8 +111,7 @@ bool SharedImageBackingFactoryEGL::IsSupported(
   return true;
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryEGL::MakeEglImageBacking(
+std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -140,7 +135,7 @@ SharedImageBackingFactoryEGL::MakeEglImageBacking(
     return nullptr;
   }
 
-  return std::make_unique<SharedImageBackingEglImage>(
+  return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       estimated_size, format_info, workarounds_, attribs_, use_passthrough_,
       pixel_data);

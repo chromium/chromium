@@ -4036,7 +4036,7 @@
     {
       "id": 396,
       "cr_bugs": [1327044],
-      "description": "Add fence to SharedImageBackingOzone::BeginAccess when on same GL context",
+      "description": "Add fence to OzoneImageBacking::BeginAccess when on same GL context",
       "os": {
         "type": "chromeos"
       },

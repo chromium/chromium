@@ -42,21 +42,21 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
 }
 
 using ScopedResetAndRestoreUnpackState =
-    SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState;
+    GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState;
 
-using ScopedRestoreTexture = SharedImageBackingGLCommon::ScopedRestoreTexture;
+using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
-class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
-                           public SharedImageRepresentationGLTextureClient {
+class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
+                                public GLTextureImageRepresentationClient {
  public:
-  AngleVulkanBacking(const raw_ptr<SharedContextState>& context_state,
-                     const Mailbox& mailbox,
-                     viz::ResourceFormat format,
-                     const gfx::Size& size,
-                     const gfx::ColorSpace& color_space,
-                     GrSurfaceOrigin surface_origin,
-                     SkAlphaType alpha_type,
-                     uint32_t usage)
+  AngleVulkanImageBacking(const raw_ptr<SharedContextState>& context_state,
+                          const Mailbox& mailbox,
+                          viz::ResourceFormat format,
+                          const gfx::Size& size,
+                          const gfx::ColorSpace& color_space,
+                          GrSurfaceOrigin surface_origin,
+                          SkAlphaType alpha_type,
+                          uint32_t usage)
       : ClearTrackingSharedImageBacking(mailbox,
                                         format,
                                         size,
@@ -68,7 +68,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
                                         false /* is_thread_safe */),
         context_state_(context_state) {}
 
-  ~AngleVulkanBacking() override {
+  ~AngleVulkanImageBacking() override {
     DCHECK(!is_gl_write_in_process_);
     DCHECK(!is_skia_write_in_process_);
     DCHECK_EQ(gl_reads_in_process_, 0);
@@ -93,9 +93,8 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     }
   }
 
-  bool Initialize(
-      const SharedImageBackingFactoryAngleVulkan::FormatInfo& format_info,
-      const base::span<const uint8_t>& data) {
+  bool Initialize(const AngleVulkanImageBackingFactory::FormatInfo& format_info,
+                  const base::span<const uint8_t>& data) {
     auto* device_queue =
         context_state_->vk_context_provider()->GetDeviceQueue();
     VkFormat vk_format = ToVkFormat(format());
@@ -185,23 +184,23 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     }
   }
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override {
     if (!passthrough_texture_ && !InitializePassthroughTexture())
       return nullptr;
 
-    return std::make_unique<SharedImageRepresentationGLTexturePassthroughImpl>(
+    return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
         manager, this, this, tracker, passthrough_texture_);
   }
 
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
-  // SharedImageRepresentationGLTextureClient implementation.
-  bool SharedImageRepresentationGLTextureBeginAccess(bool readonly) override {
+  // GLTextureImageRepresentationClient implementation.
+  bool GLTextureImageRepresentationBeginAccess(bool readonly) override {
     if (!readonly) {
       // For GL write access.
       if (is_gl_write_in_process_) {
@@ -259,7 +258,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     return true;
   }
 
-  void SharedImageRepresentationGLTextureEndAccess(bool readonly) override {
+  void GLTextureImageRepresentationEndAccess(bool readonly) override {
     if (readonly) {
       // For GL read access.
       if (gl_reads_in_process_ == 0) {
@@ -286,10 +285,10 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     ReleaseTextureANGLE();
   }
 
-  void SharedImageRepresentationGLTextureRelease(bool have_context) override {}
+  void GLTextureImageRepresentationRelease(bool have_context) override {}
 
  private:
-  class SkiaRepresentation;
+  class SkiaAngleVulkanImageRepresentation;
 
   void AcquireTextureANGLE() {
     gl::GLApi* api = gl::g_current_gl_context;
@@ -410,7 +409,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     }
 
     scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
-    SharedImageBackingGLCommon::MakeTextureAndSetParameters(
+    GLTextureImageBackingHelper::MakeTextureAndSetParameters(
         GL_TEXTURE_2D, /*service_id=*/0,
         /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
     passthrough_texture->SetEstimatedSize(estimated_size());
@@ -455,19 +454,19 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   int gl_reads_in_process_ = 0;
 };
 
-class AngleVulkanBacking::SkiaRepresentation
-    : public SharedImageRepresentationSkia {
+class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
+    : public SkiaImageRepresentation {
  public:
-  SkiaRepresentation(SharedImageManager* manager,
-                     AngleVulkanBacking* backing,
-                     MemoryTypeTracker* tracker)
-      : SharedImageRepresentationSkia(manager, backing, tracker) {}
+  SkiaAngleVulkanImageRepresentation(SharedImageManager* manager,
+                                     AngleVulkanImageBacking* backing,
+                                     MemoryTypeTracker* tracker)
+      : SkiaImageRepresentation(manager, backing, tracker) {}
 
-  ~SkiaRepresentation() override {
+  ~SkiaAngleVulkanImageRepresentation() override {
     backing_impl()->context_state_->EraseCachedSkSurface(this);
   }
 
-  // SharedImageRepresentationSkia implementation.
+  // SkiaImageRepresentation implementation.
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
@@ -535,41 +534,41 @@ class AngleVulkanBacking::SkiaRepresentation
   }
 
  private:
-  AngleVulkanBacking* backing_impl() const {
-    return static_cast<AngleVulkanBacking*>(backing());
+  AngleVulkanImageBacking* backing_impl() const {
+    return static_cast<AngleVulkanImageBacking*>(backing());
   }
 
   int surface_msaa_count_ = 0;
 };
 
-std::unique_ptr<SharedImageRepresentationSkia> AngleVulkanBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> AngleVulkanImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   DCHECK_EQ(context_state_, context_state.get());
-  return std::make_unique<SkiaRepresentation>(manager, this, tracker);
+  return std::make_unique<SkiaAngleVulkanImageRepresentation>(manager, this,
+                                                              tracker);
 }
 
 }  // namespace
 
-SharedImageBackingFactoryAngleVulkan::SharedImageBackingFactoryAngleVulkan(
+AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     SharedContextState* context_state)
-    : SharedImageBackingFactoryGLCommon(gpu_preferences,
-                                        workarounds,
-                                        context_state->feature_info(),
-                                        context_state->progress_reporter()),
+    : GLCommonImageBackingFactory(gpu_preferences,
+                                  workarounds,
+                                  context_state->feature_info(),
+                                  context_state->progress_reporter()),
       context_state_(context_state) {
   DCHECK(context_state_->GrContextIsVulkan());
   DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_ANGLE_vulkan_image);
 }
 
-SharedImageBackingFactoryAngleVulkan::~SharedImageBackingFactoryAngleVulkan() =
-    default;
+AngleVulkanImageBackingFactory::~AngleVulkanImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
+AngleVulkanImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -585,7 +584,7 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
     return nullptr;
   }
 
-  auto backing = std::make_unique<AngleVulkanBacking>(
+  auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
@@ -596,7 +595,7 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
+AngleVulkanImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -609,7 +608,7 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
   if (!CanCreateSharedImage(size, data, format_info, GL_TEXTURE_2D))
     return nullptr;
 
-  auto backing = std::make_unique<AngleVulkanBacking>(
+  auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
@@ -620,7 +619,7 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
+AngleVulkanImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -636,7 +635,7 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
   return nullptr;
 }
 
-bool SharedImageBackingFactoryAngleVulkan::CanUseAngleVulkanBacking(
+bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
     uint32_t usage) const {
   // Ignore for mipmap usage.
   usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
@@ -660,7 +659,7 @@ bool SharedImageBackingFactoryAngleVulkan::CanUseAngleVulkanBacking(
   return usage & SHARED_IMAGE_USAGE_GLES2;
 }
 
-bool SharedImageBackingFactoryAngleVulkan::IsSupported(
+bool AngleVulkanImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
     bool thread_safe,
@@ -669,7 +668,7 @@ bool SharedImageBackingFactoryAngleVulkan::IsSupported(
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
-  if (!CanUseAngleVulkanBacking(usage))
+  if (!CanUseAngleVulkanImageBacking(usage))
     return false;
 
   if (thread_safe)

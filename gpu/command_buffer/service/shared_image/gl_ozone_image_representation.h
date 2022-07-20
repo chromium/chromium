@@ -21,14 +21,14 @@
 
 namespace gpu {
 
-class SharedImageRepresentationGLOzoneShared {
+class GLOzoneImageRepresentationShared {
  public:
   static bool BeginAccess(GLenum mode,
-                          SharedImageBackingOzone* ozone_backing,
+                          OzoneImageBacking* ozone_backing,
                           bool& need_end_fence);
   static void EndAccess(bool need_end_fence,
                         GLenum mode,
-                        SharedImageBackingOzone* ozone_backing);
+                        OzoneImageBacking* ozone_backing);
   static std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
       SharedImageBacking* backing,
       scoped_refptr<gfx::NativePixmap> pixmap,
@@ -39,33 +39,32 @@ class SharedImageRepresentationGLOzoneShared {
 
 // Representation of an Ozone-backed SharedImage that can be accessed as a
 // GL texture.
-class SharedImageRepresentationGLTextureOzone
-    : public SharedImageRepresentationGLTexture {
+class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
  public:
-  // Creates and initializes a SharedImageRepresentationGLTextureOzone. On
+  // Creates and initializes a GLTextureOzoneImageRepresentation. On
   // failure, returns nullptr.
-  static std::unique_ptr<SharedImageRepresentationGLTextureOzone> Create(
+  static std::unique_ptr<GLTextureOzoneImageRepresentation> Create(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferPlane plane);
 
-  ~SharedImageRepresentationGLTextureOzone() override;
+  ~GLTextureOzoneImageRepresentation() override;
 
-  // SharedImageRepresentationGLTexture implementation.
+  // GLTextureImageRepresentation implementation.
   gles2::Texture* GetTexture() override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
  private:
-  SharedImageRepresentationGLTextureOzone(SharedImageManager* manager,
-                                          SharedImageBacking* backing,
-                                          MemoryTypeTracker* tracker,
-                                          gles2::Texture* texture);
+  GLTextureOzoneImageRepresentation(SharedImageManager* manager,
+                                    SharedImageBacking* backing,
+                                    MemoryTypeTracker* tracker,
+                                    gles2::Texture* texture);
 
-  SharedImageBackingOzone* ozone_backing() {
-    return static_cast<SharedImageBackingOzone*>(backing());
+  OzoneImageBacking* ozone_backing() {
+    return static_cast<OzoneImageBacking*>(backing());
   }
 
   raw_ptr<gles2::Texture> texture_;
@@ -75,36 +74,36 @@ class SharedImageRepresentationGLTextureOzone
 
 // Representation of an Ozone-backed SharedImage that can be accessed as a
 // GL texture with passthrough.
-class SharedImageRepresentationGLTexturePassthroughOzone
-    : public SharedImageRepresentationGLTexturePassthrough {
+class GLTexturePassthroughOzoneImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
   // Creates and initializes a
-  // SharedImageRepresentationGLTexturePassthroughOzone. On failure, returns
+  // GLTexturePassthroughOzoneImageRepresentation. On failure, returns
   // nullptr.
-  static std::unique_ptr<SharedImageRepresentationGLTexturePassthroughOzone>
-  Create(SharedImageManager* manager,
-         SharedImageBacking* backing,
-         MemoryTypeTracker* tracker,
-         scoped_refptr<gfx::NativePixmap> pixmap,
-         gfx::BufferPlane plane);
+  static std::unique_ptr<GLTexturePassthroughOzoneImageRepresentation> Create(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferPlane plane);
 
-  ~SharedImageRepresentationGLTexturePassthroughOzone() override;
+  ~GLTexturePassthroughOzoneImageRepresentation() override;
 
-  // SharedImageRepresentationGLTexturePassthrough implementation.
+  // GLTexturePassthroughImageRepresentation implementation.
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
  private:
-  SharedImageRepresentationGLTexturePassthroughOzone(
+  GLTexturePassthroughOzoneImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gles2::TexturePassthrough> texture_passthrough);
 
-  SharedImageBackingOzone* ozone_backing() {
-    return static_cast<SharedImageBackingOzone*>(backing());
+  OzoneImageBacking* ozone_backing() {
+    return static_cast<OzoneImageBacking*>(backing());
   }
 
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;

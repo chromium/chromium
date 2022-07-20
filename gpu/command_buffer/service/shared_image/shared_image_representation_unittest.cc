@@ -31,7 +31,7 @@ class SharedImageRepresentationTest : public ::testing::Test {
     auto alpha_type = kPremul_SkAlphaType;
     uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-    auto backing = std::make_unique<TestSharedImageBacking>(
+    auto backing = std::make_unique<TestImageBacking>(
         mailbox_, format, size, color_space, surface_origin, alpha_type, usage,
         0 /* estimated_size */);
     factory_ref_ = manager_.Register(std::move(backing), tracker_.get());

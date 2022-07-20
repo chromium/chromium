@@ -27,18 +27,17 @@ class DXGISharedHandleManager;
 class SharedImageBacking;
 struct Mailbox;
 
-class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
+class GPU_GLES2_EXPORT D3DImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  SharedImageBackingFactoryD3D(
+  D3DImageBackingFactory(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager);
 
-  SharedImageBackingFactoryD3D(const SharedImageBackingFactoryD3D&) = delete;
-  SharedImageBackingFactoryD3D& operator=(const SharedImageBackingFactoryD3D&) =
-      delete;
+  D3DImageBackingFactory(const D3DImageBackingFactory&) = delete;
+  D3DImageBackingFactory& operator=(const D3DImageBackingFactory&) = delete;
 
-  ~SharedImageBackingFactoryD3D() override;
+  ~D3DImageBackingFactory() override;
 
   // Returns true if D3D shared images are supported and this factory should be
   // used. Generally this means Skia-GL, passthrough decoder, and ANGLE-D3D11.

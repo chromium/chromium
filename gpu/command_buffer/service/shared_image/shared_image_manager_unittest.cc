@@ -44,7 +44,7 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
   auto alpha_type = kPremul_SkAlphaType;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-  auto backing = std::make_unique<TestSharedImageBacking>(
+  auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       kSizeBytes);
 
@@ -84,7 +84,7 @@ TEST(SharedImageManagerTest, TransferRefSameTracker) {
   auto alpha_type = kPremul_SkAlphaType;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-  auto backing = std::make_unique<TestSharedImageBacking>(
+  auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       kSizeBytes);
 
@@ -116,7 +116,7 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   auto alpha_type = kPremul_SkAlphaType;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-  auto backing = std::make_unique<TestSharedImageBacking>(
+  auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       kSizeBytes);
 
@@ -186,7 +186,7 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   auto alpha_type = kPremul_SkAlphaType;
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
 
-  auto backing = std::make_unique<TestSharedImageBacking>(
+  auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       kSizeBytes);
 

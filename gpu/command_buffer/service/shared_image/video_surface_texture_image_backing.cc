@@ -26,7 +26,7 @@
 
 namespace gpu {
 
-SharedImageVideoSurfaceTexture::SharedImageVideoSurfaceTexture(
+VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
     const Mailbox& mailbox,
     const gfx::Size& size,
     const gfx::ColorSpace color_space,
@@ -34,12 +34,12 @@ SharedImageVideoSurfaceTexture::SharedImageVideoSurfaceTexture(
     SkAlphaType alpha_type,
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state)
-    : SharedImageVideo(mailbox,
-                       size,
-                       color_space,
-                       surface_origin,
-                       alpha_type,
-                       /*is_thread_safe=*/false),
+    : AndroidVideoImageBacking(mailbox,
+                               size,
+                               color_space,
+                               surface_origin,
+                               alpha_type,
+                               /*is_thread_safe=*/false),
       stream_texture_sii_(std::move(stream_texture_sii)),
       context_state_(std::move(context_state)),
       gpu_main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
@@ -49,7 +49,7 @@ SharedImageVideoSurfaceTexture::SharedImageVideoSurfaceTexture(
   context_state_->AddContextLostObserver(this);
 }
 
-SharedImageVideoSurfaceTexture::~SharedImageVideoSurfaceTexture() {
+VideoSurfaceTextureImageBacking::~VideoSurfaceTextureImageBacking() {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
 
   if (context_state_)
@@ -59,7 +59,7 @@ SharedImageVideoSurfaceTexture::~SharedImageVideoSurfaceTexture() {
   stream_texture_sii_.reset();
 }
 
-size_t SharedImageVideoSurfaceTexture::EstimatedSizeForMemTracking() const {
+size_t VideoSurfaceTextureImageBacking::EstimatedSizeForMemTracking() const {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
 
   // This backing contributes to gpu memory only if its bound to the texture
@@ -67,7 +67,7 @@ size_t SharedImageVideoSurfaceTexture::EstimatedSizeForMemTracking() const {
   return stream_texture_sii_->IsUsingGpuMemory() ? estimated_size() : 0;
 }
 
-void SharedImageVideoSurfaceTexture::OnContextLost() {
+void VideoSurfaceTextureImageBacking::OnContextLost() {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
 
   // We release codec buffers when shared image context is lost. This is
@@ -78,23 +78,23 @@ void SharedImageVideoSurfaceTexture::OnContextLost() {
   context_state_ = nullptr;
 }
 
-// Representation of SharedImageVideoSurfaceTexture as a GL Texture.
-class SharedImageVideoSurfaceTexture::SharedImageRepresentationGLTextureVideo
-    : public SharedImageRepresentationGLTexture {
+// Representation of VideoSurfaceTextureImageBacking as a GL Texture.
+class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
+    : public GLTextureImageRepresentation {
  public:
-  SharedImageRepresentationGLTextureVideo(
+  GLTextureVideoImageRepresentation(
       SharedImageManager* manager,
-      SharedImageVideoSurfaceTexture* backing,
+      VideoSurfaceTextureImageBacking* backing,
       MemoryTypeTracker* tracker,
       std::unique_ptr<gles2::AbstractTexture> texture)
-      : SharedImageRepresentationGLTexture(manager, backing, tracker),
+      : GLTextureImageRepresentation(manager, backing, tracker),
         texture_(std::move(texture)) {}
 
   // Disallow copy and assign.
-  SharedImageRepresentationGLTextureVideo(
-      const SharedImageRepresentationGLTextureVideo&) = delete;
-  SharedImageRepresentationGLTextureVideo& operator=(
-      const SharedImageRepresentationGLTextureVideo&) = delete;
+  GLTextureVideoImageRepresentation(const GLTextureVideoImageRepresentation&) =
+      delete;
+  GLTextureVideoImageRepresentation& operator=(
+      const GLTextureVideoImageRepresentation&) = delete;
 
   gles2::Texture* GetTexture() override {
     auto* texture = gles2::Texture::CheckedCast(texture_->GetTextureBase());
@@ -108,7 +108,7 @@ class SharedImageVideoSurfaceTexture::SharedImageRepresentationGLTextureVideo
     DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
     auto* video_backing =
-        static_cast<SharedImageVideoSurfaceTexture*>(backing());
+        static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(texture_->service_id());
     return true;
   }
@@ -119,19 +119,17 @@ class SharedImageVideoSurfaceTexture::SharedImageRepresentationGLTextureVideo
   std::unique_ptr<gles2::AbstractTexture> texture_;
 };
 
-// Representation of SharedImageVideoSurfaceTexture as a GL Texture.
-class SharedImageVideoSurfaceTexture::
-    SharedImageRepresentationGLTexturePassthroughVideo
-    : public SharedImageRepresentationGLTexturePassthrough {
+// Representation of VideoSurfaceTextureImageBacking as a GL Texture.
+class VideoSurfaceTextureImageBacking::
+    GLTexturePassthroughVideoImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
-  SharedImageRepresentationGLTexturePassthroughVideo(
+  GLTexturePassthroughVideoImageRepresentation(
       SharedImageManager* manager,
-      SharedImageVideoSurfaceTexture* backing,
+      VideoSurfaceTextureImageBacking* backing,
       MemoryTypeTracker* tracker,
       std::unique_ptr<gles2::AbstractTexture> abstract_texture)
-      : SharedImageRepresentationGLTexturePassthrough(manager,
-                                                      backing,
-                                                      tracker),
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         abstract_texture_(std::move(abstract_texture)),
         passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
             abstract_texture_->GetTextureBase())) {
@@ -140,10 +138,10 @@ class SharedImageVideoSurfaceTexture::
   }
 
   // Disallow copy and assign.
-  SharedImageRepresentationGLTexturePassthroughVideo(
-      const SharedImageRepresentationGLTexturePassthroughVideo&) = delete;
-  SharedImageRepresentationGLTexturePassthroughVideo& operator=(
-      const SharedImageRepresentationGLTexturePassthroughVideo&) = delete;
+  GLTexturePassthroughVideoImageRepresentation(
+      const GLTexturePassthroughVideoImageRepresentation&) = delete;
+  GLTexturePassthroughVideoImageRepresentation& operator=(
+      const GLTexturePassthroughVideoImageRepresentation&) = delete;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override {
@@ -155,7 +153,7 @@ class SharedImageVideoSurfaceTexture::
     DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
     auto* video_backing =
-        static_cast<SharedImageVideoSurfaceTexture*>(backing());
+        static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(passthrough_texture_->service_id());
     return true;
   }
@@ -167,9 +165,9 @@ class SharedImageVideoSurfaceTexture::
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 };
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageVideoSurfaceTexture::ProduceGLTexture(SharedImageManager* manager,
-                                                 MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTextureImageRepresentation>
+VideoSurfaceTextureImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                                  MemoryTypeTracker* tracker) {
   // Note that for DrDc this method will never be called for
   // this(SurfaceTexture) implementation and for Webview, this method is called
   // only on gpu main thread.
@@ -194,12 +192,12 @@ SharedImageVideoSurfaceTexture::ProduceGLTexture(SharedImageManager* manager,
       stream_texture_sii_.get(),
       stream_texture_sii_->GetTextureBase()->service_id());
 
-  return std::make_unique<SharedImageRepresentationGLTextureVideo>(
+  return std::make_unique<GLTextureVideoImageRepresentation>(
       manager, this, tracker, std::move(texture));
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageVideoSurfaceTexture::ProduceGLTexturePassthrough(
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+VideoSurfaceTextureImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
@@ -223,12 +221,12 @@ SharedImageVideoSurfaceTexture::ProduceGLTexturePassthrough(
       stream_texture_sii_.get(),
       stream_texture_sii_->GetTextureBase()->service_id());
 
-  return std::make_unique<SharedImageRepresentationGLTexturePassthroughVideo>(
+  return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
       manager, this, tracker, std::move(texture));
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageVideoSurfaceTexture::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+VideoSurfaceTextureImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -272,18 +270,16 @@ SharedImageVideoSurfaceTexture::ProduceSkia(
       stream_texture_sii_.get(),
       stream_texture_sii_->GetTextureBase()->service_id());
 
-  std::unique_ptr<gpu::SharedImageRepresentationGLTextureBase>
-      gl_representation;
+  std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
     gl_representation =
-        std::make_unique<SharedImageRepresentationGLTexturePassthroughVideo>(
+        std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
             manager, this, tracker, std::move(texture));
   } else {
-    gl_representation =
-        std::make_unique<SharedImageRepresentationGLTextureVideo>(
-            manager, this, tracker, std::move(texture));
+    gl_representation = std::make_unique<GLTextureVideoImageRepresentation>(
+        manager, this, tracker, std::move(texture));
   }
-  auto skia_representation = SharedImageRepresentationSkiaGL::Create(
+  auto skia_representation = SkiaGLImageRepresentation::Create(
       std::move(gl_representation), std::move(context_state), manager, this,
       tracker);
   if (!skia_representation) {
@@ -294,33 +290,31 @@ SharedImageVideoSurfaceTexture::ProduceSkia(
   return skia_representation;
 }
 
-void SharedImageVideoSurfaceTexture::BeginGLReadAccess(
+void VideoSurfaceTextureImageBacking::BeginGLReadAccess(
     const GLuint service_id) {
   stream_texture_sii_->UpdateAndBindTexImage(service_id);
 }
 
-// Representation of SharedImageVideoSurfaceTexture as an overlay plane.
-class SharedImageVideoSurfaceTexture::SharedImageRepresentationOverlayVideo
-    : public gpu::SharedImageRepresentationLegacyOverlay {
+// Representation of VideoSurfaceTextureImageBacking as an overlay plane.
+class VideoSurfaceTextureImageBacking::OverlayVideoImageRepresentation
+    : public gpu::LegacyOverlayImageRepresentation {
  public:
-  SharedImageRepresentationOverlayVideo(gpu::SharedImageManager* manager,
-                                        SharedImageVideoSurfaceTexture* backing,
-                                        gpu::MemoryTypeTracker* tracker)
-      : gpu::SharedImageRepresentationLegacyOverlay(manager, backing, tracker) {
-  }
+  OverlayVideoImageRepresentation(gpu::SharedImageManager* manager,
+                                  VideoSurfaceTextureImageBacking* backing,
+                                  gpu::MemoryTypeTracker* tracker)
+      : gpu::LegacyOverlayImageRepresentation(manager, backing, tracker) {}
 
   // Disallow copy and assign.
-  SharedImageRepresentationOverlayVideo(
-      const SharedImageRepresentationOverlayVideo&) = delete;
-  SharedImageRepresentationOverlayVideo& operator=(
-      const SharedImageRepresentationOverlayVideo&) = delete;
+  OverlayVideoImageRepresentation(const OverlayVideoImageRepresentation&) =
+      delete;
+  OverlayVideoImageRepresentation& operator=(
+      const OverlayVideoImageRepresentation&) = delete;
 
  protected:
   void RenderToOverlay() override {
     DCHECK(!stream_image()->HasTextureOwner())
         << "CodecImage must be already in overlay";
-    TRACE_EVENT0("media",
-                 "SharedImageRepresentationOverlayVideo::RenderToOverlay");
+    TRACE_EVENT0("media", "OverlayVideoImageRepresentation::RenderToOverlay");
     stream_image()->RenderToOverlay();
   }
 
@@ -332,20 +326,20 @@ class SharedImageVideoSurfaceTexture::SharedImageRepresentationOverlayVideo
  private:
   StreamTextureSharedImageInterface* stream_image() {
     auto* video_backing =
-        static_cast<SharedImageVideoSurfaceTexture*>(backing());
+        static_cast<VideoSurfaceTextureImageBacking*>(backing());
     DCHECK(video_backing);
     return video_backing->stream_texture_sii_.get();
   }
 };
 
-std::unique_ptr<gpu::SharedImageRepresentationLegacyOverlay>
-SharedImageVideoSurfaceTexture::ProduceLegacyOverlay(
+std::unique_ptr<gpu::LegacyOverlayImageRepresentation>
+VideoSurfaceTextureImageBacking::ProduceLegacyOverlay(
     gpu::SharedImageManager* manager,
     gpu::MemoryTypeTracker* tracker) {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
 
-  return std::make_unique<SharedImageRepresentationOverlayVideo>(manager, this,
-                                                                 tracker);
+  return std::make_unique<OverlayVideoImageRepresentation>(manager, this,
+                                                           tracker);
 }
 
 }  // namespace gpu

@@ -21,8 +21,8 @@ class SharedGLFenceEGL;
 
 namespace gpu {
 class GpuDriverBugWorkarounds;
-class SharedImageRepresentationGLTexture;
-class SharedImageRepresentationSkia;
+class GLTextureImageRepresentation;
+class SkiaImageRepresentation;
 struct Mailbox;
 
 namespace gles2 {
@@ -34,9 +34,9 @@ class NativeImageBuffer;
 // this backing uses EGL Image siblings. This backing is thread safe across
 // different threads running different GL contexts not part of same shared
 // group. This is achieved by using locks and fences for proper synchronization.
-class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
+class EGLImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  SharedImageBackingEglImage(
+  EGLImageBacking(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -45,17 +45,16 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       SkAlphaType alpha_type,
       uint32_t usage,
       size_t estimated_size,
-      const SharedImageBackingFactoryGLCommon::FormatInfo format_into,
+      const GLCommonImageBackingFactory::FormatInfo format_into,
       const GpuDriverBugWorkarounds& workarounds,
-      const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
+      const GLTextureImageBackingHelper::UnpackStateAttribs& attribs,
       bool use_passthrough,
       base::span<const uint8_t> pixel_data);
 
-  SharedImageBackingEglImage(const SharedImageBackingEglImage&) = delete;
-  SharedImageBackingEglImage& operator=(const SharedImageBackingEglImage&) =
-      delete;
+  EGLImageBacking(const EGLImageBacking&) = delete;
+  EGLImageBacking& operator=(const EGLImageBacking&) = delete;
 
-  ~SharedImageBackingEglImage() override;
+  ~EGLImageBacking() override;
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -64,24 +63,24 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
   void MarkForDestruction() override;
 
  protected:
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
   class TextureHolder;
-  class RepresentationGLShared;
-  class RepresentationGLTexture;
-  class RepresentationGLTexturePassthrough;
+  class GLRepresentationShared;
+  class GLTextureEGLImageRepresentation;
+  class GLTexturePassthroughEGLImageRepresentation;
 
   template <class T>
   std::unique_ptr<T> ProduceGLTextureInternal(SharedImageManager* manager,
@@ -89,8 +88,8 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
 
   bool BeginWrite();
   void EndWrite();
-  bool BeginRead(const RepresentationGLShared* reader);
-  void EndRead(const RepresentationGLShared* reader);
+  bool BeginRead(const GLRepresentationShared* reader);
+  void EndRead(const GLRepresentationShared* reader);
 
   // Use to create EGLImage texture target from the same EGLImage object.
   // Optional |pixel_data| to initialize a texture with before EGLImage object
@@ -100,7 +99,7 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
 
   void SetEndReadFence(scoped_refptr<gl::SharedGLFenceEGL> shared_egl_fence);
 
-  const SharedImageBackingFactoryGLCommon::FormatInfo format_info_;
+  const GLCommonImageBackingFactory::FormatInfo format_info_;
   scoped_refptr<TextureHolder> source_texture_holder_;
   raw_ptr<gl::GLApi> created_on_context_;
 
@@ -120,10 +119,10 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
   // signalled.
   base::flat_map<gl::GLApi*, scoped_refptr<gl::SharedGLFenceEGL>> read_fences_
       GUARDED_BY(lock_);
-  base::flat_set<const RepresentationGLShared*> active_readers_
+  base::flat_set<const GLRepresentationShared*> active_readers_
       GUARDED_BY(lock_);
 
-  const SharedImageBackingGLCommon::UnpackStateAttribs gl_unpack_attribs_;
+  const GLTextureImageBackingHelper::UnpackStateAttribs gl_unpack_attribs_;
   const bool use_passthrough_;
 };
 

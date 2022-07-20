@@ -24,7 +24,7 @@ namespace gpu {
 
 class SharedImageBackingFactory;
 
-// TODO(kylechar): Merge with SharedImageBackingOzone::AccessStream enum.
+// TODO(kylechar): Merge with OzoneImageBacking::AccessStream enum.
 enum class SharedImageAccessStream {
   kSkia,
   kOverlay,
@@ -38,7 +38,7 @@ enum class SharedImageAccessStream {
 // backing. The real GPU backing must implement `UploadFromMemory()` and not
 // have it's own shared memory segment.
 // TODO(crbug.com/1293509): Support multiple GPU backings.
-class GPU_GLES2_EXPORT SharedImageBackingCompound : public SharedImageBacking {
+class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
  public:
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `gpu_backing_factory`.
@@ -55,18 +55,17 @@ class GPU_GLES2_EXPORT SharedImageBackingCompound : public SharedImageBacking {
       SkAlphaType alpha_type,
       uint32_t usage);
 
-  SharedImageBackingCompound(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      std::unique_ptr<SharedImageBackingSharedMemory> shm_backing,
-      std::unique_ptr<SharedImageBacking> gpu_backing);
+  CompoundImageBacking(const Mailbox& mailbox,
+                       viz::ResourceFormat format,
+                       const gfx::Size& size,
+                       const gfx::ColorSpace& color_space,
+                       GrSurfaceOrigin surface_origin,
+                       SkAlphaType alpha_type,
+                       uint32_t usage,
+                       std::unique_ptr<SharedMemoryImageBacking> shm_backing,
+                       std::unique_ptr<SharedImageBacking> gpu_backing);
 
-  ~SharedImageBackingCompound() override;
+  ~CompoundImageBacking() override;
 
   // Called by wrapped representations before access. This will update
   // the backing that is going to be accessed if most recent pixels are in
@@ -83,22 +82,22 @@ class GPU_GLES2_EXPORT SharedImageBackingCompound : public SharedImageBacking {
 
  protected:
   // SharedImageBacking implementation.
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type) override;
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 

@@ -12,9 +12,8 @@
 
 namespace gpu {
 
-// Common helper functions for SharedImageBackingGLTexture and
-// SharedImageBackingPassthroughGLImage.
-class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
+// Common helper functions for GLTextureImageBacking and GLImageBacking.
+class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
  public:
   // These parameters are used to explicitly initialize a GL texture.
   struct InitializeGLTextureParams {
@@ -100,7 +99,7 @@ class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
   // Create a Dawn backing. This will use |backing|'s ProduceGLTexture or
   // ProduceGLTexturePassthrough method, and populate the dawn backing via
   // CopyTextureCHROMIUM.
-  static std::unique_ptr<SharedImageRepresentationDawn> ProduceDawnCommon(
+  static std::unique_ptr<DawnImageRepresentation> ProduceDawnCommon(
       SharedImageFactory* factory,
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,

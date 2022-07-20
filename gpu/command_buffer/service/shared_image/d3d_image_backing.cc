@@ -198,8 +198,7 @@ void CopyPlane(const uint8_t* source_memory,
 }  // namespace
 
 // static
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromSwapChainBuffer(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -216,7 +215,7 @@ SharedImageBackingD3D::CreateFromSwapChainBuffer(
     LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
   }
-  return base::WrapUnique(new SharedImageBackingD3D(
+  return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
       /*dxgi_shared_handle_state=*/{}, /*shared_memory_handle=*/{},
@@ -224,8 +223,7 @@ SharedImageBackingD3D::CreateFromSwapChainBuffer(
 }
 
 // static
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromDXGISharedHandle(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -254,15 +252,14 @@ SharedImageBackingD3D::CreateFromDXGISharedHandle(
       return nullptr;
     }
   }
-  auto backing = base::WrapUnique(new SharedImageBackingD3D(
+  auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
       std::move(dxgi_shared_handle_state)));
   return backing;
 }
 
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromGLTexture(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromGLTexture(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -272,14 +269,14 @@ SharedImageBackingD3D::CreateFromGLTexture(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<gles2::TexturePassthrough> gl_texture) {
-  return base::WrapUnique(new SharedImageBackingD3D(
+  return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture)));
 }
 
 // static
 std::vector<std::unique_ptr<SharedImageBacking>>
-SharedImageBackingD3D::CreateFromVideoTexture(
+D3DImageBacking::CreateFromVideoTexture(
     base::span<const Mailbox> mailboxes,
     DXGI_FORMAT dxgi_format,
     const gfx::Size& size,
@@ -321,7 +318,7 @@ SharedImageBackingD3D::CreateFromVideoTexture(
       return {};
     }
 
-    shared_images[plane_index] = base::WrapUnique(new SharedImageBackingD3D(
+    shared_images[plane_index] = base::WrapUnique(new D3DImageBacking(
         mailbox, plane_format, plane_size, kInvalidColorSpace,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
         std::move(gl_texture), dxgi_shared_handle_state));
@@ -332,8 +329,7 @@ SharedImageBackingD3D::CreateFromVideoTexture(
 }
 
 // static
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromSharedMemoryHandle(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSharedMemoryHandle(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -349,14 +345,14 @@ SharedImageBackingD3D::CreateFromSharedMemoryHandle(
     LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
   }
-  auto backing = base::WrapUnique(new SharedImageBackingD3D(
+  auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
       /*dxgi_shared_handle_state=*/{}, std::move(shared_memory_handle)));
   return backing;
 }
 
-SharedImageBackingD3D::SharedImageBackingD3D(
+D3DImageBacking::D3DImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -392,7 +388,7 @@ SharedImageBackingD3D::SharedImageBackingD3D(
   DCHECK(has_webgpu_usage || gl_texture_);
 }
 
-SharedImageBackingD3D::~SharedImageBackingD3D() {
+D3DImageBacking::~D3DImageBacking() {
   if (!have_context())
     gl_texture_->MarkContextLost();
   gl_texture_.reset();
@@ -404,7 +400,7 @@ SharedImageBackingD3D::~SharedImageBackingD3D() {
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-ID3D11Texture2D* SharedImageBackingD3D::GetOrCreateStagingTexture() {
+ID3D11Texture2D* D3DImageBacking::GetOrCreateStagingTexture() {
   if (!staging_texture_) {
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
     DCHECK(d3d11_texture_);
@@ -440,17 +436,17 @@ ID3D11Texture2D* SharedImageBackingD3D::GetOrCreateStagingTexture() {
   return staging_texture_.Get();
 }
 
-SharedImageBackingType SharedImageBackingD3D::GetType() const {
+SharedImageBackingType D3DImageBacking::GetType() const {
   return SharedImageBackingType::kD3D;
 }
 
-void SharedImageBackingD3D::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
   if (!shared_memory_handle_.is_null())
     needs_upload_to_gpu_ = true;
 }
 
-bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
+bool D3DImageBacking::UploadToGpuIfNeeded() {
   if (!needs_upload_to_gpu_)
     return true;
 
@@ -514,7 +510,7 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
   return true;
 }
 
-bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
+bool D3DImageBacking::CopyToGpuMemoryBuffer() {
   if (shared_memory_handle_.is_null()) {
     LOG(ERROR)
         << "Called CopyToGpuMemoryBuffer for backing without shared memory GMB";
@@ -580,13 +576,12 @@ bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
   return true;
 }
 
-bool SharedImageBackingD3D::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
+bool D3DImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
   mailbox_manager->ProduceTexture(mailbox(), gl_texture_.get());
   return true;
 }
 
-WGPUTextureUsageFlags SharedImageBackingD3D::GetAllowedDawnUsages(
+WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
     const WGPUTextureFormat wgpu_format) const {
   // TODO(crbug.com/2709243): Figure out other SI flags, if any.
   DCHECK(usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU);
@@ -604,15 +599,15 @@ WGPUTextureUsageFlags SharedImageBackingD3D::GetAllowedDawnUsages(
   }
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
-                                   MemoryTypeTracker* tracker,
-                                   WGPUDevice device,
-                                   WGPUBackendType backend_type) {
+std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
 #if BUILDFLAG(USE_DAWN)
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
-    return std::make_unique<SharedImageRepresentationDawnEGLImage>(
+    return std::make_unique<DawnEGLImageRepresentation>(
         ProduceGLTexturePassthrough(manager, tracker), manager, this, tracker,
         device);
   }
@@ -680,18 +675,17 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   }
   DCHECK(external_image_ptr);
   DCHECK(external_image_ptr->IsValid());
-  return std::make_unique<SharedImageRepresentationDawnD3D>(
+  return std::make_unique<DawnD3DImageRepresentation>(
       manager, this, tracker, device, external_image_ptr);
 #else
   return nullptr;
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-void SharedImageBackingD3D::OnMemoryDump(
-    const std::string& dump_name,
-    base::trace_event::MemoryAllocatorDump* dump,
-    base::trace_event::ProcessMemoryDump* pmd,
-    uint64_t client_tracing_id) {
+void D3DImageBacking::OnMemoryDump(const std::string& dump_name,
+                                   base::trace_event::MemoryAllocatorDump* dump,
+                                   base::trace_event::ProcessMemoryDump* pmd,
+                                   uint64_t client_tracing_id) {
   // Add a |service_guid| which expresses shared ownership between the
   // various GPU dumps.
   auto client_guid = GetSharedImageGUIDForTracing(mailbox());
@@ -706,36 +700,36 @@ void SharedImageBackingD3D::OnMemoryDump(
   GetGLImage()->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
-bool SharedImageBackingD3D::BeginAccessD3D12() {
+bool D3DImageBacking::BeginAccessD3D12() {
   if (dxgi_shared_handle_state_)
     return dxgi_shared_handle_state_->BeginAccessD3D12();
   // D3D12 access is only allowed with shared handle and keyed mutex.
   return false;
 }
 
-void SharedImageBackingD3D::EndAccessD3D12() {
+void D3DImageBacking::EndAccessD3D12() {
   if (dxgi_shared_handle_state_)
     dxgi_shared_handle_state_->EndAccessD3D12();
 }
 
-bool SharedImageBackingD3D::BeginAccessD3D11() {
+bool D3DImageBacking::BeginAccessD3D11() {
   if (dxgi_shared_handle_state_)
     return dxgi_shared_handle_state_->BeginAccessD3D11();
   // D3D11 access is allowed without shared handle and keyed mutex.
   return true;
 }
 
-void SharedImageBackingD3D::EndAccessD3D11() {
+void D3DImageBacking::EndAccessD3D11() {
   if (dxgi_shared_handle_state_)
     dxgi_shared_handle_state_->EndAccessD3D11();
 }
 
-gl::GLImage* SharedImageBackingD3D::GetGLImage() const {
+gl::GLImage* D3DImageBacking::GetGLImage() const {
   return gl_texture_->GetLevelImage(gl_texture_->target(), 0u);
 }
 
-bool SharedImageBackingD3D::PresentSwapChain() {
-  TRACE_EVENT0("gpu", "SharedImageBackingD3D::PresentSwapChain");
+bool D3DImageBacking::PresentSwapChain() {
+  TRACE_EVENT0("gpu", "D3DImageBacking::PresentSwapChain");
   if (!swap_chain_ || !is_back_buffer_) {
     LOG(ERROR) << "Backing does not correspond to back buffer of swap chain";
     return false;
@@ -764,16 +758,16 @@ bool SharedImageBackingD3D::PresentSwapChain() {
     return false;
   }
 
-  TRACE_EVENT0("gpu", "SharedImageBackingD3D::PresentSwapChain::Flush");
+  TRACE_EVENT0("gpu", "D3DImageBacking::PresentSwapChain::Flush");
   // Flush device context through ANGLE otherwise present could be deferred.
   api->glFlushFn();
   return true;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingD3D::ProduceGLTexturePassthrough(SharedImageManager* manager,
-                                                   MemoryTypeTracker* tracker) {
-  TRACE_EVENT0("gpu", "SharedImageBackingD3D::ProduceGLTexturePassthrough");
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                             MemoryTypeTracker* tracker) {
+  TRACE_EVENT0("gpu", "D3DImageBacking::ProduceGLTexturePassthrough");
   if (!UploadToGpuIfNeeded()) {
     LOG(ERROR) << "UploadToGpuIfNeeded failed";
     return nullptr;
@@ -788,24 +782,23 @@ SharedImageBackingD3D::ProduceGLTexturePassthrough(SharedImageManager* manager,
       return nullptr;
     }
   }
-  return std::make_unique<SharedImageRepresentationGLTexturePassthroughD3D>(
+  return std::make_unique<GLTexturePassthroughD3DImageRepresentation>(
       manager, this, tracker, std::move(gl_texture));
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingD3D::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> D3DImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  return SharedImageRepresentationSkiaGL::Create(
+  return SkiaGLImageRepresentation::Create(
       ProduceGLTexturePassthrough(manager, tracker), std::move(context_state),
       manager, this, tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageBackingD3D::ProduceOverlay(SharedImageManager* manager,
-                                      MemoryTypeTracker* tracker) {
-  TRACE_EVENT0("gpu", "SharedImageBackingD3D::ProduceOverlay");
+std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  TRACE_EVENT0("gpu", "D3DImageBacking::ProduceOverlay");
   // Prefer GLImageMemory for shared memory case so that we don't upload to a
   // texture if it ends up in an overlay.
   if (!shared_memory_handle_.is_null()) {
@@ -817,11 +810,11 @@ SharedImageBackingD3D::ProduceOverlay(SharedImageManager* manager,
       LOG(ERROR) << "Failed to initialize GLImageSharedMemory";
       return nullptr;
     }
-    return std::make_unique<SharedImageRepresentationOverlayD3D>(
+    return std::make_unique<OverlayD3DImageRepresentation>(
         manager, this, tracker, std::move(gl_image));
   }
-  return std::make_unique<SharedImageRepresentationOverlayD3D>(
-      manager, this, tracker, GetGLImage());
+  return std::make_unique<OverlayD3DImageRepresentation>(manager, this, tracker,
+                                                         GetGLImage());
 }
 
 }  // namespace gpu

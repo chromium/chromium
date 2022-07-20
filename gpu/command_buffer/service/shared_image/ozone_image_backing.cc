@@ -57,21 +57,18 @@ size_t GetPixmapSizeInBytes(const gfx::NativePixmap& pixmap) {
 
 }  // namespace
 
-class SharedImageBackingOzone::SharedImageRepresentationVaapiOzone
-    : public SharedImageRepresentationVaapi {
+class OzoneImageBacking::VaapiOzoneImageRepresentation
+    : public VaapiImageRepresentation {
  public:
-  SharedImageRepresentationVaapiOzone(SharedImageManager* manager,
-                                      SharedImageBacking* backing,
-                                      MemoryTypeTracker* tracker,
-                                      VaapiDependencies* vaapi_dependency)
-      : SharedImageRepresentationVaapi(manager,
-                                       backing,
-                                       tracker,
-                                       vaapi_dependency) {}
+  VaapiOzoneImageRepresentation(SharedImageManager* manager,
+                                SharedImageBacking* backing,
+                                MemoryTypeTracker* tracker,
+                                VaapiDependencies* vaapi_dependency)
+      : VaapiImageRepresentation(manager, backing, tracker, vaapi_dependency) {}
 
  private:
-  SharedImageBackingOzone* ozone_backing() {
-    return static_cast<SharedImageBackingOzone*>(backing());
+  OzoneImageBacking* ozone_backing() {
+    return static_cast<OzoneImageBacking*>(backing());
   }
   void EndAccess() override { ozone_backing()->has_pending_va_writes_ = true; }
   void BeginAccess() override {
@@ -81,18 +78,18 @@ class SharedImageBackingOzone::SharedImageRepresentationVaapiOzone
   }
 };
 
-class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
-    : public SharedImageRepresentationOverlay {
+class OzoneImageBacking::OverlayOzoneImageRepresentation
+    : public OverlayImageRepresentation {
  public:
-  SharedImageRepresentationOverlayOzone(SharedImageManager* manager,
-                                        SharedImageBacking* backing,
-                                        MemoryTypeTracker* tracker)
-      : SharedImageRepresentationOverlay(manager, backing, tracker) {}
-  ~SharedImageRepresentationOverlayOzone() override = default;
+  OverlayOzoneImageRepresentation(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  MemoryTypeTracker* tracker)
+      : OverlayImageRepresentation(manager, backing, tracker) {}
+  ~OverlayOzoneImageRepresentation() override = default;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
-    auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
+    auto* ozone_backing = static_cast<OzoneImageBacking*>(backing());
     std::vector<gfx::GpuFenceHandle> fences;
     bool need_end_fence;
     ozone_backing->BeginAccess(/*readonly=*/true, AccessStream::kOverlay,
@@ -106,7 +103,7 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
     return true;
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
-    auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
+    auto* ozone_backing = static_cast<OzoneImageBacking*>(backing());
     ozone_backing->EndAccess(/*readonly=*/true, AccessStream::kOverlay,
                              std::move(release_fence));
   }
@@ -115,7 +112,7 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
     if (!gl_image_) {
       gfx::BufferFormat buffer_format = viz::BufferFormat(format());
       auto pixmap =
-          static_cast<SharedImageBackingOzone*>(backing())->GetNativePixmap();
+          static_cast<OzoneImageBacking*>(backing())->GetNativePixmap();
       gl_image_ = base::MakeRefCounted<gl::GLImageNativePixmap>(
           pixmap->GetBufferSize(), buffer_format);
       if (backing()->color_space().IsValid())
@@ -129,78 +126,75 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
   scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
 
-SharedImageBackingOzone::~SharedImageBackingOzone() = default;
+OzoneImageBacking::~OzoneImageBacking() = default;
 
-SharedImageBackingType SharedImageBackingOzone::GetType() const {
+SharedImageBackingType OzoneImageBacking::GetType() const {
   return SharedImageBackingType::kOzone;
 }
 
-void SharedImageBackingOzone::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void OzoneImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
     external_write_fence_ = in_fence->GetGpuFenceHandle().Clone();
   }
 }
 
-bool SharedImageBackingOzone::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
+bool OzoneImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
   NOTREACHED();
   return false;
 }
 
-scoped_refptr<gfx::NativePixmap> SharedImageBackingOzone::GetNativePixmap() {
+scoped_refptr<gfx::NativePixmap> OzoneImageBacking::GetNativePixmap() {
   return pixmap_;
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
-                                     MemoryTypeTracker* tracker,
-                                     WGPUDevice device,
-                                     WGPUBackendType backend_type) {
+std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
 #if BUILDFLAG(USE_DAWN)
   DCHECK(dawn_procs_);
   WGPUTextureFormat webgpu_format = viz::ToWGPUFormat(format());
   if (webgpu_format == WGPUTextureFormat_Undefined) {
     return nullptr;
   }
-  return std::make_unique<SharedImageRepresentationDawnOzone>(
+  return std::make_unique<DawnOzoneImageRepresentation>(
       manager, this, tracker, device, webgpu_format, pixmap_, dawn_procs_);
 #else  // !BUILDFLAG(USE_DAWN)
   return nullptr;
 #endif
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingOzone::ProduceGLTexture(SharedImageManager* manager,
-                                          MemoryTypeTracker* tracker) {
-  return SharedImageRepresentationGLTextureOzone::Create(manager, this, tracker,
-                                                         pixmap_, plane_);
+std::unique_ptr<GLTextureImageRepresentation>
+OzoneImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                    MemoryTypeTracker* tracker) {
+  return GLTextureOzoneImageRepresentation::Create(manager, this, tracker,
+                                                   pixmap_, plane_);
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingOzone::ProduceGLTexturePassthrough(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  return SharedImageRepresentationGLTexturePassthroughOzone::Create(
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                               MemoryTypeTracker* tracker) {
+  return GLTexturePassthroughOzoneImageRepresentation::Create(
       manager, this, tracker, pixmap_, plane_);
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingOzone::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   if (context_state->GrContextIsGL()) {
     auto gl_representation = ProduceGLTexture(manager, tracker);
     if (!gl_representation) {
-      LOG(ERROR) << "SharedImageBackingOzone::ProduceSkia failed to create GL "
+      LOG(ERROR) << "OzoneImageBacking::ProduceSkia failed to create GL "
                     "representation";
       return nullptr;
     }
-    auto skia_representation = SharedImageRepresentationSkiaGL::Create(
+    auto skia_representation = SkiaGLImageRepresentation::Create(
         std::move(gl_representation), std::move(context_state), manager, this,
         tracker);
     if (!skia_representation) {
-      LOG(ERROR) << "SharedImageBackingOzone::ProduceSkia failed to create "
+      LOG(ERROR) << "OzoneImageBacking::ProduceSkia failed to create "
                     "Skia representation";
       return nullptr;
     }
@@ -219,7 +213,7 @@ SharedImageBackingOzone::ProduceSkia(
     if (!vulkan_image)
       return nullptr;
 
-    return std::make_unique<SharedImageRepresentationSkiaVkOzone>(
+    return std::make_unique<SkiaVkOzoneImageRepresentation>(
         manager, this, std::move(context_state), std::move(vulkan_image),
         tracker);
   }
@@ -227,14 +221,14 @@ SharedImageBackingOzone::ProduceSkia(
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
-                                        MemoryTypeTracker* tracker) {
-  return std::make_unique<SharedImageRepresentationOverlayOzone>(manager, this,
-                                                                 tracker);
+std::unique_ptr<OverlayImageRepresentation> OzoneImageBacking::ProduceOverlay(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  return std::make_unique<OverlayOzoneImageRepresentation>(manager, this,
+                                                           tracker);
 }
 
-SharedImageBackingOzone::SharedImageBackingOzone(
+OzoneImageBacking::OzoneImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     gfx::BufferPlane plane,
@@ -286,8 +280,7 @@ SharedImageBackingOzone::SharedImageBackingOzone(
   }
 }
 
-std::unique_ptr<SharedImageRepresentationVaapi>
-SharedImageBackingOzone::ProduceVASurface(
+std::unique_ptr<VaapiImageRepresentation> OzoneImageBacking::ProduceVASurface(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     VaapiDependenciesFactory* dep_factory) {
@@ -296,22 +289,21 @@ SharedImageBackingOzone::ProduceVASurface(
     vaapi_deps_ = dep_factory->CreateVaapiDependencies(pixmap_);
 
   if (!vaapi_deps_) {
-    LOG(ERROR) << "SharedImageBackingOzone::ProduceVASurface failed to create "
+    LOG(ERROR) << "OzoneImageBacking::ProduceVASurface failed to create "
                   "VaapiDependencies";
     return nullptr;
   }
-  return std::make_unique<
-      SharedImageBackingOzone::SharedImageRepresentationVaapiOzone>(
+  return std::make_unique<OzoneImageBacking::VaapiOzoneImageRepresentation>(
       manager, this, tracker, vaapi_deps_.get());
 }
 
-bool SharedImageBackingOzone::VaSync() {
+bool OzoneImageBacking::VaSync() {
   if (has_pending_va_writes_)
     has_pending_va_writes_ = !vaapi_deps_->SyncSurface();
   return !has_pending_va_writes_;
 }
 
-bool SharedImageBackingOzone::UploadFromMemory(const SkPixmap& pixmap) {
+bool OzoneImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   DCHECK(!pixmap.info().isEmpty());
 
   if (context_state_->context_lost())
@@ -352,7 +344,7 @@ bool SharedImageBackingOzone::UploadFromMemory(const SkPixmap& pixmap) {
   return written;
 }
 
-void SharedImageBackingOzone::FlushAndSubmitIfNecessary(
+void OzoneImageBacking::FlushAndSubmitIfNecessary(
     std::vector<GrBackendSemaphore> signal_semaphores,
     SharedContextState* const shared_context_state) {
   bool sync_cpu = gpu::ShouldVulkanSyncCpuForSkiaSubmit(
@@ -373,11 +365,10 @@ void SharedImageBackingOzone::FlushAndSubmitIfNecessary(
   }
 }
 
-bool SharedImageBackingOzone::BeginAccess(
-    bool readonly,
-    AccessStream access_stream,
-    std::vector<gfx::GpuFenceHandle>* fences,
-    bool& need_end_fence) {
+bool OzoneImageBacking::BeginAccess(bool readonly,
+                                    AccessStream access_stream,
+                                    std::vector<gfx::GpuFenceHandle>* fences,
+                                    bool& need_end_fence) {
   // Track reads and writes if not being used for concurrent read/writes.
   if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
     if (is_write_in_progress_) {
@@ -471,9 +462,9 @@ bool SharedImageBackingOzone::BeginAccess(
   return true;
 }
 
-void SharedImageBackingOzone::EndAccess(bool readonly,
-                                        AccessStream access_stream,
-                                        gfx::GpuFenceHandle fence) {
+void OzoneImageBacking::EndAccess(bool readonly,
+                                  AccessStream access_stream,
+                                  gfx::GpuFenceHandle fence) {
   // Track reads and writes if not being used for concurrent read/writes.
   if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
     if (readonly) {

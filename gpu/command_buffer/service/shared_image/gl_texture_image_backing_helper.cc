@@ -14,7 +14,7 @@
 
 namespace gpu {
 
-SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState::
+GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState::
     ScopedResetAndRestoreUnpackState(gl::GLApi* api,
                                      const UnpackStateAttribs& attribs,
                                      bool uploading_data)
@@ -64,7 +64,7 @@ SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState::
   }
 }
 
-SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState::
+GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState::
     ~ScopedResetAndRestoreUnpackState() {
   if (unpack_buffer_)
     api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, unpack_buffer_);
@@ -86,7 +86,7 @@ SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState::
     api_->glPixelStoreiFn(GL_UNPACK_LSB_FIRST, unpack_lsb_first_);
 }
 
-SharedImageBackingGLCommon::ScopedRestoreTexture::ScopedRestoreTexture(
+GLTextureImageBackingHelper::ScopedRestoreTexture::ScopedRestoreTexture(
     gl::GLApi* api,
     GLenum target)
     : api_(api), target_(target) {
@@ -110,18 +110,18 @@ SharedImageBackingGLCommon::ScopedRestoreTexture::ScopedRestoreTexture(
   old_binding_ = old_texture_binding;
 }
 
-SharedImageBackingGLCommon::ScopedRestoreTexture::~ScopedRestoreTexture() {
+GLTextureImageBackingHelper::ScopedRestoreTexture::~ScopedRestoreTexture() {
   api_->glBindTextureFn(target_, old_binding_);
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
-                                              SharedImageManager* manager,
-                                              MemoryTypeTracker* tracker,
-                                              WGPUDevice device,
-                                              WGPUBackendType backend_type,
-                                              SharedImageBacking* backing,
-                                              bool use_passthrough) {
+std::unique_ptr<DawnImageRepresentation>
+GLTextureImageBackingHelper::ProduceDawnCommon(SharedImageFactory* factory,
+                                               SharedImageManager* manager,
+                                               MemoryTypeTracker* tracker,
+                                               WGPUDevice device,
+                                               WGPUBackendType backend_type,
+                                               SharedImageBacking* backing,
+                                               bool use_passthrough) {
   DCHECK(factory);
   // Make SharedContextState from factory the current context
   SharedContextState* shared_context_state = factory->GetSharedContextState();
@@ -143,8 +143,8 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
 
   // Create a representation for current backing to avoid non-expected release
   // and using scope access methods.
-  std::unique_ptr<SharedImageRepresentationGLTextureBase> src_image;
-  std::unique_ptr<SharedImageRepresentationGLTextureBase> dst_image;
+  std::unique_ptr<GLTextureImageRepresentationBase> src_image;
+  std::unique_ptr<GLTextureImageRepresentationBase> dst_image;
   if (use_passthrough) {
     src_image =
         manager->ProduceGLTexturePassthrough(backing->mailbox(), tracker);
@@ -159,7 +159,7 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
     return nullptr;
   }
 
-  std::unique_ptr<SharedImageRepresentationGLTextureBase::ScopedAccess>
+  std::unique_ptr<GLTextureImageRepresentationBase::ScopedAccess>
       source_access = src_image->BeginScopedAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kNo);
@@ -168,8 +168,8 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
     return nullptr;
   }
 
-  std::unique_ptr<SharedImageRepresentationGLTextureBase::ScopedAccess>
-      dest_access = dst_image->BeginScopedAccess(
+  std::unique_ptr<GLTextureImageRepresentationBase::ScopedAccess> dest_access =
+      dst_image->BeginScopedAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!dest_access) {
@@ -212,7 +212,7 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
 }
 
 // static
-void SharedImageBackingGLCommon::MakeTextureAndSetParameters(
+void GLTextureImageBackingHelper::MakeTextureAndSetParameters(
     GLenum target,
     GLuint service_id,
     bool framebuffer_attachment_angle,

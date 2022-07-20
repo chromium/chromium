@@ -55,24 +55,24 @@ bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
 // Wrapped representation types are not in the anonymous namespace because they
 // need to be friend classes to real representations to access protected
 // virtual functions.
-class WrappedGLTextureRepresentation
-    : public SharedImageRepresentationGLTexture {
+class WrappedGLTextureCompoundImageRepresentation
+    : public GLTextureImageRepresentation {
  public:
-  WrappedGLTextureRepresentation(
+  WrappedGLTextureCompoundImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SharedImageRepresentationGLTexture> wrapped)
-      : SharedImageRepresentationGLTexture(manager, backing, tracker),
+      std::unique_ptr<GLTextureImageRepresentation> wrapped)
+      : GLTextureImageRepresentation(manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
 
-  SharedImageBackingCompound* compound_backing() {
-    return static_cast<SharedImageBackingCompound*>(backing());
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
   }
 
-  // SharedImageRepresentationGLTexture implementation.
+  // GLTextureImageRepresentation implementation.
   bool BeginAccess(GLenum mode) final {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
@@ -94,29 +94,27 @@ class WrappedGLTextureRepresentation
   gles2::Texture* GetTexture() final { return wrapped_->GetTexture(); }
 
  private:
-  std::unique_ptr<SharedImageRepresentationGLTexture> wrapped_;
+  std::unique_ptr<GLTextureImageRepresentation> wrapped_;
 };
 
-class WrappedGLTexturePassthroughRepresentation
-    : public SharedImageRepresentationGLTexturePassthrough {
+class WrappedGLTexturePassthroughCompoundImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
-  WrappedGLTexturePassthroughRepresentation(
+  WrappedGLTexturePassthroughCompoundImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SharedImageRepresentationGLTexturePassthrough> wrapped)
-      : SharedImageRepresentationGLTexturePassthrough(manager,
-                                                      backing,
-                                                      tracker),
+      std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped)
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
 
-  SharedImageBackingCompound* compound_backing() {
-    return static_cast<SharedImageBackingCompound*>(backing());
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
   }
 
-  // SharedImageRepresentationGLTexturePassthrough implementation.
+  // GLTexturePassthroughImageRepresentation implementation.
   bool BeginAccess(GLenum mode) final {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
@@ -140,26 +138,26 @@ class WrappedGLTexturePassthroughRepresentation
   }
 
  private:
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough> wrapped_;
+  std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped_;
 };
 
-class WrappedSkiaRepresentation : public SharedImageRepresentationSkia {
+class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
  public:
-  WrappedSkiaRepresentation(
+  WrappedSkiaCompoundImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SharedImageRepresentationSkia> wrapped)
-      : SharedImageRepresentationSkia(manager, backing, tracker),
+      std::unique_ptr<SkiaImageRepresentation> wrapped)
+      : SkiaImageRepresentation(manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
 
-  SharedImageBackingCompound* compound_backing() {
-    return static_cast<SharedImageBackingCompound*>(backing());
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
   }
 
-  // SharedImageRepresentationSkia implementation.
+  // SkiaImageRepresentation implementation.
   bool SupportsMultipleConcurrentReadAccess() final {
     return wrapped_->SupportsMultipleConcurrentReadAccess();
   }
@@ -218,26 +216,26 @@ class WrappedSkiaRepresentation : public SharedImageRepresentationSkia {
   void EndReadAccess() final { wrapped_->EndReadAccess(); }
 
  private:
-  std::unique_ptr<SharedImageRepresentationSkia> wrapped_;
+  std::unique_ptr<SkiaImageRepresentation> wrapped_;
 };
 
-class WrappedDawnRepresentation : public SharedImageRepresentationDawn {
+class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
  public:
-  WrappedDawnRepresentation(
+  WrappedDawnCompoundImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SharedImageRepresentationDawn> wrapped)
-      : SharedImageRepresentationDawn(manager, backing, tracker),
+      std::unique_ptr<DawnImageRepresentation> wrapped)
+      : DawnImageRepresentation(manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
 
-  SharedImageBackingCompound* compound_backing() {
-    return static_cast<SharedImageBackingCompound*>(backing());
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
   }
 
-  // SharedImageRepresentationDawn implementation.
+  // DawnImageRepresentation implementation.
   WGPUTexture BeginAccess(WGPUTextureUsage webgpu_usage) final {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
@@ -248,26 +246,27 @@ class WrappedDawnRepresentation : public SharedImageRepresentationDawn {
   void EndAccess() final { wrapped_->EndAccess(); }
 
  private:
-  std::unique_ptr<SharedImageRepresentationDawn> wrapped_;
+  std::unique_ptr<DawnImageRepresentation> wrapped_;
 };
 
-class WrappedOverlayRepresentation : public SharedImageRepresentationOverlay {
+class WrappedOverlayCompoundImageRepresentation
+    : public OverlayImageRepresentation {
  public:
-  WrappedOverlayRepresentation(
+  WrappedOverlayCompoundImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SharedImageRepresentationOverlay> wrapped)
-      : SharedImageRepresentationOverlay(manager, backing, tracker),
+      std::unique_ptr<OverlayImageRepresentation> wrapped)
+      : OverlayImageRepresentation(manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
 
-  SharedImageBackingCompound* compound_backing() {
-    return static_cast<SharedImageBackingCompound*>(backing());
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
   }
 
-  // SharedImageRepresentationOverlay implementation.
+  // OverlayImageRepresentation implementation.
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kOverlay,
                                           AccessMode::kRead);
@@ -280,12 +279,11 @@ class WrappedOverlayRepresentation : public SharedImageRepresentationOverlay {
   gl::GLImage* GetGLImage() final { return wrapped_->GetGLImage(); }
 
  private:
-  std::unique_ptr<SharedImageRepresentationOverlay> wrapped_;
+  std::unique_ptr<OverlayImageRepresentation> wrapped_;
 };
 
 // static
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingCompound::CreateSharedMemory(
+std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageBackingFactory* gpu_backing_factory,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
@@ -307,7 +305,7 @@ SharedImageBackingCompound::CreateSharedMemory(
     return nullptr;
   }
 
-  auto shm_backing = std::make_unique<SharedImageBackingSharedMemory>(
+  auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
       gpu::Mailbox(), format, size, color_space, surface_origin, alpha_type,
       SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
 
@@ -320,12 +318,12 @@ SharedImageBackingCompound::CreateSharedMemory(
     return nullptr;
   }
 
-  return std::make_unique<SharedImageBackingCompound>(
+  return std::make_unique<CompoundImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(shm_backing), std::move(gpu_backing));
 }
 
-SharedImageBackingCompound::SharedImageBackingCompound(
+CompoundImageBacking::CompoundImageBacking(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -333,7 +331,7 @@ SharedImageBackingCompound::SharedImageBackingCompound(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    std::unique_ptr<SharedImageBackingSharedMemory> shm_backing,
+    std::unique_ptr<SharedMemoryImageBacking> shm_backing,
     std::unique_ptr<SharedImageBacking> gpu_backing)
     : SharedImageBacking(mailbox,
                          format,
@@ -357,11 +355,10 @@ SharedImageBackingCompound::SharedImageBackingCompound(
   SetClearedRect(gfx::Rect(size));
 }
 
-SharedImageBackingCompound::~SharedImageBackingCompound() = default;
+CompoundImageBacking::~CompoundImageBacking() = default;
 
-void SharedImageBackingCompound::NotifyBeginAccess(
-    SharedImageAccessStream stream,
-    RepresentationAccessMode mode) {
+void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
+                                             RepresentationAccessMode mode) {
   // Compound backings don't support CPU access directly or copying
   // from GPU back to CPU yet. Also no support for VAAPI.
   DCHECK_NE(stream, SharedImageAccessStream::kMemory);
@@ -371,9 +368,8 @@ void SharedImageBackingCompound::NotifyBeginAccess(
   // only want to update a backing if it's not currently being accessed.
 
   if (shm_has_update_) {
-    auto& wrapper =
-        static_cast<SharedImageBackingSharedMemory*>(shm_backing_.get())
-            ->shared_memory_wrapper();
+    auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
+                        ->shared_memory_wrapper();
     DCHECK(wrapper.IsValid());
 
     SkPixmap pixmap(shm_backing_->AsSkImageInfo(), wrapper.GetMemory(),
@@ -387,69 +383,67 @@ void SharedImageBackingCompound::NotifyBeginAccess(
   }
 }
 
-SharedImageBackingType SharedImageBackingCompound::GetType() const {
+SharedImageBackingType CompoundImageBacking::GetType() const {
   return SharedImageBackingType::kCompound;
 }
 
-void SharedImageBackingCompound::Update(
-    std::unique_ptr<gfx::GpuFence> in_fence) {
+void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
   shm_has_update_ = true;
 }
 
-bool SharedImageBackingCompound::ProduceLegacyMailbox(
+bool CompoundImageBacking::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   return gpu_backing_->ProduceLegacyMailbox(mailbox_manager);
 }
 
-gfx::Rect SharedImageBackingCompound::ClearedRect() const {
+gfx::Rect CompoundImageBacking::ClearedRect() const {
   return gpu_backing_->ClearedRect();
 }
 
-void SharedImageBackingCompound::SetClearedRect(const gfx::Rect& cleared_rect) {
+void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   // Shared memory backing doesn't track cleared rect.
   gpu_backing_->SetClearedRect(cleared_rect);
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingCompound::ProduceDawn(SharedImageManager* manager,
-                                        MemoryTypeTracker* tracker,
-                                        WGPUDevice device,
-                                        WGPUBackendType backend_type) {
+std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
   auto real_rep =
       gpu_backing_->ProduceDawn(manager, tracker, device, backend_type);
   if (!real_rep)
     return nullptr;
 
-  return std::make_unique<WrappedDawnRepresentation>(manager, this, tracker,
-                                                     std::move(real_rep));
+  return std::make_unique<WrappedDawnCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingCompound::ProduceGLTexture(SharedImageManager* manager,
-                                             MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTextureImageRepresentation>
+CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                       MemoryTypeTracker* tracker) {
   auto real_rep = gpu_backing_->ProduceGLTexture(manager, tracker);
   if (!real_rep)
     return nullptr;
 
-  return std::make_unique<WrappedGLTextureRepresentation>(
+  return std::make_unique<WrappedGLTextureCompoundImageRepresentation>(
       manager, this, tracker, std::move(real_rep));
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingCompound::ProduceGLTexturePassthrough(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                                  MemoryTypeTracker* tracker) {
   auto real_rep = gpu_backing_->ProduceGLTexturePassthrough(manager, tracker);
   if (!real_rep)
     return nullptr;
 
-  return std::make_unique<WrappedGLTexturePassthroughRepresentation>(
+  return std::make_unique<
+      WrappedGLTexturePassthroughCompoundImageRepresentation>(
       manager, this, tracker, std::move(real_rep));
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingCompound::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -458,22 +452,22 @@ SharedImageBackingCompound::ProduceSkia(
   if (!real_rep)
     return nullptr;
 
-  return std::make_unique<WrappedSkiaRepresentation>(manager, this, tracker,
-                                                     std::move(real_rep));
+  return std::make_unique<WrappedSkiaCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageBackingCompound::ProduceOverlay(SharedImageManager* manager,
-                                           MemoryTypeTracker* tracker) {
+std::unique_ptr<OverlayImageRepresentation>
+CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
+                                     MemoryTypeTracker* tracker) {
   auto real_rep = gpu_backing_->ProduceOverlay(manager, tracker);
   if (!real_rep)
     return nullptr;
 
-  return std::make_unique<WrappedOverlayRepresentation>(manager, this, tracker,
-                                                        std::move(real_rep));
+  return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
 }
 
-void SharedImageBackingCompound::OnMemoryDump(
+void CompoundImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDump* dump,
     base::trace_event::ProcessMemoryDump* pmd,

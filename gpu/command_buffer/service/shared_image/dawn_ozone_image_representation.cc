@@ -19,7 +19,7 @@
 
 namespace gpu {
 
-SharedImageRepresentationDawnOzone::SharedImageRepresentationDawnOzone(
+DawnOzoneImageRepresentation::DawnOzoneImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
@@ -27,7 +27,7 @@ SharedImageRepresentationDawnOzone::SharedImageRepresentationDawnOzone(
     WGPUTextureFormat format,
     scoped_refptr<gfx::NativePixmap> pixmap,
     scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
-    : SharedImageRepresentationDawn(manager, backing, tracker),
+    : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
       format_(format),
       pixmap_(pixmap),
@@ -39,13 +39,12 @@ SharedImageRepresentationDawnOzone::SharedImageRepresentationDawnOzone(
   dawn_procs_->data.deviceReference(device_);
 }
 
-SharedImageRepresentationDawnOzone::~SharedImageRepresentationDawnOzone() {
+DawnOzoneImageRepresentation::~DawnOzoneImageRepresentation() {
   EndAccess();
   dawn_procs_->data.deviceRelease(device_);
 }
 
-WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
-    WGPUTextureUsage usage) {
+WGPUTexture DawnOzoneImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   // It doesn't make sense to have two overlapping BeginAccess calls on the same
   // representation.
   if (texture_) {
@@ -68,8 +67,8 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
   if (!ozone_backing()->BeginAccess(
-          /*readonly=*/false, SharedImageBackingOzone::AccessStream::kWebGPU,
-          &fences, need_end_fence)) {
+          /*readonly=*/false, OzoneImageBacking::AccessStream::kWebGPU, &fences,
+          need_end_fence)) {
     return nullptr;
   }
   DCHECK(need_end_fence);
@@ -122,7 +121,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   texture_ = dawn::native::vulkan::WrapVulkanImage(device_, &descriptor);
   if (!texture_) {
     ozone_backing()->EndAccess(/*readonly=*/false,
-                               SharedImageBackingOzone::AccessStream::kWebGPU,
+                               OzoneImageBacking::AccessStream::kWebGPU,
                                gfx::GpuFenceHandle());
     close(fd);
   }
@@ -130,7 +129,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   return texture_;
 }
 
-void SharedImageRepresentationDawnOzone::EndAccess() {
+void DawnOzoneImageRepresentation::EndAccess() {
   if (!texture_) {
     return;
   }
@@ -150,7 +149,7 @@ void SharedImageRepresentationDawnOzone::EndAccess() {
     gfx::GpuFenceHandle fence;
     fence.owned_fd = base::ScopedFD(export_info.semaphoreHandles[0]);
     ozone_backing()->EndAccess(/*readonly=*/false,
-                               SharedImageBackingOzone::AccessStream::kWebGPU,
+                               OzoneImageBacking::AccessStream::kWebGPU,
                                std::move(fence));
   }
   dawn_procs_->data.textureDestroy(texture_);

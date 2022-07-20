@@ -113,14 +113,14 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   // Only one of the follow should be non-null at the same time.
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_passthrough_;
-  std::unique_ptr<gpu::SharedImageRepresentationSkia> representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationRaster> raster_representation_;
+  std::unique_ptr<gpu::SkiaImageRepresentation> representation_;
+  std::unique_ptr<gpu::RasterImageRepresentation> raster_representation_;
 
   // For scoped read accessing |representation|. It is only accessed on GPU
   // thread.
-  std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedReadAccess>
       representation_scoped_read_access_;
-  std::unique_ptr<gpu::SharedImageRepresentationRaster::ScopedReadAccess>
+  std::unique_ptr<gpu::RasterImageRepresentation::ScopedReadAccess>
       representation_raster_scoped_access_;
 
   // For holding SkPromiseImageTexture create from |fallback_texture| or legacy

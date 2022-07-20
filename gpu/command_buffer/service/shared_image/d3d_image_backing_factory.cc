@@ -151,7 +151,7 @@ scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
 
 }  // anonymous namespace
 
-SharedImageBackingFactoryD3D::SharedImageBackingFactoryD3D(
+D3DImageBackingFactory::D3DImageBackingFactory(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager)
     : d3d11_device_(std::move(d3d11_device)),
@@ -159,25 +159,25 @@ SharedImageBackingFactoryD3D::SharedImageBackingFactoryD3D(
   DCHECK(d3d11_device_);
 }
 
-SharedImageBackingFactoryD3D::~SharedImageBackingFactoryD3D() = default;
+D3DImageBackingFactory::~D3DImageBackingFactory() = default;
 
-SharedImageBackingFactoryD3D::SwapChainBackings::SwapChainBackings(
+D3DImageBackingFactory::SwapChainBackings::SwapChainBackings(
     std::unique_ptr<SharedImageBacking> front_buffer,
     std::unique_ptr<SharedImageBacking> back_buffer)
     : front_buffer(std::move(front_buffer)),
       back_buffer(std::move(back_buffer)) {}
 
-SharedImageBackingFactoryD3D::SwapChainBackings::~SwapChainBackings() = default;
+D3DImageBackingFactory::SwapChainBackings::~SwapChainBackings() = default;
 
-SharedImageBackingFactoryD3D::SwapChainBackings::SwapChainBackings(
-    SharedImageBackingFactoryD3D::SwapChainBackings&&) = default;
+D3DImageBackingFactory::SwapChainBackings::SwapChainBackings(
+    D3DImageBackingFactory::SwapChainBackings&&) = default;
 
-SharedImageBackingFactoryD3D::SwapChainBackings&
-SharedImageBackingFactoryD3D::SwapChainBackings::operator=(
-    SharedImageBackingFactoryD3D::SwapChainBackings&&) = default;
+D3DImageBackingFactory::SwapChainBackings&
+D3DImageBackingFactory::SwapChainBackings::operator=(
+    D3DImageBackingFactory::SwapChainBackings&&) = default;
 
 // static
-bool SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
+bool D3DImageBackingFactory::IsD3DSharedImageSupported(
     const GpuPreferences& gpu_preferences) {
   // Only supported for passthrough command decoder and Skia-GL.
   const bool using_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
@@ -189,22 +189,21 @@ bool SharedImageBackingFactoryD3D::IsD3DSharedImageSupported(
 }
 
 // static
-bool SharedImageBackingFactoryD3D::IsSwapChainSupported() {
+bool D3DImageBackingFactory::IsSwapChainSupported() {
   return gl::DirectCompositionSurfaceWin::IsDirectCompositionSupported() &&
          gl::DirectCompositionSurfaceWin::IsSwapChainTearingSupported();
 }
 
-SharedImageBackingFactoryD3D::SwapChainBackings
-SharedImageBackingFactoryD3D::CreateSwapChain(
-    const Mailbox& front_buffer_mailbox,
-    const Mailbox& back_buffer_mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage) {
-  if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
+D3DImageBackingFactory::SwapChainBackings
+D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
+                                        const Mailbox& back_buffer_mailbox,
+                                        viz::ResourceFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) {
+  if (!D3DImageBackingFactory::IsSwapChainSupported())
     return {nullptr, nullptr};
 
   DXGI_FORMAT swap_chain_format;
@@ -281,7 +280,7 @@ SharedImageBackingFactoryD3D::CreateSwapChain(
     LOG(ERROR) << "GetBuffer failed with error " << std::hex;
     return {nullptr, nullptr};
   }
-  auto back_buffer_backing = SharedImageBackingD3D::CreateFromSwapChainBuffer(
+  auto back_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
       back_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(back_buffer_texture), swap_chain,
       /*is_back_buffer=*/true);
@@ -295,7 +294,7 @@ SharedImageBackingFactoryD3D::CreateSwapChain(
     LOG(ERROR) << "GetBuffer failed with error " << std::hex;
     return {nullptr, nullptr};
   }
-  auto front_buffer_backing = SharedImageBackingD3D::CreateFromSwapChainBuffer(
+  auto front_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
       front_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(front_buffer_texture), swap_chain,
       /*is_back_buffer=*/false);
@@ -306,8 +305,7 @@ SharedImageBackingFactoryD3D::CreateSwapChain(
   return {std::move(front_buffer_backing), std::move(back_buffer_backing)};
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryD3D::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -385,13 +383,12 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
       dxgi_shared_handle_manager_->CreateAnonymousSharedHandleState(
           base::win::ScopedHandle(shared_handle), d3d11_texture);
 
-  return SharedImageBackingD3D::CreateFromDXGISharedHandle(
+  return D3DImageBacking::CreateFromDXGISharedHandle(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(dxgi_shared_handle_state));
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryD3D::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -404,8 +401,7 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
   return nullptr;
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryD3D::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -436,7 +432,7 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
 
     auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
-    auto backing = SharedImageBackingD3D::CreateFromDXGISharedHandle(
+    auto backing = D3DImageBacking::CreateFromDXGISharedHandle(
         mailbox, viz::GetResourceFormat(format), size, color_space,
         surface_origin, alpha_type, usage, std::move(d3d11_texture),
         std::move(dxgi_shared_handle_state));
@@ -493,7 +489,7 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
   const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
   handle.offset += gfx::BufferOffsetForBufferFormat(size, format, plane_index);
 
-  auto backing = SharedImageBackingD3D::CreateFromSharedMemoryHandle(
+  auto backing = D3DImageBacking::CreateFromSharedMemoryHandle(
       mailbox, plane_format, plane_size, color_space, surface_origin,
       alpha_type, usage, std::move(d3d11_texture), std::move(handle));
   if (backing) {
@@ -509,7 +505,7 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
 }
 
 std::vector<std::unique_ptr<SharedImageBacking>>
-SharedImageBackingFactoryD3D::CreateSharedImageVideoPlanes(
+D3DImageBackingFactory::CreateSharedImageVideoPlanes(
     base::span<const Mailbox> mailboxes,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
@@ -529,12 +525,12 @@ SharedImageBackingFactoryD3D::CreateSharedImageVideoPlanes(
 
   auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
-  return SharedImageBackingD3D::CreateFromVideoTexture(
+  return D3DImageBacking::CreateFromVideoTexture(
       mailboxes, GetDXGIFormat(format), size, usage, std::move(d3d11_texture),
       /*array_slice=*/0, std::move(dxgi_shared_handle_state));
 }
 
-bool SharedImageBackingFactoryD3D::UseMapOnDefaultTextures() {
+bool D3DImageBackingFactory::UseMapOnDefaultTextures() {
   if (!map_on_default_textures_.has_value()) {
     D3D11_FEATURE_DATA_D3D11_OPTIONS2 features;
     HRESULT hr = d3d11_device_->CheckFeatureSupport(
@@ -555,7 +551,7 @@ bool SharedImageBackingFactoryD3D::UseMapOnDefaultTextures() {
 
 // Returns true if the specified GpuMemoryBufferType can be imported using
 // this factory.
-bool SharedImageBackingFactoryD3D::CanImportGpuMemoryBuffer(
+bool D3DImageBackingFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType gmb_type,
     viz::ResourceFormat format) {
   return gmb_type == gfx::DXGI_SHARED_HANDLE ||
@@ -565,14 +561,13 @@ bool SharedImageBackingFactoryD3D::CanImportGpuMemoryBuffer(
           format == viz::YUV_420_BIPLANAR);
 }
 
-bool SharedImageBackingFactoryD3D::IsSupported(
-    uint32_t usage,
-    viz::ResourceFormat format,
-    bool thread_safe,
-    gfx::GpuMemoryBufferType gmb_type,
-    GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
-    bool is_pixel_used) {
+bool D3DImageBackingFactory::IsSupported(uint32_t usage,
+                                         viz::ResourceFormat format,
+                                         bool thread_safe,
+                                         gfx::GpuMemoryBufferType gmb_type,
+                                         GrContextType gr_context_type,
+                                         bool* allow_legacy_mailbox,
+                                         bool is_pixel_used) {
   if (is_pixel_used) {
     return false;
   }

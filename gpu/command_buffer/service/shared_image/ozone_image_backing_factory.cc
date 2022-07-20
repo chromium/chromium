@@ -43,7 +43,7 @@ gfx::BufferUsage GetBufferUsage(uint32_t usage) {
 
 }  // namespace
 
-SharedImageBackingFactoryOzone::SharedImageBackingFactoryOzone(
+OzoneImageBackingFactory::OzoneImageBackingFactory(
     SharedContextState* shared_context_state,
     const GpuDriverBugWorkarounds& workarounds)
     : shared_context_state_(shared_context_state), workarounds_(workarounds) {
@@ -53,10 +53,10 @@ SharedImageBackingFactoryOzone::SharedImageBackingFactoryOzone(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-SharedImageBackingFactoryOzone::~SharedImageBackingFactoryOzone() = default;
+OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
 
-std::unique_ptr<SharedImageBackingOzone>
-SharedImageBackingFactoryOzone::CreateSharedImageInternal(
+std::unique_ptr<OzoneImageBacking>
+OzoneImageBackingFactory::CreateSharedImageInternal(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -87,14 +87,13 @@ SharedImageBackingFactoryOzone::CreateSharedImageInternal(
     DLOG(ERROR) << "Failed to create native pixmap";
     return nullptr;
   }
-  return std::make_unique<SharedImageBackingOzone>(
+  return std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, shared_context_state_.get(),
       std::move(pixmap), dawn_procs_, workarounds_);
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryOzone::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -110,8 +109,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
                                    usage);
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryOzone::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -139,8 +137,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
   return backing;
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryOzone::CreateSharedImage(
+std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -167,7 +164,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
   const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
   const viz::ResourceFormat plane_format =
       viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
-  auto backing = std::make_unique<SharedImageBackingOzone>(
+  auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, plane_format, plane, plane_size, color_space, surface_origin,
       alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
       dawn_procs_, workarounds_);
@@ -176,14 +173,13 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
   return backing;
 }
 
-bool SharedImageBackingFactoryOzone::IsSupported(
-    uint32_t usage,
-    viz::ResourceFormat format,
-    bool thread_safe,
-    gfx::GpuMemoryBufferType gmb_type,
-    GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
-    bool is_pixel_used) {
+bool OzoneImageBackingFactory::IsSupported(uint32_t usage,
+                                           viz::ResourceFormat format,
+                                           bool thread_safe,
+                                           gfx::GpuMemoryBufferType gmb_type,
+                                           GrContextType gr_context_type,
+                                           bool* allow_legacy_mailbox,
+                                           bool is_pixel_used) {
   if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
   }
@@ -211,9 +207,9 @@ bool SharedImageBackingFactoryOzone::IsSupported(
 #if BUILDFLAG(IS_FUCHSIA)
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
 
-  // For now just use SharedImageBackingOzone for primary plane buffers.
+  // For now just use OzoneImageBacking for primary plane buffers.
   // TODO(crbug.com/1310026): When Vulkan/GL interop is supported on Fuchsia
-  // SharedImageBackingOzone should be used for all scanout buffers.
+  // OzoneImageBacking should be used for all scanout buffers.
   constexpr uint32_t kPrimaryPlaneUsageFlags = SHARED_IMAGE_USAGE_DISPLAY |
                                                SHARED_IMAGE_USAGE_SCANOUT |
                                                SHARED_IMAGE_USAGE_RASTER;
@@ -226,7 +222,7 @@ bool SharedImageBackingFactoryOzone::IsSupported(
   return true;
 }
 
-bool SharedImageBackingFactoryOzone::CanImportNativePixmapToVulkan() {
+bool OzoneImageBackingFactory::CanImportNativePixmapToVulkan() {
   if (!shared_context_state_->vk_context_provider()) {
     return false;
   }
@@ -237,7 +233,7 @@ bool SharedImageBackingFactoryOzone::CanImportNativePixmapToVulkan() {
       ->CanImportGpuMemoryBuffer(vk_device, gfx::NATIVE_PIXMAP);
 }
 
-bool SharedImageBackingFactoryOzone::CanImportNativePixmapToWebGPU() {
+bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {
   // Assume that if skia/vulkan vkDevice supports the Vulkan extensions
   // (external_memory_dma_buf, image_drm_format_modifier), then Dawn/WebGPU also
   // support the extensions until there is capability to check the extensions

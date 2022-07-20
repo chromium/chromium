@@ -21,10 +21,9 @@ namespace gpu {
 // SharedImageRepresentation of a Ozone-backed SharedImage to be used by Dawn.
 // On access, the pixmap backing the SharedImage is imported into Dawn for
 // rendering.
-class SharedImageRepresentationDawnOzone
-    : public SharedImageRepresentationDawn {
+class DawnOzoneImageRepresentation : public DawnImageRepresentation {
  public:
-  SharedImageRepresentationDawnOzone(
+  DawnOzoneImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
@@ -33,12 +32,11 @@ class SharedImageRepresentationDawnOzone
       scoped_refptr<gfx::NativePixmap> pixmap,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
 
-  SharedImageRepresentationDawnOzone(
-      const SharedImageRepresentationDawnOzone&) = delete;
-  SharedImageRepresentationDawnOzone& operator=(
-      const SharedImageRepresentationDawnOzone&) = delete;
+  DawnOzoneImageRepresentation(const DawnOzoneImageRepresentation&) = delete;
+  DawnOzoneImageRepresentation& operator=(const DawnOzoneImageRepresentation&) =
+      delete;
 
-  ~SharedImageRepresentationDawnOzone() override;
+  ~DawnOzoneImageRepresentation() override;
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
 
@@ -46,9 +44,9 @@ class SharedImageRepresentationDawnOzone
 
  private:
   // TODO(andrescj): move other shared image representations into
-  // SharedImageBackingOzone.
-  SharedImageBackingOzone* ozone_backing() {
-    return static_cast<SharedImageBackingOzone*>(backing());
+  // OzoneImageBacking.
+  OzoneImageBacking* ozone_backing() {
+    return static_cast<OzoneImageBacking*>(backing());
   }
   const WGPUDevice device_;
   const WGPUTextureFormat format_;

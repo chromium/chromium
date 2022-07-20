@@ -14,14 +14,12 @@
 
 namespace gpu {
 
-SharedImageBackingFactorySharedMemory::SharedImageBackingFactorySharedMemory() =
-    default;
+SharedMemoryImageBackingFactory::SharedMemoryImageBackingFactory() = default;
 
-SharedImageBackingFactorySharedMemory::
-    ~SharedImageBackingFactorySharedMemory() = default;
+SharedMemoryImageBackingFactory::~SharedMemoryImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactorySharedMemory::CreateSharedImage(
+SharedMemoryImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -36,7 +34,7 @@ SharedImageBackingFactorySharedMemory::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactorySharedMemory::CreateSharedImage(
+SharedMemoryImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -50,7 +48,7 @@ SharedImageBackingFactorySharedMemory::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactorySharedMemory::CreateSharedImage(
+SharedMemoryImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -69,13 +67,13 @@ SharedImageBackingFactorySharedMemory::CreateSharedImage(
     return nullptr;
   }
 
-  auto backing = std::make_unique<SharedImageBackingSharedMemory>(
+  auto backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(shm_wrapper));
   return backing;
 }
 
-bool SharedImageBackingFactorySharedMemory::IsSupported(
+bool SharedMemoryImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::ResourceFormat format,
     bool thread_safe,

@@ -213,7 +213,7 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
   // Create a shared image.
   // TODO(vikassoni): This shared image need to be thread safe eventually for
   // webview to work with shared images.
-  auto shared_image = gpu::SharedImageVideo::Create(
+  auto shared_image = gpu::AndroidVideoImageBacking::Create(
       mailbox, coded_size, spec.color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, std::move(image), std::move(shared_context),
       std::move(drdc_lock));

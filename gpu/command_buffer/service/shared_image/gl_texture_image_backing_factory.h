@@ -28,14 +28,14 @@ struct Mailbox;
 
 // Implementation of SharedImageBackingFactory that produces GL-texture backed
 // SharedImages.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
-    : public SharedImageBackingFactoryGLCommon {
+class GPU_GLES2_EXPORT GLTextureImageBackingFactory
+    : public GLCommonImageBackingFactory {
  public:
-  SharedImageBackingFactoryGLTexture(const GpuPreferences& gpu_preferences,
-                                     const GpuDriverBugWorkarounds& workarounds,
-                                     const gles2::FeatureInfo* feature_info,
-                                     gl::ProgressReporter* progress_reporter);
-  ~SharedImageBackingFactoryGLTexture() override;
+  GLTextureImageBackingFactory(const GpuPreferences& gpu_preferences,
+                               const GpuDriverBugWorkarounds& workarounds,
+                               const gles2::FeatureInfo* feature_info,
+                               gl::ProgressReporter* progress_reporter);
+  ~GLTextureImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

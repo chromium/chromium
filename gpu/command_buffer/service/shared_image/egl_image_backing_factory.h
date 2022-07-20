@@ -29,13 +29,13 @@ struct Mailbox;
 
 // Implementation of SharedImageBackingFactory that produces EGL backed
 // SharedImages.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
-    : public SharedImageBackingFactoryGLCommon {
+class GPU_GLES2_EXPORT EGLImageBackingFactory
+    : public GLCommonImageBackingFactory {
  public:
-  SharedImageBackingFactoryEGL(const GpuPreferences& gpu_preferences,
-                               const GpuDriverBugWorkarounds& workarounds,
-                               const gles2::FeatureInfo* feature_info);
-  ~SharedImageBackingFactoryEGL() override;
+  EGLImageBackingFactory(const GpuPreferences& gpu_preferences,
+                         const GpuDriverBugWorkarounds& workarounds,
+                         const gles2::FeatureInfo* feature_info);
+  ~EGLImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

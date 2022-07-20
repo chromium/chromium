@@ -81,13 +81,13 @@ class MockProgressReporter : public gl::ProgressReporter {
   MOCK_METHOD0(ReportProgress, void());
 };
 
-class SharedImageBackingFactoryGLImageTestBase
+class GLImageBackingFactoryTestBase
     : public testing::TestWithParam<std::tuple<bool, viz::ResourceFormat>> {
  public:
-  explicit SharedImageBackingFactoryGLImageTestBase(bool is_thread_safe)
+  explicit GLImageBackingFactoryTestBase(bool is_thread_safe)
       : shared_image_manager_(
             std::make_unique<SharedImageManager>(is_thread_safe)) {}
-  ~SharedImageBackingFactoryGLImageTestBase() override {
+  ~GLImageBackingFactoryTestBase() override {
     // |context_state_| must be destroyed on its own context.
     context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
   }
@@ -105,10 +105,10 @@ class SharedImageBackingFactoryGLImageTestBase
 
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = use_passthrough();
-    backing_factory_ = std::make_unique<SharedImageBackingFactoryGLImage>(
+    backing_factory_ = std::make_unique<GLImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(), factory,
         &progress_reporter_, /*for_shared_memory_gmbs=*/false);
-    backing_factory_shmem_ = std::make_unique<SharedImageBackingFactoryGLImage>(
+    backing_factory_shmem_ = std::make_unique<GLImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(), factory,
         &progress_reporter_, /*for_shared_memory_gmbs=*/true);
 
@@ -139,8 +139,8 @@ class SharedImageBackingFactoryGLImageTestBase
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageBackingFactoryGLImage> backing_factory_;
-  std::unique_ptr<SharedImageBackingFactoryGLImage> backing_factory_shmem_;
+  std::unique_ptr<GLImageBackingFactory> backing_factory_;
+  std::unique_ptr<GLImageBackingFactory> backing_factory_shmem_;
   gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
@@ -151,11 +151,9 @@ class SharedImageBackingFactoryGLImageTestBase
   bool supports_ab30_ = false;
 };
 
-class SharedImageBackingFactoryGLImageTest
-    : public SharedImageBackingFactoryGLImageTestBase {
+class GLImageBackingFactoryTest : public GLImageBackingFactoryTestBase {
  public:
-  SharedImageBackingFactoryGLImageTest()
-      : SharedImageBackingFactoryGLImageTestBase(false) {}
+  GLImageBackingFactoryTest() : GLImageBackingFactoryTestBase(false) {}
   void SetUp() override {
     GpuDriverBugWorkarounds workarounds;
     SetUpBase(workarounds, &image_factory_);
@@ -165,7 +163,7 @@ class SharedImageBackingFactoryGLImageTest
   TextureImageFactory image_factory_;
 };
 
-TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
+TEST_P(GLImageBackingFactoryTest, Basic) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100975)
   gpu::GPUTestBotConfig bot_config;
@@ -219,7 +217,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
   ASSERT_TRUE(image);
   EXPECT_EQ(size, image->GetSize());
 
-  // Next, validate via a SharedImageRepresentationGLTexture.
+  // Next, validate via a GLTextureImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
@@ -247,7 +245,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
     gl_representation_rgb.reset();
   }
 
-  // Next, validate a SharedImageRepresentationGLTexturePassthrough.
+  // Next, validate a GLTexturePassthroughImageRepresentation.
   if (use_passthrough()) {
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
@@ -261,13 +259,13 @@ TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
     gl_representation.reset();
   }
 
-  // Finally, validate a SharedImageRepresentationSkia.
+  // Finally, validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
@@ -278,8 +276,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
   EXPECT_EQ(size.height(), surface->height());
   scoped_write_access.reset();
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
-      scoped_read_access;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   auto* promise_texture = scoped_read_access->promise_image_texture();
@@ -325,7 +322,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
   }
 }
 
-TEST_P(SharedImageBackingFactoryGLImageTest, InitialData) {
+TEST_P(GLImageBackingFactoryTest, InitialData) {
   // TODO(andrescj): these loop over the formats can be replaced by test
   // parameters.
   for (auto format :
@@ -360,7 +357,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InitialData) {
     ASSERT_TRUE(texture_base);
     GLenum expected_target = texture_base->target();
 
-    // Validate via a SharedImageRepresentationGLTexture(Passthrough).
+    // Validate via a GLTextureImageRepresentation(Passthrough).
     std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
         shared_image_manager_->Register(std::move(backing),
                                         memory_type_tracker_.get());
@@ -397,7 +394,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InitialData) {
   }
 }
 
-TEST_P(SharedImageBackingFactoryGLImageTest, InitialDataImage) {
+TEST_P(GLImageBackingFactoryTest, InitialDataImage) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
   if (should_succeed)
@@ -419,7 +416,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InitialDataImage) {
   }
   ASSERT_TRUE(backing);
 
-  // Validate via a SharedImageRepresentationGLTexture(Passthrough).
+  // Validate via a GLTextureImageRepresentation(Passthrough).
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
@@ -448,7 +445,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InitialDataImage) {
   }
 }
 
-TEST_P(SharedImageBackingFactoryGLImageTest, InitialDataWrongSize) {
+TEST_P(GLImageBackingFactoryTest, InitialDataWrongSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -468,7 +465,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InitialDataWrongSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(SharedImageBackingFactoryGLImageTest, InvalidFormat) {
+TEST_P(GLImageBackingFactoryTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = viz::ResourceFormat::YUV_420_BIPLANAR;
   gfx::Size size(256, 256);
@@ -483,7 +480,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InvalidFormat) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(SharedImageBackingFactoryGLImageTest, InvalidSize) {
+TEST_P(GLImageBackingFactoryTest, InvalidSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(0, 0);
@@ -504,7 +501,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, InvalidSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(SharedImageBackingFactoryGLImageTest, EstimatedSize) {
+TEST_P(GLImageBackingFactoryTest, EstimatedSize) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
   if (should_succeed)
@@ -541,7 +538,7 @@ TEST_P(SharedImageBackingFactoryGLImageTest, EstimatedSize) {
 // Ensures that the various conversion functions used w/ TexStorage2D match
 // their TexImage2D equivalents, allowing us to minimize the amount of parallel
 // data tracked in the SharedImageFactoryGLImage.
-TEST_P(SharedImageBackingFactoryGLImageTest, TexImageTexStorageEquivalence) {
+TEST_P(GLImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(GpuDriverBugWorkarounds(), GpuFeatureInfo());
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
@@ -635,12 +632,10 @@ class StubImage : public gl::GLImageStub {
   unsigned internal_format_ = GL_RGBA;
 };
 
-class SharedImageBackingFactoryGLImageWithGMBTest
-    : public SharedImageBackingFactoryGLImageTestBase,
-      public gpu::ImageFactory {
+class GLImageBackingFactoryWithGMBTest : public GLImageBackingFactoryTestBase,
+                                         public gpu::ImageFactory {
  public:
-  SharedImageBackingFactoryGLImageWithGMBTest()
-      : SharedImageBackingFactoryGLImageTestBase(false) {}
+  GLImageBackingFactoryWithGMBTest() : GLImageBackingFactoryTestBase(false) {}
   void SetUp() override { SetUpBase(GpuDriverBugWorkarounds(), this); }
 
   scoped_refptr<gl::GLImage> GetImageFromMailbox(Mailbox mailbox) {
@@ -680,8 +675,7 @@ class SharedImageBackingFactoryGLImageWithGMBTest
   static constexpr int kClientId = 3;
 };
 
-TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
-       GpuMemoryBufferImportEmpty) {
+TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
   gfx::BufferFormat format = viz::BufferFormat(get_format());
@@ -697,8 +691,7 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
   EXPECT_FALSE(backing);
 }
 
-TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
-       GpuMemoryBufferImportNative) {
+TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
   // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
   // (crbug.com/1100975)
   gpu::GPUTestBotConfig bot_config;
@@ -743,7 +736,7 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
                                                           context_state_);
     std::vector<GrBackendSemaphore> begin_semaphores;
     std::vector<GrBackendSemaphore> end_semaphores;
-    std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+    std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
         scoped_read_access;
     skia_representation->BeginScopedReadAccess(&begin_semaphores,
                                                &end_semaphores);
@@ -756,8 +749,7 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
   EXPECT_GT(stub_image->update_counter(), update_counter);
 }
 
-TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
-       GpuMemoryBufferImportSharedMemory) {
+TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportSharedMemory) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
   gfx::BufferFormat format = viz::BufferFormat(get_format());
@@ -795,7 +787,7 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
   EXPECT_EQ(format, shm_image->format());
 }
 
-TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
+TEST_P(GLImageBackingFactoryWithGMBTest,
        GpuMemoryBufferImportNative_WithRGBEmulation) {
   if (use_passthrough())
     return;
@@ -862,12 +854,12 @@ std::string TestParamToString(
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,
-                         SharedImageBackingFactoryGLImageTest,
+                         GLImageBackingFactoryTest,
                          ::testing::Combine(::testing::Bool(),
                                             kResourceFormats),
                          TestParamToString);
 INSTANTIATE_TEST_SUITE_P(Service,
-                         SharedImageBackingFactoryGLImageWithGMBTest,
+                         GLImageBackingFactoryWithGMBTest,
                          ::testing::Combine(::testing::Bool(),
                                             kResourceFormats),
                          TestParamToString);

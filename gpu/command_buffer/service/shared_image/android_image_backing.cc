@@ -10,17 +10,16 @@
 
 namespace gpu {
 
-SharedImageBackingAndroid::SharedImageBackingAndroid(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    size_t estimated_size,
-    bool is_thread_safe,
-    base::ScopedFD initial_upload_fd)
+AndroidImageBacking::AndroidImageBacking(const Mailbox& mailbox,
+                                         viz::ResourceFormat format,
+                                         const gfx::Size& size,
+                                         const gfx::ColorSpace& color_space,
+                                         GrSurfaceOrigin surface_origin,
+                                         SkAlphaType alpha_type,
+                                         uint32_t usage,
+                                         size_t estimated_size,
+                                         bool is_thread_safe,
+                                         base::ScopedFD initial_upload_fd)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -32,9 +31,9 @@ SharedImageBackingAndroid::SharedImageBackingAndroid(
                                       is_thread_safe),
       write_sync_fd_(std::move(initial_upload_fd)) {}
 
-SharedImageBackingAndroid::~SharedImageBackingAndroid() = default;
+AndroidImageBacking::~AndroidImageBacking() = default;
 
-bool SharedImageBackingAndroid::BeginWrite(base::ScopedFD* fd_to_wait_on) {
+bool AndroidImageBacking::BeginWrite(base::ScopedFD* fd_to_wait_on) {
   AutoLock auto_lock(this);
 
   if (is_writing_ || !active_readers_.empty() || is_overlay_accessing_) {
@@ -50,7 +49,7 @@ bool SharedImageBackingAndroid::BeginWrite(base::ScopedFD* fd_to_wait_on) {
   return true;
 }
 
-void SharedImageBackingAndroid::EndWrite(base::ScopedFD end_write_fd) {
+void AndroidImageBacking::EndWrite(base::ScopedFD end_write_fd) {
   AutoLock auto_lock(this);
 
   if (!is_writing_) {
@@ -64,9 +63,8 @@ void SharedImageBackingAndroid::EndWrite(base::ScopedFD end_write_fd) {
   write_sync_fd_ = std::move(end_write_fd);
 }
 
-bool SharedImageBackingAndroid::BeginRead(
-    const SharedImageRepresentation* reader,
-    base::ScopedFD* fd_to_wait_on) {
+bool AndroidImageBacking::BeginRead(const SharedImageRepresentation* reader,
+                                    base::ScopedFD* fd_to_wait_on) {
   AutoLock auto_lock(this);
 
   if (is_writing_) {
@@ -90,8 +88,8 @@ bool SharedImageBackingAndroid::BeginRead(
   return true;
 }
 
-void SharedImageBackingAndroid::EndRead(const SharedImageRepresentation* reader,
-                                        base::ScopedFD end_read_fd) {
+void AndroidImageBacking::EndRead(const SharedImageRepresentation* reader,
+                                  base::ScopedFD end_read_fd) {
   AutoLock auto_lock(this);
 
   if (!active_readers_.contains(reader)) {
@@ -106,7 +104,7 @@ void SharedImageBackingAndroid::EndRead(const SharedImageRepresentation* reader,
       gl::MergeFDs(std::move(read_sync_fd_), std::move(end_read_fd));
 }
 
-base::ScopedFD SharedImageBackingAndroid::TakeReadFence() {
+base::ScopedFD AndroidImageBacking::TakeReadFence() {
   AutoLock auto_lock(this);
 
   return std::move(read_sync_fd_);

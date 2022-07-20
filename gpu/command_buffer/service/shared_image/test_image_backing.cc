@@ -14,36 +14,33 @@
 
 namespace gpu {
 namespace {
-class TestSharedImageRepresentationGLTexture
-    : public SharedImageRepresentationGLTexture {
+class TestGLTextureImageRepresentation : public GLTextureImageRepresentation {
  public:
-  TestSharedImageRepresentationGLTexture(SharedImageManager* manager,
-                                         SharedImageBacking* backing,
-                                         MemoryTypeTracker* tracker,
-                                         gles2::Texture* texture)
-      : SharedImageRepresentationGLTexture(manager, backing, tracker),
+  TestGLTextureImageRepresentation(SharedImageManager* manager,
+                                   SharedImageBacking* backing,
+                                   MemoryTypeTracker* tracker,
+                                   gles2::Texture* texture)
+      : GLTextureImageRepresentation(manager, backing, tracker),
         texture_(texture) {}
 
   gles2::Texture* GetTexture() override { return texture_; }
   bool BeginAccess(GLenum mode) override {
-    return static_cast<TestSharedImageBacking*>(backing())->can_access();
+    return static_cast<TestImageBacking*>(backing())->can_access();
   }
 
  private:
   const raw_ptr<gles2::Texture> texture_;
 };
 
-class TestSharedImageRepresentationGLTexturePassthrough
-    : public SharedImageRepresentationGLTexturePassthrough {
+class TestGLTexturePassthroughImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
-  TestSharedImageRepresentationGLTexturePassthrough(
+  TestGLTexturePassthroughImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gles2::TexturePassthrough> texture)
-      : SharedImageRepresentationGLTexturePassthrough(manager,
-                                                      backing,
-                                                      tracker),
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         texture_(std::move(texture)) {}
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
@@ -51,19 +48,19 @@ class TestSharedImageRepresentationGLTexturePassthrough
     return texture_;
   }
   bool BeginAccess(GLenum mode) override {
-    return static_cast<TestSharedImageBacking*>(backing())->can_access();
+    return static_cast<TestImageBacking*>(backing())->can_access();
   }
 
  private:
   const scoped_refptr<gles2::TexturePassthrough> texture_;
 };
 
-class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
+class TestSkiaImageRepresentation : public SkiaImageRepresentation {
  public:
-  TestSharedImageRepresentationSkia(SharedImageManager* manager,
-                                    SharedImageBacking* backing,
-                                    MemoryTypeTracker* tracker)
-      : SharedImageRepresentationSkia(manager, backing, tracker) {}
+  TestSkiaImageRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker)
+      : SkiaImageRepresentation(manager, backing, tracker) {}
 
  protected:
   sk_sp<SkSurface> BeginWriteAccess(
@@ -71,7 +68,7 @@ class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override {
-    if (!static_cast<TestSharedImageBacking*>(backing())->can_access()) {
+    if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
@@ -82,7 +79,7 @@ class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    if (!static_cast<TestSharedImageBacking*>(backing())->can_access()) {
+    if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
     GrBackendTexture backend_tex(size().width(), size().height(),
@@ -93,7 +90,7 @@ class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override {
-    if (!static_cast<TestSharedImageBacking*>(backing())->can_access()) {
+    if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
     GrBackendTexture backend_tex(size().width(), size().height(),
@@ -103,15 +100,15 @@ class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
   void EndReadAccess() override {}
 };
 
-class TestSharedImageRepresentationDawn : public SharedImageRepresentationDawn {
+class TestDawnImageRepresentation : public DawnImageRepresentation {
  public:
-  TestSharedImageRepresentationDawn(SharedImageManager* manager,
-                                    SharedImageBacking* backing,
-                                    MemoryTypeTracker* tracker)
-      : SharedImageRepresentationDawn(manager, backing, tracker) {}
+  TestDawnImageRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker)
+      : DawnImageRepresentation(manager, backing, tracker) {}
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override {
-    if (!static_cast<TestSharedImageBacking*>(backing())->can_access()) {
+    if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
 
@@ -122,13 +119,12 @@ class TestSharedImageRepresentationDawn : public SharedImageRepresentationDawn {
   void EndAccess() override {}
 };
 
-class TestSharedImageRepresentationOverlay
-    : public SharedImageRepresentationOverlay {
+class TestOverlayImageRepresentation : public OverlayImageRepresentation {
  public:
-  TestSharedImageRepresentationOverlay(SharedImageManager* manager,
-                                       SharedImageBacking* backing,
-                                       MemoryTypeTracker* tracker)
-      : SharedImageRepresentationOverlay(manager, backing, tracker) {}
+  TestOverlayImageRepresentation(SharedImageManager* manager,
+                                 SharedImageBacking* backing,
+                                 MemoryTypeTracker* tracker)
+      : OverlayImageRepresentation(manager, backing, tracker) {}
 
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
     return true;
@@ -139,16 +135,15 @@ class TestSharedImageRepresentationOverlay
 
 }  // namespace
 
-TestSharedImageBacking::TestSharedImageBacking(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    size_t estimated_size,
-    GLuint texture_id)
+TestImageBacking::TestImageBacking(const Mailbox& mailbox,
+                                   viz::ResourceFormat format,
+                                   const gfx::Size& size,
+                                   const gfx::ColorSpace& color_space,
+                                   GrSurfaceOrigin surface_origin,
+                                   SkAlphaType alpha_type,
+                                   uint32_t usage,
+                                   size_t estimated_size,
+                                   GLuint texture_id)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -174,30 +169,29 @@ TestSharedImageBacking::TestSharedImageBacking(
       service_id_, GL_TEXTURE_2D);
 }
 
-TestSharedImageBacking::TestSharedImageBacking(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    size_t estimated_size)
-    : TestSharedImageBacking(mailbox,
-                             format,
-                             size,
-                             color_space,
-                             surface_origin,
-                             alpha_type,
-                             usage,
-                             estimated_size,
-                             203 /* texture_id */) {
+TestImageBacking::TestImageBacking(const Mailbox& mailbox,
+                                   viz::ResourceFormat format,
+                                   const gfx::Size& size,
+                                   const gfx::ColorSpace& color_space,
+                                   GrSurfaceOrigin surface_origin,
+                                   SkAlphaType alpha_type,
+                                   uint32_t usage,
+                                   size_t estimated_size)
+    : TestImageBacking(mailbox,
+                       format,
+                       size,
+                       color_space,
+                       surface_origin,
+                       alpha_type,
+                       usage,
+                       estimated_size,
+                       203 /* texture_id */) {
   // Using a dummy |texture_id|, so lose our context so we don't do anything
   // real with it.
   OnContextLost();
 }
 
-TestSharedImageBacking::~TestSharedImageBacking() {
+TestImageBacking::~TestImageBacking() {
   // Pretend our context is lost to avoid actual cleanup in |texture_| or
   // |passthrough_texture_|.
   texture_->RemoveLightweightRef(false /* have_context */);
@@ -208,70 +202,65 @@ TestSharedImageBacking::~TestSharedImageBacking() {
     glDeleteTextures(1, &service_id_);
 }
 
-bool TestSharedImageBacking::GetUploadFromMemoryCalledAndReset() {
+bool TestImageBacking::GetUploadFromMemoryCalledAndReset() {
   return std::exchange(upload_from_memory_called_, false);
 }
 
-SharedImageBackingType TestSharedImageBacking::GetType() const {
+SharedImageBackingType TestImageBacking::GetType() const {
   return SharedImageBackingType::kTest;
 }
 
-gfx::Rect TestSharedImageBacking::ClearedRect() const {
+gfx::Rect TestImageBacking::ClearedRect() const {
   return texture_->GetLevelClearedRect(texture_->target(), 0);
 }
 
-void TestSharedImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
+void TestImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
 }
 
-bool TestSharedImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool TestImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   upload_from_memory_called_ = true;
   return true;
 }
 
-bool TestSharedImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
+bool TestImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
   return false;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
-TestSharedImageBacking::ProduceGLTexture(SharedImageManager* manager,
-                                         MemoryTypeTracker* tracker) {
-  return std::make_unique<TestSharedImageRepresentationGLTexture>(
-      manager, this, tracker, texture_);
+std::unique_ptr<GLTextureImageRepresentation>
+TestImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                   MemoryTypeTracker* tracker) {
+  return std::make_unique<TestGLTextureImageRepresentation>(manager, this,
+                                                            tracker, texture_);
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-TestSharedImageBacking::ProduceGLTexturePassthrough(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  return std::make_unique<TestSharedImageRepresentationGLTexturePassthrough>(
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+TestImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                              MemoryTypeTracker* tracker) {
+  return std::make_unique<TestGLTexturePassthroughImageRepresentation>(
       manager, this, tracker, texture_passthrough_);
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-TestSharedImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> TestImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  return std::make_unique<TestSharedImageRepresentationSkia>(manager, this,
-                                                             tracker);
+  return std::make_unique<TestSkiaImageRepresentation>(manager, this, tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-TestSharedImageBacking::ProduceDawn(SharedImageManager* manager,
-                                    MemoryTypeTracker* tracker,
-                                    WGPUDevice device,
-                                    WGPUBackendType backend_type) {
-  return std::make_unique<TestSharedImageRepresentationDawn>(manager, this,
-                                                             tracker);
+std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
+  return std::make_unique<TestDawnImageRepresentation>(manager, this, tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-TestSharedImageBacking::ProduceOverlay(SharedImageManager* manager,
-                                       MemoryTypeTracker* tracker) {
-  return std::make_unique<TestSharedImageRepresentationOverlay>(manager, this,
-                                                                tracker);
+std::unique_ptr<OverlayImageRepresentation> TestImageBacking::ProduceOverlay(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  return std::make_unique<TestOverlayImageRepresentation>(manager, this,
+                                                          tracker);
 }
 
 }  // namespace gpu

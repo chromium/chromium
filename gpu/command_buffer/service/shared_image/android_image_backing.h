@@ -11,20 +11,22 @@
 
 namespace gpu {
 
-class SharedImageBackingAndroid : public ClearTrackingSharedImageBacking {
+class AndroidImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  SharedImageBackingAndroid(const Mailbox& mailbox,
-                            viz::ResourceFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage,
-                            size_t estimated_size,
-                            bool is_thread_safe,
-                            base::ScopedFD initial_upload_fd);
+  AndroidImageBacking(const Mailbox& mailbox,
+                      viz::ResourceFormat format,
+                      const gfx::Size& size,
+                      const gfx::ColorSpace& color_space,
+                      GrSurfaceOrigin surface_origin,
+                      SkAlphaType alpha_type,
+                      uint32_t usage,
+                      size_t estimated_size,
+                      bool is_thread_safe,
+                      base::ScopedFD initial_upload_fd);
 
-  ~SharedImageBackingAndroid() override;
+  ~AndroidImageBacking() override;
+  AndroidImageBacking(const AndroidImageBacking&) = delete;
+  AndroidImageBacking& operator=(const AndroidImageBacking&) = delete;
 
   virtual bool BeginWrite(base::ScopedFD* fd_to_wait_on);
   virtual void EndWrite(base::ScopedFD end_write_fd);
@@ -45,10 +47,6 @@ class SharedImageBackingAndroid : public ClearTrackingSharedImageBacking {
       GUARDED_BY(lock_);
 
   bool is_overlay_accessing_ GUARDED_BY(lock_) = false;
-
-  SharedImageBackingAndroid(const SharedImageBackingAndroid&) = delete;
-  SharedImageBackingAndroid& operator=(const SharedImageBackingAndroid&) =
-      delete;
 };
 
 }  // namespace gpu

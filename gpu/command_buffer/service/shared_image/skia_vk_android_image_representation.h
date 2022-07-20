@@ -14,22 +14,21 @@
 
 namespace gpu {
 class SharedContextState;
-class SharedImageBackingAndroid;
+class AndroidImageBacking;
 class VulkanImage;
 class VulkanImplementation;
 
 // A generic Skia vulkan representation which can be used by any backing on
 // Android.
-class SharedImageRepresentationSkiaVkAndroid
-    : public SharedImageRepresentationSkia {
+class SkiaVkAndroidImageRepresentation : public SkiaImageRepresentation {
  public:
-  SharedImageRepresentationSkiaVkAndroid(
+  SkiaVkAndroidImageRepresentation(
       SharedImageManager* manager,
-      SharedImageBackingAndroid* backing,
+      AndroidImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
       MemoryTypeTracker* tracker);
 
-  ~SharedImageRepresentationSkiaVkAndroid() override;
+  ~SkiaVkAndroidImageRepresentation() override;
 
   sk_sp<SkSurface> BeginWriteAccess(
       int final_msaa_count,
@@ -49,8 +48,8 @@ class SharedImageRepresentationSkiaVkAndroid
   void EndReadAccess() override;
 
  protected:
-  SharedImageBackingAndroid* android_backing() const {
-    return static_cast<SharedImageBackingAndroid*>(backing());
+  AndroidImageBacking* android_backing() const {
+    return static_cast<AndroidImageBacking*>(backing());
   }
 
   SharedContextState* context_state() const { return context_state_.get(); }

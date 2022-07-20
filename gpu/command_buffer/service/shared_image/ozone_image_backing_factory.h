@@ -20,14 +20,13 @@ class SharedContextState;
 
 // Implementation of SharedImageBackingFactory that produces NativePixmap
 // backed SharedImages.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
+class GPU_GLES2_EXPORT OzoneImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  explicit SharedImageBackingFactoryOzone(
-      SharedContextState* shared_context_state,
-      const GpuDriverBugWorkarounds& workarounds);
+  explicit OzoneImageBackingFactory(SharedContextState* shared_context_state,
+                                    const GpuDriverBugWorkarounds& workarounds);
 
-  ~SharedImageBackingFactoryOzone() override;
+  ~OzoneImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -80,7 +79,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   const GpuDriverBugWorkarounds workarounds_;
 
-  std::unique_ptr<SharedImageBackingOzone> CreateSharedImageInternal(
+  std::unique_ptr<OzoneImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       SurfaceHandle surface_handle,

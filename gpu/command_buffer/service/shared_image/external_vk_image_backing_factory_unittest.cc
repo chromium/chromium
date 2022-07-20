@@ -40,7 +40,7 @@
 namespace gpu {
 namespace {
 
-class ExternalVkImageFactoryTest : public testing::Test {
+class ExternalVkImageBackingFactoryTest : public testing::Test {
  protected:
   bool VulkanSupported() const {
     // crbug.com(941685, 1139366): Vulkan driver crashes on Linux FYI Release
@@ -88,7 +88,7 @@ class ExternalVkImageFactoryTest : public testing::Test {
         std::make_unique<SharedImageRepresentationFactory>(
             &shared_image_manager_, nullptr);
     shared_image_factory_ =
-        std::make_unique<ExternalVkImageFactory>(context_state_);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
 
 #if BUILDFLAG(USE_DAWN)
     // Create a Dawn Vulkan device
@@ -135,7 +135,7 @@ class ExternalVkImageFactoryTest : public testing::Test {
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
-  std::unique_ptr<ExternalVkImageFactory> shared_image_factory_;
+  std::unique_ptr<ExternalVkImageBackingFactory> shared_image_factory_;
 
 #if BUILDFLAG(USE_DAWN)
   dawn::native::Instance dawn_instance_;
@@ -145,7 +145,7 @@ class ExternalVkImageFactoryTest : public testing::Test {
 
 #if BUILDFLAG(USE_DAWN)
 
-TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
+TEST_F(ExternalVkImageBackingFactoryTest, DawnWrite_SkiaVulkanRead) {
   if (!VulkanSupported()) {
     DLOG(ERROR) << "Test skipped because Vulkan isn't supported.";
     return;
@@ -268,7 +268,7 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
   }
 }
 
-TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
+TEST_F(ExternalVkImageBackingFactoryTest, SkiaVulkanWrite_DawnRead) {
   if (!VulkanSupported()) {
     DLOG(ERROR) << "Test skipped because Vulkan isn't supported.";
     return;
@@ -291,7 +291,7 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
                                      memory_type_tracker_.get());
 
   {
-    // Create a SkiaRepresentation
+    // Create a SkiaImageRepresentation
     auto skia_representation =
         shared_image_representation_factory_->ProduceSkia(mailbox,
                                                           context_state_.get());

@@ -11,44 +11,41 @@
 
 namespace gpu {
 
-SharedImageRepresentationGLTexturePassthroughD3D::
-    SharedImageRepresentationGLTexturePassthroughD3D(
+GLTexturePassthroughD3DImageRepresentation::
+    GLTexturePassthroughD3DImageRepresentation(
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
         scoped_refptr<gles2::TexturePassthrough> texture)
-    : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
+    : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       texture_(std::move(texture)) {}
 
 const scoped_refptr<gles2::TexturePassthrough>&
-SharedImageRepresentationGLTexturePassthroughD3D::GetTexturePassthrough() {
+GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough() {
   return texture_;
 }
 
-SharedImageRepresentationGLTexturePassthroughD3D::
-    ~SharedImageRepresentationGLTexturePassthroughD3D() = default;
+GLTexturePassthroughD3DImageRepresentation::
+    ~GLTexturePassthroughD3DImageRepresentation() = default;
 
-bool SharedImageRepresentationGLTexturePassthroughD3D::BeginAccess(
-    GLenum mode) {
-  SharedImageBackingD3D* d3d_image_backing =
-      static_cast<SharedImageBackingD3D*>(backing());
+bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
   return d3d_image_backing->BeginAccessD3D11();
 }
 
-void SharedImageRepresentationGLTexturePassthroughD3D::EndAccess() {
-  SharedImageBackingD3D* d3d_image_backing =
-      static_cast<SharedImageBackingD3D*>(backing());
+void GLTexturePassthroughD3DImageRepresentation::EndAccess() {
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
   d3d_image_backing->EndAccessD3D11();
 }
 
 #if BUILDFLAG(USE_DAWN)
-SharedImageRepresentationDawnD3D::SharedImageRepresentationDawnD3D(
+DawnD3DImageRepresentation::DawnD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     dawn::native::d3d12::ExternalImageDXGI* external_image)
-    : SharedImageRepresentationDawn(manager, backing, tracker),
+    : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
       external_image_(external_image),
       dawn_procs_(dawn::native::GetProcs()) {
@@ -60,15 +57,13 @@ SharedImageRepresentationDawnD3D::SharedImageRepresentationDawnD3D(
   dawn_procs_.deviceReference(device_);
 }
 
-SharedImageRepresentationDawnD3D::~SharedImageRepresentationDawnD3D() {
+DawnD3DImageRepresentation::~DawnD3DImageRepresentation() {
   EndAccess();
   dawn_procs_.deviceRelease(device_);
 }
 
-WGPUTexture SharedImageRepresentationDawnD3D::BeginAccess(
-    WGPUTextureUsage usage) {
-  SharedImageBackingD3D* d3d_image_backing =
-      static_cast<SharedImageBackingD3D*>(backing());
+WGPUTexture DawnD3DImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
 
   if (!d3d_image_backing->BeginAccessD3D12())
     return nullptr;
@@ -91,13 +86,12 @@ WGPUTexture SharedImageRepresentationDawnD3D::BeginAccess(
   return texture_;
 }
 
-void SharedImageRepresentationDawnD3D::EndAccess() {
+void DawnD3DImageRepresentation::EndAccess() {
   if (!texture_) {
     return;
   }
 
-  SharedImageBackingD3D* d3d_image_backing =
-      static_cast<SharedImageBackingD3D*>(backing());
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
 
   if (dawn::native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
     SetCleared();
@@ -115,34 +109,33 @@ void SharedImageRepresentationDawnD3D::EndAccess() {
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
-SharedImageRepresentationOverlayD3D::SharedImageRepresentationOverlayD3D(
+OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     scoped_refptr<gl::GLImage> gl_image)
-    : SharedImageRepresentationOverlay(manager, backing, tracker),
+    : OverlayImageRepresentation(manager, backing, tracker),
       gl_image_(std::move(gl_image)) {}
 
-SharedImageRepresentationOverlayD3D::~SharedImageRepresentationOverlayD3D() =
-    default;
+OverlayD3DImageRepresentation::~OverlayD3DImageRepresentation() = default;
 
-bool SharedImageRepresentationOverlayD3D::BeginReadAccess(
+bool OverlayD3DImageRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
   // Only D3D images need keyed mutex synchronization.
   if (gl_image_->GetType() == gl::GLImage::Type::D3D)
-    return static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();
+    return static_cast<D3DImageBacking*>(backing())->BeginAccessD3D11();
   return true;
 }
 
-void SharedImageRepresentationOverlayD3D::EndReadAccess(
+void OverlayD3DImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
   // Only D3D images need keyed mutex synchronization.
   if (gl_image_->GetType() == gl::GLImage::Type::D3D)
-    static_cast<SharedImageBackingD3D*>(backing())->EndAccessD3D11();
+    static_cast<D3DImageBacking*>(backing())->EndAccessD3D11();
 }
 
-gl::GLImage* SharedImageRepresentationOverlayD3D::GetGLImage() {
+gl::GLImage* OverlayD3DImageRepresentation::GetGLImage() {
   return gl_image_.get();
 }
 

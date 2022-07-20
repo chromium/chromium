@@ -571,11 +571,11 @@ void ExternalVkImageBacking::ReturnPendingSemaphoresWithFenceHelper(
   pending_semaphores_.clear();
 }
 
-std::unique_ptr<SharedImageRepresentationDawn>
-ExternalVkImageBacking::ProduceDawn(SharedImageManager* manager,
-                                    MemoryTypeTracker* tracker,
-                                    WGPUDevice wgpuDevice,
-                                    WGPUBackendType backend_type) {
+std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice wgpuDevice,
+    WGPUBackendType backend_type) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
   auto wgpu_format = viz::ToWGPUFormat(format());
 
@@ -593,7 +593,7 @@ ExternalVkImageBacking::ProduceDawn(SharedImageManager* manager,
     return nullptr;
   }
 
-  return std::make_unique<ExternalVkImageDawnRepresentation>(
+  return std::make_unique<ExternalVkImageDawnImageRepresentation>(
       manager, this, tracker, wgpuDevice, wgpu_format, std::move(memory_fd));
 #else  // (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)) ||
        // !BUILDFLAG(USE_DAWN)
@@ -693,7 +693,7 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
   return texture_service_id;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   DCHECK(!texture_passthrough_);
@@ -730,7 +730,7 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
       manager, this, tracker, texture_, texture_->service_id());
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
@@ -762,8 +762,7 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
       manager, this, tracker, texture_passthrough_->service_id());
 }
 
-std::unique_ptr<SharedImageRepresentationSkia>
-ExternalVkImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> ExternalVkImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -771,15 +770,15 @@ ExternalVkImageBacking::ProduceSkia(
   // should also be using Vulkan.
   DCHECK_EQ(context_state_, context_state);
   DCHECK(context_state->GrContextIsVulkan());
-  return std::make_unique<ExternalVkImageSkiaRepresentation>(manager, this,
-                                                             tracker);
+  return std::make_unique<ExternalVkImageSkiaImageRepresentation>(manager, this,
+                                                                  tracker);
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
+std::unique_ptr<OverlayImageRepresentation>
 ExternalVkImageBacking::ProduceOverlay(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
-  return std::make_unique<ExternalVkImageOverlayRepresentation>(manager, this,
-                                                                tracker);
+  return std::make_unique<ExternalVkImageOverlayImageRepresentation>(
+      manager, this, tracker);
 }
 
 void ExternalVkImageBacking::InstallSharedMemory(

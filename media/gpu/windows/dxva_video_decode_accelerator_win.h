@@ -382,8 +382,8 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   void DisableSharedTextureSupport();
 
   // Creates ScopedSharedImages for the provided PictureBuffer. If the buffer
-  // has a GLImageDXGI this function will create SharedImageBackingD3D using the
-  // DX11 texture. Otherwise it will create thin SharedImageBackingGLImage
+  // has a GLImageDXGI this function will create D3DImageBacking using the
+  // DX11 texture. Otherwise it will create thin GLImageBacking
   // wrappers around the existing textures in |picture_buffer|.
   std::vector<scoped_refptr<Picture::ScopedSharedImage>>
   GetSharedImagesFromPictureBuffer(DXVAPictureBuffer* picture_buffer);

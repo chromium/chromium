@@ -130,7 +130,7 @@ bool IsD3DSharedImageSupported() {
   return true;
 }
 
-class SharedImageBackingFactoryD3DTestBase : public testing::Test {
+class D3DImageBackingFactoryTestBase : public testing::Test {
  public:
   void SetUp() override {
     if (!IsD3DSharedImageSupported())
@@ -148,7 +148,7 @@ class SharedImageBackingFactoryD3DTestBase : public testing::Test {
     shared_image_representation_factory_ =
         std::make_unique<SharedImageRepresentationFactory>(
             &shared_image_manager_, nullptr);
-    shared_image_factory_ = std::make_unique<SharedImageBackingFactoryD3D>(
+    shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
         shared_image_manager_.dxgi_shared_handle_manager());
   }
@@ -160,21 +160,21 @@ class SharedImageBackingFactoryD3DTestBase : public testing::Test {
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
-  std::unique_ptr<SharedImageBackingFactoryD3D> shared_image_factory_;
+  std::unique_ptr<D3DImageBackingFactory> shared_image_factory_;
 };
 
-class SharedImageBackingFactoryD3DTestSwapChain
-    : public SharedImageBackingFactoryD3DTestBase {
+class D3DImageBackingFactoryTestSwapChain
+    : public D3DImageBackingFactoryTestBase {
  public:
   void SetUp() override {
-    if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
+    if (!D3DImageBackingFactory::IsSwapChainSupported())
       return;
-    SharedImageBackingFactoryD3DTestBase::SetUp();
+    D3DImageBackingFactoryTestBase::SetUp();
   }
 };
 
-TEST_F(SharedImageBackingFactoryD3DTestSwapChain, InvalidFormat) {
-  if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
+TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
+  if (!D3DImageBackingFactory::IsSwapChainSupported())
     return;
 
   auto front_buffer_mailbox = Mailbox::GenerateForSharedImage();
@@ -218,8 +218,8 @@ TEST_F(SharedImageBackingFactoryD3DTestSwapChain, InvalidFormat) {
   }
 }
 
-TEST_F(SharedImageBackingFactoryD3DTestSwapChain, CreateAndPresentSwapChain) {
-  if (!SharedImageBackingFactoryD3D::IsSwapChainSupported())
+TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
+  if (!D3DImageBackingFactory::IsSwapChainSupported())
     return;
 
   auto front_buffer_mailbox = Mailbox::GenerateForSharedImage();
@@ -444,14 +444,13 @@ TEST_F(SharedImageBackingFactoryD3DTestSwapChain, CreateAndPresentSwapChain) {
   api->glDeleteFramebuffersEXTFn(1, &fbo);
 }
 
-class SharedImageBackingFactoryD3DTest
-    : public SharedImageBackingFactoryD3DTestBase {
+class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
  public:
   void SetUp() override {
     if (!IsD3DSharedImageSupported())
       return;
 
-    SharedImageBackingFactoryD3DTestBase::SetUp();
+    D3DImageBackingFactoryTestBase::SetUp();
     GpuDriverBugWorkarounds workarounds;
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
     context_state_ = base::MakeRefCounted<SharedContextState>(
@@ -474,7 +473,7 @@ class SharedImageBackingFactoryD3DTest
                                                           context_state_);
     ASSERT_NE(skia_representation, nullptr);
 
-    std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+    std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
         scoped_read_access =
             skia_representation->BeginScopedReadAccess(nullptr, nullptr);
     EXPECT_TRUE(scoped_read_access);
@@ -529,7 +528,7 @@ class SharedImageBackingFactoryD3DTest
 // Test to check interaction between Gl and skia GL representations.
 // We write to a GL texture using gl representation and then read from skia
 // representation.
-TEST_F(SharedImageBackingFactoryD3DTest, GL_SkiaGL) {
+TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -551,14 +550,14 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_SkiaGL) {
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
 
-  // Create a SharedImageRepresentationGLTexture.
+  // Create a GLTextureImageRepresentation.
   auto gl_representation =
       shared_image_representation_factory_->ProduceGLTexturePassthrough(
           mailbox);
   EXPECT_EQ(expected_target,
             gl_representation->GetTexturePassthrough()->target());
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
       scoped_access = gl_representation->BeginScopedAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -591,7 +590,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_SkiaGL) {
 
 #if BUILDFLAG(USE_DAWN)
 // Test to check interaction between Dawn and skia GL representations.
-TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
+TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -637,7 +636,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
 
   // Clear the shared image to green using Dawn.
   {
-    // Create a SharedImageRepresentationDawn.
+    // Create a DawnImageRepresentation.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
             mailbox, device.Get(), WGPUBackendType_D3D12);
@@ -684,7 +683,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
 // 2. Do not call SetCleared so we can test Dawn Lazy clear
 // 3. Begin render pass in Dawn, but do not do anything
 // 4. Verify through CheckSkiaPixel that GL drawn color not seen
-TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
+TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -707,14 +706,14 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
   {
-    // Create a SharedImageRepresentationGLTexture.
+    // Create a GLTextureImageRepresentation.
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_EQ(expected_target,
               gl_representation->GetTexturePassthrough()->target());
 
-    std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+    std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
         gl_scoped_access = gl_representation->BeginScopedAccess(
             GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
             SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -810,7 +809,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
 // 3. Texture in Dawn will stay as uninitialized
 // 3. Expect skia to fail to access the texture because texture is not
 // initialized
-TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
+TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -899,7 +898,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
   ASSERT_NE(skia_representation, nullptr);
 
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       scoped_read_access =
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_EQ(scoped_read_access, nullptr);
@@ -907,7 +906,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
 #endif  // BUILDFLAG(USE_DAWN)
 
 // Test that Skia trying to access uninitialized SharedImage will fail
-TEST_F(SharedImageBackingFactoryD3DTest, SkiaAccessFirstFails) {
+TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -935,13 +934,13 @@ TEST_F(SharedImageBackingFactoryD3DTest, SkiaAccessFirstFails) {
   EXPECT_FALSE(skia_representation->IsCleared());
 
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       scoped_read_access =
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_EQ(scoped_read_access, nullptr);
 }
 
-void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
+void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
   if (!IsD3DSharedImageSupported())
     return;
@@ -1009,8 +1008,7 @@ void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
   EXPECT_EQ(backing->mailbox(), mailbox);
   EXPECT_TRUE(backing->IsCleared());
 
-  SharedImageBackingD3D* backing_d3d =
-      static_cast<SharedImageBackingD3D*>(backing.get());
+  D3DImageBacking* backing_d3d = static_cast<D3DImageBacking*>(backing.get());
   EXPECT_EQ(
       backing_d3d->dxgi_shared_handle_state_for_testing()->GetSharedHandle(),
       shared_handle);
@@ -1031,8 +1029,8 @@ void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
   EXPECT_EQ(dup_backing->mailbox(), dup_mailbox);
   EXPECT_TRUE(dup_backing->IsCleared());
 
-  SharedImageBackingD3D* dup_backing_d3d =
-      static_cast<SharedImageBackingD3D*>(dup_backing.get());
+  D3DImageBacking* dup_backing_d3d =
+      static_cast<D3DImageBacking*>(dup_backing.get());
   EXPECT_EQ(dup_backing_d3d->dxgi_shared_handle_state_for_testing(),
             backing_d3d->dxgi_shared_handle_state_for_testing());
   EXPECT_EQ(dup_backing_d3d->d3d11_texture_for_testing(),
@@ -1052,7 +1050,7 @@ void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
           mailbox);
   EXPECT_TRUE(gl_representation);
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
       scoped_access = gl_representation->BeginScopedAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -1063,26 +1061,24 @@ void SharedImageBackingFactoryD3DTest::RunCreateSharedImageFromHandleTest(
           dup_mailbox);
   EXPECT_TRUE(dup_gl_representation);
 
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
       dup_scoped_access = dup_gl_representation->BeginScopedAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
   EXPECT_TRUE(dup_scoped_access);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest,
-       CreateSharedImageFromHandleFormatUNORM) {
+TEST_F(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatUNORM) {
   RunCreateSharedImageFromHandleTest(DXGI_FORMAT_R8G8B8A8_UNORM);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest,
-       CreateSharedImageFromHandleFormatTYPELESS) {
+TEST_F(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatTYPELESS) {
   RunCreateSharedImageFromHandleTest(DXGI_FORMAT_R8G8B8A8_TYPELESS);
 }
 
 #if BUILDFLAG(USE_DAWN)
 // Test to check external image stored in the backing can be reused
-TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
+TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1212,7 +1208,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
 }
 
 // Check if making Dawn have the last ref works without a current GL context.
-TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
+TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1287,12 +1283,12 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
 #endif  // BUILDFLAG(USE_DAWN)
 
 std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
-SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
-                                                    uint8_t y_fill_value,
-                                                    uint8_t u_fill_value,
-                                                    uint8_t v_fill_value,
-                                                    bool use_shared_handle,
-                                                    bool use_factory) {
+D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
+                                              uint8_t y_fill_value,
+                                              uint8_t u_fill_value,
+                                              uint8_t v_fill_value,
+                                              bool use_shared_handle,
+                                              bool use_factory) {
   DCHECK(IsD3DSharedImageSupported());
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
@@ -1364,7 +1360,7 @@ SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
               ->CreateAnonymousSharedHandleState(std::move(shared_handle),
                                                  d3d11_texture);
     }
-    shared_image_backings = SharedImageBackingD3D::CreateFromVideoTexture(
+    shared_image_backings = D3DImageBacking::CreateFromVideoTexture(
         mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
         /*array_slice=*/0, std::move(dxgi_shared_handle_state));
   }
@@ -1397,8 +1393,8 @@ SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
   return shared_image_refs;
 }
 
-void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
-                                                    bool use_factory) {
+void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
+                                              bool use_factory) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1558,20 +1554,20 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
   // TODO(dawn:551): Test Dawn access after multi-planar support lands in Dawn.
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTexture) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTexture) {
   RunVideoTest(/*use_shared_handle=*/false, /*use_factory=*/false);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTextureSharedHandle) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandle) {
   RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/false);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageVideoPlanes) {
+TEST_F(D3DImageBackingFactoryTest, CreateSharedImageVideoPlanes) {
   RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/true);
 }
 
-void SharedImageBackingFactoryD3DTest::RunOverlayTest(bool use_shared_handle,
-                                                      bool use_factory) {
+void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
+                                                bool use_factory) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1627,20 +1623,19 @@ void SharedImageBackingFactoryD3DTest::RunOverlayTest(bool use_shared_handle,
   device_context->Unmap(staging_texture.Get(), 0);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTextureOverlay) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureOverlay) {
   RunOverlayTest(/*use_shared_handle=*/false, /*use_factory=*/false);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest,
-       CreateFromVideoTextureSharedHandleOverlay) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandleOverlay) {
   RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/false);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageVideoPlanesOverlay) {
+TEST_F(D3DImageBackingFactoryTest, CreateSharedImageVideoPlanesOverlay) {
   RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/true);
 }
 
-TEST_F(SharedImageBackingFactoryD3DTest, CreateFromSharedMemory) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   if (!IsD3DSharedImageSupported())
     return;
 

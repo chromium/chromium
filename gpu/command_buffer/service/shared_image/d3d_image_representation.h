@@ -21,18 +21,18 @@
 
 namespace gpu {
 
-class SharedImageBackingD3D;
+class D3DImageBacking;
 
-// Representation of a SharedImageBackingD3D as a GL TexturePassthrough.
-class SharedImageRepresentationGLTexturePassthroughD3D
-    : public SharedImageRepresentationGLTexturePassthrough {
+// Representation of a D3DImageBacking as a GL TexturePassthrough.
+class GLTexturePassthroughD3DImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
-  SharedImageRepresentationGLTexturePassthroughD3D(
+  GLTexturePassthroughD3DImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gles2::TexturePassthrough> texture);
-  ~SharedImageRepresentationGLTexturePassthroughD3D() override;
+  ~GLTexturePassthroughD3DImageRepresentation() override;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override;
@@ -44,18 +44,18 @@ class SharedImageRepresentationGLTexturePassthroughD3D
   scoped_refptr<gles2::TexturePassthrough> texture_;
 };
 
-// Representation of a SharedImageBackingD3D as a Dawn Texture
+// Representation of a D3DImageBacking as a Dawn Texture
 #if BUILDFLAG(USE_DAWN)
-class SharedImageRepresentationDawnD3D : public SharedImageRepresentationDawn {
+class DawnD3DImageRepresentation : public DawnImageRepresentation {
  public:
-  SharedImageRepresentationDawnD3D(
+  DawnD3DImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       dawn::native::d3d12::ExternalImageDXGI* external_image);
 
-  ~SharedImageRepresentationDawnD3D() override;
+  ~DawnD3DImageRepresentation() override;
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
   void EndAccess() override;
@@ -71,15 +71,14 @@ class SharedImageRepresentationDawnD3D : public SharedImageRepresentationDawn {
 };
 #endif  // BUILDFLAG(USE_DAWN)
 
-// Representation of a SharedImageBackingD3D as an overlay.
-class SharedImageRepresentationOverlayD3D
-    : public SharedImageRepresentationOverlay {
+// Representation of a D3DImageBacking as an overlay.
+class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
  public:
-  SharedImageRepresentationOverlayD3D(SharedImageManager* manager,
-                                      SharedImageBacking* backing,
-                                      MemoryTypeTracker* tracker,
-                                      scoped_refptr<gl::GLImage> gl_image);
-  ~SharedImageRepresentationOverlayD3D() override;
+  OverlayD3DImageRepresentation(SharedImageManager* manager,
+                                SharedImageBacking* backing,
+                                MemoryTypeTracker* tracker,
+                                scoped_refptr<gl::GLImage> gl_image);
+  ~OverlayD3DImageRepresentation() override;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;

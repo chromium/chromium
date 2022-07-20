@@ -331,8 +331,8 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
   raw_ptr<Bug1307307Tracker> bug_1307307_tracker_;
 
   struct SharedImageReadAccess {
-    std::unique_ptr<SharedImageRepresentationSkia> shared_image_skia;
-    std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+    std::unique_ptr<SkiaImageRepresentation> shared_image_skia;
+    std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
         scoped_read_access;
     sk_sp<SkImage> read_access_sk_image;
   };
@@ -706,8 +706,8 @@ class RasterDecoderImpl final : public RasterDecoder,
       gfx::Rect dest_cleared_rect,
       GLboolean unpack_flip_y,
       const Mailbox& source_mailbox,
-      SharedImageRepresentationSkia* dest_shared_image,
-      SharedImageRepresentationSkia::ScopedWriteAccess* dest_scoped_access,
+      SkiaImageRepresentation* dest_shared_image,
+      SkiaImageRepresentation::ScopedWriteAccess* dest_scoped_access,
       const std::vector<GrBackendSemaphore>& begin_semaphores,
       std::vector<GrBackendSemaphore>& end_semaphores);
   void DoWritePixelsINTERNAL(GLint x_offset,
@@ -722,7 +722,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                              GLuint shm_size,
                              const volatile GLbyte* mailbox);
   bool DoWritePixelsINTERNALDirectTextureUpload(
-      SharedImageRepresentationSkia* dest_shared_image,
+      SkiaImageRepresentation* dest_shared_image,
       const SkImageInfo& src_info,
       const void* pixel_data,
       size_t row_bytes);
@@ -754,19 +754,18 @@ class RasterDecoderImpl final : public RasterDecoder,
   // `sk_subsampling`, `rgba_image, `num_yuva_images`, and `yuva_images` were
   // successfully populated. Return false on error. If this returns false, some
   // of the output arguments may be left populated.
-  bool ConvertYUVACommon(
-      const char* function_name,
-      GLenum yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* raw_mailboxes,
-      SkYUVColorSpace& sk_yuv_color_space,
-      SkYUVAInfo::PlaneConfig& sk_plane_config,
-      SkYUVAInfo::Subsampling& sk_subsampling,
-      std::unique_ptr<SharedImageRepresentationSkia>& rgba_image,
-      int& num_yuva_images,
-      std::array<std::unique_ptr<SharedImageRepresentationSkia>,
-                 SkYUVAInfo::kMaxPlanes>& yuva_images);
+  bool ConvertYUVACommon(const char* function_name,
+                         GLenum yuv_color_space,
+                         GLenum plane_config,
+                         GLenum subsampling,
+                         const volatile GLbyte* raw_mailboxes,
+                         SkYUVColorSpace& sk_yuv_color_space,
+                         SkYUVAInfo::PlaneConfig& sk_plane_config,
+                         SkYUVAInfo::Subsampling& sk_subsampling,
+                         std::unique_ptr<SkiaImageRepresentation>& rgba_image,
+                         int& num_yuva_images,
+                         std::array<std::unique_ptr<SkiaImageRepresentation>,
+                                    SkYUVAInfo::kMaxPlanes>& yuva_images);
 
   void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
                                            GLenum plane_config,
@@ -953,12 +952,12 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   // Raster helpers.
   scoped_refptr<ServiceFontManager> font_manager_;
-  std::unique_ptr<SharedImageRepresentationSkia> shared_image_;
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation> shared_image_;
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_shared_image_write_;
 
-  std::unique_ptr<SharedImageRepresentationRaster> shared_image_raster_;
-  std::unique_ptr<SharedImageRepresentationRaster::ScopedWriteAccess>
+  std::unique_ptr<RasterImageRepresentation> shared_image_raster_;
+  std::unique_ptr<RasterImageRepresentation::ScopedWriteAccess>
       scoped_shared_image_raster_write_;
 
   Bug1307307Tracker bug_1307307_tracker_;
@@ -1344,8 +1343,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
         feature_info()->feature_flags().enable_texture_half_float_linear;
   }
 #if BUILDFLAG(IS_WIN)
-  caps.shared_image_swap_chain =
-      SharedImageBackingFactoryD3D::IsSwapChainSupported();
+  caps.shared_image_swap_chain = D3DImageBackingFactory::IsSwapChainSupported();
 #endif  // BUILDFLAG(IS_WIN)
   caps.disable_legacy_mailbox = disable_legacy_mailbox_;
   return caps;
@@ -2177,7 +2175,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   std::vector<GrBackendSemaphore> end_semaphores;
 
   // Allow uncleared access, as we manually handle clear tracking.
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
           &begin_semaphores, &end_semaphores,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -2226,7 +2224,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     return;
   }
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       source_scoped_access = source_shared_image->BeginScopedReadAccess(
           &begin_semaphores, &end_semaphores);
 
@@ -2289,8 +2287,8 @@ bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
     gfx::Rect dest_cleared_rect,
     GLboolean unpack_flip_y,
     const Mailbox& source_mailbox,
-    SharedImageRepresentationSkia* dest_shared_image,
-    SharedImageRepresentationSkia::ScopedWriteAccess* dest_scoped_access,
+    SkiaImageRepresentation* dest_shared_image,
+    SkiaImageRepresentation::ScopedWriteAccess* dest_scoped_access,
     const std::vector<GrBackendSemaphore>& begin_semaphores,
     std::vector<GrBackendSemaphore>& end_semaphores) {
   if (unpack_flip_y)
@@ -2444,7 +2442,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   std::vector<GrBackendSemaphore> end_semaphores;
 
   // Allow uncleared access, as we manually handle clear tracking.
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
           &begin_semaphores, &end_semaphores,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -2483,7 +2481,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
 }
 
 bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
-    SharedImageRepresentationSkia* dest_shared_image,
+    SkiaImageRepresentation* dest_shared_image,
     const SkImageInfo& src_info,
     const void* pixel_data,
     size_t row_bytes) {
@@ -2491,7 +2489,7 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   std::vector<GrBackendSemaphore> end_semaphores;
 
   // Allow uncleared access, as we manually handle clear tracking.
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
           &begin_semaphores, &end_semaphores,
           SharedImageRepresentation::AllowUnclearedAccess::kYes,
@@ -2627,7 +2625,7 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       source_scoped_access = source_shared_image->BeginScopedReadAccess(
           &begin_semaphores, &end_semaphores);
 
@@ -2736,7 +2734,7 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
 
   // We don't use |end_semaphores| here because we're going to sync with
   // with the CPU later regardless.
-  std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       source_scoped_access = source_shared_image->BeginScopedReadAccess(
           &begin_semaphores, &end_semaphores);
 
@@ -2904,9 +2902,9 @@ bool RasterDecoderImpl::ConvertYUVACommon(
     SkYUVColorSpace& sk_yuv_color_space,
     SkYUVAInfo::PlaneConfig& sk_plane_config,
     SkYUVAInfo::Subsampling& sk_subsampling,
-    std::unique_ptr<SharedImageRepresentationSkia>& rgba_image,
+    std::unique_ptr<SkiaImageRepresentation>& rgba_image,
     int& num_yuva_planes,
-    std::array<std::unique_ptr<SharedImageRepresentationSkia>,
+    std::array<std::unique_ptr<SkiaImageRepresentation>,
                SkYUVAInfo::kMaxPlanes>& yuva_images) {
   if (yuv_color_space_in > kLastEnum_SkYUVColorSpace) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, function_name,
@@ -2978,10 +2976,9 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   SkYUVColorSpace src_color_space;
   SkYUVAInfo::PlaneConfig src_plane_config;
   SkYUVAInfo::Subsampling src_subsampling;
-  std::unique_ptr<SharedImageRepresentationSkia> rgba_image;
+  std::unique_ptr<SkiaImageRepresentation> rgba_image;
   int num_src_planes;
-  std::array<std::unique_ptr<SharedImageRepresentationSkia>,
-             SkYUVAInfo::kMaxPlanes>
+  std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
   if (!ConvertYUVACommon("ConvertYUVAMailboxesToRGB", planes_yuv_color_space,
                          plane_config, subsampling, mailboxes_in,
@@ -3004,7 +3001,7 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   }
 
   bool source_access_valid = true;
-  std::array<std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>,
+  std::array<std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>,
              SkYUVAInfo::kMaxPlanes>
       source_scoped_access;
   for (int i = 0; i < num_src_planes; ++i) {
@@ -3076,10 +3073,9 @@ void RasterDecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
   SkYUVColorSpace dst_color_space;
   SkYUVAInfo::PlaneConfig dst_plane_config;
   SkYUVAInfo::Subsampling dst_subsampling;
-  std::unique_ptr<SharedImageRepresentationSkia> rgba_image;
+  std::unique_ptr<SkiaImageRepresentation> rgba_image;
   int num_yuva_planes;
-  std::array<std::unique_ptr<SharedImageRepresentationSkia>,
-             SkYUVAInfo::kMaxPlanes>
+  std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
   if (!ConvertYUVACommon("ConvertYUVAMailboxesToRGB", yuv_color_space,
                          plane_config, subsampling, mailboxes_in,
@@ -3107,7 +3103,7 @@ void RasterDecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
     return;
   }
 
-  std::array<std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>,
+  std::array<std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>,
              SkYUVAInfo::kMaxPlanes>
       yuva_scoped_access;
   for (int i = 0; i < num_yuva_planes; ++i) {

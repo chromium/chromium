@@ -36,9 +36,9 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage,
       bool is_thread_safe) override {
-    return std::make_unique<TestSharedImageBacking>(mailbox, format, size,
-                                                    color_space, surface_origin,
-                                                    alpha_type, usage, 0);
+    return std::make_unique<TestImageBacking>(mailbox, format, size,
+                                              color_space, surface_origin,
+                                              alpha_type, usage, 0);
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -80,10 +80,10 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
 
 class CompoundImageBackingTest : public testing::Test {
  public:
-  TestSharedImageBacking* GetGpuBacking(SharedImageBackingCompound* backing) {
+  TestImageBacking* GetGpuBacking(CompoundImageBacking* backing) {
     auto* gpu_backing = backing->gpu_backing_.get();
     DCHECK_EQ(gpu_backing->GetType(), SharedImageBackingType::kTest);
-    return static_cast<TestSharedImageBacking*>(gpu_backing);
+    return static_cast<TestImageBacking*>(gpu_backing);
   }
 
   // Create a compound backing containing shared memory + GPU backing.
@@ -98,7 +98,7 @@ class CompoundImageBackingTest : public testing::Test {
             static_cast<gfx::GpuMemoryBufferId>(1), size, buffer_format,
             buffer_usage);
 
-    return SharedImageBackingCompound::CreateSharedMemory(
+    return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, Mailbox::GenerateForSharedImage(), std::move(handle),
         buffer_format, gfx::BufferPlane::DEFAULT, kNullSurfaceHandle, size,
         gfx::ColorSpace(), kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
@@ -115,8 +115,7 @@ class CompoundImageBackingTest : public testing::Test {
 TEST_F(CompoundImageBackingTest, References) {
   auto backing = CreateCompoundBacking();
 
-  auto* compound_backing =
-      static_cast<SharedImageBackingCompound*>(backing.get());
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
   EXPECT_NE(compound_backing, nullptr);
 
   auto* gpu_backing = GetGpuBacking(compound_backing);
@@ -151,8 +150,7 @@ TEST_F(CompoundImageBackingTest, References) {
 
 TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   auto backing = CreateCompoundBacking();
-  auto* compound_backing =
-      static_cast<SharedImageBackingCompound*>(backing.get());
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
   auto* gpu_backing = GetGpuBacking(compound_backing);
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);

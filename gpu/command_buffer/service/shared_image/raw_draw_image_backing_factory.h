@@ -11,10 +11,10 @@
 
 namespace gpu {
 
-class SharedImageBackingFactoryRawDraw : public SharedImageBackingFactory {
+class RawDrawImageBackingFactory : public SharedImageBackingFactory {
  public:
-  SharedImageBackingFactoryRawDraw();
-  ~SharedImageBackingFactoryRawDraw() override;
+  RawDrawImageBackingFactory();
+  ~RawDrawImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation:
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -57,8 +57,8 @@ class SharedImageBackingFactoryRawDraw : public SharedImageBackingFactory {
                    bool is_pixel_used) override;
 
  private:
-  bool CanUseRawDrawBacking(uint32_t usage,
-                            GrContextType gr_context_type) const;
+  bool CanUseRawDrawImageBacking(uint32_t usage,
+                                 GrContextType gr_context_type) const;
 };
 
 }  // namespace gpu

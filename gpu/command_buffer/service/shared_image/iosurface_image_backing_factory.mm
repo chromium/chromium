@@ -41,7 +41,7 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     IOSurfaceRef io_surface,
     const gfx::Size& size,
     viz::ResourceFormat format) {
-  TRACE_EVENT0("gpu", "SharedImageBackingFactoryIOSurface::CreateMetalTexture");
+  TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
   base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
   MTLPixelFormat mtl_pixel_format =
       static_cast<MTLPixelFormat>(viz::ToMTLPixelFormat(format));
@@ -83,17 +83,15 @@ base::ScopedCFTypeRef<IOSurfaceRef> GetIOSurfaceFromImage(
 
 // Representation of a SharedImageBackingIOSurface as a Dawn Texture.
 #if BUILDFLAG(USE_DAWN)
-class SharedImageRepresentationDawnIOSurface
-    : public SharedImageRepresentationDawn {
+class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
  public:
-  SharedImageRepresentationDawnIOSurface(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      WGPUDevice device,
-      base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-      WGPUTextureFormat wgpu_format)
-      : SharedImageRepresentationDawn(manager, backing, tracker),
+  DawnIOSurfaceRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker,
+                              WGPUDevice device,
+                              base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+                              WGPUTextureFormat wgpu_format)
+      : DawnImageRepresentation(manager, backing, tracker),
         io_surface_(std::move(io_surface)),
         device_(device),
         wgpu_format_(wgpu_format),
@@ -106,7 +104,7 @@ class SharedImageRepresentationDawnIOSurface
     dawn_procs_.deviceReference(device_);
   }
 
-  ~SharedImageRepresentationDawnIOSurface() override {
+  ~DawnIOSurfaceRepresentation() override {
     EndAccess();
     dawn_procs_.deviceRelease(device_);
   }
@@ -165,7 +163,7 @@ class SharedImageRepresentationDawnIOSurface
     // Wait for all the previous submitted commands to be scheduled to have
     // scheduling races between commands using the IOSurface on different APIs.
     // This is a blocking call but should be almost instant.
-    TRACE_EVENT0("gpu", "SharedImageRepresentationDawnIOSurface::EndAccess");
+    TRACE_EVENT0("gpu", "DawnIOSurfaceRepresentation::EndAccess");
     dawn::native::metal::WaitForCommandsToBeScheduled(device_);
 
     dawn_procs_.textureRelease(texture_);
@@ -186,7 +184,7 @@ class SharedImageRepresentationDawnIOSurface
 
 // static
 sk_sp<SkPromiseImageTexture>
-SharedImageBackingFactoryIOSurface::ProduceSkiaPromiseTextureMetal(
+IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
     SharedImageBacking* backing,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gl::GLImage> image) {
@@ -210,15 +208,14 @@ SharedImageBackingFactoryIOSurface::ProduceSkiaPromiseTextureMetal(
 }
 
 // static
-std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingFactoryIOSurface::ProduceDawn(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    scoped_refptr<gl::GLImage> image) {
+std::unique_ptr<DawnImageRepresentation>
+IOSurfaceImageBackingFactory::ProduceDawn(SharedImageManager* manager,
+                                          SharedImageBacking* backing,
+                                          MemoryTypeTracker* tracker,
+                                          WGPUDevice device,
+                                          scoped_refptr<gl::GLImage> image) {
 #if BUILDFLAG(USE_DAWN)
-  // See comments in SharedImageBackingFactoryIOSurface::CreateSharedImage
+  // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
   // regarding RGBA versus BGRA.
   viz::ResourceFormat actual_format = backing->format();
   if (actual_format == viz::RGBA_8888)
@@ -239,7 +236,7 @@ SharedImageBackingFactoryIOSurface::ProduceDawn(
   if (wgpu_format.value() == WGPUTextureFormat_Undefined)
     return nullptr;
 
-  return std::make_unique<SharedImageRepresentationDawnIOSurface>(
+  return std::make_unique<DawnIOSurfaceRepresentation>(
       manager, backing, tracker, device, io_surface, wgpu_format.value());
 #else   // BUILDFLAG(USE_DAWN)
   return nullptr;
@@ -247,7 +244,7 @@ SharedImageBackingFactoryIOSurface::ProduceDawn(
 }
 
 // static
-bool SharedImageBackingFactoryIOSurface::InitializePixels(
+bool IOSurfaceImageBackingFactory::InitializePixels(
     SharedImageBacking* backing,
     scoped_refptr<gl::GLImage> image,
     const uint8_t* src_data) {

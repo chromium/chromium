@@ -9,32 +9,31 @@
 
 namespace gpu {
 
-SharedImageRepresentationGLTexturePassthroughAndroid::
-    SharedImageRepresentationGLTexturePassthroughAndroid(
+GLTexturePassthroughAndroidImageRepresentation::
+    GLTexturePassthroughAndroidImageRepresentation(
         SharedImageManager* manager,
-        SharedImageBackingAndroid* backing,
+        AndroidImageBacking* backing,
         MemoryTypeTracker* tracker,
         scoped_refptr<gles2::TexturePassthrough> texture)
-    : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
+    : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       texture_(std::move(texture)) {
   // TODO(https://crbug.com/1172769): Remove this CHECK.
   CHECK(texture_);
 }
 
-SharedImageRepresentationGLTexturePassthroughAndroid::
-    ~SharedImageRepresentationGLTexturePassthroughAndroid() {
+GLTexturePassthroughAndroidImageRepresentation::
+    ~GLTexturePassthroughAndroidImageRepresentation() {
   EndAccess();
   if (!has_context())
     texture_->MarkContextLost();
 }
 
 const scoped_refptr<gles2::TexturePassthrough>&
-SharedImageRepresentationGLTexturePassthroughAndroid::GetTexturePassthrough() {
+GLTexturePassthroughAndroidImageRepresentation::GetTexturePassthrough() {
   return texture_;
 }
 
-bool SharedImageRepresentationGLTexturePassthroughAndroid::BeginAccess(
-    GLenum mode) {
+bool GLTexturePassthroughAndroidImageRepresentation::BeginAccess(GLenum mode) {
   bool read_only_mode = (mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM) ||
                         (mode == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
   bool read_write_mode =
@@ -64,7 +63,7 @@ bool SharedImageRepresentationGLTexturePassthroughAndroid::BeginAccess(
   return true;
 }
 
-void SharedImageRepresentationGLTexturePassthroughAndroid::EndAccess() {
+void GLTexturePassthroughAndroidImageRepresentation::EndAccess() {
   if (mode_ == RepresentationAccessMode::kNone)
     return;
 

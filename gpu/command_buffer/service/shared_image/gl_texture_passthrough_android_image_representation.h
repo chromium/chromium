@@ -9,17 +9,22 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
 namespace gpu {
-class SharedImageBackingAndroid;
+class AndroidImageBacking;
 
-class SharedImageRepresentationGLTexturePassthroughAndroid
-    : public SharedImageRepresentationGLTexturePassthrough {
+class GLTexturePassthroughAndroidImageRepresentation
+    : public GLTexturePassthroughImageRepresentation {
  public:
-  SharedImageRepresentationGLTexturePassthroughAndroid(
+  GLTexturePassthroughAndroidImageRepresentation(
       SharedImageManager* manager,
-      SharedImageBackingAndroid* backing,
+      AndroidImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gles2::TexturePassthrough> texture);
-  ~SharedImageRepresentationGLTexturePassthroughAndroid() override;
+  ~GLTexturePassthroughAndroidImageRepresentation() override;
+
+  GLTexturePassthroughAndroidImageRepresentation(
+      const GLTexturePassthroughAndroidImageRepresentation&) = delete;
+  GLTexturePassthroughAndroidImageRepresentation& operator=(
+      const GLTexturePassthroughAndroidImageRepresentation&) = delete;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override;
@@ -28,17 +33,12 @@ class SharedImageRepresentationGLTexturePassthroughAndroid
   void EndAccess() override;
 
  private:
-  SharedImageBackingAndroid* android_backing() {
-    return static_cast<SharedImageBackingAndroid*>(backing());
+  AndroidImageBacking* android_backing() {
+    return static_cast<AndroidImageBacking*>(backing());
   }
 
   scoped_refptr<gles2::TexturePassthrough> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
-
-  SharedImageRepresentationGLTexturePassthroughAndroid(
-      const SharedImageRepresentationGLTexturePassthroughAndroid&) = delete;
-  SharedImageRepresentationGLTexturePassthroughAndroid& operator=(
-      const SharedImageRepresentationGLTexturePassthroughAndroid&) = delete;
 };
 
 }  // namespace gpu

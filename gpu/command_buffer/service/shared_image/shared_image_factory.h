@@ -34,7 +34,7 @@ class MailboxManager;
 class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
-class SharedImageBackingFactoryD3D;
+class D3DImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
@@ -181,7 +181,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
 #if BUILDFLAG(IS_WIN)
   // Used for creating swap chains
-  raw_ptr<SharedImageBackingFactoryD3D> d3d_backing_factory_ = nullptr;
+  raw_ptr<D3DImageBackingFactory> d3d_backing_factory_ = nullptr;
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -202,28 +202,28 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
 
   // Helpers which call similar classes on SharedImageManager, providing a
   // MemoryTypeTracker.
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       const Mailbox& mailbox);
-  std::unique_ptr<SharedImageRepresentationGLTexture>
-  ProduceRGBEmulationGLTexture(const Mailbox& mailbox);
-  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  std::unique_ptr<GLTextureImageRepresentation> ProduceRGBEmulationGLTexture(
+      const Mailbox& mailbox);
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(const Mailbox& mailbox);
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       const Mailbox& mailbox,
       scoped_refptr<SharedContextState> context_State);
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       const Mailbox& mailbox,
       WGPUDevice device,
       WGPUBackendType backend_type);
-  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox);
-  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+  std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       const Mailbox& mailbox);
-  std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
+  std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       const Mailbox& mailbox);
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<SharedImageRepresentationLegacyOverlay> ProduceLegacyOverlay(
+  std::unique_ptr<LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
       const Mailbox& mailbox);
 #endif
 

@@ -21,16 +21,16 @@ class PaintOpBuffer;
 
 namespace gpu {
 
-class SharedImageBackingRawDraw : public ClearTrackingSharedImageBacking {
+class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  SharedImageBackingRawDraw(const Mailbox& mailbox,
-                            viz::ResourceFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage);
-  ~SharedImageBackingRawDraw() override;
+  RawDrawImageBacking(const Mailbox& mailbox,
+                      viz::ResourceFormat format,
+                      const gfx::Size& size,
+                      const gfx::ColorSpace& color_space,
+                      GrSurfaceOrigin surface_origin,
+                      SkAlphaType alpha_type,
+                      uint32_t usage);
+  ~RawDrawImageBacking() override;
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -42,17 +42,17 @@ class SharedImageBackingRawDraw : public ClearTrackingSharedImageBacking {
                     uint64_t client_tracing_id) override;
 
  protected:
-  std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
+  std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  class RepresentationRaster;
-  class RepresentationSkia;
+  class RasterRawDrawImageRepresentation;
+  class SkiaRawDrawImageRepresentation;
 
   void ResetPaintOpBuffer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool CreateBackendTextureAndFlushPaintOps(bool flush)

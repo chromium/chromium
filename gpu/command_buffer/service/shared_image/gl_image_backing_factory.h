@@ -31,21 +31,21 @@ class ImageFactory;
 
 // Implementation of SharedImageBackingFactory that produces GL-image backed
 // SharedImages.
-class GPU_GLES2_EXPORT SharedImageBackingFactoryGLImage
-    : public SharedImageBackingFactoryGLCommon {
+class GPU_GLES2_EXPORT GLImageBackingFactory
+    : public GLCommonImageBackingFactory {
  public:
   // for_shared_memory_gmbs is a temporary parameter which is used for checking
   // if gfx::SHARED_MEMORY_BUFFER is supported by the factory.
   // It is used for migrating GLImage backing, for part that works with
-  // SharedMemory GMB with SharedMemoryBacking and Composite backings, and all
-  // other parts with OzoneBacking and other backings.
-  SharedImageBackingFactoryGLImage(const GpuPreferences& gpu_preferences,
-                                   const GpuDriverBugWorkarounds& workarounds,
-                                   const gles2::FeatureInfo* feature_info,
-                                   ImageFactory* image_factory,
-                                   gl::ProgressReporter* progress_reporter,
-                                   const bool for_shared_memory_gmbs);
-  ~SharedImageBackingFactoryGLImage() override;
+  // SharedMemory GMB with SharedMemoryImageBacking and Composite backings, and
+  // all other parts with OzoneImageBacking and other backings.
+  GLImageBackingFactory(const GpuPreferences& gpu_preferences,
+                        const GpuDriverBugWorkarounds& workarounds,
+                        const gles2::FeatureInfo* feature_info,
+                        ImageFactory* image_factory,
+                        gl::ProgressReporter* progress_reporter,
+                        const bool for_shared_memory_gmbs);
+  ~GLImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

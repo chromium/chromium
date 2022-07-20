@@ -18,9 +18,9 @@
 
 namespace gpu {
 ///////////////////////////////////////////////////////////////////////////////
-// SharedImageBackingFactoryGLCommon
+// GLCommonImageBackingFactory
 
-SharedImageBackingFactoryGLCommon::SharedImageBackingFactoryGLCommon(
+GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
@@ -91,10 +91,9 @@ SharedImageBackingFactoryGLCommon::SharedImageBackingFactoryGLCommon(
   }
 }
 
-SharedImageBackingFactoryGLCommon::~SharedImageBackingFactoryGLCommon() =
-    default;
+GLCommonImageBackingFactory::~GLCommonImageBackingFactory() = default;
 
-bool SharedImageBackingFactoryGLCommon::CanCreateSharedImage(
+bool GLCommonImageBackingFactory::CanCreateSharedImage(
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,
     const FormatInfo& format_info,
@@ -171,11 +170,11 @@ bool SharedImageBackingFactoryGLCommon::CanCreateSharedImage(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// SharedImageBackingFactoryGLCommon::FormatInfo
+// GLCommonImageBackingFactory::FormatInfo
 
-SharedImageBackingFactoryGLCommon::FormatInfo::FormatInfo() = default;
-SharedImageBackingFactoryGLCommon::FormatInfo::FormatInfo(
-    const FormatInfo& other) = default;
-SharedImageBackingFactoryGLCommon::FormatInfo::~FormatInfo() = default;
+GLCommonImageBackingFactory::FormatInfo::FormatInfo() = default;
+GLCommonImageBackingFactory::FormatInfo::FormatInfo(const FormatInfo& other) =
+    default;
+GLCommonImageBackingFactory::FormatInfo::~FormatInfo() = default;
 
 }  // namespace gpu

@@ -48,9 +48,8 @@
 #endif
 
 namespace gpu {
-namespace raster {
 
-class WrappedSkImageFactory;
+class WrappedSkImageBackingFactory;
 
 namespace {
 
@@ -62,7 +61,7 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
 
 class WrappedSkImage : public ClearTrackingSharedImageBacking {
  public:
-  WrappedSkImage(base::PassKey<WrappedSkImageFactory>,
+  WrappedSkImage(base::PassKey<WrappedSkImageBackingFactory>,
                  const Mailbox& mailbox,
                  viz::ResourceFormat format,
                  const gfx::Size& size,
@@ -239,15 +238,14 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   sk_sp<SkPromiseImageTexture> promise_texture() { return promise_texture_; }
 
  protected:
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  friend class gpu::raster::WrappedSkImageFactory;
-  class RepresentationSkia;
-  class RepresentationMemory;
+  friend class gpu::WrappedSkImageBackingFactory;
+  class SkiaImageRepresentationImpl;
 
   bool Initialize() {
     // MakeCurrent to avoid destroying another client's state because Skia may
@@ -352,17 +350,17 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-class WrappedSkImage::RepresentationSkia
-    : public SharedImageRepresentationSkia {
+class WrappedSkImage::SkiaImageRepresentationImpl
+    : public SkiaImageRepresentation {
  public:
-  RepresentationSkia(SharedImageManager* manager,
-                     SharedImageBacking* backing,
-                     MemoryTypeTracker* tracker,
-                     scoped_refptr<SharedContextState> context_state)
-      : SharedImageRepresentationSkia(manager, backing, tracker),
+  SkiaImageRepresentationImpl(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker,
+                              scoped_refptr<SharedContextState> context_state)
+      : SkiaImageRepresentation(manager, backing, tracker),
         context_state_(std::move(context_state)) {}
 
-  ~RepresentationSkia() override { DCHECK(!write_surface_); }
+  ~SkiaImageRepresentationImpl() override { DCHECK(!write_surface_); }
 
   sk_sp<SkSurface> BeginWriteAccess(
       int final_msaa_count,
@@ -422,14 +420,15 @@ class WrappedSkImage::RepresentationSkia
 
 }  // namespace
 
-WrappedSkImageFactory::WrappedSkImageFactory(
+WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
     : context_state_(std::move(context_state)),
       is_drdc_enabled_(features::IsDrDcEnabled()) {}
 
-WrappedSkImageFactory::~WrappedSkImageFactory() = default;
+WrappedSkImageBackingFactory::~WrappedSkImageBackingFactory() = default;
 
-std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
+std::unique_ptr<SharedImageBacking>
+WrappedSkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -450,7 +449,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
          (context_state_->GrContextIsVulkan() && is_drdc_enabled_));
   size_t estimated_size = EstimatedSize(format, size);
   auto texture = std::make_unique<WrappedSkImage>(
-      base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
+      base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
       context_state_,
       /*is_thread_safe=*/is_thread_safe &&
@@ -460,7 +459,8 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   return texture;
 }
 
-std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
+std::unique_ptr<SharedImageBacking>
+WrappedSkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -471,7 +471,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     base::span<const uint8_t> data) {
   size_t estimated_size = EstimatedSize(format, size);
   auto texture = std::make_unique<WrappedSkImage>(
-      base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
+      base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
       context_state_, /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
                           is_drdc_enabled_);
@@ -480,7 +480,8 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   return texture;
 }
 
-std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
+std::unique_ptr<SharedImageBacking>
+WrappedSkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
@@ -496,7 +497,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
   return nullptr;
 }
 
-bool WrappedSkImageFactory::CanUseWrappedSkImage(
+bool WrappedSkImageBackingFactory::CanUseWrappedSkImage(
     uint32_t usage,
     GrContextType gr_context_type) const {
   // Ignore for mipmap usage.
@@ -507,13 +508,14 @@ bool WrappedSkImageFactory::CanUseWrappedSkImage(
   return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
 }
 
-bool WrappedSkImageFactory::IsSupported(uint32_t usage,
-                                        viz::ResourceFormat format,
-                                        bool thread_safe,
-                                        gfx::GpuMemoryBufferType gmb_type,
-                                        GrContextType gr_context_type,
-                                        bool* allow_legacy_mailbox,
-                                        bool is_pixel_used) {
+bool WrappedSkImageBackingFactory::IsSupported(
+    uint32_t usage,
+    viz::ResourceFormat format,
+    bool thread_safe,
+    gfx::GpuMemoryBufferType gmb_type,
+    GrContextType gr_context_type,
+    bool* allow_legacy_mailbox,
+    bool is_pixel_used) {
   // Note that this backing support thread safety only for vulkan mode because
   // the underlying vulkan resources like vulkan images can be shared across
   // multiple vulkan queues. Also note that this backing currently only supports
@@ -545,16 +547,15 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
   return true;
 }
 
-std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> WrappedSkImage::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   if (context_state_->context_lost())
     return nullptr;
 
-  return std::make_unique<RepresentationSkia>(manager, this, tracker,
-                                              std::move(context_state));
+  return std::make_unique<SkiaImageRepresentationImpl>(
+      manager, this, tracker, std::move(context_state));
 }
 
-}  // namespace raster
 }  // namespace gpu

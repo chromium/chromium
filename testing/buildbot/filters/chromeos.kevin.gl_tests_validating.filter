@@ -9,8 +9,8 @@
 -WebGPUTest.*
 
 # crbug.com/1314124
--ExternalVkImageFactoryTest.SkiaVulkanWrite_DawnRead
--ExternalVkImageFactoryTest.DawnWrite_SkiaVulkanRead
+-ExternalVkImageBackingFactoryTest.SkiaVulkanWrite_DawnRead
+-ExternalVkImageBackingFactoryTest.DawnWrite_SkiaVulkanRead
 -WebGPUTest.ExplicitFallbackAdapterIsDisallowed
 
 # crbug.com/1314463

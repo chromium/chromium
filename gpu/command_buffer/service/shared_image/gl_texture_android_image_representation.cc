@@ -9,28 +9,26 @@
 
 namespace gpu {
 
-SharedImageRepresentationGLTextureAndroid::
-    SharedImageRepresentationGLTextureAndroid(
-        SharedImageManager* manager,
-        SharedImageBackingAndroid* backing,
-        MemoryTypeTracker* tracker,
-        gles2::Texture* texture)
-    : SharedImageRepresentationGLTexture(manager, backing, tracker),
+GLTextureAndroidImageRepresentation::GLTextureAndroidImageRepresentation(
+    SharedImageManager* manager,
+    AndroidImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    gles2::Texture* texture)
+    : GLTextureImageRepresentation(manager, backing, tracker),
       texture_(texture) {}
 
-SharedImageRepresentationGLTextureAndroid::
-    ~SharedImageRepresentationGLTextureAndroid() {
+GLTextureAndroidImageRepresentation::~GLTextureAndroidImageRepresentation() {
   EndAccess();
 
   if (texture_)
     texture_->RemoveLightweightRef(has_context());
 }
 
-gles2::Texture* SharedImageRepresentationGLTextureAndroid::GetTexture() {
+gles2::Texture* GLTextureAndroidImageRepresentation::GetTexture() {
   return texture_;
 }
 
-bool SharedImageRepresentationGLTextureAndroid::BeginAccess(GLenum mode) {
+bool GLTextureAndroidImageRepresentation::BeginAccess(GLenum mode) {
   bool read_only_mode = (mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM) ||
                         (mode == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
   bool read_write_mode =
@@ -60,7 +58,7 @@ bool SharedImageRepresentationGLTextureAndroid::BeginAccess(GLenum mode) {
   return true;
 }
 
-void SharedImageRepresentationGLTextureAndroid::EndAccess() {
+void GLTextureAndroidImageRepresentation::EndAccess() {
   if (mode_ == RepresentationAccessMode::kNone)
     return;
 

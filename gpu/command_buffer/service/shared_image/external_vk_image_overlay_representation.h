@@ -12,20 +12,20 @@
 
 namespace gpu {
 
-class ExternalVkImageOverlayRepresentation
-    : public SharedImageRepresentationOverlay {
+class ExternalVkImageOverlayImageRepresentation
+    : public OverlayImageRepresentation {
  public:
-  ExternalVkImageOverlayRepresentation(gpu::SharedImageManager* manager,
-                                       ExternalVkImageBacking* backing,
-                                       gpu::MemoryTypeTracker* tracker);
-  ~ExternalVkImageOverlayRepresentation() override;
-  ExternalVkImageOverlayRepresentation(
-      const ExternalVkImageOverlayRepresentation&) = delete;
-  ExternalVkImageOverlayRepresentation& operator=(
-      const ExternalVkImageOverlayRepresentation&) = delete;
+  ExternalVkImageOverlayImageRepresentation(gpu::SharedImageManager* manager,
+                                            ExternalVkImageBacking* backing,
+                                            MemoryTypeTracker* tracker);
+  ~ExternalVkImageOverlayImageRepresentation() override;
+  ExternalVkImageOverlayImageRepresentation(
+      const ExternalVkImageOverlayImageRepresentation&) = delete;
+  ExternalVkImageOverlayImageRepresentation& operator=(
+      const ExternalVkImageOverlayImageRepresentation&) = delete;
 
  protected:
-  // SharedImageRepresentationOverlay implementation
+  // OverlayImageRepresentation implementation
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
   gl::GLImage* GetGLImage() override;

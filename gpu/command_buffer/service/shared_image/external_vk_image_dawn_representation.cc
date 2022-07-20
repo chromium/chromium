@@ -14,14 +14,14 @@
 
 namespace gpu {
 
-ExternalVkImageDawnRepresentation::ExternalVkImageDawnRepresentation(
+ExternalVkImageDawnImageRepresentation::ExternalVkImageDawnImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     WGPUTextureFormat wgpu_format,
     base::ScopedFD memory_fd)
-    : SharedImageRepresentationDawn(manager, backing, tracker),
+    : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
       wgpu_format_(wgpu_format),
       memory_fd_(std::move(memory_fd)),
@@ -33,12 +33,13 @@ ExternalVkImageDawnRepresentation::ExternalVkImageDawnRepresentation(
   dawn_procs_.deviceReference(device_);
 }
 
-ExternalVkImageDawnRepresentation::~ExternalVkImageDawnRepresentation() {
+ExternalVkImageDawnImageRepresentation::
+    ~ExternalVkImageDawnImageRepresentation() {
   EndAccess();
   dawn_procs_.deviceRelease(device_);
 }
 
-WGPUTexture ExternalVkImageDawnRepresentation::BeginAccess(
+WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
     WGPUTextureUsage usage) {
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(false, &begin_access_semaphores_,
@@ -95,7 +96,7 @@ WGPUTexture ExternalVkImageDawnRepresentation::BeginAccess(
   return texture_;
 }
 
-void ExternalVkImageDawnRepresentation::EndAccess() {
+void ExternalVkImageDawnImageRepresentation::EndAccess() {
   if (!texture_) {
     return;
   }

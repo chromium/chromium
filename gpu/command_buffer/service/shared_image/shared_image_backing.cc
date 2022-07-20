@@ -19,33 +19,33 @@ namespace {
 const char* BackingTypeToString(SharedImageBackingType type) {
   switch (type) {
     case SharedImageBackingType::kTest:
-      return "TestBacking";
+      return "TestImageBacking";
     case SharedImageBackingType::kExternalVkImage:
       return "ExternalVkImageBacking";
     case SharedImageBackingType::kD3D:
-      return "SharedImageBackingD3D";
-    case SharedImageBackingType::kEglImage:
-      return "SharedImageBackingEglImage";
-    case SharedImageBackingType::kAHB:
-      return "SharedImageBackingAHB";
+      return "D3DImageBacking";
+    case SharedImageBackingType::kEGLImage:
+      return "EGLImageBacking";
+    case SharedImageBackingType::kAHardwareBuffer:
+      return "AHardwareBufferImageBacking";
     case SharedImageBackingType::kAngleVulkan:
-      return "AngleVulkanBacking";
+      return "AngleVulkanImageBacking";
     case SharedImageBackingType::kGLImage:
-      return "SharedImageBackingGLImage";
+      return "GLImageBacking";
     case SharedImageBackingType::kGLTexture:
-      return "SharedImageBackingGLTexture";
+      return "GLTextureImageBacking";
     case SharedImageBackingType::kOzone:
-      return "SharedImageBackingOzone";
+      return "OzoneImageBacking";
     case SharedImageBackingType::kRawDraw:
-      return "SharedImageBackingRawDraw";
+      return "RawDrawImageBacking";
     case SharedImageBackingType::kSharedMemory:
-      return "SharedImageBackingSharedMemory";
+      return "SharedMemoryImageBacking";
     case SharedImageBackingType::kVideo:
       return "SharedImageVideo";
     case SharedImageBackingType::kWrappedSkImage:
       return "WrappedSkImage";
     case SharedImageBackingType::kCompound:
-      return "SharedImageBackingCompound";
+      return "CompoundImageBacking";
   }
   NOTREACHED();
 };
@@ -111,32 +111,32 @@ void SharedImageBacking::OnMemoryDump(
   NOTIMPLEMENTED();
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 SharedImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexture>
+std::unique_ptr<GLTextureImageRepresentation>
 SharedImageBacking::ProduceRGBEmulationGLTexture(SharedImageManager* manager,
                                                  MemoryTypeTracker* tracker) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
 SharedImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                 MemoryTypeTracker* tracker) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationSkia> SharedImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationDawn> SharedImageBacking::ProduceDawn(
+std::unique_ptr<DawnImageRepresentation> SharedImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
@@ -144,33 +144,33 @@ std::unique_ptr<SharedImageRepresentationDawn> SharedImageBacking::ProduceDawn(
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationOverlay>
-SharedImageBacking::ProduceOverlay(SharedImageManager* manager,
-                                   MemoryTypeTracker* tracker) {
+std::unique_ptr<OverlayImageRepresentation> SharedImageBacking::ProduceOverlay(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationVaapi>
-SharedImageBacking::ProduceVASurface(SharedImageManager* manager,
-                                     MemoryTypeTracker* tracker,
-                                     VaapiDependenciesFactory* dep_factory) {
+std::unique_ptr<VaapiImageRepresentation> SharedImageBacking::ProduceVASurface(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VaapiDependenciesFactory* dep_factory) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationMemory>
-SharedImageBacking::ProduceMemory(SharedImageManager* manager,
-                                  MemoryTypeTracker* tracker) {
+std::unique_ptr<MemoryImageRepresentation> SharedImageBacking::ProduceMemory(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageRepresentationRaster>
-SharedImageBacking::ProduceRaster(SharedImageManager* manager,
-                                  MemoryTypeTracker* tracker) {
+std::unique_ptr<RasterImageRepresentation> SharedImageBacking::ProduceRaster(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
   return nullptr;
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   return nullptr;

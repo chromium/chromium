@@ -33,9 +33,8 @@ std::ostream& operator<<(std::ostream& os, RepresentationAccessMode mode) {
 }
 
 // static method.
-std::unique_ptr<SharedImageRepresentationSkiaGL>
-SharedImageRepresentationSkiaGL::Create(
-    std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation,
+std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
     scoped_refptr<SharedContextState> context_state,
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -51,19 +50,19 @@ SharedImageRepresentationSkiaGL::Create(
   auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
   if (!promise_texture)
     return nullptr;
-  return base::WrapUnique(new SharedImageRepresentationSkiaGL(
+  return base::WrapUnique(new SkiaGLImageRepresentation(
       std::move(gl_representation), std::move(promise_texture),
       std::move(context_state), manager, backing, tracker));
 }
 
-SharedImageRepresentationSkiaGL::SharedImageRepresentationSkiaGL(
-    std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation,
+SkiaGLImageRepresentation::SkiaGLImageRepresentation(
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
     sk_sp<SkPromiseImageTexture> promise_texture,
     scoped_refptr<SharedContextState> context_state,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
-    : SharedImageRepresentationSkia(manager, backing, tracker),
+    : SkiaImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       promise_texture_(std::move(promise_texture)),
       context_state_(std::move(context_state)) {
@@ -73,14 +72,14 @@ SharedImageRepresentationSkiaGL::SharedImageRepresentationSkiaGL(
 #endif
 }
 
-SharedImageRepresentationSkiaGL::~SharedImageRepresentationSkiaGL() {
+SkiaGLImageRepresentation::~SkiaGLImageRepresentation() {
   DCHECK_EQ(RepresentationAccessMode::kNone, mode_);
   surface_.reset();
   if (!has_context())
     gl_representation_->OnContextLost();
 }
 
-sk_sp<SkSurface> SharedImageRepresentationSkiaGL::BeginWriteAccess(
+sk_sp<SkSurface> SkiaGLImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -108,7 +107,7 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaGL::BeginWriteAccess(
   return surface;
 }
 
-sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaGL::BeginWriteAccess(
+sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -123,7 +122,7 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaGL::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SharedImageRepresentationSkiaGL::EndWriteAccess(sk_sp<SkSurface> surface) {
+void SkiaGLImageRepresentation::EndWriteAccess(sk_sp<SkSurface> surface) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
   if (surface) {
     DCHECK(surface_);
@@ -136,7 +135,7 @@ void SharedImageRepresentationSkiaGL::EndWriteAccess(sk_sp<SkSurface> surface) {
   mode_ = RepresentationAccessMode::kNone;
 }
 
-sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaGL::BeginReadAccess(
+sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
@@ -150,7 +149,7 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaGL::BeginReadAccess(
   return promise_texture_;
 }
 
-void SharedImageRepresentationSkiaGL::EndReadAccess() {
+void SkiaGLImageRepresentation::EndReadAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kRead);
   CheckContext();
 
@@ -158,13 +157,13 @@ void SharedImageRepresentationSkiaGL::EndReadAccess() {
   mode_ = RepresentationAccessMode::kNone;
 }
 
-void SharedImageRepresentationSkiaGL::CheckContext() {
+void SkiaGLImageRepresentation::CheckContext() {
 #if DCHECK_IS_ON()
   DCHECK(gl::GLContext::GetCurrent() == context_);
 #endif
 }
 
-bool SharedImageRepresentationSkiaGL::SupportsMultipleConcurrentReadAccess() {
+bool SkiaGLImageRepresentation::SupportsMultipleConcurrentReadAccess() {
   return gl_representation_->SupportsMultipleConcurrentReadAccess();
 }
 
