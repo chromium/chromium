@@ -200,7 +200,7 @@ class IndexedDBTest : public testing::Test,
       for (auto bucket_locator : context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForBucket(bucket_locator.storage_key, &success);
+        waiter.DeleteForStorageKey(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
@@ -379,9 +379,8 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
 TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
-  bucket_locator.storage_key = kTestStorageKey;
+  storage::BucketLocator bucket_locator;
+  InitBucket(kTestStorageKey, &bucket_locator);
 
   auto open_db_callbacks =
       base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -431,7 +430,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
 
   bool success = false;
   storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-  waiter.DeleteForBucket(kTestStorageKey, &success);
+  waiter.DeleteForStorageKey(kTestStorageKey, &success);
   EXPECT_TRUE(success);
 
   EXPECT_FALSE(base::DirectoryExists(test_path));
@@ -441,9 +440,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey(url::Origin::Create(GURL("http://test/")),
                         url::Origin::Create(GURL("http://rando/")));
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
-  bucket_locator.storage_key = kTestStorageKey;
+  storage::BucketLocator bucket_locator;
+  InitBucket(kTestStorageKey, &bucket_locator);
 
   auto open_db_callbacks =
       base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -493,7 +491,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
 
   bool success = false;
   storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-  waiter.DeleteForBucket(kTestStorageKey, &success);
+  waiter.DeleteForStorageKey(kTestStorageKey, &success);
   EXPECT_TRUE(success);
 
   EXPECT_FALSE(base::DirectoryExists(test_path));
@@ -516,7 +514,7 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
   context()->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-        waiter.DeleteForBucket(kTestStorageKey, &success);
+        waiter.DeleteForStorageKey(kTestStorageKey, &success);
         loop.Quit();
       }));
   loop.Run();
@@ -545,7 +543,7 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
   context()->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-        waiter.DeleteForBucket(kTestStorageKey, &success);
+        waiter.DeleteForStorageKey(kTestStorageKey, &success);
         loop.Quit();
       }));
   loop.Run();

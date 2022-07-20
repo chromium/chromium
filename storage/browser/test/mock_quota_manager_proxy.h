@@ -62,6 +62,14 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
+  void GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      bool delete_expired,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback)
+      override;
+
   // We don't mock them.
   void SetUsageCacheEnabled(storage::QuotaClientType client_id,
                             const blink::StorageKey& storage_key,

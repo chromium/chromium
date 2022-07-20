@@ -247,7 +247,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Retrieves all buckets for `storage_key` and `type` that are in the buckets
   // table. When `delete_expired` is true, the expired buckets will be filtered
   // out of the reply and also deleted from disk.
-  void GetBucketsForStorageKey(
+  virtual void GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,

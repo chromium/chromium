@@ -42,8 +42,8 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
-  void DeleteForBucket(const blink::StorageKey& storage_key,
-                       DeleteForBucketCallback callback) override;
+  void DeleteForStorageKey(const blink::StorageKey& storage_key,
+                           DeleteForStorageKeyCallback callback) override;
   void ForceClose(const blink::StorageKey& storage_key,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;

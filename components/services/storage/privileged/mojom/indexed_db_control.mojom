@@ -59,9 +59,9 @@ interface IndexedDBControl {
   // TODO(crbug.com/1315371): Allow custom bucket names.
   GetUsage() => (array<StorageUsageInfo> info);
 
-  // Deletes all indexed db files for the given `storage_key`.
-  // TODO(crbug.com/1315371): Allow custom bucket names.
-  DeleteForBucket(blink.mojom.StorageKey storage_key) => (bool success);
+  // Deletes all indexed db files (across all buckets) for the given
+  // `storage_key`.
+  DeleteForStorageKey(blink.mojom.StorageKey storage_key) => (bool success);
 
   // Forcibly closes all connections to all databases within the `storage_key`.
   // TODO(crbug.com/1315371): Allow custom bucket names.

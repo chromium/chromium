@@ -252,9 +252,10 @@ void QuotaManagerProxy::GetBucket(
                                  std::move(respond));
 }
 
-void QuotaManagerProxy::GetBucketsForStorageKeyDeleteExpired(
+void QuotaManagerProxy::GetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
+    bool delete_expired,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   DCHECK(callback_task_runner);
@@ -263,9 +264,9 @@ void QuotaManagerProxy::GetBucketsForStorageKeyDeleteExpired(
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::GetBucketsForStorageKeyDeleteExpired,
-                       this, storage_key, type, std::move(callback_task_runner),
-                       std::move(callback)));
+        base::BindOnce(&QuotaManagerProxy::GetBucketsForStorageKey, this,
+                       storage_key, type, delete_expired,
+                       std::move(callback_task_runner), std::move(callback)));
     return;
   }
 
@@ -279,7 +280,7 @@ void QuotaManagerProxy::GetBucketsForStorageKeyDeleteExpired(
   }
 
   quota_manager_impl_->GetBucketsForStorageKey(
-      storage_key, type, std::move(respond), /*delete_expired=*/true);
+      storage_key, type, std::move(respond), delete_expired);
 }
 
 void QuotaManagerProxy::GetBucketById(

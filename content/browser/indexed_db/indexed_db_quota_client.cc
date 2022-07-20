@@ -78,7 +78,7 @@ void IndexedDBQuotaClient::DeleteBucketData(
     return;
   }
 
-  indexed_db_context_.DeleteForBucket(
+  indexed_db_context_.DeleteBucketData(
       bucket,
       base::BindOnce(
           [](DeleteBucketDataCallback callback, bool success) {

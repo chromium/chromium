@@ -141,6 +141,23 @@ void MockQuotaManager::GetBucket(
   std::move(callback).Run(std::move(bucket));
 }
 
+void MockQuotaManager::GetBucketsForStorageKey(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+    bool delete_expired) {
+  // This parameter is not supported.
+  DCHECK(!delete_expired);
+
+  std::set<BucketInfo> retval;
+  for (const auto& it : buckets_) {
+    if (it.bucket.storage_key == storage_key) {
+      retval.insert(it.bucket);
+    }
+  }
+  std::move(callback).Run(retval);
+}
+
 void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
                                         StorageType type,
                                         UsageAndQuotaCallback callback) {

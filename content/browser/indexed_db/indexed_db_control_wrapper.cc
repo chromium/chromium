@@ -61,12 +61,12 @@ void IndexedDBControlWrapper::GetUsage(GetUsageCallback usage_callback) {
   indexed_db_control_->GetUsage(std::move(usage_callback));
 }
 
-void IndexedDBControlWrapper::DeleteForBucket(
+void IndexedDBControlWrapper::DeleteForStorageKey(
     const blink::StorageKey& storage_key,
-    DeleteForBucketCallback callback) {
+    DeleteForStorageKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->DeleteForBucket(storage_key, std::move(callback));
+  indexed_db_control_->DeleteForStorageKey(storage_key, std::move(callback));
 }
 
 void IndexedDBControlWrapper::ForceClose(

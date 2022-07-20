@@ -45,7 +45,7 @@ void IndexedDBHelper::StartFetching(FetchCallback callback) {
 void IndexedDBHelper::DeleteIndexedDB(const blink::StorageKey& storage_key,
                                       base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_->GetIndexedDBControl().DeleteForBucket(
+  storage_partition_->GetIndexedDBControl().DeleteForStorageKey(
       storage_key, std::move(callback));
 }
 

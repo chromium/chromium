@@ -103,7 +103,7 @@ class IndexedDBFactoryTest : public testing::Test {
       for (auto bucket_locator : context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForBucket(bucket_locator.storage_key, &success);
+        waiter.DeleteForStorageKey(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }

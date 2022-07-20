@@ -86,10 +86,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
-  void DeleteForBucket(const blink::StorageKey& storage_key,
-                       DeleteForBucketCallback callback) override;
-  void DeleteForBucket(const storage::BucketLocator& bucket_locator,
-                       DeleteForBucketCallback callback);
+  void DeleteForStorageKey(const blink::StorageKey& storage_key,
+                           DeleteForStorageKeyCallback callback) override;
   void ForceClose(const blink::StorageKey& storage_key,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
@@ -151,6 +149,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetDatabaseKeysForTestingCallback callback) override;
   void ForceInitializeFromFilesForTesting(
       ForceInitializeFromFilesForTestingCallback callback) override;
+
+  void DeleteBucketData(const storage::BucketLocator& bucket_locator,
+                        base::OnceCallback<void(bool success)> callback);
 
   IndexedDBFactoryImpl* GetIDBFactory();
 
@@ -242,9 +243,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       const absl::optional<storage::BucketLocator>& bucket_locator);
   void GetUsageImpl(GetUsageCallback usage_callback);
-  void DeleteForBucketImpl(
-      DeleteForBucketCallback callback,
-      const absl::optional<storage::BucketLocator>& bucket_locator);
   void ForceCloseImpl(
       const storage::mojom::ForceCloseReason reason,
       base::OnceClosure closure,
@@ -255,6 +253,12 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void DownloadBucketDataImpl(
       DownloadBucketDataCallback callback,
       const absl::optional<storage::BucketLocator>& bucket_locator);
+
+  void OnGotBucketsForDeletion(
+      base::OnceCallback<void(bool)> callback,
+      storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets);
+  void DoDeleteBucketData(const storage::BucketLocator& bucket_locator,
+                          base::OnceCallback<void(bool)> callback);
 
   void ShutdownOnIDBSequence();
 

@@ -422,7 +422,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
       for (auto bucket_locator : idb_context_->GetAllBuckets()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(idb_context_.get());
-        waiter.DeleteForBucket(bucket_locator.storage_key, &success);
+        waiter.DeleteForStorageKey(bucket_locator.storage_key, &success);
         EXPECT_TRUE(success);
       }
     }

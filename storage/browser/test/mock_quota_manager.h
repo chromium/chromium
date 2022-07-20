@@ -79,6 +79,12 @@ class MockQuotaManager : public QuotaManager {
                  blink::mojom::StorageType type,
                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
+  void GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+      bool delete_expired = false) override;
+
   // Overrides QuotaManager's implementation. The internal usage data is
   // updated when `MockQuotaManagerProxy::NotifyStorageModified()` or
   // `MockQuotaManagerProxy::NotifyBucketModified()` is called. The internal
