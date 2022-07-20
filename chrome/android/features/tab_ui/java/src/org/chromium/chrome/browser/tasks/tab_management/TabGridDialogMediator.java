@@ -73,6 +73,11 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         void hideDialog(boolean showAnimation);
 
         /**
+         * Prepare the TabGridDialog before show.
+         */
+        void prepareDialog();
+
+        /**
          * @return Whether or not the TabGridDialog consumed the event.
          */
         boolean handleBackPressed();
@@ -325,6 +330,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             updateDialog();
             updateDialogScrollPosition();
             mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, mScrimClickRunnable);
+            mDialogController.prepareDialog();
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
         } else {
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
