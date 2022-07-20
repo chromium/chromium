@@ -348,7 +348,7 @@ CLParser::Parse         45      1889.1          85.0
 
 You can also get a visual report of the build performance with
 [ninjatracing](https://github.com/nico/ninjatracing). This converts the
-.ninja_log file into a .json file which can be loaded into chrome://tracing:
+.ninja_log file into a .json file which can be loaded into [chrome://tracing](chrome://tracing):
 
 ```shell
 $ python ninjatracing out\Default\.ninja_log >build.json
