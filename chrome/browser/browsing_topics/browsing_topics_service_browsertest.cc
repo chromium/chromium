@@ -36,6 +36,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -86,6 +88,31 @@ EpochTopics CreateTestEpochTopics(
                      kPaddedTopTopicsStartIndex, kTaxonomySize,
                      kTaxonomyVersion, kModelVersion, calculation_time);
 }
+
+class PortalActivationWaiter : public content::WebContentsObserver {
+ public:
+  explicit PortalActivationWaiter(content::WebContents* portal_contents)
+      : content::WebContentsObserver(portal_contents) {}
+
+  void Wait() {
+    if (!web_contents()->IsPortal())
+      return;
+
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // content::WebContentsObserver:
+  void DidActivatePortal(content::WebContents* predecessor_contents,
+                         base::TimeTicks activation_time) override {
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
 
 }  // namespace
 
@@ -205,18 +232,23 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsDisabledBrowserTest, NoTopicsAPI) {
 
 class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
  public:
-  BrowsingTopicsBrowserTest() {
+  BrowsingTopicsBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&BrowsingTopicsBrowserTest::web_contents,
+                                base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride},
+         features::kPrivacySandboxAdsAPIsOverride, blink::features::kPortals},
         /*disabled_features=*/{});
   }
 
   ~BrowsingTopicsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    prerender_helper_.SetUp(&https_server_);
+
     BrowsingTopicsBrowserTestBase::SetUpOnMainThread();
 
     for (auto& profile_and_calculation_finish_waiter :
@@ -286,6 +318,10 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
 
   const BrowsingTopicsState& browsing_topics_state() {
     return browsing_topics_service()->browsing_topics_state();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
   }
 
   std::vector<optimization_guide::WeightedIdentifier> TopicsAndWeight(
@@ -430,6 +466,8 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   }
 
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+
+  content::test::PrerenderTestHelper prerender_helper_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -984,10 +1022,105 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
       fenced_frame_test_helper_.CreateFencedFrame(
           web_contents()->GetPrimaryMainFrame(), fenced_frame_url));
 
+  EXPECT_EQ("document.browsingTopics() is not allowed in a fenced frame.",
+            InvokeTopicsAPI(fenced_frame_rfh_wrapper.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       TopicsAPINotAllowedInPrerenderedPage) {
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL prerender_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+
+  content::RenderFrameHost* prerender_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_EQ(
-      "document.browsingTopics() is only allowed in the primary main frame or "
-      "in its child iframes.",
-      InvokeTopicsAPI(fenced_frame_rfh_wrapper.get()));
+      "document.browsingTopics() is not allowed when the page is being "
+      "prerendered.",
+      InvokeTopicsAPI(prerender_host));
+
+  // Activate the prerendered page. The API call should succeed.
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          prerender_url);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  prerender_observer.WaitForActivation();
+
+  std::string result = InvokeTopicsAPI(web_contents());
+
+  EXPECT_TRUE(result == kExpectedResultOrder1 ||
+              result == kExpectedResultOrder2);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPINotAllowedInPortal) {
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL portal_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_EQ(true, content::EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                  content::JsReplace(R"(
+                          new Promise((resolve) => {
+                            let portal = document.createElement('portal');
+                            portal.src = $1;
+                            portal.onload = () => { resolve(true); }
+                            document.body.appendChild(portal);
+                          });
+                          )",
+                                                     portal_url)));
+
+  std::vector<content::WebContents*> inner_web_contents =
+      web_contents()->GetInnerWebContents();
+  EXPECT_EQ(1u, inner_web_contents.size());
+  content::WebContents* portal_contents = inner_web_contents[0];
+
+  EXPECT_EQ(
+      "document.browsingTopics() is only allowed in the outermost page and "
+      "when the page is active.",
+      InvokeTopicsAPI(portal_contents));
+
+  // Activate the portal. The API call should succeed.
+  PortalActivationWaiter activation_waiter(portal_contents);
+  content::ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
+                              "document.querySelector('portal').activate();");
+  activation_waiter.Wait();
+
+  EXPECT_EQ(portal_contents, web_contents());
+
+  std::string result = InvokeTopicsAPI(web_contents());
+
+  EXPECT_TRUE(result == kExpectedResultOrder1 ||
+              result == kExpectedResultOrder2);
+}
+
+// Regression test for crbug/1339735.
+IN_PROC_BROWSER_TEST_F(
+    BrowsingTopicsBrowserTest,
+    TopicsAPIInvokedInMainFrameUnloadHandler_NoRendererCrash) {
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/get_topics_during_unload.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  // A renderer crash won't always be captured if the renderer is also shutting
+  // down naturally around the same time. Thus, we create a new page in the same
+  // renderer process to keep the renderer process alive when the page navigates
+  // away later.
+  content::TestNavigationObserver popup_observer(main_frame_url);
+  popup_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(
+      ExecuteScript(web_contents()->GetPrimaryMainFrame(),
+                    content::JsReplace("window.open($1)", main_frame_url)));
+  popup_observer.Wait();
+
+  GURL new_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
 }
 
 }  // namespace browsing_topics

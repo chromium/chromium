@@ -25,9 +25,19 @@ struct EpochTopic {
   string taxonomy_version;
 };
 
+// Contains either the topics result, or an error message.
+union GetBrowsingTopicsResult {
+  string error_message;
+  array<EpochTopic> browsing_topics;
+};
+
 // The `BrowsingTopicsDocumentService` provides a method to request the
 // browsing topics. It is a per-document interface hosted in the browser
-// process.
+// process. Communication is only allowed in the outermost page and when the
+// page is active (not in fenced frames, prerendered pages, portals, etc.), and
+// this restriction is enforced on both sides of the mojom boundary for
+// subconditions where there are equivalent renderer/browser checks and no
+// racing is possible; otherwise, this is only checked on the browser side.
 interface BrowsingTopicsDocumentService {
 
   // Asynchronously get the browsing topics. Each topic is calculated for a
@@ -36,5 +46,5 @@ interface BrowsingTopicsDocumentService {
   // calculation for that epoch failed, or if the topics were later cleared, or
   // if the candidate topic was filtered for the requesting context and epoch.
   // Duplicate `EpochTopic`s are removed and their ordering is random.
-  GetBrowsingTopics() => (array<EpochTopic> browsing_topics);
+  GetBrowsingTopics() => (GetBrowsingTopicsResult result);
 };
