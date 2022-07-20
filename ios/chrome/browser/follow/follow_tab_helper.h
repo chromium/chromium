@@ -35,27 +35,27 @@ class FollowTabHelper : public web::WebStateObserver,
 
   ~FollowTabHelper() override;
 
-  // Creates the TabHelper and attaches to |web_state|. |web_state| must not be
+  // Creates the TabHelper and attaches to `web_state`. `web_state` must not be
   // null.
   static void CreateForWebState(web::WebState* web_state);
 
-  // Sets the presenter for follow in-product help (IPH). |presenter| is not
+  // Sets the presenter for follow in-product help (IPH). `presenter` is not
   // retained by this tab helper.
   void set_follow_iph_presenter(id<FollowIPHPresenter> presenter) {
     follow_iph_presenter_ = presenter;
   }
 
-  // Sets the value of shoud_update_follow_item_.
+  // Sets the value of `shoud_update_follow_item_`.
   void set_should_update_follow_item(bool shoud_update_follow_item) {
     should_update_follow_item_ = shoud_update_follow_item;
   }
 
-  // Sets the follow meue updater. |follow_menu_updater| is not retained by this
+  // Sets the follow menu updater. `follow_menu_updater` is not retained by this
   // tab helper.
-  void set_follow_menu_updater(id<FollowMenuUpdater> follow_menu_updater);
+  void SetFollowMenuUpdater(id<FollowMenuUpdater> follow_menu_updater);
 
-  // Removes the follow meue updater.
-  void remove_follow_menu_updater();
+  // Removes the follow menu updater.
+  void RemoveFollowMenuUpdater();
 
  private:
   friend class web::WebStateUserData<FollowTabHelper>;
@@ -99,7 +99,7 @@ class FollowTabHelper : public web::WebStateObserver,
   // Presenter for follow in-product help (IPH).
   __weak id<FollowIPHPresenter> follow_iph_presenter_ = nil;
 
-  // Manages this object as an observer of |web_state_|.
+  // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
 

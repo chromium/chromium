@@ -259,7 +259,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
     if (self.followItem) {
-      FollowTabHelper::FromWebState(_webState)->remove_follow_menu_updater();
+      FollowTabHelper::FromWebState(_webState)->RemoveFollowMenuUpdater();
       self.webPageURLs = nil;
     }
     _webState = nullptr;
@@ -521,7 +521,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
         [self createToolsMenuItems];
         if (self.webState && self.followItem) {
           FollowTabHelper::FromWebState(self.webState)
-              ->set_follow_menu_updater(self);
+              ->SetFollowMenuUpdater(self);
         }
         break;
       case PopupMenuTypeNavigationForward:

@@ -76,7 +76,7 @@ FollowTabHelper::FollowTabHelper(web::WebState* web_state)
   web_state_observation_.Observe(web_state_);
 }
 
-void FollowTabHelper::set_follow_menu_updater(
+void FollowTabHelper::SetFollowMenuUpdater(
     id<FollowMenuUpdater> follow_menu_updater) {
   DCHECK(web_state_);
   follow_menu_updater_ = follow_menu_updater;
@@ -84,13 +84,12 @@ void FollowTabHelper::set_follow_menu_updater(
     // If the page has finished loading check if the Follow menu item should be
     // updated, if not it will be updated once the page finishes loading.
     FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
-        web_state_, base::BindOnce(^(FollowWebPageURLs* web_page_urls) {
-          UpdateFollowMenuItem(web_page_urls);
-        }));
+        web_state_, base::BindOnce(&FollowTabHelper::UpdateFollowMenuItem,
+                                   weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void FollowTabHelper::remove_follow_menu_updater() {
+void FollowTabHelper::RemoveFollowMenuUpdater() {
   follow_menu_updater_ = nil;
   should_update_follow_item_ = true;
 }
@@ -109,7 +108,7 @@ void FollowTabHelper::DidRedirectNavigation(
 void FollowTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  // TODO(crbug.com/1340154): move the checking to follow_iph_presenter_
+  // TODO(crbug.com/1340154): move the checking to `follow_iph_presenter_`
   // (FollowIPHCoordinator), so this class won't need to access browser_state
   // anymore, which brings convinience to testing.
 
@@ -166,17 +165,19 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   if (!ios::GetChromeBrowserProvider()
            .GetFollowProvider()
            ->GetRecommendedStatus(web_page_urls) ||
-      !IsFollowIPHShownFrequencyEligible())
+      !IsFollowIPHShownFrequencyEligible()) {
     return;
+  }
 
   feature_engagement::Tracker* feature_engagement_tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
   // Do not show follow IPH if the feature engagement conditions are
-  // not fulfilled. Ex. Don not show more than 5 Follow IPHs per week.
+  // not fulfilled. Ex. Do not show more than 5 Follow IPHs per week.
   if (!feature_engagement_tracker->WouldTriggerHelpUI(
-          feature_engagement::kIPHFollowWhileBrowsingFeature))
+          feature_engagement::kIPHFollowWhileBrowsingFeature)) {
     return;
+  }
 
   // Check if the site has enough visit count.
   history::HistoryService* history_service =
@@ -202,8 +203,9 @@ void FollowTabHelper::OnDailyVisitQueryResult(
     history::DailyVisitsResult result) {
   // Do not display the IPH if there are not enough visits.
   if (result.total_visits < kDefaultNumVisitMin ||
-      result.days_with_visits < kDefaultDailyVisitMin)
+      result.days_with_visits < kDefaultDailyVisitMin) {
     return;
+  }
 
   // Check how much time remains before the IPH needs to be displayed.
   const base::TimeDelta elapsed_time = base::Time::Now() - page_load_time;

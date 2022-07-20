@@ -255,7 +255,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   if (self.webState && self.followAction) {
-    FollowTabHelper::FromWebState(self.webState)->remove_follow_menu_updater();
+    FollowTabHelper::FromWebState(self.webState)->RemoveFollowMenuUpdater();
   }
 
   self.destinationUsageHistory = nil;
@@ -313,7 +313,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   self.webState = (_webStateList) ? _webStateList->GetActiveWebState() : nil;
 
   if (self.webState && !self.isIncognito && IsWebChannelsEnabled()) {
-    FollowTabHelper::FromWebState(self.webState)->set_follow_menu_updater(self);
+    FollowTabHelper::FromWebState(self.webState)->SetFollowMenuUpdater(self);
   }
 
   if (_webStateList) {
@@ -1167,7 +1167,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                      reason:(ActiveWebStateChangeReason)reason {
   self.webState = newWebState;
   if (self.webState && self.followAction) {
-    FollowTabHelper::FromWebState(self.webState)->set_follow_menu_updater(self);
+    FollowTabHelper::FromWebState(self.webState)->SetFollowMenuUpdater(self);
   }
 }
 
