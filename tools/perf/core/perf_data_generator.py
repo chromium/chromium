@@ -672,7 +672,7 @@ BUILDERS = {
         }],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Windows',
+            'os': 'Windows-10',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
@@ -682,7 +682,7 @@ BUILDERS = {
         'additional_compile_targets': ['chromium_builder_perf'],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Windows',
+            'os': 'Windows-10',
             'pool': 'chrome.tests',
         },
         'perf_trigger': False,
