@@ -120,6 +120,8 @@
 #include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
 #include "chromeos/ash/components/local_search_service/local_search_service.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
+#include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
+#include "chromeos/ash/components/trash_service/trash_service_impl.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 
@@ -347,6 +349,13 @@ auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
 
+auto RunTrashService(
+    mojo::PendingReceiver<chromeos::trash_service::mojom::TrashService>
+        receiver) {
+  return std::make_unique<chromeos::trash_service::TrashServiceImpl>(
+      std::move(receiver));
+}
+
 auto RunTtsService(
     mojo::PendingReceiver<chromeos::tts::mojom::TtsService> receiver) {
   return std::make_unique<chromeos::tts::TtsService>(std::move(receiver));
@@ -480,6 +489,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunImeService);
   services.Add(RunRecordingService);
   services.Add(RunSharing);
+  services.Add(RunTrashService);
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);

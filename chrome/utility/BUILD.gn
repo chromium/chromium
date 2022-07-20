@@ -185,6 +185,8 @@ static_library("utility") {
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/local_search_service",
       "//chromeos/ash/components/local_search_service/public/mojom",
+      "//chromeos/ash/components/trash_service",
+      "//chromeos/ash/components/trash_service/public/mojom",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]

@@ -31,6 +31,8 @@ include_rules = [
   "+chromeos/ash/components/assistant/buildflags.h",
   "+chromeos/ash/components/local_search_service/local_search_service.h",
   "+chromeos/ash/components/local_search_service/public/mojom",
+  "+chromeos/ash/components/trash_service/trash_service_impl.h",
+  "+chromeos/ash/components/trash_service/public/mojom",
   "+chromeos/ash/services/assistant",
   "+chromeos/ash/services/assistant/audio_decoder",
   "+chromeos/components/quick_answers/public",
