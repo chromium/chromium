@@ -956,8 +956,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     }
     return &NewWebUI<chromeos::cloud_upload::CloudUploadDialogUI>;
   }
-  if (url.host_piece() == chrome::kChromeUINotificationTesterHost)
-    return &NewWebUI<chromeos::NotificationTesterUI>;
   if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
     return &NewWebUI<chromeos::AccountManagerErrorUI>;
   if (url.host_piece() == chrome::kChromeUIAccountMigrationWelcomeHost)
