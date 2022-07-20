@@ -351,7 +351,8 @@ class WPTResultsProcessor(object):
         if not screenshots:
             return
         for screenshot in screenshots:
-            url, printable_image = screenshot.split(':')[:2]
+            url, printable_image = screenshot.rsplit(':', 1)
+
             # The URL produced by wptrunner will have a leading "/", which we
             # trim away for easier comparison to the WPT name below.
             if url.startswith('/'):
@@ -380,18 +381,18 @@ class WPTResultsProcessor(object):
 
         diff_bytes, _, error = self.port.diff_image(expected_image_bytes,
                                                     actual_image_bytes)
-        if diff_bytes and not error:
+        if error:
+            _log.error(
+                'Error creating diff image for %s '
+                '(error: %s, diff_bytes is None: %s)', test_name, error,
+                diff_bytes is None)
+        elif diff_bytes:
             diff_subpath = self._write_png_artifact(
                 diff_bytes,
                 test_name,
                 test_failures.FILENAME_SUFFIX_DIFF,
             )
             artifacts['image_diff'] = [diff_subpath]
-        else:
-            _log.error(
-                'Error creating diff image for %s '
-                '(error: %s, diff_bytes is None: %s)', test_name, error,
-                diff_bytes is None)
 
     def _maybe_write_logs(self, artifacts, test_name):
         """Write WPT logs to disk, if possible."""
