@@ -89,7 +89,8 @@ bool CanRegisterAttributionInContext(
     LocalFrame* frame,
     HTMLElement* element,
     absl::optional<uint64_t> request_id,
-    AttributionSrcLoader::RegisterContext context) {
+    AttributionSrcLoader::RegisterContext context,
+    bool log_issues) {
   DCHECK(frame);
 
   LocalDOMWindow* window = frame->DomWindow();
@@ -102,22 +103,26 @@ bool CanRegisterAttributionInContext(
       mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
 
   if (!feature_policy_enabled) {
-    MaybeLogAuditIssue(frame,
-                       AttributionReportingIssueType::kPermissionPolicyDisabled,
-                       /*string=*/absl::nullopt, element, request_id);
+    if (log_issues) {
+      MaybeLogAuditIssue(
+          frame, AttributionReportingIssueType::kPermissionPolicyDisabled,
+          /*string=*/absl::nullopt, element, request_id);
+    }
     return false;
   }
 
   // The API is only allowed in secure contexts.
   if (!window->IsSecureContext()) {
-    MaybeLogAuditIssue(
-        frame,
-        context == AttributionSrcLoader::RegisterContext::kAttributionSrc
-            ? AttributionReportingIssueType::
-                  kAttributionSourceUntrustworthyOrigin
-            : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
-        frame->GetSecurityContext()->GetSecurityOrigin()->ToString(), element,
-        request_id);
+    if (log_issues) {
+      MaybeLogAuditIssue(
+          frame,
+          context == AttributionSrcLoader::RegisterContext::kAttributionSrc
+              ? AttributionReportingIssueType::
+                    kAttributionSourceUntrustworthyOrigin
+              : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
+          frame->GetSecurityContext()->GetSecurityOrigin()->ToString(), element,
+          request_id);
+    }
     return false;
   }
 

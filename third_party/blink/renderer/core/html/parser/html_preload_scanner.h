@@ -92,6 +92,7 @@ struct CORE_EXPORT CachedDocumentParameters {
   SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
   HashSet<String> disabled_image_types;
+  bool can_register_attribution;
 };
 
 class TokenPreloadScanner {

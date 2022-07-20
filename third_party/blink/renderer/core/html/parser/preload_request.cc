@@ -15,11 +15,13 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
+#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -106,6 +108,12 @@ Resource* PreloadRequest::Start(Document* document) {
       ResourceFetcher::DetermineRequestDestination(resource_type_));
 
   resource_request.SetFetchPriorityHint(fetch_priority_hint_);
+
+  if (is_attribution_reporting_eligible_img_or_script_) {
+    resource_request.SetHttpHeaderField(
+        http_names::kAttributionReportingEligible,
+        kAttributionEligibleEventSourceAndTrigger);
+  }
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;

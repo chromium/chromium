@@ -22,7 +22,9 @@
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -93,6 +95,12 @@ struct IntegrityTestCase {
 struct LazyLoadImageTestCase {
   const char* input_html;
   bool lazy_load_image_enabled;
+};
+
+struct AttributionSrcTestCase {
+  bool use_secure_document_url;
+  const char* input_html;
+  const char* expected_header;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -231,6 +239,19 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     } else {
       ASSERT_TRUE(preload_request_.get());
     }
+  }
+
+  void AttributionSrcRequestVerification(Document* document,
+                                         const char* expected_header) {
+    ASSERT_TRUE(preload_request_.get());
+    Resource* resource = preload_request_->Start(document);
+    ASSERT_TRUE(resource);
+
+    EXPECT_EQ(!!expected_header,
+              preload_request_->IsAttributionReportingEligibleImgOrScript());
+
+    EXPECT_EQ(expected_header, resource->GetResourceRequest().HttpHeaderField(
+                                   http_names::kAttributionReportingEligible));
   }
 
  protected:
@@ -402,6 +423,17 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.TakePreloadData(std::move(preload_data));
     preloader.LazyLoadImageEnabledVerification(
         test_case.lazy_load_image_enabled);
+  }
+
+  void Test(AttributionSrcTestCase test_case) {
+    SCOPED_TRACE(test_case.input_html);
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+    KURL base_url("http://example.test/");
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
+    preloader.AttributionSrcRequestVerification(&GetDocument(),
+                                                test_case.expected_header);
   }
 
  private:
@@ -1053,6 +1085,31 @@ TEST_F(HTMLPreloadScannerTest, testNonce) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.input_html);
+    Test(test_case);
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
+  AttributionSrcTestCase test_cases[] = {
+      // Insecure context
+      {false, "<img src='/image' attributionsrc>", nullptr},
+      {false, "<script src='/script' attributionsrc></script>", nullptr},
+      // No attributionsrc attribute
+      {true, "<img src='/image'>", nullptr},
+      {true, "<script src='/script'></script>", nullptr},
+      // Irrelevant element type
+      {true, "<video poster='/image' attributionsrc>", nullptr},
+      // Secure context, attributionsrc attribute
+      {true, "<img src='/image' attributionsrc>",
+       kAttributionEligibleEventSourceAndTrigger},
+      {true, "<script src='/script' attributionsrc></script>",
+       kAttributionEligibleEventSourceAndTrigger},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RunSetUp(kViewportDisabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
   }
 }

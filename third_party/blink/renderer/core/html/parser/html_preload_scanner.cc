@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -288,6 +289,7 @@ class TokenPreloadScanner::StartTagScanner {
 
     bool is_module = (type_attribute_value_ == script_type_names::kModule);
     bool is_script = Match(tag_impl_, html_names::kScriptTag);
+    bool is_img = Match(tag_impl_, html_names::kImgTag);
     if ((is_script && is_module) || IsLinkRelModulePreload()) {
       is_module = true;
       request->SetScriptType(mojom::blink::ScriptType::kModule);
@@ -320,7 +322,7 @@ class TokenPreloadScanner::StartTagScanner {
     }
     request->SetRenderBlockingBehavior(render_blocking_behavior);
 
-    if (type == ResourceType::kImage && Match(tag_impl_, html_names::kImgTag) &&
+    if (type == ResourceType::kImage && is_img &&
         IsLazyLoadImageDeferable(document_parameters)) {
       return nullptr;
     }
@@ -338,6 +340,12 @@ class TokenPreloadScanner::StartTagScanner {
 
     if (scanner_type_ == ScannerType::kInsertion)
       request->SetFromInsertionScanner(true);
+
+    if (attributionsrc_attr_set_ &&
+        document_parameters.can_register_attribution) {
+      DCHECK(is_script || is_img);
+      request->SetAttributionReportingEligibleImgOrScript(true);
+    }
 
     return request;
   }
@@ -380,6 +388,8 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
                Match(attribute_name, html_names::kBlockingAttr)) {
       blocking_attribute_value_ = attribute_value;
+    } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
+      attributionsrc_attr_set_ = true;
     }
   }
 
@@ -419,6 +429,8 @@ class TokenPreloadScanner::StartTagScanner {
                RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
       height_attr_dimension_type_ =
           HTMLImageElement::GetAttributeLazyLoadDimensionType(attribute_value);
+    } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
+      attributionsrc_attr_set_ = true;
     }
   }
 
@@ -764,6 +776,7 @@ class TokenPreloadScanner::StartTagScanner {
   // For explanation, see TokenPreloadScanner's declaration.
   bool priority_hints_origin_trial_enabled_;
   const HashSet<String>* disabled_image_types_;
+  bool attributionsrc_attr_set_ = false;
 };
 
 TokenPreloadScanner::TokenPreloadScanner(
@@ -1186,6 +1199,13 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   }
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
+
+  can_register_attribution = CanRegisterAttributionInContext(
+      document->Loader()->GetFrame(),
+      /*element=*/nullptr,
+      /*request_id=*/absl::nullopt,
+      AttributionSrcLoader::RegisterContext::kAttributionSrc,
+      /*log_issues=*/false);
 }
 
 }  // namespace blink

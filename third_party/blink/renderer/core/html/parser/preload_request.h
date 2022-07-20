@@ -135,6 +135,14 @@ class CORE_EXPORT PreloadRequest {
     render_blocking_behavior_ = render_blocking_behavior;
   }
 
+  bool IsAttributionReportingEligibleImgOrScript() const {
+    return is_attribution_reporting_eligible_img_or_script_;
+  }
+
+  void SetAttributionReportingEligibleImgOrScript(bool eligible) {
+    is_attribution_reporting_eligible_img_or_script_ = eligible;
+  }
+
  private:
   PreloadRequest(const String& initiator_name,
                  const TextPosition& initiator_position,
@@ -179,6 +187,7 @@ class CORE_EXPORT PreloadRequest {
   const ResourceFetcher::IsImageSet is_image_set_;
   bool is_lazy_load_image_enabled_ = false;
   base::TimeTicks creation_time_ = base::TimeTicks::Now();
+  bool is_attribution_reporting_eligible_img_or_script_ = false;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

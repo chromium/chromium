@@ -113,7 +113,8 @@ CORE_EXPORT bool CanRegisterAttributionInContext(
     LocalFrame* frame,
     HTMLElement* element,
     absl::optional<uint64_t> request_id,
-    AttributionSrcLoader::RegisterContext context);
+    AttributionSrcLoader::RegisterContext context,
+    bool log_issues = true);
 
 }  // namespace blink
 
