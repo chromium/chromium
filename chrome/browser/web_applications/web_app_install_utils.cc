@@ -595,14 +595,14 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   web_app_info->tab_strip = manifest.tab_strip;
 }
 
-std::vector<GURL> GetValidIconUrlsToDownload(
+base::flat_set<GURL> GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info) {
-  std::vector<GURL> web_app_info_icon_urls;
+  base::flat_set<GURL> web_app_info_icon_urls;
   // App icons.
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
     if (!info.url.is_valid())
       continue;
-    web_app_info_icon_urls.push_back(info.url);
+    web_app_info_icon_urls.insert(info.url);
   }
 
   // Shortcut icons.
@@ -612,7 +612,7 @@ std::vector<GURL> GetValidIconUrlsToDownload(
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
         if (!icon.url.is_valid())
           continue;
-        web_app_info_icon_urls.push_back(icon.url);
+        web_app_info_icon_urls.insert(icon.url);
       }
     }
   }
@@ -622,7 +622,7 @@ std::vector<GURL> GetValidIconUrlsToDownload(
     for (const auto& icon : file_handler.downloaded_icons) {
       if (!icon.url.is_valid())
         continue;
-      web_app_info_icon_urls.push_back(icon.url);
+      web_app_info_icon_urls.insert(icon.url);
     }
   }
 

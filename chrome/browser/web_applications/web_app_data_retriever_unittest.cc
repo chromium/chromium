@@ -329,7 +329,7 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetIcons(web_contents(), /*icon_urls=*/std::vector<GURL>(),
+  retriever.GetIcons(web_contents(), /*icon_urls=*/base::flat_set<GURL>(),
                      skip_page_favicons,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,

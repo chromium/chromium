@@ -59,7 +59,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
                                   WebAppInstallInfo* web_app_info);
 
 // Form a list of icons to download: Remove icons with invalid urls.
-std::vector<GURL> GetValidIconUrlsToDownload(
+base::flat_set<GURL> GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info);
 
 // Populate non-product icons in WebAppInstallInfo using the IconsMap. This

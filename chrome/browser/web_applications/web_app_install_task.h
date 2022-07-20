@@ -222,14 +222,14 @@ class WebAppInstallTask : content::WebContentsObserver {
   void CheckForPlayStoreIntentOrGetIcons(
       blink::mojom::ManifestPtr opt_manifest,
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      std::vector<GURL> icon_urls,
+      base::flat_set<GURL> icon_urls,
       bool skip_page_favicons);
 
   // Called when the asynchronous check for whether an intent to the Play Store
   // should be made returns.
   void OnDidCheckForIntentToPlayStore(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      std::vector<GURL> icon_urls,
+      base::flat_set<GURL> icon_urls,
       bool skip_page_favicons,
       const std::string& intent,
       bool should_intent_to_store);
@@ -240,7 +240,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // |OnDidCheckForIntentToPlayStore| based on |result|).
   void OnDidCheckForIntentToPlayStoreLacros(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      std::vector<GURL> icon_urls,
+      base::flat_set<GURL> icon_urls,
       bool skip_page_favicons,
       const std::string& intent,
       crosapi::mojom::IsInstallableResult result);

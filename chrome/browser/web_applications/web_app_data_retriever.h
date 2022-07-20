@@ -75,7 +75,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // Downloads icons from |icon_urls|. Runs |callback| with a map of
   // the retrieved icons.
   virtual void GetIcons(content::WebContents* web_contents,
-                        std::vector<GURL> icon_urls,
+                        base::flat_set<GURL> icon_urls,
                         bool skip_page_favicons,
                         GetIconsCallback callback);
 

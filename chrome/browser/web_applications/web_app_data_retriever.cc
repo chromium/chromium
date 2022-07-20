@@ -115,7 +115,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 }
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
-                                   std::vector<GURL> icon_urls,
+                                   base::flat_set<GURL> icon_urls,
                                    bool skip_page_favicons,
                                    GetIconsCallback callback) {
   DCHECK(!web_contents->IsBeingDestroyed());

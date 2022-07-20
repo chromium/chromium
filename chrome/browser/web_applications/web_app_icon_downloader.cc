@@ -18,7 +18,7 @@ namespace web_app {
 
 WebAppIconDownloader::WebAppIconDownloader(
     content::WebContents* web_contents,
-    std::vector<GURL> extra_favicon_urls,
+    base::flat_set<GURL> extra_favicon_urls,
     WebAppIconDownloaderCallback callback)
     : content::WebContentsObserver(web_contents),
       extra_favicon_urls_(std::move(extra_favicon_urls)),
@@ -89,7 +89,7 @@ void WebAppIconDownloader::FetchIcons(
   FetchIcons(urls);
 }
 
-void WebAppIconDownloader::FetchIcons(const std::vector<GURL>& urls) {
+void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
   // Download icons; put their download ids into |in_progress_requests_| and
   // their urls into |processed_urls_|.
   for (const GURL& url : urls) {

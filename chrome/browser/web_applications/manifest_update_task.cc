@@ -467,7 +467,8 @@ void ManifestUpdateTask::LoadAndCheckIconContents() {
   stage_ = Stage::kPendingIconDownload;
 
   DCHECK(install_info_.has_value());
-  std::vector<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
+  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
+
   icon_downloader_.emplace(
       web_contents(), std::move(icon_urls),
       base::BindOnce(&ManifestUpdateTask::OnIconsDownloaded, AsWeakPtr()));

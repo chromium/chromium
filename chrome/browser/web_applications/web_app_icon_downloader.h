@@ -38,7 +38,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // |extra_favicon_urls| allows callers to provide icon urls that aren't
   // provided by the renderer (e.g touch icons on non-android environments).
   WebAppIconDownloader(content::WebContents* web_contents,
-                       std::vector<GURL> extra_favicon_urls,
+                       base::flat_set<GURL> extra_favicon_urls,
                        WebAppIconDownloaderCallback callback);
   WebAppIconDownloader(const WebAppIconDownloader&) = delete;
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
@@ -66,7 +66,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // Fetches icons for the given urls.
   // |callback_| is run when all downloads complete.
   void FetchIcons(const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls);
-  void FetchIcons(const std::vector<GURL>& urls);
+  void FetchIcons(const base::flat_set<GURL>& urls);
 
   // Icon download callback.
   void DidDownloadFavicon(int id,
@@ -96,7 +96,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // URLs that aren't given by WebContentsObserver::DidUpdateFaviconURL() that
   // should be used for this favicon. This is necessary in order to get touch
   // icons on non-android environments.
-  std::vector<GURL> extra_favicon_urls_;
+  base::flat_set<GURL> extra_favicon_urls_;
 
   // The icons which were downloaded. Populated by FetchIcons().
   IconsMap icons_map_;

@@ -35,7 +35,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
       bool bypass_service_worker_check,
       CheckInstallabilityCallback callback) override;
   void GetIcons(content::WebContents* web_contents,
-                std::vector<GURL> icon_urls,
+                base::flat_set<GURL> icon_urls,
                 bool skip_page_favicons,
                 GetIconsCallback callback) override;
 
@@ -51,7 +51,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
   void SetIcons(IconsMap icons_map);
   using GetIconsDelegate =
       base::RepeatingCallback<IconsMap(content::WebContents* web_contents,
-                                       const std::vector<GURL>& icon_urls,
+                                       const base::flat_set<GURL>& icon_urls,
                                        bool skip_page_favicons)>;
   void SetGetIconsDelegate(GetIconsDelegate get_icons_delegate);
 

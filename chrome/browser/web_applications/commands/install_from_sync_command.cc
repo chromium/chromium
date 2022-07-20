@@ -230,7 +230,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
 
   const bool manifest_has_icons = opt_manifest && !opt_manifest->icons.empty();
 
-  std::vector<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
+  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
   data_retriever_->GetIcons(
       shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/manifest_has_icons,
@@ -280,7 +280,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   DCHECK(code != webapps::InstallResultCode::kWebContentsDestroyed);
   DCHECK(code != webapps::InstallResultCode::kInstallTaskDestroyed);
 
-  std::vector<GURL> icon_urls =
+  base::flat_set<GURL> icon_urls =
       GetValidIconUrlsToDownload(*fallback_install_info_);
 
   base::UmaHistogramEnumeration("WebApp.Install.SyncFallbackInstallInitiated",
