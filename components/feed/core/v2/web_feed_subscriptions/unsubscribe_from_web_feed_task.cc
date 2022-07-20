@@ -24,10 +24,12 @@ UnsubscribeFromWebFeedTask::UnsubscribeFromWebFeedTask(
     FeedStream* stream,
     const OperationToken& operation_token,
     const std::string& web_feed_id,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(Result)> callback)
     : stream_(*stream),
       operation_token_(operation_token),
       web_feed_name_(web_feed_id),
+      change_reason_(change_reason),
       callback_(std::move(callback)) {}
 
 UnsubscribeFromWebFeedTask::~UnsubscribeFromWebFeedTask() = default;
@@ -54,6 +56,7 @@ void UnsubscribeFromWebFeedTask::Run() {
   feedwire::webfeed::UnfollowWebFeedRequest request;
   SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
   request.set_name(web_feed_name_);
+  request.set_change_reason(change_reason_);
   stream_.GetNetwork().SendApiRequest<UnfollowWebFeedDiscoverApi>(
       request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
       base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,

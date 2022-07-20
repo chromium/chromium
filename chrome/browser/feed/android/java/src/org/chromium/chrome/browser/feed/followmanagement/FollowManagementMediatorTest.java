@@ -150,8 +150,9 @@ public class FollowManagementMediatorTest {
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(
-                        eq(ID1), /*isDurable=*/eq(false), mUnfollowCallbackCaptor.capture());
+                .unfollowWebFeed(eq(ID1), /*isDurable=*/eq(false),
+                        eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
+                        mUnfollowCallbackCaptor.capture());
         mUnfollowCallbackCaptor.getValue().onResult(
                 new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
 
@@ -168,8 +169,9 @@ public class FollowManagementMediatorTest {
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(
-                        eq(ID1), /*isDurable=*/eq(false), mUnfollowCallbackCaptor.capture());
+                .unfollowWebFeed(eq(ID1), /*isDurable=*/eq(false),
+                        eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
+                        mUnfollowCallbackCaptor.capture());
         mUnfollowCallbackCaptor.getValue().onResult(
                 new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
 
@@ -198,8 +200,9 @@ public class FollowManagementMediatorTest {
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .followWebFeedById(
-                        eq(ID1), /*isDurable=*/eq(false), mFollowCallbackCaptor.capture());
+                .followWebFeedById(eq(ID1), /*isDurable=*/eq(false),
+                        eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
+                        mFollowCallbackCaptor.capture());
         mFollowCallbackCaptor.getValue().onResult(new WebFeedBridge.FollowResults(
                 WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR, null));
 
@@ -217,8 +220,9 @@ public class FollowManagementMediatorTest {
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .followWebFeedById(
-                        eq(ID1), /*isDurable=*/eq(false), mFollowCallbackCaptor.capture());
+                .followWebFeedById(eq(ID1), /*isDurable=*/eq(false),
+                        eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
+                        mFollowCallbackCaptor.capture());
         mFollowCallbackCaptor.getValue().onResult(
                 new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
 

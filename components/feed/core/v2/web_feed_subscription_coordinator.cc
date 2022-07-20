@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -169,23 +170,26 @@ void WebFeedSubscriptionCoordinator::ClearAllFinished() {
 
 void WebFeedSubscriptionCoordinator::FollowWebFeed(
     const WebFeedPageInformation& page_info,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   EnqueueInFlightChange(/*subscribing=*/true,
                         WebFeedInFlightChangeStrategy::kNotDurableRequest,
-                        page_info,
+                        change_reason, page_info,
                         /*info=*/absl::nullopt);
-  WithModel(
-      base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart,
-                     base::Unretained(this), page_info, std::move(callback)));
+  WithModel(base::BindOnce(
+      &WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart,
+      base::Unretained(this), page_info, change_reason, std::move(callback)));
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart(
     const WebFeedPageInformation& page_info,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   DCHECK(model_);
 
   SubscribeToWebFeedTask::Request request;
   request.page_info = page_info;
+  request.change_reason = change_reason;
   feed_stream_->GetTaskQueue().AddTask(
       FROM_HERE,
       std::make_unique<SubscribeToWebFeedTask>(
@@ -198,35 +202,39 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart(
 void WebFeedSubscriptionCoordinator::FollowWebFeed(
     const std::string& web_feed_id,
     bool is_durable_request,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   FollowWebFeedInternal(web_feed_id,
                         is_durable_request
                             ? WebFeedInFlightChangeStrategy::kNewDurableRequest
                             : WebFeedInFlightChangeStrategy::kNotDurableRequest,
-                        std::move(callback));
+                        change_reason, std::move(callback));
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeedInternal(
     const std::string& web_feed_id,
     WebFeedInFlightChangeStrategy strategy,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   feedstore::WebFeedInfo info;
   info.set_web_feed_id(web_feed_id);
-  EnqueueInFlightChange(/*subscribing=*/true, strategy,
+  EnqueueInFlightChange(/*subscribing=*/true, strategy, change_reason,
                         /*page_information=*/absl::nullopt, info);
-  WithModel(base::BindOnce(
-      &WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart,
-      base::Unretained(this), web_feed_id, strategy, std::move(callback)));
+  WithModel(
+      base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart,
+                     base::Unretained(this), web_feed_id, strategy,
+                     change_reason, std::move(callback)));
 }
 
 void WebFeedSubscriptionCoordinator::UpdatePendingOperationBeforeAttempt(
     const std::string& web_feed_id,
     WebFeedInFlightChangeStrategy strategy,
-    feedstore::PendingWebFeedOperation::Kind kind) {
+    feedstore::PendingWebFeedOperation::Kind kind,
+    feedwire::webfeed::WebFeedChangeReason change_reason) {
   DCHECK(metadata_model_);
   switch (strategy) {
     case WebFeedInFlightChangeStrategy::kNewDurableRequest:
-      metadata_model_->AddPendingOperation(kind, web_feed_id);
+      metadata_model_->AddPendingOperation(kind, web_feed_id, change_reason);
       break;
     case WebFeedInFlightChangeStrategy::kNotDurableRequest:
       // Let other user actions override previous requests to follow or
@@ -244,13 +252,16 @@ void WebFeedSubscriptionCoordinator::UpdatePendingOperationBeforeAttempt(
 void WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart(
     const std::string& web_feed_id,
     WebFeedInFlightChangeStrategy strategy,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   DCHECK(model_);
   UpdatePendingOperationBeforeAttempt(
-      web_feed_id, strategy, feedstore::PendingWebFeedOperation::SUBSCRIBE);
+      web_feed_id, strategy, feedstore::PendingWebFeedOperation::SUBSCRIBE,
+      change_reason);
   WebFeedSubscriptionInfo info = model_->GetSubscriptionInfo(web_feed_id);
   SubscribeToWebFeedTask::Request request;
   request.web_feed_id = web_feed_id;
+  request.change_reason = change_reason;
 
   feed_stream_->GetTaskQueue().AddTask(
       FROM_HERE,
@@ -301,42 +312,47 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
 void WebFeedSubscriptionCoordinator::UnfollowWebFeed(
     const std::string& web_feed_id,
     bool is_durable_request,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(UnfollowWebFeedResult)> callback) {
   UnfollowWebFeedInternal(
       web_feed_id,
       is_durable_request ? WebFeedInFlightChangeStrategy::kNewDurableRequest
                          : WebFeedInFlightChangeStrategy::kNotDurableRequest,
-      std::move(callback));
+      change_reason, std::move(callback));
 }
 
 void WebFeedSubscriptionCoordinator::UnfollowWebFeedInternal(
     const std::string& web_feed_id,
     WebFeedInFlightChangeStrategy strategy,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(UnfollowWebFeedResult)> callback) {
-  WithModel(base::BindOnce(
-      &WebFeedSubscriptionCoordinator::UnfollowWebFeedStart,
-      base::Unretained(this), web_feed_id, strategy, std::move(callback)));
+  WithModel(
+      base::BindOnce(&WebFeedSubscriptionCoordinator::UnfollowWebFeedStart,
+                     base::Unretained(this), web_feed_id, strategy,
+                     change_reason, std::move(callback)));
 }
 
 void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
     const std::string& web_feed_id,
     WebFeedInFlightChangeStrategy strategy,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(UnfollowWebFeedResult)> callback) {
   UpdatePendingOperationBeforeAttempt(
-      web_feed_id, strategy, feedstore::PendingWebFeedOperation::UNSUBSCRIBE);
+      web_feed_id, strategy, feedstore::PendingWebFeedOperation::UNSUBSCRIBE,
+      change_reason);
 
   WebFeedSubscriptionInfo info_lookup =
       model_->GetSubscriptionInfo(web_feed_id);
 
   feedstore::WebFeedInfo info = info_lookup.web_feed_info;
   info.set_web_feed_id(web_feed_id);
-  EnqueueInFlightChange(/*subscribing=*/false, strategy,
+  EnqueueInFlightChange(/*subscribing=*/false, strategy, change_reason,
                         /*page_information=*/absl::nullopt, info);
 
   feed_stream_->GetTaskQueue().AddTask(
       FROM_HERE,
       std::make_unique<UnsubscribeFromWebFeedTask>(
-          feed_stream_, token_generator_.Token(), web_feed_id,
+          feed_stream_, token_generator_.Token(), web_feed_id, change_reason,
           base::BindOnce(
               &WebFeedSubscriptionCoordinator::UnfollowWebFeedComplete,
               base::Unretained(this), std::move(callback))));
@@ -578,12 +594,14 @@ void WebFeedSubscriptionCoordinator::ModelDataLoaded(
 void WebFeedSubscriptionCoordinator::EnqueueInFlightChange(
     bool subscribing,
     WebFeedInFlightChangeStrategy strategy,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     absl::optional<WebFeedPageInformation> page_information,
     absl::optional<feedstore::WebFeedInfo> info) {
   WebFeedInFlightChange change;
   change.token = token_generator_.Token();
   change.subscribing = subscribing;
   change.strategy = strategy;
+  change.change_reason = change_reason;
   change.page_information = std::move(page_information);
   change.web_feed_info = std::move(info);
   in_flight_changes_.push_back(std::move(change));
@@ -903,12 +921,12 @@ void WebFeedSubscriptionCoordinator::RetryPendingOperations() {
       case feedstore::PendingWebFeedOperation::SUBSCRIBE:
         FollowWebFeedInternal(op.operation.web_feed_id(),
                               WebFeedInFlightChangeStrategy::kRetry,
-                              base::DoNothing());
+                              op.operation.change_reason(), base::DoNothing());
         break;
       case feedstore::PendingWebFeedOperation::UNSUBSCRIBE:
-        UnfollowWebFeedInternal(op.operation.web_feed_id(),
-                                WebFeedInFlightChangeStrategy::kRetry,
-                                base::DoNothing());
+        UnfollowWebFeedInternal(
+            op.operation.web_feed_id(), WebFeedInFlightChangeStrategy::kRetry,
+            op.operation.change_reason(), base::DoNothing());
         break;
       default:
         NOTREACHED() << "Unsupported operation kind " << op.operation.kind();

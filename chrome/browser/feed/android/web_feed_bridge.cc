@@ -179,6 +179,7 @@ base::OnceCallback<void(T)> AdaptCallbackForJava(
 static void JNI_WebFeedBridge_FollowWebFeed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& pageInfo,
+    jint change_reason,
     const base::android::JavaParamRef<jobject>& j_callback) {
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::FollowWebFeedResult>(
@@ -192,13 +193,17 @@ static void JNI_WebFeedBridge_FollowWebFeed(
     return;
   }
 
-  FollowWebFeed(page_info.web_contents, std::move(callback));
+  FollowWebFeed(
+      page_info.web_contents,
+      static_cast<feedwire::webfeed::WebFeedChangeReason>(change_reason),
+      std::move(callback));
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& webFeedId,
     jboolean is_durable,
+    jint change_reason,
     const base::android::JavaParamRef<jobject>& j_callback) {
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
   auto callback =
@@ -208,21 +213,27 @@ static void JNI_WebFeedBridge_FollowWebFeedById(
     std::move(callback).Run({});
     return;
   }
-  subscriptions->FollowWebFeed(ToNativeWebFeedId(env, webFeedId),
-                               /*is_durable_request=*/is_durable,
-                               std::move(callback));
+  subscriptions->FollowWebFeed(
+      ToNativeWebFeedId(env, webFeedId),
+      /*is_durable_request=*/is_durable,
+      static_cast<feedwire::webfeed::WebFeedChangeReason>(change_reason),
+      std::move(callback));
 }
 
 static void JNI_WebFeedBridge_UnfollowWebFeed(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& webFeedId,
     jboolean is_durable,
+    jint change_reason,
     const base::android::JavaParamRef<jobject>& j_callback) {
   auto callback =
       AdaptCallbackForJava<WebFeedSubscriptions::UnfollowWebFeedResult>(
           env, j_callback);
-  UnfollowWebFeed(ToNativeWebFeedId(env, webFeedId),
-                  /*is_durable_request=*/is_durable, std::move(callback));
+  UnfollowWebFeed(
+      ToNativeWebFeedId(env, webFeedId),
+      /*is_durable_request=*/is_durable,
+      static_cast<feedwire::webfeed::WebFeedChangeReason>(change_reason),
+      std::move(callback));
 }
 
 static void JNI_WebFeedBridge_FindWebFeedInfoForPage(

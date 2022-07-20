@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/strings/string_piece.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 
 namespace feed {
 
@@ -28,7 +29,8 @@ WebFeedMetadataModel::~WebFeedMetadataModel() = default;
 
 void WebFeedMetadataModel::AddPendingOperation(
     feedstore::PendingWebFeedOperation::Kind kind,
-    const std::string& web_feed_id) {
+    const std::string& web_feed_id,
+    feedwire::webfeed::WebFeedChangeReason change_reason) {
   // Don't allow more than one operation for a web feed, just overwrite the
   // old one.
   RemovePendingOperationsForWebFeed(web_feed_id);
@@ -36,6 +38,7 @@ void WebFeedMetadataModel::AddPendingOperation(
   operation.set_kind(kind);
   operation.set_web_feed_id(web_feed_id);
   operation.set_id(next_id_++);
+  operation.set_change_reason(change_reason);
   store_->WritePendingWebFeedOperation(operation);
 
   pending_operations_.push_back(
@@ -85,6 +88,7 @@ WebFeedInFlightChange WebFeedMetadataModel::MakePendingInFlightChange(
   change.strategy = WebFeedInFlightChangeStrategy::kPending;
   change.web_feed_info = feedstore::WebFeedInfo();
   change.web_feed_info->set_web_feed_id(operation.web_feed_id());
+  change.change_reason = operation.change_reason();
   return change;
 }
 

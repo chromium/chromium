@@ -233,21 +233,23 @@ public class FeedStream implements Stream {
                 return;
             }
             if (update.isFollow()) {
-                WebFeedBridge.followFromId(webFeedId, update.isDurable(), results -> {
-                    WebFeedFollowUpdate.Callback callback = update.callback();
-                    if (callback != null) {
-                        callback.requestComplete(
-                                results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS);
-                    }
-                });
+                WebFeedBridge.followFromId(
+                        webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
+                            WebFeedFollowUpdate.Callback callback = update.callback();
+                            if (callback != null) {
+                                callback.requestComplete(results.requestStatus
+                                        == WebFeedSubscriptionRequestStatus.SUCCESS);
+                            }
+                        });
             } else {
-                WebFeedBridge.unfollow(webFeedId, update.isDurable(), results -> {
-                    WebFeedFollowUpdate.Callback callback = update.callback();
-                    if (callback != null) {
-                        callback.requestComplete(
-                                results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS);
-                    }
-                });
+                WebFeedBridge.unfollow(
+                        webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
+                            WebFeedFollowUpdate.Callback callback = update.callback();
+                            if (callback != null) {
+                                callback.requestComplete(results.requestStatus
+                                        == WebFeedSubscriptionRequestStatus.SUCCESS);
+                            }
+                        });
             }
         }
 

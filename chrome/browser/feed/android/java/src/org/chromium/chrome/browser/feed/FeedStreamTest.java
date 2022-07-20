@@ -580,10 +580,15 @@ public class FeedStreamTest {
             public WebFeedFollowUpdate.Callback callback() {
                 return mWebFeedFollowUpdateCallback;
             }
+            @Override
+            public int webFeedChangeReason() {
+                return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
+            }
         });
 
         verify(mWebFeedBridgeJni)
                 .followWebFeedById(eq("webFeed1".getBytes("UTF8")), eq(false),
+                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mFollowResultsCallbackCaptor.capture());
         mFollowResultsCallbackCaptor.getValue().onResult(
                 new FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
@@ -606,7 +611,7 @@ public class FeedStreamTest {
         });
 
         verify(mWebFeedBridgeJni)
-                .followWebFeedById(any(), eq(false), mFollowResultsCallbackCaptor.capture());
+                .followWebFeedById(any(), eq(false), eq(0), mFollowResultsCallbackCaptor.capture());
         // Just make sure no exception is thrown because there is no callback to call.
         mFollowResultsCallbackCaptor.getValue().onResult(
                 new FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
@@ -634,10 +639,15 @@ public class FeedStreamTest {
             public WebFeedFollowUpdate.Callback callback() {
                 return mWebFeedFollowUpdateCallback;
             }
+            @Override
+            public int webFeedChangeReason() {
+                return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
+            }
         });
 
         verify(mWebFeedBridgeJni)
                 .followWebFeedById(eq("webFeed1".getBytes("UTF8")), eq(true),
+                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mFollowResultsCallbackCaptor.capture());
         mFollowResultsCallbackCaptor.getValue().onResult(
                 new FollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, null));
@@ -670,10 +680,15 @@ public class FeedStreamTest {
             public boolean isDurable() {
                 return true;
             }
+            @Override
+            public int webFeedChangeReason() {
+                return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
+            }
         });
 
         verify(mWebFeedBridgeJni)
                 .unfollowWebFeed(eq("webFeed1".getBytes("UTF8")), eq(true),
+                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mUnfollowResultsCallbackCaptor.capture());
         mUnfollowResultsCallbackCaptor.getValue().onResult(
                 new UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
@@ -698,10 +713,15 @@ public class FeedStreamTest {
             public boolean isFollow() {
                 return false;
             }
+            @Override
+            public int webFeedChangeReason() {
+                return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
+            }
         });
 
         verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(any(), eq(false), mUnfollowResultsCallbackCaptor.capture());
+                .unfollowWebFeed(any(), eq(false), eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
+                        mUnfollowResultsCallbackCaptor.capture());
         mUnfollowResultsCallbackCaptor.getValue().onResult(
                 new UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
     }
@@ -732,10 +752,15 @@ public class FeedStreamTest {
             public boolean isDurable() {
                 return true;
             }
+            @Override
+            public int webFeedChangeReason() {
+                return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
+            }
         });
 
         verify(mWebFeedBridgeJni)
                 .unfollowWebFeed(eq("webFeed1".getBytes("UTF8")), eq(true),
+                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mUnfollowResultsCallbackCaptor.capture());
         mUnfollowResultsCallbackCaptor.getValue().onResult(
                 new UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));

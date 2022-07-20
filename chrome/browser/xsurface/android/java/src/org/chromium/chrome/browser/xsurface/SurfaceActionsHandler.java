@@ -103,6 +103,11 @@ public interface SurfaceActionsHandler {
         default WebFeedFollowUpdate.Callback callback() {
             return null;
         }
+
+        /** The WebFeedChangeReason for this change. */
+        default int webFeedChangeReason() {
+            return 0;
+        }
     }
 
     /**

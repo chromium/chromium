@@ -50,6 +50,7 @@ void SubscribeToWebFeedTask::Run() {
     feedwire::webfeed::FollowWebFeedRequest request;
     SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_name(request_.web_feed_id);
+    request.set_change_reason(request_.change_reason);
     stream_.GetNetwork().SendApiRequest<FollowWebFeedDiscoverApi>(
         request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
         base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
@@ -70,6 +71,7 @@ void SubscribeToWebFeedTask::Run() {
     feedwire::webfeed::FollowWebFeedRequest request;
     SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_web_page_uri(request_.page_info.url().spec());
+    request.set_change_reason(request_.change_reason);
     if (request_.page_info.canonical_url().is_valid()) {
       request.set_canonical_uri(request_.page_info.canonical_url().spec());
     }

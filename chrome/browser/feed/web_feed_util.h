@@ -30,12 +30,14 @@ void FindWebFeedInfoForPage(content::WebContents* web_contents,
 
 void FollowWebFeed(
     content::WebContents* web_contents,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(WebFeedSubscriptions::FollowWebFeedResult)>
         callback);
 
 void UnfollowWebFeed(
     const std::string& web_feed_id,
     bool is_durable_request,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(WebFeedSubscriptions::UnfollowWebFeedResult)>
         callback);
 

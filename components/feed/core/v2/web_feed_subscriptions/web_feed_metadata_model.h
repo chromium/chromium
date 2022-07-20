@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/operation_token.h"
 #include "components/feed/core/v2/public/types.h"
@@ -36,8 +37,10 @@ class WebFeedMetadataModel {
   WebFeedMetadataModel& operator=(const WebFeedMetadataModel&) = delete;
   ~WebFeedMetadataModel();
 
-  void AddPendingOperation(feedstore::PendingWebFeedOperation::Kind kind,
-                           const std::string& web_feed_id);
+  void AddPendingOperation(
+      feedstore::PendingWebFeedOperation::Kind kind,
+      const std::string& web_feed_id,
+      feedwire::webfeed::WebFeedChangeReason change_reason);
   void RemovePendingOperationsForWebFeed(base::StringPiece web_feed_id);
   void RecordPendingOperationsForWebFeedAttempt(base::StringPiece web_feed_id);
 

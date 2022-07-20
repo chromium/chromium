@@ -154,22 +154,24 @@ class FollowManagementMediator {
             FeedServiceBridge.reportOtherUserAction(
                     StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as subscribed if the follow operation succeeds.
-            WebFeedBridge.followFromId(id, /*isDurable=*/false, results -> {
-                reportRequestStatus(results.requestStatus);
-                itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
-                        results.requestStatus == SUCCESS);
-                itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, true);
-            });
+            WebFeedBridge.followFromId(
+                    id, /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_MANAGEMENT, results -> {
+                        reportRequestStatus(results.requestStatus);
+                        itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
+                                results.requestStatus == SUCCESS);
+                        itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, true);
+                    });
         } else {
             FeedServiceBridge.reportOtherUserAction(
                     StreamKind.UNKNOWN, FeedUserActionType.TAPPED_UNFOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as unsubscribed if the unfollow operation succeeds.
-            WebFeedBridge.unfollow(id, /*isDurable=*/false, results -> {
-                reportRequestStatus(results.requestStatus);
-                itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
-                        results.requestStatus != SUCCESS);
-                itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, true);
-            });
+            WebFeedBridge.unfollow(
+                    id, /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_MANAGEMENT, results -> {
+                        reportRequestStatus(results.requestStatus);
+                        itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
+                                results.requestStatus != SUCCESS);
+                        itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, true);
+                    });
         }
 
         itemModel.set(FollowManagementItemProperties.CHECKBOX_ENABLED_KEY, false);

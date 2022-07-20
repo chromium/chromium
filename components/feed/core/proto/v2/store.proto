@@ -10,6 +10,7 @@ import "components/feed/core/proto/v2/wire/content_id.proto";
 import "components/feed/core/proto/v2/wire/feed_action.proto";
 import "components/feed/core/proto/v2/wire/stream_structure.proto";
 import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
+import "components/feed/core/proto/v2/wire/web_feeds.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -288,4 +289,6 @@ message PendingWebFeedOperation {
   string web_feed_id = 3;
   // Number of times the operation has been attempted.
   int32 attempts = 4;
+  // Reason for this change.
+  feedwire.webfeed.WebFeedChangeReason change_reason = 5;
 }

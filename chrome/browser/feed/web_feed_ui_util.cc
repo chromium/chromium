@@ -36,6 +36,7 @@ void FollowSite(content::WebContents* web_contents) {
     }
   };
   FollowWebFeed(web_contents,
+                feedwire::webfeed::WebFeedChangeReason::WEB_PAGE_MENU,
                 base::BindOnce(on_followed, web_contents->GetLastCommittedURL(),
                                web_contents->GetWeakPtr()));
 }
@@ -67,6 +68,7 @@ void UnfollowSite(content::WebContents* web_contents) {
   UnfollowWebFeed(
       tab_helper->web_feed_id(),
       /*is_durable_request=*/false,
+      feedwire::webfeed::WebFeedChangeReason::WEB_PAGE_MENU,
       base::BindOnce(on_unfollowed, web_contents->GetLastCommittedURL(),
                      web_contents->GetWeakPtr()));
 }

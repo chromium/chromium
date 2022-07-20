@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feed {
@@ -29,6 +30,7 @@ class WebFeedSubscriptions {
   // followed. This always creates a non-durable request.
   virtual void FollowWebFeed(
       const WebFeedPageInformation& page_info,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(FollowWebFeedResult)> callback) = 0;
 
   // Follow a web feed given a web feed ID.
@@ -38,6 +40,7 @@ class WebFeedSubscriptions {
   virtual void FollowWebFeed(
       const std::string& web_feed_id,
       bool is_durable_request,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(FollowWebFeedResult)> callback) = 0;
 
   struct UnfollowWebFeedResult {
@@ -55,6 +58,7 @@ class WebFeedSubscriptions {
   virtual void UnfollowWebFeed(
       const std::string& web_feed_id,
       bool is_durable_request,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(UnfollowWebFeedResult)> callback) = 0;
 
   // Web Feed lookup for pages. These functions fetch `WebFeedMetadata` for any

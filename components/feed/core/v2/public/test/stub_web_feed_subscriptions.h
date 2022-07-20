@@ -14,14 +14,17 @@ class StubWebFeedSubscriptions : public WebFeedSubscriptions {
  public:
   void FollowWebFeed(
       const WebFeedPageInformation& page_info,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(FollowWebFeedResult)> callback) override {}
   void FollowWebFeed(
       const std::string& web_feed_id,
       bool is_durable_request,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(FollowWebFeedResult)> callback) override {}
   void UnfollowWebFeed(
       const std::string& web_feed_id,
       bool is_durable_request,
+      feedwire::webfeed::WebFeedChangeReason change_reason,
       base::OnceCallback<void(UnfollowWebFeedResult)> callback) override {}
   void FindWebFeedInfoForPage(
       const WebFeedPageInformation& page_info,

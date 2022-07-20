@@ -257,6 +257,7 @@ class TextProtoPrinter {
     PRINT_FIELD(kind);
     PRINT_FIELD(web_feed_id);
     PRINT_FIELD(attempts);
+    PRINT_FIELD(change_reason);
     EndMessage();
     return *this;
   }

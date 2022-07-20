@@ -39,6 +39,8 @@ namespace feed {
 namespace test {
 namespace {
 
+using ::feedwire::webfeed::WebFeedChangeReason;
+
 const int kTestInfoCardType1 = 101;
 const int kTestInfoCardType2 = 8888;
 const int kMinimumViewIntervalSeconds = 5 * 60;
@@ -1238,7 +1240,8 @@ TEST_F(FeedApiTest, FollowForcesRefreshWhileSurfaceAttached_NotWorking) {
   WebFeedPageInformation page_info =
       MakeWebFeedPageInformation("http://dogs.com");
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  stream_->subscriptions().FollowWebFeed(page_info, callback.Bind());
+  stream_->subscriptions().FollowWebFeed(
+      page_info, WebFeedChangeReason::WEB_PAGE_MENU, callback.Bind());
 
   ASSERT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);
@@ -1271,7 +1274,8 @@ TEST_F(FeedApiTest, FollowForcesRefresh) {
   WebFeedPageInformation page_info =
       MakeWebFeedPageInformation("http://dogs.com");
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  stream_->subscriptions().FollowWebFeed(page_info, callback.Bind());
+  stream_->subscriptions().FollowWebFeed(
+      page_info, WebFeedChangeReason::WEB_PAGE_MENU, callback.Bind());
 
   ASSERT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);

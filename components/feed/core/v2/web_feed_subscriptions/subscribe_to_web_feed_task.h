@@ -25,6 +25,8 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
   struct Request {
     WebFeedPageInformation page_info;
     std::string web_feed_id;
+    feedwire::webfeed::WebFeedChangeReason change_reason = feedwire::webfeed::
+        WebFeedChangeReason ::WEB_FEED_CHANGE_REASON_UNSPECIFIED;
     // Whether the subscription request will be stored and retried if failed.
     bool durable = false;
   };

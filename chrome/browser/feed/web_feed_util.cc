@@ -70,10 +70,12 @@ void FindWebFeedInfoForPage(
 
 void FollowWebFeed(
     content::WebContents* web_contents,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(WebFeedSubscriptions::FollowWebFeedResult)>
         callback) {
   auto on_page_info_fetched =
-      [](base::WeakPtr<content::WebContents> web_contents,
+      [](feedwire::webfeed::WebFeedChangeReason change_reason,
+         base::WeakPtr<content::WebContents> web_contents,
          base::OnceCallback<void(WebFeedSubscriptions::FollowWebFeedResult)>
              callback,
          WebFeedPageInformation page_info) {
@@ -94,19 +96,21 @@ void FollowWebFeed(
           return;
         }
 
-        subscriptions->FollowWebFeed(page_info, std::move(callback));
+        subscriptions->FollowWebFeed(page_info, change_reason,
+                                     std::move(callback));
       };
 
   WebFeedPageInformationFetcher::Start(
       ConstructPageInformation(web_contents),
       WebFeedPageInformationRequestReason::kUserRequestedFollow,
-      base::BindOnce(on_page_info_fetched, web_contents->GetWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(on_page_info_fetched, change_reason,
+                     web_contents->GetWeakPtr(), std::move(callback)));
 }
 
 void UnfollowWebFeed(
     const std::string& web_feed_id,
     bool is_durable_request,
+    feedwire::webfeed::WebFeedChangeReason change_reason,
     base::OnceCallback<void(WebFeedSubscriptions::UnfollowWebFeedResult)>
         callback) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
@@ -116,7 +120,7 @@ void UnfollowWebFeed(
     return;
   }
 
-  subscriptions->UnfollowWebFeed(web_feed_id, is_durable_request,
+  subscriptions->UnfollowWebFeed(web_feed_id, is_durable_request, change_reason,
                                  std::move(callback));
 }
 
