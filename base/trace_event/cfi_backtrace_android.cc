@@ -107,7 +107,7 @@ struct CFIUnwindDataRow {
   uint16_t cfi_data;
 
   // Return the RA offset for the current unwind row.
-  uint16_t ra_offset() const { return cfi_data & kRAMask << kRAShift; }
+  uint16_t ra_offset() const { return (cfi_data & kRAMask) << kRAShift; }
 
   // Returns the CFA offset for the current unwind row.
   uint16_t cfa_offset() const { return cfi_data & kCFAMask; }
