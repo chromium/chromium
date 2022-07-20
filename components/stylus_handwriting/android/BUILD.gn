@@ -22,7 +22,7 @@ android_library("java") {
   ]
   srcjar_deps = [ ":direct_writing_service_aidl" ]
   sources = [
-    "java/src/org/chromium/components/stylus_handwriting/ApiHelperForStylusWriting.java",
+    "java/src/org/chromium/components/stylus_handwriting/AndroidStylusWritingHandler.java",
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingBundleUtil.java",
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingConstants.java",
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinder.java",
@@ -30,5 +30,8 @@ android_library("java") {
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceConfiguration.java",
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingSettingsHelper.java",
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingTrigger.java",
+    "java/src/org/chromium/components/stylus_handwriting/DisabledStylusWritingHandler.java",
+    "java/src/org/chromium/components/stylus_handwriting/StylusApiOption.java",
+    "java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
   ]
 }

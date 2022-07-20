@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.stylus_handwriting.ApiHelperForStylusWriting;
+import org.chromium.components.stylus_handwriting.StylusWritingController;
 
 /**
  * This class coordinates the Tab events and Window focus events required for Stylus handwriting.
@@ -20,11 +20,17 @@ import org.chromium.components.stylus_handwriting.ApiHelperForStylusWriting;
 public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
+    private final ObservableSupplier<Tab> mTabProvider;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final StylusWritingController mStylusWritingController;
 
     public StylusWritingCoordinator(Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Tab> activityTabProvider) {
+        mActivity = activity;
+        mTabProvider = activityTabProvider;
+        mStylusWritingController = new StylusWritingController(mActivity.getApplicationContext());
+
         lifecycleDispatcher.register(this);
         mLifecycleDispatcher = lifecycleDispatcher;
         mCurrentTabObserver = new CurrentTabObserver(activityTabProvider,
@@ -32,15 +38,14 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
                     @Override
                     public void onContentChanged(Tab tab) {
                         if (tab.getWebContents() == null) return;
-                        ApiHelperForStylusWriting.onWebContentsInitialized(tab.getWebContents());
+                        mStylusWritingController.onWebContentsChanged(tab.getWebContents());
                     }
                 },
                 /* swap Callback */
                 tab -> {
                     if (tab == null || tab.getWebContents() == null) return;
-                    ApiHelperForStylusWriting.onWebContentsInitialized(tab.getWebContents());
+                    mStylusWritingController.onWebContentsChanged(tab.getWebContents());
                 });
-        mActivity = activity;
     }
 
     public void destroy() {
@@ -50,6 +55,6 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        ApiHelperForStylusWriting.onWindowFocusChanged(hasFocus, mActivity);
+        mStylusWritingController.onWindowFocusChanged(hasFocus);
     }
 }

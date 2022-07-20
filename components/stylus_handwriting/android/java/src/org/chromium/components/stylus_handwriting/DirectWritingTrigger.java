@@ -26,7 +26,7 @@ import org.chromium.content_public.browser.WebContents;
  * calls to DW service connection handler class {@link DirectWritingServiceBinder}. Also, sets the
  * {@link StylusWritingHandler} to receive messages about stylus writing events.
  */
-class DirectWritingTrigger implements StylusWritingHandler {
+class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     private static final String TAG = "DWTrigger";
 
     private DirectWritingServiceBinder mBinder = new DirectWritingServiceBinder();
@@ -56,15 +56,16 @@ class DirectWritingTrigger implements StylusWritingHandler {
     private boolean mNeedsFocusedNodeChangedAfterTouchUp;
     private boolean mWasButtonPressed;
 
-    private static DirectWritingTrigger sInstance = new DirectWritingTrigger();
-
     /**
      * Sets the stylus writing handler to current web contents when initialized to receive messages
      * via {@link StylusWritingHandler}
      *
+     * @param context current {@link Context}
      * @param webContents current web contents
      */
-    void onWebContentsInitialized(WebContents webContents) {
+    @Override
+    public void onWebContentsChanged(Context context, WebContents webContents) {
+        updateDWSettings(context);
         webContents.setStylusWritingHandler(this);
     }
 
@@ -121,10 +122,6 @@ class DirectWritingTrigger implements StylusWritingHandler {
         return mDwServiceEnabled;
     }
 
-    static DirectWritingTrigger getInstance() {
-        return sInstance;
-    }
-
     private void updateDWServiceStatus(Context context) {
         mDwServiceEnabled = isDirectWritingServiceEnabled(context);
         Log.i(TAG, "updateDWServiceStatus() : isEnabled = " + mDwServiceEnabled);
@@ -159,7 +156,8 @@ class DirectWritingTrigger implements StylusWritingHandler {
         }
     }
 
-    void onWindowFocusChanged(boolean hasWindowFocus, Context context) {
+    @Override
+    public void onWindowFocusChanged(Context context, boolean hasWindowFocus) {
         if (hasWindowFocus) {
             updateDWSettings(context);
         } else {

@@ -37,13 +37,14 @@ public interface StylusWritingHandler {
      * @param selectionStart the input selection start offset
      * @param selectionEnd the input selection end offset
      */
-    void updateInputState(String text, int selectionStart, int selectionEnd);
+    default void updateInputState(String text, int selectionStart, int selectionEnd) {}
+
     /**
      * Notify focused node has changed in web page.
      *  @param editableBounds the Editable element bounds Rect in pix
      * @param isEditable is true if focused node is of editable type.
      */
-    void onFocusedNodeChanged(Rect editableBounds, boolean isEditable);
+    default void onFocusedNodeChanged(Rect editableBounds, boolean isEditable) {}
 
     /**
      * Handle touch events if needed for stylus writing.
@@ -52,7 +53,9 @@ public interface StylusWritingHandler {
      * @param currentView the {@link View} which is receiving the events.
      * @return true if event is consumed by stylus writing system.
      */
-    boolean handleTouchEvent(MotionEvent event, View currentView);
+    default boolean handleTouchEvent(MotionEvent event, View currentView) {
+        return false;
+    }
 
     /**
      * Handle hover events for Direct writing.
@@ -60,28 +63,28 @@ public interface StylusWritingHandler {
      * @param event {@link MotionEvent} to be handled.
      * @param currentView the {@link View} which is receiving the events.
      */
-    void handleHoverEvent(MotionEvent event, View currentView);
+    default void handleHoverEvent(MotionEvent event, View currentView) {}
 
     /**
      * Update the editor attributes corresponding to current input.
      *
      * @param editorInfo {@link EditorInfo} object
      */
-    void updateEditorInfo(EditorInfo editorInfo);
+    default void updateEditorInfo(EditorInfo editorInfo) {}
 
     /**
      * Notify the view is detached from window.
      *
      * @param context the current context
      */
-    void onDetachedFromWindow(Context context);
+    default void onDetachedFromWindow(Context context) {}
 
     /**
      * Notify current view focus has changed
      *
      * @param hasFocus whether view gained or lost focus
      */
-    void onFocusChanged(boolean hasFocus);
+    default void onFocusChanged(boolean hasFocus) {}
 
     /**
      * This message is sent when the stylus writable element has been focused.

@@ -58,7 +58,7 @@ include_rules = [
   "+components/security_state/content/android/java",
   "+components/segmentation_platform/content/android/java",
   "+components/segmentation_platform/public/android/java",
-  "+components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/ApiHelperForStylusWriting.java",
+  "+components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/query_tiles/android/java",
   "+components/thin_webview/java",
