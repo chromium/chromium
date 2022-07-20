@@ -31,7 +31,7 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   // the corresponding window session id.
   class WindowSessionResolver : public exo::WMHelper::AppPropertyResolver {
    public:
-    explicit WindowSessionResolver(ArcWindowHandler* handler);
+    WindowSessionResolver() = default;
     WindowSessionResolver(const WindowSessionResolver&) = delete;
     WindowSessionResolver& operator=(const WindowSessionResolver&) = delete;
     ~WindowSessionResolver() override = default;
@@ -40,9 +40,6 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
     void PopulateProperties(
         const Params& params,
         ui::PropertyHandler& out_properties_container) override;
-
-   private:
-    ArcWindowHandler* handler_;
   };
 
  public:
@@ -63,6 +60,12 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   ArcWindowHandler(const ArcWindowHandler&) = delete;
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
   ~ArcWindowHandler() override;
+
+  // ArcWindowHandler is created and destroyed with the
+  // ash::AppRestore::AppRestoreArcTaskHandler.
+  // ArcWindowHandler::Get may be nullptr if accessed outside the expected
+  // lifetime.
+  static ArcWindowHandler* Get();
 
   // Returns true if the ghost window is created and launched. Otherwise,
   // returns false.

@@ -18,18 +18,21 @@
 namespace ash {
 namespace full_restore {
 
-ArcWindowHandler::WindowSessionResolver::WindowSessionResolver(
-    ArcWindowHandler* handler)
-    : handler_(handler) {}
+namespace {
+
+ArcWindowHandler* g_instance = nullptr;
+
+}  // namespace
 
 void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
     const Params& params,
     ui::PropertyHandler& out_properties_container) {
   if (params.window_session_id <= 0)
     return;
+  auto* handler = ArcWindowHandler::Get();
   auto it =
-      handler_->session_id_to_shell_surface_.find(params.window_session_id);
-  if (it != handler_->session_id_to_shell_surface_.end()) {
+      handler->session_id_to_shell_surface_.find(params.window_session_id);
+  if (it != handler->session_id_to_shell_surface_.end()) {
     // Reuse the ghost window instance for real ARC app window.
     if (it->second->HasOverlay())
       it->second->RemoveOverlay();
@@ -40,8 +43,8 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
     }
     SetShellClientControlledShellSurface(&out_properties_container,
                                          it->second.release());
-    handler_->session_id_to_shell_surface_.erase(it);
-    handler_->ghost_window_pop_count_++;
+    handler->session_id_to_shell_surface_.erase(it);
+    handler->ghost_window_pop_count_++;
   } else {
     // ARC ghost window instance.
     out_properties_container.SetProperty(app_restore::kRealArcTaskWindow,
@@ -50,19 +53,28 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
 }
 
 ArcWindowHandler::ArcWindowHandler() {
+  DCHECK_EQ(nullptr, g_instance);
   exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
-      std::make_unique<WindowSessionResolver>(this));
+      std::make_unique<WindowSessionResolver>());
   auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
   if (lifetime_manager)
     lifetime_manager->AddObserver(this);
+  g_instance = this;
 }
 
 ArcWindowHandler::~ArcWindowHandler() {
+  DCHECK_EQ(this, g_instance);
   if (exo::WMHelper::HasInstance()) {
     auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
     if (lifetime_manager)
       lifetime_manager->RemoveObserver(this);
   }
+  g_instance = nullptr;
+}
+
+// static
+ArcWindowHandler* ArcWindowHandler::Get() {
+  return g_instance;
 }
 
 void ArcWindowHandler::OnDestroyed() {
@@ -105,7 +117,7 @@ bool ArcWindowHandler::LaunchArcGhostWindow(
   }
 
   auto shell_surface = ArcGhostWindowShellSurface::Create(
-      this, app_id, session_id, adjust_bounds, restore_data,
+      app_id, session_id, adjust_bounds, restore_data,
       base::BindRepeating(&ArcWindowHandler::CloseWindow,
                           weak_ptr_factory_.GetWeakPtr(), session_id));
   if (!shell_surface)

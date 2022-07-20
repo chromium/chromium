@@ -17,8 +17,6 @@ struct AppRestoreData;
 namespace ash {
 namespace full_restore {
 
-class ArcWindowHandler;
-
 // Explicitly identifies ARC ghost surface.
 extern const aura::WindowProperty<bool>* const kArcGhostSurface;
 
@@ -32,7 +30,6 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   ~ArcGhostWindowShellSurface() override;
 
   static std::unique_ptr<ArcGhostWindowShellSurface> Create(
-      ArcWindowHandler* window_handler,
       const std::string& app_id,
       int window_id,
       const gfx::Rect& bounds,

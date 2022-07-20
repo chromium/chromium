@@ -73,7 +73,6 @@ ArcGhostWindowShellSurface::~ArcGhostWindowShellSurface() {
 
 // static
 std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
-    ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
     const gfx::Rect& bounds,
@@ -119,8 +118,8 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
-      shell_surface.get(), window_handler, window_id, display_id_value,
-      local_bounds, window_state.value_or(chromeos::WindowStateType::kDefault)));
+      shell_surface.get(), window_id, display_id_value, local_bounds,
+      window_state.value_or(chromeos::WindowStateType::kDefault)));
   shell_surface->set_close_callback(std::move(close_callback));
 
   shell_surface->SetAppId(app_id);

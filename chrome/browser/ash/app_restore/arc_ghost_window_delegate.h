@@ -21,7 +21,6 @@ class ArcGhostWindowDelegate
       public ArcWindowHandler::Observer {
  public:
   ArcGhostWindowDelegate(exo::ClientControlledShellSurface* shell_surface,
-                         ArcWindowHandler* handler,
                          int window_id,
                          int64_t display_id,
                          const gfx::Rect& bounds,
@@ -64,7 +63,6 @@ class ArcGhostWindowDelegate
   chromeos::WindowStateType window_state_;
   exo::ClientControlledShellSurface* shell_surface_;
 
-  ArcWindowHandler* arc_handler_;
   base::ScopedObservation<ArcWindowHandler, ArcWindowHandler::Observer>
       observation_{this};
 };
