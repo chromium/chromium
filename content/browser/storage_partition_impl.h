@@ -617,8 +617,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
   std::unique_ptr<LockManager> lock_manager_;
-  std::unique_ptr<SharedStorageWorkletHostManager>
-      shared_storage_worklet_host_manager_;
   std::unique_ptr<IndexedDBControlWrapper> indexed_db_control_wrapper_;
   std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
@@ -659,6 +657,13 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // Owning pointer to the SharedStorageManager for this partition.
   std::unique_ptr<storage::SharedStorageManager> shared_storage_manager_;
+
+  // This needs to be declared after `shared_storage_manager_` because
+  // `shared_storage_worklet_host` (managed by
+  // `shared_storage_worklet_host_manager_`) ultimately stores a raw pointer on
+  // it.
+  std::unique_ptr<SharedStorageWorkletHostManager>
+      shared_storage_worklet_host_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The
