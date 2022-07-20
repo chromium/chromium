@@ -269,6 +269,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // We only fetch events after we've "settled" on the current on-screen month.
   void OnScrollingSettledTimerFired();
 
+  // Sets `expanded_row_index_` and auto-scrolls the `scroll_view_` when
+  // `event_list_view_` is opened. After scrolling, disables the scroll bar.
+  void SetExpandedRowThenDisableScroll(int row_index);
+
   // ScrollView callback.
   void OnContentsScrolled();
 

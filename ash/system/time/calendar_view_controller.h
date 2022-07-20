@@ -103,9 +103,6 @@ class ASH_EXPORT CalendarViewController {
   // month.
   std::u16string GetPreviousMonthName();
 
-  // `row_height_` is expanded when the EventListView is shown.
-  int GetRowHeightWithEventListView() const;
-
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
