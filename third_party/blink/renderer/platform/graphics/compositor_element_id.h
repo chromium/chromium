@@ -37,7 +37,7 @@ enum class CompositorElementIdNamespace {
   kMaxRepresentable = 1 << kCompositorNamespaceBitCount
 };
 
-static_assert(CompositorElementIdNamespace::kMax <=
+static_assert(CompositorElementIdNamespace::kMax <
                   CompositorElementIdNamespace::kMaxRepresentable,
               "");
 
