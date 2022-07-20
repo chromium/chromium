@@ -167,9 +167,12 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
 
     @Override
     public ButtonData get(@Nullable Tab tab) {
-        if (mSingleProvider == null) return null;
-        final ButtonData receivedButtonData = mSingleProvider.get(tab);
-        if (receivedButtonData == null) return null;
+        final ButtonData receivedButtonData =
+                mSingleProvider == null ? null : mSingleProvider.get(tab);
+        if (receivedButtonData == null) {
+            mOriginalButtonSpec = null;
+            return null;
+        }
 
         if (!mIsSessionVariantRecorded && receivedButtonData.canShow()
                 && receivedButtonData.isEnabled()

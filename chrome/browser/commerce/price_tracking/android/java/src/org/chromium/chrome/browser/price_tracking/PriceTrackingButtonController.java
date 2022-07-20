@@ -63,7 +63,14 @@ public class PriceTrackingButtonController implements ButtonDataProvider {
     @Override
     public ButtonData get(@Nullable Tab tab) {
         maybeSetIphCommandBuilder(tab);
+        maybeSetActionChipResourceId();
         return mButtonData;
+    }
+
+    private void maybeSetActionChipResourceId() {
+        if (FeatureList.isInitialized() && AdaptiveToolbarFeatures.shouldShowActionChip()) {
+            mButtonData.updateActionChipResourceId(R.string.enable_price_tracking_menu_item);
+        }
     }
 
     @Override

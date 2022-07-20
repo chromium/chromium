@@ -487,12 +487,15 @@ const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
 
 const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_NewTab[] = {
     {"default_segment", "new-tab"},
+    {"show_ui_only_after_ready", "false"},
     {"ignore_segmentation_results", "true"}};
 const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Share[] = {
     {"default_segment", "share"},
+    {"show_ui_only_after_ready", "false"},
     {"ignore_segmentation_results", "true"}};
 const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Voice[] = {
     {"default_segment", "voice"},
+    {"show_ui_only_after_ready", "false"},
     {"ignore_segmentation_results", "true"}};
 const FeatureEntry::FeatureVariation
     kAdaptiveButtonInTopToolbarCustomizationVariations[] = {
@@ -502,6 +505,49 @@ const FeatureEntry::FeatureVariation
          std::size(kAdaptiveButtonCustomization_Share), nullptr},
         {"Voice", kAdaptiveButtonCustomization_Voice,
          std::size(kAdaptiveButtonCustomization_Voice), nullptr},
+};
+
+const FeatureEntry::FeatureParam kContextualPageActionPriceTracking_Quiet[] = {
+    {"action_chip", "false"},
+};
+const FeatureEntry::FeatureParam
+    kContextualPageActionPriceTracking_ActionChip[] = {
+        {"action_chip", "true"},
+        {"action_chip_time_ms", "3000"},
+};
+const FeatureEntry::FeatureParam
+    kContextualPageActionPriceTracking_ActionChip_6s[] = {
+        {"action_chip", "true"},
+        {"action_chip_time_ms", "6000"},
+};
+const FeatureEntry::FeatureParam
+    kContextualPageActionPriceTracking_ActionChip_AltColor[] = {
+        {"action_chip", "true"},
+        {"action_chip_time_ms", "3000"},
+        {"action_chip_with_different_color", "true"},
+};
+const FeatureEntry::FeatureParam
+    kContextualPageActionPriceTracking_ActionChip_AltColor_6s[] = {
+        {"action_chip", "true"},
+        {"action_chip_time_ms", "6000"},
+        {"action_chip_with_different_color", "true"},
+};
+const FeatureEntry::FeatureVariation
+    kContextualPageActionPriceTrackingVariations[] = {
+        {"Quiet", kContextualPageActionPriceTracking_Quiet,
+         std::size(kContextualPageActionPriceTracking_Quiet), nullptr},
+        {"Action Chip", kContextualPageActionPriceTracking_ActionChip,
+         std::size(kContextualPageActionPriceTracking_ActionChip), nullptr},
+        {"Action Chip - 6s", kContextualPageActionPriceTracking_ActionChip_6s,
+         std::size(kContextualPageActionPriceTracking_ActionChip_6s), nullptr},
+        {"Action Chip - Alternative Color",
+         kContextualPageActionPriceTracking_ActionChip_AltColor,
+         std::size(kContextualPageActionPriceTracking_ActionChip_AltColor),
+         nullptr},
+        {"Action Chip - Alternative Color - 6s",
+         kContextualPageActionPriceTracking_ActionChip_AltColor_6s,
+         std::size(kContextualPageActionPriceTracking_ActionChip_AltColor_6s),
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -4018,12 +4064,18 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-media-picker", flag_descriptions::kAndroidMediaPickerSupportName,
      flag_descriptions::kAndroidMediaPickerSupportDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(photo_picker::features::kAndroidMediaPickerSupport)},
+    {"contextual-page-actions", flag_descriptions::kContextualPageActionsName,
+     flag_descriptions::kContextualPageActionsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActions)},
     {"contextual-page-actions-with-price-tracking",
      flag_descriptions::kContextualPageActionsWithPriceTrackingName,
      flag_descriptions::kContextualPageActionsWithPriceTrackingDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kContextualPageActionPriceTracking)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActionPriceTracking,
+         kContextualPageActionPriceTrackingVariations,
+         "ContextualPageActionPriceTracking")},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

@@ -850,6 +850,9 @@ extern const char kCastUseBlocklistForRemotingQueryDescription[];
 extern const char kCastForceEnableRemotingQueryName[];
 extern const char kCastForceEnableRemotingQueryDescription[];
 
+extern const char kContextualPageActionsName[];
+extern const char kContextualPageActionsDescription[];
+
 extern const char kContextualPageActionsWithPriceTrackingName[];
 extern const char kContextualPageActionsWithPriceTrackingDescription[];
 

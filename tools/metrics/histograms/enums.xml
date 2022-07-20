@@ -57544,6 +57544,7 @@ from previous Chrome versions.
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
+  <int value="-800464360" label="ContextualPageActions:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
@@ -59537,6 +59538,7 @@ from previous Chrome versions.
   <int value="497039057" label="AdaptiveChargingForTesting:disabled"/>
   <int value="497137719" label="OmniboxVoiceSearchAlwaysVisible:disabled"/>
   <int value="497150691" label="AssistEmojiEnhanced:disabled"/>
+  <int value="498150771" label="ContextualPageActions:disabled"/>
   <int value="499932714" label="RunTasksByBatches:enabled"/>
   <int value="500177932" label="ArcSmartTextSelection:disabled"/>
   <int value="500947367"

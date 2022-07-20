@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.toolbar;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -24,7 +25,7 @@ public class ButtonDataImpl implements ButtonData {
     public ButtonDataImpl() {}
 
     public ButtonDataImpl(boolean canShow, @NonNull Drawable drawable,
-            @NonNull View.OnClickListener onClickListener, int contentDescriptionResId,
+            @NonNull OnClickListener onClickListener, int contentDescriptionResId,
             boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
             boolean isEnabled, @AdaptiveToolbarButtonVariant int buttonVariant) {
         mCanShow = canShow;
@@ -69,6 +70,17 @@ public class ButtonDataImpl implements ButtonData {
                 currentSpec.getContentDescriptionResId(), currentSpec.getSupportsTinting(),
                 iphCommandBuilder, currentSpec.getButtonVariant(),
                 currentSpec.getActionChipLabelResId());
+        setButtonSpec(newSpec);
+    }
+
+    /** Convenience method to update the action chip string resource ID. */
+    public void updateActionChipResourceId(@StringRes int newActionChipResourceId) {
+        ButtonSpec currentSpec = getButtonSpec();
+        ButtonSpec newSpec = new ButtonSpec(currentSpec.getDrawable(),
+                currentSpec.getOnClickListener(), currentSpec.getOnLongClickListener(),
+                currentSpec.getContentDescriptionResId(), currentSpec.getSupportsTinting(),
+                currentSpec.getIPHCommandBuilder(), currentSpec.getButtonVariant(),
+                newActionChipResourceId);
         setButtonSpec(newSpec);
     }
 }

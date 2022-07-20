@@ -1015,6 +1015,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "contextual-page-actions",
+    "owners": [ "shaktisahu@google.com", "salg@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "contextual-page-actions-with-price-tracking",
     "owners": [ "shaktisahu@google.com", "salg@google.com" ],
     "expiry_milestone": 109

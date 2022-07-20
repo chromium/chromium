@@ -50,6 +50,11 @@ public class AdaptiveToolbarFeatures {
      */
     public static final int DEFAULT_MIN_WIDTH_DP = 360;
 
+    /**
+     * Default delay between action chip expansion and collapse.
+     */
+    public static final int DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS = 3000;
+
     @AdaptiveToolbarButtonVariant
     private static Integer sButtonVariant;
 
@@ -116,7 +121,17 @@ public class AdaptiveToolbarFeatures {
     /** @return Whether the contextual page actions should show the action chip version. */
     public static boolean shouldShowActionChip() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", false);
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", false);
+    }
+
+    /**
+     * @return The amount of time the action chip should remain expanded in milliseconds. Default is
+     *         3 seconds.
+     */
+    public static int getContextualPageActionDelayMs() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip_time_ms",
+                DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS);
     }
 
     /**

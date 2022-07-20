@@ -1530,6 +1530,10 @@ const char kCastForceEnableRemotingQueryDescription[] =
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 
+const char kContextualPageActionsName[] = "Contextual page actions";
+const char kContextualPageActionsDescription[] =
+    "Enables contextual page action feature.";
+
 const char kContextualPageActionsWithPriceTrackingName[] =
     "Contextual page actions with price tracking";
 const char kContextualPageActionsWithPriceTrackingDescription[] =
