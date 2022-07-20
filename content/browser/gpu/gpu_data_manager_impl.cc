@@ -253,10 +253,17 @@ void GpuDataManagerImpl::UpdateGpuExtraInfo(
   private_->UpdateGpuExtraInfo(gpu_extra_info);
 }
 
-void GpuDataManagerImpl::UpdateMojoMediaVideoCapabilities(
+void GpuDataManagerImpl::UpdateMojoMediaVideoDecoderCapabilities(
     const media::SupportedVideoDecoderConfigs& configs) {
   base::AutoLock auto_lock(lock_);
-  private_->UpdateMojoMediaVideoCapabilities(configs);
+  private_->UpdateMojoMediaVideoDecoderCapabilities(configs);
+}
+
+void GpuDataManagerImpl::UpdateMojoMediaVideoEncoderCapabilities(
+    const media::VideoEncodeAccelerator::SupportedProfiles&
+        supported_profiles) {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateMojoMediaVideoEncoderCapabilities(supported_profiles);
 }
 
 gpu::GpuFeatureInfo GpuDataManagerImpl::GetGpuFeatureInfo() const {

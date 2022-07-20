@@ -25,6 +25,8 @@
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/common/content_export.h"
+#include "media/base/supported_video_decoder_config.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/gl/gpu_preference.h"
@@ -32,11 +34,6 @@
 namespace base {
 class CommandLine;
 }
-
-namespace media {
-struct SupportedVideoDecoderConfig;
-using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
-}  // namespace media
 
 namespace content {
 
@@ -97,8 +94,11 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
                             const absl::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& process_info);
-  void UpdateMojoMediaVideoCapabilities(
+  void UpdateMojoMediaVideoDecoderCapabilities(
       const media::SupportedVideoDecoderConfigs& configs);
+  void UpdateMojoMediaVideoEncoderCapabilities(
+      const media::VideoEncodeAccelerator::SupportedProfiles&
+          supported_profiles);
 
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const;
   gpu::GpuFeatureInfo GetGpuFeatureInfoForHardwareGpu() const;

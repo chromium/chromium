@@ -31,6 +31,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -66,8 +67,10 @@
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/host/shader_disk_cache.h"
 #include "gpu/vulkan/buildflags.h"
+#include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
@@ -449,90 +452,6 @@ enum class CompositingMode {
 // Intentionally crash with a very descriptive name.
 NOINLINE void IntentionallyCrashBrowserForUnusableGpuProcess() {
   LOG(FATAL) << "GPU process isn't usable. Goodbye.";
-}
-
-gpu::VideoCodecProfile ToGpuVideoCodecProfile(
-    media::VideoCodecProfile profile) {
-  switch (profile) {
-    case media::VIDEO_CODEC_PROFILE_UNKNOWN:
-      return gpu::VIDEO_CODEC_PROFILE_UNKNOWN;
-    case media::H264PROFILE_BASELINE:
-      return gpu::H264PROFILE_BASELINE;
-    case media::H264PROFILE_MAIN:
-      return gpu::H264PROFILE_MAIN;
-    case media::H264PROFILE_EXTENDED:
-      return gpu::H264PROFILE_EXTENDED;
-    case media::H264PROFILE_HIGH:
-      return gpu::H264PROFILE_HIGH;
-    case media::H264PROFILE_HIGH10PROFILE:
-      return gpu::H264PROFILE_HIGH10PROFILE;
-    case media::H264PROFILE_HIGH422PROFILE:
-      return gpu::H264PROFILE_HIGH422PROFILE;
-    case media::H264PROFILE_HIGH444PREDICTIVEPROFILE:
-      return gpu::H264PROFILE_HIGH444PREDICTIVEPROFILE;
-    case media::H264PROFILE_SCALABLEBASELINE:
-      return gpu::H264PROFILE_SCALABLEBASELINE;
-    case media::H264PROFILE_SCALABLEHIGH:
-      return gpu::H264PROFILE_SCALABLEHIGH;
-    case media::H264PROFILE_STEREOHIGH:
-      return gpu::H264PROFILE_STEREOHIGH;
-    case media::H264PROFILE_MULTIVIEWHIGH:
-      return gpu::H264PROFILE_MULTIVIEWHIGH;
-    case media::VP8PROFILE_ANY:
-      return gpu::VP8PROFILE_ANY;
-    case media::VP9PROFILE_PROFILE0:
-      return gpu::VP9PROFILE_PROFILE0;
-    case media::VP9PROFILE_PROFILE1:
-      return gpu::VP9PROFILE_PROFILE1;
-    case media::VP9PROFILE_PROFILE2:
-      return gpu::VP9PROFILE_PROFILE2;
-    case media::VP9PROFILE_PROFILE3:
-      return gpu::VP9PROFILE_PROFILE3;
-    case media::HEVCPROFILE_MAIN:
-      return gpu::HEVCPROFILE_MAIN;
-    case media::HEVCPROFILE_MAIN10:
-      return gpu::HEVCPROFILE_MAIN10;
-    case media::HEVCPROFILE_MAIN_STILL_PICTURE:
-      return gpu::HEVCPROFILE_MAIN_STILL_PICTURE;
-    case media::HEVCPROFILE_REXT:
-      return gpu::HEVCPROFILE_REXT;
-    case media::HEVCPROFILE_HIGH_THROUGHPUT:
-      return gpu::HEVCPROFILE_HIGH_THROUGHPUT;
-    case media::HEVCPROFILE_MULTIVIEW_MAIN:
-      return gpu::HEVCPROFILE_MULTIVIEW_MAIN;
-    case media::HEVCPROFILE_SCALABLE_MAIN:
-      return gpu::HEVCPROFILE_SCALABLE_MAIN;
-    case media::HEVCPROFILE_3D_MAIN:
-      return gpu::HEVCPROFILE_3D_MAIN;
-    case media::HEVCPROFILE_SCREEN_EXTENDED:
-      return gpu::HEVCPROFILE_SCREEN_EXTENDED;
-    case media::HEVCPROFILE_SCALABLE_REXT:
-      return gpu::HEVCPROFILE_SCALABLE_REXT;
-    case media::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
-      return gpu::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
-    case media::DOLBYVISION_PROFILE0:
-      return gpu::DOLBYVISION_PROFILE0;
-    case media::DOLBYVISION_PROFILE4:
-      return gpu::DOLBYVISION_PROFILE4;
-    case media::DOLBYVISION_PROFILE5:
-      return gpu::DOLBYVISION_PROFILE5;
-    case media::DOLBYVISION_PROFILE7:
-      return gpu::DOLBYVISION_PROFILE7;
-    case media::THEORAPROFILE_ANY:
-      return gpu::THEORAPROFILE_ANY;
-    case media::AV1PROFILE_PROFILE_MAIN:
-      return gpu::AV1PROFILE_PROFILE_MAIN;
-    case media::AV1PROFILE_PROFILE_HIGH:
-      return gpu::AV1PROFILE_PROFILE_HIGH;
-    case media::AV1PROFILE_PROFILE_PRO:
-      return gpu::AV1PROFILE_PROFILE_PRO;
-    case media::DOLBYVISION_PROFILE8:
-      return gpu::DOLBYVISION_PROFILE8;
-    case media::DOLBYVISION_PROFILE9:
-      return gpu::DOLBYVISION_PROFILE9;
-  }
-  NOTREACHED();
-  return gpu::VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -952,12 +871,62 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
            media::VideoDecoderType /* decoder_type */) {
           GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
           DCHECK(manager);
-          manager->UpdateMojoMediaVideoCapabilities(configs);
+          manager->UpdateMojoMediaVideoDecoderCapabilities(configs);
         },
         std::move(remote_decoder), std::move(media_interface_proxy)));
   });
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+
+  // Since Android never had PPAPI/NaCl it doesn't initialize encoder profiles
+  // at GPU process startup. Query them now so chrome://gpu is accurate.
+#if BUILDFLAG(IS_ANDROID)
+  auto update_vea_profiles_callback = base::BindPostTask(
+      GetUIThreadTaskRunner({}),
+      base::BindOnce([](const media::VideoEncodeAccelerator::SupportedProfiles&
+                            supported_profiles) {
+        GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
+        DCHECK(manager);
+        manager->UpdateMojoMediaVideoEncoderCapabilities(supported_profiles);
+      }));
+
+  using VEAProfileCallback = base::OnceCallback<void(
+      const media::VideoEncodeAccelerator::SupportedProfiles&)>;
+  GpuProcessHost::CallOnIO(
+      GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false,
+      base::BindOnce(
+          [](VEAProfileCallback update_vea_profiles_callback,
+             GpuProcessHost* host) {
+            if (!host)
+              return;
+
+            mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
+                vea_provider_remote;
+            host->gpu_service()->CreateVideoEncodeAcceleratorProvider(
+                vea_provider_remote.InitWithNewPipeAndPassReceiver());
+
+            mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider>
+                vea_provider;
+            vea_provider.Bind(std::move(vea_provider_remote));
+
+            // Cache pointer locally since we std::move it into the callback.
+            auto* vea_provider_ptr = vea_provider.get();
+            vea_provider_ptr->GetVideoEncodeAcceleratorSupportedProfiles(
+                base::BindOnce(
+                    [](VEAProfileCallback update_vea_profiles_callback,
+                       mojo::Remote<
+                           media::mojom::VideoEncodeAcceleratorProvider>
+                           vea_provider,
+                       const media::VideoEncodeAccelerator::SupportedProfiles&
+                           supported_profiles) {
+                      std::move(update_vea_profiles_callback)
+                          .Run(supported_profiles);
+                    },
+                    std::move(update_vea_profiles_callback),
+                    std::move(vea_provider)));
+          },
+          std::move(update_vea_profiles_callback)));
+#endif
 }
 
 bool GpuDataManagerImplPrivate::IsEssentialGpuInfoAvailable() const {
@@ -1301,18 +1270,18 @@ void GpuDataManagerImplPrivate::UpdateGpuExtraInfo(
                          &GpuDataManagerObserver::OnGpuExtraInfoUpdate);
 }
 
-void GpuDataManagerImplPrivate::UpdateMojoMediaVideoCapabilities(
+void GpuDataManagerImplPrivate::UpdateMojoMediaVideoDecoderCapabilities(
     const media::SupportedVideoDecoderConfigs& configs) {
-  gpu_info_.video_decode_accelerator_supported_profiles.clear();
-  for (const auto& config : configs) {
-    gpu::VideoDecodeAcceleratorSupportedProfile profile;
-    profile.profile = ToGpuVideoCodecProfile(config.profile_min);
-    profile.min_resolution = config.coded_size_min;
-    profile.max_resolution = config.coded_size_max;
-    profile.encrypted_only = config.require_encrypted;
-    gpu_info_.video_decode_accelerator_supported_profiles.push_back(profile);
-  }
+  gpu_info_.video_decode_accelerator_supported_profiles =
+      media::GpuVideoAcceleratorUtil::ConvertMediaConfigsToGpuDecodeProfiles(
+          configs);
+  NotifyGpuInfoUpdate();
+}
 
+void GpuDataManagerImplPrivate::UpdateMojoMediaVideoEncoderCapabilities(
+    const media::VideoEncodeAccelerator::SupportedProfiles& profiles) {
+  gpu_info_.video_encode_accelerator_supported_profiles =
+      media::GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(profiles);
   NotifyGpuInfoUpdate();
 }
 

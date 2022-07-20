@@ -26,6 +26,8 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_mode.h"
+#include "media/base/supported_video_decoder_config.h"
+#include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom.h"
 #include "ui/display/display_observer.h"
@@ -40,11 +42,6 @@ class GURL;
 namespace gpu {
 struct GpuPreferences;
 }
-
-namespace media {
-struct SupportedVideoDecoderConfig;
-using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
-}  // namespace media
 
 namespace content {
 
@@ -137,8 +134,11 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
                             const absl::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
-  void UpdateMojoMediaVideoCapabilities(
+  void UpdateMojoMediaVideoDecoderCapabilities(
       const media::SupportedVideoDecoderConfigs& configs);
+  void UpdateMojoMediaVideoEncoderCapabilities(
+      const media::VideoEncodeAccelerator::SupportedProfiles&
+          supported_profiles);
 
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const;
 
