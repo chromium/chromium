@@ -65275,6 +65275,7 @@ Called by update_use_counter_css.py.-->
   <int value="22" label="TestMessage"/>
   <int value="23" label="TailoredSecurityEnabled"/>
   <int value="24" label="VrServicesUpgrade"/>
+  <int value="25" label="TailoredSecurityDisabled"/>
   <int value="26" label="ArCoreUpgrade"/>
   <int value="27" label="InstantApps"/>
   <int value="28" label="AboutThisSite"/>

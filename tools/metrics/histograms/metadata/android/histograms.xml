@@ -111,6 +111,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SendTabToSelf"/>
   <variant name=".SharedHighlighting"/>
   <variant name=".SyncError"/>
+  <variant name=".TailoredSecurityDisabled"/>
   <variant name=".TailoredSecurityEnabled"/>
   <variant name=".Translate"/>
   <variant name=".UpdatePassword"/>
