@@ -11,8 +11,11 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using ::testing::ElementsAre;
 
 namespace history_clusters {
 
@@ -261,6 +264,41 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
     EXPECT_EQ(result.can_load_more, false);
     EXPECT_EQ(result.is_continuation, true);
   }
+}
+
+TEST_F(QueryClustersStateTest, UniqueRawLabels) {
+  QueryClustersState state(nullptr, "");
+
+  auto cluster1 = history::Cluster(1, {}, {});
+  cluster1.raw_label = u"rawlabel1";
+  auto cluster2 = history::Cluster(2, {}, {});
+  cluster2.raw_label = u"rawlabel2";
+  auto cluster3 = history::Cluster(3, {}, {});
+  cluster3.raw_label = u"rawlabel3";
+
+  // Now make some clusters with repeated raw labels.
+  auto cluster4 = history::Cluster(4, {}, {});
+  cluster4.raw_label = u"rawlabel1";
+  auto cluster5 = history::Cluster(5, {}, {});
+  cluster5.raw_label = u"rawlabel2";
+
+  auto result = InjectRawClustersAndAwaitPostProcessing(
+      &state, {cluster1, cluster2, cluster4}, {});
+  ASSERT_EQ(result.cluster_batch.size(), 3U);
+  EXPECT_THAT(state.unique_raw_labels(),
+              ElementsAre(u"rawlabel1", u"rawlabel2"));
+  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel1"), 2U);
+  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel2"), 1U);
+
+  // Test updating an existing count, and adding new ones after that.
+  result =
+      InjectRawClustersAndAwaitPostProcessing(&state, {cluster5, cluster3}, {});
+  ASSERT_EQ(result.cluster_batch.size(), 2U);
+  EXPECT_THAT(state.unique_raw_labels(),
+              ElementsAre(u"rawlabel1", u"rawlabel2", u"rawlabel3"));
+  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel1"), 2U);
+  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel2"), 2U);
+  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel3"), 1U);
 }
 
 }  // namespace history_clusters
