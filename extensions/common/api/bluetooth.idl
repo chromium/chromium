@@ -98,10 +98,6 @@ namespace bluetooth {
     Transport? transport;
 
     // The remaining battery of the device.
-    // TODO(https://crbug.com/973237): This field is only used by Chrome OS and
-    // it is different from others because it is not filled by the platform. In
-    // the future, when there is a unified Mojo service, this field will be
-    // moved to BluetoothDeviceInfo.
     long? batteryPercentage;
   };
 
