@@ -1403,11 +1403,15 @@ public class ExternalNavigationHandler {
     }
 
     /**
-     * If some third-party app launched this app with an intent, and the URL got redirected, and the
-     * user explicitly chose this app over other intent handlers, stay in the app unless there was a
-     * new intent handler after redirection or the app cannot handle it internally any more.
-     * Custom tabs are an exception to this rule, since at no point, the user sees an intent picker
-     * and "picking the Chrome app" is handled inside the support library.
+     * If another app, or the user, chose to launch this app for an intent, we should keep that
+     * navigation within this app through redirects until it resolves to a new app or external
+     * protocol given this app was intentionally chosen. Custom tabs always explicitly target the
+     * browser and this issue is handled elsewhere through
+     * {@link RedirectHandler#intentPrefersToStayInChrome()}.
+     *
+     * Usually this covers cases like https://www.youtube.com/ redirecting to
+     * https://m.youtube.com/. Note that this isn't covered by {@link #shouldStayWithinHost()} as
+     * for intent navigation there is no previously committed URL.
      */
     private boolean shouldKeepIntentRedirectInApp(ExternalNavigationParams params,
             boolean incomingIntentRedirect, List<ResolveInfo> resolvingInfos,
@@ -1416,7 +1420,7 @@ public class ExternalNavigationHandler {
                 && !params.getRedirectHandler().isFromCustomTabIntent()
                 && !params.getRedirectHandler().hasNewResolver(
                         resolvingInfos, (Intent intent) -> queryIntentActivities(intent))) {
-            if (DEBUG) Log.i(TAG, "Custom tab redirect no handled");
+            if (DEBUG) Log.i(TAG, "Intent navigation with no new handlers.");
             return true;
         }
         return false;
