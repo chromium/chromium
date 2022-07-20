@@ -565,7 +565,10 @@ class CONTENT_EXPORT FrameTree {
   // the lifetime of the FrameTree. It is not a scoped_ptr because we need the
   // pointer to remain valid even while the FrameTreeNode is being destroyed,
   // since it's common for a node to test whether it's the root node.
-  raw_ptr<FrameTreeNode, DanglingUntriaged> root_;
+  //
+  // TODO(crbug.com/1298696): content_browsertests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<FrameTreeNode, DanglingUntriagedDegradeToNoOpWhenMTE> root_;
 
   int focused_frame_tree_node_id_;
 
