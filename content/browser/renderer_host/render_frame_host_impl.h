@@ -1897,8 +1897,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool IsAnonymous() const override;
 
-  bool is_fenced_frame_opaque_url() const {
-    return is_fenced_frame_opaque_url_;
+  bool is_fenced_frame_root_originating_from_opaque_url() const {
+    return is_fenced_frame_root_originating_from_opaque_url_;
   }
 
   PolicyContainerHost* policy_container_host() {
@@ -4214,11 +4214,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // Indicates whether the fenced frame is navigated to an opaque url. This flag
-  // can only change when the embedder navigates the fenced frame. Any
-  // subsequent navigation from the fenced frame root will keep the same flag.
-  // Note that this flag is only relevant for fenced frames based on MPArch.
-  bool is_fenced_frame_opaque_url_ = false;
+  // Only for fenced frames based on MPArch:
+  // Indicates whether this is the root of a fenced subtree whose last
+  // embedder-initiated navigation was to an opaque url (urn:uuid).
+  // Once this value is initially set, it doesn't change over the lifetime of
+  // the document.
+  bool is_fenced_frame_root_originating_from_opaque_url_ = false;
 
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost

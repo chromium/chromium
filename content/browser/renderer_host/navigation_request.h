@@ -225,7 +225,7 @@ class CONTENT_EXPORT NavigationRequest
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       const absl::optional<blink::Impression>& impression,
       bool is_pdf,
-      absl::optional<bool> is_fenced_frame_opaque_url = absl::nullopt);
+      bool is_embedder_initiated_fenced_frame_navigation = false);
 
   // Creates a request for a renderer-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateRendererInitiated(
@@ -718,8 +718,8 @@ class CONTENT_EXPORT NavigationRequest
 
   bool is_anonymous() const { return is_anonymous_; }
 
-  bool is_fenced_frame_opaque_url() const {
-    return is_fenced_frame_opaque_url_;
+  bool is_target_fenced_frame_root_originating_from_opaque_url() const {
+    return is_target_fenced_frame_root_originating_from_opaque_url_;
   }
 
   // Returns a pointer to the policies copied from the navigation initiator.
@@ -1016,7 +1016,7 @@ class CONTENT_EXPORT NavigationRequest
       int initiator_process_id,
       bool was_opener_suppressed,
       bool is_pdf,
-      absl::optional<bool> is_fenced_frame_opaque_url = absl::nullopt,
+      bool is_embedder_initiated_fenced_frame_navigation = false,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener = mojo::NullReceiver());
 
@@ -2068,12 +2068,25 @@ class CONTENT_EXPORT NavigationRequest
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;
 
-  // Indicates whether the fenced frame is navigated to an opaque url. This flag
-  // can only change when the embedder navigates the fenced frame. Any
-  // subsequent navigation from within the fenced frame tree will keep the same
-  // flag. Note that this flag is only relevant for fenced frames based on
-  // MPArch.
-  const bool is_fenced_frame_opaque_url_ = false;
+  // Only for fenced frames based on MPArch:
+  // Indicates that this navigation is an embedder-initiated navigation of a
+  // fenced frame root. That is to say, the navigation is caused by a `src`
+  // attribute mutation on the <fencedframe> element, which cannot be performed
+  // from inside the fenced frame tree.
+  const bool is_embedder_initiated_fenced_frame_navigation_ = false;
+
+  // Only for fenced frames based on MPArch:
+  // Indicates that this navigation is to an opaque url (urn:uuid). This value
+  // may only be true when `is_embedder_initiated_fenced_frame_navigation` is
+  // true.
+  const bool is_embedder_initiated_fenced_frame_opaque_url_navigation_ = false;
+
+  // Only for fenced frames based on MPArch:
+  // Indicates that the target of this navigation is the root of a fenced frame
+  // tree whose most recent embedder-initiated navigation was to an opaque URL
+  // (urn:uuid). The most recent navigation may be the current
+  // NavigationRequest.
+  const bool is_target_fenced_frame_root_originating_from_opaque_url_ = false;
 
   // If this navigation is a load in a fenced frame of a URN URL that resulted
   // from an interest group auction, this contains some information about the

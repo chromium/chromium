@@ -11895,8 +11895,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
 
-  is_fenced_frame_opaque_url_ =
-      navigation_request->is_fenced_frame_opaque_url();
+  is_fenced_frame_root_originating_from_opaque_url_ =
+      navigation_request
+          ->is_target_fenced_frame_root_originating_from_opaque_url();
 
   // TODO(https://crbug.com/888079): Once we are able to compute the origin to
   // commit in the browser, `navigation_request->commit_params().storage_key`

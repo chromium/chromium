@@ -146,7 +146,7 @@ void FencedFrame::Navigate(const GURL& url,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
       /*impression=*/absl::nullopt, navigation_start_time,
-      blink::IsValidUrnUuidURL(url));
+      /*is_embedder_initiated_fenced_frame_navigation=*/true);
 }
 
 bool FencedFrame::IsHidden() {
