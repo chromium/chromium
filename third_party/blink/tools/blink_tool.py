@@ -35,6 +35,7 @@ import logging
 import os
 import signal
 import sys
+import six
 
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.tool.blink_tool import BlinkTool
@@ -62,7 +63,9 @@ class ForgivingUTF8Writer(codecs.lookup('utf-8')[-1]):
 # contain unicode strings (as with some peoples' names) we need to apply
 # the utf-8 codec to prevent throwing and exception.
 # Not having this was the cause of https://bugs.webkit.org/show_bug.cgi?id=63452.
-sys.stdout = ForgivingUTF8Writer(sys.stdout)
+# In PY3 default encoding is utf-8. Hence we don't need this.
+if six.PY2:
+    sys.stdout = ForgivingUTF8Writer(sys.stdout)
 
 
 def main():
