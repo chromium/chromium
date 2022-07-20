@@ -63727,6 +63727,8 @@ Called by update_use_counter_css.py.-->
   <int value="719" label="anchor-name"/>
   <int value="720" label="position-fallback"/>
   <int value="721" label="anchor-scroll"/>
+  <int value="722" label="hover-pop-up-delay"/>
+  <int value="723" label="hover-pop-up-hide-delay"/>
 </enum>
 
 <enum name="MappedEditingCommands">

@@ -320,6 +320,9 @@ class StyleBuilderConverter {
       const CSSValueList& scheme_list,
       Vector<AtomicString>* color_schemes);
 
+  static double ConvertTimeValue(const StyleResolverState& state,
+                                 const CSSValue& value);
+
   static scoped_refptr<ToggleGroupList> ConvertToggleGroup(
       const StyleResolverState&,
       const CSSValue&);

@@ -3089,9 +3089,6 @@ void Element::HandlePopupHovered(bool hovered) {
     auto& hover_tasks = popup_element->GetPopupData()->hoverPopupTasks();
     DCHECK(!hover_tasks.Contains(this));
 
-    // TODO(masonf): Use CSS timeout value instead of this hard-coded timeout.
-    constexpr base::TimeDelta kDelayBeforeShow = base::Milliseconds(100);
-
     // When we enter an element, we'll post a delayed task for the pop-up we're
     // targeting. It's possible that multiple nested elements have hoverpopup
     // attributes pointing to the same pop-up, and in that case, we want to
@@ -3104,14 +3101,15 @@ void Element::HandlePopupHovered(bool hovered) {
             WTF::Bind(&Element::MaybeTriggerHoverPopup,
                       WrapWeakPersistent(this),
                       WrapWeakPersistent(popup_element)),
-            kDelayBeforeShow));
+            base::Seconds(GetComputedStyle()->HoverPopUpDelay())));
   } else {
     // If we have a task still waiting, cancel it.
     popup_element->GetPopupData()->hoverPopupTasks().Take(this).Cancel();
     // TODO(masonf): Still need to implement the code to hide this pop-up after
     // a configurable delay. That needs to work even if the pop-up wasn't
     // triggered by a hoverpopup attribute. E.g. a regular pop-up that gets
-    // hidden after it has not been hovered for n seconds.
+    // hidden after it has not been hovered for n seconds. This should connect
+    // to the HoverPopUpHideDelay() computed style value.
   }
 }
 

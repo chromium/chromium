@@ -2355,6 +2355,11 @@ ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
   return flags;
 }
 
+double StyleBuilderConverter::ConvertTimeValue(const StyleResolverState& state,
+                                               const CSSValue& value) {
+  return To<CSSPrimitiveValue>(value).ComputeSeconds();
+}
+
 scoped_refptr<ToggleGroupList> StyleBuilderConverter::ConvertToggleGroup(
     const StyleResolverState& state,
     const CSSValue& value) {

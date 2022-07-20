@@ -218,6 +218,8 @@ gridTemplateAreas
 gridTemplateColumns
 gridTemplateRows
 height
+hoverPopUpDelay
+hoverPopUpHideDelay
 hyphens
 imageOrientation
 imageRendering

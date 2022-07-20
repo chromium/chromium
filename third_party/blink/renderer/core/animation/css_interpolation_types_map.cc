@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/animation/css_visibility_interpolation_type.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -230,6 +231,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSLengthInterpolationType>(used_property));
         applicable_types->push_back(
             std::make_unique<CSSNumberInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kHoverPopUpDelay:
+      case CSSPropertyID::kHoverPopUpHideDelay:
+        applicable_types->push_back(
+            std::make_unique<CSSTimeInterpolationType>(used_property));
         break;
       case CSSPropertyID::kAccentColor:
       case CSSPropertyID::kBackgroundColor:

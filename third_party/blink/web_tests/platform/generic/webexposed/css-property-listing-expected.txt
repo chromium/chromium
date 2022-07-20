@@ -213,6 +213,8 @@ All changes to this list should go through Blink's feature review process: http:
     grid-template-columns
     grid-template-rows
     height
+    hover-pop-up-delay
+    hover-pop-up-hide-delay
     hyphens
     image-orientation
     image-rendering
