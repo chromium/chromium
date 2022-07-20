@@ -5,4 +5,6 @@
 
 <resources>
     <dimen name="visit_item_remove_button_lateral_padding">18dp</dimen>
+    <dimen name="related_search_chip_list_chip_spacing">4dp</dimen>
+    <dimen name="related_search_chip_list_side_padding">16dp</dimen>
 </resources>

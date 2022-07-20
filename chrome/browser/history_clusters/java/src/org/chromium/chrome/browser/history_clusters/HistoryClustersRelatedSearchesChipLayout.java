@@ -35,6 +35,10 @@ class HistoryClustersRelatedSearchesChipLayout extends FrameLayout {
         super.onFinishInflate();
 
         mChipsCoordinator = new ChipsCoordinator(getContext(), mChipList);
+        mChipsCoordinator.setSpaceItemDecoration(
+                getResources().getDimensionPixelSize(R.dimen.related_search_chip_list_chip_spacing),
+                getResources().getDimensionPixelSize(
+                        R.dimen.related_search_chip_list_side_padding));
         addView(mChipsCoordinator.getView());
     }
 
