@@ -122,6 +122,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
     "chrome://foo/",
     "chrome-untrusted://foo/",
     "chrome-search://foo/",
+    "isolated-app://foo/",
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     "chrome-extension://foo/",
 #endif

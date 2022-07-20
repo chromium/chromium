@@ -252,8 +252,8 @@ static const char* const kChromeStandardURLSchemes[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::kExtensionScheme,
 #endif
-    chrome::kChromeNativeScheme,        chrome::kChromeSearchScheme,
-    dom_distiller::kDomDistillerScheme,
+    chrome::kIsolatedAppScheme,   chrome::kChromeNativeScheme,
+    chrome::kChromeSearchScheme,  dom_distiller::kDomDistillerScheme,
 #if BUILDFLAG(IS_ANDROID)
     content::kAndroidAppScheme,
 #endif
@@ -313,6 +313,11 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->predefined_handler_schemes.emplace_back(
       url::kWebcalScheme, chrome::kChromeOSDefaultWebcalHandler);
 #endif
+
+  schemes->secure_schemes.push_back(chrome::kIsolatedAppScheme);
+  schemes->cors_enabled_schemes.push_back(chrome::kIsolatedAppScheme);
+  schemes->service_worker_schemes.push_back(chrome::kIsolatedAppScheme);
+  url::AddWebStorageScheme(chrome::kIsolatedAppScheme);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   schemes->local_schemes.push_back(content::kExternalFileScheme);

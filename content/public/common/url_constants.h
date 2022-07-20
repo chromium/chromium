@@ -29,7 +29,6 @@ CONTENT_EXPORT extern const char kExternalFileScheme[];
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const char kAndroidAppScheme[];
 #endif
-CONTENT_EXPORT extern const char kIsolatedAppScheme[];
 
 // The `googlechrome:` scheme is registered on several platforms, and is
 // both interesting and dangerous.

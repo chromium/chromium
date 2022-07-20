@@ -77,6 +77,10 @@ extern const char kChromeHelpViaWebUIURL[];
 extern const char kChromeOsHelpViaWebUIURL[];
 #endif
 
+// The isolated-app: scheme is used for Isolated Web Apps. A public explainer
+// can be found here: https://github.com/reillyeon/isolated-web-apps
+extern const char kIsolatedAppScheme[];
+
 // The chrome-native: scheme is used show pages rendered with platform specific
 // widgets instead of using HTML.
 extern const char kChromeNativeScheme[];
