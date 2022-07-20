@@ -163,12 +163,6 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
 
   bool is_google_search_url =
       google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
-  // Extract related searches.
-  if (is_google_search_url &&
-      optimization_guide::features::ShouldExtractRelatedSearches()) {
-    page_content_annotations_service_->ExtractRelatedSearches(history_visit,
-                                                              web_contents());
-  }
 
   // Persist search metadata, if applicable if it's a Google search URL or if
   // it's a search-y URL as determined by the TemplateURLService if the flag is
@@ -249,6 +243,24 @@ void PageContentAnnotationsWebContentsObserver::TitleWasSet(
     LOG(ERROR) << "Annotating main frame navigation: \n"
                << "URL: " << entry->GetURL() << "\n"
                << "Text: " << *(history_visit.text_to_annotate);
+  }
+}
+
+void PageContentAnnotationsWebContentsObserver::
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  PageData* page_data = PageData::GetForPage(web_contents()->GetPrimaryPage());
+  if (!page_data)
+    return;
+
+  optimization_guide::HistoryVisit history_visit = optimization_guide::
+      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
+          web_contents(), page_data->navigation_id());
+  bool is_google_search_url =
+      google_util::IsGoogleSearchUrl(web_contents()->GetLastCommittedURL());
+  if (is_google_search_url &&
+      optimization_guide::features::ShouldExtractRelatedSearches()) {
+    page_content_annotations_service_->ExtractRelatedSearches(history_visit,
+                                                              web_contents());
   }
 }
 

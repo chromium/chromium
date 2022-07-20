@@ -598,7 +598,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);
 
-#if !BUILDFLAG(IS_ANDROID)
   const bool search_result_extractor_enabled =
       render_frame->IsMainFrame() &&
       history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
@@ -607,7 +606,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (search_result_extractor_enabled) {
     continuous_search::SearchResultExtractorImpl::Create(render_frame);
   }
-#endif
 
   new NetErrorHelper(render_frame);
 

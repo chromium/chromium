@@ -20,6 +20,15 @@
 #include "url/gurl.h"
 
 namespace continuous_search {
+#if !BUILDFLAG(IS_ANDROID)
+const char kRelatedSearchesId[] = "w3bYAd";
+const char kRelatedSearchesAnchorClassname[] = "k8XOCe";
+const char kRelatedSearchesTitleClassname[] = "s75CSd";
+#else
+const char kRelatedSearchesId[] = "bres";
+const char kRelatedSearchesAnchorClassname[] = "iOJVmb";
+const char kRelatedSearchesTitleClassname[] = "gkd1F";
+#endif  // IS_ANDROID
 
 namespace {
 
@@ -120,24 +129,26 @@ bool ExtractRelatedSearches(blink::WebDocument document,
   auto group = mojom::ResultGroup::New();
   group->type = mojom::ResultType::kRelatedSearches;
 
-  blink::WebElement container = document.GetElementById("w3bYAd");
-  if (container.IsNull()) {
+  blink::WebElement related_searches_container =
+      document.GetElementById(kRelatedSearchesId);
+  if (related_searches_container.IsNull()) {
     return false;
   }
 
-  blink::WebElementCollection anchors = container.GetElementsByHTMLTagName("a");
+  blink::WebElementCollection anchors =
+      related_searches_container.GetElementsByHTMLTagName("a");
   if (anchors.IsNull()) {
     return false;
   }
 
-  // Loop through the anchors inside id="w3bYAd" and extract urls and titles.
-  // This only works on Desktop SRP. Related Searches anchor elements use a
-  // different class name on Mobile. To enable this on Mobile, either check for
-  // the additional class name or remove the class name check for the anchors.
+  // Loop through the anchors that are children of the related searches div,
+  // matching against the platform-appropriate classname, and extract the urls
+  // and titles.
   for (blink::WebElement anchor = anchors.FirstItem(); !anchor.IsNull();
        anchor = anchors.NextItem()) {
     if (!anchor.HasAttribute("class") ||
-        !base::Contains(anchor.GetAttribute("class").Utf8(), "k8XOCe")) {
+        !base::Contains(anchor.GetAttribute("class").Utf8(),
+                        kRelatedSearchesAnchorClassname)) {
       continue;
     }
 
@@ -160,7 +171,8 @@ bool ExtractRelatedSearches(blink::WebDocument document,
     for (blink::WebElement inner_div = inner_divs.FirstItem();
          !inner_div.IsNull(); inner_div = inner_divs.NextItem()) {
       if (!inner_div.HasAttribute("class") ||
-          !base::Contains(inner_div.GetAttribute("class").Utf8(), "s75CSd")) {
+          !base::Contains(inner_div.GetAttribute("class").Utf8(),
+                          kRelatedSearchesTitleClassname)) {
         continue;
       }
       title = inner_div.TextContent().Utf16();

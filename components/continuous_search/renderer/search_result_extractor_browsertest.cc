@@ -144,23 +144,24 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
   expected_results->groups.push_back(std::move(related_searches_group));
 
   LoadHtmlAndExpectExtractedOutput(
-      R"(<!doctype html>
+      base::StringPrintf(
+          R"(<!doctype html>
          <body>
-           <div id="w3bYAd">
+           <div id="%s">
              <div class="foo">
-               <a href="https://www.example1.com/" class="k8XOCe bar">
-                 <div class="s75CSd bar">
+               <a href="https://www.example1.com/" class="%s bar">
+                 <div class="%s bar">
                    <span>Related 1</span>
                  </div>
                </a>
-               <a href="https://www.example2.com/" class="k8XOCe baz">
-                 <div class="s75CSd baz">
+               <a href="https://www.example2.com/" class="%s baz">
+                 <div class="%s baz">
                    <span>Related 2</span>
                  </div>
                </a>
              </div>
              <div class="mnr-c bar">
-               <a href="https://www.example1.com/" class="k8XOCe buz">
+               <a href="https://www.example1.com/" class="%s buz">
                  <div>
                    <span>Skipped</span>
                  </div>
@@ -168,6 +169,9 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
              </div>
            </div>
          </body>)",
+          kRelatedSearchesId, kRelatedSearchesAnchorClassname,
+          kRelatedSearchesTitleClassname, kRelatedSearchesAnchorClassname,
+          kRelatedSearchesTitleClassname, kRelatedSearchesTitleClassname),
       {mojom::ResultType::kRelatedSearches},
       mojom::SearchResultExtractor::Status::kSuccess,
       std::move(expected_results));

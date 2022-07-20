@@ -15,6 +15,10 @@
 
 namespace continuous_search {
 
+extern const char kRelatedSearchesId[];
+extern const char kRelatedSearchesAnchorClassname[];
+extern const char kRelatedSearchesTitleClassname[];
+
 // Implementation of `mojom::SearchResultExtractor`.
 class SearchResultExtractorImpl : public content::RenderFrameObserver,
                                   mojom::SearchResultExtractor {

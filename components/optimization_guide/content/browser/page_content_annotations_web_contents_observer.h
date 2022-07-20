@@ -53,6 +53,7 @@ class PageContentAnnotationsWebContentsObserver
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void TitleWasSet(content::NavigationEntry* navigation_entry) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // Callback invoked when the page metadata has been received from
   // |optimization_guide_decider_| for |visit|.
