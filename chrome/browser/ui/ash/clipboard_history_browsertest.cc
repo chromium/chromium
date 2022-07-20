@@ -40,7 +40,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/aura/client/capture_client_observer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -53,7 +52,6 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/capture_controller.h"
 
 namespace {
 
@@ -1223,40 +1221,12 @@ class ClipboardHistoryWebContentsBrowserTest : public InProcessBrowserTest {
   }
 };
 
-class MockCaptureChangeObserver : public aura::client::CaptureClientObserver {
- public:
-  explicit MockCaptureChangeObserver(const std::string& msg) : message_(msg) {
-    wm::CaptureController::Get()->AddObserver(this);
-  }
-  MockCaptureChangeObserver(const MockCaptureChangeObserver&) = delete;
-  MockCaptureChangeObserver& operator=(const MockCaptureChangeObserver&) =
-      default;
-  ~MockCaptureChangeObserver() override {
-    wm::CaptureController::Get()->RemoveObserver(this);
-  }
-
-  // aura::client::CaptureClientObserver:
-  void OnCaptureChanged(aura::Window* lost_capture,
-                        aura::Window* gained_capture) override {
-    ADD_FAILURE() << "MockCaptureChangeObserver::OnCaptureChanged: " << message_
-                  << " "
-                  << (lost_capture ? lost_capture->GetName()
-                                   : "null-lost_capture")
-                  << " "
-                  << (gained_capture ? gained_capture->GetName()
-                                     : "nullptr-gained_capture");
-  }
-
- private:
-  const std::string message_;
-};
-
 // Verifies that the images rendered from the copied web contents should
 // show in the clipboard history menu. Switching the auto resize mode is covered
 // in this test case.
 // Flaky: crbug/1224777
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
-                       VerifyHTMLRendering) {
+                       DISABLED_VerifyHTMLRendering) {
   // Load the web page which contains images and text.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/image-and-text.html")));
@@ -1283,9 +1253,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
       ash::Shell::GetPrimaryRootWindow());
   event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
 
-  absl::optional<MockCaptureChangeObserver> observer;
-  observer.emplace("first");
-
   // Render HTML with auto-resize mode enabled. Wait until the rendering
   // finishes.
   ImageModelRequestTestParams test_params(/*callback=*/base::NullCallback(),
@@ -1302,8 +1269,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
       static_cast<int>(
           ClipboardImageModelRequest::RequestStopReason::kFulfilled),
       1);
-
-  observer.reset();
 
   // Verify that the clipboard history menu shows. Then close the menu.
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -1325,8 +1290,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
   // Show the clipboard history menu.
   event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
 
-  observer.emplace("second");
-
   // Render HTML with auto-resize mode disabled. Wait until the rendering
   // finishes.
   test_params.enforce_auto_resize = false;
@@ -1342,8 +1305,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
       static_cast<int>(
           ClipboardImageModelRequest::RequestStopReason::kFulfilled),
       2);
-
-  observer.reset();
 
   // Verify that the clipboard history menu's status.
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
