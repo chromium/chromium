@@ -401,6 +401,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // When mButton and mBackground show up or hide they slide from/to the end (right in LTR,
         // left in RTL).
         Slide slide = new Slide(Gravity.END);
+        slide.addTarget(mButton);
+        slide.addTarget(mBackground);
 
         transition.addTransition(slide).addTransition(shrink).addTransition(fade).addTransition(
                 changeBounds);
