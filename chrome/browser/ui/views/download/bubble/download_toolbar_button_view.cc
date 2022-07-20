@@ -61,7 +61,7 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   // Wait until we're done with everything else before creating `controller_`
   // since it can call `Show()` synchronously.
   controller_ = std::make_unique<DownloadDisplayController>(
-      this, browser_->profile(), bubble_controller_.get());
+      this, browser_, bubble_controller_.get());
 }
 
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {

@@ -47,6 +47,8 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -557,6 +559,12 @@ Browser::Browser(const CreateParams& params)
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
       window_->GetExclusiveAccessContext());
+
+  if (window_->GetDownloadBubbleUIController()) {
+    window_->GetDownloadBubbleUIController()
+        ->GetDownloadDisplayController()
+        ->ListenToFullScreenChanges();
+  }
 
   BrowserList::AddBrowser(this);
 }

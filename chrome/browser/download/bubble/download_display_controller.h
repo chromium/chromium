@@ -8,6 +8,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/offline_item_model.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -16,7 +18,6 @@ namespace content {
 class DownloadManager;
 }  // namespace content
 
-class Profile;
 class DownloadBubbleUIController;
 
 namespace base {
@@ -31,10 +32,11 @@ class DownloadDisplay;
 // future OfflineItems include regular Download on Desktop platforms,
 // we can remove AllDownloadItemNotifier::Observer.
 class DownloadDisplayController
-    : public download::AllDownloadItemNotifier::Observer {
+    : public download::AllDownloadItemNotifier::Observer,
+      public FullscreenObserver {
  public:
   DownloadDisplayController(DownloadDisplay* display,
-                            Profile* profile,
+                            Browser* browser,
                             DownloadBubbleUIController* bubble_controller);
   DownloadDisplayController(const DownloadDisplayController&) = delete;
   DownloadDisplayController& operator=(const DownloadDisplayController&) =
@@ -84,6 +86,14 @@ class DownloadDisplayController
   // details are already hidden.
   void HideBubble();
 
+  // Start listening to full screen changes. This is separate from the
+  // constructor as the exclusive access manager is constructed after
+  // BrowserWindow.
+  void ListenToFullScreenChanges();
+
+  // FullScreenObserver
+  void OnFullscreenStateChanged() override;
+
   // Returns the DownloadDisplay. Should always return a valid display.
   DownloadDisplay* download_display_for_testing() { return display_; }
 
@@ -114,7 +124,8 @@ class DownloadDisplayController
 
   // Based on the information from `download_manager_`, updates the icon state
   // of the `display_`.
-  void UpdateToolbarButtonState();
+  void UpdateToolbarButtonState(
+      std::vector<std::unique_ptr<DownloadUIModel>>& all_models);
   // Asks `display_` to make the download icon inactive.
   void UpdateDownloadIconToInactive();
 
@@ -133,11 +144,15 @@ class DownloadDisplayController
 
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;
+  raw_ptr<Browser> browser_;
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      observation_{this};
   raw_ptr<content::DownloadManager> download_manager_;
   download::AllDownloadItemNotifier download_notifier_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;
+  bool download_completed_while_fullscreen_ = false;
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
   // DownloadToolbarButtonView. If one is valid, so is the other.

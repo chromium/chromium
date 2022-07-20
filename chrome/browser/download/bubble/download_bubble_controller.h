@@ -91,7 +91,7 @@ class DownloadBubbleUIController
 
   // Returns the DownloadDisplayController. Should always return a valid
   // controller.
-  DownloadDisplayController* display_controller_for_testing() {
+  DownloadDisplayController* GetDownloadDisplayController() {
     return display_controller_;
   }
 

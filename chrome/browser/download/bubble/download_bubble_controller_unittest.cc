@@ -44,9 +44,9 @@ const char kProviderNamespace[] = "mock_namespace";
 
 class MockDownloadDisplayController : public DownloadDisplayController {
  public:
-  MockDownloadDisplayController(Profile* profile,
+  MockDownloadDisplayController(Browser* browser,
                                 DownloadBubbleUIController* bubble_controller)
-      : DownloadDisplayController(nullptr, profile, bubble_controller) {}
+      : DownloadDisplayController(nullptr, browser, bubble_controller) {}
   void MaybeShowButtonWhenCreated() override {}
   MOCK_METHOD1(OnNewItem, void(bool));
   MOCK_METHOD2(OnUpdatedItem, void(bool, bool));
@@ -110,7 +110,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     controller_ = std::make_unique<DownloadBubbleUIController>(browser_.get());
     display_controller_ =
         std::make_unique<NiceMock<MockDownloadDisplayController>>(
-            profile_, controller_.get());
+            browser_.get(), controller_.get());
     controller_->set_manager_for_testing(manager_);
   }
 
@@ -382,7 +382,7 @@ class DownloadBubbleUIControllerIncognitoTest
         std::make_unique<DownloadBubbleUIController>(incognito_browser_.get());
     incognito_display_controller_ =
         std::make_unique<NiceMock<MockDownloadDisplayController>>(
-            incognito_profile_, incognito_controller_.get());
+            incognito_browser_.get(), incognito_controller_.get());
   }
 
   void TearDown() override {

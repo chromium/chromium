@@ -15,6 +15,8 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -107,6 +109,54 @@ class FakeDownloadBubbleUIController : public DownloadBubbleUIController {
 
 }  // namespace
 
+class DownloadDisplayControllerTest;
+
+// A test browser window that can toggle fullscreen state.
+class TestBrowserWindowWithFullscreen : public TestBrowserWindow,
+                                        ExclusiveAccessContext {
+ public:
+  explicit TestBrowserWindowWithFullscreen(DownloadDisplayControllerTest* test)
+      : test_(test) {}
+
+  TestBrowserWindowWithFullscreen(const TestBrowserWindowWithFullscreen&) =
+      delete;
+  TestBrowserWindowWithFullscreen& operator=(
+      const TestBrowserWindowWithFullscreen&) = delete;
+
+  ~TestBrowserWindowWithFullscreen() override = default;
+
+  // TestBrowserWindow overrides:
+  bool ShouldHideUIForFullscreen() const override { return fullscreen_; }
+  bool IsFullscreen() const override { return fullscreen_; }
+  void EnterFullscreen(const GURL& url,
+                       ExclusiveAccessBubbleType type,
+                       int64_t display_id) override {
+    fullscreen_ = true;
+  }
+  void ExitFullscreen() override { fullscreen_ = false; }
+  bool IsToolbarShowing() const override { return toolbar_showing_; }
+  bool IsLocationBarVisible() const override { return true; }
+
+  ExclusiveAccessContext* GetExclusiveAccessContext() override { return this; }
+
+  // Exclusive access interface:
+  Profile* GetProfile() override;
+  content::WebContents* GetActiveWebContents() override;
+  void UpdateExclusiveAccessExitBubbleContent(
+      const GURL& url,
+      ExclusiveAccessBubbleType bubble_type,
+      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool force_update) override {}
+  bool IsExclusiveAccessBubbleDisplayed() const override { return false; }
+  void OnExclusiveAccessUserInput() override {}
+  bool CanUserExitFullscreen() const override { return true; }
+
+ private:
+  bool fullscreen_ = false;
+  bool toolbar_showing_ = false;
+  raw_ptr<DownloadDisplayControllerTest> test_;
+};
+
 class DownloadDisplayControllerTest : public testing::Test {
  public:
   DownloadDisplayControllerTest()
@@ -131,7 +181,7 @@ class DownloadDisplayControllerTest : public testing::Test {
         ->SetDownloadManagerDelegateForTesting(std::move(delegate));
 
     display_ = std::make_unique<FakeDownloadDisplay>();
-    window_ = std::make_unique<TestBrowserWindow>();
+    window_ = std::make_unique<TestBrowserWindowWithFullscreen>(this);
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
     params.window = window_.get();
@@ -140,7 +190,7 @@ class DownloadDisplayControllerTest : public testing::Test {
         std::make_unique<FakeDownloadBubbleUIController>(browser_.get());
     bubble_controller_->set_manager_for_testing(manager_.get());
     controller_ = std::make_unique<DownloadDisplayController>(
-        display_.get(), profile_, bubble_controller_.get());
+        display_.get(), browser_.get(), bubble_controller_.get());
     controller_->set_manager_for_testing(manager_.get());
     display_->SetController(controller_.get());
   }
@@ -153,6 +203,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     // download_notifier_ will unregister itself from the manager.
     controller_.reset();
   }
+
+  Browser* browser() { return browser_.get(); }
 
  protected:
   NiceMock<content::MockDownloadManager>& manager() { return *manager_.get(); }
@@ -310,9 +362,17 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<FakeDownloadBubbleUIController> bubble_controller_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<Profile> profile_;
-  std::unique_ptr<TestBrowserWindow> window_;
+  std::unique_ptr<TestBrowserWindowWithFullscreen> window_;
   std::unique_ptr<Browser> browser_;
 };
+
+Profile* TestBrowserWindowWithFullscreen::GetProfile() {
+  return test_->browser()->profile();
+}
+
+content::WebContents* TestBrowserWindowWithFullscreen::GetActiveWebContents() {
+  return test_->browser()->tab_strip_model()->GetActiveWebContents();
+}
 
 TEST_F(DownloadDisplayControllerTest, GetProgressItemsInProgress) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
@@ -604,7 +664,7 @@ TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
   DownloadPrefs::FromDownloadManager(&manager())
       ->SetLastCompleteTime(current_time - base::Hours(25));
 
-  DownloadDisplayController controller(&display(), profile(),
+  DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
@@ -619,7 +679,7 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
   DownloadPrefs::FromDownloadManager(&manager())
       ->SetLastCompleteTime(current_time - base::Hours(23));
 
-  DownloadDisplayController controller(&display(), profile(),
+  DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
   // The initial state should not display details.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
@@ -641,7 +701,7 @@ TEST_F(DownloadDisplayControllerTest,
   DownloadPrefs::FromDownloadManager(&manager())
       ->SetLastCompleteTime(current_time - base::Hours(23));
 
-  DownloadDisplayController controller(&display(), profile(),
+  DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
   // Although the last complete time is set, the download display is not shown
   // because the download item list is empty. This can happen if the download
@@ -652,7 +712,7 @@ TEST_F(DownloadDisplayControllerTest,
 }
 
 TEST_F(DownloadDisplayControllerTest, InitialState_NoLastDownload) {
-  DownloadDisplayController controller(&display(), profile(),
+  DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
@@ -687,4 +747,67 @@ TEST_F(DownloadDisplayControllerTest, OnButtonPressed_IconStateInProgress) {
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       Fullscreen_ShowsDetailsForInProgressOnExitFullscreen) {
+  chrome::ToggleFullscreenMode(browser());
+  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  controller().OnFullscreenStateChanged();
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  // Do not show bubble for in-progress download in full screen mode.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  chrome::ToggleFullscreenMode(browser());
+  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  controller().OnFullscreenStateChanged();
+  // Show bubble for in-progress download when exiting full screen mode.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       Fullscreen_ShowsIconForCompletedOnExitFullscreen) {
+  chrome::ToggleFullscreenMode(browser());
+  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  controller().OnFullscreenStateChanged();
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE,
+                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+                     /*show_details_if_done=*/true);
+  // While the bubble does not pop up, and the toolbar not shown, the icon
+  // state is still updated. So |is_active| should be true for one minute after
+  // completed download.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  // The display is still showing but the state has changed to inactive.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  chrome::ToggleFullscreenMode(browser());
+  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  controller().OnFullscreenStateChanged();
+  // On exiting full screen, show download icon as active for 1 minute.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  // The display is still showing but the state has changed to inactive.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
 }

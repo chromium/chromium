@@ -74,7 +74,7 @@ namespace {
 bool IsDownloadSurfaceVisible(BrowserWindow* window) {
   return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)
              ? window->GetDownloadBubbleUIController()
-                   ->display_controller_for_testing()
+                   ->GetDownloadDisplayController()
                    ->download_display_for_testing()
                    ->IsShowingDetails()
              : window->IsDownloadShelfVisible();

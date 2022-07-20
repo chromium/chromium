@@ -135,15 +135,8 @@ void KeyboardLockInteractiveBrowserTest::SetUpCommandLine(
   // keyboard lock hook can interfere with it.
   // Turn off Paint Holding because the content used in the test does not paint
   // anything and we do not want to wait for the timeout.
-  // TODO(crbug.com/1327775): Currently, the download bubble pops open on new
-  // and completed downloads, which takes away focus, and unlocks the keyboard.
-  // The lock returns when the user brings the focus back to the page.
-  // However DownloadNavigationDoesNotUnlock does not pass because of the lost
-  // focus. We want to implement transient notification for Download Bubble in
-  // full screen mode to prevent taking away focus from the page.
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kSystemKeyboardLock, blink::features::kPaintHolding,
-           safe_browsing::kDownloadBubble});
+      {}, {features::kSystemKeyboardLock, blink::features::kPaintHolding});
 }
 
 void KeyboardLockInteractiveBrowserTest::SetUpOnMainThread() {
