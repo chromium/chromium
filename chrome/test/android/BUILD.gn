@@ -228,14 +228,6 @@ robolectric_binary("chrome_java_test_pagecontroller_junit_tests") {
   ]
 }
 
-# TODO(crbug.com/1238057): Migrate usages upstream and downstream to
-# :chrome_java_integration_test_support or :chrome_java_unit_test_support and
-# remove this.
-java_group("chrome_java_test_support") {
-  testonly = true
-  public_deps = [ ":chrome_java_integration_test_support" ]
-}
-
 # Rules, utilities and fakes for unit tests.
 java_group("chrome_java_unit_test_support") {
   testonly = true
