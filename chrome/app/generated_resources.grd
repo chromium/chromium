@@ -8934,8 +8934,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
        <message name="IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK" desc="Text with a link to a page where the user can manage the devices they can share a tab to.">
         <ph name="BEGIN_LINK">$1</ph>Your devices<ph name="END_LINK">$2</ph> · <ph name="EMAIL">$3<ex>foo@gmail.com</ex></ph>
       </message>
-      <message name="IDS_SEND_TAB_TO_SELF_PROMO_LABEL" desc = "Text in UI promoting send tab to self. Signed out users see this text and a sign-in button. Signed in users with no valid target device see just the text.">
-        You can send tabs between devices that are signed in with the same Google Account
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL" desc = "Text when a signed out user attempts to use send-tab-to-self, then sees a sign-in promo.">
+        To send this tab to another device, sign in to Chrome on both devices
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc = "Text shown when a user with no available target devices attempts to use send-tab-to-self.">
+        To send this tab to another device, sign in to Chrome there
       </message>
 
       <!-- Share via QR Code strings -->

@@ -45,9 +45,11 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  const std::u16string label_text = l10n_util::GetStringUTF16(
+      show_signin_button ? IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL
+                         : IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL);
   auto* label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_PROMO_LABEL),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+      label_text, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetProperty(
