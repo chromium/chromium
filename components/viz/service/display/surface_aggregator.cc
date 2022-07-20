@@ -35,6 +35,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -288,6 +289,7 @@ struct SurfaceAggregator::PrewalkResult {
   bool video_capture_enabled = false;
   bool may_contain_video = false;
   bool frame_sinks_changed = false;
+  bool page_fullscreen_mode = false;
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 };
 
@@ -1604,6 +1606,19 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       if (!quad_damage_rect.IsEmpty()) {
         resolved_pass.aggregation().has_damage_from_contributing_content = true;
       }
+
+      // Only check for root render pass on the root surface.
+      if (parent_pass == nullptr && resolved_pass.is_root() &&
+          !result.page_fullscreen_mode) {
+        gfx::Rect surface_quad_on_target_space = ClippedQuadRectangle(quad);
+        // Often time the surface_quad_on_target_space is not exactly the same
+        // as the output_rect after the math operations, although they are meant
+        // to be the same. Set the delta tolerance to 8 pixels.
+        if (surface_quad_on_target_space.ApproximatelyEqual(
+                render_pass.output_rect, /*tolerance=*/8)) {
+          result.page_fullscreen_mode = true;
+        }
+      }
     } else if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
       auto* render_pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
 
@@ -2023,6 +2038,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   frame.video_capture_enabled = prewalk_result.video_capture_enabled;
   frame.may_contain_video = prewalk_result.may_contain_video;
   frame.content_color_usage = prewalk_result.content_color_usage;
+  frame.page_fullscreen_mode = prewalk_result.page_fullscreen_mode;
 
   base::ElapsedTimer copy_timer;
   CopyUndrawnSurfaces(&prewalk_result);

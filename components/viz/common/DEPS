@@ -5,6 +5,7 @@ include_rules = [
   # about how to communicate with viz.
   "-mojo/public/cpp/bindings",
   # Exception is struct_traits.h which is used for defining friends only.
+  "+cc/base",
   "+mojo/public/cpp/bindings/struct_traits.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+third_party/skia",

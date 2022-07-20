@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 
 #include "base/timer/elapsed_timer.h"
+#include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
 
 #include "build/build_config.h"
@@ -48,6 +49,9 @@ VIZ_COMMON_EXPORT bool GatherFDStats(base::TimeDelta* delta_time_taken,
                                      int* active_fd_count,
                                      int* rlim_cur);
 
+// Returns the smallest rectangle in target space that contains the quad.
+VIZ_COMMON_EXPORT gfx::Rect ClippedQuadRectangle(const DrawQuad* quad);
+VIZ_COMMON_EXPORT gfx::RectF ClippedQuadRectangleF(const DrawQuad* quad);
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_

@@ -20,6 +20,7 @@
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -71,16 +72,6 @@ enum : size_t {
   kUVPlaneResourceIndex = 1,
 };
 
-// This returns the smallest rectangle in target space that contains the quad.
-gfx::RectF ClippedQuadRectangle(const DrawQuad* quad) {
-  gfx::RectF quad_rect = cc::MathUtil::MapClippedRect(
-      quad->shared_quad_state->quad_to_target_transform,
-      gfx::RectF(quad->rect));
-  if (quad->shared_quad_state->clip_rect)
-    quad_rect.Intersect(gfx::RectF(*quad->shared_quad_state->clip_rect));
-  return quad_rect;
-}
-
 gfx::RectF GetExpandedRectWithPixelMovingFilter(
     const AggregatedRenderPassDrawQuad* rpdq,
     float max_pixel_movement) {
@@ -127,7 +118,7 @@ DCLayerResult ValidateYUVQuad(
   if (processed_yuv_overlay_count >= allowed_yuv_overlay_count)
     return DC_LAYER_FAILED_TOO_MANY_OVERLAYS;
 
-  auto quad_target_rect = gfx::ToEnclosingRect(ClippedQuadRectangle(quad));
+  auto quad_target_rect = ClippedQuadRectangle(quad);
   for (const auto& filter_target_rect : backdrop_filter_rects) {
     if (filter_target_rect.Intersects(quad_target_rect))
       return DC_LAYER_FAILED_BACKDROP_FILTERS;
@@ -222,7 +213,7 @@ DCLayerResult ValidateTextureQuad(
     return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
   }
 
-  auto quad_target_rect = gfx::ToEnclosingRect(ClippedQuadRectangle(quad));
+  auto quad_target_rect = ClippedQuadRectangle(quad);
   for (const auto& filter_target_rect : backdrop_filter_rects) {
     if (filter_target_rect.Intersects(quad_target_rect))
       return DC_LAYER_FAILED_BACKDROP_FILTERS;
@@ -323,7 +314,7 @@ bool IsOccluded(
     }
 
     if (!has_pixel_moving_filter)
-      overlap_rect = ClippedQuadRectangle(quad);
+      overlap_rect = ClippedQuadRectangleF(quad);
 
     if (quad->material == DrawQuad::Material::kSolidColor) {
       SkColor4f color = SolidColorDrawQuad::MaterialCast(quad)->color;
@@ -668,7 +659,7 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
     auto candidate_it = std::next(quad_list->begin(), index);
     if (IsClearVideoQuad(candidate_it)) {
       gfx::Rect quad_rectangle_in_target_space =
-          gfx::ToEnclosingRect(ClippedQuadRectangle(*candidate_it));
+          ClippedQuadRectangle(*candidate_it);
       current_frame_overlay_candidate_rects.push_back(
           quad_rectangle_in_target_space);
     }
@@ -750,8 +741,7 @@ void DCLayerOverlayProcessor::Process(
       auto render_pass_it =
           render_pass_backdrop_filters.find(rpdq->render_pass_id);
       if (render_pass_it != render_pass_backdrop_filters.end()) {
-        backdrop_filter_rects.push_back(
-            gfx::ToEnclosingRect(ClippedQuadRectangle(rpdq)));
+        backdrop_filter_rects.push_back(ClippedQuadRectangle(rpdq));
       }
       continue;
     }
@@ -893,8 +883,7 @@ void DCLayerOverlayProcessor::Process(
       continue;
     }
 
-    gfx::Rect quad_rectangle_in_target_space =
-        gfx::ToEnclosingRect(ClippedQuadRectangle(*it));
+    gfx::Rect quad_rectangle_in_target_space = ClippedQuadRectangle(*it);
 
     // Quad is considered an "overlay" if it has no occluders.
     bool is_overlay = !IsOccluded(gfx::RectF(quad_rectangle_in_target_space),
