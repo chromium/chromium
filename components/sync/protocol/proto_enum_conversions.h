@@ -162,9 +162,6 @@ const char* ProtoEnumToString(
     sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
         setting_type);
 
-const char* ProtoEnumToString(
-    sync_pb::WebauthnCredentialSpecifics::PaymentsSupport payments_support);
-
 const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type);
 
 const char* ProtoEnumToString(

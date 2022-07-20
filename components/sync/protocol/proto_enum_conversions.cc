@@ -745,19 +745,6 @@ const char* ProtoEnumToString(
   return "";
 }
 
-const char* ProtoEnumToString(
-    sync_pb::WebauthnCredentialSpecifics::PaymentsSupport payments_support) {
-  ASSERT_ENUM_BOUNDS(sync_pb::WebauthnCredentialSpecifics, PaymentsSupport,
-                     NONE, FIRST_AND_THIRD_PARTY);
-  switch (payments_support) {
-    ENUM_CASE(sync_pb::WebauthnCredentialSpecifics, NONE);
-    ENUM_CASE(sync_pb::WebauthnCredentialSpecifics, FIRST_PARTY);
-    ENUM_CASE(sync_pb::WebauthnCredentialSpecifics, FIRST_AND_THIRD_PARTY);
-  }
-  NOTREACHED();
-  return "";
-}
-
 const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
   ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, DeskType, UNKNOWN_TYPE,
                      SAVE_AND_RECALL);
