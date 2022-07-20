@@ -16,10 +16,19 @@ namespace string_matching {
 
 namespace {
 
+constexpr float kEps = 1e-5f;
+
 // Default parameters.
 constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
 constexpr double kPartialMatchPenaltyRate = 0.9;
+
+void ExpectAllNearlyEqual(const std::vector<double>& scores,
+                          double epsilon = kEps) {
+  for (size_t i = 1; i < scores.size(); ++i) {
+    EXPECT_NEAR(scores[0], scores[i], epsilon);
+  }
+}
 
 void ExpectIncreasing(const std::vector<double>& scores,
                       int start_index,
@@ -93,8 +102,95 @@ class FuzzyTokenizedStringMatchTest : public testing::Test {};
  * Benchmarking tests                                                 *
  **********************************************************************/
 // The tests in this section perform benchmarking on the quality of
-// relevance scores. See the README for details.
-// TODO(crbug.com/1336160): Expand benchmarking tests.
+// relevance scores. See the README for details. These tests are divided into
+// two sections:
+//
+//   1) Abstract test cases - which illustrate our intended string matching
+//   principles generically.
+//   2) Non-abstract test cases - which use real-world examples to:
+//      a) support the principles in (1).
+//      b) document bugs.
+//
+//  Both sections will variously cover the following dimensions:
+//
+// - Special characters:
+//   - Upper/lower case
+//   - Numerals
+//   - Punctuation
+// - Typos and misspellings
+// - Full vs. partial matches
+// - Prefix-related logic
+// - Single- vs. multi-token texts
+// - Single- vs. multi-token queries
+// - Single vs. multiple possible matches
+// - Duplicate tokens
+//
+// Some test cases cover an intersection of multiple dimensions.
+//
+// Future benchmarking work may cover:
+//
+// - Special token delimiters
+//   - Camel case
+//   - Non-whitespace token delimiters
+
+/**********************************************************************
+ * Benchmarking section 1 - Abstract test cases                       *
+ **********************************************************************/
+// TODO(crbug.com/1336160): Expand abstract benchmarking tests.
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCaseInsensitivity) {
+  std::u16string text = u"abcde";
+  std::vector<std::u16string> queries = {u"abcde", u"Abcde", u"aBcDe",
+                                         u"ABCDE"};
+  std::vector<double> scores;
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    scores.push_back(relevance);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+  ExpectAllNearlyEqual(scores);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkNumerals) {
+  // TODO(crbug.com/1336160): This test is a placeholder to remember to
+  // consider numerals, and should be refined/removed/expanded as appropriate
+  // later.
+  std::u16string text = u"abc123";
+  std::u16string query = u"abc 123";
+  const double relevance = CalculateRelevance(query, text);
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkPunctuation) {
+  std::u16string text = u"abcde'fg";
+  std::vector<std::u16string> queries = {u"abcde'fg", u"abcdefg"};
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+  // TODO(crbug.com/1336160): Enforce/check that scores are close, after this
+  // behavior is implemented.
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCamelCase) {
+  std::u16string text = u"AbcdeFghIj";
+  std::vector<std::u16string> queries = {u"AbcdeFghIj", u"abcde fgh ij",
+                                         u"abcdefghij", u"abcde fghij"};
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+  // TODO(crbug.com/1336160): Enforce/check that scores are close, after this
+  // behavior is implemented.
+}
+
+/**********************************************************************
+ * Benchmarking section 2 - Non-abstract test cases                   *
+ **********************************************************************/
 
 // TODO(crbug.com/1288662): Make matching less permissive where the strings
 // are short and the matching is multi-block (e.g. "chat" vs "caret").
