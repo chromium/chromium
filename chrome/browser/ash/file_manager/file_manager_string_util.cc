@@ -19,6 +19,8 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -1050,6 +1052,17 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("GUEST_OS",
             base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));
+
+  if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
+      base::FeatureList::IsEnabled(
+          features::kDataLeakPreventionFilesRestriction)) {
+    policy::DlpRulesManager* rules_manager =
+        policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+    dict->Set("DLP_ENABLED",
+              (rules_manager && rules_manager->IsFilesPolicyEnabled()));
+  } else {
+    dict->Set("DLP_ENABLED", false);
+  }
 
   dict->Set("UI_LOCALE", locale);
   dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());

@@ -6,6 +6,8 @@
  * @fileoverview Helpers for APIs used within Files app.
  */
 
+import {util} from './util.js';
+
 /**
  * Calls the `fn` function which should expect the callback as last argument.
  *
@@ -106,8 +108,9 @@ export async function getHoldingSpaceState() {
  */
 export async function getDisallowedTransfers(entries, destinationEntry) {
   return promisify(
-      chrome.fileManagerPrivate.getDisallowedTransfers, entries,
-      destinationEntry);
+      chrome.fileManagerPrivate.getDisallowedTransfers,
+      entries.map(e => util.unwrapEntry(e)),
+      util.unwrapEntry(destinationEntry));
 }
 
 /**
@@ -118,7 +121,9 @@ export async function getDisallowedTransfers(entries, destinationEntry) {
  *     DlpMetadata
  */
 export async function getDlpMetadata(entries) {
-  return promisify(chrome.fileManagerPrivate.getDlpMetadata, entries);
+  return promisify(
+      chrome.fileManagerPrivate.getDlpMetadata,
+      entries.map(e => util.unwrapEntry(e)));
 }
 
 /**

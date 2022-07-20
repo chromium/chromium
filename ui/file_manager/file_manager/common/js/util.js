@@ -13,12 +13,12 @@ import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {promisify} from '../../common/js/api.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
+import {promisify} from './api.js';
 import {EntryList} from './files_app_entry_types.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -1344,7 +1344,6 @@ util.isExtractArchiveEnabled = () => {
   return loadTimeData.getBoolean('EXTRACT_ARCHIVE');
 };
 
-
 /**
  * Whether the Files app Experimental flag is enabled.
  * @returns {boolean}
@@ -1352,6 +1351,15 @@ util.isExtractArchiveEnabled = () => {
 util.isFilesAppExperimental = () => {
   return loadTimeData.valueExists('FILES_APP_EXPERIMENTAL') &&
       loadTimeData.getBoolean('FILES_APP_EXPERIMENTAL');
+};
+
+/**
+ * Whether the Files app integration with DLP (Data Loss Prevention) is enabled.
+ * @returns {boolean}
+ */
+util.isDlpEnabled = () => {
+  return loadTimeData.valueExists('DLP_ENABLED') &&
+      loadTimeData.getBoolean('DLP_ENABLED');
 };
 
 /**

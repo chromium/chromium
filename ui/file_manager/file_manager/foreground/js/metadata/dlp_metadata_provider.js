@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {getDlpMetadata} from '../../../common/js/api.js';
+import {util} from '../../../common/js/util.js';
 
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
@@ -20,14 +21,18 @@ export class DlpMetadataProvider extends MetadataProvider {
 
   /** @override */
   async get(requests) {
-    if (!requests.length) {
-      return Promise.resolve([]);
+    if (!util.isDlpEnabled()) {
+      return requests.map(() => new MetadataItem());
     }
 
-    // TODO(crbug.com/1297603): Early return if DLP isn't enabled.
+    if (!requests.length) {
+      return [];
+    }
+
     const entries = requests.map(_request => {
       return _request.entry;
     });
+
     try {
       const dlpMetadataList = await getDlpMetadata(entries);
       if (dlpMetadataList.length != entries.length) {
