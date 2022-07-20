@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getSizeStats} from '../../common/js/api.js';
-import {str, util} from '../../common/js/util.js';
+import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 
@@ -126,7 +126,27 @@ export class GearMenuController {
       return;
     }
 
-    this.gearMenu_.setSpaceInfo(getSizeStats(currentVolumeInfo.volumeId), true);
+    if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
+      this.gearMenu_.setSpaceInfo(
+          getDriveQuotaMetadata().then(
+              quota /* chrome.fileManagerPrivate.DriveQuotaMetadata */ => ({
+                totalSize: quota.totalUserBytes,
+                usedSize: quota.usedUserBytes,
+                warningMessage: quota.organizationLimitExceeded ?
+                    strf('DRIVE_ORGANIZATION_STORAGE_FULL') :
+                    null,
+              })),
+          true);
+      return;
+    }
+
+    this.gearMenu_.setSpaceInfo(
+        getSizeStats(currentVolumeInfo.volumeId)
+            .then(size /* chrome.fileManagerPrivate.MountPointSizeStats */ => ({
+                    totalSize: size.totalSize,
+                    usedSize: size.totalSize - size.remainingSize,
+                  })),
+        true);
   }
 
   /**

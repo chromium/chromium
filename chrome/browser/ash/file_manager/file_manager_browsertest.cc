@@ -1639,10 +1639,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("enableDisableStorageSettingsLink").FilesSwa(),
         TestCase("showAvailableStorageMyFiles"),
         TestCase("showAvailableStorageMyFiles").FilesSwa(),
-        // Disabled until Drive quota can be properly displayed.
-        // crbug.com/1177203
-        // TestCase("showAvailableStorageDrive"),
-        // TestCase("showAvailableStorageDrive").FilesSwa(),
+        TestCase("showAvailableStorageDrive"),
+        TestCase("showAvailableStorageDrive").FilesSwa(),
         TestCase("showAvailableStorageSmbfs"),
         TestCase("showAvailableStorageSmbfs").FilesSwa(),
         TestCase("showAvailableStorageDocProvider")

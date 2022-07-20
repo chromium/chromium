@@ -792,18 +792,21 @@ void FileManagerPrivateGetDriveQuotaMetadataFunction::OnGetDriveQuotaMetadata(
     return;
   }
 
-  base::Value::Dict quotaMetadata;
+  api::file_manager_private::DriveQuotaMetadata quotaMetadata;
 
-  quotaMetadata.Set("userType", static_cast<int>(usage->user_type));
-  quotaMetadata.Set("usedUserBytes",
-                    static_cast<double>(usage->used_user_bytes));
-  quotaMetadata.Set("totalUserBytes",
-                    static_cast<double>(usage->total_user_bytes));
-  quotaMetadata.Set("organizationLimitExceeded",
-                    usage->organization_limit_exceeded);
-  quotaMetadata.Set("organizationName", usage->organization_name);
+  quotaMetadata.user_type =
+      usage->user_type == drivefs::mojom::UserType::kUnmanaged
+          ? api::file_manager_private::UserType::USER_TYPE_KUNMANAGED
+          : api::file_manager_private::UserType::USER_TYPE_KORGANIZATION;
+  quotaMetadata.used_user_bytes = static_cast<double>(usage->used_user_bytes);
+  quotaMetadata.total_user_bytes = static_cast<double>(usage->total_user_bytes);
+  quotaMetadata.organization_limit_exceeded =
+      usage->organization_limit_exceeded;
+  quotaMetadata.organization_name = usage->organization_name;
 
-  Respond(OneArgument(base::Value(std::move(quotaMetadata))));
+  Respond(ArgumentList(
+      api::file_manager_private::GetDriveQuotaMetadata::Results::Create(
+          quotaMetadata)));
 }
 
 ExtensionFunction::ResponseAction

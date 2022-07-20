@@ -215,6 +215,13 @@ cr-menu.chrome-menu > [checked]::before {
   min-width: 6px;
 }
 
+.menu-warning {
+  color: var(--cros-textfield-label-color-error);
+  font-size: 11px;
+  line-height: 16px;
+  margin-top: 6px;
+}
+
 /* Entry names (File names, Folder names, Volume names, ...). */
 /* Their base bidi direction should be ltr even in RTL languages. */
 html[dir='rtl'] .entry-name {

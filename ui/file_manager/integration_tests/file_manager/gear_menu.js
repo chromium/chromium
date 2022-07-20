@@ -575,7 +575,7 @@ testcase.showAvailableStorageMyFiles = async () => {
 };
 
 /**
- * Tests that the "xGB available message appears in the gear menu for
+ * Tests that the "xGB available" message appears in the gear menu for
  * the "Google Drive" volume.
  */
 testcase.showAvailableStorageDrive = async () => {
@@ -589,17 +589,19 @@ testcase.showAvailableStorageDrive = async () => {
   // Wait for the gear menu to appear.
   await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
 
-  // Check #volume-storage is shown and disabled (can't manage Drive
-  // storage).
-  await remoteCall.waitForElement(
+  // Check #volume-storage is displayed and get a reference to it.
+  const driveMenuEntry = await remoteCall.waitForElement(
       appId,
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
+
+  // Check that it correctly indicates the available storage.
+  chrome.test.assertTrue(driveMenuEntry.text.trim() === '1 MB available');
 };
 
 /**
- * Tests that the "xGB available message appears in the gear menu for
+ * Tests that the "xGB available" message appears in the gear menu for
  * an SMB volume.
  */
 testcase.showAvailableStorageSmbfs = async () => {
