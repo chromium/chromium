@@ -144,6 +144,11 @@ class ASH_EXPORT ShellDelegate {
 
   // Retrieves the release track on which the device resides.
   virtual version_info::Channel GetChannel() = 0;
+
+  // Tells browsers not to ask the user to confirm that they want to close a
+  // window when that window is closed.
+  virtual void ForceSkipWarningUserOnClose(
+      const std::vector<aura::Window*>& windows) = 0;
 };
 
 }  // namespace ash

@@ -56,6 +56,8 @@ class TestShellDelegate : public ShellDelegate {
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
+  void ForceSkipWarningUserOnClose(
+      const std::vector<aura::Window*>& windows) override {}
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);

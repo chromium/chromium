@@ -1762,6 +1762,13 @@ void DesksController::MaybeCommitPendingDeskRemoval(
 
   if (toast_id.empty() || (temporary_removed_desk_ &&
                            temporary_removed_desk_->toast_id() == toast_id)) {
+    DCHECK(temporary_removed_desk_ && temporary_removed_desk_->desk());
+    // We need to tell any browser windows that are still in
+    // `temporary_removed_desk_->desk()` to suppress warning the user before
+    // closing.
+    Shell::Get()->shell_delegate()->ForceSkipWarningUserOnClose(
+        temporary_removed_desk_->desk()->GetAllAppWindows());
+
     temporary_removed_desk_.reset();
   }
 }

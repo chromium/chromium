@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -341,4 +340,15 @@ const GURL& ChromeShellDelegate::GetLastCommittedURLForWindowIfAny(
 
 version_info::Channel ChromeShellDelegate::GetChannel() {
   return chrome::GetChannel();
+}
+
+void ChromeShellDelegate::ForceSkipWarningUserOnClose(
+    const std::vector<aura::Window*>& windows) {
+  for (aura::Window* window : windows) {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForNativeWindow(window);
+    if (browser_view) {
+      browser_view->browser()->set_force_skip_warning_user_on_close(true);
+    }
+  }
 }

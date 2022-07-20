@@ -387,6 +387,14 @@ class Browser : public TabStripModelObserver,
     return creation_source_ == CreationSource::kSessionRestore;
   }
 
+  // Tells the browser whether it should skip showing any dialogs that ask the
+  // user to confirm that they want to close the browser when it is being
+  // closed.
+  void set_force_skip_warning_user_on_close(
+      bool force_skip_warning_user_on_close) {
+    force_skip_warning_user_on_close_ = force_skip_warning_user_on_close;
+  }
+
   // Accessors ////////////////////////////////////////////////////////////////
 
   const CreateParams& create_params() const { return create_params_; }
@@ -1290,6 +1298,9 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   WarnBeforeClosingCallback warn_before_closing_callback_;
+
+  // Tells if the browser should skip warning the user when closing the window.
+  bool force_skip_warning_user_on_close_ = false;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>

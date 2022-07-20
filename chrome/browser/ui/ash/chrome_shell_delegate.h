@@ -63,6 +63,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   static void ResetDisableLoggingRedirectForTesting();
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
   version_info::Channel GetChannel() override;
+  void ForceSkipWarningUserOnClose(
+      const std::vector<aura::Window*>& windows) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_

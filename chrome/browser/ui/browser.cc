@@ -836,10 +836,11 @@ std::u16string Browser::FormatTitleForDisplay(std::u16string title) {
 
 Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
     Browser::WarnBeforeClosingCallback warn_callback) {
-  // If the browser can close right away (there are no pending downloads we need
-  // to prompt about) then there's no need to warn. In the future, we might need
-  // to check other conditions as well.
-  if (CanCloseWithInProgressDownloads())
+  // If the browser can close right away (we've indicated that we want to skip
+  // before-unload handlers by setting `force_skip_warning_user_on_close_` to
+  // true or there are no pending downloads we need to prompt about) then
+  // there's no need to warn.
+  if (force_skip_warning_user_on_close_ || CanCloseWithInProgressDownloads())
     return WarnBeforeClosingResult::kOkToClose;
 
   DCHECK(!warn_before_closing_callback_)
@@ -849,6 +850,11 @@ Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
 }
 
 bool Browser::ShouldCloseWindow() {
+  // If `force_skip_warning_user_` is true, then we should immediately
+  // return true.
+  if (force_skip_warning_user_on_close_)
+    return true;
+
   // If the user needs to see one or more warnings, hold off closing the
   // browser.
   const WarnBeforeClosingResult result = MaybeWarnBeforeClosing(base::BindOnce(
@@ -878,12 +884,14 @@ bool Browser::IsAttemptingToCloseBrowser() const {
 
 bool Browser::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* web_contents) {
-  return unload_controller_.ShouldRunUnloadEventsHelper(web_contents);
+  return !force_skip_warning_user_on_close_ &&
+         unload_controller_.ShouldRunUnloadEventsHelper(web_contents);
 }
 
 bool Browser::RunUnloadListenerBeforeClosing(
     content::WebContents* web_contents) {
-  return unload_controller_.RunUnloadEventsHelper(web_contents);
+  return !force_skip_warning_user_on_close_ &&
+         unload_controller_.RunUnloadEventsHelper(web_contents);
 }
 
 void Browser::SetWindowUserTitle(const std::string& user_title) {
