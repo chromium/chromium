@@ -103,14 +103,13 @@ PWAConfirmationBubbleView* PWAConfirmationBubbleView::GetBubble() {
 
 PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     views::View* anchor_view,
-    PageActionIconView* highlight_icon_button,
+    views::Button* highlight_button,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker)
     : LocationBarBubbleDelegateView(anchor_view, nullptr),
-      highlight_icon_button_(highlight_icon_button),
       web_app_info_(std::move(web_app_info)),
       callback_(std::move(callback)),
       iph_state_(iph_state),
@@ -171,7 +170,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
                                         web_app::UserDisplayMode::kTabbed);
   }
 
-  SetHighlightedButton(highlight_icon_button_);
+  SetHighlightedButton(highlight_button);
 }
 
 PWAConfirmationBubbleView::~PWAConfirmationBubbleView() = default;
@@ -190,9 +189,6 @@ views::View* PWAConfirmationBubbleView::GetInitiallyFocusedView() {
 void PWAConfirmationBubbleView::WindowClosing() {
   DCHECK_EQ(g_bubble_, this);
   g_bubble_ = nullptr;
-
-  if (highlight_icon_button_)
-    highlight_icon_button_->Update();
 
   // If |web_app_info_| is populated, then the bubble was not accepted.
   if (web_app_info_) {
@@ -228,11 +224,6 @@ bool PWAConfirmationBubbleView::Accept() {
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
-}
-
-void PWAConfirmationBubbleView::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* widget) const {
-  params->name = "PWAConfirmationBubbleView";
 }
 
 namespace chrome {
