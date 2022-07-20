@@ -290,6 +290,9 @@ namespace http://www.w3.org/1999/xhtml
     property parentNode
     property part
     property popUp
+    property popUpHideTarget
+    property popUpShowTarget
+    property popUpToggleTarget
     property prefix
     property prepend
     property previousElementSibling
@@ -1511,6 +1514,9 @@ namespace http://www.w3.org/2000/svg
     property parentNode
     property part
     property popUp
+    property popUpHideTarget
+    property popUpShowTarget
+    property popUpToggleTarget
     property prefix
     property prepend
     property previousElementSibling

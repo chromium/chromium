@@ -116,65 +116,73 @@ const invokers = [
     t_set.forEach(t => {
       s_set.forEach(s => {
         h_set.forEach(h => {
-          promise_test(async test => {
-            const popUp1 = Object.assign(document.createElement('div'),{popUp: type, id: 'pop-up-1'});
-            const popUp2 = Object.assign(document.createElement('div'),{popUp: type, id: 'pop-up-2'});
-            assert_equals(popUp1.popUp,type);
-            assert_equals(popUp2.popUp,type);
-            assert_not_equals(popUp1.id,popUp2.id);
-            const invoker = testcase.makeElement(test);
-            if (t) invoker.setAttribute('popuptoggletarget',t===1 ? popUp1.id : popUp2.id);
-            if (s) invoker.setAttribute('popupshowtarget',s===1 ? popUp1.id : popUp2.id);
-            if (h) invoker.setAttribute('popuphidetarget',h===1 ? popUp1.id : popUp2.id);
-            assert_true(!document.getElementById(popUp1.id));
-            assert_true(!document.getElementById(popUp2.id));
-            document.body.appendChild(popUp1);
-            document.body.appendChild(popUp2);
-            test.add_cleanup(() => {
-              popUp1.remove();
-              popUp2.remove();
-            });
-            const {expectedBehavior, expectedId} = testcase.getExpectedLogic(t,s,h);
-            const otherId = expectedId !== 1 ? 1 : 2;
-            function assert_popUp(num,state,message) {
-              assert_true(num>0,`Invalid expectedId ${num}`);
-              assert_equals((num===1 ? popUp1 : popUp2).matches(':top-layer'),state,message || "");
-            }
-            assert_popUp(expectedId,false);
-            assert_popUp(otherId,false);
-            await testcase.invokeFn(invoker);
-            assert_popUp(otherId,false,'The other pop-up should never change');
-            switch (expectedBehavior) {
-              case "toggle":
-              case "show":
-                assert_popUp(expectedId,true,'Toggle or show should show the pop-up');
-                (expectedId===1 ? popUp1 : popUp2).hidePopUp(); // Hide the pop-up
-                break;
-              case "hide":
-              case "none":
-                assert_popUp(expectedId,false,'Hide or none should leave the pop-up hidden');
-                break;
-              default:
-                assert_unreached();
-            }
-            (expectedId===1 ? popUp1 : popUp2).showPopUp(); // Show the pop-up directly
-            assert_popUp(expectedId,true);
-            assert_popUp(otherId,false);
-            await testcase.invokeFn(invoker);
-            assert_popUp(otherId,false,'The other pop-up should never change');
-            switch (expectedBehavior) {
-              case "toggle":
-              case "hide":
-                assert_popUp(expectedId,false,'Toggle or hide should hide the pop-up');
-                break;
-              case "show":
-              case "none":
-                assert_popUp(expectedId,true,'Show or none should leave the pop-up showing');
-                break;
-              default:
-                assert_unreached();
-            }
-          },`Test ${testcase.name}, t=${t}, s=${s}, h=${h}, with popup=${type}`);
+          [false,true].forEach(use_idl => {
+            promise_test(async test => {
+              const popUp1 = Object.assign(document.createElement('div'),{popUp: type, id: 'pop-up-1'});
+              const popUp2 = Object.assign(document.createElement('div'),{popUp: type, id: 'pop-up-2'});
+              assert_equals(popUp1.popUp,type);
+              assert_equals(popUp2.popUp,type);
+              assert_not_equals(popUp1.id,popUp2.id);
+              const invoker = testcase.makeElement(test);
+              if (use_idl) {
+                invoker.popUpToggleTarget = t===1 ? popUp1.id : (t===2 ? popUp2.id : null);
+                invoker.popUpShowTarget = s===1 ? popUp1.id : (s===2 ? popUp2.id : null);
+                invoker.popUpHideTarget = h===1 ? popUp1.id : (h===2 ? popUp2.id : null);
+              } else {
+                if (t) invoker.setAttribute('popuptoggletarget',t===1 ? popUp1.id : popUp2.id);
+                if (s) invoker.setAttribute('popupshowtarget',s===1 ? popUp1.id : popUp2.id);
+                if (h) invoker.setAttribute('popuphidetarget',h===1 ? popUp1.id : popUp2.id);
+              }
+              assert_true(!document.getElementById(popUp1.id));
+              assert_true(!document.getElementById(popUp2.id));
+              document.body.appendChild(popUp1);
+              document.body.appendChild(popUp2);
+              test.add_cleanup(() => {
+                popUp1.remove();
+                popUp2.remove();
+              });
+              const {expectedBehavior, expectedId} = testcase.getExpectedLogic(t,s,h);
+              const otherId = expectedId !== 1 ? 1 : 2;
+              function assert_popUp(num,state,message) {
+                assert_true(num>0,`Invalid expectedId ${num}`);
+                assert_equals((num===1 ? popUp1 : popUp2).matches(':top-layer'),state,message || "");
+              }
+              assert_popUp(expectedId,false);
+              assert_popUp(otherId,false);
+              await testcase.invokeFn(invoker);
+              assert_popUp(otherId,false,'The other pop-up should never change');
+              switch (expectedBehavior) {
+                case "toggle":
+                case "show":
+                  assert_popUp(expectedId,true,'Toggle or show should show the pop-up');
+                  (expectedId===1 ? popUp1 : popUp2).hidePopUp(); // Hide the pop-up
+                  break;
+                case "hide":
+                case "none":
+                  assert_popUp(expectedId,false,'Hide or none should leave the pop-up hidden');
+                  break;
+                default:
+                  assert_unreached();
+              }
+              (expectedId===1 ? popUp1 : popUp2).showPopUp(); // Show the pop-up directly
+              assert_popUp(expectedId,true);
+              assert_popUp(otherId,false);
+              await testcase.invokeFn(invoker);
+              assert_popUp(otherId,false,'The other pop-up should never change');
+              switch (expectedBehavior) {
+                case "toggle":
+                case "hide":
+                  assert_popUp(expectedId,false,'Toggle or hide should hide the pop-up');
+                  break;
+                case "show":
+                case "none":
+                  assert_popUp(expectedId,true,'Show or none should leave the pop-up showing');
+                  break;
+                default:
+                  assert_unreached();
+              }
+            },`Test ${testcase.name}, t=${t}, s=${s}, h=${h}, ${use_idl ? "IDL" : "Content Attr"}, with popup=${type}`);
+          });
         });
       });
     });

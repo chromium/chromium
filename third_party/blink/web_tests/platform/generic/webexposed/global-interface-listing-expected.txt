@@ -2270,6 +2270,9 @@ interface Element : Node
     getter outerHTML
     getter part
     getter popUp
+    getter popUpHideTarget
+    getter popUpShowTarget
+    getter popUpToggleTarget
     getter prefix
     getter previousElementSibling
     getter role
@@ -2403,6 +2406,9 @@ interface Element : Node
     setter outerHTML
     setter part
     setter popUp
+    setter popUpHideTarget
+    setter popUpShowTarget
+    setter popUpToggleTarget
     setter role
     setter scrollLeft
     setter scrollTop

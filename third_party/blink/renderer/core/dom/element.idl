@@ -145,11 +145,14 @@ dictionary CheckVisibilityOptions {
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
 
-    // The Popup API
+    // The Pop-up API
     [MeasureAs=ElementShowPopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void showPopUp();
     [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void hidePopUp();
     [Unscopable,CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid] attribute DOMString? popUp;
     [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean defaultOpen;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpToggleTarget;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpHideTarget;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpShowTarget;
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;
