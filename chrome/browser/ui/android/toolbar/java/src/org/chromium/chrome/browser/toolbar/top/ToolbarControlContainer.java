@@ -21,7 +21,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
@@ -174,8 +173,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         protected ViewResourceAdapter createResourceAdapter() {
             boolean useHardwareBitmapDraw = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                useHardwareBitmapDraw = CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW);
+                useHardwareBitmapDraw = ChromeFeatureList.sToolbarUseHardwareBitmapDraw.isEnabled();
             }
             return new ToolbarViewResourceAdapter(this, useHardwareBitmapDraw);
         }

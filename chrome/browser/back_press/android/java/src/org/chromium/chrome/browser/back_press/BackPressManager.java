@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
@@ -44,7 +43,7 @@ public class BackPressManager {
      * @return True if the back gesture refactor is enabled.
      */
     public static boolean isEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.BACK_GESTURE_REFACTOR);
+        return ChromeFeatureList.sBackGestureRefactorAndroid.isEnabled();
     }
 
     /**

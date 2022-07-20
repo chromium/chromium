@@ -22,7 +22,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -200,7 +199,7 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     private boolean isTabletGridTabSwitcherEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
+        return ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled();
     }
 
     /**

@@ -49,10 +49,10 @@ public final class FieldTrialsInstrumentationTest {
             "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:a1/b1"})
     public void testOneFeatureTrialGroup() {
         // clang-format on
-        Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature1));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(sFeature1, "a1"));
 
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(sFeature1));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         StringCachedFieldTrialParameter parameterA1 =
                 new StringCachedFieldTrialParameter(sFeature1, "a1", "default");
         Assert.assertEquals("b1", parameterA1.getValue());
@@ -74,8 +74,8 @@ public final class FieldTrialsInstrumentationTest {
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature2));
         Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(sFeature1, "a2"));
 
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(sFeature1));
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(sFeature2));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
         StringCachedFieldTrialParameter parameterA1 =
                 new StringCachedFieldTrialParameter(sFeature1, "a1", "");
         Assert.assertEquals("b1", parameterA1.getValue());
@@ -107,8 +107,8 @@ public final class FieldTrialsInstrumentationTest {
         Assert.assertEquals("100", ChromeFeatureList.getFieldTrialParamByFeature(sFeature1, "a2"));
         Assert.assertEquals("true", ChromeFeatureList.getFieldTrialParamByFeature(sFeature2, "a3"));
 
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(sFeature1));
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(sFeature2));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
         DoubleCachedFieldTrialParameter parameterA1 =
                 new DoubleCachedFieldTrialParameter(sFeature1, "a1", 0.1);
         Assert.assertEquals(0.5, parameterA1.getValue(), 1e-7);
@@ -130,7 +130,7 @@ public final class FieldTrialsInstrumentationTest {
     public void testFeatureWithoutParams() {
         // clang-format on
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature1));
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(sFeature1));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
     }
 
     @Test

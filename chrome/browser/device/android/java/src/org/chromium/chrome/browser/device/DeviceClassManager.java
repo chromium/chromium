@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -90,11 +89,10 @@ public class DeviceClassManager {
      */
     public static boolean enableAccessibilityLayout(Context context) {
         // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
-        boolean gridTabSwitcherEnabled = isPhone(context)
-                || CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
-        if (gridTabSwitcherEnabled
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)) {
+        boolean gridTabSwitcherEnabled =
+                isPhone(context) || ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled();
+        if (gridTabSwitcherEnabled && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
+                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()) {
             return false;
         }
 

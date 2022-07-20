@@ -27,12 +27,12 @@ public class CachedFeatureFlagsAnnotationUnitTest {
 
     @Test
     public void testDefaultFeatureValue() {
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
     }
 
     @Test
     public void testFeatureAnnotationOnTestSuiteClass() {
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class CachedFeatureFlagsAnnotationUnitTest {
             ChromeFeatureList.TEST_DEFAULT_ENABLED})
     public void testFeatureAnnotationOnMethod() {
         // clang-format on
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
+        Assert.assertFalse(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
+        Assert.assertFalse(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
     }
 }
