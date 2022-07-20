@@ -263,7 +263,7 @@ TEST_F(ActivityDatabaseTest, InitFailure) {
   ActivityDatabase* activity_db = new ActivityDatabase(delegate);
   scoped_refptr<Action> action = new Action(
       "punky", base::Time::Now(), Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->Append("woof");
+  action->mutable_args().Append("woof");
   delegate->Record(activity_db, action);
   activity_db->Close();
 }

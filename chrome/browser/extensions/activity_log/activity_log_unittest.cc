@@ -225,8 +225,6 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
 
   static void RetrieveActions_ArgUrlExtraction(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> i) {
-    const base::DictionaryValue* other = NULL;
-
     ASSERT_EQ(4U, i->size());
     scoped_refptr<Action> action = i->at(0);
     ASSERT_EQ("XMLHttpRequest.open", action->api_name());
@@ -236,10 +234,10 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     // Test that the dom_verb field was changed to XHR (from METHOD).  This
     // could be tested on all retrieved XHR actions but it would be redundant,
     // so just test once.
-    other = action->other();
-    ASSERT_TRUE(other);
+    ASSERT_TRUE(action->other());
+    const base::Value::Dict& other = *action->other();
     absl::optional<int> dom_verb =
-        other->FindIntKey(activity_log_constants::kActionDomVerb);
+        other.FindInt(activity_log_constants::kActionDomVerb);
     ASSERT_EQ(DomActionType::XHR, dom_verb);
 
     action = i->at(1);
@@ -264,8 +262,6 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
   static void RetrieveActions_ArgUrlApiCalls(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> actions) {
     size_t api_calls_size = std::size(kUrlApiCalls);
-    const base::DictionaryValue* other = NULL;
-
     ASSERT_EQ(api_calls_size, actions->size());
 
     for (size_t i = 0; i < actions->size(); i++) {
@@ -276,10 +272,10 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
       ASSERT_EQ("[\"\\u003Carg_url>\"]",
                 ActivityLogPolicy::Util::Serialize(action->args()));
       ASSERT_EQ("http://www.google.co.uk/", action->arg_url().spec());
-      other = action->other();
-      ASSERT_TRUE(other);
+      ASSERT_TRUE(action->other());
+      const base::Value::Dict& other = *action->other();
       absl::optional<int> dom_verb =
-          other->FindIntKey(activity_log_constants::kActionDomVerb);
+          other.FindInt(activity_log_constants::kActionDomVerb);
       ASSERT_EQ(DomActionType::SETTER, dom_verb);
     }
   }
@@ -367,10 +363,10 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
                                             Action::ACTION_DOM_ACCESS,
                                             "XMLHttpRequest.open");
   action->set_page_url(GURL("http://www.google.com/"));
-  action->mutable_args()->Append("POST");
-  action->mutable_args()->Append("http://api.google.com/");
-  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
-                                     DomActionType::METHOD);
+  action->mutable_args().Append("POST");
+  action->mutable_args().Append("http://api.google.com/");
+  action->mutable_other().Set(activity_log_constants::kActionDomVerb,
+                              DomActionType::METHOD);
   activity_log->LogAction(action);
 
   // Submit a DOM API call with a relative URL in the argument, which should be
@@ -378,30 +374,30 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
   action = new Action(kExtensionId, now - base::Seconds(1),
                       Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open");
   action->set_page_url(GURL("http://www.google.com/"));
-  action->mutable_args()->Append("POST");
-  action->mutable_args()->Append("/api/");
-  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
-                                     DomActionType::METHOD);
+  action->mutable_args().Append("POST");
+  action->mutable_args().Append("/api/");
+  action->mutable_other().Set(activity_log_constants::kActionDomVerb,
+                              DomActionType::METHOD);
   activity_log->LogAction(action);
 
   // Submit a DOM API call with a relative URL but no base page URL against
   // which to resolve.
   action = new Action(kExtensionId, now - base::Seconds(2),
                       Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open");
-  action->mutable_args()->Append("POST");
-  action->mutable_args()->Append("/api/");
-  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
-                                     DomActionType::METHOD);
+  action->mutable_args().Append("POST");
+  action->mutable_args().Append("/api/");
+  action->mutable_other().Set(activity_log_constants::kActionDomVerb,
+                              DomActionType::METHOD);
   activity_log->LogAction(action);
 
   // Submit an API call with an embedded URL.
   action = new Action(kExtensionId, now - base::Seconds(3),
                       Action::ACTION_API_CALL, "windows.create");
-  action->set_args(
-      ListBuilder()
-          .Append(
-              DictionaryBuilder().Set("url", "http://www.google.co.uk").Build())
-          .Build());
+  base::Value::List list;
+  base::Value::Dict item;
+  item.Set("url", "http://www.google.co.uk");
+  list.Append(std::move(item));
+  action->set_args(std::move(list));
   activity_log->LogAction(action);
 
   activity_log->GetFilteredActions(
@@ -450,9 +446,9 @@ TEST_F(ActivityLogTest, ArgUrlApiCalls) {
   for (int i = 0; i < api_calls_size; i++) {
     action = new Action(kExtensionId, now - base::Seconds(i),
                         Action::ACTION_DOM_ACCESS, kUrlApiCalls[i]);
-    action->mutable_args()->Append("http://www.google.co.uk");
-    action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
-                                       DomActionType::SETTER);
+    action->mutable_args().Append("http://www.google.co.uk");
+    action->mutable_other().Set(activity_log_constants::kActionDomVerb,
+                                DomActionType::SETTER);
     activity_log->LogAction(action);
   }
 

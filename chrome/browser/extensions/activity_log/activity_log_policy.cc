@@ -65,7 +65,8 @@ sql::Database* ActivityLogDatabasePolicy::GetDatabaseConnection() const {
 }
 
 // static
-std::string ActivityLogPolicy::Util::Serialize(const base::Value* value) {
+std::string ActivityLogPolicy::Util::Serialize(
+    absl::optional<base::ValueView> value) {
   std::string value_as_text;
   if (value) {
     JSONStringValueSerializer serializer(&value_as_text);
@@ -105,11 +106,10 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
   // Clear WebRequest details; only keep a record of which types of
   // modifications were performed.
   if (action->action_type() == Action::ACTION_WEB_REQUEST) {
-    base::DictionaryValue* details = NULL;
-    if (action->mutable_other()->GetDictionary(constants::kActionWebRequest,
-                                               &details)) {
-      for (auto detail : details->DictItems()) {
-        details->SetBoolPath(detail.first, true);
+    if (base::Value::Dict* details =
+            action->mutable_other().FindDict(constants::kActionWebRequest)) {
+      for (auto detail : *details) {
+        details->SetByDottedPath(detail.first, true);
       }
     }
   }
@@ -120,7 +120,7 @@ void ActivityLogPolicy::Util::StripArguments(const ApiSet& api_allowlist,
                                              scoped_refptr<Action> action) {
   if (api_allowlist.find(std::make_pair(
           action->action_type(), action->api_name())) == api_allowlist.end()) {
-    action->set_args(std::unique_ptr<base::ListValue>());
+    action->set_args(absl::nullopt);
   }
 }
 

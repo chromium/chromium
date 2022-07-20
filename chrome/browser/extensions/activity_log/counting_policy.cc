@@ -496,11 +496,10 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
         query.ColumnString(3), query.ColumnInt64(10));
 
     if (query.GetColumnType(4) != sql::ColumnType::kNull) {
-      std::unique_ptr<base::Value> parsed_value =
-          base::JSONReader::ReadDeprecated(query.ColumnString(4));
+      absl::optional<base::Value> parsed_value =
+          base::JSONReader::Read(query.ColumnString(4));
       if (parsed_value && parsed_value->is_list()) {
-        action->set_args(base::WrapUnique(
-            static_cast<base::ListValue*>(parsed_value.release())));
+        action->set_args(std::move(parsed_value->GetList()));
       }
     }
 
@@ -509,11 +508,10 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
     action->ParseArgUrl(query.ColumnString(7));
 
     if (query.GetColumnType(8) != sql::ColumnType::kNull) {
-      std::unique_ptr<base::Value> parsed_value =
-          base::JSONReader::ReadDeprecated(query.ColumnString(8));
+      absl::optional<base::Value> parsed_value =
+          base::JSONReader::Read(query.ColumnString(8));
       if (parsed_value && parsed_value->is_dict()) {
-        action->set_other(base::WrapUnique(
-            static_cast<base::DictionaryValue*>(parsed_value.release())));
+        action->set_other(std::move(parsed_value->GetDict()));
       }
     }
     action->set_count(query.ColumnInt(9));

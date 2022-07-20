@@ -262,8 +262,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   int url_index = api_info->arg_url_index;
 
   if (!action->args() || url_index < 0 ||
-      static_cast<size_t>(url_index) >=
-          action->args()->GetListDeprecated().size())
+      static_cast<size_t>(url_index) >= action->args()->size())
     return;
 
   // Do not overwrite an existing arg_url value in the Action, so that callers
@@ -271,7 +270,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   if (action->arg_url().is_valid())
     return;
 
-  base::Value::ListView args_list = action->mutable_args()->GetListDeprecated();
+  base::Value::List& args_list = action->mutable_args();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
@@ -297,11 +296,12 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // valid URL.
       if (args_list[url_index].is_dict()) {
         const std::string* url_string =
-            args_list[url_index].FindStringPath(api_info->arg_url_dict_path);
+            args_list[url_index].GetDict().FindStringByDottedPath(
+                api_info->arg_url_dict_path);
         if (url_string &&
             ResolveUrl(action->page_url(), *url_string, &arg_url)) {
-          args_list[url_index].SetStringPath(api_info->arg_url_dict_path,
-                                             kArgUrlPlaceholder);
+          args_list[url_index].GetDict().SetByDottedPath(
+              api_info->arg_url_dict_path, kArgUrlPlaceholder);
         }
       }
       break;
@@ -320,8 +320,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         if (arg_url.is_valid())
           args_list[url_index] = base::Value(kArgUrlPlaceholder);
       } else if (args_list[url_index].is_list()) {
-        base::Value::ListView tab_list =
-            args_list[url_index].GetListDeprecated();
+        base::Value::List& tab_list = args_list[url_index].GetList();
         // A list of possible IDs to translate.  Work through in reverse order
         // so the last one translated is left in arg_url.
         int extracted_index = -1;  // Which list item is copied to arg_url?
@@ -388,8 +387,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
 
   auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
                                              type, activity_name);
-  action->set_args(
-      base::ListValue::From(std::make_unique<base::Value>(args.Clone())));
+  action->set_args(args.Clone());
   activity_log->LogAction(action);
 }
 
@@ -398,9 +396,6 @@ void LogApiEvent(content::BrowserContext* browser_context,
                  const std::string& extension_id,
                  const std::string& event_name,
                  const base::Value::List& args) {
-  auto list_value = std::make_unique<base::ListValue>();
-  for (const auto& value : args)
-    list_value->Append(value.Clone());
   LogApiActivity(browser_context, extension_id, event_name, args,
                  Action::ACTION_API_EVENT);
 }
@@ -433,7 +428,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
       extension_id, base::Time::Now(), Action::ACTION_WEB_REQUEST, api_call);
   action->set_page_url(url);
   action->set_page_incognito(is_incognito);
-  action->mutable_other()->SetKey(
+  action->mutable_other().Set(
       activity_log_constants::kActionWebRequest,
       base::Value::FromUniquePtrValue(std::move(details)));
   activity_log->LogAction(action);
@@ -655,10 +650,10 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
       base::StartsWith(action->api_name(), kDomXhrPrefix,
                        base::CompareCase::SENSITIVE) &&
       action->other()) {
-    base::DictionaryValue* other = action->mutable_other();
-    absl::optional<int> dom_verb = other->FindIntKey(constants::kActionDomVerb);
+    base::Value::Dict& other = action->mutable_other();
+    absl::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
     if (dom_verb == DomActionType::METHOD)
-      other->SetIntKey(constants::kActionDomVerb, DomActionType::XHR);
+      other.Set(constants::kActionDomVerb, DomActionType::XHR);
   }
   if (IsDatabaseEnabled() && database_policy_)
     database_policy_->ProcessAction(action);
@@ -704,9 +699,9 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
               profile_);
       if (no_state_prefetch_manager &&
           no_state_prefetch_manager->IsWebContentsPrefetching(web_contents))
-        action->mutable_other()->SetBoolKey(constants::kActionPrerender, true);
+        action->mutable_other().Set(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-        action->mutable_args()->Append(*it2);
+        action->mutable_args().Append(*it2);
       }
       LogAction(action);
     }

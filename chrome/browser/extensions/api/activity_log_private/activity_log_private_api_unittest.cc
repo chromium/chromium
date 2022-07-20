@@ -28,9 +28,9 @@ using api::activity_log_private::ExtensionActivity;
 typedef testing::Test ActivityLogApiUnitTest;
 
 TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append("hello");
-  args->Append("world");
+  base::Value::List args;
+  args.Append("hello");
+  args.Append("world");
   scoped_refptr<Action> action(new Action(kExtensionId,
                                           base::Time::Now(),
                                           Action::ACTION_API_CALL,
@@ -46,9 +46,9 @@ TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
 }
 
 TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append("hello");
-  args->Append("world");
+  base::Value::List args;
+  args.Append("hello");
+  args.Append("world");
   scoped_refptr<Action> action(new Action(kExtensionId,
                                base::Time::Now(),
                                Action::ACTION_DOM_ACCESS,
@@ -57,10 +57,9 @@ TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
   action->set_args(std::move(args));
   action->set_page_url(GURL("http://www.google.com"));
   action->set_page_title("Title");
-  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
-                                     DomActionType::INSERTED);
-  action->mutable_other()->SetBoolKey(activity_log_constants::kActionPrerender,
-                                      false);
+  action->mutable_other().Set(activity_log_constants::kActionDomVerb,
+                              DomActionType::INSERTED);
+  action->mutable_other().Set(activity_log_constants::kActionPrerender, false);
   ExtensionActivity result = action->ConvertToExtensionActivity();
   ASSERT_EQ(kExtensionId, *(result.extension_id.get()));
   ASSERT_EQ("http://www.google.com/", *(result.page_url.get()));

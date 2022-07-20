@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
 #include "extensions/common/constants.h"
@@ -30,7 +29,7 @@ namespace extensions {
 
 namespace {
 
-std::string Serialize(const base::Value* value) {
+std::string Serialize(absl::optional<base::ValueView> value) {
   std::string value_as_text;
   if (!value) {
     value_as_text = "null";
@@ -54,9 +53,6 @@ Action::Action(const std::string& extension_id,
       time_(time),
       action_type_(action_type),
       api_name_(api_name),
-      page_incognito_(false),
-      arg_incognito_(false),
-      count_(0),
       action_id_(action_id) {}
 
 Action::~Action() {}
@@ -68,8 +64,7 @@ scoped_refptr<Action> Action::Clone() const {
   auto clone = base::MakeRefCounted<Action>(
       extension_id(), time(), action_type(), api_name(), action_id());
   if (args()) {
-    clone->set_args(
-        base::ListValue::From(base::Value::ToUniquePtrValue(args()->Clone())));
+    clone->set_args(args()->Clone());
   }
   clone->set_page_url(page_url());
   clone->set_page_title(page_title());
@@ -77,19 +72,19 @@ scoped_refptr<Action> Action::Clone() const {
   clone->set_arg_url(arg_url());
   clone->set_arg_incognito(arg_incognito());
   if (other())
-    clone->set_other(base::WrapUnique(other()->DeepCopy()));
+    clone->set_other(other()->Clone());
   return clone;
 }
 
-void Action::set_args(std::unique_ptr<base::ListValue> args) {
+void Action::set_args(absl::optional<base::Value::List> args) {
   args_ = std::move(args);
 }
 
-base::ListValue* Action::mutable_args() {
-  if (!args_.get()) {
-    args_ = std::make_unique<base::ListValue>();
-  }
-  return args_.get();
+base::Value::List& Action::mutable_args() {
+  if (!args_)
+    args_.emplace();
+
+  return *args_;
 }
 
 void Action::set_page_url(const GURL& page_url) {
@@ -100,15 +95,15 @@ void Action::set_arg_url(const GURL& arg_url) {
   arg_url_ = arg_url;
 }
 
-void Action::set_other(std::unique_ptr<base::DictionaryValue> other) {
+void Action::set_other(absl::optional<base::Value::Dict> other) {
   other_ = std::move(other);
 }
 
-base::DictionaryValue* Action::mutable_other() {
-  if (!other_.get()) {
-    other_ = std::make_unique<base::DictionaryValue>();
-  }
-  return other_.get();
+base::Value::Dict& Action::mutable_other() {
+  if (!other_)
+    other_.emplace();
+
+  return *other_;
 }
 
 std::string Action::SerializePageUrl() const {
@@ -192,20 +187,19 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
     std::unique_ptr<ExtensionActivity::Other> other_field(
         new ExtensionActivity::Other);
     if (absl::optional<bool> prerender =
-            other()->FindBoolKey(constants::kActionPrerender)) {
+            other()->FindBool(constants::kActionPrerender)) {
       other_field->prerender = std::make_unique<bool>(*prerender);
     }
-    const base::DictionaryValue* web_request;
-    if (other()->GetDictionaryWithoutPathExpansion(constants::kActionWebRequest,
-                                                   &web_request)) {
+    if (const base::Value::Dict* web_request =
+            other()->FindDict(constants::kActionWebRequest)) {
       other_field->web_request = std::make_unique<std::string>(
-          ActivityLogPolicy::Util::Serialize(web_request));
+          ActivityLogPolicy::Util::Serialize(*web_request));
     }
-    const std::string* extra = other()->FindStringKey(constants::kActionExtra);
+    const std::string* extra = other()->FindString(constants::kActionExtra);
     if (extra)
       other_field->extra = std::make_unique<std::string>(*extra);
     if (absl::optional<int> dom_verb =
-            other()->FindIntKey(constants::kActionDomVerb)) {
+            other()->FindInt(constants::kActionDomVerb)) {
       switch (static_cast<DomActionType::Type>(dom_verb.value())) {
         case DomActionType::GETTER:
           other_field->dom_verb =
@@ -278,8 +272,8 @@ std::string Action::PrintForDebug() const {
   }
 
   result += " API=" + api_name_;
-  if (args_.get()) {
-    result += " ARGS=" + Serialize(args_.get());
+  if (args_) {
+    result += " ARGS=" + Serialize(*args_);
   }
   if (page_url_.is_valid()) {
     if (page_incognito_)
@@ -289,7 +283,7 @@ std::string Action::PrintForDebug() const {
   }
   if (!page_title_.empty()) {
     base::Value title(page_title_);
-    result += " PAGE_TITLE=" + Serialize(&title);
+    result += " PAGE_TITLE=" + Serialize(title);
   }
   if (arg_url_.is_valid()) {
     if (arg_incognito_)
@@ -297,8 +291,8 @@ std::string Action::PrintForDebug() const {
     else
       result += " ARG_URL=" + arg_url_.spec();
   }
-  if (other_.get()) {
-    result += " OTHER=" + Serialize(other_.get());
+  if (other_) {
+    result += " OTHER=" + Serialize(*other_);
   }
 
   result += base::StringPrintf(" COUNT=%d", count_);
