@@ -188,7 +188,9 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
 
   // 11. Remember the position of all the boxes in boxes as their specified
   // position.
-  [[maybe_unused]] const LayoutUnit specified_position = adjusted_position;
+  const LayoutUnit specified_position = adjusted_position;
+
+  bool switched = false;
 
   // 12. Let title area be a box that covers all of the video’s rendering area.
   gfx::Rect title_area = ToEnclosingRect(container.PhysicalBorderBoxRect());
@@ -225,10 +227,34 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
       continue;
     }
 
-    // TODO(crbug.com/1335309): Implement this.
+    // 17. Switch direction: If switched is true, then remove all the boxes in
+    // boxes, and jump to the step labeled done positioning below.
+    if (switched) {
+      // Move the cue to the outside of the video rendering area instead of
+      // removing the boxes. This makes "RevertAdjustment()" simpler.
+      adjusted_position = full_dimension + 1;
+      break;
+    }
+
+    // 18. Otherwise, move all the boxes in boxes back to their specified
+    // position as determined in the earlier step.
+    adjusted_position = specified_position;
+
+    // 19. Negate step.
+    step_ = -step_;
+
+    // 20. Set switched to true.
+    switched = true;
 
     // 21. Jump back to the step labeled step loop.
   }
+
+  // Set adjusted_position to 'top' or 'left' property as a percentage value,
+  // which will work well even if the video rendering area is resized.
+  cue_.SetInlineStyleProperty(
+      is_horizontal ? CSSPropertyID::kTop : CSSPropertyID::kLeft,
+      (adjusted_position * 100 / full_dimension).ToDouble(),
+      CSSPrimitiveValue::UnitType::kPercentage);
 }
 
 void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {
