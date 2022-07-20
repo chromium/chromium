@@ -84,7 +84,6 @@ void AwContentRendererClient::ExposeInterfacesToBrowser(
 
 bool AwContentRendererClient::HandleNavigation(
     content::RenderFrame* render_frame,
-    bool render_view_was_created_by_renderer,
     blink::WebFrame* frame,
     const blink::WebURLRequest& request,
     blink::WebNavigationType type,
@@ -114,16 +113,19 @@ bool AwContentRendererClient::HandleNavigation(
        gurl.SchemeIs(url::kAboutScheme)))
     return false;
 
+  AwRenderViewExt* view =
+      AwRenderViewExt::FromWebView(render_frame->GetWebView());
+
   // use NavigationInterception throttle to handle the call as that can
   // be deferred until after the java side has been constructed.
   //
-  // TODO(nick): |render_view_was_created_by_renderer| was plumbed in to
+  // TODO(nick): `view->created_by_renderer()` was plumbed in to
   // preserve the existing code behavior, but it doesn't appear to be correct.
   // In particular, this value will be true for the initial navigation of a
   // RenderView created via window.open(), but it will also be true for all
   // subsequent navigations in that RenderView, no matter how they are
   // initiated.
-  if (render_view_was_created_by_renderer) {
+  if (view->created_by_renderer()) {
     return false;
   }
 
@@ -166,8 +168,9 @@ void AwContentRendererClient::RenderFrameCreated(
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
 }
 
-void AwContentRendererClient::WebViewCreated(blink::WebView* web_view) {
-  AwRenderViewExt::WebViewCreated(web_view);
+void AwContentRendererClient::WebViewCreated(blink::WebView* web_view,
+                                             bool was_created_by_renderer) {
+  AwRenderViewExt::WebViewCreated(web_view, was_created_by_renderer);
 }
 
 void AwContentRendererClient::PrepareErrorPage(

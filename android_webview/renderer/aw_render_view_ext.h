@@ -23,10 +23,15 @@ class AwRenderViewExt : public blink::WebViewObserver {
   AwRenderViewExt(const AwRenderViewExt&) = delete;
   AwRenderViewExt& operator=(const AwRenderViewExt&) = delete;
 
-  static void WebViewCreated(blink::WebView* web_view);
+  static void WebViewCreated(blink::WebView* web_view,
+                             bool created_by_renderer);
+
+  static AwRenderViewExt* FromWebView(blink::WebView* web_view);
+
+  bool created_by_renderer() { return created_by_renderer_; }
 
  private:
-  AwRenderViewExt(blink::WebView* web_view);
+  AwRenderViewExt(blink::WebView* web_view, bool created_by_renderer);
   ~AwRenderViewExt() override;
 
   // blink::WebViewObserver overrides.
@@ -41,6 +46,8 @@ class AwRenderViewExt : public blink::WebViewObserver {
   // Whether the contents size may have changed and |UpdateContentsSize| needs
   // to be called.
   bool needs_contents_size_update_ = true;
+
+  bool created_by_renderer_;
 };
 
 }  // namespace android_webview

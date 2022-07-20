@@ -5116,15 +5116,12 @@ void RenderFrameImpl::BeginNavigation(
   DCHECK(!(use_archive && IsMainFrame()));
 
 #if BUILDFLAG(IS_ANDROID)
-  bool render_view_was_created_by_renderer =
-      render_view_->was_created_by_renderer_;
   // The handlenavigation API is deprecated and will be removed once
   // crbug.com/325351 is resolved.
   if (!url.is_empty() && !use_archive && !IsURLHandledByNetworkStack(url) &&
       GetContentClient()->renderer()->HandleNavigation(
-          this, render_view_was_created_by_renderer, frame_, info->url_request,
-          info->navigation_type, info->navigation_policy,
-          false /* is_redirect */)) {
+          this, frame_, info->url_request, info->navigation_type,
+          info->navigation_policy, false /* is_redirect */)) {
     return;
   }
 #endif

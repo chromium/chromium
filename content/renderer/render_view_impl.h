@@ -183,13 +183,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   // The `AgentSchedulingGroup` this view is associated with.
   AgentSchedulingGroup& agent_scheduling_group_;
 
-#if BUILDFLAG(IS_ANDROID)
-  // Android Specific ----------------------------------------------------------
-
-  // Whether this was a renderer-created or browser-created RenderViewImpl.
-  bool was_created_by_renderer_ = false;
-#endif
-
   // ---------------------------------------------------------------------------
   // ADDING NEW DATA? Please see if it fits appropriately in one of the above
   // sections rather than throwing it randomly at the end. If you're adding a

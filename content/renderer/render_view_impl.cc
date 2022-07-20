@@ -165,13 +165,8 @@ void RenderViewImpl::Initialize(
   if (params->window_was_opened_by_another_window)
     GetWebView()->SetOpenedByDOM();
 
-  GetContentClient()->renderer()->WebViewCreated(webview_);
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(sgurun): crbug.com/325351 Needed only for android webview's deprecated
-  // HandleNavigation codepath.
-  was_created_by_renderer_ = was_created_by_renderer;
-#endif
+  GetContentClient()->renderer()->WebViewCreated(webview_,
+                                                 was_created_by_renderer);
 }
 
 RenderViewImpl::~RenderViewImpl() {

@@ -172,7 +172,8 @@ void ContentRendererClientImpl::RenderFrameCreated(
   }
 }
 
-void ContentRendererClientImpl::WebViewCreated(blink::WebView* web_view) {
+void ContentRendererClientImpl::WebViewCreated(blink::WebView* web_view,
+                                               bool was_created_by_renderer) {
   new prerender::NoStatePrefetchClient(web_view);
 }
 
