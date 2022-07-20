@@ -107,6 +107,9 @@ void RegisterContentSchemes(bool should_lock_registry) {
     url::EnableNonStandardSchemesForAndroidWebView();
 #endif
 
+  for (auto& [scheme, handler] : schemes.predefined_handler_schemes)
+    url::AddPredefinedHandlerScheme(scheme.c_str(), handler.c_str());
+
   schemes.service_worker_schemes.push_back(kIsolatedAppScheme);
   // This should only be registered if the
   // kEnableServiceWorkerForChromeUntrusted feature is enabled but checking

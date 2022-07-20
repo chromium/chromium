@@ -277,6 +277,12 @@ extern const char kCwsEnhancedSafeBrowsingLearnMoreURL[];
 extern const char kEnhancedPlaybackNotificationLearnMoreURL[];
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Chrome OS default pre-defined custom handlers
+extern const char kChromeOSDefaultMailtoHandler[];
+extern const char kChromeOSDefaultWebcalHandler[];
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Help center URL for Chrome OS Account Manager.
 extern const char kAccountManagerLearnMoreURL[];

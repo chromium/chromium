@@ -24,6 +24,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_util.h"
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
@@ -68,11 +69,9 @@ std::unique_ptr<ProtocolHandlerRegistry> ProtocolHandlerRegistry::Create(
   auto registry =
       std::make_unique<ProtocolHandlerRegistry>(prefs, std::move(delegate));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If installing defaults, they must be installed prior calling
   // InitProtocolSettings.
-  registry->InstallDefaultsForChromeOS();
-#endif
+  registry->InstallPredefinedHandlers();
 
   registry->InitProtocolSettings();
 
@@ -178,17 +177,11 @@ bool ProtocolHandlerRegistry::IsDefault(const ProtocolHandler& handler) const {
   return GetHandlerFor(handler.protocol()) == handler;
 }
 
-void ProtocolHandlerRegistry::InstallDefaultsForChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only chromeos has default protocol handlers at this point.
-  AddPredefinedHandler(ProtocolHandler::CreateProtocolHandler(
-      "mailto",
-      GURL("https://mail.google.com/mail/?extsrc=mailto&amp;url=%s")));
-  AddPredefinedHandler(ProtocolHandler::CreateProtocolHandler(
-      "webcal", GURL("https://www.google.com/calendar/render?cid=%s")));
-#else
-  NOTREACHED();  // this method should only ever be called in chromeos.
-#endif
+void ProtocolHandlerRegistry::InstallPredefinedHandlers() {
+  for (const auto& [scheme, handler] : url::GetPredefinedHandlerSchemes()) {
+    AddPredefinedHandler(
+        ProtocolHandler::CreateProtocolHandler(scheme, GURL(handler)));
+  }
 }
 
 void ProtocolHandlerRegistry::InitProtocolSettings() {

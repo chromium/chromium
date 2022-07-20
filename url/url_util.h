@@ -115,6 +115,16 @@ COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCSPBypassingSchemes();
 COMPONENT_EXPORT(URL) void AddEmptyDocumentScheme(const char* new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetEmptyDocumentSchemes();
 
+// Adds a scheme with a predefined default handler.
+//
+// This pair of strings must be normalized protocol handler parameters as
+// described in the Custom Handler specification.
+// https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+COMPONENT_EXPORT(URL)
+void AddPredefinedHandlerScheme(const char* new_scheme, const char* handler);
+COMPONENT_EXPORT(URL)
+std::vector<std::pair<std::string, std::string>> GetPredefinedHandlerSchemes();
+
 // Sets a flag to prevent future calls to Add*Scheme from succeeding.
 //
 // This is designed to help prevent errors for multithreaded applications.

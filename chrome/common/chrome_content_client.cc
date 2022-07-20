@@ -307,6 +307,13 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->csp_bypassing_schemes.push_back(extensions::kExtensionScheme);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  schemes->predefined_handler_schemes.emplace_back(
+      url::kMailToScheme, chrome::kChromeOSDefaultMailtoHandler);
+  schemes->predefined_handler_schemes.emplace_back(
+      url::kWebcalScheme, chrome::kChromeOSDefaultWebcalHandler);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   schemes->local_schemes.push_back(content::kExternalFileScheme);
 #endif

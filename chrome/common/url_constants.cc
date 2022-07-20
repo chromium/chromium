@@ -308,6 +308,13 @@ const char kEnhancedPlaybackNotificationLearnMoreURL[] =
     "https://support.google.com/chrome/?p=mobile_protected_content";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kChromeOSDefaultMailtoHandler[] =
+    "https://mail.google.com/mail/?extsrc=mailto&amp;url=%s";
+const char kChromeOSDefaultWebcalHandler[] =
+    "https://www.google.com/calendar/render?cid=%s";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAccountManagerLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=google_accounts";

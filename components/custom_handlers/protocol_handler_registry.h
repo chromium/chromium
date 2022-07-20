@@ -227,7 +227,7 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Install default protocol handlers for chromeos which must be done
   // prior to calling InitProtocolSettings.
-  void InstallDefaultsForChromeOS();
+  void InstallPredefinedHandlers();
 
   // Puts the given handler at the top of the list of handlers for its
   // protocol.

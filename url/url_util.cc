@@ -29,6 +29,16 @@ struct SchemeWithType {
   SchemeType type;
 };
 
+// A pair for representing a scheme and a custom protocol handler for it.
+//
+// This pair of strings must be normalized protocol handler parameters as
+// described in the Custom Handler specification.
+// https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+struct SchemeWithHandler {
+  std::string scheme;
+  std::string handler;
+};
+
 // List of currently registered schemes and associated properties.
 struct SchemeRegistry {
   // Standard format schemes (see header for details).
@@ -100,6 +110,9 @@ struct SchemeRegistry {
   std::vector<std::string> empty_document_schemes = {
       kAboutScheme,
   };
+
+  // Schemes with a predefined default custom handler.
+  std::vector<SchemeWithHandler> predefined_handler_schemes;
 
   bool allow_non_standard_schemes = false;
 };
@@ -501,6 +514,21 @@ void DoSchemeModificationPreamble() {
       << "Trying to add a scheme after the lists have been locked.";
 }
 
+void DoAddSchemeWithHandler(const char* new_scheme,
+                            const char* handler,
+                            std::vector<SchemeWithHandler>* schemes) {
+  DoSchemeModificationPreamble();
+  DCHECK(schemes);
+  DCHECK(strlen(new_scheme) > 0);
+  DCHECK(strlen(handler) > 0);
+  DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
+  DCHECK(std::find_if(schemes->begin(), schemes->end(),
+                      [&new_scheme](const SchemeWithHandler& scheme) {
+                        return scheme.scheme == new_scheme;
+                      }) == schemes->end());
+  schemes->push_back({new_scheme, handler});
+}
+
 void DoAddScheme(const char* new_scheme, std::vector<std::string>* schemes) {
   DoSchemeModificationPreamble();
   DCHECK(schemes);
@@ -647,6 +675,22 @@ void AddEmptyDocumentScheme(const char* new_scheme) {
 
 const std::vector<std::string>& GetEmptyDocumentSchemes() {
   return GetSchemeRegistry().empty_document_schemes;
+}
+
+void AddPredefinedHandlerScheme(const char* new_scheme, const char* handler) {
+  DoAddSchemeWithHandler(
+      new_scheme, handler,
+      &GetSchemeRegistryWithoutLocking()->predefined_handler_schemes);
+}
+
+std::vector<std::pair<std::string, std::string>> GetPredefinedHandlerSchemes() {
+  std::vector<std::pair<std::string, std::string>> result;
+  result.reserve(GetSchemeRegistry().predefined_handler_schemes.size());
+  for (const SchemeWithHandler& entry :
+       GetSchemeRegistry().predefined_handler_schemes) {
+    result.emplace_back(entry.scheme, entry.handler);
+  }
+  return result;
 }
 
 void LockSchemeRegistries() {

@@ -54,6 +54,8 @@ COMPONENT_EXPORT(URL) extern const char kUrnScheme[];
 COMPONENT_EXPORT(URL) extern const char16_t kUrnScheme16[];
 COMPONENT_EXPORT(URL) extern const char kUuidInPackageScheme[];
 COMPONENT_EXPORT(URL) extern const char16_t kUuidInPackageScheme16[];
+COMPONENT_EXPORT(URL) extern const char kWebcalScheme[];
+COMPONENT_EXPORT(URL) extern const char16_t kWebcalScheme16[];
 COMPONENT_EXPORT(URL) extern const char kWsScheme[];
 COMPONENT_EXPORT(URL) extern const char16_t kWsScheme16[];
 COMPONENT_EXPORT(URL) extern const char kWssScheme[];
