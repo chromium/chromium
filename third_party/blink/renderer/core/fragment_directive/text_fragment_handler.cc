@@ -40,7 +40,11 @@ void TextFragmentHandler::BindTextFragmentReceiver(
 }
 
 void TextFragmentHandler::Cancel() {
-  DCHECK(GetTextFragmentSelectorGenerator());
+  // TODO(crbug.com/1303881): This shouldn't happen, but sometimes browser
+  // side requests link to text when generation was never started.
+  // See crash in crbug.com/1301794.
+  if (!GetTextFragmentSelectorGenerator())
+    return;
 
   GetTextFragmentSelectorGenerator()->Reset();
 }
