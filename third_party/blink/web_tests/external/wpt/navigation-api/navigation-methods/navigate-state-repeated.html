@@ -3,7 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 promise_test(async t => {
-  navigation.onnavigate = e => e.transitionWhile(Promise.resolve());
+  navigation.onnavigate = e => e.intercept();
 
   let result1 = navigation.navigate('/foo', {state: {foo: 1}});
   assert_equals(navigation.currentEntry.getState().foo, 1);

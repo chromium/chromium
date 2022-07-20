@@ -20,5 +20,5 @@ promise_test(async t => {
   i.contentWindow.navigation.onnavigateerror = t.unreached_func("navigateerror must not fire");
   await new Promise(resolve => t.step_timeout(resolve, 20));
   assert_true(navigate_called);
-}, "<a download> fires navigate, but not navigatesuccess or navigateerror when not intercepted by transitionWhile()");
+}, "<a download> fires navigate, but not navigatesuccess or navigateerror when not intercepted by intercept()");
 </script>

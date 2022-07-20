@@ -11,7 +11,8 @@
 
   readonly attribute NavigationNavigationType navigationType;
   readonly attribute NavigationDestination destination;
-  readonly attribute boolean canTransition;
+  [ImplementedAs=canIntercept] readonly attribute boolean canTransition;
+  readonly attribute boolean canIntercept;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
@@ -19,6 +20,7 @@
   readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
-  [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional NavigationTransitionWhileOptions options = {});
+  [RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional NavigationTransitionWhileOptions options = {});
+  [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
   [RaisesException] void restoreScroll();
 };

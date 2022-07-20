@@ -19,7 +19,7 @@ async_test(t => {
       let onnavigate_called = false;
       let promise_settled = false;
       i.contentWindow.navigation.onnavigate = t.step_func(e => {
-        e.transitionWhile(Promise.resolve());
+        e.intercept();
         onnavigate_called = true;
         assert_equals(e.info, navInfo);
         assert_equals(e.navigationType, "reload");

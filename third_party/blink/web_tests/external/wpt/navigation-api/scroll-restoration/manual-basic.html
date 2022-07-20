@@ -12,7 +12,7 @@ promise_test(async t => {
   assert_equals(window.scrollY, 0);
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
-  navigation.onnavigate = e => e.transitionWhile(Promise.resolve(), { scrollRestoration: "manual" });
+  navigation.onnavigate = e => e.intercept({ scrollRestoration: "manual" });
   await navigation.back().finished;
   assert_not_equals(window.scrollY, 0);
 }, "scrollRestoration: manual should prevent auto scroll on back.");

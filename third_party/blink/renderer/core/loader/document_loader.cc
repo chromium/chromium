@@ -826,6 +826,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
     navigation_api->UpdateForNavigation(*history_item_, type);
+  if (!frame_)
+    return;
 
   // Aything except a history.pushState/replaceState is considered a new
   // navigation that resets whether the user has scrolled and fires popstate.

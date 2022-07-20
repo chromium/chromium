@@ -10,7 +10,7 @@ async_test(t => {
   i.contentWindow.navigation.onnavigate = t.step_func_done(e => {
     assert_equals(e.navigationType, "push", "navigationType");
     assert_true(e.cancelable, "cancelable");
-    assert_true(e.canTransition, "canTransition");
+    assert_true(e.canIntercept, "canIntercept");
     assert_false(e.userInitiated, "userInitiated");
     assert_false(e.hashChange, "hashChange");
     assert_equals(e.formData, null, "formData");

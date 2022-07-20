@@ -62,6 +62,7 @@ enum class DeprecationIssueType {
   kLocalCSSFileExtensionRejected,
   kMediaSourceAbortRemove,
   kMediaSourceDurationTruncatingBuffered,
+  kNavigateEventTransitionWhile,
   kNoSysexWebMIDIWithoutPermission,
   kNotDeprecated,
   kNotificationInsecureOrigin,

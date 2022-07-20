@@ -310,19 +310,40 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // Note how reload types don't update the current entry or dispose any
   // entries.
 
-  // It's important to do this before firing dispose events, since dispose
-  // events could start another navigation or otherwise mess with
-  // ongoing_navigation_.
+  // It's important to do this before firing dispose events, since
+  // currententrychange or dispose events below could start another navigation
+  // or otherwise mess with ongoing_navigation_. In that case, waiting to call
+  // NotifyAboutTheCommittedToEntry() leads to the committed promise rejecting,
+  // even though we have already committed and the promise should definitely
+  // fulfill.
   if (ongoing_navigation_) {
     ongoing_navigation_->NotifyAboutTheCommittedToEntry(
         entries_[current_entry_index_], type);
   }
+
+  NavigateEvent* ongoing_navigate_event = ongoing_navigate_event_;
+
+  // Entering a MicrotasksScope here allows us to defer microtasks from running
+  // immediately after the currententrychange and dispose events if there is an
+  // event listener for any of those events. This ensures a stable
+  // relative ordering of the navigateResult.committed promise (fulfilled in
+  // NotifyAboutTheCommittedToEntry() above) and any intercept() handlers (run
+  // in FinalizeNavigationActionPromisesList() below). intercept() handlers must
+  // execute first.
+  // Without the microtasks scope deferring promise continuations, the order
+  // inverts when committing a browser-initiated same-document navigation and
+  // an event listener is present for either currententrychange or dispose.
+  v8::MicrotasksScope scope(GetSupplementable()->GetIsolate(),
+                            v8::MicrotasksScope::kRunMicrotasks);
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
   init->setNavigationType(DetermineNavigationType(type));
   init->setFrom(old_current);
   DispatchEvent(*NavigationCurrentEntryChangeEvent::Create(
       event_type_names::kCurrententrychange, init));
+
+  if (ongoing_navigate_event)
+    ongoing_navigate_event->FinalizeNavigationActionPromisesList();
 
   for (const auto& disposed_entry : disposed_entries) {
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
@@ -758,7 +779,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   init->setDestination(destination);
 
   init->setCancelable(params.frame_load_type != WebFrameLoadType::kBackForward);
-  init->setCanTransition(
+  init->setCanIntercept(
       CanChangeToUrlForHistoryApi(
           params.url, GetSupplementable()->GetSecurityOrigin(), current_url) &&
       (params.event_type != NavigateEventType::kCrossDocument ||
@@ -792,8 +813,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     return DispatchResult::kAbort;
   }
 
-  auto promise_list = navigate_event->GetNavigationActionPromisesList();
-  if (!promise_list.IsEmpty()) {
+  if (navigate_event->HasNavigationActions()) {
     transition_ = MakeGarbageCollected<NavigationTransition>(
         script_state, navigation_type, currentEntry());
 
@@ -813,11 +833,12 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
         params.is_synchronously_committed_same_document);
   }
 
-  if (!promise_list.IsEmpty() ||
+  if (navigate_event->HasNavigationActions() ||
       params.event_type != NavigateEventType::kCrossDocument) {
     NavigateReaction::ReactType react_type =
-        promise_list.IsEmpty() ? NavigateReaction::ReactType::kImmediate
-                               : NavigateReaction::ReactType::kTransitionWhile;
+        navigate_event->HasNavigationActions()
+            ? NavigateReaction::ReactType::kTransitionWhile
+            : NavigateReaction::ReactType::kImmediate;
 
     // There is a subtle timing difference between the fast-path for zero
     // promises and the path for 1+ promises, in both spec and implementation.
@@ -827,6 +848,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // finished promise, ...) that the difference is pretty easily observable by
     // web developers and web platform tests. So, let's make sure we always go
     // down the 1+ promises path.
+    auto promise_list = navigate_event->GetNavigationActionPromisesList();
     const HeapVector<ScriptPromise>& tweaked_promise_list =
         promise_list.IsEmpty()
             ? HeapVector<ScriptPromise>(
@@ -842,8 +864,9 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   // navigations, because they might later get interrupted by another
   // navigation, in which case we need to reject the promises and so on.
 
-  return promise_list.IsEmpty() ? DispatchResult::kContinue
-                                : DispatchResult::kTransitionWhile;
+  return navigate_event->HasNavigationActions()
+             ? DispatchResult::kTransitionWhile
+             : DispatchResult::kContinue;
 }
 
 void NavigationApi::InformAboutCanceledNavigation(
@@ -890,7 +913,7 @@ void NavigationApi::ContextDestroyed() {
 bool NavigationApi::HasNonDroppedOngoingNavigation() const {
   bool has_ongoing_transition_while =
       ongoing_navigate_event_ &&
-      !ongoing_navigate_event_->GetNavigationActionPromisesList().IsEmpty();
+      ongoing_navigate_event_->HasNavigationActions();
   return has_ongoing_transition_while && !has_dropped_navigation_;
 }
 

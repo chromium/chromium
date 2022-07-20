@@ -14,7 +14,7 @@ enum NavigationNavigationType {
 dictionary NavigateEventInit : EventInit {
   NavigationNavigationType navigationType = "push";
   required NavigationDestination destination;
-  boolean canTransition = false;
+  boolean canIntercept = false;
   boolean userInitiated = false;
   boolean hashChange = false;
   required AbortSignal signal;

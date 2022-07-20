@@ -40857,6 +40857,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4300" label="CookieDomainNonASCII"/>
   <int value="4301" label="ClientHintsMetaEquivDelegateCH"/>
   <int value="4302" label="ExpectCTHeader"/>
+  <int value="4303" label="NavigateEventTransitionWhile"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

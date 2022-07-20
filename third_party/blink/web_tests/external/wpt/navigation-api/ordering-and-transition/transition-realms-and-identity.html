@@ -9,7 +9,7 @@ promise_test(async () => {
   await new Promise(resolve => window.onload = resolve);
 
   i.contentWindow.navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   });
 
   const returnValueFinished1 = i.contentWindow.navigation.navigate("?1").finished;

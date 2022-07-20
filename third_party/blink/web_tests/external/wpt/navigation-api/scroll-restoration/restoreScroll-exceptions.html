@@ -12,27 +12,27 @@ promise_test(async t => {
 
   // Throw for non-traverse
   navigation.addEventListener("navigate", t.step_func(e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
     assert_throws_dom("InvalidStateError", () => e.restoreScroll());
   }), { once : true });
   await navigation.navigate("#frag").finished;
 
-  // Throw for non-transitionWhile() traverse
+  // Throw for non-intercept() traverse
   navigation.addEventListener("navigate", t.step_func(e => {
     assert_throws_dom("InvalidStateError", () => e.restoreScroll());
   }), { once : true });
   await navigation.back().finished;
 
-  // Throw for transitionWhile() traverse with no explicit scrollRestoration behavior.
+  // Throw for intercept() traverse with no explicit scrollRestoration behavior.
   navigation.addEventListener("navigate", t.step_func(e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
     assert_throws_dom("InvalidStateError", () => e.restoreScroll());
   }), { once : true });
   await navigation.forward().finished;
 
-  // Throw for transitionWhile() traverse with scrollRestoration "after-transition".
+  // Throw for intercept() traverse with scrollRestoration "after-transition".
   navigation.addEventListener("navigate", t.step_func(e => {
-    e.transitionWhile(Promise.resolve(), { scrollRestoration: "after-transition" });
+    e.intercept({ scrollRestoration: "after-transition" });
     assert_throws_dom("InvalidStateError", () => e.restoreScroll());
   }), { once : true });
   await navigation.back().finished;

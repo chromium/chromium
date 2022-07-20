@@ -20,7 +20,7 @@ async_test(t => {
       let result;
 
       i.contentWindow.navigation.onnavigate = t.step_func(e => {
-        e.transitionWhile(new Promise(resolve => () => t.step_timeout(resolve, 2)));
+        e.intercept({ handler: () => new Promise(resolve => t.step_timeout(resolve, 2)) });
         t.step_timeout(() => i.remove(), 1);
       });
 

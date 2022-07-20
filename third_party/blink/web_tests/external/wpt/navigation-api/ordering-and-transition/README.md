@@ -15,10 +15,10 @@ Note:
   existing for `currententrychange` causes code to run, and thus microtasks to run,
   at a very specific point in the navigation-commit lifecycle. We want to test
   that it doesn't impact the ordering.
-* Similarly we test that `transitionWhile(Promise.resolve())` does not change
-  the ordering compared to no `transitionWhile()` call, for same-document
+* Similarly we test that `intercept()` does not change
+  the ordering compared to no `intercept()` call, for same-document
   navigations, by trying to ensure most variants have appropriate
-  `transitionWhile()` counterparts with similar orderings.
+  `intercept()` counterparts with similar orderings.
 
 TODOs:
 

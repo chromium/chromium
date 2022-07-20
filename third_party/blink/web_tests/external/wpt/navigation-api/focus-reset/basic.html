@@ -12,7 +12,7 @@ test(() => {
 
   navigation.addEventListener("navigate", e => {
     assert_throws_js(TypeError, () => {
-      e.transitionWhile(Promise.resolve(), { focusReset: "invalid" });
+      e.intercept({ focusReset: "invalid" });
     });
     throwAssertionHappened = true;
   }, { once: true });
@@ -27,40 +27,37 @@ testFocusWasNotReset(() => {
 
 testFocusWasReset(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 }, "Resets the focus when no focusReset option is provided");
 
 testFocusWasReset(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 }, "Resets the focus when focusReset is explicitly set to undefined");
 
 testFocusWasReset(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(new Promise(r => t.step_timeout(r, 5)));
+    e.intercept({ handler: () => new Promise(r => t.step_timeout(r, 5)) });
   }, { once: true });
 }, "Resets the focus when no focusReset option is provided (nontrivial fulfilled promise)");
 
 testFocusWasReset(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.reject());
+    e.intercept({ handler: () => Promise.reject() });
   }, { once: true });
 }, "Resets the focus when no focusReset option is provided (rejected promise)");
 
 testFocusWasReset(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(
-      Promise.resolve(),
-      { focusReset: "after-transition" }
-    );
+    e.intercept({ focusReset: "after-transition" });
   }, { once: true });
 }, "Resets the focus when focusReset is explicitly set to 'after-transition'");
 
 testFocusWasNotReset(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve(), { focusReset: "manual" });
+    e.intercept({ focusReset: "manual" });
   });
 }, "Does not reset the focus when focusReset is set to 'manual'");
 </script>

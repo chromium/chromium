@@ -12,5 +12,5 @@ promise_test(async t => {
   assertNeverSettles(t, result, i.contentWindow);
 
   await new Promise(resolve => i.onload = () => t.step_timeout(resolve, 0));
-}, "reload() promises never settle (without transitionWhile())");
+}, "reload() promises never settle (without intercept())");
 </script>

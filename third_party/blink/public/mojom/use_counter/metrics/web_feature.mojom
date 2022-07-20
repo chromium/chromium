@@ -3621,6 +3621,7 @@ enum WebFeature {
   kCookieDomainNonASCII = 4300,
   kClientHintsMetaEquivDelegateCH = 4301,
   kExpectCTHeader = 4302,
+  kNavigateEventTransitionWhile = 4303,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

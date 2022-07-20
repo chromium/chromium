@@ -12,7 +12,7 @@ promise_test(async t => {
   assert_equals(window.scrollY, 0);
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
-  navigation.onnavigate = e => e.transitionWhile(Promise.resolve(), { scrollRestoration: "after-transition" });
+  navigation.onnavigate = e => e.intercept({ scrollRestoration: "after-transition" });
   await navigation.back().finished;
   assert_equals(window.scrollY, 0);
 }, "scrollRestoration: after-transition should scroll when back completes");

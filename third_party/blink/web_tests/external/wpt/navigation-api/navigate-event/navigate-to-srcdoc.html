@@ -11,7 +11,7 @@ async_test(t => {
     iframe.contentWindow.navigation.onnavigate = t.step_func(e => {
       assert_equals(e.navigationType, "push");
       assert_true(e.cancelable, "cancelable");
-      assert_false(e.canTransition, "canTransition");
+      assert_false(e.canIntercept, "canIntercept");
       assert_false(e.userInitiated, "userInitiated");
       assert_false(e.hashChange, "hashChange");
       assert_equals(e.downloadRequest, null);

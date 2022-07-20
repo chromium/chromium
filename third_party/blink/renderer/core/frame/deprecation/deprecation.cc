@@ -241,6 +241,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kIdentityInCanMakePaymentEvent:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kIdentityInCanMakePaymentEvent);
+    case WebFeature::kNavigateEventTransitionWhile:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kNavigateEventTransitionWhile);
     default:
       return DeprecationInfo::NotDeprecated(feature);
   }

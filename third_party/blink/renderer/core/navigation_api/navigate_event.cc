@@ -6,12 +6,15 @@
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_handler.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_transition_while_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -27,7 +30,7 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
       ExecutionContextClient(context),
       navigation_type_(init->navigationType()),
       destination_(init->destination()),
-      can_transition_(init->canTransition()),
+      can_intercept_(init->canIntercept()),
       user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
       signal_(init->signal()),
@@ -40,52 +43,51 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
   DCHECK(IsA<LocalDOMWindow>(context));
 }
 
-void NavigateEvent::transitionWhile(ScriptState* script_state,
-                                    ScriptPromise newNavigationAction,
-                                    NavigationTransitionWhileOptions* options,
-                                    ExceptionState& exception_state) {
+bool NavigateEvent::PerformSharedInteceptChecksAndSetup(
+    NavigationTransitionWhileOptions* options,
+    const String& function_name,
+    ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "transitionWhile() may not be called in a "
-        "detached window.");
-    return;
+        function_name + "() may not be called in a detached window.");
+    return false;
   }
 
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
-        "transitionWhile() may only be called on a "
-        "trusted event.");
-    return;
+        function_name + "() may only be called on a trusted event.");
+    return false;
   }
 
-  if (!can_transition_) {
+  if (!can_intercept_) {
     exception_state.ThrowSecurityError(
         "A navigation with URL '" + url_.ElidedString() +
-        "' cannot be intercepted by transitionWhile() in a window with origin "
-        "'" +
+        "' cannot be intercepted by in a window with origin '" +
         DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
         DomWindow()->Url().ElidedString() + "'.");
-    return;
+    return false;
   }
 
   if (!IsBeingDispatched()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "transitionWhile() may only be called while the navigate event is "
-        "being dispatched.");
+        function_name +
+            "() may only be called while the navigate event is "
+            "being dispatched.");
+    return false;
   }
 
   if (defaultPrevented()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "transitionWhile() may not be called if the event has been canceled.");
-    return;
+        function_name + "() may not be called if the event has been canceled.");
+    return false;
   }
 
-  if (navigation_action_promises_list_.IsEmpty())
+  if (!HasNavigationActions()) {
     DomWindow()->document()->AddFocusedElementChangeObserver(this);
-  navigation_action_promises_list_.push_back(newNavigationAction);
+  }
 
   if (options->hasFocusReset()) {
     if (focus_reset_behavior_ &&
@@ -117,12 +119,47 @@ void NavigateEvent::transitionWhile(ScriptState* script_state,
     }
     scroll_restoration_behavior_ = options->scrollRestoration();
   }
+  return true;
+}
+
+void NavigateEvent::transitionWhile(ScriptPromise newNavigationAction,
+                                    NavigationTransitionWhileOptions* options,
+                                    ExceptionState& exception_state) {
+  if (DomWindow()) {
+    Deprecation::CountDeprecation(DomWindow(),
+                                  WebFeature::kNavigateEventTransitionWhile);
+  }
+
+  if (PerformSharedInteceptChecksAndSetup(options, "transitionWhile",
+                                          exception_state)) {
+    has_navigation_actions_ = true;
+    navigation_action_promises_list_.push_back(newNavigationAction);
+  }
+}
+
+void NavigateEvent::intercept(NavigationInterceptOptions* options,
+                              ExceptionState& exception_state) {
+  if (PerformSharedInteceptChecksAndSetup(options, "intercept",
+                                          exception_state)) {
+    has_navigation_actions_ = true;
+    if (options->hasHandler())
+      navigation_action_handlers_list_.push_back(options->handler());
+  }
+}
+
+void NavigateEvent::FinalizeNavigationActionPromisesList() {
+  for (auto& function : navigation_action_handlers_list_) {
+    ScriptPromise result;
+    if (function->Invoke(this).To(&result))
+      navigation_action_promises_list_.push_back(result);
+  }
+  navigation_action_handlers_list_.clear();
 }
 
 void NavigateEvent::ResetFocusIfNeeded() {
   // We only do focus reset if transitionWhile() was called, opting us into the
   // new default behavior which the navigation API provides.
-  if (navigation_action_promises_list_.IsEmpty())
+  if (!HasNavigationActions())
     return;
   auto* document = DomWindow()->document();
   document->RemoveFocusedElementChangeObserver(this);
@@ -150,12 +187,12 @@ void NavigateEvent::ResetFocusIfNeeded() {
 }
 
 void NavigateEvent::DidChangeFocus() {
-  DCHECK(!navigation_action_promises_list_.IsEmpty());
+  DCHECK(HasNavigationActions());
   did_change_focus_during_transition_while_ = true;
 }
 
 bool NavigateEvent::ShouldSendAxEvents() const {
-  return !navigation_action_promises_list_.IsEmpty();
+  return HasNavigationActions();
 }
 
 void NavigateEvent::restoreScroll(ExceptionState& exception_state) {
@@ -231,6 +268,7 @@ void NavigateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(form_data_);
   visitor->Trace(info_);
   visitor->Trace(navigation_action_promises_list_);
+  visitor->Trace(navigation_action_handlers_list_);
 }
 
 }  // namespace blink

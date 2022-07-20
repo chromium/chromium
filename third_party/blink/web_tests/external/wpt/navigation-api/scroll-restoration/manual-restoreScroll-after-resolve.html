@@ -16,7 +16,7 @@ promise_test(async t => {
   let navigate_event;
   navigation.onnavigate = e => {
     navigate_event = e;
-    e.transitionWhile(Promise.resolve(), { scrollRestoration: "manual" });
+    e.intercept({ scrollRestoration: "manual" });
   };
   await navigation.back().finished;
   assert_not_equals(window.scrollY, 0);

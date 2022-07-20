@@ -13,12 +13,6 @@ promise_test(async t => {
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
 
-  let transitionWhile_resolve;
-  navigation.onnavigate = t.step_func(e => {
-    e.transitionWhile(new Promise(r => transitionWhile_resolve = r));
-    assert_not_equals(window.scrollY, 0);
-  }), { scrollRestoration: "after-transition" };
-
   window.onpopstate = t.step_func(() => assert_not_equals(window.scrollY, 0));
   window.onhashchange = t.step_func(() => assert_not_equals(window.scrollY, 0));
 
@@ -30,10 +24,21 @@ promise_test(async t => {
   });
 
   let back_promises = navigation.back();
-
-  await back_promises.committed;
-  transitionWhile_resolve();
-  assert_not_equals(window.scrollY, 0);
+  navigation.onnavigate = t.step_func(e => {
+    e.intercept({ scrollRestoration: "after-transition",
+                  handler: async () => {
+                    // The ordering here should be:
+                    //  * intercept() is called
+                    //  * back_promises.committed is resolved
+                    //  * this handler runs.
+                    // If this handler incorrectly blocks back_promises.committed,
+                    // this test will hang.
+                    await back_promises.committed;
+                    assert_not_equals(window.scrollY, 0);
+                  }
+                });
+    assert_not_equals(window.scrollY, 0);
+  });
 
   await back_promises.finished;
   assert_equals(window.scrollY, 0);

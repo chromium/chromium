@@ -13,7 +13,7 @@ promise_test(async t => {
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
   navigation.onnavigate = t.step_func(e => {
-    e.transitionWhile(Promise.resolve(), { scrollRestoration: "manual" });
+    e.intercept({ scrollRestoration: "manual" });
     e.restoreScroll();
     assert_equals(window.scrollY, 0);
     assert_throws_dom("InvalidStateError", () => e.restoreScroll());

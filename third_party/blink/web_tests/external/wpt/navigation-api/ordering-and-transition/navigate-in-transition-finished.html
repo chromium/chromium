@@ -32,7 +32,7 @@ promise_test(async t => {
   }));
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept({ handler() { recorder.record("handler run"); } });
 
     if (location.hash === "#1") {
       fromHash1 = navigation.currentEntry;
@@ -50,6 +50,7 @@ promise_test(async t => {
     /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
     ["currententrychange", "#1", { from: fromStart, navigationType: "push" }],
+    ["handler run", "#1", { from: fromStart, navigationType: "push" }],
     ["committed fulfilled 1", "#1", { from: fromStart, navigationType: "push" }],
     ["promise microtask", "#1", { from: fromStart, navigationType: "push" }],
     ["navigatesuccess", "#1", { from: fromStart, navigationType: "push" }],
@@ -58,6 +59,7 @@ promise_test(async t => {
 
     ["navigate", "#1", null],
     ["currententrychange", "#2", { from: fromHash1, navigationType: "push" }],
+    ["handler run", "#2", { from: fromHash1, navigationType: "push" }],
     ["committed fulfilled 2", "#2", { from: fromHash1, navigationType: "push" }],
     ["navigatesuccess", "#2", { from: fromHash1, navigationType: "push" }],
     ["finished fulfilled 2", "#2", null],

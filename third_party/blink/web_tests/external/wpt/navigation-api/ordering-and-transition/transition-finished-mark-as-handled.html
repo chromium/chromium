@@ -5,7 +5,7 @@
 <script>
 async_test(t => {
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.reject(new Error("oh no!")));
+    e.intercept({ handler: () => Promise.reject(new Error("oh no!")) });
   });
 
   window.onunhandledrejection = t.unreached_func("unhandledrejection must not fire");

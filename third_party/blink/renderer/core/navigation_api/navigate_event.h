@@ -25,10 +25,12 @@ namespace blink {
 class AbortSignal;
 class NavigationDestination;
 class NavigateEventInit;
+class NavigationInterceptOptions;
 class NavigationTransitionWhileOptions;
 class ExceptionState;
 class FormData;
 class ScriptPromise;
+class V8NavigationInterceptHandler;
 
 class NavigateEvent final : public Event,
                             public ExecutionContextClient,
@@ -50,7 +52,7 @@ class NavigateEvent final : public Event,
 
   String navigationType() { return navigation_type_; }
   NavigationDestination* destination() { return destination_; }
-  bool canTransition() const { return can_transition_; }
+  bool canIntercept() const { return can_intercept_; }
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
   AbortSignal* signal() { return signal_; }
@@ -58,10 +60,10 @@ class NavigateEvent final : public Event,
   String downloadRequest() const { return download_request_; }
   ScriptValue info() const { return info_; }
 
-  void transitionWhile(ScriptState*,
-                       ScriptPromise newNavigationAction,
+  void transitionWhile(ScriptPromise newNavigationAction,
                        NavigationTransitionWhileOptions*,
                        ExceptionState&);
+  void intercept(NavigationInterceptOptions*, ExceptionState&);
 
   void restoreScroll(ExceptionState&);
   void RestoreScrollAfterTransitionIfNeeded();
@@ -69,6 +71,9 @@ class NavigateEvent final : public Event,
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
   }
+  bool HasNavigationActions() const { return has_navigation_actions_; }
+  void FinalizeNavigationActionPromisesList();
+
   void ResetFocusIfNeeded();
   bool ShouldSendAxEvents() const;
 
@@ -81,12 +86,15 @@ class NavigateEvent final : public Event,
   void Trace(Visitor*) const final;
 
  private:
+  bool PerformSharedInteceptChecksAndSetup(NavigationTransitionWhileOptions*,
+                                           const String& function_name,
+                                           ExceptionState&);
   void RestoreScrollInternal();
   bool InManualScrollRestorationMode();
 
   String navigation_type_;
   Member<NavigationDestination> destination_;
-  bool can_transition_;
+  bool can_intercept_;
   bool user_initiated_;
   bool hash_change_;
   Member<AbortSignal> signal_;
@@ -99,7 +107,10 @@ class NavigateEvent final : public Event,
   absl::optional<HistoryItem::ViewState> history_item_view_state_;
 
   KURL url_;
+  bool has_navigation_actions_ = false;
   HeapVector<ScriptPromise> navigation_action_promises_list_;
+  HeapVector<Member<V8NavigationInterceptHandler>>
+      navigation_action_handlers_list_;
 
   enum class ManualRestoreState { kNotRestored, kRestored, kDone };
   ManualRestoreState restore_state_ = ManualRestoreState::kNotRestored;

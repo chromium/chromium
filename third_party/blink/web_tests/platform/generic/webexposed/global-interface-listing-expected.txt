@@ -5823,6 +5823,7 @@ interface NativeIOFileManager
     method requestCapacity
 interface NavigateEvent : Event
     attribute @@toStringTag
+    getter canIntercept
     getter canTransition
     getter destination
     getter downloadRequest
@@ -5833,6 +5834,7 @@ interface NavigateEvent : Event
     getter signal
     getter userInitiated
     method constructor
+    method intercept
     method restoreScroll
     method transitionWhile
 interface Navigation : EventTarget

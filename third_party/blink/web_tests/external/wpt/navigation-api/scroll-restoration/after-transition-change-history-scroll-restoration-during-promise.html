@@ -15,15 +15,16 @@ promise_test(async t => {
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
 
-  let transitionWhile_resolve;
+  let intercept_resolve;
   navigation.onnavigate = e => {
-    e.transitionWhile(new Promise(r => transitionWhile_resolve = r), { scrollRestoration: "after-transition" });
+    e.intercept({ handler: () => new Promise(r => intercept_resolve = r),
+                  scrollRestoration: "after-transition" });
   };
 
   let back_promises = navigation.back();
   await back_promises.committed;
   history.scrollRestoration = "auto";
-  transitionWhile_resolve();
+  intercept_resolve();
   await back_promises.finished;
   assert_equals(window.scrollY, 0);
 }, "scrollRestoration: after-transition should ignore history.scrollRestoration even if it changes in the middle of the navigation");

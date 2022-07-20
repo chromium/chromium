@@ -23,7 +23,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
@@ -44,7 +44,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
@@ -65,7 +65,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
@@ -88,7 +88,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
@@ -111,7 +111,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
@@ -134,7 +134,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
@@ -156,7 +156,7 @@ promise_test(async t => {
   assert_equals(document.activeElement, decoy, "focus() worked");
 
   navigation.addEventListener("navigate", e => {
-    e.transitionWhile(Promise.resolve());
+    e.intercept();
   }, { once: true });
 
   const { committed, finished } = navigation.navigate("#1");
