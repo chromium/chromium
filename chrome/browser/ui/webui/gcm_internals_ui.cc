@@ -71,9 +71,8 @@ void GcmInternalsUIMessageHandler::ReturnResults(
     Profile* profile,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) {
-  base::DictionaryValue results;
-  gcm_driver::SetGCMInternalsInfo(stats, profile_service, profile->GetPrefs(),
-                                  &results);
+  base::Value results = gcm_driver::SetGCMInternalsInfo(stats, profile_service,
+                                                        profile->GetPrefs());
   FireWebUIListener(gcm_driver::kSetGcmInternalsInfo, results);
 }
 
