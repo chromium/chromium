@@ -393,6 +393,11 @@ AX_TEST_F('DictationEditingUtilTest', 'SmartSpacing', function() {
   caretIndex = 6;
   commitText = 'there';
   assertEquals('there ', f());
+
+  value = 'hello,';
+  caretIndex = value.length;
+  commitText = 'world';
+  assertEquals(' world', f());
 });
 
 AX_TEST_F('DictationEditingUtilTest', 'SmartCapitalization', function() {
@@ -436,6 +441,11 @@ AX_TEST_F('DictationEditingUtilTest', 'SmartCapitalization', function() {
   caretIndex = 9;
   commitText = 'biology';
   assertEquals('biology', f());
+
+  value = 'hello,';
+  caretIndex = value.length;
+  commitText = 'world';
+  assertEquals('world', f());
 });
 
 AX_TEST_F('DictationEditingUtilTest', 'NavNextSentJa', function() {

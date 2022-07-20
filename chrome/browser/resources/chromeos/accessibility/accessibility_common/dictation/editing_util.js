@@ -243,6 +243,8 @@ export class EditingUtil {
    */
   static smartCapitalization(value, caretIndex, commitText) {
     if (EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_.test(commitText)) {
+      // If `commitText` begins with punctuation, then it's assumed that it's
+      // already correctly capitalized.
       return commitText;
     }
 
@@ -251,7 +253,7 @@ export class EditingUtil {
     }
 
     const leftOfCaret = value.substring(0, caretIndex).trim();
-    return EditingUtil.ENDS_WITH_PUNCTUATION_REGEX_.test(leftOfCaret) ?
+    return EditingUtil.ENDS_WITH_END_OF_SENTENCE_REGEX_.test(leftOfCaret) ?
         EditingUtil.capitalize_(commitText) :
         EditingUtil.lowercase_(commitText);
   }
@@ -317,6 +319,13 @@ export class EditingUtil {
 EditingUtil.END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]/;
 
 /**
+ * Similar to above, but looks for a match at the end of a string.
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.ENDS_WITH_END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]$/;
+
+/**
  * @private {!RegExp}
  * @const
  */
@@ -341,10 +350,3 @@ EditingUtil.PUNCTUATION_REGEX_ =
  */
 EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_ =
     /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/;
-
-/**
- * @private {!RegExp}
- * @const
- */
-EditingUtil.ENDS_WITH_PUNCTUATION_REGEX_ =
-    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]$/;

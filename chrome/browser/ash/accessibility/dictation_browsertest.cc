@@ -726,6 +726,15 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalizationWithComma) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello,", "Hello,");
+  SendFinalResultAndWaitForTextAreaValue("world", "Hello, world");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 // Tests the behavior of Dictation in other languages.
 class DictationI18NTest : public DictationTestBase {
  public:
