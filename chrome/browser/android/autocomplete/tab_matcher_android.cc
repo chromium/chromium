@@ -15,6 +15,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/search_engines/template_url_service.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 class AutocompleteClientTabAndroidUserData
@@ -66,7 +70,7 @@ bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
   if (!input)
     input = &empty_input;
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, client_.GetTemplateURLService(), std::u16string());
+      url, *input, template_url_service_, std::u16string());
   const auto all_tabs = GetAllHiddenAndNonCCTTabInfos();
   return all_tabs.find(stripped_url) != all_tabs.end();
 }
@@ -82,7 +86,7 @@ void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
 
   for (auto& gurl_to_tab_info : *map) {
     const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-        gurl_to_tab_info.first, *input, client_.GetTemplateURLService(),
+        gurl_to_tab_info.first, *input, template_url_service_,
         std::u16string());
     auto found_tab = all_tabs.find(stripped_url);
     if (found_tab != all_tabs.end()) {
@@ -148,8 +152,7 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos()
         AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
     DCHECK(user_data);
     if (!user_data->IsInitialized()) {
-      user_data->UpdateStrippedURL(tab->GetURL(),
-                                   client_.GetTemplateURLService());
+      user_data->UpdateStrippedURL(tab->GetURL(), template_url_service_);
     }
 
     const GURL& tab_stripped_url = user_data->GetStrippedURL();

@@ -7,15 +7,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/tab_matcher.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 
 // Implementation of TabMatcher shared across all desktop platforms.
 class TabMatcherDesktop : public TabMatcher {
  public:
-  TabMatcherDesktop(const AutocompleteProviderClient& client, Profile* profile)
-      : client_{client}, profile_{profile} {}
+  TabMatcherDesktop(const TemplateURLService* template_url_service,
+                    Profile* profile)
+      : template_url_service_{template_url_service}, profile_{profile} {}
 
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
@@ -27,7 +28,7 @@ class TabMatcherDesktop : public TabMatcher {
       const GURL& stripped_url,
       content::WebContents* web_contents) const;
 
-  const AutocompleteProviderClient& client_;
+  base::raw_ptr<const TemplateURLService> template_url_service_;
   raw_ptr<Profile> profile_{};
 };
 

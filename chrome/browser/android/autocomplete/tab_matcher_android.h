@@ -5,24 +5,20 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOCOMPLETE_TAB_MATCHER_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_AUTOCOMPLETE_TAB_MATCHER_ANDROID_H_
 
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/tab_matcher.h"
-#include "content/public/browser/web_contents.h"
+#include "components/search_engines/template_url_service.h"
 
-class TabAndroid;
-class TabModel;
+class AutocompleteInput;
+class TemplateURLService;
 
 // Implementation of TabMatcher targeting Android platform.
 class TabMatcherAndroid : public TabMatcher {
  public:
-  TabMatcherAndroid(const AutocompleteProviderClient& client, Profile* profile)
-      : client_{client}, profile_{profile} {}
+  TabMatcherAndroid(const TemplateURLService* template_url_service,
+                    Profile* profile)
+      : template_url_service_{template_url_service}, profile_{profile} {}
 
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
@@ -33,7 +29,7 @@ class TabMatcherAndroid : public TabMatcher {
  private:
   GURLToTabInfoMap GetAllHiddenAndNonCCTTabInfos() const;
 
-  const AutocompleteProviderClient& client_;
+  const TemplateURLService* template_url_service_;
   raw_ptr<Profile> profile_;
 };
 

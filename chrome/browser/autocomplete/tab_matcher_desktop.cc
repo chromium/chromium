@@ -60,7 +60,7 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   if (!input)
     input = &empty_input;
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, client_.GetTemplateURLService(), std::u16string());
+      url, *input, template_url_service_, std::u16string());
   Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* active_tab = nullptr;
   if (active_browser)
@@ -99,7 +99,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
       web_contents->GetController().GetLastCommittedEntryIndex()) {
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
-        web_contents->GetLastCommittedURL(), client_.GetTemplateURLService());
+        web_contents->GetLastCommittedURL(), template_url_service_);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }
