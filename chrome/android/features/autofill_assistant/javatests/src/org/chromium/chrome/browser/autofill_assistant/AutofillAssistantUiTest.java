@@ -64,7 +64,9 @@ import org.chromium.net.test.EmbeddedTestServer;
 import java.util.Arrays;
 import java.util.List;
 
-/** Instrumentation tests for autofill assistant UI. */
+/**
+ * Instrumentation tests for autofill assistant UI.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantUiTest {
     private String mTestPage;
@@ -193,9 +195,8 @@ public class AutofillAssistantUiTest {
                                         descriptionLine3,
                                         /* priceAttribution = */ "",
                                         /* userApprovalRequired= */ false,
-                                        /* highlightTitle= */ false,
-                                        /* highlightLine1= */ false,
-                                        /* highlightLine2 = */ false,
+                                        /* highlightTitle= */ false, /* highlightLine1= */
+                                        false, /* highlightLine2 = */ false,
                                         /* highlightLine3 = */ false,
                                         AutofillAssistantDetailsUiTest.NO_PLACEHOLDERS))));
         onView(withId(R.id.details_title))
@@ -226,8 +227,8 @@ public class AutofillAssistantUiTest {
                 ()
                         -> assistantCoordinator.getModel().getInfoBoxModel().set(
                                 AssistantInfoBoxModel.INFO_BOX,
-                                new AssistantInfoBox(null, infoBoxExplanation,
-                                        /*useIntrinsicDimensions=*/false)));
+                                new AssistantInfoBox(
+                                        /* imagePath = */ "", infoBoxExplanation)));
         TextView infoBoxExplanationView =
                 bottomSheetContent.findViewById(R.id.info_box_explanation);
         onView(is(infoBoxExplanationView)).check(matches(withText(infoBoxExplanation)));

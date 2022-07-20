@@ -69,7 +69,6 @@ using ::base::android::ToJavaByteArray;
 namespace autofill_assistant {
 
 namespace {
-
 std::vector<float> ToFloatVector(const std::vector<RectF>& areas) {
   std::vector<float> flattened;
   for (const auto& rect : areas) {
@@ -1977,38 +1976,9 @@ void UiControllerAndroid::OnInfoBoxChanged(const InfoBox* info_box) {
   }
 
   const InfoBoxProto& proto = info_box->proto().info_box();
-  auto jcontext =
-      Java_AutofillAssistantUiController_getContext(env, java_object_);
-  absl::optional<DrawableProto> drawable_proto;
-  bool use_instrinsic_dimensions = false;
-  switch (proto.image_case()) {
-    case InfoBoxProto::ImageCase::kImagePath: {
-      if (!proto.image_path().empty()) {
-        drawable_proto.emplace();
-        auto* bitmap_proto = drawable_proto->mutable_bitmap();
-        bitmap_proto->set_url(proto.image_path());
-        bitmap_proto->set_use_instrinsic_dimensions(true);
-        use_instrinsic_dimensions = true;
-      }
-      break;
-    }
-    case InfoBoxProto::ImageCase::kDrawable: {
-      drawable_proto = proto.drawable();
-      break;
-    }
-    case InfoBoxProto::ImageCase::IMAGE_NOT_SET: {
-      break;
-    }
-  }
-  base::android::ScopedJavaLocalRef<jobject> jdrawable = nullptr;
-  if (drawable_proto.has_value()) {
-    jdrawable = ui_controller_android_utils::CreateJavaDrawable(
-        env, jcontext, *dependencies_, *drawable_proto,
-        execution_delegate_->GetUserModel());
-  }
   auto jinfo_box = Java_AssistantInfoBox_create(
-      env, jdrawable, ConvertUTF8ToJavaString(env, proto.explanation()),
-      use_instrinsic_dimensions);
+      env, ConvertUTF8ToJavaString(env, proto.image_path()),
+      ConvertUTF8ToJavaString(env, proto.explanation()));
   Java_AssistantInfoBoxModel_setInfoBox(env, jmodel, jinfo_box);
 }
 

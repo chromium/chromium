@@ -67,18 +67,10 @@ message ShapeDrawableProto {
   optional ColorProto stroke_color = 4;
 }
 
-message ConfigBasedUrlProto {
-  map<string, string> url = 1;
-}
-
 message BitmapDrawableProto {
-  oneof image_url {
-    string url = 1;
-    ConfigBasedUrlProto config_based_url = 4;
-  }
+  optional string url = 1;
   optional ClientDimensionProto width = 2;
   optional ClientDimensionProto height = 3;
-  optional bool use_instrinsic_dimensions = 5;
 }
 
 message FaviconDrawableProto {

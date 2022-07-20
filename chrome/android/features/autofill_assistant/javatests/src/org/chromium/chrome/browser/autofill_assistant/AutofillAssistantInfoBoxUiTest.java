@@ -20,7 +20,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.support.test.InstrumentationRegistry;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
@@ -36,7 +35,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.R;
-import org.chromium.components.autofill_assistant.generic_ui.AssistantDrawable;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBox;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxCoordinator;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxModel;
@@ -46,16 +44,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantInfoBoxUiTest {
-    private static final AssistantDrawable sAssistantDrawable = AssistantDrawable.createFromIcon(1);
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
     private TextView getExplanationView(AssistantInfoBoxCoordinator coordinator) {
         return coordinator.getView().findViewById(R.id.info_box_explanation);
-    }
-
-    private ImageView getImageView(AssistantInfoBoxCoordinator coordinator) {
-        return coordinator.getView().findViewById(R.id.info_box_image);
     }
 
     private AssistantInfoBoxModel createModel() {
@@ -101,35 +94,20 @@ public class AutofillAssistantInfoBoxUiTest {
     /** Tests for an infobox with a message, but without an image. */
     @Test
     @MediumTest
-    public void testMessageNoImageLegacy() throws Exception {
-        testMessageNoImage(/*useLegacyImplementation=*/false);
-    }
-
-    /** Tests for an infobox with a message, but without an image. */
-    @Test
-    @MediumTest
     public void testMessageNoImage() throws Exception {
-        testMessageNoImage(/*useLegacyImplementation=*/true);
-    }
-
-    private void testMessageNoImage(boolean useLegacyImplementation) throws Exception {
         AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
-        AssistantInfoBox infoBox = new AssistantInfoBox(
-                null, "Message", /* useIntrinsicDimensions= */ useLegacyImplementation);
+        AssistantInfoBox infoBox = new AssistantInfoBox("", "Message");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantInfoBoxModel.INFO_BOX, infoBox));
         onView(is(coordinator.getView())).check(matches(isDisplayed()));
-        // Image should not be set.org.chromium.components.autofill_assistant.generic_ui
+        // Image should not be set.
         assertThat(getExplanationView(coordinator).getCompoundDrawables()[1], nullValue());
-        onView(is(getImageView(coordinator))).check(matches(not(isDisplayed())));
-
         onView(is(getExplanationView(coordinator))).check(matches(withText("Message")));
 
         // Test that info message supports typeface span.
-        AssistantInfoBox boldInfoBox = new AssistantInfoBox(
-                null, "<b>Message</b>", /* useIntrinsicDimensions= */ useLegacyImplementation);
+        AssistantInfoBox boldInfoBox = new AssistantInfoBox("", "<b>Message</b>");
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantInfoBoxModel.INFO_BOX, boldInfoBox));
         onView(is(getExplanationView(coordinator))).check(matches(withText("Message")));
@@ -140,11 +118,10 @@ public class AutofillAssistantInfoBoxUiTest {
     /** Tests for an infobox with message and image. */
     @Test
     @MediumTest
-    public void testImageLegacy() throws Exception {
+    public void testImage() throws Exception {
         AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
-        AssistantInfoBox infoBox = new AssistantInfoBox(
-                sAssistantDrawable, "Message", /* useIntrinsicDimensions= */ true);
+        AssistantInfoBox infoBox = new AssistantInfoBox("x", "Message");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantInfoBoxModel.INFO_BOX, infoBox));
@@ -154,42 +131,19 @@ public class AutofillAssistantInfoBoxUiTest {
         onView(is(getExplanationView(coordinator))).check(matches(withText("Message")));
     }
 
-    /** Tests for an infobox with message and image. */
-    @Test
-    @MediumTest
-    public void testImage() throws Exception {
-        AssistantInfoBoxModel model = createModel();
-        AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
-        AssistantInfoBox infoBox = new AssistantInfoBox(
-                sAssistantDrawable, "Message", /* useIntrinsicDimensions= */ false);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(AssistantInfoBoxModel.INFO_BOX, infoBox));
-        onView(is(getExplanationView(coordinator))).check(matches(isDisplayed()));
-        onView(is(getImageView(coordinator))).check(matches(isDisplayed()));
-        // Image should be set.
-        assertThat(getImageView(coordinator).getDrawable(), not(nullValue()));
-        onView(is(getExplanationView(coordinator))).check(matches(withText("Message")));
-    }
-
     @Test
     @MediumTest
     public void hideIfEmpty() throws Exception {
         AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantInfoBoxModel.INFO_BOX,
-                                new AssistantInfoBox(
-                                        null, "Message", /* useIntrinsicDimensions= */ false)));
+        TestThreadUtils.runOnUiThreadBlocking(()
+                                                      -> model.set(AssistantInfoBoxModel.INFO_BOX,
+                                                              new AssistantInfoBox("", "Message")));
         onView(is(coordinator.getView())).check(matches(isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantInfoBoxModel.INFO_BOX,
-                                new AssistantInfoBox(
-                                        null, "", /* useIntrinsicDimensions= */ false)));
+                () -> model.set(AssistantInfoBoxModel.INFO_BOX, new AssistantInfoBox("", "")));
         onView(is(coordinator.getView())).check(matches(not(isDisplayed())));
     }
 
@@ -198,8 +152,7 @@ public class AutofillAssistantInfoBoxUiTest {
     public void hideIfNull() throws Exception {
         AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
-        AssistantInfoBox infoBox =
-                new AssistantInfoBox(null, "Message", /* useIntrinsicDimensions= */ false);
+        AssistantInfoBox infoBox = new AssistantInfoBox("Message", "");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantInfoBoxModel.INFO_BOX, infoBox));
