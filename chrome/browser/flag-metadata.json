@@ -4710,6 +4710,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "omnibox-https-upgrades",
+    "owners": ["meacer", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110
