@@ -73,7 +73,8 @@ bool KeywordExtensionsDelegateImpl::Start(
     const std::u16string& remaining_input) {
   DCHECK(template_url);
 
-  if (input.want_asynchronous_matches()) {
+  bool want_asynchronous_matches = !input.omit_asynchronous_matches();
+  if (want_asynchronous_matches) {
     std::string extension_id = template_url->GetExtensionId();
     if (extension_id != current_keyword_extension_id_)
       MaybeEndExtensionKeywordMode();
@@ -92,7 +93,7 @@ bool KeywordExtensionsDelegateImpl::Start(
       matches()->push_back(extension_suggest_matches_[i]);
       matches()->back().relevance = matches()->front().relevance - (i + 1);
     }
-  } else if (input.want_asynchronous_matches()) {
+  } else if (want_asynchronous_matches) {
     extension_suggest_last_input_ = input;
     extension_suggest_matches_.clear();
 
@@ -103,7 +104,7 @@ bool KeywordExtensionsDelegateImpl::Start(
             base::UTF16ToUTF8(remaining_input), current_input_id_))
       set_done(false);
   }
-  return input.want_asynchronous_matches();
+  return want_asynchronous_matches;
 }
 
 void KeywordExtensionsDelegateImpl::EnterExtensionKeywordMode(

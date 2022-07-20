@@ -53,7 +53,7 @@ void AutocompleteControllerMetrics::OnUpdateResult(
   // logging as soon as the final update occurs, while `OnStop()` handles the
   // case where the final update never occurs because of interruptions.
   // TODO(manukh): Consider adding this filter to the above metrics as well.
-  if (!controller_.input().want_asynchronous_matches())
+  if (controller_.input().omit_asynchronous_matches())
     return;
   // E.g., suggestion deletion can call `OnUpdateResult()` after the controller
   // is done and finalization metrics have been logged. They shouldn't be

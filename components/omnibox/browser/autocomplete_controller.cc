@@ -444,23 +444,23 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   TRACE_EVENT1("omnibox", "AutocompleteController::Start", "text",
                base::UTF16ToUTF8(input.text()));
 
-  // Providers assume synchronous inputs (`want_asynchronous_matches() ==
-  // false`) have default focus type (`focus_type() == DEFAULT`). See
+  // Providers assume synchronous inputs (`omit_asynchronous_matches() ==
+  // true`) have default focus type (`focus_type() == DEFAULT`). See
   // crbug.com/1339425.
-  DCHECK(input.want_asynchronous_matches() ||
+  DCHECK(!input.omit_asynchronous_matches() ||
          input.focus_type() == OmniboxFocusType::DEFAULT);
 
-  // When input.want_asynchronous_matches() is false, the AutocompleteController
+  // When input.omit_asynchronous_matches() is true, the AutocompleteController
   // is being used for text classification, which should not notify observers.
   // TODO(manukh): This seems unnecessary; `AutocompleteClassifier` and
   //   `OmniboxController` use separate instances of `AutocompleteController`,
   //   the former doesn't add observers, the latter always uses
-  //   `want_asynchronous_matches()` set to true. Besides, if that weren't the
+  //   `omit_asynchrous_matches()` set to false. Besides, if that weren't the
   //   case, e.g. the classifier did add an observer, then
   //   `AutocompleteController` should respect that, not assume it's a mistake
   //   and silently ignore the observer. Audit all call paths of `::Start()` to
   //   remove this check.
-  if (input.want_asynchronous_matches()) {
+  if (!input.omit_asynchronous_matches()) {
     for (Observer& obs : observers_)
       obs.OnStart(this, input);
   }
@@ -474,7 +474,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 
   const std::u16string old_input_text(input_.text());
   const bool old_allow_exact_keyword_match = input_.allow_exact_keyword_match();
-  const bool old_want_asynchronous_matches = input_.want_asynchronous_matches();
+  const bool old_omit_asynchronous_matches = input_.omit_asynchronous_matches();
   const OmniboxFocusType old_focus_type = input_.focus_type();
   input_ = input;
 
@@ -490,7 +490,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   const bool minimal_changes =
       (input_.text() == old_input_text) &&
       (input_.allow_exact_keyword_match() == old_allow_exact_keyword_match) &&
-      (input_.want_asynchronous_matches() == old_want_asynchronous_matches) &&
+      (input_.omit_asynchronous_matches() == old_omit_asynchronous_matches) &&
       (input_.focus_type() == old_focus_type);
 
   expire_timer_.Stop();
@@ -522,7 +522,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
         provider_end_time - provider_start_time, base::Milliseconds(1),
         base::Seconds(5), 20);
   }
-  if (input.want_asynchronous_matches() && (input.text().length() < 6)) {
+  if (!input.omit_asynchronous_matches() && (input.text().length() < 6)) {
     // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 1s
     // buckets.
     // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. Do
@@ -533,7 +533,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
         end_time - start_time, base::Milliseconds(1), base::Seconds(1), 50);
   }
   base::UmaHistogramBoolean("Omnibox.Start.WantAsyncMatches",
-                            input.want_asynchronous_matches());
+                            !input.omit_asynchronous_matches());
 
   // This will usually set |done_| to false, unless all providers are finished
   // after the synchronous pass we just completed.
@@ -1147,7 +1147,7 @@ void AutocompleteController::CheckIfDone() {
     }
   }
   // If asynchronous matches have been disallowed, all providers should be done.
-  DCHECK(input_.want_asynchronous_matches() || all_providers_done);
+  DCHECK(!input_.omit_asynchronous_matches() || all_providers_done);
   done_ = all_providers_done;
 }
 

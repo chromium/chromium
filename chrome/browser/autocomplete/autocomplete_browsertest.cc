@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
         u"chrome", metrics::OmniboxEventProto::NTP,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_prevent_inline_autocomplete(true);
-    input.set_want_asynchronous_matches(false);
+    input.set_omit_asynchronous_matches(true);
     autocomplete_controller->Start(input);
 
     EXPECT_TRUE(autocomplete_controller->done());

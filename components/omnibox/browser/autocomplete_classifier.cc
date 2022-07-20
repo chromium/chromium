@@ -102,7 +102,7 @@ void AutocompleteClassifier::Classify(
   // lower-down suggestions.
   input.set_prefer_keyword(prefer_keyword);
   input.set_allow_exact_keyword_match(allow_exact_keyword_match);
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
   controller_->Start(input);
   DCHECK(controller_->done());
 

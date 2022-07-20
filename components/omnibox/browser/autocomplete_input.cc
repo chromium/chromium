@@ -106,7 +106,7 @@ AutocompleteInput::AutocompleteInput()
       prefer_keyword_(false),
       allow_exact_keyword_match_(true),
       keyword_mode_entry_method_(metrics::OmniboxEventProto::INVALID),
-      want_asynchronous_matches_(true),
+      omit_asynchronous_matches_(false),
       should_use_https_as_default_scheme_(false),
       added_default_scheme_to_typed_url_(false),
       https_port_for_testing_(0),
@@ -752,7 +752,7 @@ void AutocompleteInput::Clear() {
   prevent_inline_autocomplete_ = false;
   prefer_keyword_ = false;
   allow_exact_keyword_match_ = false;
-  want_asynchronous_matches_ = true;
+  omit_asynchronous_matches_ = false;
   focus_type_ = OmniboxFocusType::DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
   query_tile_id_.reset();

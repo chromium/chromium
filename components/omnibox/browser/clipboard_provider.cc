@@ -146,7 +146,7 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
     return;
 
   // Image matched was kicked off asynchronously, so proceed when that ends.
-  if (input.want_asynchronous_matches() && CreateImageMatch(input))
+  if (!input.omit_asynchronous_matches() && CreateImageMatch(input))
     return;
 
   bool read_clipboard_content = false;
@@ -179,7 +179,7 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
   // user. To avoid this, all the methods above will not check the contents and
   // will return false/absl::nullopt. Instead, check the existence of content
   // without accessing the actual content and create blank matches.
-  if (input.want_asynchronous_matches()) {
+  if (!input.omit_asynchronous_matches()) {
     // Image matched was kicked off asynchronously, so proceed when that ends.
     CheckClipboardContent(input);
   }

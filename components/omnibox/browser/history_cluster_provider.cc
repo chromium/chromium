@@ -33,7 +33,7 @@ void HistoryClusterProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
   Stop(true, false);
 
-  if (!input.want_asynchronous_matches())
+  if (input.omit_asynchronous_matches())
     return;
 
   if (!IsJourneysEnabledInOmnibox(client_->GetHistoryClustersService(),

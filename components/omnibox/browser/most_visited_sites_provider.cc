@@ -145,7 +145,7 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
   // If TopSites has not yet been loaded, then `OnMostVisitedUrlsAvailable` will
   // be called asynchronously, so we need to first check that async calls are
   // allowed for the given input.
-  if (!top_sites->loaded() && !input.want_asynchronous_matches()) {
+  if (!top_sites->loaded() && input.omit_asynchronous_matches()) {
     return;
   }
 

@@ -189,7 +189,10 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
     }
   }
 
-  if (!input.want_asynchronous_matches()) {
+  if (input.omit_asynchronous_matches()) {
+    // Asynchronous provider logic should only be omitted during non-prefetch
+    // ZPS requests.
+    DCHECK(!is_prefetch);
     Stop(true, false);
     return;
   }

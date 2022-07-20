@@ -699,7 +699,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
     input.set_prefer_keyword(input_.prefer_keyword());
     input.set_keyword_mode_entry_method(input_.keyword_mode_entry_method());
     input.set_allow_exact_keyword_match(input_.allow_exact_keyword_match());
-    input.set_want_asynchronous_matches(input_.want_asynchronous_matches());
+    input.set_omit_asynchronous_matches(input_.omit_asynchronous_matches());
     input.set_focus_type(input_.focus_type());
     input_ = input;
     AutocompleteMatch url_match(VerbatimMatchForInput(

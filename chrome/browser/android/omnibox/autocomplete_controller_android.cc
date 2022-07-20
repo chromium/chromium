@@ -166,7 +166,7 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
   input_.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
   input_.set_prefer_keyword(prefer_keyword);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
-  input_.set_want_asynchronous_matches(want_asynchronous_matches);
+  input_.set_omit_asynchronous_matches(!want_asynchronous_matches);
   autocomplete_controller_->Start(input_);
 }
 

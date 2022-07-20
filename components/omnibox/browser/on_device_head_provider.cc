@@ -112,7 +112,7 @@ bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   // Only accept asynchronous request.
-  if (!input.want_asynchronous_matches() ||
+  if (input.omit_asynchronous_matches() ||
       input.type() == metrics::OmniboxInputType::EMPTY)
     return false;
 

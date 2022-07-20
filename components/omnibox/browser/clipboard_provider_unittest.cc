@@ -297,11 +297,11 @@ TEST_F(ClipboardProviderTest, SkipImageMatchGivenWantAsynchronousMatchesFalse) {
 
   gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
   SetClipboardImage(test_image);
-  // When `input.want_asynchronous_matches` is set to false, the clipboard
+  // When `input.omit_asynchronous_matches` is set to true, the clipboard
   // provider should skip any asynchronous logic associated with creating an
   // image match.
   AutocompleteInput input = CreateAutocompleteInput(OmniboxFocusType::ON_FOCUS);
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
   provider_->Start(input, false);
   ASSERT_TRUE(provider_->done());
   ASSERT_TRUE(provider_->matches().empty());

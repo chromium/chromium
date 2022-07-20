@@ -520,7 +520,7 @@ TEST_F(ZeroSuggestProviderTest,
       .WillRepeatedly(testing::Return(true));
 
   AutocompleteInput input = CreateNTPOnFocusInputForRemoteNoUrl();
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
@@ -532,7 +532,7 @@ TEST_F(ZeroSuggestProviderTest,
             provider_->GetResultTypeRunningForTesting());
 
   // There should be no pending network requests, given that asynchronous logic
-  // has been explicitly disabled (`want_asynchronous_matches_ == false`).
+  // has been explicitly disabled (`omit_asynchronous_matches_ == true`).
   ASSERT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
   EXPECT_TRUE(provider_->done());
   EXPECT_TRUE(provider_->matches().empty());

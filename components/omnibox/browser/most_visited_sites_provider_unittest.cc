@@ -380,7 +380,7 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   ASSERT_FALSE(top_sites_->loaded());
   auto input = BuildAutocompleteInputForWebOnFocus();
   input.set_focus_type(OmniboxFocusType::DEFAULT);
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
   controller_->Start(input);
   EXPECT_TRUE(provider_->done());
   EXPECT_EQ(0u, NumMostVisitedMatches());

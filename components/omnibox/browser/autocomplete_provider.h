@@ -301,7 +301,7 @@ class AutocompleteProvider
   // for any provider, then the `AutocompleteController::done_` must also be
   // false. This ensures the controller can determine when each provider
   // finishes processing async requests. Should be true after either `Stop()` or
-  // `Start()` with `AutocompleteInput.want_asynchronous_matches` set to false
+  // `Start()` with `AutocompleteInput.omit_asynchronous_matches_` set to true
   // are called.
   bool done() const { return done_; }
 

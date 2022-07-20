@@ -243,7 +243,7 @@ views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
   AutocompleteInput input(
       u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
   edit_model()->autocomplete_controller()->Start(input);
 
   EXPECT_FALSE(edit_model()->result().empty());
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   AutocompleteInput input(
       u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
   edit_model()->autocomplete_controller()->Start(input);
 
   // Create a match to populate the autocomplete.

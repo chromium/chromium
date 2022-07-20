@@ -1221,7 +1221,7 @@ TEST_F(DocumentProviderTest, CachingForSyncMatches) {
 
   AutocompleteInput input(u"document", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
 
   // Expect sync matches to be scored.
   // Fill cache.
@@ -1265,7 +1265,7 @@ TEST_F(DocumentProviderTest, StartCallsStop) {
 
   AutocompleteInput invalid_input(u"12", metrics::OmniboxEventProto::OTHER,
                                   TestSchemeClassifier());
-  invalid_input.set_want_asynchronous_matches(true);
+  invalid_input.set_omit_asynchronous_matches(false);
 
   provider_->done_ = false;
   provider_->Start(invalid_input, false);

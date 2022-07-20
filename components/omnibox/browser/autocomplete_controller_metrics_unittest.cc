@@ -39,7 +39,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // By default, the controller wants async matches. `SetInputSync()` will
   // explicitly set this behavior.
   void SetInputSync(bool sync) {
-    controller_.input_.set_want_asynchronous_matches(!sync);
+    controller_.input_.set_omit_asynchronous_matches(sync);
   }
 
   // Mimics `AutocompleteController::Start()`'s behavior. `sync_results_only`

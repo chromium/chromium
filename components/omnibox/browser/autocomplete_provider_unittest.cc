@@ -155,7 +155,7 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
   AddResultsWithSearchTermsArgs(3, 1, AutocompleteMatchType::SEARCH_SUGGEST,
                                 TemplateURLRef::SearchTermsArgs(u"query"));
 
-  if (input.want_asynchronous_matches()) {
+  if (!input.omit_asynchronous_matches()) {
     done_ = false;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&TestProvider::Run, this));
@@ -266,7 +266,7 @@ void TestPrefetchProvider::StartPrefetch(const AutocompleteInput& input) {
   matches_.clear();
   done_ = false;
 
-  if (input.want_asynchronous_matches()) {
+  if (!input.omit_asynchronous_matches()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&TestPrefetchProvider::RunPrefetch, this));
   } else {
@@ -1752,7 +1752,7 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
   // closure of `run_loop` before `run_loop` is run. This prevents the provider
   // from being able to notify the controller of finishing the non-prefetch
   // request resulting in the controller to remain in an invalid state.
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
   controller_->StartPrefetch(input);
 
   // Wait for the provider to finish asynchronously.

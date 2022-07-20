@@ -59,7 +59,7 @@ QueryTileProvider::~QueryTileProvider() = default;
 
 void QueryTileProvider::Start(const AutocompleteInput& input,
                               bool minimal_changes) {
-  done_ = !input.want_asynchronous_matches();
+  done_ = input.omit_asynchronous_matches();
   matches_.clear();
   if (!AllowQueryTileSuggestions(input)) {
     done_ = true;

@@ -623,7 +623,7 @@ void DocumentProvider::Start(const AutocompleteInput& input,
   CopyCachedMatchesToMatches();
   DemoteMatchesBeyondMax();
 
-  if (!input.want_asynchronous_matches()) {
+  if (input.omit_asynchronous_matches()) {
     return;
   }
 

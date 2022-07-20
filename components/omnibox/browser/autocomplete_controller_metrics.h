@@ -26,7 +26,7 @@ class AutocompleteProvider;
 //      `AutocompleteController::OnProviderUpdate()`).
 // 2) How long until the suggestions finalize.
 //    - Does not track sync requests (i.e.,
-//      `AutocompleteInput::set_want_asynchronous_matches()` set to false).
+//      `AutocompleteInput::omit_asynchronous_matches()` set to true).
 //    - Does track async requests that complete syncly.
 //    - Tracks suggestion additions, changes, and removals.
 // 3) How many suggestions change during updates.

@@ -119,10 +119,10 @@ class HistoryClustersProviderTest : public testing::Test,
 };
 
 TEST_F(HistoryClustersProviderTest, WantAsynchronousMatchesFalse) {
-  // When `input.want_asynchronous_matches_` is false, should not  attempt
+  // When `input.omit_asynchronous_matches_` is true, should not attempt
   // to provide suggestions.
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(false);
+  input.set_omit_asynchronous_matches(true);
 
   EXPECT_TRUE(provider_->done());
   provider_->Start(input, false);
@@ -134,7 +134,7 @@ TEST_F(HistoryClustersProviderTest, SyncSearchMatches) {
   // before the history cluster provider begins.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   search_provider_->matches_ = {CreateMatch(u"keyword")};
   search_provider_->done_ = true;
@@ -159,7 +159,7 @@ TEST_F(HistoryClustersProviderTest, AsyncSearchMatches) {
   // history cluster provider begins.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   // `done()` should be true before starting.
   EXPECT_TRUE(provider_->done());
@@ -192,7 +192,7 @@ TEST_F(HistoryClustersProviderTest, EmptySyncSearchMatches) {
   // Test the sync case where the search provider finds no matches.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->done());
@@ -205,7 +205,7 @@ TEST_F(HistoryClustersProviderTest, EmptyAsyncSearchMatches) {
   // Test the async case where the search provider finds no matches.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   search_provider_->done_ = false;
   provider_->Start(input, false);
@@ -225,7 +225,7 @@ TEST_F(HistoryClustersProviderTest, MultipassSearchMatches) {
   // the server are produced asyncly.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   // Simulate receiving sync search matches.
   search_provider_->done_ = false;
@@ -254,7 +254,7 @@ TEST_F(HistoryClustersProviderTest, MultipassSyncSearchMatches) {
   // the sync pass.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   // Simulate receiving sync search matches.
   search_provider_->done_ = false;
@@ -276,7 +276,7 @@ TEST_F(HistoryClustersProviderTest, NoKeyworddMatches) {
   // Test the case where none of the search matches match a keyword.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   search_provider_->matches_ = {CreateMatch(u"key"), CreateMatch(u"keyworddd"),
                                 CreateMatch(u"Tigran Petrosian")};
@@ -296,7 +296,7 @@ TEST_F(HistoryClustersProviderTest, MultipleKeyworddMatches) {
   // Test the case where multiple of the search matches match a keyword.
 
   AutocompleteInput input;
-  input.set_want_asynchronous_matches(true);
+  input.set_omit_asynchronous_matches(false);
 
   search_provider_->matches_ = {CreateMatch(u"keyword2"),
                                 CreateMatch(u"keyword"),

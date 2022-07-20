@@ -754,12 +754,11 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
   // For the minimal_changes case, if we finished the previous query and still
   // have its results, or are allowed to keep running it, just do that, rather
   // than starting a new query.
-  if (minimal_changes &&
-      (!default_results_.suggest_results.empty() ||
-       !default_results_.navigation_results.empty() ||
-       !keyword_results_.suggest_results.empty() ||
-       !keyword_results_.navigation_results.empty() ||
-       (!done_ && input_.want_asynchronous_matches())))
+  if (minimal_changes && (!default_results_.suggest_results.empty() ||
+                          !default_results_.navigation_results.empty() ||
+                          !keyword_results_.suggest_results.empty() ||
+                          !keyword_results_.navigation_results.empty() ||
+                          (!done_ && !input_.omit_asynchronous_matches())))
     return;
 
   // We can't keep running any previous query, so halt it.
@@ -774,7 +773,7 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
     UpdateMatchContentsClass(keyword_input_.text(), &keyword_results_);
 
   // We can't start a new query if we're only allowed synchronous results.
-  if (!input_.want_asynchronous_matches())
+  if (input_.omit_asynchronous_matches())
     return;
 
   // Kick off a timer that will start the URL fetch if it completes before
