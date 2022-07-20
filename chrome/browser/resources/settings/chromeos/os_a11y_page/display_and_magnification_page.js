@@ -116,6 +116,17 @@ class SettingsDisplayAndMagnificationElement extends
         },
       },
 
+      /**
+       * Whether the user is in kiosk mode.
+       * @protected
+       */
+       isKioskModeActive_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isKioskModeActive');
+        },
+      },
+
       /** @protected */
       screenMagnifierHintLabel_: {
         type: String,
