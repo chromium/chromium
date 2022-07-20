@@ -563,6 +563,32 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_ValidateCache) {
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_BlockedByRequestHeaders) {
+  constexpr const char* kSpecialHeaders[][2] = {
+      {"if-Unmodified-since", "foo"},
+      {"if-mAtch", "foo"},
+      {"if-raNge", "foo"},
+      {"if-modiFied-since", "foo"},
+      {"IF-NONE-MATCH", "foo"},
+      {"cachE-control", "no-cache"},
+      {"praGma", "no-cache"},
+      {"Cache-Control", "max-age=0"},
+  };
+
+  // Store a response to the in-memory cache first.
+  {
+    ResourceRequest request = CreateRequest("/cacheable");
+    StoreResponseToMemoryCache(request);
+  }
+
+  for (const auto& [name, value] : kSpecialHeaders) {
+    SCOPED_TRACE(base::StringPrintf("header='%s', value='%s'", name, value));
+    ResourceRequest request = CreateRequest("/cacheable");
+    request.headers.SetHeader(name, value);
+    ASSERT_FALSE(CanServeFromMemoryCache(request));
+  }
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_Expired) {
   const uint64_t kMaxAge = 60;
   ResourceRequest request =

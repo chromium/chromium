@@ -69690,6 +69690,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Stale"/>
   <int value="2" label="Used"/>
   <int value="3" label="VaryMismatch"/>
+  <int value="4" label="BlockedByRequestHeaders"/>
 </enum>
 
 <enum name="NetworkServiceSandboxGrantResult">

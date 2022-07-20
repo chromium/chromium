@@ -48,8 +48,8 @@ struct HeaderNameAndValue {
 };
 
 // Collected from kPassThroughHeaders, kValidationHeaders, kForceFetchHeaders,
-// kForceValidateHeaders, in //net/http/http_cache_transaction.cc. *If* we ship
-// the in-memory network memory cache, it'd be worthwhile to remove the
+// kForceValidateHeaders, in //net/http/http_cache_transaction.cc.
+// TODO(https://crbug.com/1339708): It'd be worthwhile to remove the
 // duplication.
 constexpr HeaderNameAndValue kSpecialHeaders[] = {
     {"if-unmodified-since", nullptr},
@@ -76,7 +76,8 @@ enum class EntryStatus {
   kStale = 1,
   kUsed = 2,
   kVaryMismatch = 3,
-  kMaxValue = kVaryMismatch,
+  kBlockedByRequestHeaders = 4,
+  kMaxValue = kBlockedByRequestHeaders,
 };
 
 void RecordEntryStatus(EntryStatus result) {
@@ -172,6 +173,24 @@ bool VaryHasSupportedHeadersOnly(
     return false;
   }
 
+  return true;
+}
+
+bool CheckSpecialRequestHeaders(const net::HttpRequestHeaders& headers) {
+  for (const auto& [name, value] : kSpecialHeaders) {
+    std::string header_value;
+    if (!headers.GetHeader(name, &header_value))
+      continue;
+    // `nullptr` means `header_value` doesn't matter.
+    if (value == nullptr)
+      return false;
+    net::HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(),
+                                    ',');
+    while (v.GetNext()) {
+      if (base::EqualsCaseInsensitiveASCII(v.value_piece(), value))
+        return false;
+    }
+  }
   return true;
 }
 
@@ -282,24 +301,8 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
     return nullptr;
   }
 
-  for (const auto& [name, value] : kSpecialHeaders) {
-    std::string header_value;
-    if (!url_request->extra_request_headers().GetHeader(name, &header_value)) {
-      continue;
-    }
-    if (value == nullptr) {
-      // `nullptr` is a wildcard symbol.
-      return nullptr;
-    }
-
-    net::HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(),
-                                    ',');
-    while (v.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(v.value_piece(), value)) {
-        return nullptr;
-      }
-    }
-  }
+  if (!CheckSpecialRequestHeaders(url_request->extra_request_headers()))
+    return nullptr;
 
   if (response->content_length > static_cast<int>(max_per_entry_bytes_))
     return nullptr;
@@ -396,6 +399,11 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   if (resource_request.load_flags & net::LOAD_BYPASS_CACHE ||
       resource_request.load_flags & net::LOAD_DISABLE_CACHE ||
       resource_request.load_flags & net::LOAD_VALIDATE_CACHE) {
+    return absl::nullopt;
+  }
+
+  if (!CheckSpecialRequestHeaders(resource_request.headers)) {
+    RecordEntryStatus(EntryStatus::kBlockedByRequestHeaders);
     return absl::nullopt;
   }
 
