@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/linux/linux_ui.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/linux/window_frame_provider.h"
 
 namespace gtk {

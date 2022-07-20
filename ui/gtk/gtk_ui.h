@@ -100,8 +100,9 @@ class GtkUi : public ui::LinuxUi {
   ui::NativeTheme* GetNativeTheme() const override;
 
   // ui::TextEditKeybindingDelegate:
-  bool MatchEvent(const ui::Event& event,
-                  std::vector<ui::TextEditCommandAuraLinux>* commands) override;
+  bool GetTextEditCommandsForEvent(
+      const ui::Event& event,
+      std::vector<ui::TextEditCommandAuraLinux>* commands) override;
 
 #if BUILDFLAG(ENABLE_PRINTING)
   // printing::PrintingContextLinuxDelegate:

@@ -5,6 +5,8 @@
 import("//build/config/linux/gtk/gtk.gni")
 import("//ui/qt/qt.gni")
 
+assert(is_linux)
+
 component("linux_ui") {
   defines = [ "IS_LINUX_UI_IMPL" ]
   public = [
@@ -56,4 +58,20 @@ source_set("linux_ui_factory") {
   if (use_qt) {
     deps += [ "//ui/qt" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "fake_linux_ui.h" ]
+  sources = [ "fake_linux_ui.cc" ]
+
+  public_deps = [ ":linux_ui" ]
+  deps = [
+    "//base",
+    "//skia",
+    "//ui/gfx",
+    "//ui/native_theme",
+    "//ui/shell_dialogs",
+  ]
 }

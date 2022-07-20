@@ -62,6 +62,7 @@ include_rules = [
   "+sql",
   "+ui/aura_extra",
   "+components/vector_icons",
+  "+ui/linux",
   "+ui/strings/grit/ax_strings.h",
   "+ui/webui",
 

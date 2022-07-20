@@ -44,11 +44,10 @@
 #include "ui/base/ime/text_input_type.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
+#include "ui/linux/fake_linux_ui.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1142,10 +1141,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
 // Ensure that a cross-process subframe can utilize keyboard edit commands.
 // See https://crbug.com/640706.  This test is Linux-specific, as it relies on
-// overriding TextEditKeyBindingsDelegateAuraLinux, which only exists on Linux.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// overriding ui::LinuxUi.
+#if BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        SubframeKeyboardEditCommands) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1193,16 +1190,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // Define and install a test delegate that translates any keystroke to a
   // command to delete all text from current cursor position to the beginning
   // of the line.
-  class TextDeleteDelegate : public ui::TextEditKeyBindingsDelegateAuraLinux {
+  class TextDeleteDelegate : public ui::FakeLinuxUi {
    public:
-    TextDeleteDelegate() {}
+    TextDeleteDelegate() = default;
 
     TextDeleteDelegate(const TextDeleteDelegate&) = delete;
     TextDeleteDelegate& operator=(const TextDeleteDelegate&) = delete;
 
-    ~TextDeleteDelegate() override {}
+    ~TextDeleteDelegate() override = default;
 
-    bool MatchEvent(
+    bool GetTextEditCommandsForEvent(
         const ui::Event& event,
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       if (commands) {
@@ -1213,10 +1210,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
     }
   };
 
-  TextDeleteDelegate delegate;
-  ui::TextEditKeyBindingsDelegateAuraLinux* old_delegate =
-      ui::GetTextEditKeyBindingsDelegate();
-  ui::SetTextEditKeyBindingsDelegate(&delegate);
+  auto old_linux_ui =
+      ui::LinuxUi::SetInstance(std::make_unique<TextDeleteDelegate>());
 
   // Press ctrl-alt-shift-D.  The test's delegate will pretend that this
   // corresponds to the command to delete everyting to the beginning of the
@@ -1226,7 +1221,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // commands logic that's tested here.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_D, true, true,
                                               true, false));
-  ui::SetTextEditKeyBindingsDelegate(old_delegate);
+  ui::LinuxUi::SetInstance(std::move(old_linux_ui));
 
   // Verify that the input field in the subframe is erased.
   EXPECT_TRUE(ExecuteScriptAndExtractString(

@@ -62,10 +62,9 @@
 #include "base/win/windows_version.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/fake_linux_ui.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1579,11 +1578,9 @@ TEST_F(TextfieldTest, OnKeyPress) {
 TEST_F(TextfieldTest, OnKeyPressBinding) {
   InitTextfield();
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Install a TextEditKeyBindingsDelegateAuraLinux that does nothing.
-  class TestDelegate : public ui::TextEditKeyBindingsDelegateAuraLinux {
+  class TestDelegate : public ui::FakeLinuxUi {
    public:
     TestDelegate() = default;
 
@@ -1592,15 +1589,14 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
 
     ~TestDelegate() override = default;
 
-    bool MatchEvent(
+    bool GetTextEditCommandsForEvent(
         const ui::Event& event,
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       return false;
     }
   };
 
-  TestDelegate delegate;
-  ui::SetTextEditKeyBindingsDelegate(&delegate);
+  ui::LinuxUi::SetInstance(std::make_unique<TestDelegate>());
 #endif
 
   SendKeyEvent(ui::VKEY_A, false, false);
@@ -1620,10 +1616,8 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
   EXPECT_EQ(u"a", textfield_->GetText());
   textfield_->clear();
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::SetTextEditKeyBindingsDelegate(nullptr);
+#if BUILDFLAG(IS_LINUX)
+  ui::LinuxUi::SetInstance(nullptr);
 #endif
 }
 

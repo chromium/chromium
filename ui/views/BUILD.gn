@@ -568,6 +568,10 @@ component("views") {
     deps += [ "//chromeos/constants" ]
   }
 
+  if (is_linux) {
+    public_deps += [ "//ui/linux:linux_ui" ]
+  }
+
   if (is_linux || is_chromeos || is_fuchsia) {
     public += [ "color_chooser/color_chooser_view.h" ]
     sources += [ "color_chooser/color_chooser_view.cc" ]
@@ -575,7 +579,6 @@ component("views") {
 
   if (is_linux || is_chromeos_lacros) {
     deps += [ "//ui/base/ime/linux" ]
-    public_deps += [ "//ui/linux:linux_ui" ]
     if (!is_chromeos_lacros) {
       sources += [ "controls/menu/menu_config_linux.cc" ]
     }
@@ -1278,6 +1281,10 @@ test("views_unittests") {
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
       "win/pen_event_processor_unittest.cc",
     ]
+  }
+
+  if (is_linux) {
+    deps += [ "//ui/linux:test_support" ]
   }
 
   if (is_linux || is_chromeos_lacros) {

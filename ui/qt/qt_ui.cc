@@ -179,10 +179,6 @@ bool QtUi::Initialize() {
   FontChanged();
   shell_dialog_linux::Initialize();
 
-  // TODO(thomasanderson): Merge TextEditKeyBindingsDelegateAuraLinux into
-  // LinuxUi and remove this.
-  ui::SetTextEditKeyBindingsDelegate(this);
-
   return true;
 }
 
@@ -306,8 +302,9 @@ ui::NativeTheme* QtUi::GetNativeTheme() const {
   return native_theme_.get();
 }
 
-bool QtUi::MatchEvent(const ui::Event& event,
-                      std::vector<ui::TextEditCommandAuraLinux>* commands) {
+bool QtUi::GetTextEditCommandsForEvent(
+    const ui::Event& event,
+    std::vector<ui::TextEditCommandAuraLinux>* commands) {
   // QT doesn't have "key themes" (eg. readline bindings) like GTK.
   return false;
 }

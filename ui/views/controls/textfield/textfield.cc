@@ -70,11 +70,9 @@
 #include "base/win/win_util.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -708,13 +706,11 @@ bool Textfield::OnKeyPressed(const ui::KeyEvent& event) {
   if (!textfield)
     return handled;
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::TextEditKeyBindingsDelegateAuraLinux* delegate =
-      ui::GetTextEditKeyBindingsDelegate();
+#if BUILDFLAG(IS_LINUX)
+  auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (!handled && delegate && delegate->MatchEvent(event, &commands)) {
+  if (!handled && linux_ui &&
+      linux_ui->GetTextEditCommandsForEvent(event, &commands)) {
     for (const auto& command : commands) {
       if (IsTextEditCommandEnabled(command.command())) {
         ExecuteTextEditCommand(command.command());
@@ -854,14 +850,11 @@ void Textfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 }
 
 bool Textfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Skip any accelerator handling that conflicts with custom keybindings.
-  ui::TextEditKeyBindingsDelegateAuraLinux* delegate =
-      ui::GetTextEditKeyBindingsDelegate();
+  auto* linux_ui = ui::LinuxUi::instance();
   std::vector<ui::TextEditCommandAuraLinux> commands;
-  if (delegate && delegate->MatchEvent(event, &commands)) {
+  if (linux_ui && linux_ui->GetTextEditCommandsForEvent(event, &commands)) {
     const auto is_enabled = [this](const auto& command) {
       return IsTextEditCommandEnabled(command.command());
     };

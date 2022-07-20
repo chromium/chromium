@@ -27,6 +27,9 @@
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/themes/theme_service_aura_linux.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -76,7 +79,7 @@ ThemeServiceFactory::ThemeServiceFactory()
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
 }
 
-ThemeServiceFactory::~ThemeServiceFactory() {}
+ThemeServiceFactory::~ThemeServiceFactory() = default;
 
 KeyedService* ThemeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
@@ -98,11 +101,11 @@ void ThemeServiceFactory::RegisterProfilePrefs(
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool default_uses_system_theme = false;
-
+#if BUILDFLAG(IS_LINUX)
   const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
   if (linux_ui)
     default_uses_system_theme = linux_ui->GetDefaultUsesSystemTheme();
-
+#endif
   registry->RegisterBooleanPref(prefs::kUsesSystemTheme,
                                 default_uses_system_theme);
 #endif

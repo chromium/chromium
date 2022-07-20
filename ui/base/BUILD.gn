@@ -1146,7 +1146,6 @@ test("ui_base_unittests") {
       deps += [
         "//ui/base/ime/init",
         "//ui/base/ime/linux",
-        "//ui/linux:linux_ui",
       ]
     }
     if (is_linux && !is_castos) {

@@ -11,8 +11,11 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image.h"
-#include "ui/linux/linux_ui.h"
 #include "ui/native_theme/native_theme_aura.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
 
 namespace {
 
@@ -34,15 +37,12 @@ class SystemThemeLinux : public CustomThemeSupplier {
  private:
   ~SystemThemeLinux() override;
 
-  // These pointers are not owned by us.
-  const raw_ptr<ui::LinuxUi> linux_ui_;
+  // This pointer is not owned by us.
   const raw_ptr<PrefService> pref_service_;
 };
 
 SystemThemeLinux::SystemThemeLinux(PrefService* pref_service)
-    : CustomThemeSupplier(ThemeType::kNativeX11),
-      linux_ui_(ui::LinuxUi::instance()),
-      pref_service_(pref_service) {}
+    : CustomThemeSupplier(ThemeType::kNativeX11), pref_service_(pref_service) {}
 
 void SystemThemeLinux::StartUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, true);
@@ -53,18 +53,28 @@ void SystemThemeLinux::StartUsingTheme() {
 void SystemThemeLinux::StopUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
   // Have the former theme notify its observers of change.
-  if (linux_ui_)
-    linux_ui_->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance())
+    linux_ui->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
+#endif
 }
 
 bool SystemThemeLinux::GetColor(int id, SkColor* color) const {
-  return linux_ui_ && linux_ui_->GetColor(id, color,
-                                          pref_service_->GetBoolean(
-                                              prefs::kUseCustomChromeFrame));
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    return linux_ui->GetColor(
+        id, color, pref_service_->GetBoolean(prefs::kUseCustomChromeFrame));
+  }
+#endif
+  return false;
 }
 
 bool SystemThemeLinux::GetDisplayProperty(int id, int* result) const {
-  return linux_ui_ && linux_ui_->GetDisplayProperty(id, result);
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance())
+    return linux_ui->GetDisplayProperty(id, result);
+#endif
+  return false;
 }
 
 gfx::Image SystemThemeLinux::GetImageNamed(int id) const {

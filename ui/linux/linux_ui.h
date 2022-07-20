@@ -18,9 +18,7 @@
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"  // nogncheck
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_font_delegate.h"
 
@@ -48,12 +46,14 @@ namespace ui {
 
 class CursorThemeManagerObserver;
 class DeviceScaleFactorObserver;
+class Event;
 class LinuxInputMethodContext;
 class LinuxInputMethodContextDelegate;
 class NativeTheme;
 class NavButtonProvider;
 class SelectFileDialog;
 class SelectFilePolicy;
+class TextEditCommandAuraLinux;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
 
@@ -61,7 +61,6 @@ class WindowFrameProvider;
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi
     : public gfx::SkiaFontDelegate,
-      public ui::TextEditKeyBindingsDelegateAuraLinux,
       public gfx::AnimationSettingsProviderLinux {
  public:
   using UseSystemThemeCallback =
@@ -89,7 +88,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   ~LinuxUi() override;
 
   // Sets the dynamically loaded singleton that draws the desktop native UI.
-  static void SetInstance(std::unique_ptr<LinuxUi> instance);
+  // Returns the old instance if any.
+  static std::unique_ptr<LinuxUi> SetInstance(
+      std::unique_ptr<LinuxUi> instance);
 
   // Returns a LinuxUI instance for the toolkit used in the user's desktop
   // environment.
@@ -207,6 +208,14 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   // Returns a platform specific input method context.
   virtual std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
       LinuxInputMethodContextDelegate* delegate) const = 0;
+
+  // Matches a key event against the users' platform specific key bindings,
+  // false will be returned if the key event doesn't correspond to a predefined
+  // key binding.  Edit commands matched with |event| will be stored in
+  // |edit_commands|, if |edit_commands| is non-nullptr.
+  virtual bool GetTextEditCommandsForEvent(
+      const ui::Event& event,
+      std::vector<TextEditCommandAuraLinux>* commands) = 0;
 
  protected:
   struct CmdLineArgs {

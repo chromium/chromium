@@ -242,10 +242,6 @@ bool GtkUi::Initialize() {
   // so this must be done after to avoid the race condition.
   shell_dialog_linux::Initialize();
 
-  // TODO(thomasanderson): Merge TextEditKeyBindingsDelegateAuraLinux into
-  // LinuxUi and remove this.
-  ui::SetTextEditKeyBindingsDelegate(this);
-
   using Action = ui::LinuxUi::WindowFrameAction;
   using ActionSource = ui::LinuxUi::WindowFrameActionSource;
   window_frame_actions_ = {
@@ -598,8 +594,9 @@ ui::NativeTheme* GtkUi::GetNativeTheme() const {
   return native_theme_;
 }
 
-bool GtkUi::MatchEvent(const ui::Event& event,
-                       std::vector<ui::TextEditCommandAuraLinux>* commands) {
+bool GtkUi::GetTextEditCommandsForEvent(
+    const ui::Event& event,
+    std::vector<ui::TextEditCommandAuraLinux>* commands) {
   // GTK4 dropped custom key bindings.
   if (GtkCheckVersion(4))
     return false;

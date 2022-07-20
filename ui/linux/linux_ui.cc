@@ -10,35 +10,34 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
-#include "ui/linux/linux_ui_delegate.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
 
-ui::LinuxUi* g_linux_ui = nullptr;
+std::unique_ptr<ui::LinuxUi>& GetLinuxUiInstance() {
+  static base::NoDestructor<std::unique_ptr<ui::LinuxUi>> linux_ui;
+  return *linux_ui;
+}
 
 }  // namespace
 
 namespace ui {
 
 // static
-void LinuxUi::SetInstance(std::unique_ptr<LinuxUi> instance) {
-  delete g_linux_ui;
-  g_linux_ui = instance.release();
+std::unique_ptr<LinuxUi> LinuxUi::SetInstance(
+    std::unique_ptr<LinuxUi> instance) {
+  SkiaFontDelegate::SetInstance(instance.get());
+  gfx::AnimationSettingsProviderLinux::SetInstance(instance.get());
 
-  SkiaFontDelegate::SetInstance(g_linux_ui);
-  gfx::AnimationSettingsProviderLinux::SetInstance(g_linux_ui);
-
-  // Do not set IME instance for ozone as we delegate creating the input method
-  // to OzonePlatforms instead. If this is set, OzonePlatform never sets a
-  // context factory.
+  return std::exchange(GetLinuxUiInstance(), std::move(instance));
 }
 
 // static
 LinuxUi* LinuxUi::instance() {
-  return g_linux_ui;
+  return GetLinuxUiInstance().get();
 }
 
 LinuxUi::LinuxUi() = default;

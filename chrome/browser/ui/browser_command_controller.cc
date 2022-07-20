@@ -96,10 +96,8 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
 #endif
 
 #if defined(USE_OZONE)
@@ -319,15 +317,14 @@ bool BrowserCommandController::IsReservedCommandOrKey(
 #endif
   }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // If this key was registered by the user as a content editing hotkey, then
   // it is not reserved.
-  ui::TextEditKeyBindingsDelegateAuraLinux* delegate =
-      ui::GetTextEditKeyBindingsDelegate();
-  if (delegate && event.os_event && delegate->MatchEvent(*event.os_event, NULL))
+  auto* linux_ui = ui::LinuxUi::instance();
+  if (linux_ui && event.os_event &&
+      linux_ui->GetTextEditCommandsForEvent(*event.os_event, nullptr)) {
     return false;
+  }
 #endif
 
   return command_id == IDC_CLOSE_TAB || command_id == IDC_CLOSE_WINDOW ||
