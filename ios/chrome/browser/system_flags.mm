@@ -36,6 +36,12 @@ NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 const base::Feature kEnableThirdPartyKeyboardWorkaround{
     "EnableThirdPartyKeyboardWorkaround", base::FEATURE_ENABLED_BY_DEFAULT};
+
+NSString* const kForceBackgroundRefreshForFollowingFeedEnabled =
+    @"ForceBackgroundRefreshForFollowingFeedEnabled";
+NSString* const kBackgroundRefreshMaxAgeInSeconds =
+    @"BackgroundRefreshMaxAgeInSeconds";
+
 }  // namespace
 
 namespace experimental_flags {
@@ -84,6 +90,16 @@ void DidResetFirstFollowCount() {
 bool ShouldAlwaysShowFirstFollow() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"AlwaysShowFirstFollow"];
+}
+
+bool IsForceBackgroundRefreshForFollowingFeedEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kForceBackgroundRefreshForFollowingFeedEnabled];
+}
+
+double GetBackgroundRefreshMaxAgeInSeconds() {
+  return [[NSUserDefaults standardUserDefaults]
+      doubleForKey:kBackgroundRefreshMaxAgeInSeconds];
 }
 
 bool IsMemoryDebuggingEnabled() {

@@ -59,6 +59,15 @@ void DidResetFirstFollowCount();
 // TODO(crbug.com/1312124): Remove after launch.
 bool ShouldAlwaysShowFirstFollow();
 
+// Returns true if background refresh should also be used for the Following
+// feed. If false, the default value or finch feature flag value should be used.
+bool IsForceBackgroundRefreshForFollowingFeedEnabled();
+
+// The maximum age a response can be before it is refreshed in the background.
+// This check is done when the background task is executed. The default value of
+// 0 means the age check is ignored.
+double GetBackgroundRefreshMaxAgeInSeconds();
+
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 

@@ -53,6 +53,36 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Additional Feed Background Refresh Settings</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Background Refresh must be enabled in chrome://flags to use these additional settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Background Refresh for Following Feed</string>
+			<key>Key</key>
+			<string>ForceBackgroundRefreshForFollowingFeedEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Feed Max Age In Seconds</string>
+			<key>Key</key>
+			<string>BackgroundRefreshMaxAgeInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
