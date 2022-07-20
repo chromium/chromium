@@ -174,11 +174,11 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
 }
 
 // Parses the FIDO transport types extension from the DER-encoded, X.509
-// certificate in |der_cert| and adds any transport types found to
-// |out_transports|. Returns true if any transports were added.
-bool AddTransportsFromCertificate(
+// certificate in |der_cert| and appends any unique transport types found to
+// |out_transports|.
+void AppendUniqueTransportsFromCertificate(
     base::span<const uint8_t> der_cert,
-    base::flat_set<device::FidoTransportProtocol>* out_transports) {
+    std::vector<device::FidoTransportProtocol>* out_transports) {
   // See
   // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html#fido-u2f-certificate-transports-extension
   static constexpr uint8_t kTransportTypesOID[] = {
@@ -192,7 +192,7 @@ bool AddTransportsFromCertificate(
                             sizeof(kTransportTypesOID)),
           &present, &critical, &contents) ||
       !present) {
-    return false;
+    return;
   }
 
   const net::der::Input contents_der(contents);
@@ -200,7 +200,7 @@ bool AddTransportsFromCertificate(
   absl::optional<net::der::BitString> transport_bits =
       contents_parser.ReadBitString();
   if (!transport_bits) {
-    return false;
+    return;
   }
 
   // The certificate extension contains a BIT STRING where different bits
@@ -218,15 +218,12 @@ bool AddTransportsFromCertificate(
       {4, device::FidoTransportProtocol::kInternal},
   };
 
-  bool ret = false;
   for (const auto& mapping : kTransportMapping) {
-    if (transport_bits->AssertsBit(mapping.bit_index)) {
-      out_transports->insert(mapping.transport);
-      ret |= true;
+    if (transport_bits->AssertsBit(mapping.bit_index) &&
+        !base::Contains(*out_transports, mapping.transport)) {
+      out_transports->push_back(mapping.transport);
     }
   }
-
-  return ret;
 }
 
 enum class AttestationErasureOption {
@@ -1657,34 +1654,23 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
                 *response_data.transport_used())
           : device::AuthenticatorAttachment::kAny;
 
-  base::flat_set<device::FidoTransportProtocol> transports;
-  // transports_authoritative tracks whether the contents of `transports` are
-  // considered to be sufficient complete to report back to the website.
-  bool transports_authoritative = false;
-
+  // The transport list must not contain duplicates but the order doesn't matter
+  // because Blink will sort the resulting strings before returning them.
+  std::vector<device::FidoTransportProtocol> transports;
   if (response_data.transport_used()) {
-    transports.insert(*response_data.transport_used());
+    transports.push_back(*response_data.transport_used());
   }
-  if (response_data.transports) {
-    transports.insert(response_data.transports->begin(),
-                      response_data.transports->end());
-    transports_authoritative = true;
-  }
-  // Also include any transports from the attestation certificate.
+  // If the attestation certificate specifies that the token supports any other
+  // transports, include them in the list.
   absl::optional<base::span<const uint8_t>> leaf_cert =
       response_data.attestation_object()
           .attestation_statement()
           .GetLeafCertificate();
   if (leaf_cert) {
-    transports_authoritative |=
-        AddTransportsFromCertificate(*leaf_cert, &transports);
+    AppendUniqueTransportsFromCertificate(*leaf_cert, &transports);
   }
 
-  // The order of transports doesn't matter because Blink will sort the
-  // resulting strings before returning them.
-  if (transports_authoritative) {
-    response->transports.assign(transports.begin(), transports.end());
-  }
+  response->transports = std::move(transports);
 
   bool did_create_hmac_secret = false;
   bool did_store_cred_blob = false;

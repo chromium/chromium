@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -3845,49 +3844,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
             std::get<0>(*failure_reason_receiver.result()));
 }
 
-TEST_F(AuthenticatorImplTest, NoNonAuthoritativeTransports) {
-  NavigateAndCommit(GURL(kTestOrigin1));
-  virtual_device_factory_->SetSupportedProtocol(
-      device::ProtocolVersion::kCtap2);
-  device::VirtualCtap2Device::Config config;
-  // If there are no transports in the attestation certificate, and none from
-  // getInfo, then none should be reported because there isn't enough
-  // information to say.
-  config.include_transports_in_attestation_certificate = false;
-  virtual_device_factory_->SetCtap2Config(config);
-
-  MakeCredentialResult result = AuthenticatorMakeCredential();
-  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-
-  EXPECT_TRUE(result.response->transports.empty());
-}
-
-TEST_F(AuthenticatorImplTest, TransportsFromGetInfo) {
-  NavigateAndCommit(GURL(kTestOrigin1));
-  virtual_device_factory_->SetSupportedProtocol(
-      device::ProtocolVersion::kCtap2);
-  device::VirtualCtap2Device::Config config;
-  config.include_transports_in_attestation_certificate = false;
-  config.transports_in_get_info = {
-      device::FidoTransportProtocol::kBluetoothLowEnergy};
-  virtual_device_factory_->SetCtap2Config(config);
-
-  MakeCredentialResult result = AuthenticatorMakeCredential();
-  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-
-  base::flat_set<device::FidoTransportProtocol> reported(
-      result.response->transports.begin(), result.response->transports.end());
-  EXPECT_EQ(reported.size(), 2u);
-  // The transports from the getInfo are authoritative and so they should be
-  // reported. In addition to 'ble' from getInfo, 'usb' should be included
-  // because that's what was used to communicate with the virtual authenticator.
-  EXPECT_TRUE(
-      reported.contains(device::FidoTransportProtocol::kBluetoothLowEnergy));
-  EXPECT_TRUE(reported.contains(
-      device::FidoTransportProtocol::kUsbHumanInterfaceDevice));
-}
-
-TEST_F(AuthenticatorImplTest, TransportsInAttestationCertificate) {
+TEST_F(AuthenticatorImplTest, Transports) {
   NavigateAndCommit(GURL(kTestOrigin1));
 
   for (auto protocol :

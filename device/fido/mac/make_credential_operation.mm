@@ -151,8 +151,6 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
               CoseAlgorithmIdentifier::kEs256, std::move(*signature),
               /*x509_certificates=*/std::vector<std::vector<uint8_t>>())));
   response.is_resident_key = request_.resident_key_required;
-  response.transports.emplace();
-  response.transports->insert(FidoTransportProtocol::kInternal);
   std::move(callback_).Run(CtapDeviceResponseCode::kSuccess,
                            std::move(response));
 }

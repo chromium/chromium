@@ -97,10 +97,6 @@ absl::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
     }
   }
 
-  if (device->device_info() && device->device_info()->transports) {
-    response->transports = *device->device_info()->transports;
-  }
-
   return response;
 }
 
