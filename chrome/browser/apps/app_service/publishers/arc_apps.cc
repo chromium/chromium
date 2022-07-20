@@ -426,7 +426,8 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
                                    : intent->mime_type.value();
     request->urls.push_back(std::move(url_with_type));
   }
-  if (intent->share_text.has_value() || intent->share_title.has_value()) {
+  if (intent->share_text.has_value() || intent->share_title.has_value() ||
+      intent->extras.has_value()) {
     request->extras = apps_util::CreateArcIntentExtras(intent);
   }
   return request;

@@ -10,6 +10,7 @@
 #include "ash/webui/media_app_ui/file_system_access_helpers.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -133,6 +134,10 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
     const std::string& mime_type,
     base::OnceCallback<void()> edit_in_photos_callback,
     absl::optional<storage::FileSystemURL> url) {
+  constexpr char kPhotosKeepOpenExtraName[] =
+      "com.google.android.apps.photos.editor.contract.keep_photos_open";
+  constexpr char kPhotosKeepOpenExtraValue[] = "true";
+
   if (!url.has_value()) {
     std::move(edit_in_photos_callback).Run();
     return;
@@ -148,6 +153,8 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
       &filesystem_url);
 
   auto intent = apps_util::CreateEditIntentFromFile(filesystem_url, mime_type);
+  intent->extras = {
+      std::make_pair(kPhotosKeepOpenExtraName, kPhotosKeepOpenExtraValue)};
 
   proxy->LaunchAppWithIntent(
       arc::kGooglePhotosAppId, ui::EF_NONE, std::move(intent),

@@ -686,6 +686,9 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
     extras.insert(std::make_pair(kIntentExtraStartType + kIntentPrefixLength,
                                  intent->start_type.value()));
   }
+  if (!intent->extras.empty()) {
+    extras.insert(intent->extras.begin(), intent->extras.end());
+  }
   return extras;
 }
 
@@ -706,6 +709,9 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
     // Slice off the "S." prefix for the key.
     extras.insert(std::make_pair(kIntentExtraStartType + kIntentPrefixLength,
                                  intent->start_type.value()));
+  }
+  if (intent->extras.has_value()) {
+    extras.insert(intent->extras->begin(), intent->extras->end());
   }
   return extras;
 }
