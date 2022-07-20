@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -21,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,17 +47,20 @@ public class UndoRefocusHelper implements DestroyObserver {
 
     /**
      * This method is used to create and initialize the UndoRefocusHelper.
+     * @param context Application context to check form factor.
      * @param modelSelector TabModelSelector used to subscribe to TabModelSelectorTabModelObserver
      *         to capture when tabs are being closed or the closure is being undone.
      * @param layoutManagerObservableSupplier This supplies the LayoutManager implementation to
      *         observe the layout state when it's available.
      * @param isTablet Whether the current device is a tablet.
      */
-    public static void initialize(TabModelSelector modelSelector,
+    public static void initialize(Context context, TabModelSelector modelSelector,
             ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
             boolean isTablet) {
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) return;
-
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                || !CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) {
+          return;
+        }
         new UndoRefocusHelper(modelSelector, layoutManagerObservableSupplier, isTablet);
     }
 

@@ -1743,15 +1743,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Supplier<Boolean> dialogVisibilitySupplier = null;
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(this)) {
             dialogVisibilitySupplier = () -> {
-                assert mStartSurfaceSupplier.get() != null;
                 // Return true if dialog from either tab switcher or tab strip is visible.
 
                 ToolbarManager toolbarManager = getToolbarManager();
                 TabGroupUi tabGroupUi = toolbarManager.getTabGroupUi();
                 boolean isDialogVisible = tabGroupUi != null && tabGroupUi.isTabGridDialogVisible();
 
-                Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
-                        mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
+                Supplier<Boolean> tabSwitcherDialogVisibilitySupplier = mStartSurfaceSupplier == null
+                        ? null
+                        : mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
 
                 if (tabSwitcherDialogVisibilitySupplier != null) {
                     isDialogVisible = isDialogVisible || tabSwitcherDialogVisibilitySupplier.get();
@@ -1766,7 +1766,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
-        UndoRefocusHelper.initialize(tabModelSelector, getLayoutManagerSupplier(), isTablet());
+        UndoRefocusHelper.initialize(
+                this, tabModelSelector, getLayoutManagerSupplier(), isTablet());
 
         assert getActivityTabStartupMetricsTracker() != null;
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();

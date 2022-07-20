@@ -196,12 +196,23 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupsAndroidEnabled(Context context) {
         // Disable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
+            return isTabletTabGroupsEnabled(context);
         }
 
         return !DeviceClassManager.enableAccessibilityLayout(context)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)
                 && isTabManagementModuleSupported();
+    }
+  
+    /**
+     * @return Whether tab groups are enabled for tablet.
+     * @param context The activity context.
+     */
+    public static boolean isTabletTabGroupsEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID);
     }
 
     /**
