@@ -11,14 +11,13 @@ namespace syncer {
 // numeric values should never be reused.
 // Exposed publicly for testing.
 enum class TrustedVaultDeviceRegistrationStateForUMA {
-  kAlreadyRegisteredV0 = 0,
+  kAlreadyRegistered = 0,
   kLocalKeysAreStale = 1,
   kThrottledClientSide = 2,
   kAttemptingRegistrationWithNewKeyPair = 3,
   kAttemptingRegistrationWithExistingKeyPair = 4,
   kAttemptingRegistrationWithPersistentAuthError = 5,
-  kAlreadyRegisteredV1 = 6,
-  kMaxValue = kAlreadyRegisteredV1,
+  kMaxValue = kAttemptingRegistrationWithPersistentAuthError,
 };
 
 // Used to provide UMA metric breakdowns.

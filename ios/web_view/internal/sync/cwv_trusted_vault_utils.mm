@@ -16,7 +16,7 @@ syncer::TrustedVaultDeviceRegistrationStateForUMA CWVConvertTrustedVaultState(
   switch (state) {
     case CWVTrustedVaultStateAlreadyRegistered:
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
-          kAlreadyRegisteredV0;
+          kAlreadyRegistered;
     case CWVTrustedVaultStateLocalKeysAreStale:
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
           kLocalKeysAreStale;
