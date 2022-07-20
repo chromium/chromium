@@ -1321,6 +1321,9 @@
     <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_DESCRIPTION" desc="Description for the type of spell check that sends the text the user types to Google for spelling suggestions. It is important that it is communicated that the text the user types in the browser will be sent to Google.">
       Uses the same spell checker that’s used in Google search. Text you type in the browser is sent to Google.
     </message>
+    <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_SPELL_CHECK" desc="The label of the toggle that enables the spell check service.">
+      Check for spelling errors when you type text on web pages
+    </message>
     <if expr="not is_macosx">
       <message name="IDS_SETTING_LANGUAGES_SPELL_CHECK_DISABLED_REASON" desc="Text that indicates to the user that spell check options are disabled because none of the languages they have added have spell check support.">
         Spell check isn’t supported for the languages you selected
