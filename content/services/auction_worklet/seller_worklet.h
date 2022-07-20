@@ -245,6 +245,13 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     void FinishInit();
 
+    // Calls `PostScoreAdCallbackToUserThread`, passing in a 0 score and null
+    // for all other values. Used on errors, which cause us to drop win/loss
+    // report URLs, even if the methods to set them have been invoked.
+    void PostScoreAdCallbackToUserThreadOnError(
+        ScoreAdCallbackInternal callback,
+        std::vector<std::string> errors);
+
     void PostScoreAdCallbackToUserThread(
         ScoreAdCallbackInternal callback,
         double score,

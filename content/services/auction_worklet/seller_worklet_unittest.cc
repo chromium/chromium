@@ -733,13 +733,14 @@ TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
       "{desirability:1, allowComponentAuction:[32]}", 1,
       /*expected_errors=*/{},
       kExpectedComponentAuctionModifiedBidParams.Clone());
-  // Error for not allowing participation in component auctions takes precedence
-  // over error for not having `ad` field.
+  // Even with a desirability of 0, a false `allowComponentAuction` value is
+  // considered an error.
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:0, allowComponentAuction:false}", 0,
+      kExpectedErrorsOnFailure);
+  // A missing `allowComponentAuction` field is treated as if it were "false".
   RunScoreAdWithReturnValueExpectingResult("{desirability:1}", 0,
                                            kExpectedErrorsOnFailure);
-  RunScoreAdWithReturnValueExpectingResult(
-      "{desirability:1, allowComponentAuction:false}", 0,
-      kExpectedErrorsOnFailure);
 
   // With a component seller in `browser_signals_other_seller_`, an object must
   // be returned, and `allowComponentAuction` must be true.
@@ -858,6 +859,10 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
 
   // Invalid bids result in errors.
   RunScoreAdWithReturnValueExpectingResult(
+      R"({ad:null, desirability:1, allowComponentAuction:true, bid:0})", 0,
+      /*expected_errors=*/
+      {"https://url.test/ scoreAd() returned an invalid bid."});
+  RunScoreAdWithReturnValueExpectingResult(
       R"({ad:null, desirability:1, allowComponentAuction:true, bid:-1})", 0,
       /*expected_errors=*/
       {"https://url.test/ scoreAd() returned an invalid bid."});
@@ -873,6 +878,11 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "{ad:null, desirability:1, allowComponentAuction:true, bid:0/0}", 0,
       /*expected_errors=*/
       {"https://url.test/ scoreAd() returned an invalid bid."});
+
+  // A 0 bid is normally considered invalid, unless desirability is 0, in which
+  // case it is ignored.
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:0, allowComponentAuction:true, bid:0}", 0);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
