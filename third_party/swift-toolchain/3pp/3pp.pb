@@ -6,6 +6,9 @@
 # goma/reclient. It likely just needs to download the .tgz on swift.org and 
 # unpack it.
 
+# IMPORTANT: When changing the download URL, also be sure to update the install
+# directory in the `build` section. Otherwise the packaging bot will fail.
+
 create {
   platform_re: "mac-.*"
   source {
@@ -16,7 +19,7 @@ create {
   }
   build {
     install: "install-mac.sh"
-    install: "swift-5.6.2-RELEASE-osx"
+    install: "swift-5.7-DEVELOPMENT-SNAPSHOT-2022-07-17-a-osx"
   }
 }
 
