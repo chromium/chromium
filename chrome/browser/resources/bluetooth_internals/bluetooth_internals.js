@@ -218,8 +218,8 @@ function setupDeviceSystem(response) {
   devicesPage.setDevices(devices);
 
   devicesPage.pageDiv.addEventListener('inspectpressed', function(event) {
-    const detailsPage =
-        makeDeviceDetailsPage(devices.getByAddress(event.detail.address));
+    const detailsPage = makeDeviceDetailsPage(
+        devices.item(devices.getByAddress(event.detail.address)));
     pageManager.showPageByName(detailsPage.name);
   });
 

@@ -62,7 +62,7 @@ suite('bluetooth_internals', function() {
     adapterFieldSet = document.querySelector('#adapter fieldset');
     deviceTable = document.querySelector('#devices table');
     sidebarNode = document.querySelector('#sidebar');
-    devices.splice(0, devices.length);
+    devices.resetForTest();
     adapterBroker.deviceAdded(fakeDeviceInfo1());
     adapterBroker.deviceAdded(fakeDeviceInfo2());
   });

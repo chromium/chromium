@@ -73,7 +73,6 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "array_data_model.m.js",
     "focus_outline_manager.m.js",
     "focus_row.m.js",
     "keyboard_shortcut_list.m.js",
@@ -94,6 +93,7 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "array_data_model.m.js",
       "grid.m.js",
       "list_item.m.js",
       "list.m.js",

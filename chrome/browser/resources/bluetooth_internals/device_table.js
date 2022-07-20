@@ -61,9 +61,12 @@ DeviceTable.prototype = {
     assert(!this.devices_, 'Devices can only be set once.');
 
     this.devices_ = deviceCollection;
-    this.devices_.addEventListener('sorted', this.redraw_.bind(this));
-    this.devices_.addEventListener('change', this.handleChange_.bind(this));
-    this.devices_.addEventListener('splice', this.handleSplice_.bind(this));
+    this.devices_.addEventListener(
+        'device-update', this.handleDeviceUpdate_.bind(this));
+    this.devices_.addEventListener(
+        'device-added', this.handleDeviceAdded_.bind(this));
+    this.devices_.addEventListener(
+        'devices-reset-for-test', this.redraw_.bind(this));
 
     this.redraw_();
   },
@@ -77,7 +80,7 @@ DeviceTable.prototype = {
    */
   setInspecting(deviceInfo, isInspecting) {
     this.inspectionMap_.set(deviceInfo, isInspecting);
-    this.updateRow_(deviceInfo, this.devices_.indexOf(deviceInfo));
+    this.updateRow_(deviceInfo, this.devices_.getByAddress(deviceInfo.address));
   },
 
   /**
@@ -97,13 +100,13 @@ DeviceTable.prototype = {
 
   /**
    * Updates table row on change event of the device collection.
-   * @param {!Event} event
+   * @param {!CustomEvent<number>} event
    * @private
    */
-  handleChange_(event) {
+  handleDeviceUpdate_(event) {
     this.updateRow_(
-        /** @type {!DeviceInfo} */ (this.devices_.item(event.index)),
-        event.index);
+        /** @type {!DeviceInfo} */ (this.devices_.item(event.detail)),
+        event.detail);
   },
 
   /**
@@ -123,17 +126,11 @@ DeviceTable.prototype = {
 
   /**
    * Updates table row on splice event of the device collection.
-   * @param {!Event} event
+   * @param {!CustomEvent<device: DeviceInfo, index: number>} event
    * @private
    */
-  handleSplice_(event) {
-    event.removed.forEach(function() {
-      this.body_.deleteRow(event.index);
-    }, this);
-
-    event.added.forEach(function(device, index) {
-      this.insertRow_(device, event.index + index);
-    }, this);
+  handleDeviceAdded_(event) {
+    this.insertRow_(event.detail.device, event.detail.index);
   },
 
   /**

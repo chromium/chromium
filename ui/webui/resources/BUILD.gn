@@ -232,7 +232,6 @@ generate_definitions_js_files = [
   "js/cr/event_target.m.js",
   "js/cr.m.js",
   "js/cr/ui.m.js",
-  "js/cr/ui/array_data_model.m.js",
   "js/cr/ui/drag_wrapper.js",
   "js/cr/ui/focus_grid.js",
   "js/cr/ui/focus_outline_manager.m.js",
@@ -257,6 +256,7 @@ if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
 
 if (is_chromeos_ash) {
   generate_definitions_js_files += [
+    "js/cr/ui/array_data_model.m.js",
     "js/cr/ui/list_item.m.js",
     "js/cr/ui/list_selection_controller.m.js",
     "js/cr/ui/list_selection_model.m.js",
