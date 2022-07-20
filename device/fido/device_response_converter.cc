@@ -22,6 +22,7 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -525,6 +526,24 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
     response.max_credential_id_length =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+  }
+
+  it = response_map.find(CBOR(0x09));
+  if (it != response_map.end()) {
+    if (!it->second.is_array())
+      return absl::nullopt;
+
+    response.transports.emplace();
+    for (const auto& transport_str : it->second.GetArray()) {
+      if (!transport_str.is_string())
+        return absl::nullopt;
+
+      absl::optional<FidoTransportProtocol> maybe_transport(
+          ConvertToFidoTransportProtocol(transport_str.GetString()));
+      if (maybe_transport.has_value()) {
+        response.transports->insert(*maybe_transport);
+      }
+    }
   }
 
   it = response_map.find(CBOR(0x0a));

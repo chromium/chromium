@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
@@ -95,6 +96,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // attestation should not be returned. This is acted upon by
   // |AuthenticatorCommon| based on enterprise policy.
   bool attestation_should_be_filtered = false;
+
+  // transports contains the full set of transports supported by the
+  // authenticator, if known.
+  absl::optional<base::flat_set<FidoTransportProtocol>> transports;
 
  private:
   AttestationObject attestation_object_;

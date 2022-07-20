@@ -348,7 +348,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
   // attestation statement and FIDO-U2F attestation statement.
   // https://w3c.github.io/webauthn/#defined-attestation-formats
   absl::optional<std::vector<uint8_t>> GenerateAttestationCertificate(
-      bool individual_attestation_requested) const;
+      bool individual_attestation_requested,
+      bool include_transports) const;
 
   void StoreNewKey(base::span<const uint8_t> key_handle,
                    VirtualFidoDevice::RegistrationData registration_data);

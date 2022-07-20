@@ -104,6 +104,14 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
         0x08, base::strict_cast<int64_t>(*response.max_credential_id_length));
   }
 
+  if (response.transports) {
+    std::vector<cbor::Value> transport_values;
+    for (FidoTransportProtocol transport : *response.transports) {
+      transport_values.emplace_back(ToString(transport));
+    }
+    device_info_map.emplace(0x09, std::move(transport_values));
+  }
+
   if (response.remaining_discoverable_credentials) {
     device_info_map.emplace(0x14,
                             base::strict_cast<int64_t>(

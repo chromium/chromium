@@ -661,6 +661,10 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     device_info_->min_pin_length = mutable_state()->min_pin_length;
     device_info_->force_pin_change = mutable_state()->force_pin_change;
   }
+
+  if (!config.transports_in_get_info.empty()) {
+    device_info_->transports = config.transports_in_get_info;
+  }
 }
 
 VirtualCtap2Device::~VirtualCtap2Device() = default;
@@ -1260,8 +1264,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     if (config_.always_return_enterprise_attestation) {
       enterprise_attestation_requested = true;
     }
-    attestation_cert =
-        GenerateAttestationCertificate(enterprise_attestation_requested);
+    attestation_cert = GenerateAttestationCertificate(
+        enterprise_attestation_requested,
+        config_.include_transports_in_attestation_certificate);
     if (!attestation_cert) {
       DLOG(ERROR) << "Failed to generate attestation certificate.";
       return CtapDeviceResponseCode::kCtap2ErrOther;

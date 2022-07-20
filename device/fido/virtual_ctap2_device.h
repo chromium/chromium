@@ -83,6 +83,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // as a fixed size area for the large blob.
     size_t available_large_blob_storage = 1024;
     bool cred_blob_support = false;
+    // include_transports_in_attestation_certificate controls whether a
+    // transports extension will be included in the attestation certificate
+    // returned from a makeCredential operation.
+    bool include_transports_in_attestation_certificate = true;
+    // transports_in_get_info, if not empty, contains the transports that will
+    // be reported via getInfo.
+    std::vector<FidoTransportProtocol> transports_in_get_info;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;
