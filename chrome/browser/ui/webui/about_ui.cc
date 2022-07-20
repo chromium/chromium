@@ -686,11 +686,21 @@ void AboutUIHTMLSource::StartDataRequest(
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (source_name_ == chrome::kChromeUIOSCreditsHost) {
-    ChromeOSCreditsHandler::Start(path, std::move(callback));
-    return;
+    if (path == kCreditsCssPath) {
+      response = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_ABOUT_UI_CREDITS_CSS);
+    } else {
+      ChromeOSCreditsHandler::Start(path, std::move(callback));
+      return;
+    }
   } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
-    CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
-    return;
+    if (path == kCreditsCssPath) {
+      response = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_ABOUT_UI_CREDITS_CSS);
+    } else {
+      CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
+      return;
+    }
   } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
     HandleBorealisCredits(profile(), std::move(callback));
     return;
