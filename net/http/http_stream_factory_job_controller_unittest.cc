@@ -484,7 +484,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
 
 TEST_P(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.enable_quic = false;
   HttpRequestInfo request_info;
@@ -591,7 +591,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
       std::unique_ptr<ConfiguredProxyResolutionService>
           proxy_resolution_service =
-              ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+              ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
                   "PROXY badproxy:99; PROXY badfallbackproxy:98; DIRECT",
                   TRAFFIC_ANNOTATION_FOR_TESTS);
       auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
@@ -777,12 +777,12 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
       std::unique_ptr<ConfiguredProxyResolutionService>
           proxy_resolution_service =
-              ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+              ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
                   "HTTPS badproxy:99; HTTPS badfallbackproxy:98; DIRECT",
                   TRAFFIC_ANNOTATION_FOR_TESTS);
       if (mock_error.triggers_ssl_connect_job_retry_logic) {
         proxy_resolution_service =
-            ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+            ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
                 "HTTPS badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
       }
       auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
@@ -976,7 +976,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
     CreateSessionDeps();
 
     std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-        ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
             "SOCKS5 badproxy:99; SOCKS5 badfallbackproxy:98; DIRECT",
             TRAFFIC_ANNOTATION_FOR_TESTS);
     auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
@@ -1089,7 +1089,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 // Tests that ERR_MSG_TOO_BIG is retryable for QUIC proxy.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "QUIC badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Before starting the test, verify that there are no proxies marked as bad.
@@ -1136,7 +1136,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
 TEST_F(JobControllerReconsiderProxyAfterErrorTest,
        DoNotReconsiderErrMsgTooBig) {
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Before starting the test, verify that there are no proxies marked as bad.

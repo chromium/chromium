@@ -61,7 +61,7 @@ class ProxyResolvingSocketTestBase {
     mock_client_socket_factory_->set_enable_read_if_ready(true);
     auto context_builder = net::CreateTestURLRequestContextBuilder();
     context_builder->set_proxy_resolution_service(
-        net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+        net::ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
             pac_result, TRAFFIC_ANNOTATION_FOR_TESTS));
     context_builder->set_client_socket_factory_for_testing(
         mock_client_socket_factory_.get());

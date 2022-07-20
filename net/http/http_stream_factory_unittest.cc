@@ -728,7 +728,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
 TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
   const char* kProxyString = "PROXY bad:99; PROXY maybe:80; DIRECT";
   SpdySessionDependencies session_deps(
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           kProxyString, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // First connection attempt fails
@@ -780,7 +780,7 @@ TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
 TEST_F(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
   const char* kProxyString = "PROXY bad:99; DIRECT";
   SpdySessionDependencies session_deps(
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           kProxyString, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // A 404 in response to a CONNECT will trigger
@@ -848,7 +848,7 @@ const int quic_proxy_test_mock_errors[] = {
 TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
   for (int quic_proxy_test_mock_error : quic_proxy_test_mock_errors) {
     std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
-        ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
             "QUIC bad:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
 
     HttpNetworkSessionParams session_params;
@@ -1621,10 +1621,10 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
 TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
   url::SchemeHostPort scheme_host_port("http", "myproxy.org", 443);
   auto session_deps = std::make_unique<SpdySessionDependencies>(
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS));
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
@@ -1691,10 +1691,10 @@ TEST_F(HttpStreamFactoryTest,
 
   url::SchemeHostPort scheme_host_port("http", "myproxy.org", 443);
   auto session_deps = std::make_unique<SpdySessionDependencies>(
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS));
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);

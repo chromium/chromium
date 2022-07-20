@@ -3607,7 +3607,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   RecordingNetLogObserver net_log_observer;
   NetLogWithSource net_log_with_source =
@@ -3757,7 +3757,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   RecordingNetLogObserver net_log_observer;
   session_deps_.net_log = NetLog::Get();
@@ -4132,7 +4132,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveExtraData) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   RecordingNetLogObserver net_log_observer;
   session_deps_.net_log = NetLog::Get();
@@ -4409,7 +4409,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
 
   // Proxy matches request URL.
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   NetLogWithSource net_log_with_source =
       NetLogWithSource::Make(NetLogSourceType::NONE);
@@ -4566,7 +4566,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Proxy matches request URL.
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   NetLogWithSource net_log_with_source =
       NetLogWithSource::Make(NetLogSourceType::NONE);
@@ -4820,7 +4820,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Proxy matches request URL.
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   NetLogWithSource net_log_with_source =
       NetLogWithSource::Make(NetLogSourceType::NONE);
@@ -5257,7 +5257,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto auth_handler_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
@@ -5373,7 +5373,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto auth_handler_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
@@ -5494,7 +5494,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto auth_handler_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
@@ -5594,7 +5594,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto auth_handler_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
@@ -5712,7 +5712,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   auto auth_handler_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
@@ -6320,7 +6320,7 @@ TEST_F(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   NetLogWithSource net_log_with_source =
       NetLogWithSource::Make(NetLogSourceType::NONE);
@@ -9447,7 +9447,7 @@ TEST_F(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
   // The NTLM test data expects the proxy to be named 'server'. The origin is
   // https://origin/.
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY server", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   SSLContextConfig config;
@@ -11319,7 +11319,7 @@ TEST_F(HttpNetworkTransactionTest, HTTPSBadCertificateViaProxy) {
 // Test HTTPS connections to a site, going through an HTTPS proxy
 TEST_F(HttpNetworkTransactionTest, HTTPSViaHttpsProxy) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -11383,7 +11383,7 @@ TEST_F(HttpNetworkTransactionTest, HTTPSViaHttpsProxy) {
 // Test that an HTTPS Proxy cannot redirect a CONNECT request for main frames.
 TEST_F(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaHttpsProxy) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -11450,7 +11450,7 @@ TEST_F(HttpNetworkTransactionTest,
        RedirectOfHttpsConnectSubresourceViaHttpsProxy) {
   base::HistogramTester histograms;
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -11496,9 +11496,9 @@ TEST_F(HttpNetworkTransactionTest,
 TEST_F(HttpNetworkTransactionTest,
        RedirectOfHttpsConnectViaAutoDetectedHttpsProxy) {
   base::HistogramTester histograms;
-  session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResult(
-          "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_resolution_service = ConfiguredProxyResolutionService::
+      CreateFixedFromAutoDetectedPacResultForTest("HTTPS proxy:70",
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
   HttpRequestInfo request;
@@ -11725,7 +11725,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthSpdyProxy) {
 
   // Configure against https proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   RecordingNetLogObserver net_log_observer;
   session_deps_.net_log = NetLog::Get();
@@ -12366,7 +12366,7 @@ TEST_F(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -12422,7 +12422,7 @@ TEST_F(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -12538,7 +12538,7 @@ TEST_F(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS5 myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -12606,7 +12606,7 @@ TEST_F(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "SOCKS5 myproxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
 
@@ -16394,7 +16394,7 @@ TEST_F(HttpNetworkTransactionTest, CancelAfterHeaders) {
 // Test a basic GET request through a proxy.
 TEST_F(HttpNetworkTransactionTest, ProxyGet) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -16461,7 +16461,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyGet) {
 // Test a basic HTTPS GET request through a proxy.
 TEST_F(HttpNetworkTransactionTest, ProxyTunnelGet) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   RecordingNetLogObserver net_log_observer;
   session_deps_.net_log = NetLog::Get();
@@ -16546,7 +16546,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyTunnelGet) {
 // literal host.
 TEST_F(HttpNetworkTransactionTest, ProxyTunnelGetIPv6) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   RecordingNetLogObserver net_log_observer;
   session_deps_.net_log = NetLog::Get();
@@ -18290,7 +18290,7 @@ TEST_F(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttpOverTunnel) {
   data1.set_connect_data(connect_data1);
 
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = net::NetLog::Get();
   SSLSocketDataProvider ssl1(ASYNC, OK);  // to the proxy
@@ -19631,7 +19631,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyHeadersNotSentOverWssTunnel) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -19738,7 +19738,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyHeadersNotSentOverWsTunnel) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -19811,7 +19811,7 @@ TEST_F(HttpNetworkTransactionTest, WebSocketNotSentOverQuicProxy) {
   for (bool secure : {true, false}) {
     SCOPED_TRACE(secure);
     session_deps_.proxy_resolution_service =
-        ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
             "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
     session_deps_.enable_quic = true;
 
@@ -20116,7 +20116,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyResolutionFailsAsync) {
 
 TEST_F(HttpNetworkTransactionTest, NoSupportedProxies) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "QUIC myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.enable_quic = false;
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -20399,7 +20399,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
        DontProcessNelHeaderProxy) {
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -21349,7 +21349,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest, DontCreateReportProxy) {
 
   // Configure against proxy server "myproxy:70".
   session_deps_.proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -22819,7 +22819,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
     SCOPED_TRACE(use_proxy);
     if (use_proxy) {
       session_deps_.proxy_resolution_service =
-          ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+          ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
               "HTTPS proxy:443", TRAFFIC_ANNOTATION_FOR_TESTS);
     } else {
       session_deps_.proxy_resolution_service =

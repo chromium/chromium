@@ -858,7 +858,7 @@ ConfiguredProxyResolutionService::CreateDirect() {
 
 // static
 std::unique_ptr<ConfiguredProxyResolutionService>
-ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
     const std::string& pac_string,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   // We need the settings to contain an "automatic" setting, otherwise the
@@ -876,7 +876,7 @@ ConfiguredProxyResolutionService::CreateFixedFromPacResult(
 
 // static
 std::unique_ptr<ConfiguredProxyResolutionService>
-ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResult(
+ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResultForTest(
     const std::string& pac_string,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   auto proxy_config_service =

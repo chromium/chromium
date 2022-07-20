@@ -216,14 +216,14 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // |pac_string| is a list of proxy servers, in the format that a PAC script
   // would return it. For example, "PROXY foobar:99; SOCKS fml:2; DIRECT"
   static std::unique_ptr<ConfiguredProxyResolutionService>
-  CreateFixedFromPacResult(
+  CreateFixedFromPacResultForTest(
       const std::string& pac_string,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
-  // Same as CreateFixedFromPacResult(), except the resulting ProxyInfo from
-  // resolutions will be tagged as having been auto-detected.
+  // Same as CreateFixedFromPacResultForTest(), except the resulting ProxyInfo
+  // from resolutions will be tagged as having been auto-detected.
   static std::unique_ptr<ConfiguredProxyResolutionService>
-  CreateFixedFromAutoDetectedPacResult(
+  CreateFixedFromAutoDetectedPacResultForTest(
       const std::string& pac_string,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 

@@ -260,7 +260,7 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
       ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           ProxyServerToPacResultElement(proxy_server),
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -302,7 +302,7 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   // Connection to |proxy_server| would fail. Request should be fetched over
   // DIRECT.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           ProxyServerToPacResultElement(proxy_server) + "; DIRECT",
           TRAFFIC_ANNOTATION_FOR_TESTS);
 

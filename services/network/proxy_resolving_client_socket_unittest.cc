@@ -44,7 +44,7 @@ namespace {
 
 std::unique_ptr<net::ConfiguredProxyResolutionService>
 CreateProxyResolutionService(base::StringPiece pac_result) {
-  return net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
+  return net::ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
       static_cast<std::string>(pac_result), TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
