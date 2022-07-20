@@ -142,6 +142,7 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   if (is_mappable) {
     GPU* gpu = device->adapter()->gpu();
     gpu->TrackMappableBuffer(buffer);
+    device->TrackMappableBuffer(buffer);
     buffer->mappable_buffer_handles_ = gpu->mappable_buffer_handles();
   }
 
@@ -205,6 +206,7 @@ void GPUBuffer::destroy(ScriptState* script_state) {
   GetProcs().bufferDestroy(GetHandle());
   // Destroyed, so it can never be mapped again. Stop tracking.
   device_->adapter()->gpu()->UntrackMappableBuffer(this);
+  device_->UntrackMappableBuffer(this);
   // Drop the reference to the mapped buffer handles. No longer
   // need to remove the WGPUBuffer from this set in ~GPUBuffer.
   mappable_buffer_handles_ = nullptr;

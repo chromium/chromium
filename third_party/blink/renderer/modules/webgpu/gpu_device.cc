@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -383,9 +384,10 @@ GPUQueue* GPUDevice::queue() {
   return queue_;
 }
 
-void GPUDevice::destroy() {
+void GPUDevice::destroy(ScriptState* script_state) {
   destroyed_ = true;
   DestroyAllExternalTextures();
+  UnmapAllMappableBuffers(script_state);
   GetProcs().deviceDestroy(GetHandle());
   FlushNow();
 }
@@ -596,6 +598,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
   visitor->Trace(active_external_textures_);
+  visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }
@@ -611,6 +614,20 @@ void GPUDevice::DestroyAllExternalTextures() {
     external_texture->Destroy();
   }
   active_external_textures_.clear();
+}
+
+void GPUDevice::UnmapAllMappableBuffers(ScriptState* script_state) {
+  for (GPUBuffer* buffer : mappable_buffers_) {
+    buffer->unmap(script_state);
+  }
+}
+
+void GPUDevice::TrackMappableBuffer(GPUBuffer* buffer) {
+  mappable_buffers_.insert(buffer);
+}
+
+void GPUDevice::UntrackMappableBuffer(GPUBuffer* buffer) {
+  mappable_buffers_.erase(buffer);
 }
 
 void GPUDevice::AddActiveExternalTexture(GPUExternalTexture* external_texture) {

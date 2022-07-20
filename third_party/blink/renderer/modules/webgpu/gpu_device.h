@@ -55,7 +55,6 @@ class GPUTextureDescriptor;
 class ScriptPromiseResolver;
 class ScriptState;
 class V8GPUErrorFilter;
-
 class GPUDevice final : public EventTargetWithInlineData,
                         public ExecutionContextClient,
                         public DawnObject<WGPUDevice> {
@@ -84,7 +83,7 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   GPUQueue* queue();
 
-  void destroy();
+  void destroy(ScriptState* script_state);
 
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
@@ -149,6 +148,13 @@ class GPUDevice final : public EventTargetWithInlineData,
                                   ExceptionState& exception_state);
   std::string formattedLabel() const;
 
+  // Store the buffer in a weak hash set so we can unmap it when the
+  // device is destroyed.
+  void TrackMappableBuffer(GPUBuffer* buffer);
+  // Untrack the GPUBuffer. This is called eagerly when the buffer is
+  // destroyed.
+  void UntrackMappableBuffer(GPUBuffer* buffer);
+
  private:
   using LostProperty =
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
@@ -157,6 +163,8 @@ class GPUDevice final : public EventTargetWithInlineData,
   void Dispose();
 
   void DestroyAllExternalTextures();
+
+  void UnmapAllMappableBuffers(ScriptState* script_state);
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
   void OnLogging(WGPULoggingType loggingType, const char* message);
@@ -204,6 +212,8 @@ class GPUDevice final : public EventTargetWithInlineData,
   // Keep a list of all active GPUExternalTexture. Eagerly destroy them
   // when the device is destroyed (via .destroy) to free the memory.
   HeapHashSet<WeakMember<GPUExternalTexture>> active_external_textures_;
+
+  HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
 
   // This attribute records that whether GPUDevice is destroyed (via destroy()).
   bool destroyed_ = false;
