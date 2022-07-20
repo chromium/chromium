@@ -114,9 +114,7 @@ class TestWebUIDataSource : public URLDataSource {
     std::move(callback).Run(response.get());
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "text/html";
-  }
+  std::string GetMimeType(const GURL& url) override { return "text/html"; }
 };
 
 class NetworkServiceBrowserTest : public ContentBrowserTest {
