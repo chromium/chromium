@@ -3032,9 +3032,13 @@ message SetAttributeProto {
 }
 
 message InfoBoxProto {
-  // Optional path to an image. Ok tick used if not set.
-  optional string image_path = 1;
-
+  oneof image {
+    // Optional path to an image.
+    // This is deprecated and will be removed in M108.
+    string image_path = 1;
+    // Drawable shown in a separate ImageView above TextView.
+    DrawableProto drawable = 4;
+  }
   // The explanation to show in the box. Not setting this field will clear an
   // existing info box.
   optional string explanation = 2;

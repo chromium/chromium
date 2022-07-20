@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/android/jni_headers/AssistantChip_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantColor_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantDateTime_jni.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantDeviceConfig_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantDialogButton_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantDimension_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantDrawable_jni.h"
@@ -42,6 +43,8 @@ using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF16ToJavaString;
 using ::base::android::ConvertUTF8ToJavaString;
 using ::base::android::JavaRef;
+
+constexpr char kNightModePrefix[] = "night-";
 
 DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
   switch (icon) {
@@ -94,6 +97,81 @@ void MaybeSetRawInfo(autofill::AutofillProfile* profile,
                      const JavaRef<jstring>& value) {
   if (value) {
     profile->SetRawInfo(type, ConvertJavaStringToUTF16(value));
+  }
+}
+
+const std::pair<std::string, std::string> RemoveDarkQualifier(
+    std::string resource_qualifier,
+    std::string url) {
+  if (resource_qualifier.rfind(kNightModePrefix, 0) == 0) {
+    resource_qualifier =
+        resource_qualifier.substr(std::string(kNightModePrefix).length());
+  }
+  return {resource_qualifier, url};
+}
+
+std::map<std::string, std::string> FilterConfigBasedOnDayNightSetting(
+    bool is_dark_mode_enabled,
+    const ConfigBasedUrlProto& url_config) {
+  std::map<std::string, std::string> daynight_specific_config;
+  for (auto config_entry : url_config.url()) {
+    std::string resource_qualifier = config_entry.first;
+    std::string url = config_entry.second;
+    bool dark_mode_qualified =
+        resource_qualifier.rfind(kNightModePrefix, 0) == 0;
+    if (is_dark_mode_enabled == dark_mode_qualified) {
+      daynight_specific_config.insert(
+          RemoveDarkQualifier(resource_qualifier, url));
+    }
+  }
+  std::map<std::string, std::string> dpi_url_config;
+  if (daynight_specific_config.empty()) {
+    for (auto config_entry : url_config.url()) {
+      daynight_specific_config.insert(
+          RemoveDarkQualifier(config_entry.first, config_entry.second));
+    }
+  }
+  return daynight_specific_config;
+}
+
+const std::string GetBitmapImageUrlBasedOnDeviceConfig(
+    JNIEnv* env,
+    const JavaRef<jobject>& jcontext,
+    const ConfigBasedUrlProto& url_config) {
+  bool is_dark_mode_enabled =
+      Java_AssistantDeviceConfig_isDarkModeEnabled(env, jcontext);
+  std::map<std::string, std::string> daynight_specific_config =
+      FilterConfigBasedOnDayNightSetting(is_dark_mode_enabled, url_config);
+
+  // Return image for the device pixel density. If not available, fallback to
+  // mdpi. Caller has to specify mdpi image.
+  std::string device_density = ConvertJavaStringToUTF8(
+      Java_AssistantDeviceConfig_getDevicePixelDensity(env, jcontext));
+  auto pos_it = daynight_specific_config.find(device_density);
+  if (pos_it != daynight_specific_config.end()) {
+    return pos_it->second;
+  }
+  if (daynight_specific_config.find("mdpi") == daynight_specific_config.end()) {
+    return "";
+  }
+  return daynight_specific_config.find("mdpi")->second;
+}
+
+const std::string GetBitmapImageUrl(JNIEnv* env,
+                                    const JavaRef<jobject>& jcontext,
+                                    const BitmapDrawableProto& bitmap) {
+  switch (bitmap.image_url_case()) {
+    case BitmapDrawableProto::ImageUrlCase::kUrl: {
+      return bitmap.url();
+    }
+    case BitmapDrawableProto::ImageUrlCase::kConfigBasedUrl: {
+      return GetBitmapImageUrlBasedOnDeviceConfig(env, jcontext,
+                                                  bitmap.config_based_url());
+    }
+    case BitmapDrawableProto::ImageUrlCase::IMAGE_URL_NOT_SET: {
+      VLOG(1) << "Image url not set in bitmap image request.";
+      return "";
+    }
   }
 }
 
@@ -189,14 +267,21 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
           env, base::android::ConvertUTF8ToJavaString(
                    env, proto.resource_identifier()));
     case DrawableProto::kBitmap: {
-      int width_pixels = ui_controller_android_utils::GetPixelSizeOrDefault(
-          env, jcontext, proto.bitmap().width(), 0);
-      int height_pixels = ui_controller_android_utils::GetPixelSizeOrDefault(
-          env, jcontext, proto.bitmap().height(), 0);
-      return Java_AssistantDrawable_createFromUrl(
-          env, dependencies.CreateImageFetcher(),
-          base::android::ConvertUTF8ToJavaString(env, proto.bitmap().url()),
-          width_pixels, height_pixels);
+      std::string url = GetBitmapImageUrl(env, jcontext, proto.bitmap());
+      if (proto.bitmap().use_instrinsic_dimensions()) {
+        return Java_AssistantDrawable_createFromUrlWithIntrinsicDimensions(
+            env, dependencies.CreateImageFetcher(),
+            base::android::ConvertUTF8ToJavaString(env, url));
+      } else {
+        int width_pixels = ui_controller_android_utils::GetPixelSizeOrDefault(
+            env, jcontext, proto.bitmap().width(), 0);
+        int height_pixels = ui_controller_android_utils::GetPixelSizeOrDefault(
+            env, jcontext, proto.bitmap().height(), 0);
+        return Java_AssistantDrawable_createFromUrl(
+            env, dependencies.CreateImageFetcher(),
+            base::android::ConvertUTF8ToJavaString(env, url), width_pixels,
+            height_pixels);
+      }
     }
     case DrawableProto::kShape: {
       switch (proto.shape().shape_case()) {

@@ -49,6 +49,12 @@ public abstract class AssistantDrawable {
         return new AssistantBitmapDrawable(imageFetcher, url, widthInPixels, heightInPixels);
     }
 
+    @CalledByNative
+    public static AssistantDrawable createFromUrlWithIntrinsicDimensions(
+            ImageFetcher imageFetcher, String url) {
+        return new AssistantBitmapDrawable(imageFetcher, url);
+    }
+
     /** Returns whether {@code resourceId} is a valid resource identifier. */
     @CalledByNative
     public static boolean isValidDrawableResource(Context context, String resourceId) {
@@ -116,12 +122,22 @@ public abstract class AssistantDrawable {
         private final String mUrl;
         private final int mWidthInPixels;
         private final int mHeightInPixels;
+        private final boolean mUseInstrinicDimensions;
 
         AssistantBitmapDrawable(ImageFetcher imageFetcher, String url, int width, int height) {
             mImageFetcher = imageFetcher;
             mUrl = url;
             mWidthInPixels = width;
             mHeightInPixels = height;
+            mUseInstrinicDimensions = false;
+        }
+
+        AssistantBitmapDrawable(ImageFetcher imageFetcher, String url) {
+            mImageFetcher = imageFetcher;
+            mUrl = url;
+            mWidthInPixels = 0;
+            mHeightInPixels = 0;
+            mUseInstrinicDimensions = true;
         }
 
         @Override
@@ -131,9 +147,11 @@ public abstract class AssistantDrawable {
                     mUrl, ImageFetcher.ASSISTANT_DETAILS_UMA_CLIENT_NAME);
             mImageFetcher.fetchImage(params, result -> {
                 if (result != null) {
-                    callback.onResult(new BitmapDrawable(context.getResources(),
-                            Bitmap.createScaledBitmap(
-                                    result, mWidthInPixels, mHeightInPixels, true)));
+                    if (!mUseInstrinicDimensions) {
+                        result = Bitmap.createScaledBitmap(
+                                result, mWidthInPixels, mHeightInPixels, true);
+                    }
+                    callback.onResult(new BitmapDrawable(context.getResources(), result));
                 } else {
                     callback.onResult(null);
                 }

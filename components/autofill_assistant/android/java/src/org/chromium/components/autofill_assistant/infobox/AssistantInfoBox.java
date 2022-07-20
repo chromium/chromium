@@ -4,35 +4,43 @@
 
 package org.chromium.components.autofill_assistant.infobox;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.autofill_assistant.generic_ui.AssistantDrawable;
 
-/**
- * Java side equivalent of autofill_assistant::InfoBoxProto.
- */
+/** Java side equivalent of autofill_assistant::InfoBoxProto. */
 @JNINamespace("autofill_assistant")
 public class AssistantInfoBox {
-    private final String mImagePath;
+    @Nullable
+    private final AssistantDrawable mDrawable;
     private final String mExplanation;
+    private final boolean mUseIntrinsicDimensions;
 
-    public AssistantInfoBox(String imagePath, String explanation) {
-        this.mImagePath = imagePath;
+    public AssistantInfoBox(@Nullable AssistantDrawable drawable, String explanation,
+            boolean useIntrinsicDimensions) {
+        this.mDrawable = drawable;
         this.mExplanation = explanation;
+        this.mUseIntrinsicDimensions = useIntrinsicDimensions;
     }
 
-    public String getImagePath() {
-        return mImagePath;
+    public AssistantDrawable getDrawable() {
+        return mDrawable;
     }
 
     public String getExplanation() {
         return mExplanation;
     }
 
-    /**
-     * Create infobox with the given values.
-     */
+    public boolean getUseIntrinsicDimensions() {
+        return mUseIntrinsicDimensions;
+    }
+
+    /** Create infobox with the given values. */
     @CalledByNative
-    private static AssistantInfoBox create(String imagePath, String explanation) {
-        return new AssistantInfoBox(imagePath, explanation);
+    private static AssistantInfoBox create(@Nullable AssistantDrawable drawable, String explanation,
+            boolean useIntrinsicDimensions) {
+        return new AssistantInfoBox(drawable, explanation, useIntrinsicDimensions);
     }
 }

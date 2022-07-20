@@ -5,9 +5,9 @@
 package org.chromium.components.autofill_assistant.infobox;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.components.autofill_assistant.AssistantTextUtils;
@@ -24,13 +24,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 class AssistantInfoBoxViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<AssistantInfoBoxModel,
                 AssistantInfoBoxViewBinder.ViewHolder, PropertyKey> {
-    /**
-     * A wrapper class that holds the different views of the info box.
-     */
+    /** A wrapper class that holds the different views of the info box. */
     static class ViewHolder {
+        final ImageView mImageView;
         final TextView mExplanationView;
 
         public ViewHolder(Context context, View infoBoxView) {
+            mImageView = infoBoxView.findViewById(R.id.info_box_image);
             mExplanationView = infoBoxView.findViewById(R.id.info_box_explanation);
         }
     }
@@ -43,10 +43,7 @@ class AssistantInfoBoxViewBinder
         mContext = context;
         mImageFetcher = imageFetcher;
     }
-
-    /**
-     * Explicitly clean up.
-     */
+    /** Explicitly clean up. */
     public void destroy() {
         mImageFetcher.destroy();
         mImageFetcher = null;
@@ -72,18 +69,39 @@ class AssistantInfoBoxViewBinder
         AssistantTextUtils.applyVisualAppearanceTags(
                 viewHolder.mExplanationView, explanation, null);
         viewHolder.mExplanationView.announceForAccessibility(viewHolder.mExplanationView.getText());
-        if (infoBox.getImagePath().isEmpty()) {
-            viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        if (infoBox.getDrawable() == null) {
+            hideLegacyImage(viewHolder);
+            hideImageView(viewHolder);
         } else {
-            ImageFetcher.Params params = ImageFetcher.Params.create(
-                    infoBox.getImagePath(), ImageFetcher.ASSISTANT_INFO_BOX_UMA_CLIENT_NAME);
-            mImageFetcher.fetchImage(params, image -> {
+            infoBox.getDrawable().getDrawable(mContext, image -> {
                 if (image != null) {
-                    Drawable d = new BitmapDrawable(mContext.getResources(), image);
-                    viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(
-                            null, d, null, null);
+                    if (infoBox.getUseIntrinsicDimensions()) {
+                        showLegacyImage(viewHolder, image);
+                    } else {
+                        showImageView(viewHolder, image);
+                    }
                 }
             });
         }
+    }
+
+    private void hideLegacyImage(ViewHolder viewHolder) {
+        viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+    }
+
+    private void showLegacyImage(ViewHolder viewHolder, Drawable image) {
+        hideImageView(viewHolder);
+        viewHolder.mExplanationView.setCompoundDrawablesWithIntrinsicBounds(
+                null, image, null, null);
+    }
+
+    private void hideImageView(ViewHolder viewHolder) {
+        viewHolder.mImageView.setVisibility(View.GONE);
+    }
+
+    private void showImageView(ViewHolder viewHolder, Drawable image) {
+        hideLegacyImage(viewHolder);
+        viewHolder.mImageView.setVisibility(View.VISIBLE);
+        viewHolder.mImageView.setImageDrawable(image);
     }
 }
