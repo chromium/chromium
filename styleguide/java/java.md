@@ -256,6 +256,11 @@ with the testing suffixes supported [PRESUMBIT.py](https://chromium.googlesource
 `ForTest`, are also accepted. These suffixes are checked at presubmit time
 to ensure the functions are called only by test files.
 
+It's generally bad practice to directly call test-only methods from
+non-test-only code. However, occasionally it has to be done, and if so, you
+should guard the check with an `if (BuildConfig.IS_FOR_TEST)` so that our Java
+optimizer can still remove the call in non-test builds.
+
 ## Location
 "Top level directories" are defined as directories with a GN file, such as
 [//base](https://chromium.googlesource.com/chromium/src/+/main/base/)

@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.build.BuildConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -273,7 +274,9 @@ import javax.annotation.concurrent.GuardedBy;
         try {
             previous = mDelegate;
             mDelegate = recorder;
-            swapUserActionCallbacksForTesting(previous, recorder);
+            if (BuildConfig.IS_FOR_TEST) {
+                swapUserActionCallbacksForTesting(previous, recorder);
+            }
             if (recorder == null) {
                 return previous;
             }

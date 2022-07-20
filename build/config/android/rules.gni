@@ -1489,7 +1489,7 @@ if (enable_java_templates) {
       }
       srcjar_deps += [
         ":$_compile_resources_target_name",
-        "//build/android:build_config_gen",
+        "//build/android:build_config_for_testing_gen",
       ]
       if (_generate_final_jni) {
         srcjar_deps += [ ":$_jni_srcjar_target_name" ]

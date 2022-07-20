@@ -27,6 +27,11 @@ if (enable_java_templates) {
     use_final_fields = false
   }
 
+  generate_build_config_srcjar("build_config_for_testing_gen") {
+    use_final_fields = false
+    testonly = true
+  }
+
   write_native_libraries_java("native_libraries_gen") {
     use_final_fields = false
   }
