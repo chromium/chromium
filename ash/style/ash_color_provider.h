@@ -60,9 +60,7 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   // Gets the color of |type| of the corresponding layer based on the current
   // inverted color mode. For views that need LIGHT colors while DARK mode is
   // active, and vice versa.
-  SkColor GetInvertedShieldLayerColor(ShieldLayerType type) const;
   SkColor GetInvertedBaseLayerColor(BaseLayerType type) const;
-  SkColor GetInvertedContentLayerColor(ContentLayerType type) const;
 
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see

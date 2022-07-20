@@ -69,6 +69,8 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kSeparatorColor,
 
     kTextColorPrimary,
+    // Inverted `kTextColorPrimary` on current color mode.
+    kInvertedTextColorPrimary,
     kTextColorSecondary,
     kTextColorAlert,
     kTextColorWarning,
@@ -89,6 +91,8 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     // The default color for button labels.
     kButtonLabelColor,
+    // Inverted `kButtonLabelColor` on current color mode.
+    kInvertedButtonLabelColor,
     kButtonLabelColorPrimary,
 
     // Color for blue button labels, e.g, 'Retry' button of the system toast.

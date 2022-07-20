@@ -44,15 +44,14 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   const auto* color_provider = AshColorProvider::Get();
   const bool is_dark_light_mode_enabled = features::IsDarkLightModeEnabled();
   auto background_color_type = AshColorProvider::BaseLayerType::kTransparent80;
-  auto text_color_type = AshColorProvider::ContentLayerType::kTextColorPrimary;
   const SkColor tooltip_background =
       is_dark_light_mode_enabled
           ? color_provider->GetInvertedBaseLayerColor(background_color_type)
           : color_provider->GetBaseLayerColor(background_color_type);
-  const SkColor tooltip_text =
+  const SkColor tooltip_text = color_provider->GetContentLayerColor(
       is_dark_light_mode_enabled
-          ? color_provider->GetInvertedContentLayerColor(text_color_type)
-          : color_provider->GetContentLayerColor(text_color_type);
+          ? AshColorProvider::ContentLayerType::kInvertedTextColorPrimary
+          : AshColorProvider::ContentLayerType::kTextColorPrimary);
 
   set_color(tooltip_background);
   label->SetEnabledColor(tooltip_text);

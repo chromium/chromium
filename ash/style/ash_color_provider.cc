@@ -177,18 +177,8 @@ AshColorProvider::GetInvertedInkDropBaseColorAndOpacity(
   return std::make_pair(base_color, opacity);
 }
 
-SkColor AshColorProvider::GetInvertedShieldLayerColor(
-    ShieldLayerType type) const {
-  return GetShieldLayerColorImpl(type, /*inverted=*/true);
-}
-
 SkColor AshColorProvider::GetInvertedBaseLayerColor(BaseLayerType type) const {
   return GetBaseLayerColorImpl(type, /*inverted=*/true);
-}
-
-SkColor AshColorProvider::GetInvertedContentLayerColor(
-    ContentLayerType type) const {
-  return GetContentLayerColorImpl(type, !IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetBackgroundColor() const {
@@ -321,6 +311,8 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     case ContentLayerType::kBatterySystemInfoBackgroundColor:
       return use_dark_color ? gfx::kGoogleGreen300 : gfx::kGoogleGreen600;
     case ContentLayerType::kBatterySystemInfoIconColor:
+    case ContentLayerType::kInvertedTextColorPrimary:
+    case ContentLayerType::kInvertedButtonLabelColor:
       return use_dark_color ? gfx::kGoogleGrey900 : gfx::kGoogleGrey200;
     default:
       return ResolveColor(type, use_dark_color);
