@@ -40,7 +40,8 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
       const net::NetLogWithSource& net_log,
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
-      scoped_refptr<base::RefCountedBytes> content);
+      scoped_refptr<base::RefCountedBytes> content,
+      int64_t encoded_body_length);
 
   ~NetworkServiceMemoryCacheURLLoader() override;
 
@@ -91,6 +92,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
 
   // The response body to be served.
   scoped_refptr<base::RefCountedBytes> content_;
+  const int64_t encoded_body_length_;
 
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> producer_handle_watcher_;

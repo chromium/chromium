@@ -221,10 +221,12 @@ bool MatchVaryHeader(const ResourceRequest& resource_request,
 struct NetworkServiceMemoryCache::Entry {
   Entry(const net::HttpVaryData& vary_data,
         mojom::URLResponseHeadPtr response_head,
-        scoped_refptr<base::RefCountedBytes> content)
+        scoped_refptr<base::RefCountedBytes> content,
+        int64_t encoded_body_length)
       : vary_data(vary_data),
         response_head(std::move(response_head)),
-        content(std::move(content)) {}
+        content(std::move(content)),
+        encoded_body_length(encoded_body_length) {}
   ~Entry() = default;
 
   // Movable.
@@ -236,6 +238,7 @@ struct NetworkServiceMemoryCache::Entry {
   net::HttpVaryData vary_data;
   mojom::URLResponseHeadPtr response_head;
   scoped_refptr<base::RefCountedBytes> content;
+  int64_t encoded_body_length;
 };
 
 NetworkServiceMemoryCache::NetworkServiceMemoryCache(
@@ -376,8 +379,9 @@ void NetworkServiceMemoryCache::StoreResponse(
 
   scoped_refptr<base::RefCountedBytes> content =
       base::RefCountedBytes::TakeVector(&data);
-  auto entry = std::make_unique<Entry>(vary_data, std::move(response_head),
-                                       std::move(content));
+  auto entry =
+      std::make_unique<Entry>(vary_data, std::move(response_head),
+                              std::move(content), status.encoded_body_length);
   entries_.Put(cache_key, std::move(entry));
 
   ShrinkToTotalBytes();
@@ -469,7 +473,8 @@ void NetworkServiceMemoryCache::CreateLoaderAndStart(
 
   auto loader = std::make_unique<NetworkServiceMemoryCacheURLLoader>(
       this, GetNextTraceId(), resource_request.url, net_log,
-      std::move(receiver), std::move(client), it->second->content);
+      std::move(receiver), std::move(client), it->second->content,
+      it->second->encoded_body_length);
   NetworkServiceMemoryCacheURLLoader* raw_loader = loader.get();
   url_loaders_.insert(std::move(loader));
 

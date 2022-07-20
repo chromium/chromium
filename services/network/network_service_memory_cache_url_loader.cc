@@ -20,13 +20,15 @@ NetworkServiceMemoryCacheURLLoader::NetworkServiceMemoryCacheURLLoader(
     const net::NetLogWithSource& net_log,
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
-    scoped_refptr<base::RefCountedBytes> content)
+    scoped_refptr<base::RefCountedBytes> content,
+    int64_t encoded_body_length)
     : memory_cache_(memory_cache),
       trace_id_(trace_id),
       net_log_(net_log),
       receiver_(this, std::move(receiver)),
       client_(std::move(client)),
-      content_(std::move(content)) {
+      content_(std::move(content)),
+      encoded_body_length_(encoded_body_length) {
   DCHECK(memory_cache_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "loading", "NetworkServiceMemoryCacheURLLoader",
@@ -189,7 +191,7 @@ void NetworkServiceMemoryCacheURLLoader::Finish(int error_code) {
     status.exists_in_cache = true;
     status.exists_in_memory_cache = true;
     status.completion_time = base::TimeTicks::Now();
-    status.encoded_body_length = content_->size();
+    status.encoded_body_length = encoded_body_length_;
     status.decoded_body_length = content_->size();
 
     client_->OnComplete(status);
