@@ -121,7 +121,9 @@ void ShowDisabledDialogForWebContents(content::WebContents* web_contents) {
           .AddBodyText(body_text, kBodyText)
           .AddOkButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogAccepted,
-                             base::Unretained(model_delegate_ptr)))
+                             base::Unretained(model_delegate_ptr)),
+              l10n_util::GetStringUTF16(
+                  IDS_TAILORED_SECURITY_DISABLED_DIALOG_ACCEPT_BUTTON))
           .AddCancelButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogRejected,
                              base::Unretained(model_delegate_ptr),
