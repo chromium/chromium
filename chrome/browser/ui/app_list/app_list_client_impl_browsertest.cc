@@ -383,6 +383,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
 
   // Show the launcher.
   client->ShowAppList();
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/false);
+  }
 
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   ASSERT_TRUE(model_updater);
@@ -401,8 +405,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
       "chrome-extension://mgndgikekgjfcpckkfioiadnlibdjbkf/";
 
   // Search by title and the app must present in the results.
-  model_updater->UpdateSearchBox(base::ASCIIToUTF16(app_title),
-                                 true /* initiated_by_user */);
+  ash::AppListTestApi().SimulateSearch(base::UTF8ToUTF16(app_title));
   ASSERT_TRUE(search_controller->FindSearchResult(app_result_id));
 
   // Expect that the browser window is not minimized.
@@ -591,8 +594,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
   EXPECT_FALSE(search_controller->GetResultByTitleForTest(title));
 
   // Now a search finds the extension.
-  model_updater->UpdateSearchBox(base::ASCIIToUTF16(title),
-                                 true /* initiated_by_user */);
+  ash::AppListTestApi().SimulateSearch(base::UTF8ToUTF16(title));
+
   EXPECT_TRUE(search_controller->GetResultByTitleForTest(title));
 
   // Uninstall the extension.

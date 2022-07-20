@@ -285,6 +285,7 @@ void SearchBoxView::ClearSearch() {
         /*search_box_is_empty=*/true, /*triggered_by_contents_change=*/false);
   }
   NotifyQueryChanged();
+  view_delegate_->StartSearch(u"");
 }
 
 void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
@@ -365,6 +366,11 @@ void SearchBoxView::UpdateModel(bool initiated_by_user) {
 
   search_box_model->Update(new_query, initiated_by_user);
   search_box_model_observer_.Observe(search_box_model);
+
+  // Ask the controller to start the search if the change was initiated by the
+  // user.
+  if (initiated_by_user)
+    view_delegate_->StartSearch(new_query);
 }
 
 void SearchBoxView::UpdateSearchIcon() {

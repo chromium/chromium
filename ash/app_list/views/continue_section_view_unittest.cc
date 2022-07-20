@@ -783,7 +783,7 @@ TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
       {"id1", SearchResultActionType::kRemove}};
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
-      client->GetAndClearInvokedResultActions();
+      client->GetAndResetInvokedResultActions();
   EXPECT_EQ(expected_actions, invoked_actions);
 }
 
@@ -810,7 +810,7 @@ TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
       {"id1", SearchResultActionType::kRemove},
       {"id2", SearchResultActionType::kRemove}};
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
-      client->GetAndClearInvokedResultActions();
+      client->GetAndResetInvokedResultActions();
   EXPECT_EQ(expected_actions, invoked_actions);
 
   EXPECT_EQ(1, histogram_tester.GetBucketCount(

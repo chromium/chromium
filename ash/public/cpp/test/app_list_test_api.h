@@ -167,6 +167,9 @@ class ASH_EXPORT AppListTestApi {
   // Returns the recent app item item specified by `index`.
   views::View* GetRecentAppAt(int index);
 
+  // Updates launcher search box content, and triggers search.
+  void SimulateSearch(const std::u16string& query);
+
   // App list sort related methods ---------------------------------------------
 
   enum class MenuType {

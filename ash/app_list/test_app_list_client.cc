@@ -40,7 +40,7 @@ void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
 }
 
 void TestAppListClient::StartSearch(const std::u16string& trimmed_query) {
-  last_search_query_ = trimmed_query;
+  search_queries_.push_back(trimmed_query);
 }
 
 void TestAppListClient::OpenSearchResult(int profile_id,
@@ -88,9 +88,15 @@ AppListNotifier* TestAppListClient::GetNotifier() {
 }
 
 std::vector<TestAppListClient::SearchResultActionId>
-TestAppListClient::GetAndClearInvokedResultActions() {
+TestAppListClient::GetAndResetInvokedResultActions() {
   std::vector<SearchResultActionId> result;
   result.swap(invoked_result_actions_);
+  return result;
+}
+
+std::vector<std::u16string> TestAppListClient::GetAndResetPastSearchQueries() {
+  std::vector<std::u16string> result;
+  result.swap(search_queries_);
   return result;
 }
 

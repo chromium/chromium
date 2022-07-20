@@ -625,11 +625,6 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
     else
       ShowPage(AppListBubblePage::kApps);
   }
-
-  // Ask the controller to start the search.
-  std::u16string query =
-      AppListModelProvider::Get()->search_model()->search_box()->text();
-  view_delegate_->StartSearch(query);
   SchedulePaint();
 }
 

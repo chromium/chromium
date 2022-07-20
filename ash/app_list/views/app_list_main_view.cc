@@ -131,8 +131,6 @@ void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   contents_view_->ShowSearchResults(search_box_view_->is_search_box_active() ||
                                     !query.empty());
-
-  delegate_->StartSearch(raw_query);
 }
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {

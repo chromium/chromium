@@ -75,7 +75,6 @@ class TestAppListClient : public AppListClient {
   int zero_state_search_done_count() const {
     return zero_state_search_done_count_;
   }
-  std::u16string last_search_query() const { return last_search_query_; }
 
   // Returns the number of AppItems that have been activated. These items could
   // live in search, RecentAppsView, or ScrollableAppsGridView.
@@ -90,7 +89,13 @@ class TestAppListClient : public AppListClient {
   }
 
   using SearchResultActionId = std::pair<std::string, int>;
-  std::vector<SearchResultActionId> GetAndClearInvokedResultActions();
+  std::vector<SearchResultActionId> GetAndResetInvokedResultActions();
+
+  // Returns the list of search queries that were requested.
+  // This clears the list of tracked queries - if the method gets called
+  // consecutively, the second call will not return queries returned returned by
+  // the first call.
+  std::vector<std::u16string> GetAndResetPastSearchQueries();
 
  private:
   // Called in response to StartZeroStateSearch() when
@@ -101,7 +106,7 @@ class TestAppListClient : public AppListClient {
   int start_zero_state_search_count_ = 0;
   bool run_zero_state_callback_immediately_ = true;
   int zero_state_search_done_count_ = 0;
-  std::u16string last_search_query_;
+  std::vector<std::u16string> search_queries_;
   std::vector<SearchResultActionId> invoked_result_actions_;
   int activate_item_count_ = 0;
   std::string activate_item_last_id_;

@@ -580,10 +580,13 @@ TEST_F(AppListBubbleViewTest, ClosingBubbleClearsSearch) {
   EXPECT_TRUE(search_box_input->HasFocus());
   EXPECT_EQ(u"a", search_box_input->GetText());
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
-  EXPECT_EQ(u"a", client->last_search_query());
+  EXPECT_EQ(std::vector<std::u16string>({u"a"}),
+            client->GetAndResetPastSearchQueries());
 
   // The app list view and widget are cached after this close.
   DismissAppList();
+  EXPECT_EQ(std::vector<std::u16string>({u""}),
+            client->GetAndResetPastSearchQueries());
 
   // Search box is empty on next show.
   ShowAppList();
@@ -594,7 +597,6 @@ TEST_F(AppListBubbleViewTest, ClosingBubbleClearsSearch) {
   search_box_input = GetSearchBoxView()->search_box();
   EXPECT_TRUE(search_box_input->HasFocus());
   EXPECT_EQ(u"", search_box_input->GetText());
-  EXPECT_EQ(u"", client->last_search_query());
 }
 
 // Regression test for https://crbug.com/1313140
@@ -702,6 +704,10 @@ TEST_F(AppListBubbleViewTest, AssistantPageLayout) {
 TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   ShowAppList();
   PressAndReleaseKey(ui::VKEY_A);
+  TestAppListClient* const app_list_client =
+      GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ(std::vector<std::u16string>({u"a"}),
+            app_list_client->GetAndResetPastSearchQueries());
 
   // Close button is visible after typing text.
   SearchBoxView* search_box_view = GetSearchBoxView();
@@ -711,6 +717,8 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   // Clicking the close button clears the search, but the search box is still
   // focused/active.
   LeftClickOn(search_box_view->close_button());
+  EXPECT_EQ(std::vector<std::u16string>({u""}),
+            app_list_client->GetAndResetPastSearchQueries());
   EXPECT_FALSE(search_box_view->close_button()->GetVisible());
   EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
@@ -747,15 +755,21 @@ TEST_F(AppListBubbleViewTest, TypingTextShowsSearchPage) {
 }
 
 TEST_F(AppListBubbleViewTest, TypingTextStartsSearch) {
-  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
-
   ShowAppList();
 
   PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_EQ(client->last_search_query(), u"a");
+
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ(std::vector<std::u16string>({u"a"}),
+            client->GetAndResetPastSearchQueries());
 
   PressAndReleaseKey(ui::VKEY_B);
-  EXPECT_EQ(client->last_search_query(), u"ab");
+  EXPECT_EQ(std::vector<std::u16string>({u"ab"}),
+            client->GetAndResetPastSearchQueries());
+
+  PressAndReleaseKey(ui::VKEY_BACK);
+  EXPECT_EQ(std::vector<std::u16string>({u"a"}),
+            client->GetAndResetPastSearchQueries());
 }
 
 TEST_F(AppListBubbleViewTest, BackActionsClearSearch) {
