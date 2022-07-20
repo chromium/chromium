@@ -573,9 +573,7 @@ class UntrustedSourceWithCorsSupport : public URLDataSource {
       const std::string& origin) override {
     return origin;
   }
-  std::string GetMimeType(const std::string& path) override {
-    return "text/html";
-  }
+  std::string GetMimeType(const GURL& url) override { return "text/html"; }
   void StartDataRequest(const GURL& url,
                         const WebContents::Getter& wc_getter,
                         GotDataCallback callback) override {
