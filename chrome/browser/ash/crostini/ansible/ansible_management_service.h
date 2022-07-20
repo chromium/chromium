@@ -43,6 +43,9 @@ class AnsibleManagementService : public KeyedService,
     ~Observer() override = default;
     virtual void OnAnsibleSoftwareConfigurationStarted(
         const guest_os::GuestId& container_id) = 0;
+    virtual void OnAnsibleSoftwareConfigurationProgress(
+        const guest_os::GuestId& container_id,
+        const std::vector<std::string>& status_lines) {}
     virtual void OnAnsibleSoftwareConfigurationFinished(
         const guest_os::GuestId& container_id,
         bool success) = 0;
