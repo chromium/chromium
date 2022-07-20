@@ -19,6 +19,7 @@ _web_idl_extended_attributes_applicable_to_types = [
     "LegacyNullToEmptyString",
 ]
 _blink_specific_extended_attributes_applicable_to_types = [
+    "BufferSourceTypeNoSizeLimit",
     "FlexibleArrayBufferView",
     "StringContext",
     # "TreatNullAs" is the old version of "LegacyNullToEmptyString".

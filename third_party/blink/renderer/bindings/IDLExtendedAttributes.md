@@ -1650,6 +1650,12 @@ Standard: [TC39 Dynamic Code Brand Checks](https://github.com/tc39/proposal-dyna
 
 These extended attributes are _discouraged_ - they are not deprecated, but they should be avoided and removed if possible.
 
+### [BufferSourceTypeNoSizeLimit] _(t)_
+
+Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
+
+Consult with the bindings team before you use this extended attribute.
+
 ### [DoNotCheckConstants] _(i)_
 
 Summary: `[DoNotCheckConstants]` indicates that constant values in an IDL file can be different from constant values in Blink implementation.

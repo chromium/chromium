@@ -236,6 +236,10 @@ struct IDLOnBeforeUnloadEventHandler final
     : public IDLBaseHelper<EventListener*> {};
 struct IDLOnErrorEventHandler final : public IDLBaseHelper<EventListener*> {};
 
+// [BufferSourceTypeNoSizeLimit]
+template <typename T>
+struct IDLBufferSourceTypeNoSizeLimit {};
+
 // IDL optional types
 //
 // IDLOptional represents an optional argument and supports a conversion from

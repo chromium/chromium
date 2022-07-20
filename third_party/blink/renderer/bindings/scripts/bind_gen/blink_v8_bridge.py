@@ -420,9 +420,15 @@ def _native_value_tag_impl(idl_type):
             idl_type.type_name_with_extended_attribute_key_values)
 
     if real_type.is_array_buffer:
+        if "BufferSourceTypeNoSizeLimit" in real_type.effective_annotations:
+            return "IDLBufferSourceTypeNoSizeLimit<{}>".format(
+                blink_type_info(real_type).typename)
         return blink_type_info(real_type).typename
 
     if real_type.is_buffer_source_type:
+        if "BufferSourceTypeNoSizeLimit" in real_type.effective_annotations:
+            return "IDLBufferSourceTypeNoSizeLimit<{}>".format(
+                blink_type_info(real_type).value_t)
         return blink_type_info(real_type).value_t
 
     if real_type.is_symbol:
