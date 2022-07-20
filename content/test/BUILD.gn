@@ -1419,6 +1419,7 @@ test("content_browsertests") {
     "../browser/site_per_process_hit_test_browsertest.cc",
     "../browser/site_per_process_layout_browsertest.cc",
     "../browser/site_per_process_mixed_content_browsertest.cc",
+    "../browser/site_per_process_oopsif_browsertest.cc",
     "../browser/site_per_process_sad_frame_browsertest.cc",
     "../browser/site_per_process_scroll_browsertest.cc",
     "../browser/site_per_process_unload_browsertest.cc",
