@@ -159,10 +159,6 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
     return InvokeForAXTextMarkerRange(target, property_node);
   }
 
-  if (IsNSRect(target)) {
-    return InvokeForRect(target, property_node);
-  }
-
   if ([target isKindOfClass:[NSArray class]])
     return InvokeForArray(target, property_node);
 
@@ -400,28 +396,6 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForDictionary(
   NSString* key = PropertyNodeToString(property_node);
   NSDictionary* dictionary = target;
   return AXOptionalNSObject::NotNullOrError(dictionary[key]);
-}
-
-AXOptionalNSObject AXCallStatementInvoker::InvokeForRect(
-    const id target,
-    const AXPropertyNode& property_node) const {
-  NSValue* value = target;
-  NSRect rect = value.rectValue;
-
-  if (property_node.name_or_value == "size") {
-    NSValue* size = [NSValue valueWithSize:rect.size];
-    return AXOptionalNSObject(size);
-  }
-
-  if (property_node.name_or_value == "position") {
-    NSValue* position = [NSValue valueWithPoint:rect.origin];
-    return AXOptionalNSObject(position);
-  }
-
-  LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
-             << "' attribute called on NSRect in '"
-             << property_node.ToFlatString() << "' statement";
-  return AXOptionalNSObject::Error();
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeSetAccessibilityFocused(

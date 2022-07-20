@@ -652,6 +652,13 @@ bool IsAXSetter(SEL selector) {
       self, NSAccessibilityUIElementDestroyedNotification);
 }
 
+- (NSRect)boundsInScreen {
+  if (!_node || !_node->GetDelegate())
+    return NSZeroRect;
+  return gfx::ScreenRectToNSRect(_node->GetDelegate()->GetBoundsRect(
+      ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped));
+}
+
 - (NSString*)getStringAttribute:(ax::mojom::StringAttribute)attribute {
   std::string attributeValue;
   if (_node->GetStringAttribute(attribute, &attributeValue))
@@ -763,7 +770,7 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (id)accessibilityHitTest:(NSPoint)point {
-  if (!NSPointInRect(point, [self accessibilityFrame]))
+  if (!NSPointInRect(point, [self boundsInScreen]))
     return nil;
 
   for (id child in [[self AXChildren] reverseObjectEnumerator]) {
@@ -1572,11 +1579,11 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSValue*)AXPosition {
-  return [NSValue valueWithPoint:self.accessibilityFrame.origin];
+  return [NSValue valueWithPoint:self.boundsInScreen.origin];
 }
 
 - (NSValue*)AXSize {
-  return [NSValue valueWithSize:self.accessibilityFrame.size];
+  return [NSValue valueWithSize:self.boundsInScreen.size];
 }
 
 - (NSString*)AXTitle {
@@ -1761,10 +1768,7 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSRect)accessibilityFrame {
-  if (!_node || !_node->GetDelegate())
-    return NSZeroRect;
-  return gfx::ScreenRectToNSRect(_node->GetDelegate()->GetBoundsRect(
-      ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped));
+  return [self boundsInScreen];
 }
 
 - (NSString*)accessibilityLabel {

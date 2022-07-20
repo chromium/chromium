@@ -1,4 +1,0 @@
-// Only test the size attribute of accessibility frame because testing the
-// position results in flakey tests.
-div.accessibilityFrame.size={w: 85, h: 18}
-clipped.accessibilityFrame.size={w: 80, h: 36}

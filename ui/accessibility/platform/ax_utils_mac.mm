@@ -38,14 +38,6 @@ AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(AXTextMarkerRangeRef);
 
 namespace ui {
 
-bool IsNSRect(id object) {
-  if (object == nil || ![object isKindOfClass:[NSValue class]])
-    return false;
-  if (0 == strcmp([object objCType], @encode(NSRect)))
-    return true;
-  return false;
-}
-
 bool IsAXTextMarker(id object) {
   if (object == nil)
     return false;
