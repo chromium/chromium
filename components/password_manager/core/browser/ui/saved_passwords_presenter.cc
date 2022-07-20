@@ -135,12 +135,12 @@ void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
   const auto range =
-      sort_key_to_password_forms_.equal_range(credential.key().value());
+      sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
   bool removed = false;
   undo_helper_->StartGroupingActions();
   std::for_each(range.first, range.second, [&](const auto& pair) {
     const auto& current_form = pair.second;
-    // Make sure |form| and |current_form| share the same store.
+    // Make sure |credential| and |current_form| share the same store.
     if (credential.stored_in.contains(current_form.in_store)) {
       // |current_form| is unchanged result obtained from
       // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one store
@@ -199,9 +199,10 @@ bool SavedPasswordsPresenter::AddCredential(
 
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            std::u16string new_password) {
-  CredentialUIEntry entry(form);
-  entry.password = new_password;
-  return EditSavedCredentials(entry) == EditResult::kSuccess;
+  CredentialUIEntry updated_credential(form);
+  updated_credential.password = new_password;
+  return EditSavedCredentials(CredentialUIEntry(form), updated_credential) ==
+         EditResult::kSuccess;
 }
 
 bool SavedPasswordsPresenter::EditSavedPasswords(
@@ -210,37 +211,39 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     const std::u16string& new_password) {
   // TODO(crbug.com/1184691): Change desktop settings and maybe iOS to use this
   // presenter for updating the duplicates.
-  CredentialUIEntry entry(form);
-  entry.password = new_password;
-  entry.username = new_username;
-  return EditSavedCredentials(entry) == EditResult::kSuccess;
+  CredentialUIEntry updated_credential(form);
+  updated_credential.password = new_password;
+  updated_credential.username = new_username;
+  return EditSavedCredentials(CredentialUIEntry(form), updated_credential) ==
+         EditResult::kSuccess;
 }
 
 SavedPasswordsPresenter::EditResult
 SavedPasswordsPresenter::EditSavedCredentials(
-    const CredentialUIEntry& credential) {
+    const CredentialUIEntry& original_credential,
+    const CredentialUIEntry& updated_credential) {
   std::vector<PasswordForm> forms_to_change =
-      GetCorrespondingPasswordForms(credential.key());
+      GetCorrespondingPasswordForms(original_credential);
   if (forms_to_change.empty())
     return EditResult::kNotFound;
 
-  IsUsernameChanged username_changed(credential.username !=
-                                     forms_to_change[0].username_value);
-  IsPasswordChanged password_changed(credential.password !=
-                                     forms_to_change[0].password_value);
+  IsUsernameChanged username_changed(updated_credential.username !=
+                                     original_credential.username);
+  IsPasswordChanged password_changed(updated_credential.password !=
+                                     original_credential.password);
   IsPasswordNoteChanged note_changed =
-      IsNoteChanged(forms_to_change[0], credential.note);
+      IsNoteChanged(forms_to_change[0], updated_credential.note);
 
   bool issues_changed =
-      credential.password_issues != forms_to_change[0].password_issues;
+      updated_credential.password_issues != forms_to_change[0].password_issues;
 
   // Password can't be empty.
-  if (credential.password.empty())
+  if (updated_credential.password.empty())
     return EditResult::kEmptyPassword;
 
   // Username can't be changed to the existing one.
-  if (username_changed &&
-      IsUsernameAlreadyUsed(passwords_, forms_to_change, credential.username)) {
+  if (username_changed && IsUsernameAlreadyUsed(passwords_, forms_to_change,
+                                                updated_credential.username)) {
     return EditResult::kAlreadyExisits;
   }
 
@@ -257,25 +260,25 @@ SavedPasswordsPresenter::EditSavedCredentials(
     PasswordForm new_form = old_form;
 
     if (issues_changed) {
-      new_form.password_issues = credential.password_issues;
+      new_form.password_issues = updated_credential.password_issues;
     }
 
     if (password_changed) {
-      new_form.password_value = credential.password;
+      new_form.password_value = updated_credential.password;
       new_form.date_password_modified = base::Time::Now();
       new_form.password_issues.clear();
     }
 
     if (note_changed) {
       PasswordNoteAction note_action =
-          UpdateNoteInPasswordForm(new_form, credential.note);
+          UpdateNoteInPasswordForm(new_form, updated_credential.note);
       metrics_util::LogPasswordNoteActionInSettings(note_action);
     }
 
     // An updated username implies a change in the primary key, thus we need
     // to make sure to call the right API.
     if (username_changed) {
-      new_form.username_value = credential.username;
+      new_form.username_value = updated_credential.username;
       // Phished and leaked issues are no longer relevant on username change.
       // Weak and reused issues are still relevant.
       new_form.password_issues.erase(InsecureType::kPhished);
@@ -332,8 +335,9 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
 
 std::vector<PasswordForm>
 SavedPasswordsPresenter::GetCorrespondingPasswordForms(
-    const CredentialKey& key) const {
-  const auto range = sort_key_to_password_forms_.equal_range(key.value());
+    const CredentialUIEntry& credential) const {
+  const auto range =
+      sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
   std::vector<PasswordForm> forms;
   base::ranges::transform(range.first, range.second, std::back_inserter(forms),
                           [](const auto& pair) { return pair.second; });

@@ -288,7 +288,7 @@ bool InsecureCredentialsManager::MuteCredential(
       password_issue.second.is_muted = IsMuted(true);
     }
   }
-  return presenter_->EditSavedCredentials(updated_credential) ==
+  return presenter_->EditSavedCredentials(credential, updated_credential) ==
          SavedPasswordsPresenter::EditResult::kSuccess;
 }
 
@@ -301,7 +301,7 @@ bool InsecureCredentialsManager::UnmuteCredential(
       password_issue.second.is_muted = IsMuted(false);
     }
   }
-  return presenter_->EditSavedCredentials(updated_credential) ==
+  return presenter_->EditSavedCredentials(credential, updated_credential) ==
          SavedPasswordsPresenter::EditResult::kSuccess;
 }
 

@@ -14,17 +14,13 @@
 
 namespace password_manager {
 
-using CredentialKey = base::StrongAlias<class CredentialKeyTag, std::string>;
-
 // Simple struct that represents an entry inside Settings UI. Allows implicit
 // construction from PasswordForm for convenience. A single entry might
 // correspond to multiple PasswordForms.
 struct CredentialUIEntry {
   struct Less {
     bool operator()(const CredentialUIEntry& lhs,
-                    const CredentialUIEntry& rhs) const {
-      return lhs.key() < rhs.key();
-    }
+                    const CredentialUIEntry& rhs) const;
   };
 
   CredentialUIEntry();
@@ -84,17 +80,11 @@ struct CredentialUIEntry {
   // site. Defaults to |date_created|.
   base::Time last_used_time;
 
-  const CredentialKey& key() const { return key_; }
-
   // Information about password insecurities.
   bool IsLeaked() const;
   bool IsPhished() const;
 
   const base::Time GetLastLeakedOrPhishedTime() const;
-
- private:
-  // Key which is constructed from an original PasswordForm.
-  CredentialKey key_;
 };
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);

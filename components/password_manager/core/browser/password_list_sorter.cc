@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -27,10 +28,23 @@ constexpr char kSortKeyNoFederationSymbol = '-';
 }  // namespace
 
 std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
-  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(form);
+  std::string key = CreateSortKey(CredentialUIEntry(form));
+
+  if (ignore_store)
+    return key;
+
+  if (form.in_store == PasswordForm::Store::kAccountStore) {
+    return key + kSortKeyPartsSeparator + std::string("account");
+  }
+
+  return key;
+}
+
+std::string CreateSortKey(const CredentialUIEntry& credential) {
+  std::string shown_origin = GetShownOrigin(credential);
 
   const auto facet_uri =
-      FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+      FacetURI::FromPotentiallyInvalidSpec(credential.signon_realm);
   const bool is_android_uri = facet_uri.IsValidAndroidFacetURI();
 
   if (is_android_uri) {
@@ -57,23 +71,19 @@ std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
   key += is_android_uri ? facet_uri.canonical_spec()
                         : SplitByDotAndReverse(shown_origin);
 
-  if (!form.blocked_by_user) {
-    key += kSortKeyPartsSeparator + base::UTF16ToUTF8(form.username_value) +
-           kSortKeyPartsSeparator + base::UTF16ToUTF8(form.password_value);
+  if (!credential.blocked_by_user) {
+    key += kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.username) +
+           kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.password);
 
     key += kSortKeyPartsSeparator;
-    if (!form.federation_origin.opaque())
-      key += form.federation_origin.host();
+    if (!credential.federation_origin.opaque())
+      key += credential.federation_origin.host();
     else
       key += kSortKeyNoFederationSymbol;
   }
 
   // To separate HTTP/HTTPS credentials, add the scheme to the key.
-  key += kSortKeyPartsSeparator + link_url.scheme();
-
-  if (!ignore_store && form.in_store == PasswordForm::Store::kAccountStore) {
-    key += kSortKeyPartsSeparator + std::string("account");
-  }
+  key += kSortKeyPartsSeparator + GetShownUrl(credential).scheme();
 
   return key;
 }
@@ -85,7 +95,7 @@ void SortEntriesAndHideDuplicates(
       keys_to_forms;
   keys_to_forms.reserve(list->size());
   for (auto& form : *list) {
-    std::string key = CreateSortKey(*form);
+    std::string key = CreateSortKey(*form, IgnoreStore(false));
     keys_to_forms.emplace_back(std::move(key), std::move(form));
   }
 

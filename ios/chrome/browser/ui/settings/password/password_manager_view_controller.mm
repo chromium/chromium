@@ -126,7 +126,8 @@ bool ArePasswordsListsEqual(
     return false;
 
   for (size_t i = 0; i < lhs.size(); i++) {
-    if (CreateSortKey(lhs[i]) != CreateSortKey(rhs[i]))
+    if (CreateSortKey(lhs[i], password_manager::IgnoreStore(false)) !=
+        CreateSortKey(rhs[i], password_manager::IgnoreStore(false)))
       return false;
   }
   return true;
@@ -137,10 +138,12 @@ void RemoveFormsToBeDeleted(
     const std::vector<password_manager::PasswordForm>& to_delete) {
   std::unordered_set<std::string> sort_keys_to_delete;
   base::ranges::for_each(to_delete, [&sort_keys_to_delete](const auto& form) {
-    sort_keys_to_delete.insert(CreateSortKey(form));
+    sort_keys_to_delete.insert(
+        CreateSortKey(form, password_manager::IgnoreStore(false)));
   });
   base::EraseIf(forms, [&sort_keys_to_delete](const auto& form) {
-    return sort_keys_to_delete.find(CreateSortKey(form)) !=
+    return sort_keys_to_delete.find(
+               CreateSortKey(form, password_manager::IgnoreStore(false))) !=
            sort_keys_to_delete.end();
   });
 }

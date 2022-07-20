@@ -338,14 +338,14 @@ bool PasswordCheckDelegate::ChangeInsecureCredential(
     const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = FindMatchingEntry(credential);
-  if (!entry)
+  const CredentialUIEntry* original_credential = FindMatchingEntry(credential);
+  if (!original_credential)
     return false;
 
-  CredentialUIEntry credential_to_edit = *entry;
-  credential_to_edit.password = base::UTF8ToUTF16(new_password);
-  switch (
-      saved_passwords_presenter_->EditSavedCredentials(credential_to_edit)) {
+  CredentialUIEntry updated_credential = *original_credential;
+  updated_credential.password = base::UTF8ToUTF16(new_password);
+  switch (saved_passwords_presenter_->EditSavedCredentials(
+      *original_credential, updated_credential)) {
     case password_manager::SavedPasswordsPresenter::EditResult::kSuccess:
     case password_manager::SavedPasswordsPresenter::EditResult::kNothingChanged:
       return true;

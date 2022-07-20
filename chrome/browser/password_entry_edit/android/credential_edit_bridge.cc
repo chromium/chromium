@@ -89,10 +89,13 @@ void CredentialEditBridge::SaveChanges(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& username,
     const base::android::JavaParamRef<jstring>& password) {
-  password_manager::CredentialUIEntry to_edit = credential_;
-  to_edit.username = base::android::ConvertJavaStringToUTF16(username);
-  to_edit.password = base::android::ConvertJavaStringToUTF16(password);
-  saved_passwords_presenter_->EditSavedCredentials(to_edit);
+  password_manager::CredentialUIEntry updated_credential = credential_;
+  updated_credential.username =
+      base::android::ConvertJavaStringToUTF16(username);
+  updated_credential.password =
+      base::android::ConvertJavaStringToUTF16(password);
+  saved_passwords_presenter_->EditSavedCredentials(credential_,
+                                                   updated_credential);
 }
 
 void CredentialEditBridge::DeleteCredential(JNIEnv* env) {

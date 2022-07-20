@@ -287,7 +287,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   EXPECT_CALL(observer, OnEdited(updated_username));
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_username)));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
   EXPECT_THAT(
       store().stored_passwords(),
@@ -342,7 +343,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsernameClearsPartialIssues) {
   EXPECT_CALL(observer, OnEdited(updated_username));
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_username)));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
   EXPECT_THAT(
       store().stored_passwords(),
@@ -384,7 +386,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   EXPECT_CALL(observer, OnEdited(updated_password));
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_password)));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
   EXPECT_THAT(
       store().stored_passwords(),
@@ -415,7 +418,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
 
   // The note with the non-empty display name should be untouched. Another note
@@ -448,7 +452,8 @@ TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
   credential_to_edit.note = PasswordNote(kNewNoteValue, base::Time::Now());
 
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
 
   PasswordForm expected_updated_form = form;
@@ -477,7 +482,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
 
   PasswordForm expected_updated_form = form;
@@ -504,7 +510,8 @@ TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
 
   RunUntilIdle();
 
@@ -580,7 +587,8 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   EXPECT_CALL(observer, OnEdited(updated_both));
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_both)));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             credential_to_edit));
   RunUntilIdle();
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(updated_both))));
@@ -610,7 +618,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
   // Updating the form with the username which is already used for same website
   // fails.
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kAlreadyExisits,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form1),
+                                             credential_to_edit));
   RunUntilIdle();
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form1.signon_realm, ElementsAre(form1, form2))));
@@ -619,7 +628,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
   credential_to_edit.password = u"";
   // Updating the form with the empty password fails.
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kEmptyPassword,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(CredentialUIEntry(form1),
+                                             credential_to_edit));
   RunUntilIdle();
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form1.signon_realm, ElementsAre(form1, form2))));
@@ -646,7 +656,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
 
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kNothingChanged,
-            presenter().EditSavedCredentials(CredentialUIEntry(form)));
+            presenter().EditSavedCredentials(CredentialUIEntry(form),
+                                             CredentialUIEntry(form)));
   RunUntilIdle();
   histogram_tester.ExpectBucketCount(
       "PasswordManager.PasswordEditUpdatedValues",
@@ -659,7 +670,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordsEmptyList) {
   CredentialUIEntry credential(
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kNotFound,
-            presenter().EditSavedCredentials(credential));
+            presenter().EditSavedCredentials(credential, credential));
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
@@ -1042,7 +1053,8 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
   credential_to_edit.username = new_username;
 
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
-            presenter().EditSavedCredentials(credential_to_edit));
+            presenter().EditSavedCredentials(
+                CredentialUIEntry(profile_store_form), credential_to_edit));
   RunUntilIdle();
   profile_store_form.username_value = new_username;
   profile_store_form.password_issues.clear();

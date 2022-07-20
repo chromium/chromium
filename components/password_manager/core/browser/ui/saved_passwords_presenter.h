@@ -112,9 +112,11 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                           const std::u16string& new_username,
                           const std::u16string& new_password);
 
-  // Modifies all the saved credentials with a matching key. Only username,
-  // password and notes are modified.
-  EditResult EditSavedCredentials(const CredentialUIEntry& credential);
+  // Modifies all the saved credentials matching |original_credential| to
+  // |updated_credential|. Only username, password, notes and password issues
+  // are modifiable.
+  EditResult EditSavedCredentials(const CredentialUIEntry& original_credential,
+                                  const CredentialUIEntry& updated_credential);
 
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;
@@ -129,9 +131,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   std::vector<PasswordForm> GetUniquePasswordForms() const;
   std::vector<CredentialUIEntry> GetSavedCredentials() const;
 
-  // Returns PasswordForms corresponding to |key|.
+  // Returns PasswordForms corresponding to |credential|.
   std::vector<PasswordForm> GetCorrespondingPasswordForms(
-      const CredentialKey& key) const;
+      const CredentialUIEntry& credential) const;
 
   // Allows clients and register and de-register themselves.
   void AddObserver(Observer* observer);

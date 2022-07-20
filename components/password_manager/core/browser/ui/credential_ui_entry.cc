@@ -9,6 +9,11 @@
 
 namespace password_manager {
 
+bool CredentialUIEntry::Less::operator()(const CredentialUIEntry& lhs,
+                                         const CredentialUIEntry& rhs) const {
+  return CreateSortKey(lhs) < CreateSortKey(rhs);
+}
+
 CredentialUIEntry::CredentialUIEntry() = default;
 
 CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
@@ -21,8 +26,7 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       federation_origin(form.federation_origin),
       password_issues(form.password_issues),
       blocked_by_user(form.blocked_by_user),
-      last_used_time(form.date_last_used),
-      key_(CredentialKey(CreateSortKey(form, IgnoreStore(true)))) {
+      last_used_time(form.date_last_used) {
   // Only one-note with an empty `unique_display_name` is supported in the
   // settings UI.
   for (const PasswordNote& n : form.notes) {
@@ -68,7 +72,7 @@ const base::Time CredentialUIEntry::GetLastLeakedOrPhishedTime() const {
 }
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  return lhs.key() == rhs.key();
+  return CreateSortKey(lhs) == CreateSortKey(rhs);
 }
 
 }  // namespace password_manager
