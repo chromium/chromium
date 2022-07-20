@@ -2,14 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 
-html_to_js("web_components") {
-  js_files = [
-    "policy_conflict.js",
-    "policy_row.js",
-    "policy_precedence_row.js",
-    "policy_table.js",
-    "status_box.js",
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "policy_conflict.html",
+    "policy_row.html",
+    "policy_precedence_row.html",
+    "policy_table.html",
+    "status_box.html",
   ]
+  template = "native"
+  use_js = true
 }
