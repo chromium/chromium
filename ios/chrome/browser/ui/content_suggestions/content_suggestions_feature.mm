@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
+#import "base/metrics/field_trial_params.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -36,6 +38,9 @@ const base::Feature kContentSuggestionsUIModuleRefresh{
 const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kTrendingQueriesHideShortcutsParam[] = "hide_shortcuts";
+const char kTrendingQueriesDisabledFeedParam[] = "disabled_feed_only";
+const char kTrendingQueriesSignedOutParam[] = "signed_out_only";
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -63,4 +68,19 @@ bool IsContentSuggestionsUIModuleRefreshEnabled() {
 
 bool IsTrendingQueriesModuleEnabled() {
   return base::FeatureList::IsEnabled(kTrendingQueriesModule);
+}
+
+bool ShouldHideShortcutsForTrendingQueries() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false);
+}
+
+bool ShouldOnlyShowTrendingQueriesForDisabledFeed() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesDisabledFeedParam, false);
+}
+
+bool ShouldOnlyShowTrendingQueriesForSignedOut() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesSignedOutParam, false);
 }

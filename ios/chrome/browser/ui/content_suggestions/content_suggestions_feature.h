@@ -31,6 +31,11 @@ extern const base::Feature kContentSuggestionsUIModuleRefresh;
 // Feature to show the Trending Queries module.
 extern const base::Feature kTrendingQueriesModule;
 
+// Feature params for kTrendingQueriesModule.
+extern const char kTrendingQueriesHideShortcutsParam[];
+extern const char kTrendingQueriesDisabledFeedParam[];
+extern const char kTrendingQueriesSignedOutParam[];
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
@@ -53,5 +58,16 @@ bool IsContentSuggestionsUIModuleRefreshEnabled();
 
 // Whether the Trending Queries module feature is enabled.
 bool IsTrendingQueriesModuleEnabled();
+
+// Whether the shorctus should be hidden while showing the Trending Queries
+// module.
+bool ShouldHideShortcutsForTrendingQueries();
+
+// Whether the Trending Queries module should only be shown to users who had the
+// feed disabled.
+bool ShouldOnlyShowTrendingQueriesForDisabledFeed();
+
+// Whether the Trending Queries module should only be shown to signed out users.
+bool ShouldOnlyShowTrendingQueriesForSignedOut();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

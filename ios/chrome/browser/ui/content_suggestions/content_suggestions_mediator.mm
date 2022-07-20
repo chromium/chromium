@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/ntp_snippets/category.h"
 #import "components/ntp_snippets/category_info.h"
 #import "components/ntp_tiles/metrics.h"
@@ -30,6 +31,8 @@
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -264,19 +267,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     if ([self.mostVisitedItems count]) {
       [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
     }
-    if (!ShouldHideShortcutsForStartSurface()) {
+    if (!ShouldHideShortcutsForTrendingQueries()) {
       [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
     }
     if (IsTrendingQueriesModuleEnabled()) {
-      // Fetch Trending Queries
-      TemplateURLRef::SearchTermsArgs args;
-      args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
-      _startSuggestService->FetchSuggestions(
-          args,
-          base::BindOnce(
-              &StartSuggestServiceResponseBridge::OnSuggestionsReceived,
-              _startSuggestServiceResponseBridge->AsWeakPtr()),
-          self.showingStartSurface);
+      [self fetchTrendingQueriesIfApplicable];
     }
     return;
   }
@@ -809,6 +804,39 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   message.action = action;
   message.category = @"MostVisitedUndo";
   [self.dispatcher showSnackbarMessage:message];
+}
+
+- (void)fetchTrendingQueriesIfApplicable {
+  PrefService* pref_service =
+      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
+          ->GetPrefs();
+  BOOL isFeedVisible =
+      pref_service->GetBoolean(prefs::kArticlesForYouEnabled) &&
+      pref_service->GetBoolean(feed::prefs::kArticlesListVisible);
+  if (ShouldOnlyShowTrendingQueriesForDisabledFeed() && isFeedVisible) {
+    // Notify consumer with empty array so it knows to remove the module.
+    [self.consumer setTrendingQueriesWithConfigs:@[]];
+    return;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  BOOL isSignedIn =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (ShouldOnlyShowTrendingQueriesForSignedOut() && isSignedIn) {
+    // Notify consumer with empty array so it knows to remove the module.
+    [self.consumer setTrendingQueriesWithConfigs:@[]];
+    return;
+  }
+
+  // Fetch Trending Queries
+  TemplateURLRef::SearchTermsArgs args;
+  args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
+  _startSuggestService->FetchSuggestions(
+      args,
+      base::BindOnce(&StartSuggestServiceResponseBridge::OnSuggestionsReceived,
+                     _startSuggestServiceResponseBridge->AsWeakPtr()),
+      self.showingStartSurface);
 }
 
 #pragma mark - Properties

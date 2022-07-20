@@ -122,6 +122,8 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 // List of all UITapGestureRecognizers created for the Trending Queries.
 @property(nonatomic, strong)
     NSMutableArray<UITapGestureRecognizer*>* trendingQueryTapRecognizers;
+// Set to YES when the trending queries fetch has been received.
+@property(nonatomic, assign) BOOL trendingQueriesReceived;
 
 @end
 
@@ -260,7 +262,9 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
     ]];
     [self populateMostVisitedModule];
   }
-  if (IsTrendingQueriesModuleEnabled()) {
+  BOOL noTrendingQueriesToShow =
+      self.trendingQueriesReceived && [self.trendingQueryViews count] == 0;
+  if (IsTrendingQueriesModuleEnabled() && !noTrendingQueriesToShow) {
     self.trendingQueriesContainingView = [[UIView alloc] init];
     self.trendingQueriesModuleContainer =
         [[ContentSuggestionsModuleContainer alloc]
@@ -522,6 +526,7 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 - (void)setTrendingQueriesWithConfigs:
     (NSArray<QuerySuggestionConfig*>*)configs {
   DCHECK(IsTrendingQueriesModuleEnabled());
+  self.trendingQueriesReceived = YES;
   if (!self.trendingQueriesContainingView) {
     self.trendingQueriesContainingView = [[UIView alloc] init];
   }
@@ -733,7 +738,6 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 
 - (void)populateTrendingQueriesModule {
   for (QuerySuggestionView* view in self.trendingQueryViews) {
-    //      view.menuProvider = self.menuProvider;
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(contentSuggestionsElementTapped:)];

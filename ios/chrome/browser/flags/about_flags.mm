@@ -397,6 +397,35 @@ const FeatureEntry::FeatureVariation kFREDefaultBrowserPromoVariations[] = {
      std::size(kFREDefaultBrowserPromoShortDelay), nullptr},
 };
 
+const FeatureEntry::FeatureParam kTrendingQueriesEnableAllUsers[] = {
+    {kTrendingQueriesHideShortcutsParam, "false"},
+    {kTrendingQueriesDisabledFeedParam, "false"},
+    {kTrendingQueriesSignedOutParam, "false"}};
+const FeatureEntry::FeatureParam kTrendingQueriesEnableAllUsersHideShortcuts[] =
+    {{kTrendingQueriesHideShortcutsParam, "true"},
+     {kTrendingQueriesDisabledFeedParam, "false"},
+     {kTrendingQueriesSignedOutParam, "false"}};
+const FeatureEntry::FeatureParam kTrendingQueriesEnableFeedDisabled[] = {
+    {kTrendingQueriesHideShortcutsParam, "false"},
+    {kTrendingQueriesDisabledFeedParam, "true"},
+    {kTrendingQueriesSignedOutParam, "false"}};
+const FeatureEntry::FeatureParam kTrendingQueriesEnableSignedOut[] = {
+    {kTrendingQueriesHideShortcutsParam, "true"},
+    {kTrendingQueriesDisabledFeedParam, "false"},
+    {kTrendingQueriesSignedOutParam, "true"}};
+
+const FeatureEntry::FeatureVariation kTrendingQueriesModuleVariations[] = {
+    {"Enabled All Users", kTrendingQueriesEnableAllUsers,
+     std::size(kTrendingQueriesEnableAllUsers), nullptr},
+    {"Enabled All Users Hide Shortcuts",
+     kTrendingQueriesEnableAllUsersHideShortcuts,
+     std::size(kTrendingQueriesEnableAllUsersHideShortcuts), nullptr},
+    {"Enabled Disabled Feed", kTrendingQueriesEnableFeedDisabled,
+     std::size(kTrendingQueriesEnableFeedDisabled), nullptr},
+    {"Enabled Signed Out", kTrendingQueriesEnableSignedOut,
+     std::size(kTrendingQueriesEnableSignedOut), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNewMICEFREWithUMADialog[] = {
     {kNewMobileIdentityConsistencyFREParam,
      kNewMobileIdentityConsistencyFREParamUMADialog}};
@@ -1039,7 +1068,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kAdaptiveSuggestionsCount)},
     {"trending-queries-module", flag_descriptions::kTrendingQueriesModuleName,
      flag_descriptions::kTrendingQueriesModuleDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTrendingQueriesModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTrendingQueriesModule,
+                                    kTrendingQueriesModuleVariations,
+                                    "TrendingQueriesModule")},
     {"autofill-parse-iban-fields",
      flag_descriptions::kAutofillParseIbanFieldsName,
      flag_descriptions::kAutofillParseIbanFieldsDescription, flags_ui::kOsIos,
