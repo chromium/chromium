@@ -8,24 +8,24 @@
 #error "This file requires ARC support."
 #endif
 
-NSInteger kSymbolActionPointSize = 18;
+extern const CGFloat kSymbolActionPointSize = 18;
 
-NSString* kLinkActionSymbol = @"link";
-NSString* kQRCodeFinderActionSymbol = @"qrcode.viewfinder";
-NSString* kNewTabActionSymbol = @"plus.square";
-NSString* kNewTabCircleActionSymbol = @"plus.circle";
-NSString* kClipboardActionSymbol = @"doc.on.clipboard";
-NSString* kDeleteActionSymbol = @"trash";
-NSString* kEditActionSymbol = @"pencil";
-NSString* kMarkAsReadActionSymbol = @"text.badge.checkmark";
-NSString* kReadLaterActionSymbol = @"text.badge.plus";
-NSString* kAddBookmarkActionSymbol = @"star";
-NSString* kCopyActionSymbol = @"doc.on.doc";
-NSString* kNewWindowActionSymbol = @"square.split.2x1";
-NSString* kHideActionSymbol = @"eye.slash";
-NSString* kRequestDesktopActionSymbol = @"desktopcomputer";
-NSString* kRequestMobileActionSymbol = @"iphone";
-NSString* kFindInPageActionSymbol = @"doc.text.magnifyingglass";
-NSString* kZoomTextActionSymbol = @"plus.magnifyingglass";
-NSString* kSaveImageActionSymbol = @"square.and.arrow.down";
-NSString* kOpenImageActionSymbol = @"arrow.up.right.square";
+NSString* const kLinkActionSymbol = @"link";
+NSString* const kQRCodeFinderActionSymbol = @"qrcode.viewfinder";
+NSString* const kNewTabActionSymbol = @"plus.square";
+NSString* const kNewTabCircleActionSymbol = @"plus.circle";
+NSString* const kClipboardActionSymbol = @"doc.on.clipboard";
+NSString* const kDeleteActionSymbol = @"trash";
+NSString* const kEditActionSymbol = @"pencil";
+NSString* const kMarkAsReadActionSymbol = @"text.badge.checkmark";
+NSString* const kReadLaterActionSymbol = @"text.badge.plus";
+NSString* const kAddBookmarkActionSymbol = @"star";
+NSString* const kCopyActionSymbol = @"doc.on.doc";
+NSString* const kNewWindowActionSymbol = @"square.split.2x1";
+NSString* const kHideActionSymbol = @"eye.slash";
+NSString* const kRequestDesktopActionSymbol = @"desktopcomputer";
+NSString* const kRequestMobileActionSymbol = @"iphone";
+NSString* const kFindInPageActionSymbol = @"doc.text.magnifyingglass";
+NSString* const kZoomTextActionSymbol = @"plus.magnifyingglass";
+NSString* const kSaveImageActionSymbol = @"square.and.arrow.down";
+NSString* const kOpenImageActionSymbol = @"arrow.up.right.square";

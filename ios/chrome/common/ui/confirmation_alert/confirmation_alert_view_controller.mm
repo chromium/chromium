@@ -34,38 +34,38 @@ NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier =
 
 namespace {
 
-constexpr CGFloat kActionsBottomMargin = 10;
+const CGFloat kActionsBottomMargin = 10;
 // Gradient height.
-constexpr CGFloat kGradientHeight = 40.;
-constexpr CGFloat kScrollViewBottomInsets = 20;
-constexpr CGFloat kStackViewSpacing = 8;
-constexpr CGFloat kStackViewSpacingAfterIllustration = 27;
+const CGFloat kGradientHeight = 40.;
+const CGFloat kScrollViewBottomInsets = 20;
+const CGFloat kStackViewSpacing = 8;
+const CGFloat kStackViewSpacingAfterIllustration = 27;
 // The multiplier used when in regular horizontal size class.
-constexpr CGFloat kSafeAreaMultiplier = 0.65;
-constexpr CGFloat kContentOptimalWidth = 327;
+const CGFloat kSafeAreaMultiplier = 0.65;
+const CGFloat kContentOptimalWidth = 327;
 
 // The size of the symbol image.
-constexpr NSInteger kSymbolBadgeImagePointSize = 13;
+const CGFloat kSymbolBadgeImagePointSize = 13;
 
 // The name of the checkmark symbol in filled circle.
 NSString* const kCheckmarkSymbol = @"checkmark.circle.fill";
 
 // Properties of the favicon.
-constexpr CGFloat kFaviconCornerRadius = 13;
-constexpr CGFloat kFaviconShadowOffsetX = 0;
-constexpr CGFloat kFaviconShadowOffsetY = 0;
-constexpr CGFloat kFaviconShadowRadius = 6;
-constexpr CGFloat kFaviconShadowOpacity = 0.1;
+const CGFloat kFaviconCornerRadius = 13;
+const CGFloat kFaviconShadowOffsetX = 0;
+const CGFloat kFaviconShadowOffsetY = 0;
+const CGFloat kFaviconShadowRadius = 6;
+const CGFloat kFaviconShadowOpacity = 0.1;
 
 // Length of each side of the favicon frame (which contains the favicon and the
 // surrounding whitespace).
-constexpr CGFloat kFaviconFrameSideLength = 60;
+const CGFloat kFaviconFrameSideLength = 60;
 
 // Length of each side of the favicon.
-constexpr CGFloat kFaviconSideLength = 30;
+const CGFloat kFaviconSideLength = 30;
 
 // Length of each side of the favicon badge.
-constexpr CGFloat kFaviconBadgeSideLength = 24;
+const CGFloat kFaviconBadgeSideLength = 24;
 
 }  // namespace
 

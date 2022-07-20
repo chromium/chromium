@@ -31,7 +31,7 @@
 namespace {
 
 // The size of the symbol badge image.
-NSInteger kSymbolBadgeImagePointSize = 13;
+const CGFloat kSymbolBadgeImagePointSize = 13;
 
 // The string format used to append the distillation date to the URL host.
 NSString* const kURLAndDistillationDateFormat = @"%@ • %@";

@@ -10,7 +10,7 @@
 #error "This file requires ARC support."
 #endif
 
-NSInteger kSettingsRootSymbolImagePointSize = 18;
+const CGFloat kSettingsRootSymbolImagePointSize = 18;
 
 // Custom symbol names.
 NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";

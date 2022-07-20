@@ -63,7 +63,7 @@ using signin_metrics::PromoAction;
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolAddAccountPointSize = 20;
+const CGFloat kSymbolAddAccountPointSize = 20;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAccounts = kSectionIdentifierEnumZero,

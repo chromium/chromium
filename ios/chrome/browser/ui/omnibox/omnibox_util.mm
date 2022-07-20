@@ -17,7 +17,7 @@
 namespace {
 
 // The size of symbol images.
-NSInteger kSymbolLocationBarPointSize = 10;
+const CGFloat kSymbolLocationBarPointSize = 10;
 
 }  // namespace
 

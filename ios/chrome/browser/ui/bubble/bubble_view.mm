@@ -99,7 +99,7 @@ const CGFloat kSnoozeButtonMinimumSize = 48.0f;
 const CGFloat kSnoozeButtonFontSize = 15.0f;
 
 // The size of symbol action images.
-const NSInteger kSymbolBubblePointSize = 17;
+const CGFloat kSymbolBubblePointSize = 17;
 
 // Returns a background view for BubbleView.
 UIView* BubbleBackgroundView() {

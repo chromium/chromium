@@ -25,7 +25,7 @@ const int kSelectionModeButtonSize = 17;
 const int kSearchBarTrailingSpace = 24;
 
 // The size of top toolbar search symbol image.
-NSInteger kSymbolSearchImagePointSize = 22;
+const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 @interface TabGridTopToolbar () <UIToolbarDelegate>

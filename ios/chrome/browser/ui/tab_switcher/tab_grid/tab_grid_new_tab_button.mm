@@ -20,7 +20,7 @@
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolNewTabPointSize = 24;
+const CGFloat kSymbolNewTabPointSize = 24;
 
 }  // namespace
 

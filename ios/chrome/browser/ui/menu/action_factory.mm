@@ -19,8 +19,6 @@
 #error "This file requires ARC support."
 #endif
 
-NSInteger kSymbolToolbarPointSize = 18;
-
 @interface ActionFactory ()
 
 // Histogram to record executed actions.

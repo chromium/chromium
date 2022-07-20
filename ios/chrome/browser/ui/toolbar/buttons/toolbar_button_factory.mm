@@ -29,11 +29,11 @@
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolToolbarPointSize = 24;
+const CGFloat kSymbolToolbarPointSize = 24;
 
 // Specific symbols used in the toolbar.
-NSString* kToolbarArrowBackwardSymbol = @"arrow.backward";
-NSString* kToolbarArrowForwardSymbol = @"arrow.forward";
+NSString* const kToolbarArrowBackwardSymbol = @"arrow.backward";
+NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
 
 }  // namespace
 

@@ -72,7 +72,7 @@
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolImagePointSize = 18;
+const CGFloat kSymbolImagePointSize = 18;
 
 // The name if the popup symbol.
 NSString* const kRestoreSessionSymbol = @"exclamationmark.triangle.fill";

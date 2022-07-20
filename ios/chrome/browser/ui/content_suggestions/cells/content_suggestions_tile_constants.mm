@@ -18,10 +18,10 @@
 namespace {
 
 // The size of the symbol image used in content suggestions.
-NSInteger kSymbolContentSuggestionsPointSize = 22;
+const CGFloat kSymbolContentSuggestionsPointSize = 22;
 
 // Specific symbols used in the content suggestions.
-NSString* kContentSuggestionsBookmarksSymbol = @"star.fill";
+NSString* const kContentSuggestionsBookmarksSymbol = @"star.fill";
 
 }  // namespace
 

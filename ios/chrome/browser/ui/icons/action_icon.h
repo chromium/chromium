@@ -8,27 +8,27 @@
 #import <UIKit/UIKit.h>
 
 // The size of the symbol image used in UIActions.
-extern NSInteger kSymbolActionPointSize;
+extern const CGFloat kSymbolActionPointSize;
 
 // Specific symbols used to create UIActions.
-extern NSString* kLinkActionSymbol;
-extern NSString* kQRCodeFinderActionSymbol;
-extern NSString* kNewTabActionSymbol;
-extern NSString* kNewTabCircleActionSymbol;
-extern NSString* kClipboardActionSymbol;
-extern NSString* kDeleteActionSymbol;
-extern NSString* kEditActionSymbol;
-extern NSString* kMarkAsReadActionSymbol;
-extern NSString* kReadLaterActionSymbol;
-extern NSString* kAddBookmarkActionSymbol;
-extern NSString* kCopyActionSymbol;
-extern NSString* kNewWindowActionSymbol;
-extern NSString* kHideActionSymbol;
-extern NSString* kRequestDesktopActionSymbol;
-extern NSString* kRequestMobileActionSymbol;
-extern NSString* kFindInPageActionSymbol;
-extern NSString* kZoomTextActionSymbol;
-extern NSString* kSaveImageActionSymbol;
-extern NSString* kOpenImageActionSymbol;
+extern NSString* const kLinkActionSymbol;
+extern NSString* const kQRCodeFinderActionSymbol;
+extern NSString* const kNewTabActionSymbol;
+extern NSString* const kNewTabCircleActionSymbol;
+extern NSString* const kClipboardActionSymbol;
+extern NSString* const kDeleteActionSymbol;
+extern NSString* const kEditActionSymbol;
+extern NSString* const kMarkAsReadActionSymbol;
+extern NSString* const kReadLaterActionSymbol;
+extern NSString* const kAddBookmarkActionSymbol;
+extern NSString* const kCopyActionSymbol;
+extern NSString* const kNewWindowActionSymbol;
+extern NSString* const kHideActionSymbol;
+extern NSString* const kRequestDesktopActionSymbol;
+extern NSString* const kRequestMobileActionSymbol;
+extern NSString* const kFindInPageActionSymbol;
+extern NSString* const kZoomTextActionSymbol;
+extern NSString* const kSaveImageActionSymbol;
+extern NSString* const kOpenImageActionSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_ACTION_ICON_H_

@@ -63,8 +63,7 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 const CGFloat kGoogleSearchLogoShrunkHeight = 36;
 
 // The size of the symbol image.
-NSInteger kSymbolContentSuggestionsPointSize = 18;
-
+const CGFloat kSymbolContentSuggestionsPointSize = 18;
 }
 
 namespace content_suggestions {
