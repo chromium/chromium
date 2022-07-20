@@ -95,6 +95,7 @@ function initialize() {
       $('remote-approvals-button').classList.add('secondary-button');
     }
     $('remote-approvals-button').onclick = function(event) {
+      $('remote-approvals-button').disabled = true;
       sendCommand('requestUrlAccessRemote');
     };
     $('local-approvals-button').onclick = function(event) {
@@ -178,7 +179,7 @@ function requestCreated(isSuccessful, isMainFrame) {
     }
   } else {
     $('request-failed-message').hidden = false;
-    $('remote-approvals-button').hidden = false;
+    $('remote-approvals-button').disabled = false;
     $('show-details-link').hidden = false;
   }
 }
