@@ -9,25 +9,33 @@
 }
 #container {
   position: relative;
+  width: 600px;
+  height: 400px;
 }
 #a1 {
   anchor-name: --a1;
   background: orange;
-  position: absolute;
-  left: 100px;
-  top: 100px;
+  margin-left: 100px;
+  margin-top: 100px;
   width: 100px;
   height: 100px;
 }
+.htb-rtl #a1 { margin-right: 400px; }
+.vlr-rtl #a1 { margin-bottom: 200px; }
+.vrl-ltr #a1 { margin-right: 400px; }
+.vrl-rtl #a1 { margin-right: 400px; margin-bottom: 200px; }
 #a2 {
   anchor-name: --a2;
   background: purple;
-  position: absolute;
-  left: 500px;
-  top: 300px;
+  margin-left: 500px;
+  margin-top: 100px;
   width: 100px;
   height: 100px;
 }
+.vlr-ltr #a2 { margin-left: 300px; margin-top: 300px; }
+.vlr-rtl #a2 { margin-left: 300px; margin-top: 300px; }
+.vrl-ltr #a2 { margin-right: -600px; margin-top: 300px; }
+.vrl-rtl #a2 { margin-right: -600px; margin-top: 300px; }
 #target {
   background: green;
   position: absolute;
@@ -35,14 +43,6 @@
   top: anchor(--a1 bottom);
   right: anchor(--a2 left);
   bottom: anchor(--a2 top);
-}
-#ref {
-  background: red;
-  position: absolute;
-  left: 200px;
-  top: 200px;
-  width: 300px;
-  height: 100px;
 }
 .htb-ltr { writing-mode: horizontal-tb; direction: ltr; }
 .htb-rtl { writing-mode: horizontal-tb; direction: rtl; }
@@ -52,10 +52,9 @@
 .vrl-rtl { writing-mode: vertical-rl; direction: rtl; }
 </style>
 <body>
-  <div  id="container">
+  <div id="container">
     <div id="a1"></div>
     <div id="a2"></div>
-    <div id="ref"></div>
     <div id="target"></div>
   </div>
 <script>
