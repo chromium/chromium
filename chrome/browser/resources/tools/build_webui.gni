@@ -159,7 +159,10 @@ template("build_webui") {
       ]
     }
 
-    tsconfig_base = "tsconfig_base.json"
+    if (!defined(invoker.ts_use_local_config) || invoker.ts_use_local_config) {
+      tsconfig_base = "tsconfig_base.json"
+    }
+
     in_files = ts_files
 
     extra_deps = [ ":preprocess" ]

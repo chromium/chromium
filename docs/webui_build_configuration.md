@@ -441,6 +441,10 @@ ts_composite: See |composite| in ts_library(). Defaults to false, optional.
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
+ts_use_local_config: Whether to pass a local "tsconfig_base.json" file as the
+                     |tsconfig_base| to ts_library(). Optional, defaults to true.
+                     If false, the default //tools/typescript/tsconfig_base.json
+                     will be used.
 
 HTML/CSS/JS optimization related params:
 optimize: Specifies whether any optimization steps will be used, defaults to
