@@ -131,11 +131,18 @@ static bool IsInvalidPercentage(double value, ExceptionState& exception_state) {
 VTTCueBackgroundBox::VTTCueBackgroundBox(Document& document)
     : HTMLDivElement(document) {
   SetShadowPseudoId(TextTrackCue::CueShadowPseudoId());
+  SetHasCustomStyleCallbacks();
 }
 
 void VTTCueBackgroundBox::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   HTMLDivElement::Trace(visitor);
+}
+
+void VTTCueBackgroundBox::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLDivElement::DidRecalcStyle(change);
+  if (auto* vtt_cue_box = DynamicTo<VTTCueBox>(parentNode()))
+    vtt_cue_box->RevertAdjustment();
 }
 
 void VTTCueBackgroundBox::SetTrack(TextTrack* track) {

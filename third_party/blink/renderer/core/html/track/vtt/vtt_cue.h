@@ -72,6 +72,8 @@ class VTTCueBackgroundBox final : public HTMLDivElement {
   const TextTrack* GetTrack() const { return track_; }
 
  private:
+  void DidRecalcStyle(const StyleRecalcChange) override;
+
   Member<TextTrack> track_;
 };
 
