@@ -415,6 +415,14 @@ AppManagementPageHandler CreateAppManagementPageHandler(Profile* profile) {
 }
 #endif
 
+void ActivateBrowserAndWait(Browser* browser) {
+  DCHECK(browser);
+  DCHECK(browser->window());
+  auto waiter = ui_test_utils::BrowserActivationWaiter(browser);
+  browser->window()->Activate();
+  waiter.WaitForActivation();
+}
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -722,7 +730,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   browser_added_waiter.Wait();
   active_app_id_ = install_observer.Wait();
   app_browser_ = browser_added_waiter.browser_added();
-  ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
+  ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
   AfterStateChangeAction();
 }
@@ -776,7 +784,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   active_app_id_ = install_observer.Wait();
   DCHECK_EQ(app_id, active_app_id_);
   app_browser_ = browser_added_waiter.browser_added();
-  ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
+  ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   AfterStateChangeAction();
 }
@@ -926,7 +934,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   IntentPickerBubbleView::intent_picker_bubble()->AcceptDialog();
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
-  ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
+  ActivateBrowserAndWait(app_browser_);
   active_app_id_ = app_browser()->app_controller()->app_id();
   AfterStateChangeAction();
 }
@@ -943,7 +951,7 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   CHECK(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
-  ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
+  ActivateBrowserAndWait(app_browser_);
   active_app_id_ = app_id;
 
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
@@ -967,7 +975,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     LaunchAppStartupBrowserCreator(app_id);
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
-    ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
+    ActivateBrowserAndWait(app_browser_);
     active_app_id_ = app_id;
     EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
   } else {
@@ -2306,7 +2314,7 @@ void WebAppIntegrationTestDriver::InstallCreateShortcut(bool open_in_window) {
   if (open_in_window) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
-    ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
+    ActivateBrowserAndWait(app_browser_);
   }
 }
 
