@@ -35,7 +35,7 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
     self.mock(test_runner.SimulatorTestRunner, 'deleteSimulator',
               lambda a, b: True)
     self.mock(wpr_runner.WprProxySimulatorTestRunner,
-              'copy_trusted_certificate', lambda a: True)
+              'copy_trusted_certificate', lambda a, b: True)
     self.mock(iossim_util, 'get_simulator',
               lambda a, b: 'E4E66320-177A-450A-9BA1-488D85B7278E')
 

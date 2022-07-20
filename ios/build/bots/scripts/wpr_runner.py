@@ -235,10 +235,14 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
 
     return test_matched_filter != invert
 
-  def copy_trusted_certificate(self):
-    """Copies a TrustStore file with a trusted HTTPS certificate into all sims.
+  def copy_trusted_certificate(self, udid):
+    """Copies a root HTTPS cert into a simulator.
 
     This allows the simulators to access HTTPS webpages served through WprGo.
+
+    Args:
+      udid: String of UDID of the simulator to install the trusted certificate
+        into.
 
     Raises:
       WprToolsNotFoundError: If wpr_tools_path is not specified.
@@ -247,24 +251,16 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
 
     if not os.path.exists(self.wpr_tools_path):
       raise WprToolsNotFoundError(self.wpr_tools_path)
-    cert_path = "{}/TrustStore_trust.sqlite3".format(self.wpr_tools_path)
+    cert_path = "{}/web_page_replay_go/wpr_cert.pem".format(self.wpr_tools_path)
 
     if not os.path.exists(cert_path):
       raise CertPathNotFoundError(cert_path)
 
-    trust_stores = glob.glob(
-        '{}/Library/Developer/CoreSimulator/Devices/*/data/Library'.format(
-            os.path.expanduser('~')))
-    for trust_store in trust_stores:
-      LOGGER.info('Copying TrustStore to %s', trust_store)
-      trust_store_file_path = os.path.join(trust_store,
-                                           'Keychains/TrustStore.sqlite3')
-      if os.path.isfile(trust_store_file_path):
-        os.remove(trust_store_file_path)
-      trust_store_dir_path = os.path.join(trust_store, 'Keychains')
-      if not os.path.exists(trust_store_dir_path):
-        os.makedirs(trust_store_dir_path)
-      shutil.copy(cert_path, trust_store_file_path)
+    LOGGER.info('Copying root cert into %s', udid)
+    subprocess.check_call(['xcrun', 'simctl', 'boot', udid])
+    subprocess.check_call(
+        ['xcrun', 'simctl', 'keychain', udid, 'add-root-cert', cert_path])
+    subprocess.check_call(['xcrun', 'simctl', 'shutdown', udid])
 
   def _run(self, cmd, shards=1):
     """Runs the specified command, parsing GTest output.
@@ -295,7 +291,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
     # certificate needed for HTTPS proxying.
     udid = self.getSimulator()
 
-    self.copy_trusted_certificate()
+    self.copy_trusted_certificate(udid)
 
     for recipe_path in glob.glob('{}/*.test'.format(self.replay_path)):
       base_name = os.path.basename(recipe_path)
