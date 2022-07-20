@@ -405,29 +405,29 @@ arc::mojom::ActionType GetArcActionType(const std::string& action) {
 // Constructs an OpenUrlsRequest to be passed to
 // FileSystemInstance.OpenUrlsWithPermissionAndWindowInfo.
 arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
-    const apps::mojom::IntentPtr& intent,
+    const apps::IntentPtr& intent,
     const arc::mojom::ActivityNamePtr& activity,
     const std::vector<GURL>& content_urls) {
   arc::mojom::OpenUrlsRequestPtr request = arc::mojom::OpenUrlsRequest::New();
   request->action_type = GetArcActionType(intent->action);
   request->activity_name = activity.Clone();
-  DCHECK_EQ(content_urls.size(), intent->files.value().size());
+  DCHECK_EQ(content_urls.size(), intent->files.size());
   for (int i = 0; i < content_urls.size(); i++) {
     auto content_url = content_urls[i];
     arc::mojom::ContentUrlWithMimeTypePtr url_with_type =
         arc::mojom::ContentUrlWithMimeType::New();
     url_with_type->content_url = content_url;
-    DCHECK(intent->files.value()[i]->mime_type.has_value() ||
+    DCHECK(intent->files[i]->mime_type.has_value() ||
            intent->mime_type.has_value());
     // Save the file's original mimetype to the URL if it exists. Otherwise, use
     // the common intent mime type instead.
-    url_with_type->mime_type = intent->files.value()[i]->mime_type.has_value()
-                                   ? intent->files.value()[i]->mime_type.value()
+    url_with_type->mime_type = intent->files[i]->mime_type.has_value()
+                                   ? intent->files[i]->mime_type.value()
                                    : intent->mime_type.value();
     request->urls.push_back(std::move(url_with_type));
   }
   if (intent->share_text.has_value() || intent->share_title.has_value() ||
-      intent->extras.has_value()) {
+      !intent->extras.empty()) {
     request->extras = apps_util::CreateArcIntentExtras(intent);
   }
   return request;
@@ -436,10 +436,10 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
 void OnContentUrlResolved(const base::FilePath& file_path,
                           const std::string& app_id,
                           int32_t event_flags,
-                          apps::mojom::IntentPtr intent,
+                          apps::IntentPtr intent,
                           arc::mojom::ActivityNamePtr activity,
-                          apps::mojom::WindowInfoPtr window_info,
-                          apps::ArcApps::LaunchAppWithIntentCallback callback,
+                          apps::WindowInfoPtr window_info,
+                          base::OnceCallback<void(bool)> callback,
                           const std::vector<GURL>& content_urls) {
   for (const auto& content_url : content_urls) {
     if (!content_url.is_valid()) {
@@ -474,8 +474,7 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   ::full_restore::SaveAppLaunchInfo(
       file_path,
       std::make_unique<app_restore::AppLaunchInfo>(
-          app_id, event_flags, apps::ConvertMojomIntentToIntent(intent),
-          session_id, display_id));
+          app_id, event_flags, std::move(intent), session_id, display_id));
 
   std::move(callback).Run(/*success=*/true);
 }
@@ -580,6 +579,18 @@ bool IsWebAppShellPackage(Profile* profile,
          apk_web_app_service->IsWebAppShellPackage(app_info.package_name);
 }
 
+bool IntentHasFilesAndMimeTypes(const apps::IntentPtr& intent) {
+  if (intent->files.empty()) {
+    return false;
+  }
+  bool all_files_have_mime_type = base::ranges::all_of(
+      intent->files,
+      [](apps::IntentFilePtr& file) { return file->mime_type.has_value(); });
+  return all_files_have_mime_type || intent->mime_type.has_value();
+}
+
+// TODO(crbug.com/1253250): Remove. Prefer the non mojom
+// IntentHasFilesAndMimeTypes.
 bool IntentHasFilesAndMimeTypes(const apps::mojom::IntentPtr& intent) {
   if (!intent->files.has_value()) {
     return false;
@@ -767,6 +778,174 @@ void ArcApps::Launch(const std::string& app_id,
                                app_id, event_flags, session_id, display_id));
 }
 
+void ArcApps::LaunchAppWithIntent(const std::string& app_id,
+                                  int32_t event_flags,
+                                  IntentPtr intent,
+                                  LaunchSource launch_source,
+                                  WindowInfoPtr window_info,
+                                  base::OnceCallback<void(bool)> callback) {
+  auto user_interaction_type = GetUserInterationType(launch_source);
+  if (!user_interaction_type.has_value()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  if (app_id == arc::kPlayStoreAppId &&
+      apps_util::IsHumanLaunch(launch_source)) {
+    arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
+                                          /*launched=*/true);
+  }
+
+  arc::ArcMetricsService::RecordArcUserInteraction(
+      profile_, user_interaction_type.value());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      prefs->GetApp(app_id);
+  if (!app_info) {
+    LOG(ERROR) << "Launch App failed, could not find app with id " << app_id;
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  if (app_info->ready) {
+    arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
+    activity->package_name = app_info->package_name;
+    if (intent->activity_name.has_value() &&
+        !intent->activity_name.value().empty()) {
+      activity->activity_name = intent->activity_name.value();
+    }
+
+    auto new_window_info = SetSessionId(std::move(window_info));
+    int32_t session_id = new_window_info->window_id;
+    int64_t display_id = new_window_info->display_id;
+
+    // Check if the intent has files, and whether the intent has a mime type or
+    // all the individual files have mime types.
+    if (IntentHasFilesAndMimeTypes(intent)) {
+      std::vector<GURL> file_urls;
+      for (const auto& file : intent->files) {
+        file_urls.push_back(file->url);
+      }
+      arc::ConvertToContentUrlsAndShare(
+          profile_, apps::GetFileSystemURL(profile_, file_urls),
+          base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
+                         event_flags, std::move(intent), std::move(activity),
+                         std::move(new_window_info), std::move(callback)));
+      return;
+    }
+
+    auto intent_for_full_restore = intent->Clone();
+
+    std::string intent_str =
+        apps_util::CreateLaunchIntent(app_info->package_name, intent);
+    if (!intent_str.empty()) {
+      // If |intent| can be converted to a string, call the Launch interface.
+      if (!arc::LaunchAppWithIntent(
+              profile_, app_id, intent_str, event_flags,
+              user_interaction_type.value(),
+              MakeArcWindowInfo(std::move(new_window_info)))) {
+        VLOG(2) << "Failed to launch app: " + app_id + ".";
+        std::move(callback).Run(/*success=*/false);
+        return;
+      }
+    } else {
+      // If |intent| can't be converted to a string, call the HandleIntent
+      // interface.
+      auto arc_intent =
+          apps_util::ConvertAppServiceToArcIntent(std::move(intent));
+
+      if (!arc_intent) {
+        LOG(ERROR) << "Launch App failed, launch intent is not valid";
+        std::move(callback).Run(/*success=*/false);
+        return;
+      }
+
+      auto* arc_service_manager = arc::ArcServiceManager::Get();
+      if (!arc_service_manager) {
+        std::move(callback).Run(/*success=*/false);
+        return;
+      }
+
+      arc::mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
+          arc_service_manager->arc_bridge_service()->intent_helper(),
+          HandleIntentWithWindowInfo);
+      if (instance) {
+        instance->HandleIntentWithWindowInfo(
+            std::move(arc_intent), std::move(activity),
+            MakeArcWindowInfo(std::move(new_window_info)));
+      } else {
+        instance = ARC_GET_INSTANCE_FOR_METHOD(
+            arc_service_manager->arc_bridge_service()->intent_helper(),
+            HandleIntent);
+        if (!instance) {
+          std::move(callback).Run(/*success=*/false);
+          return;
+        }
+
+        instance->HandleIntent(std::move(arc_intent), std::move(activity));
+      }
+    }
+
+    prefs->SetLastLaunchTime(app_id);
+
+    full_restore::SaveAppLaunchInfo(
+        profile_->GetPath(),
+        std::make_unique<app_restore::AppLaunchInfo>(
+            app_id, event_flags, std::move(intent_for_full_restore), session_id,
+            display_id));
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
+
+  if (arc::IsArcPlayStoreEnabledForProfile(profile_)) {
+    // Handle the case when default app tries to re-activate OptIn flow.
+    if (arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_) &&
+        !arc::ArcSessionManager::Get()->enable_requested() &&
+        prefs->IsDefault(app_id)) {
+      arc::SetArcPlayStoreEnabledForProfile(profile_, true);
+      // PlayStore item has special handling for shelf controllers. In order
+      // to avoid unwanted initial animation for PlayStore item do not create
+      // deferred launch request when PlayStore item enables Google Play
+      // Store.
+      if (app_id == arc::kPlayStoreAppId) {
+        prefs->SetLastLaunchTime(app_id);
+        std::move(callback).Run(/*success=*/true);
+        return;
+      }
+    }
+  } else {
+    if (prefs->IsDefault(app_id)) {
+      // The setting can fail if the preference is managed.  However, the
+      // caller is responsible to not call this function in such case.  DCHECK
+      // is here to prevent possible mistake.
+      if (!arc::SetArcPlayStoreEnabledForProfile(profile_, true)) {
+        std::move(callback).Run(/*success=*/false);
+        return;
+      }
+      DCHECK(arc::IsArcPlayStoreEnabledForProfile(profile_));
+
+      // PlayStore item has special handling for shelf controllers. In order
+      // to avoid unwanted initial animation for PlayStore item do not create
+      // deferred launch request when PlayStore item enables Google Play
+      // Store.
+      if (app_id == arc::kPlayStoreAppId) {
+        prefs->SetLastLaunchTime(app_id);
+        std::move(callback).Run(/*success=*/false);
+        return;
+      }
+    } else {
+      // Only reachable when ARC always starts.
+      DCHECK(arc::ShouldArcAlwaysStart());
+    }
+  }
+  std::move(callback).Run(/*success=*/true);
+}
+
 void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
                                   LaunchCallback callback) {
   auto event_flags = apps::GetEventFlags(params.disposition,
@@ -917,15 +1096,17 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       arc::ConvertToContentUrlsAndShare(
           profile_, apps::GetFileSystemURL(profile_, file_urls),
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
-                         event_flags, std::move(intent), std::move(activity),
-                         std::move(new_window_info), std::move(callback)));
+                         event_flags, ConvertMojomIntentToIntent(intent),
+                         std::move(activity),
+                         ConvertMojomWindowInfoToWindowInfo(new_window_info),
+                         std::move(callback)));
       return;
     }
 
     auto intent_for_full_restore = intent.Clone();
 
-    std::string intent_str =
-        apps_util::CreateLaunchIntent(app_info->package_name, intent);
+    std::string intent_str = apps_util::CreateLaunchIntent(
+        app_info->package_name, ConvertMojomIntentToIntent(intent));
     if (!intent_str.empty()) {
       // If |intent| can be converted to a string, call the Launch interface.
       if (!arc::LaunchAppWithIntent(

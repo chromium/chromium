@@ -38,6 +38,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -109,6 +110,12 @@ class ArcApps : public KeyedService,
               int32_t event_flags,
               LaunchSource launch_source,
               WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           base::OnceCallback<void(bool)> callback);
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
   void LaunchShortcut(const std::string& app_id,

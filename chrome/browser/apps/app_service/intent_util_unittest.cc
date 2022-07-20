@@ -147,8 +147,12 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   ASSERT_TRUE(intent);
   ASSERT_TRUE(arc_intent);
 
-  // TODO(crbug.com/1253250): Modify CreateLaunchIntent to use the non mojom
-  // intent to verity intent_str, done in CreateIntentForActivityMojom.
+  std::string intent_str =
+      "#Intent;action=android.intent.action.MAIN;category=android.intent."
+      "category.LAUNCHER;launchFlags=0x10200000;component=com.android.vending/"
+      ".AssetBrowserActivity;S.org.chromium.arc.start_type=initialStart;end";
+  EXPECT_EQ(intent_str,
+            apps_util::CreateLaunchIntent("com.android.vending", intent));
 
   EXPECT_EQ(arc::kIntentActionMain, arc_intent->action);
 
@@ -182,8 +186,9 @@ TEST_F(IntentUtilsTest, CreateIntentForActivityMojom) {
       "#Intent;action=android.intent.action.MAIN;category=android.intent."
       "category.LAUNCHER;launchFlags=0x10200000;component=com.android.vending/"
       ".AssetBrowserActivity;S.org.chromium.arc.start_type=initialStart;end";
-  EXPECT_EQ(intent_str,
-            apps_util::CreateLaunchIntent("com.android.vending", intent));
+  EXPECT_EQ(intent_str, apps_util::CreateLaunchIntent(
+                            "com.android.vending",
+                            apps::ConvertMojomIntentToIntent(intent)));
 
   EXPECT_EQ(arc::kIntentActionMain, arc_intent->action);
 
@@ -201,8 +206,7 @@ TEST_F(IntentUtilsTest, CreateIntentForActivityMojom) {
 }
 
 TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
-  apps::mojom::IntentPtr intent =
-      apps_util::CreateShareIntentFromText("text", "title");
+  apps::IntentPtr intent = apps_util::MakeShareIntent("text", "title");
   std::string intent_str =
       "#Intent;action=android.intent.action.SEND;launchFlags=0x10200000;"
       "component=com.android.vending/;type=text/"

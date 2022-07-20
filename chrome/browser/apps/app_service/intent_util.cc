@@ -802,11 +802,11 @@ const char* ConvertArcToAppServiceIntentAction(const std::string& arc_action) {
 }
 
 std::string CreateLaunchIntent(const std::string& package_name,
-                               const apps::mojom::IntentPtr& intent) {
+                               const apps::IntentPtr& intent) {
   // If |intent| has |ui_bypassed|, |url| or |data|, it is too complex to
   // convert to a string, so return the empty string.
-  if (intent->ui_bypassed != apps::mojom::OptionalBool::kUnknown ||
-      intent->url.has_value() || intent->data.has_value()) {
+  if (intent->ui_bypassed.has_value() || intent->url.has_value() ||
+      intent->data.has_value()) {
     return std::string();
   }
 
@@ -818,10 +818,8 @@ std::string CreateLaunchIntent(const std::string& package_name,
                             ConvertAppServiceToArcIntentAction(intent->action));
 
   // Convert categories.
-  if (intent->categories.has_value()) {
-    for (const auto& category : intent->categories.value()) {
-      ret += base::StringPrintf("%s=%s;", arc::kCategory, category.c_str());
-    }
+  for (const auto& category : intent->categories) {
+    ret += base::StringPrintf("%s=%s;", arc::kCategory, category.c_str());
   }
 
   // Set launch flags.
@@ -864,10 +862,8 @@ std::string CreateLaunchIntent(const std::string& package_name,
                               intent->start_type.value().c_str());
   }
 
-  if (intent->extras.has_value()) {
-    for (auto it : intent->extras.value()) {
-      ret += base::StringPrintf("%s=%s;", it.first.c_str(), it.second.c_str());
-    }
+  for (auto it : intent->extras) {
+    ret += base::StringPrintf("%s=%s;", it.first.c_str(), it.second.c_str());
   }
 
   ret += arc::kEndSuffix;
