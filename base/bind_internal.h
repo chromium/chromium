@@ -359,6 +359,17 @@ struct ExtractCallableRunTypeImpl<Callable, R (Callable::*)(Args...) const> {
   using Type = R(Args...);
 };
 
+template <typename Callable, typename R, typename... Args>
+struct ExtractCallableRunTypeImpl<Callable, R (Callable::*)(Args...) noexcept> {
+  using Type = R(Args...);
+};
+
+template <typename Callable, typename R, typename... Args>
+struct ExtractCallableRunTypeImpl<Callable,
+                                  R (Callable::*)(Args...) const noexcept> {
+  using Type = R(Args...);
+};
+
 // Evaluated to RunType of the given callable type.
 // Example:
 //   auto f = [](int, char*) { return 0.1; };

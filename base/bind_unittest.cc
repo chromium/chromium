@@ -319,6 +319,16 @@ int Noexcept() noexcept {
   return 42;
 }
 
+class NoexceptFunctor {
+ public:
+  int operator()() noexcept { return 42; }
+};
+
+class ConstNoexceptFunctor {
+ public:
+  int operator()() noexcept { return 42; }
+};
+
 class BindTest : public ::testing::Test {
  public:
   BindTest() {
@@ -1734,6 +1744,8 @@ TEST_F(BindTest, BindNoexcept) {
   EXPECT_EQ(
       42, base::BindOnce(&BindTest::ConstNoexceptMethod, base::Unretained(this))
               .Run());
+  EXPECT_EQ(42, base::BindOnce(NoexceptFunctor()).Run());
+  EXPECT_EQ(42, base::BindOnce(ConstNoexceptFunctor()).Run());
 }
 
 int PingPong(int* i_ptr) {
