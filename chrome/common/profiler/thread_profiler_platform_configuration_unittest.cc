@@ -142,21 +142,19 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetChildProcessEnableFraction) {
+  EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
+                     metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kUtility));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kUnknown));
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(0.75, config()->GetChildProcessEnableFraction(
                       metrics::CallStackProfileParams::Process::kRenderer));
   EXPECT_EQ(0.0,
             config()->GetChildProcessEnableFraction(
                 metrics::CallStackProfileParams::Process::kNetworkService));
 #else
-  EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(0.2, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kRenderer));
   EXPECT_EQ(1.0,
@@ -167,43 +165,9 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              IsEnabledForThread) {
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kBrowser,
-      metrics::CallStackProfileParams::Thread::kMain));
-  EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kBrowser,
-      metrics::CallStackProfileParams::Thread::kIo));
-
-  EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kGpu,
-      metrics::CallStackProfileParams::Thread::kMain));
-  EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kGpu,
-      metrics::CallStackProfileParams::Thread::kIo));
-  EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kGpu,
-      metrics::CallStackProfileParams::Thread::kCompositor));
-
-  EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kRenderer,
-      metrics::CallStackProfileParams::Thread::kMain));
-  EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kRenderer,
-      metrics::CallStackProfileParams::Thread::kIo));
-  EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kRenderer,
-      metrics::CallStackProfileParams::Thread::kCompositor));
-  EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kRenderer,
-      metrics::CallStackProfileParams::Thread::kServiceWorker));
-
-  EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::Process::kNetworkService,
-      metrics::CallStackProfileParams::Thread::kIo));
-#else
-  // Profiling should be enabled without restriction across all threads. Not all
-  // these combinations actually make sense or are implemented in the code, but
+  // Profiling should be enabled without restriction across all threads,
+  // assuming it is enabled for corresponding process. Not all these
+  // combinations actually make sense or are implemented in the code, but
   // iterating over all combinations is the simplest way to test.
   for (int i = 0;
        i <= static_cast<int>(metrics::CallStackProfileParams::Process::kMax);
@@ -218,5 +182,4 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
       EXPECT_TRUE(config()->IsEnabledForThread(process, thread));
     }
   }
-#endif
 }
