@@ -114,20 +114,6 @@ class CollectionViewControllerTest : public BlockCleanupTest {
 
 }  // namespace
 
-TEST_F(CollectionViewControllerTest, InitDefaultStyle) {
-  CollectionViewController* controller = [[CollectionViewController alloc]
-      initWithLayout:[[MDCCollectionViewFlowLayout alloc] init]
-               style:CollectionViewControllerStyleDefault];
-  EXPECT_EQ(nil, controller.appBarViewController);
-}
-
-TEST_F(CollectionViewControllerTest, InitAppBarStyle) {
-  CollectionViewController* controller = [[CollectionViewController alloc]
-      initWithLayout:[[MDCCollectionViewFlowLayout alloc] init]
-               style:CollectionViewControllerStyleAppBar];
-  EXPECT_NE(nil, controller.appBarViewController);
-}
-
 TEST_F(CollectionViewControllerTest, CellForItemAtIndexPath) {
   CollectionViewController* controller = [[CollectionViewController alloc]
       initWithLayout:[[MDCCollectionViewFlowLayout alloc] init]

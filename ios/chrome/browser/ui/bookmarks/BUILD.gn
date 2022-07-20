@@ -74,7 +74,6 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/table_view",

@@ -13,7 +13,6 @@ source_set("collection_view") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/common/ui/colors",
   ]
   public_deps = [

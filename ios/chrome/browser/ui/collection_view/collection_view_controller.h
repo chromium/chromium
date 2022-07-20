@@ -8,22 +8,18 @@
 #import <MaterialComponents/MaterialCollections.h>
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/material_components/app_bar_view_controller_presenting.h"
 
 @class CollectionViewItem;
 
 typedef NS_ENUM(NSInteger, CollectionViewControllerStyle) {
   // A simple collection view controller.
   CollectionViewControllerStyleDefault,
-  // A collection view controller with an app bar.
-  CollectionViewControllerStyleAppBar,
 };
 
 // Chrome-specific Material Design collection view controller. With
 // CollectionViewControllerStyleAppBar, it features an app bar in the card
 // style.
-@interface CollectionViewController
-    : MDCCollectionViewController<AppBarViewControllerPresenting>
+@interface CollectionViewController : MDCCollectionViewController
 
 // The model of this controller.
 @property(strong, nonatomic, readonly)
@@ -66,33 +62,6 @@ typedef NS_ENUM(NSInteger, CollectionViewControllerStyle) {
 - (void)collectionView:(UICollectionView*)collectionView
     willMoveItemAtIndexPath:(NSIndexPath*)indexPath
                 toIndexPath:(NSIndexPath*)newIndexPath NS_REQUIRES_SUPER;
-
-#pragma mark UIScrollViewDelegate
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView NS_REQUIRES_SUPER;
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate NS_REQUIRES_SUPER;
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView
-    NS_REQUIRES_SUPER;
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset
-    NS_REQUIRES_SUPER;
 
 @end
 

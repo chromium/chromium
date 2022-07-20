@@ -11,77 +11,28 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
-#import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// The implementation of this controller follows the guidelines from
-// https://github.com/material-components/material-components-ios/tree/develop/components/AppBar
 @implementation CollectionViewController
-@synthesize appBarViewController = _appBarViewController;
 @synthesize collectionViewModel = _collectionViewModel;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout
                          style:(CollectionViewControllerStyle)style {
-  self = [super initWithCollectionViewLayout:layout];
-  if (self) {
-    if (style == CollectionViewControllerStyleAppBar) {
-      _appBarViewController = [[ChromeAppBarViewController alloc] init];
-    }
-  }
-  return self;
+  return [super initWithCollectionViewLayout:layout];
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
-  // Configure the app bar, if there is one.
-  if (self.appBarViewController) {
-    // Configure the app bar style.
-    ConfigureAppBarViewControllerWithCardStyle(self.appBarViewController);
-    // Set the header view's tracking scroll view.
-    self.appBarViewController.headerView.trackingScrollView =
-        self.collectionView;
-    // After all other views have been registered.
-    [self addChildViewController:_appBarViewController];
-    // Match the width of the parent view.
-    CGRect frame = self.appBarViewController.view.frame;
-    frame.origin.x = 0;
-    frame.size.width =
-        self.appBarViewController.parentViewController.view.bounds.size.width;
-    self.appBarViewController.view.frame = frame;
-    [self.view addSubview:self.appBarViewController.view];
-    [self.appBarViewController didMoveToParentViewController:self];
-
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(contentSizeCategoryDidChange:)
-               name:UIContentSizeCategoryDidChangeNotification
-             object:nil];
-  }
 
   // Suport dark mode.
   self.collectionView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   self.styler.cellBackgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-}
-
-- (void)contentSizeCategoryDidChange:(id)sender {
-  [MDCCollectionViewCell cr_clearPreferredHeightForWidthCellCache];
-  [self.collectionView.collectionViewLayout invalidateLayout];
-}
-
-- (UIViewController*)childViewControllerForStatusBarHidden {
-  return self.appBarViewController;
-}
-
-- (UIViewController*)childViewControllerForStatusBarStyle {
-  return self.appBarViewController;
 }
 
 - (void)loadModel {
@@ -245,41 +196,6 @@
     return CGSizeMake(0, MDCCellDefaultOneLineHeight);
   }
   return CGSizeZero;
-}
-
-#pragma mark UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView trackingScrollViewDidScroll];
-  }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView trackingScrollViewDidEndDecelerating];
-  }
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView trackingScrollViewDidEndDraggingWillDecelerate:decelerate];
-  }
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset {
-  MDCFlexibleHeaderView* headerView = self.appBarViewController.headerView;
-  if (scrollView == headerView.trackingScrollView) {
-    [headerView
-        trackingScrollViewWillEndDraggingWithVelocity:velocity
-                                  targetContentOffset:targetContentOffset];
-  }
 }
 
 #pragma mark - NSObject
