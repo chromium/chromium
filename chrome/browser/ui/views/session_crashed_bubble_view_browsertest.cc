@@ -70,8 +70,14 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 
 // Regression test for https://crbug.com/1042010, it should be possible to focus
 // the bubble with the "rotate pane focus" (F6) hotkey.
+// TODO(crbug.com/1343849): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey
+#else
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey CanFocusBubbleWithRotatePaneFocusHotkey
+#endif
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
-                       CanFocusBubbleWithRotatePaneFocusHotkey) {
+                       MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey) {
   ShowUi("SessionCrashedBubble");
   views::FocusManager* focus_manager =
       crash_bubble_->GetWidget()->GetFocusManager();
