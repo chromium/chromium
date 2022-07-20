@@ -52,7 +52,7 @@ class DevToolsDataSource : public content::URLDataSource {
   struct PendingRequest;
 
   // content::URLDataSource overrides.
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   bool ShouldAddContentSecurityPolicy() override;
   bool ShouldDenyXFrameOptions() override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;

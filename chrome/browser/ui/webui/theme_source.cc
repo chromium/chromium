@@ -169,7 +169,7 @@ void ThemeSource::StartDataRequest(
     // user can also enter these into the omnibox, so we need to fail
     // gracefully.
     std::move(callback).Run(nullptr);
-  } else if ((GetMimeType(path) == "image/png") &&
+  } else if ((GetMimeType(url) == "image/png") &&
              ((scale > max_scale) || (frame != -1))) {
     // This will extract and scale frame 0 of animated images.
     // TODO(reveman): Support scaling of animated images and avoid scaling and
@@ -181,9 +181,9 @@ void ThemeSource::StartDataRequest(
   }
 }
 
-std::string ThemeSource::GetMimeType(const std::string& path) {
+std::string ThemeSource::GetMimeType(const GURL& url) {
   std::string parsed_path;
-  webui::ParsePathAndScale(GetThemeUrl(path), &parsed_path, nullptr);
+  webui::ParsePathAndScale(url, &parsed_path, nullptr);
   return IsNewTabCssPath(parsed_path) ? "text/css" : "image/png";
 }
 

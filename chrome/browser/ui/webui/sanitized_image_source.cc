@@ -212,7 +212,7 @@ void SanitizedImageSource::StartImageDownload(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-std::string SanitizedImageSource::GetMimeType(const std::string& path) {
+std::string SanitizedImageSource::GetMimeType(const GURL& url) {
   return "image/png";
 }
 

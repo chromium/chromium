@@ -123,7 +123,7 @@ void FileIconSource::StartDataRequest(
   FetchFileIcon(file_path, scale_factor, icon_size, std::move(callback));
 }
 
-std::string FileIconSource::GetMimeType(const std::string&) {
+std::string FileIconSource::GetMimeType(const GURL&) {
   // Rely on image decoder inferring the correct type.
   return std::string();
 }

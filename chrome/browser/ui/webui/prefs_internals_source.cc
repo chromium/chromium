@@ -23,7 +23,7 @@ std::string PrefsInternalsSource::GetSource() {
   return chrome::kChromeUIPrefsInternalsHost;
 }
 
-std::string PrefsInternalsSource::GetMimeType(const std::string& path) {
+std::string PrefsInternalsSource::GetMimeType(const GURL& url) {
   return "text/plain";
 }
 

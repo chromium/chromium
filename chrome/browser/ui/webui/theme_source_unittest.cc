@@ -74,10 +74,14 @@ class WebUISourcesTest : public testing::Test {
 };
 
 TEST_F(WebUISourcesTest, ThemeSourceMimeTypes) {
-  EXPECT_EQ(theme_source()->GetMimeType("css/new_tab_theme.css"), "text/css");
-  EXPECT_EQ(theme_source()->GetMimeType("css/new_tab_theme.css?foo"),
-                                        "text/css");
-  EXPECT_EQ(theme_source()->GetMimeType("WRONGURL"), "image/png");
+  EXPECT_EQ(
+      theme_source()->GetMimeType(GURL("chrome://theme/css/new_tab_theme.css")),
+      "text/css");
+  EXPECT_EQ(theme_source()->GetMimeType(
+                GURL("chrome://theme/css/new_tab_theme.css?foo")),
+            "text/css");
+  EXPECT_EQ(theme_source()->GetMimeType(GURL("chrome://theme/WRONGURL")),
+            "image/png");
 }
 
 TEST_F(WebUISourcesTest, ThemeSourceImages) {
