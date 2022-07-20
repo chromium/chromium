@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>ComputePressureObserver on DOMWindow of detached iframe</title>
+<title>PressureObserver on DOMWindow of detached iframe</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -13,15 +13,15 @@ test(() => {
   const frame_window = iframe.contentWindow;
 
   iframe.remove();
-  assert_equals(undefined, frame_window.ComputePressureObserver);
-}, 'ComputePressureObserver constructor does not exist in detached iframes');
+  assert_equals(undefined, frame_window.PressureObserver);
+}, 'PressureObserver constructor does not exist in detached iframes');
 
 promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
 
-  const observer = new frame_window.ComputePressureObserver(
+  const observer = new frame_window.PressureObserver(
       () => {},
       {cpuUtilizationThresholds: [0.5]});
   const iframe_DOMException = frame_window.DOMException;
@@ -31,14 +31,14 @@ promise_test(async t => {
   // Calling observe() from a detached iframe should fail but not crash.
   await promise_rejects_dom(t, 'NotSupportedError', iframe_DOMException,
                             observer.observe('cpu'));
-}, 'ComputePressureObserver.observe() on detached frame rejects');
+}, 'PressureObserver.observe() on detached frame rejects');
 
 promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
 
-  const observer = new frame_window.ComputePressureObserver(
+  const observer = new frame_window.PressureObserver(
       () => {},
       {cpuUtilizationThresholds: [0.5]});
 
@@ -48,14 +48,14 @@ promise_test(async t => {
 
   // Calling disconnect() from a detached iframe should not crash.
   observer.disconnect();
-}, 'ComputePressureObserver.stop() on detached frame returns');
+}, 'PressureObserver.stop() on detached frame returns');
 
 promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const frame_window = iframe.contentWindow;
 
-  const observer = new frame_window.ComputePressureObserver(
+  const observer = new frame_window.PressureObserver(
       () => {},
       {cpuUtilizationThresholds: [0.5]});
   const iframe_DOMException = frame_window.DOMException;
@@ -67,16 +67,16 @@ promise_test(async t => {
 
   // Establish an observer and wait for an update in the main frame. This should
   // keep the test running long enough to catch any crash from the observe()
-  // call in the removed iframe's ComputePressureObserver.
+  // call in the removed iframe's PressureObserver.
   const update = await new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
+    const observer = new PressureObserver(
         resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
   assert_in_array(update.cpuUtilization, [0.25, 0.75],
                   'cpuUtilization quantization');
-}, 'Detaching frame while ComputePressureObserver.observe() settles');
+}, 'Detaching frame while PressureObserver.observe() settles');
 
 </script>
 </body>

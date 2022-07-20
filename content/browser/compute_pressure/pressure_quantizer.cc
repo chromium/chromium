@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/compute_pressure/compute_pressure_quantizer.h"
+#include "content/browser/compute_pressure/pressure_quantizer.h"
 
 #include <vector>
 
 namespace content {
 
-ComputePressureQuantizer::ComputePressureQuantizer() = default;
+PressureQuantizer::PressureQuantizer() = default;
 
-ComputePressureQuantizer::~ComputePressureQuantizer() {
+PressureQuantizer::~PressureQuantizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 // static
-bool ComputePressureQuantizer::IsValid(
-    const blink::mojom::ComputePressureQuantization& quantization) {
+bool PressureQuantizer::IsValid(
+    const blink::mojom::PressureQuantization& quantization) {
   if (quantization.cpu_utilization_thresholds.size() >
-      blink::mojom::kMaxComputePressureCpuUtilizationThresholds) {
+      blink::mojom::kMaxPressureCpuUtilizationThresholds) {
     return false;
   }
   if (!ValueQuantizer::IsValid(quantization.cpu_utilization_thresholds))
@@ -27,10 +27,10 @@ bool ComputePressureQuantizer::IsValid(
   return true;
 }
 
-bool ComputePressureQuantizer::IsSame(
-    const blink::mojom::ComputePressureQuantization& quantization) const {
+bool PressureQuantizer::IsSame(
+    const blink::mojom::PressureQuantization& quantization) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ComputePressureQuantizer::IsValid(quantization));
+  DCHECK(PressureQuantizer::IsValid(quantization));
 
   if (!cpu_utilization_quantizer_.IsSame(
           quantization.cpu_utilization_thresholds)) {
@@ -40,34 +40,34 @@ bool ComputePressureQuantizer::IsSame(
   return true;
 }
 
-device::mojom::ComputePressureState ComputePressureQuantizer::Quantize(
-    device::mojom::ComputePressureStatePtr sample) const {
+device::mojom::PressureState PressureQuantizer::Quantize(
+    device::mojom::PressureStatePtr sample) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  device::mojom::ComputePressureState state;
+  device::mojom::PressureState state;
   state.cpu_utilization =
       cpu_utilization_quantizer_.Quantize(sample->cpu_utilization);
 
   return state;
 }
 
-void ComputePressureQuantizer::Assign(
-    blink::mojom::ComputePressureQuantizationPtr quantization) {
+void PressureQuantizer::Assign(
+    blink::mojom::PressureQuantizationPtr quantization) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ComputePressureQuantizer::IsValid(*quantization));
+  DCHECK(PressureQuantizer::IsValid(*quantization));
 
   cpu_utilization_quantizer_.Assign(
       std::move(quantization->cpu_utilization_thresholds));
 }
 
-ComputePressureQuantizer::ValueQuantizer::ValueQuantizer() = default;
+PressureQuantizer::ValueQuantizer::ValueQuantizer() = default;
 
-ComputePressureQuantizer::ValueQuantizer::~ValueQuantizer() {
+PressureQuantizer::ValueQuantizer::~ValueQuantizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 // static
-bool ComputePressureQuantizer::ValueQuantizer::IsValid(
+bool PressureQuantizer::ValueQuantizer::IsValid(
     const std::vector<double>& thresholds) {
   double last_threshold = 0.0;
 
@@ -83,7 +83,7 @@ bool ComputePressureQuantizer::ValueQuantizer::IsValid(
   return true;
 }
 
-bool ComputePressureQuantizer::ValueQuantizer::IsSame(
+bool PressureQuantizer::ValueQuantizer::IsSame(
     const std::vector<double>& thresholds) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ValueQuantizer::IsValid(thresholds));
@@ -98,7 +98,7 @@ bool ComputePressureQuantizer::ValueQuantizer::IsSame(
   return true;
 }
 
-double ComputePressureQuantizer::ValueQuantizer::Quantize(double value) const {
+double PressureQuantizer::ValueQuantizer::Quantize(double value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   double lower_bound = 0.0;
@@ -116,8 +116,7 @@ double ComputePressureQuantizer::ValueQuantizer::Quantize(double value) const {
   return (lower_bound + upper_bound) / 2;
 }
 
-void ComputePressureQuantizer::ValueQuantizer::Assign(
-    std::vector<double> thresholds) {
+void PressureQuantizer::ValueQuantizer::Assign(std::vector<double> thresholds) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ValueQuantizer::IsValid(thresholds));
 

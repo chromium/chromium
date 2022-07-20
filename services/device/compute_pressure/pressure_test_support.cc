@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/compute_pressure_test_support.h"
+#include "services/device/compute_pressure/pressure_test_support.h"
 
 #include <ostream>
 
@@ -10,22 +10,20 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "services/device/compute_pressure/compute_pressure_sample.h"
+#include "services/device/compute_pressure/pressure_sample.h"
 
 namespace device {
 
-bool operator==(const ComputePressureSample& lhs,
-                const ComputePressureSample& rhs) noexcept {
+bool operator==(const PressureSample& lhs, const PressureSample& rhs) noexcept {
   return lhs.cpu_utilization == rhs.cpu_utilization;
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const ComputePressureSample& sample) {
+std::ostream& operator<<(std::ostream& os, const PressureSample& sample) {
   os << "[utilization: " << sample.cpu_utilization << "]";
   return os;
 }
 
-constexpr ComputePressureSample FakeCpuProbe::kInitialSample;
+constexpr PressureSample FakeCpuProbe::kInitialSample;
 
 FakeCpuProbe::FakeCpuProbe() : last_sample_(kInitialSample) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -44,14 +42,14 @@ void FakeCpuProbe::Update() {
                                                 base::BlockingType::MAY_BLOCK);
 }
 
-ComputePressureSample FakeCpuProbe::LastSample() {
+PressureSample FakeCpuProbe::LastSample() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock auto_lock(lock_);
   return last_sample_;
 }
 
-void FakeCpuProbe::SetLastSample(ComputePressureSample sample) {
+void FakeCpuProbe::SetLastSample(PressureSample sample) {
   base::AutoLock auto_lock(lock_);
   last_sample_ = sample;
 }

@@ -2,7 +2,7 @@
 
 promise_test(async t => {
   const observer1_updates = [];
-  const observer1 = new ComputePressureObserver(
+  const observer1 = new PressureObserver(
       update => { observer1_updates.push(update); },
       {cpuUtilizationThresholds: [0.5]});
   t.add_cleanup(() => observer1.disconnect());
@@ -17,7 +17,7 @@ promise_test(async t => {
 
   const observer2_updates = [];
   await new Promise((resolve, reject) => {
-    const observer2 = new iframe2.contentWindow.ComputePressureObserver(
+    const observer2 = new iframe2.contentWindow.PressureObserver(
         update => {
           observer2_updates.push(update);
           resolve();
@@ -53,7 +53,7 @@ promise_test(async t => {
 
   const observer3_updates = [];
   await new Promise((resolve, reject) => {
-    const observer3 = new iframe3.contentWindow.ComputePressureObserver(
+    const observer3 = new iframe3.contentWindow.PressureObserver(
         update => {
           observer3_updates.push(update);
           resolve();
@@ -78,5 +78,5 @@ promise_test(async t => {
   assert_equals(observer3_updates.length, 1);
   assert_in_array(observer3_updates[0].cpuUtilization, [0.375, 0.875],
                   'cpuUtilization quantization');
-}, 'ComputePressureObserver with a new quantization schema stops all ' +
+}, 'PressureObserver with a new quantization schema stops all ' +
    'other active observers');

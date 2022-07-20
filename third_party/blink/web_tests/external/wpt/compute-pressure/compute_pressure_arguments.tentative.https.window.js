@@ -10,9 +10,9 @@ for (const property of ['cpuUtilizationThresholds']) {
       options[property] = [out_of_range_value];
 
       assert_throws_js(TypeError, () => {
-        new ComputePressureObserver(callback, options);
+        new PressureObserver(callback, options);
       });
-    }, `ComputePressureObserver constructor throws when ${property} ` +
+    }, `PressureObserver constructor throws when ${property} ` +
        `is [${out_of_range_value}]`);
   }
 
@@ -24,9 +24,9 @@ for (const property of ['cpuUtilizationThresholds']) {
           cpuUtilizationThresholds: [0.5] };
       options[property] = [valid_value];
 
-      const observer = new ComputePressureObserver(callback, options);
-      assert_true(observer instanceof ComputePressureObserver);
-    }, `ComputePressureObserver constructor accepts ${property} value ` +
+      const observer = new PressureObserver(callback, options);
+      assert_true(observer instanceof PressureObserver);
+    }, `PressureObserver constructor accepts ${property} value ` +
        `[${valid_value}]`);
   }
 }
@@ -36,9 +36,9 @@ test(t => {
 
 
   assert_throws_js(TypeError, () => {
-    new ComputePressureObserver(
+    new PressureObserver(
         callback,
         { cpuUtilizationThresholds: [0.5, 0.5] });
   });
-}, 'ComputePressureObserver constructor throws when cpuUtilizationThresholds ' +
+}, 'PressureObserver constructor throws when cpuUtilizationThresholds ' +
    'has duplicates');

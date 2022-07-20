@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/compute-pressure/#dom-computepressurerecord
+// https://wicg.github.io/compute-pressure/#dom-pressurerecord
 [
     Exposed=Window,
     SecureContext
-] dictionary ComputePressureRecord {
+] dictionary PressureRecord {
    // TODO(crbug.com/1308316): Remove cpuUtilization when switching
    // to new API.
    double cpuUtilization;

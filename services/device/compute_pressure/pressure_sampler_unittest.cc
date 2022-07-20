@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/compute_pressure_sampler.h"
-#include "build/build_config.h"
+#include "services/device/compute_pressure/pressure_sampler.h"
 
 #include <cstddef>
 #include <memory>
@@ -18,21 +17,22 @@
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "services/device/compute_pressure/compute_pressure_sample.h"
-#include "services/device/compute_pressure/compute_pressure_test_support.h"
+#include "build/build_config.h"
 #include "services/device/compute_pressure/cpu_probe.h"
+#include "services/device/compute_pressure/pressure_sample.h"
+#include "services/device/compute_pressure/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 
-class ComputePressureSamplerTest : public testing::Test {
+class PressureSamplerTest : public testing::Test {
  public:
-  ComputePressureSamplerTest()
-      : sampler_(std::make_unique<ComputePressureSampler>(
+  PressureSamplerTest()
+      : sampler_(std::make_unique<PressureSampler>(
             std::make_unique<FakeCpuProbe>(),
             base::Milliseconds(1),
-            base::BindRepeating(&ComputePressureSamplerTest::SamplerCallback,
+            base::BindRepeating(&PressureSamplerTest::SamplerCallback,
                                 base::Unretained(this)))) {}
 
   void WaitForUpdate() {
@@ -52,7 +52,7 @@ class ComputePressureSamplerTest : public testing::Test {
     return *cpu_probe;
   }
 
-  void SamplerCallback(ComputePressureSample sample) {
+  void SamplerCallback(PressureSample sample) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     samples_.push_back(sample);
     if (update_callback_) {
@@ -66,13 +66,12 @@ class ComputePressureSamplerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  // This member is a std::unique_ptr instead of a plain ComputePressureSampler
+  // This member is a std::unique_ptr instead of a plain PressureSampler
   // so it can be replaced inside tests.
-  std::unique_ptr<ComputePressureSampler> sampler_;
+  std::unique_ptr<PressureSampler> sampler_;
 
   // The samples reported by the callback.
-  std::vector<ComputePressureSample> samples_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
 
  private:
   void SetNextUpdateCallback(base::OnceClosure callback) {
@@ -86,14 +85,14 @@ class ComputePressureSamplerTest : public testing::Test {
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-TEST_F(ComputePressureSamplerTest, EnsureStarted) {
+TEST_F(PressureSamplerTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sampler_->EnsureStarted();
   WaitForUpdate();
 
   EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.42}));
+  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.42}));
 }
 
 namespace {
@@ -101,7 +100,7 @@ namespace {
 // TestDouble for CpuProbe that produces a different value after every Update().
 class StreamingCpuProbe : public CpuProbe {
  public:
-  explicit StreamingCpuProbe(std::vector<ComputePressureSample> samples,
+  explicit StreamingCpuProbe(std::vector<PressureSample> samples,
                              base::OnceClosure callback)
       : samples_(std::move(samples)), callback_(std::move(callback)) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -120,7 +119,7 @@ class StreamingCpuProbe : public CpuProbe {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
   }
 
-  ComputePressureSample LastSample() override {
+  PressureSample LastSample() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (sample_index_ < samples_.size()) {
       return samples_.at(sample_index_);
@@ -136,42 +135,40 @@ class StreamingCpuProbe : public CpuProbe {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::vector<ComputePressureSample> samples_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
   size_t sample_index_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // This closure is called on a LastSample call after expected number of
-  // samples has been taken by ComputePressureSampler.
+  // samples has been taken by PressureSampler.
   base::OnceClosure callback_;
 };
 
 }  // namespace
 
-TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
+TEST_F(PressureSamplerTest, EnsureStarted_SkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<ComputePressureSample> samples = {
+  std::vector<PressureSample> samples = {
       // Value right after construction.
-      ComputePressureSample{0.1},
+      PressureSample{0.1},
       // Value after first Update(), should be discarded.
-      ComputePressureSample{0.2},
+      PressureSample{0.2},
       // Value after second Update(), should be reported.
-      ComputePressureSample{0.4},
+      PressureSample{0.4},
   };
 
   base::RunLoop run_loop;
-  sampler_ = std::make_unique<ComputePressureSampler>(
+  sampler_ = std::make_unique<PressureSampler>(
       std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
       base::Milliseconds(1),
-      base::BindRepeating(&ComputePressureSamplerTest::SamplerCallback,
+      base::BindRepeating(&PressureSamplerTest::SamplerCallback,
                           base::Unretained(this)));
   sampler_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_,
-              testing::Not(testing::Contains(ComputePressureSample{0.2})));
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.4}));
+  EXPECT_THAT(samples_, testing::Not(testing::Contains(PressureSample{0.2})));
+  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.4}));
 }
 
 // TODO(crbug.com/1271419): Flaky.
@@ -182,7 +179,7 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
 #define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
   Stop_Delayed_EnsureStarted_Immediate
 #endif
-TEST_F(ComputePressureSamplerTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
+TEST_F(PressureSamplerTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sampler_->EnsureStarted();
@@ -190,15 +187,15 @@ TEST_F(ComputePressureSamplerTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(ComputePressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.25});
 
   sampler_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
+TEST_F(PressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sampler_->EnsureStarted();
@@ -206,46 +203,46 @@ TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(ComputePressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.25});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
   sampler_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Immediate) {
+TEST_F(PressureSamplerTest, Stop_Immediate_EnsureStarted_Immediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sampler_->EnsureStarted();
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(ComputePressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.25});
 
   sampler_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-TEST_F(ComputePressureSamplerTest, Stop_Immediate_EnsureStarted_Delayed) {
+TEST_F(PressureSamplerTest, Stop_Immediate_EnsureStarted_Delayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sampler_->EnsureStarted();
   sampler_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(ComputePressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.25});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
   sampler_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(ComputePressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
 }  // namespace device

@@ -9,14 +9,14 @@
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "services/device/compute_pressure/compute_pressure_sample.h"
+#include "services/device/compute_pressure/pressure_sample.h"
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/compute_pressure/cpu_probe_linux.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
-constexpr ComputePressureSample CpuProbe::kUnsupportedValue;
+constexpr PressureSample CpuProbe::kUnsupportedValue;
 
 CpuProbe::CpuProbe() = default;
 CpuProbe::~CpuProbe() = default;
@@ -39,7 +39,7 @@ class NullCpuProbe : public CpuProbe {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
   }
 
-  ComputePressureSample LastSample() override {
+  PressureSample LastSample() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return CpuProbe::kUnsupportedValue;
   }

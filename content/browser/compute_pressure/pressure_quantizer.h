@@ -2,42 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_QUANTIZER_H_
-#define CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_QUANTIZER_H_
+#ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_QUANTIZER_H_
+#define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_QUANTIZER_H_
 
 #include <vector>
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
-#include "services/device/public/mojom/compute_pressure_state.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
+#include "services/device/public/mojom/pressure_state.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.h"
 
 namespace content {
 
 // Quantizes compute pressure data for a frame.
 //
-// See blink::mojom::ComputePressureQuantization for a descripion of the
-// quantization scheme. The scheme converts a high-entropy
-// device::mojom::ComputePressureState into a low-entropy one, which minimizes
-// the amount of information exposed to a Web page that uses the Compute
-// Pressure API.
+// See blink::mojom::PressureQuantization for a descripion of the quantization
+// scheme. The scheme converts a high-entropy device::mojom::PressureState
+// into a low-entropy one, which minimizes the amount of information exposed
+// to a Web page that uses the Compute Pressure API.
 //
 // This class is not thread-safe, so each instance must be used on one sequence.
-class CONTENT_EXPORT ComputePressureQuantizer {
+class CONTENT_EXPORT PressureQuantizer {
  public:
   // Creates a quantizer with the single sub-interval [0, 1].
   //
   // Until Assign() is called, all values will be quantized to the same value.
-  ComputePressureQuantizer();
-  ~ComputePressureQuantizer();
+  PressureQuantizer();
+  ~PressureQuantizer();
 
-  ComputePressureQuantizer(const ComputePressureQuantizer&) = delete;
-  ComputePressureQuantizer& operator=(const ComputePressureQuantizer&) = delete;
+  PressureQuantizer(const PressureQuantizer&) = delete;
+  PressureQuantizer& operator=(const PressureQuantizer&) = delete;
 
-  // True iff `quantization` is a valid compute pressure quantization scheme.
-  static bool IsValid(
-      const blink::mojom::ComputePressureQuantization& quantization);
+  // True iff `quantization` is a valid pressure quantization scheme.
+  static bool IsValid(const blink::mojom::PressureQuantization& quantization);
 
   // True if this quantizer's scheme is the same as `quantization`.
   //
@@ -45,15 +43,14 @@ class CONTENT_EXPORT ComputePressureQuantizer {
   // for floating-point precision errors, such as 0.5 != 0.2 + 0.3.
   //
   // `quantization` must be valid.
-  bool IsSame(
-      const blink::mojom::ComputePressureQuantization& quantization) const;
+  bool IsSame(const blink::mojom::PressureQuantization& quantization) const;
 
   // Overwrites the quantization scheme used by this quantizer.
-  void Assign(blink::mojom::ComputePressureQuantizationPtr quantization);
+  void Assign(blink::mojom::PressureQuantizationPtr quantization);
 
   // Quantizes `sample` using the current quantization scheme.
-  device::mojom::ComputePressureState Quantize(
-      device::mojom::ComputePressureStatePtr sample) const;
+  device::mojom::PressureState Quantize(
+      device::mojom::PressureStatePtr sample) const;
 
  private:
   // Quantizes a single value in compute pressure data.
@@ -89,4 +86,4 @@ class CONTENT_EXPORT ComputePressureQuantizer {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_QUANTIZER_H_
+#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_QUANTIZER_H_

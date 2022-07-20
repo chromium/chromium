@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/compute_pressure_sampler.h"
+#include "services/device/compute_pressure/pressure_sampler.h"
 
 #include <utility>
 
@@ -16,8 +16,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "services/device/compute_pressure/compute_pressure_sample.h"
 #include "services/device/compute_pressure/cpu_probe.h"
+#include "services/device/compute_pressure/pressure_sample.h"
 
 namespace device {
 
@@ -33,10 +33,10 @@ scoped_refptr<base::SequencedTaskRunner> CreateProbeTaskRunner() {
 
 }  // namespace
 
-ComputePressureSampler::ComputePressureSampler(
+PressureSampler::PressureSampler(
     std::unique_ptr<CpuProbe> probe,
     base::TimeDelta sampling_interval,
-    base::RepeatingCallback<void(ComputePressureSample)> sampling_callback)
+    base::RepeatingCallback<void(PressureSample)> sampling_callback)
     : probe_task_runner_(CreateProbeTaskRunner()),
       probe_(std::move(probe)),
       sampling_interval_(sampling_interval),
@@ -44,12 +44,12 @@ ComputePressureSampler::ComputePressureSampler(
   DCHECK(sampling_callback_);
 }
 
-ComputePressureSampler::~ComputePressureSampler() {
+PressureSampler::~PressureSampler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   probe_task_runner_->DeleteSoon(FROM_HERE, std::move(probe_));
 }
 
-void ComputePressureSampler::EnsureStarted() {
+void PressureSampler::EnsureStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(has_probe()) << __func__
                       << " should not be called if has_probe() returns false";
@@ -67,18 +67,18 @@ void ComputePressureSampler::EnsureStarted() {
   // base::Unretained usage is safe here because base::RepeatingTimer guarantees
   // that its callback will not be called after it goes out of scope.
   timer_.Start(FROM_HERE, sampling_interval_,
-               base::BindRepeating(&ComputePressureSampler::UpdateProbe,
+               base::BindRepeating(&PressureSampler::UpdateProbe,
                                    base::Unretained(this)));
 }
 
-void ComputePressureSampler::Stop() {
+void PressureSampler::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timer_.AbandonAndStop();
   got_probe_baseline_ = false;
 }
 
-void ComputePressureSampler::UpdateProbe() {
+void PressureSampler::UpdateProbe() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(has_probe());
 
@@ -88,16 +88,16 @@ void ComputePressureSampler::UpdateProbe() {
   probe_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](CpuProbe* probe) -> ComputePressureSample {
+          [](CpuProbe* probe) -> PressureSample {
             probe->Update();
             return probe->LastSample();
           },
           probe_.get()),
-      base::BindOnce(&ComputePressureSampler::DidUpdateProbe,
+      base::BindOnce(&PressureSampler::DidUpdateProbe,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ComputePressureSampler::DidUpdateProbe(ComputePressureSample sample) {
+void PressureSampler::DidUpdateProbe(PressureSample sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Don't report the update result if Stop() was called.

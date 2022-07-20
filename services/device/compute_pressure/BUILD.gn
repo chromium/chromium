@@ -8,13 +8,13 @@ source_set("compute_pressure") {
   visibility = [ "//services/device:*" ]
 
   sources = [
-    "compute_pressure_manager_impl.cc",
-    "compute_pressure_manager_impl.h",
-    "compute_pressure_sample.h",
-    "compute_pressure_sampler.cc",
-    "compute_pressure_sampler.h",
     "cpu_probe.cc",
     "cpu_probe.h",
+    "pressure_manager_impl.cc",
+    "pressure_manager_impl.h",
+    "pressure_sample.h",
+    "pressure_sampler.cc",
+    "pressure_sampler.h",
   ]
 
   public_deps = [ "//services/device/public/mojom" ]

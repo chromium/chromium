@@ -1259,14 +1259,6 @@ interface CompressionStream
     getter readable
     getter writable
     method constructor
-interface ComputePressureObserver
-    static getter supportedSources
-    attribute @@toStringTag
-    method constructor
-    method disconnect
-    method observe
-    method takeRecords
-    method unobserve
 interface ComputedAccessibleNode
     attribute @@toStringTag
     getter atomic
@@ -6694,6 +6686,14 @@ interface PresentationRequest : EventTarget
     method reconnect
     method start
     setter onconnectionavailable
+interface PressureObserver
+    static getter supportedSources
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
+    method takeRecords
+    method unobserve
 interface ProcessingInstruction : CharacterData
     attribute @@toStringTag
     getter sheet

@@ -5,7 +5,7 @@ promise_test(async t => {
   // be represented exactly in floating-point, so === comparison works.
 
   const update = await new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
+    const observer = new PressureObserver(
         resolve,
         {cpuUtilizationThresholds: [0.25]});
     t.add_cleanup(() => observer.disconnect());
@@ -14,4 +14,4 @@ promise_test(async t => {
 
   assert_in_array(
       update.cpuUtilization, [0.125, 0.625], 'cpuUtilization quantization');
-}, 'ComputePressureObserver quantizes utilization and speed separately');
+}, 'PressureObserver quantizes utilization and speed separately');

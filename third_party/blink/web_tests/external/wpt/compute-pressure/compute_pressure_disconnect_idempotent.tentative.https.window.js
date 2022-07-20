@@ -2,7 +2,7 @@
 
 promise_test(async t => {
   const observer1_updates = [];
-  const observer1 = new ComputePressureObserver(update => {
+  const observer1 = new PressureObserver(update => {
     observer1_updates.push(update);
   }, {cpuUtilizationThresholds: [0.5]});
   t.add_cleanup(() => observer1.disconnect());
@@ -12,7 +12,7 @@ promise_test(async t => {
 
   const observer2_updates = [];
   await new Promise((resolve, reject) => {
-    const observer2 = new ComputePressureObserver(update => {
+    const observer2 = new PressureObserver(update => {
       observer2_updates.push(update);
       resolve();
     }, {cpuUtilizationThresholds: [0.5]});
@@ -34,7 +34,7 @@ promise_test(async t => {
 
   const observer3_updates = [];
   await new Promise((resolve, reject) => {
-    const observer3 = new ComputePressureObserver(update => {
+    const observer3 = new PressureObserver(update => {
       observer3_updates.push(update);
       resolve();
     }, {cpuUtilizationThresholds: [0.75]});
@@ -50,4 +50,4 @@ promise_test(async t => {
   assert_in_array(
       observer3_updates[0].cpuUtilization, [0.375, 0.875],
       'cpuUtilization quantization');
-}, 'Stopped ComputePressureObservers do not receive updates');
+}, 'Stopped PressureObserver do not receive updates');

@@ -74,7 +74,7 @@ void CpuProbeLinux::Update() {
   }
 }
 
-ComputePressureSample CpuProbeLinux::LastSample() {
+PressureSample CpuProbeLinux::LastSample() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_sample_;
 }

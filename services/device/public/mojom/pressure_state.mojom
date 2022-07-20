@@ -5,7 +5,7 @@
 module device.mojom;
 
 // Represents availability of compute resources.
-struct ComputePressureState {
+struct PressureState {
   // Average utilization of all CPU cores.
   //
   // Values use a scale from 0.0 (no utilization) to 1.0 (100% utilization).

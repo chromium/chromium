@@ -40,7 +40,7 @@ class ComputePressureOriginTrialBrowserTest : public ContentBrowserTest {
   }
 
   bool HasComputePressureApi() {
-    return EvalJs(shell(), "'ComputePressureObserver' in window").ExtractBool();
+    return EvalJs(shell(), "'PressureObserver' in window").ExtractBool();
   }
 
  protected:

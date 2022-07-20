@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/wicg/compute-pressure/
+// https://wicg.github.io/compute-pressure/#dom-pressureupdatecallback
 [
     Exposed=Window,
     RuntimeEnabled=ComputePressure,
     SecureContext
-] callback ComputePressureUpdateCallback = void (
-    ComputePressureRecord changes,
-    ComputePressureObserver observer
+] callback PressureUpdateCallback = void (
+    PressureRecord changes,
+    PressureObserver observer
   );

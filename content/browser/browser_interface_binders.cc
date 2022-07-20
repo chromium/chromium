@@ -20,7 +20,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
-#include "content/browser/compute_pressure/compute_pressure_service_impl.h"
+#include "content/browser/compute_pressure/pressure_service_impl.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -107,7 +107,7 @@
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
@@ -739,8 +739,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::CreateCodeCacheHost, base::Unretained(host)));
 
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<blink::mojom::ComputePressureService>(base::BindRepeating(
-        &ComputePressureServiceImpl::Create, base::Unretained(host)));
+    map->Add<blink::mojom::PressureService>(base::BindRepeating(
+        &PressureServiceImpl::Create, base::Unretained(host)));
   }
 
   map->Add<blink::mojom::ContactsManager>(

@@ -15,8 +15,8 @@ GeolocationContextBinder& GetGeolocationContextBinderOverride() {
   return *binder;
 }
 
-ComputePressureManagerBinder& GetComputePressureManagerBinderOverride() {
-  static base::NoDestructor<ComputePressureManagerBinder> binder;
+PressureManagerBinder& GetPressureManagerBinderOverride() {
+  static base::NoDestructor<PressureManagerBinder> binder;
   return *binder;
 }
 

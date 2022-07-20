@@ -2,21 +2,21 @@
 
 promise_test(async t => {
   const update1_promise = new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
+    const observer = new PressureObserver(
         resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
 
   const update2_promise = new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
+    const observer = new PressureObserver(
         resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
 
   const update3_promise = new Promise((resolve, reject) => {
-    const observer = new ComputePressureObserver(
+    const observer = new PressureObserver(
         resolve, {cpuUtilizationThresholds: [0.5]});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
@@ -29,5 +29,5 @@ promise_test(async t => {
     assert_in_array(update.cpuUtilization, [0.25, 0.75],
                     'cpuUtilization quantization');
   }
-}, 'Three ComputePressureObserver instances with the same quantization ' +
+}, 'Three PressureObserver instances with the same quantization ' +
    'schema receive updates');

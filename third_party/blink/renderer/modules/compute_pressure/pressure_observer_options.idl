@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/wicg/compute-pressure/
+// https://wicg.github.io/compute-pressure/#dom-pressureobserveroptions
 [
     Exposed=Window,
     SecureContext
-] dictionary ComputePressureObserverOptions {
+] dictionary PressureObserverOptions {
   sequence<double> cpuUtilizationThresholds = [];
 };

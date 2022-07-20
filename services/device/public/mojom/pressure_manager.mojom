@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/device/public/mojom/pressure_state.mojom";
+
+// This interface is used to get the PressureState.
+//
+// This interface is implemented by PressureManagerImpl and lives in the Device
+// Service. PressureServiceImpl in content/browser uses this interface to
+// subscribe to notification about PressureStateChanged.
+interface PressureManager {
+  // Add a client that will be notified on PressureStateChanged.
+  AddClient(pending_remote<PressureClient> client) => (bool success);
+};
+
+// Interface that client of the PressureManager interface must
+// implement to observe PressureState changes.
+//
+// This interface is implemented by PressureServiceImpl in content/browser.
+// PressureManagerImpl uses this interface to notify PressureServiceImpl about
+// PressureStateChanged.
+interface PressureClient {
+  // Interface used to notify PressureState changes.
+  PressureStateChanged(PressureState state, mojo_base.mojom.Time timestamp);
+};

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "services/device/compute_pressure/compute_pressure_sample.h"
+#include "services/device/compute_pressure/pressure_sample.h"
 
 namespace device {
 
@@ -32,8 +32,7 @@ namespace device {
 class CpuProbe {
  public:
   // LastSample() return value when the implementation fails to get a result.
-  static constexpr ComputePressureSample kUnsupportedValue = {.cpu_utilization =
-                                                                  0.0};
+  static constexpr PressureSample kUnsupportedValue = {.cpu_utilization = 0.0};
 
   // Instantiates the CpuProbe subclass most suitable for the current platform.
   //
@@ -52,7 +51,7 @@ class CpuProbe {
   virtual void Update() = 0;
 
   // CPU compute resource availability between the last two Update() calls.
-  virtual ComputePressureSample LastSample() = 0;
+  virtual PressureSample LastSample() = 0;
 
  protected:
   // The constructor is intentionally only exposed to subclasses. Production

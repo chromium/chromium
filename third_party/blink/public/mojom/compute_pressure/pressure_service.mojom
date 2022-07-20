@@ -4,9 +4,9 @@
 
 module blink.mojom;
 
-import "services/device/public/mojom/compute_pressure_state.mojom";
+import "services/device/public/mojom/pressure_state.mojom";
 
-// Specifies a quantization scheme for the data in a ComputePressureState.
+// Specifies a quantization scheme for the data in a PressureState.
 //
 // Each array of thresholds subdivides the interval [0.0, 1.0]. The array must
 // not contain the 0.0 and 1.0 values, as they are implied. For example, the
@@ -18,32 +18,32 @@ import "services/device/public/mojom/compute_pressure_state.mojom";
 // example above would report a CPU utilization value of 0.51 as 0.65. This is
 // because 0.51 falls in the sub-interval [0.5, 0.8], and the center of that
 // interval is 0.65, the average of 0.5 and 0.8.
-struct ComputePressureQuantization {
+struct PressureQuantization {
   array<double> cpu_utilization_thresholds;
 };
 
-// The maximum size of ComputePressureQuantization.cpu_utilization_thresholds.
-const int32 kMaxComputePressureCpuUtilizationThresholds = 3;
+// The maximum size of PressureQuantization.cpu_utilization_thresholds.
+const int32 kMaxPressureCpuUtilizationThresholds = 3;
 
 // Implemented by renderers to receive compute pressure info from the browser.
 //
-// The values in the ComputePressureState reported to the renderer are always
-// quantized according to a ComputePressureQuantization scheme.
-interface ComputePressureObserver {
+// The values in the PressureState reported to the renderer are always
+// quantized according to a PressureQuantization scheme.
+interface PressureObserver {
   // Called in the following circumstances.
   //
   // 1. Once after an observer is created.
-  // 2. When the (quantized) compute pressure state differs from the previously
+  // 2. When the (quantized) PressureState differs from the previously
   //    reported state.
   //
   // Updates to an observer are rate-limited. Observers that belong to visible
   // pages receive updates at most once a second, while other observers are
   // limited to at most one update in 10 seconds.
-  OnUpdate(device.mojom.ComputePressureState state);
+  OnUpdate(device.mojom.PressureState state);
 };
 
-// Result of ComputePressureService.AddObserver().
-enum ComputePressureStatus {
+// Result of PressureService.AddObserver().
+enum PressureStatus {
   kOk,
 
   // The underlying platform does not report compute pressure information.
@@ -62,8 +62,8 @@ enum ComputePressureStatus {
 // The interface is implemented in the browser and consumed by renderers. The
 // interface is only accessible to frames (and not workers).  Each frame that
 // accesses the API creates a separate connection.
-interface ComputePressureService {
-  // Subscribes to updates on the device's compute pressure state.
+interface PressureService {
+  // Subscribes to updates on the device's PressureState.
   //
   // The reported state will be quantized according to the `quantization`
   // scheme. `quantization` must be a valid quantization scheme.
@@ -76,7 +76,7 @@ interface ComputePressureService {
   // belonging to the same frame, the conflict is resolved by stopping all the
   // frame's pre-existing active observers. In other words, after AddObserver()
   // completes, the newly created observer will be the only active observer.
-  AddObserver(pending_remote<ComputePressureObserver> observer,
-              ComputePressureQuantization quantization)
-      => (ComputePressureStatus status);
+  AddObserver(pending_remote<PressureObserver> observer,
+              PressureQuantization quantization)
+      => (PressureStatus status);
 };

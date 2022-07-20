@@ -1,7 +1,7 @@
 'use strict';
 
 test(t => {
-  const observer = new ComputePressureObserver(
+  const observer = new PressureObserver(
       t.unreached_func('This callback should not have been called.'),
       {cpuUtilizationThresholds: [0.25]});
 
@@ -12,7 +12,7 @@ test(t => {
 promise_test(async t => {
   let observer;
   const record = await new Promise((resolve, reject) => {
-    observer = new ComputePressureObserver(
+    observer = new PressureObserver(
         resolve,
         {cpuUtilizationThresholds: [0.25]});
     t.add_cleanup(() => observer.disconnect());

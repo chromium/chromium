@@ -13,8 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "services/device/compute_pressure/compute_pressure_sample.h"
 #include "services/device/compute_pressure/cpu_probe.h"
+#include "services/device/compute_pressure/pressure_sample.h"
 #include "services/device/compute_pressure/procfs_stat_cpu_parser.h"
 
 namespace device {
@@ -35,7 +35,7 @@ class CpuProbeLinux : public CpuProbe {
 
   // CpuProbe implementation.
   void Update() override;
-  ComputePressureSample LastSample() override;
+  PressureSample LastSample() override;
 
  private:
   explicit CpuProbeLinux(base::FilePath procfs_stat_path);
@@ -56,7 +56,7 @@ class CpuProbeLinux : public CpuProbe {
   std::vector<ProcfsStatCpuParser::CoreTimes> last_core_times_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  ComputePressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace device

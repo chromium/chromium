@@ -49,10 +49,10 @@ source_set("test_support") {
     "test/fake_usb_device_manager.h",
     "test/mock_usb_mojo_device.cc",
     "test/mock_usb_mojo_device.h",
-    "test/scoped_compute_pressure_manager_overrider.cc",
-    "test/scoped_compute_pressure_manager_overrider.h",
     "test/scoped_geolocation_overrider.cc",
     "test/scoped_geolocation_overrider.h",
+    "test/scoped_pressure_manager_overrider.cc",
+    "test/scoped_pressure_manager_overrider.h",
     "test/test_wake_lock_provider.cc",
     "test/test_wake_lock_provider.h",
   ]
