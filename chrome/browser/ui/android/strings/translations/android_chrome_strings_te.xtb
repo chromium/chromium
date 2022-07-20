@@ -282,7 +282,7 @@
 <translation id="2512164632052122970">కంటెంట్ భాషలు</translation>
 <translation id="2513403576141822879">గోప్యత, భద్రత మరియు డేటా సేకరణకు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్‌ మరియు Google సేవలను<ph name="END_LINK" /> చూడండి</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
-<translation id="2523184218357549926">మీరు సందర్శించే పేజీల URLలను Googleకి పంపుతుంది</translation>
+<translation id="2523184218357549926">మీరు సందర్శించే పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="2527209463677295330">పేజీ తాలూకు ఎక్కువ టెక్స్ట్‌ను చేర్చడం ద్వారా, మీరు మెరుగైన ఫలితాలను చూడవచ్చు</translation>
 <translation id="2527497042232966453">అజ్ఞాత ట్యాబ్‌లకు స్విచ్ చేయబడింది</translation>
 <translation id="2527779675047087889">క్లిప్ బోర్డ్ కంటెంట్‌లను దాచండి</translation>
@@ -430,7 +430,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">మీరు Chrome వినియోగ రిపోర్ట్‌లను కూడా షేర్ చేస్తున్నట్లయితే, ఆ రిపోర్ట్‌లలో మీరు సందర్శించే URLలు ఉంటాయి</translation>
 <translation id="3250563604907490871">మీరు Wi-Fiకి కనెక్ట్ అయిన తర్వాత ఇమేజ్ వివరణలు కొనసాగించబడతాయి</translation>
-<translation id="3254409185687681395">ఈ పేజీని బుక్‌మార్క్ చేయి</translation>
+<translation id="3254409185687681395">ఈ పేజీని బుక్‌మార్క్ చేయండి</translation>
 <translation id="3259831549858767975">పేజీలోని అన్నింటినీ చిన్నవిగా చేయండి</translation>
 <translation id="3264124641674805320">తర్వాత ఉపయోగించడానికి కంటెంట్‌ను డౌన్‌లోడ్ చేయడం ఎలా</translation>
 <translation id="3264259168916048410">ఒక సైట్‌లోకి సైన్ ఇన్ చేయడానికి, మీ కంప్యూటర్ ఈ పరికరాన్ని ఉపయోగించాలని కోరుతోంది</translation>
@@ -560,7 +560,7 @@
 <translation id="4056223980640387499">సెపియా</translation>
 <translation id="4060598801229743805">ఎంపికలు స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉంటాయి</translation>
 <translation id="4062305924942672200">చట్ట సంబంధిత సమాచారం</translation>
-<translation id="4084682180776658562">బుక్‌మార్క్ చేయి</translation>
+<translation id="4084682180776658562">బుక్‌మార్క్ చేయండి</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> నుండి – <ph name="BEGIN_DEEMPHASIZED" />Google బట్వాడా చేస్తోంది<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">యాప్‌ డేటాను తొలగించాలా?</translation>
 <translation id="4096227151372679484">బుక్‌మార్క్‌ను సేవ్ చేయడానికి సంబంధించిన దశల ఫోల్డర్‌లు స్క్రీన్‌లో సగం వరకు తెరవబడ్డాయి</translation>
@@ -993,7 +993,7 @@
 <translation id="6410883413783534063">ఒకే సమయంలో వేర్వేరు పేజీలను సందర్శించడానికి ట్యాబ్‌లను తెరవండి</translation>
 <translation id="6411219469806822692">ఇంతకంటే పైకి వెళ్లడం సాధ్యపడదు. పేజీకి మరింత పైనుండి ప్రారంభించడానికి ట్రై చేయండి.</translation>
 <translation id="6412673304250309937">Chromeలో స్టోర్ చేసిన సురక్షితం కాని సైట్‌ల లిస్ట్‌తో కూడిన URLలను చెక్ చేస్తుంది. ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chrome, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు.</translation>
-<translation id="641643625718530986">ముద్రించు…</translation>
+<translation id="641643625718530986">ప్రింట్ చేయండి…</translation>
 <translation id="6422857128426228781">ట్రాక్ చేసిన మీ ప్రోడక్ట్‌లను మీరు ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="6433501201775827830">మీ సెర్చ్ ఇంజిన్‌ను ఎంచుకోండి</translation>
 <translation id="6434309073475700221">తొలగించు</translation>
@@ -1214,7 +1214,7 @@
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" />కు సంబంధించి అది మీరేనని <ph name="EMBEDDED_ORIGIN" />ను వెరిఫై చేయనీయండి</translation>
 <translation id="7596558890252710462">ఆపరేటింగ్ సిస్టమ్</translation>
 <translation id="7605594153474022051">సింక్‌ పని చేయడం లేదు</translation>
-<translation id="7612619742409846846">Googleకి ఇలా సైన్ ఇన్ చేశారు</translation>
+<translation id="7612619742409846846">Googleకు ఇలా సైన్ ఇన్ చేశారు</translation>
 <translation id="7616551326690708776">మీ హైలైట్ కోసం ఒక టెంప్లేట్‌ను ఎంచుకోండి.</translation>
 <translation id="7619072057915878432">నెట్‌వర్క్ వైఫల్యాల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="7626032353295482388">Chromeకు స్వాగతం</translation>

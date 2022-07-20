@@ -536,7 +536,7 @@
 <translation id="4601367666219428522">표 <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">다음 키 누름 무시</translation>
 <translation id="4623097797855662355">출판사 이름</translation>
-<translation id="4624970070706497034">Chromebook용 음성 안내 지원 맞춤설정 기능이 더 이상 제공되지 않습니다. 기능은 계속 사용할 수 있지만 음성 안내 지원 기본 키보드 단축키를 사용하셔야 합니다. 검색 키와 A 키를 동시에 누른 후 K 키를 눌러 사용 가능한 단축키를 보세요. 음성 안내 지원 기능을 계속 사용하려면 명령 키를 다시 누르시기 바랍니다.</translation>
+<translation id="4624970070706497034">Chromebook용 TalkBack 맞춤설정 기능이 더 이상 제공되지 않습니다. 기능은 계속 사용할 수 있지만 TalkBack 기본 키보드 단축키를 사용하셔야 합니다. 검색 키와 A 키를 동시에 누른 후 K 키를 눌러 사용 가능한 단축키를 보세요. TalkBack 기능을 계속 사용하려면 명령 키를 다시 누르시기 바랍니다.</translation>
 <translation id="463135993322337640">ChromeVox o, n을 눌러 새로운 기능을 살펴보세요</translation>
 <translation id="4649220074413114917">두 손가락으로 화면을 탭하면 현재 음성 안내를 중지할 수 있습니다. ChromeVox의 음성 안내가 필요하지 않을 때 유용합니다. 계속하려면 두 손가락으로 화면을 탭하세요.</translation>
 <translation id="4660783501463101648">기본 버전이 삭제되었습니다. ChromeVox 기본 버전으로 다시 전환하기 위한 키보드 토글이 삭제되었습니다.</translation>
@@ -1169,7 +1169,7 @@
 <translation id="9223032053830369045">딥 레드</translation>
 <translation id="923331726185079994">ChromeVox 업데이트됨</translation>
 <translation id="93384979447910801">다크 씨 그린</translation>
-<translation id="937605981140327129">음성 안내 지원이 현재 설치되지 않았습니다. Play 스토어에서 Android 접근성 도구 모음을 설치하고 다시 시도하세요.</translation>
+<translation id="937605981140327129">TalkBack이 현재 설치되지 않았습니다. Play 스토어에서 Android 접근성 도구 모음을 설치하고 다시 시도하세요.</translation>
 <translation id="948171205378458592">말하기 속도 줄이기</translation>
 <translation id="957570623732056069">한 손가락을 왼쪽 또는 오른쪽으로 스와이프하여 이 수업으로 이동</translation>
 <translation id="958854023026327378">손가락 한 개를 사용하여 아래로 스와이프</translation>

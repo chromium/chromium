@@ -254,7 +254,7 @@
 <translation id="6992289844737586249">사이트에서 마이크를 사용하기 전에 확인(권장)</translation>
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
 <translation id="7016516562562142042">현재 검색엔진에 허용됨</translation>
-<translation id="702463548815491781">음성 안내 지원 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
+<translation id="702463548815491781">TalkBack 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />개 선택됨. 화면 상단에서 옵션 선택 가능</translation>
