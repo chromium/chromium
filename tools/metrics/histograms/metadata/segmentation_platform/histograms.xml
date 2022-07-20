@@ -113,6 +113,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SegmentationPlatform.FeatureProcessing.Error.{SegmentationModel}"
+    enum="SegmentationPlatformFeatureProcessingError"
+    expires_after="2022-12-01">
+  <owner>haileywang@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the feature processing error of segmentation models. Recorded
+    whenever an error is encountered during the feature processing stage of the
+    {SegmentationModel} model. Used to distinguish between multiple types of
+    processing errors.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
 <histogram name="SegmentationPlatform.Init.CreationToInitializationLatency"
     units="ms" expires_after="M104">
   <owner>ssid@chromium.org</owner>

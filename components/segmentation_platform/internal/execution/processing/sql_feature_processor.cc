@@ -42,7 +42,8 @@ void SqlFeatureProcessor::Process(
     // Validate the proto::SqlFeature metadata.
     if (metadata_utils::ValidateMetadataSqlFeature(feature) !=
         metadata_utils::ValidationResult::kValidationSuccess) {
-      feature_processor_state->SetError();
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kSqlValidationError);
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback_),
                                     std::move(feature_processor_state),
@@ -85,7 +86,8 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
   }
 
   if (total_bind_values != result.size()) {
-    feature_processor_state->SetError();
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kSqlBindValuesError);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::move(feature_processor_state),
@@ -107,7 +109,8 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
       // Validate the result tensor.
       if (result.count(std::make_pair(sql_feature_index, bind_value_index)) !=
           1) {
-        feature_processor_state->SetError();
+        feature_processor_state->SetError(
+            stats::FeatureProcessingError::kResultTensorError);
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback_),
                                       std::move(feature_processor_state),
@@ -137,7 +140,8 @@ void SqlFeatureProcessor::OnQueriesRun(
     bool success,
     IndexedTensors result) {
   if (!success) {
-    feature_processor_state->SetError();
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kSqlQueryRunError);
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

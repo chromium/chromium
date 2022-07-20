@@ -50,7 +50,11 @@ FeatureProcessorState::FeatureProcessorState(
 
 FeatureProcessorState::~FeatureProcessorState() = default;
 
-void FeatureProcessorState::SetError() {
+void FeatureProcessorState::SetError(stats::FeatureProcessingError error) {
+  stats::RecordFeatureProcessingError(segment_id_, error);
+  DVLOG(1) << "Processing error occured: model "
+           << stats::OptimizationTargetToHistogramVariant(segment_id_)
+           << " failed with " << stats::FeatureProcessingErrorToString(error);
   error_ = true;
   input_tensor_.clear();
 }
@@ -79,7 +83,7 @@ void FeatureProcessorState::AppendTensor(
     if (value.type == ProcessedValue::Type::FLOAT) {
       tensor_result.push_back(value.float_val);
     } else {
-      SetError();
+      SetError(stats::FeatureProcessingError::kResultTensorError);
       return;
     }
   }

@@ -85893,6 +85893,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Model metadata invalid"/>
 </enum>
 
+<enum name="SegmentationPlatformFeatureProcessingError">
+  <int value="0" label="UkmEngineDisabled"/>
+  <int value="1" label="UmaValidationError"/>
+  <int value="2" label="SqlValidationError"/>
+  <int value="3" label="CustomInputError"/>
+  <int value="4" label="SqlBindValuesError"/>
+  <int value="5" label="SqlQueryRunError"/>
+  <int value="6" label="ResultTensorError"/>
+</enum>
+
 <enum name="SegmentationPlatformModelExecutionStatus">
   <int value="0" label="Success"/>
   <int value="1" label="ExecutionError"/>

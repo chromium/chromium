@@ -578,6 +578,35 @@ void RecordSegmentSelectionFailure(const std::string& segmentation_key,
       reason);
 }
 
+std::string FeatureProcessingErrorToString(FeatureProcessingError error) {
+  switch (error) {
+    case FeatureProcessingError::kUkmEngineDisabled:
+      return "UkmEngineDisabled";
+    case FeatureProcessingError::kUmaValidationError:
+      return "UmaValidationError";
+    case FeatureProcessingError::kSqlValidationError:
+      return "SqlValidationError";
+    case FeatureProcessingError::kCustomInputError:
+      return "CustomInputError";
+    case FeatureProcessingError::kSqlBindValuesError:
+      return "SqlBindValuesError";
+    case FeatureProcessingError::kSqlQueryRunError:
+      return "SqlQueryRunError";
+    case FeatureProcessingError::kResultTensorError:
+      return "ResultTensorError";
+    default:
+      return "Other";
+  }
+}
+
+void RecordFeatureProcessingError(SegmentId segment_id,
+                                  FeatureProcessingError error) {
+  base::UmaHistogramEnumeration(
+      "SegmentationPlatform.FeatureProcessing.Error." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      error);
+}
+
 void RecordModelAvailability(SegmentId segment_id,
                              SegmentationModelAvailability availability) {
   base::UmaHistogramEnumeration(

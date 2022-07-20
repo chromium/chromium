@@ -115,7 +115,8 @@ void FeatureListQueryProcessor::ProcessNext(
       auto* ukm_manager = storage_service_->ukm_data_manager();
       if (!ukm_manager->IsUkmEngineEnabled()) {
         // UKM engine is disabled, feature cannot be processed.
-        feature_processor_state->SetError();
+        feature_processor_state->SetError(
+            stats::FeatureProcessingError::kUkmEngineDisabled);
         feature_processor_state->RunCallback();
         return;
       }

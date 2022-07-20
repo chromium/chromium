@@ -186,6 +186,26 @@ enum class SegmentationSelectionFailureReason {
 void RecordSegmentSelectionFailure(const std::string& segmentation_key,
                                    SegmentationSelectionFailureReason reason);
 
+// Keep in sync with SegmentationPlatformFeatureProcessingError in
+// //tools/metrics/histograms/enums.xml.
+enum class FeatureProcessingError {
+  kUkmEngineDisabled = 0,
+  kUmaValidationError = 1,
+  kSqlValidationError = 2,
+  kCustomInputError = 3,
+  kSqlBindValuesError = 4,
+  kSqlQueryRunError = 5,
+  kResultTensorError = 6,
+  kMaxValue = kResultTensorError,
+};
+
+// Return a string display for the given FeatureProcessingError.
+std::string FeatureProcessingErrorToString(FeatureProcessingError error);
+
+// Records the type of error encountered during feature processing.
+void RecordFeatureProcessingError(SegmentId segment_id,
+                                  FeatureProcessingError error);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "SegmentationModelAvailability" in //tools/metrics/histograms/enums.xml.

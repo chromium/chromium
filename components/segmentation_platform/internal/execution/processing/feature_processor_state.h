@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,9 +74,7 @@ class FeatureProcessorState {
   Data PopNextData();
 
   // Sets an error to the current feature processor state.
-  // TODO(haileywang): Pass in a reason for error enum here and record an enum
-  // histogram of feature failure reasons.
-  void SetError();
+  void SetError(stats::FeatureProcessingError error);
 
   // Returns whether the input feature list is empty.
   bool IsFeatureListEmpty() const;

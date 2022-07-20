@@ -70,7 +70,8 @@ void UmaFeatureProcessor::ProcessNextUmaFeature() {
   // Validate the proto::UMAFeature metadata.
   if (metadata_utils::ValidateMetadataUmaFeature(next_feature.value()) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
-    feature_processor_state_->SetError();
+    feature_processor_state_->SetError(
+        stats::FeatureProcessingError::kUmaValidationError);
     ProcessNextUmaFeature();
     return;
   }

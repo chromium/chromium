@@ -139,7 +139,8 @@ void CustomInputProcessor::ProcessIndexType(
   DCHECK(custom_inputs.empty());
   if (!success || feature_processor_state->error()) {
     result->clear();
-    feature_processor_state->SetError();
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kCustomInputError);
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -158,7 +159,8 @@ void CustomInputProcessor::OnGotProcessedValue(
     bool error,
     Tensor current_value) {
   if (error) {
-    feature_processor_state->SetError();
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kCustomInputError);
   } else {
     DCHECK_EQ(current_tensor_length, current_value.size());
   }
@@ -201,16 +203,20 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
   } else if (custom_input.fill_policy() ==
              proto::CustomInput::FILL_PREDICTION_TIME) {
     if (!AddPredictionTime(custom_input, tensor_result))
-      feature_processor_state->SetError();
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
   } else if (custom_input.fill_policy() ==
              proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION) {
     if (!AddTimeRangeBeforePrediction(custom_input, tensor_result))
-      feature_processor_state->SetError();
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
   } else if (custom_input.fill_policy() ==
              proto::CustomInput::PRICE_TRACKING_HINTS) {
-    feature_processor_state->SetError();
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kCustomInputError);
     NOTREACHED() << "InputDelegate is not found";
   }
+
   return tensor_result;
 }
 
