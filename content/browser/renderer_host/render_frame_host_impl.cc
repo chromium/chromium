@@ -1162,10 +1162,14 @@ CreateJavaScriptExecuteRequestForTestsCallback(
 
 bool ValidateUnfencedTopNavigation(
     RenderFrameHostImpl* render_frame_host,
-    const GURL& url,
+    GURL& url,
     int initiator_process_id,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     bool user_gesture) {
+  // Validate and modify `url` as needed.
+  render_frame_host->GetSiteInstance()->GetProcess()->FilterURL(
+      /*empty_allowed=*/false, &url);
+
   // It should only be possible to send this IPC with this flag from an
   // opaque-ads fenced frame. Opaque-ads fenced frames should always
   // have the sandbox flag `allow-top-navigation-by-user-activation`.
@@ -7102,7 +7106,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // inside the MPArch renderer process, so we need to set it here.
   // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
   if (params->is_unfenced_top_navigation) {
-    const GURL validated_params_url = params->url;
+    GURL validated_params_url = params->url;
 
     // Check that the IPC parameters are valid and that the navigation
     // is allowed.

@@ -112,6 +112,10 @@ void FencedFrame::Navigate(const GURL& url,
     return;
   }
 
+  GURL validated_url = url;
+  owner_render_frame_host_->GetSiteInstance()->GetProcess()->FilterURL(
+      /*empty_allowed=*/false, &validated_url);
+
   FrameTreeNode* inner_root = frame_tree_->root();
 
   // Rerandomize the fenced frame's storage partitioning nonce, so that state
@@ -136,7 +140,8 @@ void FencedFrame::Navigate(const GURL& url,
   url::Origin initiator_origin;
 
   inner_root->navigator().NavigateFromFrameProxy(
-      inner_root->current_frame_host(), url, /*initiator_frame_token=*/nullptr,
+      inner_root->current_frame_host(), validated_url,
+      /*initiator_frame_token=*/nullptr,
       content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
       /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
