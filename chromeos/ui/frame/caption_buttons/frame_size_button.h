@@ -37,13 +37,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
 
   ~FrameSizeButton() override;
 
-  // views::Button overrides:
+  // views::Button:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void StateChanged(views::Button::ButtonState old_state) override;
+  void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // Cancel the snap opereation if we're currently in snap mode. The snap
   // preview will be deleted and the button will be set back to its normal mode.
@@ -57,6 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   bool in_snap_mode_for_testing() { return in_snap_mode_; }
 
  private:
+  class PieAnimation;
   class SnappingWindowObserver;
 
   // Starts |set_buttons_to_snap_mode_timer_|.
@@ -88,6 +91,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // whether the buttons should animate back to their original icons.
   void SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate animate);
 
+  void DestroyPieAnimation();
+
   // Not owned.
   raw_ptr<FrameSizeButtonDelegate> delegate_;
 
@@ -106,6 +111,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   base::OneShotTimer set_buttons_to_snap_mode_timer_;
 
   raw_ptr<MultitaskMenu> multitask_menu_;
+
+  // Creates an animation to add indication to when long hover and long press to
+  // show multitask menu and snap buttons will trigger.
+  std::unique_ptr<PieAnimation> pie_animation_;
 
   // Whether the buttons adjacent to the size button snap the window left and
   // right.

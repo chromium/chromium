@@ -16,8 +16,13 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -33,6 +38,12 @@ const int kSetButtonsToSnapModeDelayMs = 150;
 // "snap mode" and keep the button hovered/pressed.
 const int kMaxOvershootX = 200;
 const int kMaxOvershootY = 50;
+
+constexpr base::TimeDelta kPieAnimationPressDuration = base::Milliseconds(150);
+constexpr base::TimeDelta kPieAnimationHoverDuration = base::Milliseconds(500);
+
+// TODO(sammiequon): Update the color to match specs.
+constexpr SkColor kPieColor = SkColorSetA(SK_ColorGRAY, 128);
 
 // Returns true if a mouse drag while in "snap mode" at |location_in_screen|
 // would hover/press |button| or keep it hovered/pressed.
@@ -82,6 +93,87 @@ SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
 }
 
 }  // namespace
+
+// This class controls animating a pie on a parent button which indicates when
+// long press or long hover will end.
+class FrameSizeButton::PieAnimation : public gfx::SlideAnimation,
+                                      public gfx::AnimationDelegate {
+ public:
+  PieAnimation(base::TimeDelta duration,
+               base::OnceClosure on_animation_canceled,
+               base::OnceClosure on_animation_ended,
+               FrameSizeButton* button)
+      : gfx::SlideAnimation(this),
+        on_animation_canceled_(std::move(on_animation_canceled)),
+        on_animation_ended_(std::move(on_animation_ended)),
+        button_(button) {
+    // `SlideAnimation` is unaffected by debug tools such as
+    // "--ui-slow-animations" flag, so manually multiply the duration here.
+    SetSlideDuration(
+        ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration);
+    SetTweenType(gfx::Tween::LINEAR);
+
+    // Use a runner synced with the compositor.
+    gfx::AnimationContainer* container = new gfx::AnimationContainer();
+    container->SetAnimationRunner(
+        std::make_unique<views::CompositorAnimationRunner>(
+            button_->GetWidget()));
+    SetContainer(container);
+
+    Show();
+  }
+
+  PieAnimation(const PieAnimation&) = delete;
+  PieAnimation& operator=(const PieAnimation&) = delete;
+
+  ~PieAnimation() override = default;
+
+  void Paint(gfx::Canvas* canvas) {
+    // Use the bounds of the inkdrop. Assert that the width and height matches
+    // so we get a nice round pie.
+    gfx::Rect bounds = button_->GetLocalBounds();
+    bounds.Inset(button_->GetInkdropInsets(bounds.size()));
+    DCHECK_EQ(bounds.width(), bounds.height());
+
+    // The pie is a filled arc which starts at the top and sweeps around
+    // clockwise.
+    const SkScalar start_angle = -90.f;
+    const SkScalar sweep_angle = 360.f * GetCurrentValue();
+
+    SkPath path;
+    path.moveTo(bounds.CenterPoint().x(), bounds.CenterPoint().y());
+    path.arcTo(gfx::RectToSkRect(bounds), start_angle, sweep_angle,
+               /*forceMoveTo=*/false);
+    path.close();
+
+    cc::PaintFlags flags;
+    flags.setColor(kPieColor);
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawPath(path, flags);
+  }
+
+  // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override {
+    button_->SchedulePaint();
+    std::move(on_animation_ended_).Run();
+  }
+
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    button_->SchedulePaint();
+  }
+
+  void AnimationCanceled(const gfx::Animation* animation) override {
+    std::move(on_animation_canceled_).Run();
+  }
+
+ private:
+  base::OnceClosure on_animation_canceled_;
+  base::OnceClosure on_animation_ended_;
+
+  // The button `this` is associated with. Unowned.
+  raw_ptr<FrameSizeButton> button_;
+};
 
 // The class to observe the to-be-snapped window during the waiting-for-snap
 // mode. If the window's window state is changed or the window is put in
@@ -141,14 +233,28 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
 FrameSizeButton::~FrameSizeButton() = default;
 
 bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {
+  // Note that this triggers `StateChanged()`, and we want the changes to
+  // `pie_animation_` below to come after `StateChanged()`.
+  views::FrameCaptionButton::OnMousePressed(event);
+
   // The minimize and close buttons are set to snap left and right when snapping
   // is enabled. Do not enable snapping if the minimize button is not visible.
   // The close button is always visible.
   if (IsTriggerableEvent(event) && !in_snap_mode_ &&
       delegate_->IsMinimizeButtonVisible() && delegate_->CanSnap()) {
     StartSetButtonsToSnapModeTimer(event);
+
+    // Add a visual indicator of when snap mode will get triggered.
+    if (chromeos::wm::features::IsFloatWindowEnabled()) {
+      std::pair<base::OnceClosure, base::OnceClosure> split =
+          base::SplitOnceCallback(base::BindOnce(
+              &FrameSizeButton::DestroyPieAnimation, base::Unretained(this)));
+      pie_animation_ = std::make_unique<PieAnimation>(
+          kPieAnimationPressDuration, std::move(split.first),
+          std::move(split.second), this);
+    }
   }
-  views::FrameCaptionButton::OnMousePressed(event);
+
   return true;
 }
 
@@ -187,8 +293,22 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
   }
   if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap()) {
     StartSetButtonsToSnapModeTimer(*event);
+
     // Go through FrameCaptionButton's handling so that the button gets pressed.
     views::FrameCaptionButton::OnGestureEvent(event);
+
+    // Add a visual indicator of when snap mode will get triggered. Note that
+    // order matters as the subclasses will call `StateChanged()` and we want
+    // the changes there to run first.
+    if (chromeos::wm::features::IsFloatWindowEnabled()) {
+      std::pair<base::OnceClosure, base::OnceClosure> split =
+          base::SplitOnceCallback(base::BindOnce(
+              &FrameSizeButton::DestroyPieAnimation, base::Unretained(this)));
+      pie_animation_ = std::make_unique<PieAnimation>(
+          kPieAnimationPressDuration, std::move(split.first),
+          std::move(split.second), this);
+    }
+
     return;
   }
 
@@ -210,6 +330,30 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   views::FrameCaptionButton::OnGestureEvent(event);
+}
+
+void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return;
+
+  if (GetState() == views::Button::STATE_HOVERED) {
+    // TODO(shidi): On animation end we should show the multitask menu.
+    std::pair<base::OnceClosure, base::OnceClosure> split =
+        base::SplitOnceCallback(base::BindOnce(
+            &FrameSizeButton::DestroyPieAnimation, base::Unretained(this)));
+    pie_animation_ = std::make_unique<PieAnimation>(
+        kPieAnimationHoverDuration, std::move(split.first),
+        std::move(split.second), this);
+  } else if (old_state == views::Button::STATE_HOVERED) {
+    pie_animation_.reset();
+  }
+}
+
+void FrameSizeButton::PaintButtonContents(gfx::Canvas* canvas) {
+  if (pie_animation_)
+    pie_animation_->Paint(canvas);
+
+  views::FrameCaptionButton::PaintButtonContents(canvas);
 }
 
 const raw_ptr<MultitaskMenu> FrameSizeButton::GetMultitaskMenuForTesting() {
@@ -349,8 +493,13 @@ void FrameSizeButton::CancelSnap() {
 void FrameSizeButton::SetButtonsToNormalMode(
     FrameSizeButtonDelegate::Animate animate) {
   in_snap_mode_ = false;
+  pie_animation_.reset();
   set_buttons_to_snap_mode_timer_.Stop();
   delegate_->SetButtonsToNormal(animate);
+}
+
+void FrameSizeButton::DestroyPieAnimation() {
+  pie_animation_.reset();
 }
 
 }  // namespace chromeos
