@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_ASH_COLOR_ID_H_
 #define ASH_STYLE_ASH_COLOR_ID_H_
 
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 
 namespace ash {
@@ -30,7 +31,7 @@ namespace ash {
 #include "ui/color/color_id_macros.inc"
 
 enum AshColorIds : ui::ColorId {
-  kAshColorsStart = ui::kUiColorsEnd,
+  kAshColorsStart = cros_tokens::kCrosSysColorsEnd,
 
   ASH_COLOR_IDS
 
