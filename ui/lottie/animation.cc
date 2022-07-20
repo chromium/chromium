@@ -178,27 +178,25 @@ void Animation::Stop() {
   timer_control_.reset(nullptr);
 }
 
-float Animation::GetCurrentProgress() const {
+absl::optional<float> Animation::GetCurrentProgress() const {
   switch (state_) {
     case PlayState::kStopped:
-      return 0;
+      return absl::nullopt;
     case PlayState::kEnded:
       DCHECK(timer_control_);
       return timer_control_->GetNormalizedEndOffset();
     case PlayState::kPaused:
-      // It may be that the timer hasn't been initialized, which may happen if
-      // the animation was paused while it was in the kSchedulePlay state.
-      return timer_control_
-                 ? timer_control_->GetNormalizedCurrentCycleProgress()
-                 : (scheduled_start_offset_ / GetAnimationDuration());
     case PlayState::kSchedulePlay:
     case PlayState::kPlaying:
     case PlayState::kScheduleResume:
-      // The timer control needs to be initialized before making this call. It
-      // may not have been initialized if OnAnimationStep has not been called
-      // yet
-      DCHECK(timer_control_);
-      return timer_control_->GetNormalizedCurrentCycleProgress();
+      // The timer control may not have been initialized if OnAnimationStep has
+      // not been called yet (meaning no frame has actually been painted yet and
+      // there is no "progress" at all).
+      if (timer_control_) {
+        return timer_control_->GetNormalizedCurrentCycleProgress();
+      } else {
+        return absl::nullopt;
+      }
   }
 }
 
@@ -226,6 +224,11 @@ void Animation::Paint(gfx::Canvas* canvas,
         state_ = PlayState::kEnded;
     } break;
     case PlayState::kPaused:
+      // The |timer_control_| may be null if the animation was Start()ed and
+      // then Pause()ed before a single frame was painted. Initialize it here
+      // so that GetCurrentProgress() below returns a valid timestamp.
+      if (!timer_control_)
+        InitTimer(timestamp);
       break;
     case PlayState::kScheduleResume:
       state_ = PlayState::kPlaying;
@@ -243,7 +246,9 @@ void Animation::Paint(gfx::Canvas* canvas,
     case PlayState::kEnded:
       break;
   }
-  PaintFrame(canvas, GetCurrentProgress(), size);
+  absl::optional<float> current_progress = GetCurrentProgress();
+  DCHECK(current_progress);
+  PaintFrame(canvas, *current_progress, size);
 
   // Notify animation cycle ended after everything is done in case an observer
   // tries to change the animation's state within its observer implementation.

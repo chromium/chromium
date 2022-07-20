@@ -21,6 +21,7 @@
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
@@ -144,7 +145,13 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // Returns the current normalized [0..1] value at which the animation frame
   // is.
   // 0 -> first frame and 1 -> last frame.
-  float GetCurrentProgress() const;
+  //
+  // Returns nullopt if a timestamp is currently is unavailable. This is the
+  // case if:
+  // * The animation is currently Stop()ed.
+  // * The animation has been Start()ed but a single frame has not been painted
+  //   yet.
+  absl::optional<float> GetCurrentProgress() const;
 
   // Paint operations ----------------------------------------------------------
   // Paints the frame of the animation for the given |timestamp| at the given
