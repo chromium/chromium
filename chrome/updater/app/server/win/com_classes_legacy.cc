@@ -26,12 +26,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
@@ -657,6 +660,182 @@ HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
   }
 
   return S_OK;
+}
+
+PolicyStatusImpl::PolicyStatusImpl()
+    : policy_service_(PolicyService::Create(CreateExternalConstants())) {}
+PolicyStatusImpl::~PolicyStatusImpl() = default;
+
+HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
+  return S_OK;
+}
+
+// IPolicyStatus.
+STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
+  DCHECK(minutes);
+
+  int period = 0;
+  if (!policy_service_->GetLastCheckPeriodMinutes(nullptr, &period))
+    return E_FAIL;
+
+  *minutes = period;
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
+    DWORD* start_hour,
+    DWORD* start_min,
+    DWORD* duration_min,
+    VARIANT_BOOL* are_updates_suppressed) {
+  DCHECK(start_hour);
+  DCHECK(start_min);
+  DCHECK(duration_min);
+  DCHECK(are_updates_suppressed);
+
+  UpdatesSuppressedTimes updates_suppressed_times;
+  if (!policy_service_->GetUpdatesSuppressedTimes(nullptr,
+                                                  &updates_suppressed_times) ||
+      !updates_suppressed_times.valid()) {
+    return E_FAIL;
+  }
+
+  base::Time::Exploded now;
+  base::Time::Now().LocalExplode(&now);
+  *start_hour = updates_suppressed_times.start_hour_;
+  *start_min = updates_suppressed_times.start_minute_;
+  *duration_min = updates_suppressed_times.duration_minute_;
+  *are_updates_suppressed =
+      updates_suppressed_times.contains(now.hour, now.minute) ? VARIANT_TRUE
+                                                              : VARIANT_FALSE;
+
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(BSTR* pref) {
+  DCHECK(pref);
+
+  std::string download_preference;
+  if (!policy_service_->GetDownloadPreferenceGroupPolicy(
+          nullptr, &download_preference)) {
+    return E_FAIL;
+  }
+
+  *pref =
+      base::win::ScopedBstr(base::ASCIIToWide(download_preference)).Release();
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(DWORD* limit) {
+  DCHECK(limit);
+
+  int cache_size_limit = 0;
+  if (!policy_service_->GetPackageCacheSizeLimitMBytes(nullptr,
+                                                       &cache_size_limit)) {
+    return E_FAIL;
+  }
+
+  *limit = cache_size_limit;
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(DWORD* days) {
+  DCHECK(days);
+
+  int cache_life_limit = 0;
+  if (!policy_service_->GetPackageCacheExpirationTimeDays(nullptr,
+                                                          &cache_life_limit)) {
+    return E_FAIL;
+  }
+
+  *days = cache_life_limit;
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
+    BSTR app_id,
+    DWORD* policy) {
+  DCHECK(policy);
+
+  int install_policy = 0;
+  if (!policy_service_->GetEffectivePolicyForAppInstalls(
+          base::WideToASCII(app_id), nullptr, &install_policy)) {
+    return E_FAIL;
+  }
+
+  *policy = install_policy;
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(BSTR app_id,
+                                                                DWORD* policy) {
+  DCHECK(policy);
+
+  int update_policy = 0;
+  if (!policy_service_->GetEffectivePolicyForAppUpdates(
+          base::WideToASCII(app_id), nullptr, &update_policy)) {
+    return E_FAIL;
+  }
+
+  *policy = update_policy;
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(BSTR app_id,
+                                                       BSTR* prefix) {
+  DCHECK(prefix);
+
+  std::string target_version_prefix;
+  if (!policy_service_->GetTargetVersionPrefix(
+          base::WideToASCII(app_id), nullptr, &target_version_prefix)) {
+    return E_FAIL;
+  }
+
+  *prefix =
+      base::win::ScopedBstr(base::ASCIIToWide(target_version_prefix)).Release();
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
+    BSTR app_id,
+    VARIANT_BOOL* rollback_allowed) {
+  DCHECK(rollback_allowed);
+
+  bool is_rollback_allowed = false;
+  if (!policy_service_->IsRollbackToTargetVersionAllowed(
+          base::WideToASCII(app_id), nullptr, &is_rollback_allowed)) {
+    return E_FAIL;
+  }
+
+  *rollback_allowed = is_rollback_allowed ? VARIANT_TRUE : VARIANT_FALSE;
+  return S_OK;
+}
+
+// TODO(crbug.com/1344200): Implement the IDispatch methods.
+STDMETHODIMP PolicyStatusImpl::GetTypeInfoCount(UINT*) {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusImpl::GetIDsOfNames(REFIID,
+                                             LPOLESTR*,
+                                             UINT,
+                                             LCID,
+                                             DISPID*) {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusImpl::Invoke(DISPID,
+                                      REFIID,
+                                      LCID,
+                                      WORD,
+                                      DISPPARAMS*,
+                                      VARIANT*,
+                                      EXCEPINFO*,
+                                      UINT*) {
+  return E_NOTIMPL;
 }
 
 }  // namespace updater

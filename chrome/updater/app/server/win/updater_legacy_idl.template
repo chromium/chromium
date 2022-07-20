@@ -247,6 +247,85 @@ interface IAppCommandWeb : IDispatch {
 
 [
   object,
+  dual,
+  uuid(IPOLICYSTATUS_IID),
+  helpstring("IPolicyStatus Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatus : IDispatch {
+  // Global Update Policies
+
+  // Returns the time interval between update checks in minutes.
+  // 0 indicates updates are disabled.
+  [propget] HRESULT lastCheckPeriodMinutes([out, retval] DWORD* minutes);
+
+  // For domain-joined machines, returns the suppressed times if any, and also
+  // checks the current time against the times that updates are suppressed.
+  // Updates are suppressed if the current time falls between the start time and
+  // the duration.
+  // The duration does not account for daylight savings time. For instance, if
+  // the start time is 22:00 hours, and with a duration of 8 hours, the updates
+  // will be suppressed for 8 hours regardless of whether daylight savings time
+  // changes happen in between.
+  [propget] HRESULT updatesSuppressedTimes(
+      [out] DWORD* start_hour,
+      [out] DWORD* start_min,
+      [out] DWORD* duration_min,
+      [out] VARIANT_BOOL* are_updates_suppressed);
+
+  // Returns the value of the "DownloadPreference" group policy or an
+  // empty string if the group policy does not exist, the policy is unknown, or
+  // an error happened.
+  [propget] HRESULT downloadPreferenceGroupPolicy([out, retval] BSTR* pref);
+
+  // Gets the total disk size limit for cached packages. When this limit is hit,
+  // packages may be deleted from oldest until total size is below the limit.
+  [propget] HRESULT packageCacheSizeLimitMBytes([out, retval] DWORD* limit);
+
+  // Gets the package cache life limit. If a cached package is older than this
+  // limit, it may be deleted.
+  [propget] HRESULT packageCacheExpirationTimeDays([out, retval] DWORD* days);
+
+  // Application Update Policies
+
+  // Returns 1 if installation of the specified app is allowed.
+  // Otherwise, returns 0.
+  [propget] HRESULT effectivePolicyForAppInstalls([in] BSTR app_id,
+                                                  [out, retval] DWORD* policy);
+
+  // Returns 1 if updates of the specified app is allowed.
+  // Otherwise, returns one of 0 (Disabled), 2 (ManualUpdatesOnly), or
+  // 3 (AutomaticUpdatesOnly).
+  [propget] HRESULT effectivePolicyForAppUpdates([in] BSTR app_id,
+                                                 [out, retval] DWORD* policy);
+
+  // Returns the target version prefix for the app, if the machine is joined to
+  // a domain and has the corresponding policy set.
+  // Examples:
+  // * "" (or not configured): update to latest version available.
+  // * "55.": update to any minor version of 55 (e.g. 55.24.34 or 55.60.2).
+  // * "55.2.": update to any minor version of 55.2 (e.g. 55.2.34 or 55.2.2).
+  // * "55.24.34": update to this specific version only.
+  [propget] HRESULT targetVersionPrefix([in] BSTR app_id,
+                                        [out, retval] BSTR* prefix);
+
+  // Returns whether the RollbackToTargetVersion policy has been set for the
+  // app. Setting RollbackToTargetVersion will result in a version downgrade if
+  // the app version on the client is higher than the version on the server.
+  // This could happen under circumstances such as:
+  // - TargetVersionPrefix is used to pick an older version on the channel.
+  // - TargetChannel is used to move the client to a channel with a lower
+  //   version (e.g., Dev/Beta to Beta/Stable).
+  // - A user somehow installed a newer version on the client.
+  // When not set, a client will not receive updates until the app version on
+  // the server passes the version on the client.
+  [propget] HRESULT isRollbackToTargetVersionAllowed(
+      [in] BSTR app_id,
+      [out, retval] VARIANT_BOOL* rollback_allowed);
+};
+
+[
+  object,
   oleautomation,
   uuid(IPROCESSLAUNCHER_IID),
   helpstring("Google Update IProcessLauncher Interface"),
@@ -318,6 +397,7 @@ library UpdaterLegacyLib {
   interface IAppBundleWeb;
   interface IAppWeb;
   interface IAppCommandWeb;
+  interface IPolicyStatus;
   interface IProcessLauncher;
   interface IProcessLauncher2;
 };

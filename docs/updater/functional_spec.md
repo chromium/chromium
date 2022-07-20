@@ -823,6 +823,25 @@ respectively, a command format of:
 becomes the command line
   `echo.exe AA %2 %BB`
 
+### Policy Status API
+The feature allows Chrome and other applications to query the policies that are
+currently in effect.
+
+Chrome Browser Enterprise (CBE) admins sometimes want to understand if the
+update policies they have set have propagated to the clients.
+
+Without this API, the only way they can do this is to open up regedit to see if
+the GPO has propagated correctly.
+
+In addition there is a delay between when the GPO is set on the server and when
+the value is propagated on the client so being able to verify that the updater
+picks up the policy can help debug propagation issues as well.
+
+The IPolicyStatus interface therefore exposes this functionality that can be
+queried and shown in chrome://policy.
+
+[IPolicyStatus members](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template?q=IPolicyStatus)
+
 ## Uninstallation
 On Mac and Linux, if the application was registered with an existence path
 checker and no file at that path exists (or if the file at that path is owned
