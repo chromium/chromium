@@ -1916,6 +1916,10 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
   return false;
 }
 
+bool BrowserAccessibilityAndroid::CanFireEvents() const {
+  return !IsChildOfLeaf();
+}
+
 void BrowserAccessibilityAndroid::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
 

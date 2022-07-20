@@ -159,8 +159,7 @@ AXNode* AXNode::GetParentCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (parent_)
     return parent_;
-  const AXTreeManager* manager =
-      AXTreeManagerMap::GetInstance().GetManager(tree_->GetAXTreeID());
+  const AXTreeManager* manager = GetManager();
   if (manager)
     return manager->GetParentNodeFromParentTreeAsAXNode();
   return nullptr;
@@ -196,8 +195,7 @@ AXNode* AXNode::GetUnignoredParentCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   AXNode* unignored_parent = GetUnignoredParent();
   if (!unignored_parent) {
-    const AXTreeManager* manager =
-        AXTreeManagerMap::GetInstance().GetManager(tree_->GetAXTreeID());
+    const AXTreeManager* manager = GetManager();
     if (manager)
       unignored_parent = manager->GetParentNodeFromParentTreeAsAXNode();
   }
@@ -288,8 +286,22 @@ AXNode* AXNode::GetDeepestFirstChild() const {
     return nullptr;
 
   AXNode* deepest_child = GetFirstChild();
+  DCHECK(deepest_child);
   while (deepest_child->GetChildCount())
     deepest_child = deepest_child->GetFirstChild();
+
+  return deepest_child;
+}
+
+AXNode* AXNode::GetDeepestFirstChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (!GetChildCountCrossingTreeBoundary())
+    return nullptr;
+
+  AXNode* deepest_child = GetFirstChildCrossingTreeBoundary();
+  DCHECK(deepest_child);
+  while (deepest_child->GetChildCountCrossingTreeBoundary())
+    deepest_child = deepest_child->GetFirstChildCrossingTreeBoundary();
 
   return deepest_child;
 }
@@ -300,8 +312,22 @@ AXNode* AXNode::GetDeepestFirstUnignoredChild() const {
     return nullptr;
 
   AXNode* deepest_child = GetFirstUnignoredChild();
+  DCHECK(deepest_child);
   while (deepest_child->GetUnignoredChildCount())
     deepest_child = deepest_child->GetFirstUnignoredChild();
+
+  return deepest_child;
+}
+
+AXNode* AXNode::GetDeepestFirstUnignoredChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (!GetUnignoredChildCountCrossingTreeBoundary())
+    return nullptr;
+
+  AXNode* deepest_child = GetFirstUnignoredChildCrossingTreeBoundary();
+  DCHECK(deepest_child);
+  while (deepest_child->GetUnignoredChildCountCrossingTreeBoundary())
+    deepest_child = deepest_child->GetFirstUnignoredChildCrossingTreeBoundary();
 
   return deepest_child;
 }
@@ -312,8 +338,22 @@ AXNode* AXNode::GetDeepestLastChild() const {
     return nullptr;
 
   AXNode* deepest_child = GetLastChild();
+  DCHECK(deepest_child);
   while (deepest_child->GetChildCount())
     deepest_child = deepest_child->GetLastChild();
+
+  return deepest_child;
+}
+
+AXNode* AXNode::GetDeepestLastChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (!GetChildCountCrossingTreeBoundary())
+    return nullptr;
+
+  AXNode* deepest_child = GetLastChildCrossingTreeBoundary();
+  DCHECK(deepest_child);
+  while (deepest_child->GetChildCountCrossingTreeBoundary())
+    deepest_child = deepest_child->GetLastChildCrossingTreeBoundary();
 
   return deepest_child;
 }
@@ -324,8 +364,22 @@ AXNode* AXNode::GetDeepestLastUnignoredChild() const {
     return nullptr;
 
   AXNode* deepest_child = GetLastUnignoredChild();
+  DCHECK(deepest_child);
   while (deepest_child->GetUnignoredChildCount())
     deepest_child = deepest_child->GetLastUnignoredChild();
+
+  return deepest_child;
+}
+
+AXNode* AXNode::GetDeepestLastUnignoredChildCrossingTreeBoundary() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  if (!GetUnignoredChildCountCrossingTreeBoundary())
+    return nullptr;
+
+  AXNode* deepest_child = GetLastUnignoredChildCrossingTreeBoundary();
+  DCHECK(deepest_child);
+  while (deepest_child->GetUnignoredChildCountCrossingTreeBoundary())
+    deepest_child = deepest_child->GetLastUnignoredChildCrossingTreeBoundary();
 
   return deepest_child;
 }
@@ -602,6 +656,11 @@ AXNode::UnignoredChildrenCrossingTreeBoundaryEnd() const {
   return UnignoredChildCrossingTreeBoundaryIterator(this, nullptr);
 }
 
+bool AXNode::CanFireEvents() const {
+  // TODO(nektar): Cache the `IsChildOfLeaf` state in `AXComputedNodeData`.
+  return !IsChildOfLeaf();
+}
+
 absl::optional<int> AXNode::CompareTo(const AXNode& other) const {
   if (this == &other)
     return 0;
@@ -735,6 +794,10 @@ SkColor AXNode::ComputeColorAttribute(ax::mojom::IntAttribute attr) const {
   }
 
   return color;
+}
+
+AXTreeManager* AXNode::GetManager() const {
+  return AXTreeManagerMap::GetInstance().GetManager(tree_->GetAXTreeID());
 }
 
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
@@ -1688,6 +1751,7 @@ bool AXNode::IsInvisibleOrIgnored() const {
 }
 
 bool AXNode::IsChildOfLeaf() const {
+  // TODO(nektar): Cache this state in `AXComputedNodeData`.
   for (const AXNode* ancestor = GetUnignoredParent(); ancestor;
        ancestor = ancestor->GetUnignoredParent()) {
     if (ancestor->IsLeaf())
@@ -1926,6 +1990,51 @@ AXNode* AXNode::GetTextFieldAncestor() const {
     if (ancestor->data().IsTextField())
       return ancestor;
   }
+  return nullptr;
+}
+
+AXNode* AXNode::GetTextFieldInnerEditorElement() const {
+  if (!data().IsAtomicTextField() || !GetUnignoredChildCount())
+    return nullptr;
+
+  // Text fields wrap their static text and inline text boxes in generic
+  // containers, and some, like <input type="search">, wrap the wrapper as well.
+  // There are several incarnations of this structure.
+  // 1. An empty atomic text field:
+  // -- Generic container <-- there can be any number of these in a chain.
+  //    However, some empty text fields have the below structure, with empty
+  //    text boxes.
+  // 2. A single line, an atomic text field with some text in it:
+  // -- Generic container <-- there can be any number of these in a chain.
+  // ---- Static text
+  // ------ Inline text box children (zero or more)
+  // ---- Line Break (optional,  a placeholder break element if the text data
+  //                    ends with '\n' or '\r')
+  // 3. A multiline textarea with some text in it:
+  //    Similar to #2, but can repeat the static text, line break children
+  //    multiple times.
+
+  AXNode* text_container = GetDeepestFirstUnignoredChild();
+  DCHECK(text_container) << "Unable to retrieve deepest unignored child on\n"
+                         << *this;
+  // Non-empty text fields expose a set of static text objects with one or more
+  // inline text boxes each. On some platforms, such as Android, we don't enable
+  // inline text boxes, and only the static text objects are exposed.
+  if (text_container->GetRole() == ax::mojom::Role::kInlineTextBox)
+    text_container = text_container->GetUnignoredParent();
+
+  // Get the parent of the static text or the line break, if any; a line break
+  // is possible when the field contains a line break as its first character.
+  if (text_container->GetRole() == ax::mojom::Role::kStaticText ||
+      text_container->GetRole() == ax::mojom::Role::kLineBreak) {
+    text_container = text_container->GetUnignoredParent();
+  }
+
+  DCHECK(text_container) << "Unexpected unignored parent while computing text "
+                            "field inner editor element on\n"
+                         << *this;
+  if (text_container->GetRole() == ax::mojom::Role::kGenericContainer)
+    return text_container;
   return nullptr;
 }
 

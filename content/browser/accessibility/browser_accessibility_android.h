@@ -32,6 +32,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   int32_t unique_id() const { return GetUniqueId().Get(); }
 
   // BrowserAccessibility Overrides.
+  bool CanFireEvents() const override;
   void OnDataChanged() override;
   void OnLocationChanged() override;
   std::u16string GetLocalizedStringForImageAnnotationStatus(
