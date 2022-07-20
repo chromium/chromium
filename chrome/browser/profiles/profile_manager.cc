@@ -1074,7 +1074,7 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
   return guest_path.Append(chrome::kGuestProfileDir);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 // static
 base::FilePath ProfileManager::GetSystemProfilePath() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1084,7 +1084,7 @@ base::FilePath ProfileManager::GetSystemProfilePath() {
   base::FilePath system_path = profile_manager->user_data_dir();
   return system_path.Append(chrome::kSystemProfileDir);
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static

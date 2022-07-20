@@ -441,11 +441,11 @@ ProfileImpl::ProfileImpl(
   if (path == ProfileManager::GetGuestProfilePath()) {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kGuest);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   } else if (path == ProfileManager::GetSystemProfilePath()) {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kSystem);
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   } else {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kRegular);

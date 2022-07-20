@@ -90,14 +90,14 @@ class TestingProfileManager : public ProfileObserver {
   // The subsystem owns the Profile and returns a weak pointer.
   TestingProfile* CreateGuestProfile();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   // Creates a new system TestingProfile whose data lives in the system profile
   // test environment directory, as specified by the profile manager.
   // This profile will not be added to the ProfileAttributesStorage. This will
   // register the TestingProfile with the profile subsystem as well.
   // The subsystem owns the Profile and returns a weak pointer.
   TestingProfile* CreateSystemProfile();
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
   // Deletes a TestingProfile from the profile subsystem.
   void DeleteTestingProfile(const std::string& profile_name);
@@ -109,10 +109,10 @@ class TestingProfileManager : public ProfileObserver {
   // Deletes a guest TestingProfile from the profile manager.
   void DeleteGuestProfile();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   // Deletes a system TestingProfile from the profile manager.
   void DeleteSystemProfile();
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
   // Deletes the storage instance. This is useful for testing that the storage
   // is properly persisting data.

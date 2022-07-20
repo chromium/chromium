@@ -429,7 +429,7 @@ void TestingProfile::InitializeProfileType() {
     return;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   bool is_system = false;
   if (IsOffTheRecord()) {
     is_system = original_profile_->IsSystemProfile();
@@ -444,7 +444,7 @@ void TestingProfile::InitializeProfileType() {
         this, profile_metrics::BrowserProfileType::kSystem);
     return;
   }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
   if (IsOffTheRecord()) {
     profile_metrics::SetBrowserProfileType(

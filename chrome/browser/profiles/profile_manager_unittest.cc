@@ -833,14 +833,14 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   EXPECT_FALSE(entry->IsOmitted());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileManagerTest, GetSystemProfilePath) {
   base::FilePath system_profile_path = ProfileManager::GetSystemProfilePath();
   base::FilePath expected_path = temp_dir_.GetPath();
   expected_path = expected_path.Append(chrome::kSystemProfileDir);
   EXPECT_EQ(expected_path, system_profile_path);
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 // Test profile manager that creates all profiles as guest by default.
 class UnittestGuestProfileManager : public FakeProfileManager {
