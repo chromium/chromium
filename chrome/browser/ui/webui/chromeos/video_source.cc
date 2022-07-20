@@ -85,9 +85,9 @@ void VideoSource::StartDataRequest(
                      std::move(got_data_callback)));
 }
 
-std::string VideoSource::GetMimeType(const std::string& path) {
+std::string VideoSource::GetMimeType(const GURL& url) {
   std::string mime_type;
-  std::string ext = base::FilePath(path).Extension();
+  std::string ext = base::FilePath(url.path_piece()).Extension();
   if (!ext.empty())
     net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
   return mime_type;

@@ -190,7 +190,7 @@ void UserImageSource::StartDataRequest(
   std::move(callback).Run(GetUserImageInternal(account_id, frame));
 }
 
-std::string UserImageSource::GetMimeType(const std::string& path) {
+std::string UserImageSource::GetMimeType(const GURL& url) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";

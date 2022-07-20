@@ -52,7 +52,7 @@ void SlowTraceSource::StartDataRequest(
                                base::Unretained(this), std::move(callback)));
 }
 
-std::string SlowTraceSource::GetMimeType(const std::string& path) {
+std::string SlowTraceSource::GetMimeType(const GURL& url) {
   return "application/zip";
 }
 
