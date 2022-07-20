@@ -52,7 +52,6 @@ void TextFragmentHandler::Cancel() {
 void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   DCHECK(shared_highlighting::ShouldOfferLinkToText(
       GURL(GetFrame()->GetDocument()->Url())));
-  DCHECK(!GetFrame()->Selection().SelectedText().IsEmpty());
 
   response_callback_ = std::move(callback);
   selector_ready_status_ =
