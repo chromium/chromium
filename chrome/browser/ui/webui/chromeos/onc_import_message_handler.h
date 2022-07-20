@@ -9,6 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace net {
@@ -16,10 +18,6 @@ class NSSCertDatabase;
 }
 
 namespace chromeos {
-
-namespace onc {
-class CertificateImporterImpl;
-}
 
 class OncImportMessageHandler : public content::WebUIMessageHandler {
  public:

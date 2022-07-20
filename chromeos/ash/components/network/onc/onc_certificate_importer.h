@@ -11,8 +11,7 @@
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
  public:
@@ -54,7 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
       DoneCallback done_callback) = 0;
 };
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_H_

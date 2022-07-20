@@ -20,8 +20,7 @@
 #include "chromeos/test/chromeos_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 TEST(ONCUtils, ProxySettingsToProxyConfig) {
   base::Value list_of_tests = test_utils::ReadTestJson("proxy_config.json");
@@ -130,5 +129,4 @@ TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailableForL2tpVpn) {
   EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list));
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

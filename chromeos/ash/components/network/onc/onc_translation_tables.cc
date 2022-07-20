@@ -14,8 +14,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 // CertificatePattern is converted with function CreateUIData(...) to UIData
 // stored in Shill.
@@ -556,5 +555,4 @@ bool TranslateStringToONC(const StringTranslationEntry table[],
   return false;
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

@@ -29,8 +29,7 @@
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 CertificateImporterImpl::CertificateImporterImpl(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
@@ -257,5 +256,4 @@ bool CertificateImporterImpl::StoreClientCertificate(
   return true;
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

@@ -14,7 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kFakePemEncodedIssuer[] = "PEM-ENCODED-ISSUER";
@@ -179,4 +179,4 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuerCAPEM) {
   EXPECT_FALSE(pattern.value().Matches(*cert_, "OtherIssuer"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

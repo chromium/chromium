@@ -14,8 +14,7 @@
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 Normalizer::Normalizer(bool remove_recommended_fields)
     : remove_recommended_fields_(remove_recommended_fields) {}
@@ -291,5 +290,4 @@ void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value* network) {
                     !name_servers_type_is_static || name_servers_exist);
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

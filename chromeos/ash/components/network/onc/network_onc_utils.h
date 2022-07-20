@@ -13,7 +13,11 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
@@ -28,13 +32,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
-
-class NetworkState;
-
-namespace onc {
-
-struct OncValueSignature;
+namespace ash::onc {
 
 // Returns a network type pattern for matching the ONC type string.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -94,7 +92,14 @@ bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs);
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::onc {
+using ::ash::onc::ConvertOncProxySettingsToProxyConfig;
+using ::ash::onc::GetPolicyForNetwork;
+using ::ash::onc::ImportNetworksForUser;
+using ::ash::onc::NetworkTypePatternFromOncType;
+}  // namespace chromeos::onc
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_NETWORK_ONC_UTILS_H_

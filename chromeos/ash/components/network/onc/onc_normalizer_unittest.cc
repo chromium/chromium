@@ -9,8 +9,7 @@
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 // Validate that StaticIPConfig IPAddress and dependent fields will be removed
 // if IPAddressConfigType is not 'Static'.
@@ -124,5 +123,4 @@ TEST(ONCNormalizerTest, NormalizeNetworkConfigurationWifi) {
   EXPECT_TRUE(test_utils::Equals(expected_normalized, &actual_normalized));
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

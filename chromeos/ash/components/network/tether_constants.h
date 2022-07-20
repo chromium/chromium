@@ -32,4 +32,13 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kTetherDeviceName[];
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::kTetherBatteryPercentage;
+using ::chromeos::kTetherCarrier;
+using ::chromeos::kTetherHasConnectedToHost;
+using ::chromeos::kTetherSignalStrength;
+using ::chromeos::kTypeTether;
+}  // namespace ash
+
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_TETHER_CONSTANTS_H_

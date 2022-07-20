@@ -185,4 +185,12 @@ void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::client_cert {
+using ::chromeos::client_cert::ConfigType;
+using ::chromeos::client_cert::GetPkcs11AndSlotIdFromEapCertId;
+using ::chromeos::client_cert::SetEmptyShillProperties;
+using ::chromeos::client_cert::SetShillProperties;
+}  // namespace ash::client_cert
+
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CLIENT_CERT_UTIL_H_

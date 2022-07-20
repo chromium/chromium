@@ -134,4 +134,55 @@ extern const OncValueSignature kSIMLockStatusSignature;
 }  // namespace onc
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::onc {
+using ::chromeos::onc::FieldIsCredential;
+using ::chromeos::onc::GetFieldSignature;
+using ::chromeos::onc::kARCVPNSignature;
+using ::chromeos::onc::kCellularApnSignature;
+using ::chromeos::onc::kCellularFoundNetworkSignature;
+using ::chromeos::onc::kCellularPaymentPortalSignature;
+using ::chromeos::onc::kCellularProviderSignature;
+using ::chromeos::onc::kCellularSignature;
+using ::chromeos::onc::kCellularWithStateSignature;
+using ::chromeos::onc::kCertificateListSignature;
+using ::chromeos::onc::kCertificatePatternSignature;
+using ::chromeos::onc::kCertificateSignature;
+using ::chromeos::onc::kEAPSignature;
+using ::chromeos::onc::kEAPSubjectAlternativeNameMatchListSignature;
+using ::chromeos::onc::kEAPSubjectAlternativeNameMatchSignature;
+using ::chromeos::onc::kEthernetSignature;
+using ::chromeos::onc::kGlobalNetworkConfigurationSignature;
+using ::chromeos::onc::kIPConfigSignature;
+using ::chromeos::onc::kIPsecSignature;
+using ::chromeos::onc::kIssuerSubjectPatternSignature;
+using ::chromeos::onc::kL2TPSignature;
+using ::chromeos::onc::kNetworkConfigurationListSignature;
+using ::chromeos::onc::kNetworkConfigurationSignature;
+using ::chromeos::onc::kNetworkWithStateSignature;
+using ::chromeos::onc::kOpenVPNSignature;
+using ::chromeos::onc::kProxyLocationSignature;
+using ::chromeos::onc::kProxyManualSignature;
+using ::chromeos::onc::kProxySettingsSignature;
+using ::chromeos::onc::kRecommendedSignature;
+using ::chromeos::onc::kSavedIPConfigSignature;
+using ::chromeos::onc::kScopeSignature;
+using ::chromeos::onc::kSIMLockStatusSignature;
+using ::chromeos::onc::kStaticIPConfigSignature;
+using ::chromeos::onc::kTetherSignature;
+using ::chromeos::onc::kTetherWithStateSignature;
+using ::chromeos::onc::kThirdPartyVPNSignature;
+using ::chromeos::onc::kToplevelConfigurationSignature;
+using ::chromeos::onc::kVerifyX509Signature;
+using ::chromeos::onc::kVPNSignature;
+using ::chromeos::onc::kWiFiSignature;
+using ::chromeos::onc::kWiFiWithStateSignature;
+using ::chromeos::onc::kWireGuardPeerListSignature;
+using ::chromeos::onc::kWireGuardPeerSignature;
+using ::chromeos::onc::kWireGuardSignature;
+using ::chromeos::onc::kXAUTHSignature;
+using ::chromeos::onc::OncFieldSignature;
+using ::chromeos::onc::OncValueSignature;
+}  // namespace ash::onc
+
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_SIGNATURE_H_

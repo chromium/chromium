@@ -616,7 +616,7 @@ void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
   // Otherwise retrieve list of configured or visible WiFi networks.
   bool configured_only = type == mojom::GetNetworksRequestType::CONFIGURED_ONLY;
   chromeos::NetworkTypePattern network_pattern =
-      chromeos::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
+      ash::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
 
   chromeos::NetworkStateHandler::NetworkStateList network_states;
   GetStateHandler()->GetNetworkListByType(

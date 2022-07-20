@@ -53,4 +53,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::NetworkUIData;
+}
+
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UI_DATA_H_

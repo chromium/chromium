@@ -26,8 +26,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 namespace {
 
@@ -1019,5 +1018,4 @@ base::Value TranslateShillServiceToONCPart(
   return translator.CreateTranslatedONCObject();
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

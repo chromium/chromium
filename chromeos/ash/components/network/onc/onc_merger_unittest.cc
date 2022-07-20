@@ -12,8 +12,7 @@
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 namespace {
 
 // Checks that both dictionaries contain an entry at |path| with the same value.
@@ -151,5 +150,4 @@ TEST_F(ONCMergerTest, MergeToAugmented) {
 }
 
 }  // namespace merger
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

@@ -140,4 +140,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) OncParsedCertificates {
 }  // namespace onc
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::onc {
+using ::chromeos::onc::OncParsedCertificates;
+}
+
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_PARSED_CERTIFICATES_H_

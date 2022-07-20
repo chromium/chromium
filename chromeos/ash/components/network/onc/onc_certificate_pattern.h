@@ -20,7 +20,7 @@ namespace net {
 class X509Certificate;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A class to contain a certificate pattern and find existing matches to the
 // pattern in the certificate database.
@@ -73,6 +73,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncCertificatePattern {
   std::vector<std::string> enrollment_uri_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::OncCertificatePattern;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_

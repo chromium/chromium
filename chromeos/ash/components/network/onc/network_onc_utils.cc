@@ -60,8 +60,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 namespace {
 
@@ -651,5 +650,4 @@ bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs) {
   return false;
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

@@ -8,11 +8,10 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/components/onc/onc_signature.h"
 
-namespace chromeos {
-namespace onc {
-
-struct OncValueSignature;
+namespace ash::onc {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
  public:
@@ -55,7 +54,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   const bool remove_recommended_fields_;
 };
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::onc {
+using ::ash::onc::Normalizer;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_NORMALIZER_H_

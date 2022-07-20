@@ -108,8 +108,7 @@ void AppendDeviceState(
     const chromeos::DeviceState* device,
     NetworkingPrivateDelegate::DeviceStateList* device_state_list) {
   DCHECK(!type.empty());
-  NetworkTypePattern pattern =
-      chromeos::onc::NetworkTypePatternFromOncType(type);
+  NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(type);
   NetworkStateHandler::TechnologyState technology_state =
       GetStateHandler()->GetTechnologyState(pattern);
   private_api::DeviceStateType state = private_api::DEVICE_STATE_TYPE_NONE;
@@ -492,7 +491,7 @@ void NetworkingPrivateChromeOS::GetNetworks(
   NetworkTypePattern pattern =
       (!visible_only && network_type == ::onc::network_type::kEthernet)
           ? NetworkTypePattern::EthernetOrEthernetEAP()
-          : chromeos::onc::NetworkTypePatternFromOncType(network_type);
+          : ash::onc::NetworkTypePatternFromOncType(network_type);
   base::Value network_properties_list =
       chromeos::network_util::TranslateNetworkListToONC(
           pattern, configured_only, visible_only, limit);
@@ -759,8 +758,7 @@ void NetworkingPrivateChromeOS::GetCertificateLists(
 
 void NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type,
                                                   BoolCallback callback) {
-  NetworkTypePattern pattern =
-      chromeos::onc::NetworkTypePatternFromOncType(type);
+  NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(type);
 
   NET_LOG(USER) << __func__ << ":" << type;
   GetStateHandler()->SetTechnologyEnabled(
@@ -771,8 +769,7 @@ void NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type,
 
 void NetworkingPrivateChromeOS::DisableNetworkType(const std::string& type,
                                                    BoolCallback callback) {
-  NetworkTypePattern pattern =
-      chromeos::onc::NetworkTypePatternFromOncType(type);
+  NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(type);
 
   NET_LOG(USER) << __func__ << ":" << type;
   GetStateHandler()->SetTechnologyEnabled(
@@ -783,7 +780,7 @@ void NetworkingPrivateChromeOS::DisableNetworkType(const std::string& type,
 
 void NetworkingPrivateChromeOS::RequestScan(const std::string& type,
                                             BoolCallback callback) {
-  NetworkTypePattern pattern = chromeos::onc::NetworkTypePatternFromOncType(
+  NetworkTypePattern pattern = ash::onc::NetworkTypePatternFromOncType(
       type.empty() ? ::onc::network_type::kAllTypes : type);
   GetStateHandler()->RequestScan(pattern);
 

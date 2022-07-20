@@ -26,8 +26,7 @@ namespace net {
 class NSSCertDatabase;
 }
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 // This class handles certificate imports from ONC (both policy and user
 // imports) into a certificate store. The GUID of Client certificates is stored
@@ -108,7 +107,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   base::WeakPtrFactory<CertificateImporterImpl> weak_factory_{this};
 };
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::onc {
+using ::ash::onc::CertificateImporterImpl;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_

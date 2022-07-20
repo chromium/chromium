@@ -162,6 +162,7 @@ using ::chromeos::CellTowerVector;
 using ::chromeos::CellularSIMSlotInfo;
 using ::chromeos::WifiAccessPoint;
 using ::chromeos::WifiAccessPointVector;
+namespace network_util = ::chromeos::network_util;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UTIL_H_

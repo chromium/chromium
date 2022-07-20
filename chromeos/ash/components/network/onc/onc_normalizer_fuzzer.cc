@@ -12,8 +12,7 @@
 #include "chromeos/components/onc/onc_signature.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 // Fuzzer for methods of the `Normalizer` class.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -30,5 +29,4 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   return 0;
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

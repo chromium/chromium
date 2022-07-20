@@ -119,7 +119,7 @@ class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
   bool mac_addr_randomization_ = false;
 };
 
-class FakeCertificateImporter : public chromeos::onc::CertificateImporter {
+class FakeCertificateImporter : public ash::onc::CertificateImporter {
  public:
   using OncParsedCertificates = chromeos::onc::OncParsedCertificates;
 
@@ -433,7 +433,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   // continues to point to that instance but
   // |client_certificate_importer_owned_| is released.
   FakeCertificateImporter* certificate_importer_;
-  std::unique_ptr<chromeos::onc::CertificateImporter>
+  std::unique_ptr<ash::onc::CertificateImporter>
       client_certificate_importer_owned_;
 
   StrictMock<MockConfigurationPolicyProvider> provider_;

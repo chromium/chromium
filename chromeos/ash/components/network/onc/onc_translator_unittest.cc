@@ -13,8 +13,7 @@
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 // First parameter: Filename of source ONC.
 // Second parameter: Filename of expected translated Shill json.
@@ -185,5 +184,4 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("shill_wifi_eap_empty_certid.json",
                        "translation_of_shill_wifi_eap_empty_certid.onc")));
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

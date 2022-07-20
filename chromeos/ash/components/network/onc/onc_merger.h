@@ -6,15 +6,14 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/components/onc/onc_signature.h"
 
 namespace base {
 class Value;
 }
 
-namespace chromeos {
-namespace onc {
-
-struct OncValueSignature;
+namespace ash::onc {
 
 // Merges the given |user_settings| and |shared_settings| settings with the
 // given |user_policy| and |device_policy| settings. Each can be omitted by
@@ -48,7 +47,12 @@ base::Value MergeSettingsAndPoliciesToAugmented(
     const base::Value* shared_settings,
     const base::Value* active_settings);
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::onc {
+using ::ash::onc::MergeSettingsAndPoliciesToAugmented;
+using ::ash::onc::MergeSettingsAndPoliciesToEffective;
+}  // namespace chromeos::onc
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_

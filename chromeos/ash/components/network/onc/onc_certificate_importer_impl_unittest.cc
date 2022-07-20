@@ -26,8 +26,7 @@
 #include "net/cert/x509_util_nss.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace onc {
+namespace ash::onc {
 
 class ONCCertificateImporterImplTest : public testing::Test {
  public:
@@ -352,5 +351,4 @@ INSTANTIATE_TEST_SUITE_P(
                                 "certificate-web-authority.onc",
                                 "certificate-web-authority-update.onc")));
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace ash::onc

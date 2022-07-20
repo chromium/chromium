@@ -14,7 +14,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -122,4 +122,4 @@ OncCertificatePattern::OncCertificatePattern(
       subject_pattern_(std::move(subject_pattern)),
       enrollment_uri_list_(std::move(enrollment_uri_list)) {}
 
-}  // namespace chromeos
+}  // namespace ash
