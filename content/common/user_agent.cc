@@ -276,20 +276,21 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
 }
 
 std::string GetReducedUserAgent(bool mobile, std::string major_version) {
-  std::string user_agent;
 #if BUILDFLAG(IS_ANDROID)
+  // There is an extra field in the template on Android.
   std::string device_compat;
   // Note: The extra space after Mobile is meaningful here, to avoid
   // "MobileSafari", but unneeded for non-mobile Android devices.
   device_compat = mobile ? "Mobile " : "";
-  user_agent = base::StringPrintf(frozen_user_agent_strings::kAndroid,
-                                  GetUnifiedPlatform().c_str(),
-                                  major_version.c_str(), device_compat.c_str());
-#else
-  user_agent =
-      base::StringPrintf(frozen_user_agent_strings::kDesktop,
-                         GetUnifiedPlatform().c_str(), major_version.c_str());
 #endif
+  std::string user_agent =
+      base::StringPrintf(frozen_user_agent_strings::kTemplate,
+                         GetUnifiedPlatform().c_str(), major_version.c_str()
+#if BUILDFLAG(IS_ANDROID)
+                                                           ,
+                         device_compat.c_str()
+#endif
+      );
 
   return user_agent;
 }

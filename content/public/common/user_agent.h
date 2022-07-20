@@ -15,15 +15,12 @@ namespace content {
 
 namespace frozen_user_agent_strings {
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kDesktop[] =
+const char kTemplate[] =
     "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
-    "Safari/537.36";
-#else
-const char kAndroid[] =
-    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
-    "%sSafari/537.36";
+#if BUILDFLAG(IS_ANDROID)
+    "%s"
 #endif
+    "Safari/537.36";
 
 const char kUnifiedPlatformAndroid[] = "Linux; Android 10; K";
 const char kUnifiedPlatformCrOS[] = "X11; CrOS x86_64 14541.0.0";
