@@ -39,6 +39,7 @@
 .cipd
 .classpath
 .code-coverage
+.coverage
 .cproject
 .dir-locals.el
 .emulator_sdk

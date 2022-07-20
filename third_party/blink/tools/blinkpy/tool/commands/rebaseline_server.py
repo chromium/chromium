@@ -83,7 +83,7 @@ class RebaselineServer(AbstractLocalServerCommand):
         results_directory = args[0]
         host = Host()
 
-        print 'Parsing full_results.json...'
+        print('Parsing full_results.json...')
         results_json_path = host.filesystem.join(results_directory,
                                                  'full_results.json')
         results_json = json_results_generator.load_json(
@@ -96,7 +96,7 @@ class RebaselineServer(AbstractLocalServerCommand):
         self._test_config = TestConfig(port, web_tests_directory,
                                        results_directory, platforms, host)
 
-        print 'Gathering current baselines...'
+        print('Gathering current baselines...')
         self._gather_baselines(results_json)
 
         return {

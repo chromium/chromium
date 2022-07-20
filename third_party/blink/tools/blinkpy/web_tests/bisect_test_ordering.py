@@ -57,7 +57,7 @@ class Bisector(object):
     def bisect(self):
         if self.test_fails_in_isolation():
             self.buckets = [Bucket([self.expected_failure])]
-            print '%s fails when run in isolation.' % self.expected_failure
+            print('%s fails when run in isolation.' % self.expected_failure)
             self.print_result()
             return 0
         if not self.test_fails(self.tests):
@@ -81,26 +81,26 @@ class Bisector(object):
         return self.test_bucket_list_fails([Bucket([self.expected_failure])])
 
     def verify_non_flaky(self):
-        print 'Verifying the failure is not flaky by running 10 times.'
+        print('Verifying the failure is not flaky by running 10 times.')
         count_failures = 0
         for _ in range(0, 10):
             if self.test_bucket_list_fails(self.buckets):
                 count_failures += 1
-        print 'Failed %d/10 times' % count_failures
+        print('Failed %d/10 times' % count_failures)
 
     def print_progress(self):
         count = 0
         for bucket in self.buckets:
             count += len(bucket.tests)
-        print '%d tests left, %d buckets' % (count, len(self.buckets))
+        print('%d tests left, %d buckets' % (count, len(self.buckets)))
 
     def print_result(self):
         tests = []
         for bucket in self.buckets:
             tests += bucket.tests
         extra_args = ' --debug' if self.is_debug else ''
-        print 'run_web_tests.py%s --jobs=1 --order=none %s' % (extra_args,
-                                                               ' '.join(tests))
+        print('run_web_tests.py%s --jobs=1 --order=none %s' %
+              (extra_args, ' '.join(tests)))
 
     def is_done(self):
         for bucket in self.buckets:

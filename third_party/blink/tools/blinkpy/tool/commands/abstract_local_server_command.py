@@ -57,8 +57,10 @@ class AbstractLocalServerCommand(Command):
 
         server_url = 'http://localhost:%d%s' % (options.httpd_port,
                                                 self.launch_path)
-        print 'Starting server at %s' % server_url
-        print "Use the 'Exit' link in the UI, %squitquitquit or Ctrl-C to stop" % server_url
+        print('Starting server at %s' % server_url)
+        print(
+            "Use the 'Exit' link in the UI, %squitquitquit or Ctrl-C to stop" %
+            server_url)
 
         if options.show_results:
             # FIXME: This seems racy.
