@@ -6,6 +6,9 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
+using testing::_;
+using testing::Mock;
+
 namespace blink {
 
 class MockTextFragmentFinder : public TextFragmentFinder {
@@ -20,21 +23,21 @@ class MockTextFragmentFinder : public TextFragmentFinder {
   void GoToStep(SelectorMatchStep step) override { step_ = step; }
 };
 
-class TextFragmentFinderTest : public SimTest,
-                               public TextFragmentFinder::Client {
+class MockTextFragmentFinderClient : public TextFragmentFinder::Client {
+ public:
+  MOCK_METHOD(void,
+              DidFindMatch,
+              (const RangeInFlatTree& match, bool is_unique),
+              (override));
+  MOCK_METHOD(void, NoMatchFound, (), (override));
+};
+
+class TextFragmentFinderTest : public SimTest {
  public:
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
-
-  void NoMatchFound() override { no_match_called_ = true; }
-
-  void DidFindMatch(const RangeInFlatTree& match, bool is_unique) override {}
-  bool IsNoMatchFoundCalled() { return no_match_called_; }
-
- private:
-  bool no_match_called_ = false;
 };
 
 // Tests that Find tasks will fail gracefully when DOM mutations invalidate the
@@ -52,23 +55,35 @@ TEST_F(TextFragmentFinderTest, DOMMutation) {
                                 "First paragraph", "", "button text",
                                 "prefix to unique");
 
+  MockTextFragmentFinderClient client;
+
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      *this, selector, &GetDocument(),
+      client, selector, &GetDocument(),
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
-  finder->FindMatch();
+  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
 
-  finder->FindPrefix();
-  EXPECT_EQ(false, IsNoMatchFoundCalled());
+  {
+    EXPECT_CALL(client, NoMatchFound()).Times(0);
+    finder->FindMatch();
+    finder->FindPrefix();
+    Mock::VerifyAndClearExpectations(&client);
+  }
 
-  finder->FindTextStart();
-  EXPECT_EQ(false, IsNoMatchFoundCalled());
+  {
+    EXPECT_CALL(client, NoMatchFound()).Times(0);
+    finder->FindTextStart();
+    Mock::VerifyAndClearExpectations(&client);
+  }
 
-  Node* input = GetDocument().getElementById("input");
-  input->remove();
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  {
+    EXPECT_CALL(client, NoMatchFound()).Times(1);
+    Node* input = GetDocument().getElementById("input");
+    input->remove();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  finder->FindSuffix();
-  EXPECT_EQ(true, IsNoMatchFoundCalled());
+    finder->FindSuffix();
+    Mock::VerifyAndClearExpectations(&client);
+  }
 }
 
 }  // namespace blink

@@ -98,18 +98,17 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     };
     auto callback =
         WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
-    GetTextFragmentSelectorGenerator()->Generate(
-        *MakeGarbageCollected<RangeInFlatTree>(
-            ToPositionInFlatTree(selected_start),
-            ToPositionInFlatTree(selected_end)),
-        std::move(callback));
+    CreateGenerator()->Generate(*MakeGarbageCollected<RangeInFlatTree>(
+                                    ToPositionInFlatTree(selected_start),
+                                    ToPositionInFlatTree(selected_end)),
+                                std::move(callback));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_called);
     return selector;
   }
 
-  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() {
+  TextFragmentSelectorGenerator* CreateGenerator() {
     return MakeGarbageCollected<TextFragmentSelectorGenerator>(
         GetDocument().GetFrame());
   }
@@ -1443,9 +1442,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextEndPosition_PrevNode) {
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*first_paragraph));
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when available prefix is a text node outside of selection
@@ -1466,9 +1464,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   Node* node = GetDocument().getElementById("first")->previousSibling();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when available prefix is a parent node text content outside of
@@ -1489,9 +1486,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   Node* node = GetDocument().getElementById("div")->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when previous node is used for available prefix when selection
@@ -1515,9 +1511,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   Node* node = GetDocument().getElementById("first")->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when previous node is used for available prefix when selection
@@ -1545,9 +1540,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   Node* node = GetDocument().getElementById("first")->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Check the case when available prefix complete text content of the previous
@@ -1566,9 +1560,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
 
   PositionInFlatTree expected_position;
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
 }
 
 // Similar test for suffix.
@@ -1593,7 +1586,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_NextNode) {
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when there is a commented block between selection and the
@@ -1620,7 +1613,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when available suffix is a text node outside of selection
@@ -1643,7 +1636,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when available suffix is a parent node text content outside of
@@ -1665,7 +1658,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_ParentNode) {
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when next node is used for available suffix when selection is
@@ -1690,7 +1683,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when next node is used for available suffix when selection is
@@ -1718,7 +1711,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 // Check the case when available suffix is a text node outside of selection
@@ -1738,7 +1731,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_NoNextNode) {
 
   PositionInFlatTree expected_position;
   EXPECT_EQ(expected_position,
-            GetTextFragmentSelectorGenerator()->GetNextTextStartPosition(end));
+            CreateGenerator()->GetNextTextStartPosition(end));
 }
 
 TEST_F(TextFragmentSelectorGeneratorTest, BeforeAndAfterAnchor) {
@@ -1785,9 +1778,82 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   Node* node = shadow1.getElementById("p")->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
-  EXPECT_EQ(
-      expected_position,
-      GetTextFragmentSelectorGenerator()->GetPreviousTextEndPosition(start));
+  EXPECT_EQ(expected_position,
+            CreateGenerator()->GetPreviousTextEndPosition(start));
+}
+
+// Tests that the generator fails gracefully if the layout subtree is removed
+// while we're operating on it. Reproduction for https://crbug.com/1313253.
+TEST_F(TextFragmentSelectorGeneratorTest, RemoveLayoutObjectAsync) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  // This test case relies on the initial try of 'p p p-,Foo,-s s s' being
+  // non-unique. This forces the generator to try expanding the context after
+  // the initial asynchronous search finishes. Before that happens, the current
+  // node's LayoutObject is removed.
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>p p p p</p>
+    <p id='target'>Foo s s s p p p Foo s s s</p>
+    <p>More text to so context expansion doesn't abort due to reaching end</p>
+  )HTML");
+
+  // Select the first instance of "Foo"
+  Element* target = GetDocument().getElementById("target");
+
+  Node* text = target->firstChild();
+  const auto& selected_start = Position(text, 0);
+  const auto& selected_end = Position(text, 3);
+  ASSERT_EQ("Foo", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  String selector;
+  bool finished = false;
+  auto lambda = [](bool& callback_called, String& selector,
+                   const TextFragmentSelector& generated_selector,
+                   shared_highlighting::LinkGenerationError error) {
+    selector = generated_selector.ToString();
+    callback_called = true;
+  };
+  auto callback = WTF::Bind(lambda, std::ref(finished), std::ref(selector));
+
+  TextFragmentSelectorGenerator* generator = CreateGenerator();
+  generator->Generate(*MakeGarbageCollected<RangeInFlatTree>(
+                          ToPositionInFlatTree(selected_start),
+                          ToPositionInFlatTree(selected_end)),
+                      std::move(callback));
+
+  // This test intends to test what happens when the layout tree is mutated
+  // while the generator is waiting for the next asynchronous step. Thus, the
+  // generator must still be running at this point for this test to be valid.
+  ASSERT_FALSE(finished);
+
+  // The TestCandidate state is the async break point in the generator, this
+  // will post a task in AsyncFindBuffer to perform the text search on the
+  // document. We'll mutate the layout tree while this task isn't run yet so
+  // that when it run and returns to the generator we ensure neither touches
+  // the removed layout tree.
+  EXPECT_EQ(generator->state_,
+            TextFragmentSelectorGenerator::SelectorState::kTestCandidate);
+
+  generator->did_find_match_callback_for_testing_ = WTF::Bind(
+      [](Element* target, bool is_unique) {
+        EXPECT_FALSE(is_unique);
+
+        // Set display:none should remove the layout object associated with the
+        // range the generator is currently targeting.
+        EXPECT_TRUE(target->GetLayoutObject());
+        target->setAttribute(html_names::kStyleAttr,
+                             AtomicString("display:none"));
+        target->GetDocument().UpdateStyleAndLayoutTree();
+        target->GetDocument().View()->UpdateStyleAndLayout();
+        EXPECT_FALSE(target->GetLayoutObject());
+      },
+      WrapWeakPersistent(target));
+
+  // Pump tasks to continue generator operation now.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(finished);
 }
 
 }  // namespace blink

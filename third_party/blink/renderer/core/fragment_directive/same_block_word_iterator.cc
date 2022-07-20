@@ -74,6 +74,9 @@ bool SameBlockWordIterator<Direction>::NextNode() {
 template <typename Direction>
 Node* SameBlockWordIterator<Direction>::NextVisibleTextNodeWithinBlock(
     Node& start_node) {
+  if (!start_node.GetLayoutObject())
+    return nullptr;
+
   // Move forward/backward until no next/previous node is available within same
   // |block_ancestor|.
   Node* node = &start_node;

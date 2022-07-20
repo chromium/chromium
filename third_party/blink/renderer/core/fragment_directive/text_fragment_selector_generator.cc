@@ -193,6 +193,9 @@ String TextFragmentSelectorGenerator::GetSelectorTargetText() const {
 
 void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
                                                  bool is_unique) {
+  if (did_find_match_callback_for_testing_)
+    std::move(did_find_match_callback_for_testing_).Run(is_unique);
+
   if (is_unique &&
       PlainText(match.ToEphemeralRange()).StripWhiteSpace().length() ==
           PlainText(range_->ToEphemeralRange()).StripWhiteSpace().length()) {

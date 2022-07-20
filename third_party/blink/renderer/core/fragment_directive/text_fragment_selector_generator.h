@@ -103,17 +103,18 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
                            GetNextTextStartPosition_NoNextNode);
   FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
                            ExactTextSelector_Long);
-
   FRIEND_TEST_ALL_PREFIXES(
       TextFragmentSelectorGeneratorTest,
       GetPreviousTextEndPosition_ShouldSkipNodesWithNoLayoutObject);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentSelectorGeneratorTest,
+                           RemoveLayoutObjectAsync);
 
   // Used for determining the next step of selector generation.
   enum GenerationStep { kExact, kRange, kContext };
 
   // Used for determining the current state of |selector_|.
   enum SelectorState {
-    // Sreach for candidate selector didn't start.
+    // Search for candidate selector didn't start.
     kNotStarted,
 
     // Candidate selector should be generated or extended.
@@ -180,6 +181,10 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   std::unique_ptr<TextFragmentSelector> selector_;
 
   GenerateCallback pending_generate_selector_callback_;
+
+  // Callback invoked each time DidFindMatch is called; for testing only.
+  // Allows inserting code to run between asynchronous generation steps.
+  base::OnceCallback<void(bool is_unique)> did_find_match_callback_for_testing_;
 
   GenerationStep step_ = kExact;
   SelectorState state_ = kNeedsNewCandidate;
