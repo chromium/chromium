@@ -5,8 +5,6 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_PROJECTOR_MESSAGE_HANDLER_H_
 #define ASH_WEBUI_PROJECTOR_APP_PROJECTOR_MESSAGE_HANDLER_H_
 
-#include <set>
-
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
@@ -61,6 +59,14 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   void OnSodaError() override;
   void OnSodaInstalled() override;
 
+ protected:
+  // Called when the XHR request is completed. Resolves the javascript promise
+  // created by ProjectorBrowserProxy.sendXhr by calling the `js_callback_id`.
+  virtual void OnXhrRequestCompleted(const std::string& js_callback_id,
+                                     bool success,
+                                     const std::string& response_body,
+                                     const std::string& error);
+
  private:
   // Requested by the Projector SWA to list the available accounts (primary and
   // secondary accounts) in the current session. The list of accounts will be
@@ -110,18 +116,12 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
                                      GoogleServiceAuthError error,
                                      const signin::AccessTokenInfo& info);
 
-  // Called when the XHR request is completed. Resolves the javascript promise
-  // created by ProjectorBrowserProxy.sendXhr by calling the `js_callback_id`.
-  void OnXhrRequestCompleted(const std::string& js_callback_id,
-                             bool success,
-                             const std::string& response_body,
-                             const std::string& error);
-
   // Requested by the Projector SWA to fetch a list of screencasts pending to
   // upload or failed to upload.
   void GetPendingScreencasts(const base::Value::List& args);
 
-  // Requested by the Projector SWA to fetch a single screencast.
+  // Requested by the Projector SWA to fetch a single screencast with the
+  // screencast id specified by `args`.
   void GetScreencast(const base::Value::List& args);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;

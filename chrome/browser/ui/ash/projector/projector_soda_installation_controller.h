@@ -41,11 +41,11 @@ class ProjectorSodaInstallationController
 
   // Checks if the device is eligible to install SODA and language pack for the
   // `language` provided.
-  bool ShouldDownloadSoda(speech::LanguageCode language);
+  bool ShouldDownloadSoda(speech::LanguageCode language) const;
 
   // Checks if SODA binary and the requested `language` is downloaded and
   // available on device.
-  bool IsSodaAvailable(speech::LanguageCode language);
+  bool IsSodaAvailable(speech::LanguageCode language) const;
 
  protected:
   // speech::SodaInstaller::Observer:

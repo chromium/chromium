@@ -70,14 +70,14 @@ void ProjectorSodaInstallationController::InstallSoda(
 }
 
 bool ProjectorSodaInstallationController::ShouldDownloadSoda(
-    speech::LanguageCode language_code) {
+    speech::LanguageCode language_code) const {
   return base::FeatureList::IsEnabled(
              ash::features::kOnDeviceSpeechRecognition) &&
          IsLanguageSupported(language_code) && !IsSodaAvailable(language_code);
 }
 
 bool ProjectorSodaInstallationController::IsSodaAvailable(
-    speech::LanguageCode language_code) {
+    speech::LanguageCode language_code) const {
   return speech::SodaInstaller::GetInstance()->IsSodaInstalled(language_code);
 }
 

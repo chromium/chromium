@@ -133,7 +133,7 @@ class ProjectorAppClient {
   virtual const PendingScreencastSet& GetPendingScreencasts() const = 0;
 
   // Checks if device is eligible to trigger SODA installer.
-  virtual bool ShouldDownloadSoda() = 0;
+  virtual bool ShouldDownloadSoda() const = 0;
 
   // Triggers the installation of SODA (Speech On-Device API) binary and the
   // corresponding language pack for projector.
@@ -151,7 +151,7 @@ class ProjectorAppClient {
   virtual void OnSodaInstalled() = 0;
 
   // Triggers the opening of the Chrome feedback dialog.
-  virtual void OpenFeedbackDialog() = 0;
+  virtual void OpenFeedbackDialog() const = 0;
 
   // TODO(b/236857019): Wire up ProjectorMessageHandler.
   // Populates a screencast object in |callback| for given |screencast_id|.

@@ -41,12 +41,12 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OnNewScreencastPreconditionChanged(
       const ash::NewScreencastPrecondition& precondition) override;
   const ash::PendingScreencastSet& GetPendingScreencasts() const override;
-  bool ShouldDownloadSoda() override;
+  bool ShouldDownloadSoda() const override;
   void InstallSoda() override;
   void OnSodaInstallProgress(int combined_progress) override;
   void OnSodaInstallError() override;
   void OnSodaInstalled() override;
-  void OpenFeedbackDialog() override;
+  void OpenFeedbackDialog() const override;
   void GetScreencast(
       const std::string& screencast_id,
       ash::ProjectorAppClient::OnGetScreencastCallback callback) override;

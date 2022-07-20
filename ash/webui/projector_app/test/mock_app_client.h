@@ -45,12 +45,12 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_METHOD1(OnNewScreencastPreconditionChanged,
                void(const NewScreencastPrecondition&));
   MOCK_CONST_METHOD0(GetPendingScreencasts, const PendingScreencastSet&());
-  MOCK_METHOD0(ShouldDownloadSoda, bool());
+  MOCK_CONST_METHOD0(ShouldDownloadSoda, bool());
   MOCK_METHOD0(InstallSoda, void());
   MOCK_METHOD1(OnSodaInstallProgress, void(int));
   MOCK_METHOD0(OnSodaInstallError, void());
   MOCK_METHOD0(OnSodaInstalled, void());
-  MOCK_METHOD0(OpenFeedbackDialog, void());
+  MOCK_CONST_METHOD0(OpenFeedbackDialog, void());
   MOCK_METHOD2(GetScreencast,
                void(const std::string&,
                     ProjectorAppClient::OnGetScreencastCallback));

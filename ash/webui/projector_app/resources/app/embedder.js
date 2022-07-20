@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ProjectorBrowserProxyImpl} from '../communication/projector_browser_proxy.js';
 
@@ -70,12 +70,5 @@ Polymer({
       }
       client.onScreencastsStateChange(pendingScreencasts);
     });
-
-    this.addWebUIListener(
-        'onSodaInstalled',
-        () => {
-            // TODO(b/197164300): Pass this information to google3 deployed
-            // content in iframe.
-        });
   },
 });

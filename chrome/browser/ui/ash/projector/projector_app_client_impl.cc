@@ -121,7 +121,7 @@ void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
     observer.OnScreencastsPendingStatusChanged(pending_screencast);
 }
 
-bool ProjectorAppClientImpl::ShouldDownloadSoda() {
+bool ProjectorAppClientImpl::ShouldDownloadSoda() const {
   return soda_installation_controller_ &&
          soda_installation_controller_->ShouldDownloadSoda(
              GetLocaleLanguageCode());
@@ -148,7 +148,7 @@ void ProjectorAppClientImpl::OnSodaInstalled() {
     observer.OnSodaInstalled();
 }
 
-void ProjectorAppClientImpl::OpenFeedbackDialog() {
+void ProjectorAppClientImpl::OpenFeedbackDialog() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   constexpr char kProjectorAppFeedbackCategoryTag[] = "FromProjectorApp";
   chrome::ShowFeedbackPage(GURL(ash::kChromeUITrustedProjectorUrl), profile,

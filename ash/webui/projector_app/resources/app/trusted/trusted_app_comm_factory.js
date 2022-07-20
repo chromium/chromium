@@ -88,11 +88,11 @@ export class TrustedAppRequestHandler extends RequestHandler {
       }
       return this.browserProxy_.startProjectorSession(storageDir[0]);
     });
-    this.registerMethod('getOAuthTokenForAccount', (account) => {
-      if (!account || account.length != 1) {
-        return {};
+    this.registerMethod('getOAuthTokenForAccount', (args) => {
+      if (!args || args.length != 1) {
+        return Promise.reject('Incorrect args for getOAuthTokenForAccount');
       }
-      return this.browserProxy_.getOAuthTokenForAccount(account[0]);
+      return this.browserProxy_.getOAuthTokenForAccount(args[0]);
     });
     this.registerMethod('onError', (msg) => {
       this.browserProxy_.onError(msg);
@@ -132,6 +132,9 @@ export class TrustedAppRequestHandler extends RequestHandler {
       return this.browserProxy_.openFeedbackDialog();
     });
     this.registerMethod('getScreencast', (args) => {
+      if (!args || args.length != 1) {
+        return Promise.reject('Incorrect args for getScreencast');
+      }
       return this.browserProxy_.getScreencast(args[0]);
     });
   }
