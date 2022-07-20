@@ -66,17 +66,17 @@ class TestModel : public ExistingBaseSubMenuModel {
     Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, infos_);
   }
 
-  const std::vector<int> existing_commands() const {
+  const std::vector<size_t> existing_commands() const {
     return existing_commands_;
   }
 
  protected:
-  void ExecuteExistingCommand(int target_index) override {
+  void ExecuteExistingCommand(size_t target_index) override {
     existing_commands_.push_back(target_index);
   }
 
  private:
-  std::vector<int> existing_commands_;
+  std::vector<size_t> existing_commands_;
   std::vector<MenuItemInfo> infos_;
 };
 
@@ -127,5 +127,5 @@ TEST_F(ExistingBaseSubMenuModelTest, ExecuteCommand_New) {
 TEST_F(ExistingBaseSubMenuModelTest, ExecuteCommand_Existing) {
   test_model()->ExecuteCommand(kMinCommandId + 1, kExpectedFlags);
   test_model()->ExecuteCommand(kMinCommandId + 2, kExpectedFlags);
-  EXPECT_THAT(test_model()->existing_commands(), testing::ElementsAre(1, 2));
+  EXPECT_THAT(test_model()->existing_commands(), testing::ElementsAre(1u, 2u));
 }

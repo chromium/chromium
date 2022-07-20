@@ -42,7 +42,7 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   };
 
   // SimpleMenuModel:
-  bool MayHaveMnemonicsAt(int index) const override;
+  bool MayHaveMnemonicsAt(size_t index) const override;
 
  private:
   // A menu delegate used to determine which labels are shown and enabled. Also
@@ -50,7 +50,7 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel::Delegate> delegate_;
 
   // This is the index of the assign to all desks item in the menu model.
-  int assign_to_all_desks_item_index_;
+  size_t assign_to_all_desks_item_index_;
 };
 
 }  // namespace chromeos

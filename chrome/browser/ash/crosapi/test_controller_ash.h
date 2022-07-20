@@ -120,7 +120,7 @@ class TestControllerAsh : public mojom::TestController,
   static void OnSelectContextMenuForShelfItem(
       SelectContextMenuForShelfItemCallback callback,
       const std::string& item_id,
-      uint32_t index,
+      size_t index,
       std::unique_ptr<ui::SimpleMenuModel> model);
 
   // Each call to EnterOverviewMode or ExitOverviewMode spawns a waiter for the

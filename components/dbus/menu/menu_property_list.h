@@ -21,7 +21,8 @@ class MenuModel;
 
 // Computes properties for the menu item with index |i| in |menu|.
 COMPONENT_EXPORT(DBUS)
-MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu, int i);
+MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
+                                                    size_t i);
 
 // Given inputs |old_properties| and |new_properties|, computes outputs
 // |item_updated_props| and |item_removed_props| suitable for use in

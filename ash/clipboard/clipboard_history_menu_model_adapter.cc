@@ -364,7 +364,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
 
   // The menu item view and its corresponding command should be removed at the
   // same time. Otherwise, it may run into check errors.
-  model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id));
+  model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id).value());
   root_view_->RemoveMenuItem(root_view_->GetMenuItemByID(command_id));
   root_view_->ChildrenChanged();
 

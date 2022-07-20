@@ -35,8 +35,8 @@ NSMenu* MakeEmptySubmenu() {
 // Called when adding a submenu to the menu and checks if the submenu, via its
 // |model|, has visible child items.
 bool MenuHasVisibleItems(const ui::MenuModel* model) {
-  int count = model->GetItemCount();
-  for (int index = 0; index < count; index++) {
+  size_t count = model->GetItemCount();
+  for (size_t index = 0; index < count; ++index) {
     if (model->IsVisibleAt(index))
       return true;
   }
@@ -91,7 +91,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 // Adds the item at |index| in |model| as an NSMenuItem at |index| of |menu|.
 // Associates a submenu if the MenuModel::ItemType is TYPE_SUBMENU.
 - (void)addItemToMenu:(NSMenu*)menu
-              atIndex:(NSInteger)index
+              atIndex:(size_t)index
             fromModel:(ui::MenuModel*)model
     withColorProvider:(const ui::ColorProvider*)colorProvider;
 
@@ -184,8 +184,8 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
        withColorProvider:(const ui::ColorProvider*)colorProvider {
   NSMenu* menu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
 
-  const int count = model->GetItemCount();
-  for (int index = 0; index < count; index++) {
+  const size_t count = model->GetItemCount();
+  for (size_t index = 0; index < count; ++index) {
     if (model->GetTypeAt(index) == ui::MenuModel::TYPE_SEPARATOR) {
       [self addSeparatorToMenu:menu atIndex:index];
     } else {
@@ -206,7 +206,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 - (void)addItemToMenu:(NSMenu*)menu
-              atIndex:(NSInteger)index
+              atIndex:(size_t)index
             fromModel:(ui::MenuModel*)model
     withColorProvider:(const ui::ColorProvider*)colorProvider {
   NSString* label = l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(index));

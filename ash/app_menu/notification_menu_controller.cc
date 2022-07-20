@@ -78,8 +78,9 @@ void NotificationMenuController::OnNotificationRemoved(
   // |root_menu_|, and remove the entry from the model.
   root_menu_->RemoveMenuItem(notification_menu_view_->parent());
   app_menu_model_adapter_->model()->RemoveItemAt(
-      app_menu_model_adapter_->model()->GetIndexOfCommandId(
-          NOTIFICATION_CONTAINER));
+      app_menu_model_adapter_->model()
+          ->GetIndexOfCommandId(NOTIFICATION_CONTAINER)
+          .value());
   notification_menu_view_ = nullptr;
 
   // Notify the root MenuItemView so it knows to resize and re-calculate the

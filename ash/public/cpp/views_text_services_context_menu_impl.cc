@@ -83,15 +83,15 @@ bool ViewsTextServicesContextMenuImpl::SupportsCommand(int command_id) const {
 
 void ViewsTextServicesContextMenuImpl::AddClipboardHistoryMenuOption(
     ui::SimpleMenuModel* menu) {
-  const int index_of_paste =
+  const absl::optional<size_t> index_of_paste =
       menu->GetIndexOfCommandId(ui::TouchEditable::kPaste);
 
   // Only add the clipboard history menu option when having the menu option
   // for paste.
-  if (index_of_paste == -1)
+  if (!index_of_paste.has_value())
     return;
 
-  const int target_index = index_of_paste + 1;
+  const size_t target_index = index_of_paste.value() + 1;
   menu->InsertItemAt(target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
                      l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
   if (ClipboardHistoryController::Get()->ShouldShowNewFeatureBadge()) {

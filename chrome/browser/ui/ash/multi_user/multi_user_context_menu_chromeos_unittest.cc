@@ -104,13 +104,13 @@ TEST_F(MultiUserContextMenuChromeOSTest, OwnedWindow) {
     SetLoggedInUsers(2);
     std::unique_ptr<ui::MenuModel> menu = CreateMultiUserContextMenu(window());
     ASSERT_TRUE(menu.get());
-    EXPECT_EQ(1, menu.get()->GetItemCount());
+    EXPECT_EQ(1u, menu.get()->GetItemCount());
   }
   {
     SetLoggedInUsers(3);
     std::unique_ptr<ui::MenuModel> menu = CreateMultiUserContextMenu(window());
     ASSERT_TRUE(menu.get());
-    EXPECT_EQ(2, menu.get()->GetItemCount());
+    EXPECT_EQ(2u, menu.get()->GetItemCount());
   }
 }
 

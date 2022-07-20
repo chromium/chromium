@@ -100,7 +100,7 @@ DbusMenu::MenuItem::MenuItem(int32_t id,
                              std::vector<int32_t>&& children,
                              ui::MenuModel* menu,
                              ui::MenuModel* containing_menu,
-                             int containing_menu_index)
+                             size_t containing_menu_index)
     : id(id),
       properties(std::move(properties)),
       children(std::move(children)),
@@ -210,7 +210,7 @@ void DbusMenu::MenuItemsPropertiesUpdated(
   MenuPropertyChanges removed_props;
   for (const auto& menu_item : menu_items) {
     ui::MenuModel* menu = menu_item.first;
-    int index = menu_item.second;
+    size_t index = menu_item.second;
     MenuItem* parent = FindMenuItemForModel(menu, items_[0].get());
     MenuItem* item = nullptr;
     for (int32_t id : parent->children) {
@@ -475,7 +475,7 @@ std::vector<int32_t> DbusMenu::ConvertMenu(ui::MenuModel* menu) {
     return items;
   items.reserve(menu->GetItemCount());
 
-  for (int i = 0; i < menu->GetItemCount(); ++i) {
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     ui::MenuModel* submenu = menu->GetSubmenuModelAt(i);
     std::vector<int32_t> children = ConvertMenu(submenu);
 

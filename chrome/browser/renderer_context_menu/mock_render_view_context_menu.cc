@@ -136,7 +136,7 @@ void MockRenderViewContextMenu::AppendSubMenuItems(ui::MenuModel* model) {
   // them. This works in non-mock because of toolkit_delegate_ in RVCMBase.
   // TODO(yusukes,lazyboy): This is a hack. RVCMProxy should neither directly
   // know about but submenu items nor it should update them.
-  for (int i = 0; i < model->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
     MockMenuItem sub_item;
     sub_item.command_id = model->GetCommandIdAt(i);
     sub_item.enabled = model->IsEnabledAt(i);

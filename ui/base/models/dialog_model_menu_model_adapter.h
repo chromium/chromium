@@ -27,25 +27,26 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuModelAdapter final
 
   // MenuModel:
   bool HasIcons() const override;
-  int GetItemCount() const override;
-  ItemType GetTypeAt(int index) const override;
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override;
-  int GetCommandIdAt(int index) const override;
-  std::u16string GetLabelAt(int index) const override;
-  bool IsItemDynamicAt(int index) const override;
-  bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
+  size_t GetItemCount() const override;
+  ItemType GetTypeAt(size_t index) const override;
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
+  int GetCommandIdAt(size_t index) const override;
+  std::u16string GetLabelAt(size_t index) const override;
+  bool IsItemDynamicAt(size_t index) const override;
+  bool GetAcceleratorAt(size_t index,
+                        ui::Accelerator* accelerator) const override;
   bool IsItemCheckedAt(size_t index) const override;
-  int GetGroupIdAt(int index) const override;
-  ImageModel GetIconAt(int index) const override;
-  ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override;
-  bool IsEnabledAt(int index) const override;
-  MenuModel* GetSubmenuModelAt(int index) const override;
-  void ActivatedAt(int index) override;
-  void ActivatedAt(int index, int event_flags) override;
+  int GetGroupIdAt(size_t index) const override;
+  ImageModel GetIconAt(size_t index) const override;
+  ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override;
+  bool IsEnabledAt(size_t index) const override;
+  MenuModel* GetSubmenuModelAt(size_t index) const override;
+  void ActivatedAt(size_t index) override;
+  void ActivatedAt(size_t index, int event_flags) override;
 
  private:
-  const DialogModelField* GetField(int index) const;
-  DialogModelField* GetField(int index);
+  const DialogModelField* GetField(size_t index) const;
+  DialogModelField* GetField(size_t index);
 
   std::unique_ptr<DialogModel> model_;
 };

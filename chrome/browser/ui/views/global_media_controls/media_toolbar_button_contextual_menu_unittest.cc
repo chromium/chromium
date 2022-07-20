@@ -54,11 +54,11 @@ TEST_F(MediaToolbarButtonContextualMenuTest, ShowMenu) {
   auto menu = MediaToolbarButtonContextualMenu::Create(browser());
   auto model = menu->CreateMenuModel();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_EQ(model->GetItemCount(), 2);
+  EXPECT_EQ(model->GetItemCount(), 2u);
   EXPECT_EQ(model->GetCommandIdAt(1),
             IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE);
 #else
-  EXPECT_EQ(model->GetItemCount(), 1);
+  EXPECT_EQ(model->GetItemCount(), 1u);
 #endif
   EXPECT_EQ(model->GetCommandIdAt(0),
             IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);

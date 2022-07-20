@@ -38,7 +38,7 @@ constexpr bool kShownByPolicy = true;
 constexpr bool kShownByUser = false;
 
 bool HasCommandId(ui::MenuModel* menu_model, int command_id) {
-  for (int i = 0; i < menu_model->GetItemCount(); i++) {
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     if (menu_model->GetCommandIdAt(i) == command_id)
       return true;
   }
@@ -131,7 +131,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   // Report an issue
 
   // Number of menu items, including separators.
-  int expected_number_items = 6;
+  size_t expected_number_items = 6;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_number_items += 2;
 #endif
@@ -140,7 +140,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   std::unique_ptr<ui::SimpleMenuModel> model = menu.CreateMenuModel();
   EXPECT_EQ(model->GetItemCount(), expected_number_items);
 
-  for (int i = 0; i < expected_number_items; i++) {
+  for (size_t i = 0; i < expected_number_items; ++i) {
     EXPECT_TRUE(model->IsEnabledAt(i));
     EXPECT_TRUE(model->IsVisibleAt(i));
   }
@@ -152,7 +152,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   // Run the same checks as before. All existing menu items should be now
   // enabled and visible.
   EXPECT_EQ(model->GetItemCount(), expected_number_items);
-  for (int i = 0; i < expected_number_items; i++) {
+  for (size_t i = 0; i < expected_number_items; ++i) {
     EXPECT_TRUE(model->IsEnabledAt(i));
     EXPECT_TRUE(model->IsVisibleAt(i));
   }
@@ -163,8 +163,10 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
 // incognito.
 TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
   MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
-  EXPECT_NE(-1, menu.CreateMenuModel()->GetIndexOfCommandId(
-                    IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE));
+  EXPECT_TRUE(
+      menu.CreateMenuModel()
+          ->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE)
+          .has_value());
 
   std::unique_ptr<BrowserWindow> window(CreateBrowserWindow());
   std::unique_ptr<Browser> incognito_browser(
@@ -173,8 +175,10 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
 
   MediaRouterContextualMenu incognito_menu(incognito_browser.get(),
                                            kShownByPolicy, &observer_);
-  EXPECT_EQ(-1, incognito_menu.CreateMenuModel()->GetIndexOfCommandId(
-                    IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE));
+  EXPECT_FALSE(
+      incognito_menu.CreateMenuModel()
+          ->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE)
+          .has_value());
 }
 #endif
 

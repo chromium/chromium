@@ -171,11 +171,11 @@ TEST_F(AppMenuModelTest, Basics) {
                                                  &fake_delegate);
   TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
   model.Init();
-  int itemCount = model.GetItemCount();
+  size_t item_count = model.GetItemCount();
 
   // Verify it has items. The number varies by platform, so we don't check
   // the exact number.
-  EXPECT_GT(itemCount, 10);
+  EXPECT_GT(item_count, 10u);
 
   // Verify that the upgrade item is visible if supported.
   EXPECT_EQ(browser_defaults::kShowUpgradeMenuItem,
@@ -189,14 +189,14 @@ TEST_F(AppMenuModelTest, Basics) {
   // delegate is internal, it doesn't use the one we pass in.
   // Note: the second item in the menu may be a separator if the browser
   // supports showing upgrade status in the app menu.
-  int item_index = 1;
+  size_t item_index = 1;
   if (model.GetTypeAt(item_index) == ui::MenuModel::TYPE_SEPARATOR)
     ++item_index;
   model.ActivatedAt(item_index);
   EXPECT_TRUE(model.IsEnabledAt(item_index));
   // Make sure to use the index that is not separator in all configurations.
-  model.ActivatedAt(itemCount - 1);
-  EXPECT_TRUE(model.IsEnabledAt(itemCount - 1));
+  model.ActivatedAt(item_count - 1);
+  EXPECT_TRUE(model.IsEnabledAt(item_count - 1));
 
   EXPECT_EQ(model.execute_count_, 2);
   EXPECT_EQ(model.enable_count_, 2);
@@ -206,21 +206,21 @@ TEST_F(AppMenuModelTest, Basics) {
 
   // Choose something from the bookmark submenu and make sure it makes it back
   // to the delegate as well.
-  int bookmarks_model_index = -1;
-  for (int i = 0; i < itemCount; ++i) {
+  size_t bookmarks_model_index = 0;
+  for (size_t i = 0; i < item_count; ++i) {
     if (model.GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
       // The bookmarks submenu comes after the Tabs and Downloads items.
       bookmarks_model_index = i + 2;
       break;
     }
   }
-  EXPECT_GT(bookmarks_model_index, -1);
+  EXPECT_GT(bookmarks_model_index, 0u);
   ui::MenuModel* bookmarks_model =
       model.GetSubmenuModelAt(bookmarks_model_index);
   EXPECT_TRUE(bookmarks_model);
   // The bookmarks model may be empty until we tell it we're going to show it.
   bookmarks_model->MenuWillShow();
-  EXPECT_GT(bookmarks_model->GetItemCount(), 1);
+  EXPECT_GT(bookmarks_model->GetItemCount(), 1u);
 
   // Bookmark manager item.
   bookmarks_model->ActivatedAt(4);
@@ -243,19 +243,19 @@ TEST_F(AppMenuModelTest, GlobalError) {
 
   AppMenuModel model(this, browser());
   model.Init();
-  int index1 = model.GetIndexOfCommandId(command1);
-  EXPECT_GT(index1, -1);
-  int index2 = model.GetIndexOfCommandId(command2);
-  EXPECT_GT(index2, -1);
+  absl::optional<size_t> index1 = model.GetIndexOfCommandId(command1);
+  ASSERT_TRUE(index1.has_value());
+  absl::optional<size_t> index2 = model.GetIndexOfCommandId(command2);
+  ASSERT_TRUE(index2.has_value());
 
-  EXPECT_TRUE(model.IsEnabledAt(index1));
+  EXPECT_TRUE(model.IsEnabledAt(index1.value()));
   EXPECT_EQ(0, error1->execute_count());
-  model.ActivatedAt(index1);
+  model.ActivatedAt(index1.value());
   EXPECT_EQ(1, error1->execute_count());
 
-  EXPECT_TRUE(model.IsEnabledAt(index2));
+  EXPECT_TRUE(model.IsEnabledAt(index2.value()));
   EXPECT_EQ(0, error2->execute_count());
-  model.ActivatedAt(index2);
+  model.ActivatedAt(index2.value());
   EXPECT_EQ(1, error1->execute_count());
 }
 
@@ -265,17 +265,18 @@ TEST_F(AppMenuModelTest, GlobalError) {
 TEST_F(AppMenuModelTest, DisableSettingsItem) {
   AppMenuModel model(this, browser());
   model.Init();
-  const int options_index = model.GetIndexOfCommandId(IDC_OPTIONS);
+  const size_t options_index = model.GetIndexOfCommandId(IDC_OPTIONS).value();
   EXPECT_TRUE(model.IsEnabledAt(options_index));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const int help_menu_index = model.GetIndexOfCommandId(IDC_HELP_MENU);
+  const size_t help_menu_index =
+      model.GetIndexOfCommandId(IDC_HELP_MENU).value();
   ui::SimpleMenuModel* help_menu = static_cast<ui::SimpleMenuModel*>(
       model.GetSubmenuModelAt(help_menu_index));
-  const int about_index = help_menu->GetIndexOfCommandId(IDC_ABOUT);
+  const size_t about_index = help_menu->GetIndexOfCommandId(IDC_ABOUT).value();
   EXPECT_TRUE(help_menu->IsEnabledAt(about_index));
 #else
-  const int about_index = model.GetIndexOfCommandId(IDC_ABOUT);
+  const size_t about_index = model.GetIndexOfCommandId(IDC_ABOUT).value();
   EXPECT_TRUE(model.IsEnabledAt(about_index));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

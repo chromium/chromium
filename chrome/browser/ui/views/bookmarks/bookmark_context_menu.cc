@@ -66,7 +66,7 @@ BookmarkContextMenu::BookmarkContextMenu(
       observer_(nullptr),
       close_on_remove_(close_on_remove) {
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
-  for (int i = 0; i < menu_model->GetItemCount(); ++i) {
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(
         menu_model, i, menu_, menu_model->GetCommandIdAt(i));
   }

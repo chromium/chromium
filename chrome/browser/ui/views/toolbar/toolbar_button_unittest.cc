@@ -67,7 +67,7 @@ class CheckActiveWebContentsMenuModel : public ui::SimpleMenuModel {
   ~CheckActiveWebContentsMenuModel() override = default;
 
   // ui::SimpleMenuModel:
-  int GetItemCount() const override {
+  size_t GetItemCount() const override {
     EXPECT_TRUE(tab_strip_model_->GetActiveWebContents());
     return 0;
   }

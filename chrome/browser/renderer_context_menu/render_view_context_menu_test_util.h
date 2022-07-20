@@ -72,7 +72,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   // returned in |found_model| and |found_index|. Otherwise returns false.
   bool GetMenuModelAndItemIndex(int command_id,
                                 ui::MenuModel** found_model,
-                                int* found_index);
+                                size_t* found_index);
 
   // Returns the command id of the menu item with the specified |path|.
   int GetCommandIDByProfilePath(const base::FilePath& path) const;

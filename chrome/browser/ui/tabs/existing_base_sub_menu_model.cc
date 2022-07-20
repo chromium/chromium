@@ -21,7 +21,7 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
       parent_new_command_id_(parent_new_command_id) {}
 
 const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
-    int index) const {
+    size_t index) const {
   if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
     return &ui::ResourceBundle::GetSharedInstance().GetFontList(
         ui::ResourceBundle::BoldFont);
@@ -75,7 +75,7 @@ void ExistingBaseSubMenuModel::Build(
   int command_id = min_command_id_ + 1;
   for (size_t i = 0; i < menu_item_infos.size(); ++i) {
     const MenuItemInfo& item = menu_item_infos[i];
-    if (command_id > min_command_id_ + max_size)
+    if (command_id > min_command_id_ + static_cast<int>(max_size))
       break;
 
     if (item.target_index.has_value()) {
@@ -107,7 +107,7 @@ bool ExistingBaseSubMenuModel::IsNewCommand(int command_id) const {
   return command_id == min_command_id_;
 }
 
-void ExistingBaseSubMenuModel::ExecuteExistingCommand(int target_index) {}
+void ExistingBaseSubMenuModel::ExecuteExistingCommand(size_t target_index) {}
 
 int ExistingBaseSubMenuModel::GetContextIndex() const {
   return model_->GetIndexOfWebContents(context_contents_);

@@ -53,13 +53,13 @@ TEST_F(ExistingTabGroupSubMenuModelTest, BuildSubmenuItems) {
   ASSERT_EQ(model->count(), 3);
 
   ExistingTabGroupSubMenuModel menu1(nullptr, nullptr, model, 0);
-  EXPECT_EQ(3, menu1.GetItemCount());
+  EXPECT_EQ(3u, menu1.GetItemCount());
 
   ExistingTabGroupSubMenuModel menu2(nullptr, nullptr, model, 1);
-  EXPECT_EQ(3, menu2.GetItemCount());
+  EXPECT_EQ(3u, menu2.GetItemCount());
 
   ExistingTabGroupSubMenuModel menu3(nullptr, nullptr, model, 2);
-  EXPECT_EQ(4, menu3.GetItemCount());
+  EXPECT_EQ(4u, menu3.GetItemCount());
 }
 
 // Verify tabs can be added tab groups in the same window.
@@ -72,7 +72,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddTabsToGroupSameWindow) {
   model->AddToNewGroup({0});
   model->AddToNewGroup({1});
   ExistingTabGroupSubMenuModel menu(nullptr, nullptr, model, 2);
-  EXPECT_EQ(4, menu.GetItemCount());
+  EXPECT_EQ(4u, menu.GetItemCount());
 
   // Move the tab at index 2 into the group with the tab at index 0.
   menu.ExecuteExistingCommandForTesting(0);
@@ -83,7 +83,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddTabsToGroupSameWindow) {
                    ->tab_count());
 
   ExistingTabGroupSubMenuModel menu2(nullptr, nullptr, model, 2);
-  EXPECT_EQ(3, menu2.GetItemCount());
+  EXPECT_EQ(3u, menu2.GetItemCount());
 }
 
 // Verify non-selected tabs can be added tab groups in the same window.
@@ -102,7 +102,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddNonSelectedTabsToTabGroup) {
 
   // Create the menu on the tab at index 3.
   ExistingTabGroupSubMenuModel menu(nullptr, nullptr, model, 3);
-  EXPECT_EQ(4, menu.GetItemCount());
+  EXPECT_EQ(4u, menu.GetItemCount());
 
   // Move the tab at index 2 into the group with the tab at index 0.
   menu.ExecuteExistingCommandForTesting(0);
@@ -115,8 +115,8 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddNonSelectedTabsToTabGroup) {
   ExistingTabGroupSubMenuModel menu2(nullptr, nullptr, model, 2);
   ExistingTabGroupSubMenuModel menu3(nullptr, nullptr, model, 3);
 
-  EXPECT_EQ(3, menu2.GetItemCount());
-  EXPECT_EQ(4, menu3.GetItemCount());
+  EXPECT_EQ(3u, menu2.GetItemCount());
+  EXPECT_EQ(4u, menu3.GetItemCount());
 }
 
 // Verify tabs can be added to tab groups in other browser windows.
@@ -163,7 +163,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   std::vector<int> selected_indices =
       std::vector<int>(selection_indices.begin(), selection_indices.end());
   EXPECT_EQ(selected_indices.size(), size_t(3));
-  EXPECT_EQ(4, menu_1.GetItemCount());
+  EXPECT_EQ(4u, menu_1.GetItemCount());
 
   // Move the 3 selected indices in model_1 to model_2.
   menu_1.ExecuteExistingCommandForTesting(1);

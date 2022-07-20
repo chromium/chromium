@@ -216,7 +216,7 @@ class ExtensionContextMenuBrowserTest
       return false;
 
     MenuModel* model = nullptr;
-    int index = -1;
+    size_t index = 0;
     if (!menu->GetMenuModelAndItemIndex(command_id, &model, &index)) {
       return false;
     }
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetWebContents(), url, GURL(), GURL()));
 
-  int index = 0;
+  size_t index = 0;
   MenuModel* model = nullptr;
 
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
 static void ExpectLabelAndType(const char* expected_label,
                                MenuModel::ItemType expected_type,
                                const MenuModel& menu,
-                               int index) {
+                               size_t index) {
   EXPECT_EQ(expected_type, menu.GetTypeAt(index));
   EXPECT_EQ(base::UTF8ToUTF16(expected_label), menu.GetLabelAt(index));
 }
@@ -698,11 +698,11 @@ static void VerifyMenuForSeparatorsTest(const MenuModel& menu) {
   //  --separator--
   //  normal3
 
-  int index = 0;
+  size_t index = 0;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_EQ(7, menu.GetItemCount());
+  ASSERT_EQ(7u, menu.GetItemCount());
 #else
-  ASSERT_EQ(11, menu.GetItemCount());
+  ASSERT_EQ(11u, menu.GetItemCount());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ExpectLabelAndType("radio1", MenuModel::TYPE_RADIO, menu, index++);
   ExpectLabelAndType("radio2", MenuModel::TYPE_RADIO, menu, index++);
@@ -747,7 +747,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   // The top-level item should be an "automagic parent" with the extension's
   // name.
   MenuModel* model = nullptr;
-  int index = 0;
+  size_t index = 0;
   std::u16string label;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0),

@@ -53,8 +53,8 @@ class TestMenuModel : public ui::SimpleMenuModel,
 
  protected:
   // ui::MenuModel::
-  bool IsItemDynamicAt(int index) const override {
-    EXPECT_LE(index, 0);
+  bool IsItemDynamicAt(size_t index) const override {
+    EXPECT_EQ(index, 0u);
     // Return true so that GetIconForCommandId() will always be called.
     return true;
   }

@@ -203,14 +203,14 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
   ui::MenuModel* sub_menu_model = nullptr;
-  int device_id = -1;
+  size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
-  EXPECT_EQ(2, sub_menu_model->GetItemCount());
-  EXPECT_EQ(0, device_id);
+  EXPECT_EQ(2u, sub_menu_model->GetItemCount());
+  EXPECT_EQ(0u, device_id);
 
   for (auto& device : devices) {
-    EXPECT_EQ(kSubMenuFirstDeviceCommandId + device_id,
+    EXPECT_EQ(kSubMenuFirstDeviceCommandId + static_cast<int>(device_id),
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 
@@ -236,14 +236,14 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
   ui::MenuModel* sub_menu_model = nullptr;
-  int device_id = -1;
+  size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
-  EXPECT_EQ(2, sub_menu_model->GetItemCount());
-  EXPECT_EQ(0, device_id);
+  EXPECT_EQ(2u, sub_menu_model->GetItemCount());
+  EXPECT_EQ(0u, device_id);
 
   for (auto& device : devices) {
-    EXPECT_EQ(kSubMenuFirstDeviceCommandId + device_id,
+    EXPECT_EQ(kSubMenuFirstDeviceCommandId + static_cast<int>(device_id),
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 

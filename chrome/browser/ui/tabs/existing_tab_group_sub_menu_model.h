@@ -34,14 +34,14 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   static bool ShouldShowSubmenu(TabStripModel* model, int context_index);
 
   // ExistingBaseSubMenuModel:
-  std::u16string GetLabelAt(int index) const override;
+  std::u16string GetLabelAt(size_t index) const override;
 
   // Used for testing.
-  void ExecuteExistingCommandForTesting(int target_index);
+  void ExecuteExistingCommandForTesting(size_t target_index);
 
  private:
   // ExistingBaseSubMenuModel
-  void ExecuteExistingCommand(int target_index) override;
+  void ExecuteExistingCommand(size_t target_index) override;
 
   // Retrieves all tab groups ids from the given model.
   const std::vector<tab_groups::TabGroupId> GetGroupsFromModel(
@@ -61,7 +61,7 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   // be used in cases where the tab groups returned from
   // GetOrderedTabGroupsInSubMenu changes after the menu has been opened but
   // before the action is taken from the menumodel.
-  std::map<int, tab_groups::TabGroupId> target_index_to_group_mapping_;
+  std::map<size_t, tab_groups::TabGroupId> target_index_to_group_mapping_;
 
   // Used to retrieve a list of browsers which potentially hold tab groups.
   const raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;

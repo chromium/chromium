@@ -154,7 +154,7 @@ MenuItemView* MenuModelAdapter::AppendMenuItem(MenuItemView* menu,
 
 void MenuModelAdapter::ExecuteCommand(int id) {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
     model->ActivatedAt(index);
     return;
@@ -165,7 +165,7 @@ void MenuModelAdapter::ExecuteCommand(int id) {
 
 void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
     model->ActivatedAt(index, mouse_event_flags);
     return;
@@ -184,7 +184,7 @@ bool MenuModelAdapter::IsTriggerableEvent(MenuItemView* source,
 bool MenuModelAdapter::GetAccelerator(int id,
                                       ui::Accelerator* accelerator) const {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->GetAcceleratorAt(index, accelerator);
 
@@ -194,7 +194,7 @@ bool MenuModelAdapter::GetAccelerator(int id,
 
 std::u16string MenuModelAdapter::GetLabel(int id) const {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->GetLabelAt(index);
 
@@ -204,7 +204,7 @@ std::u16string MenuModelAdapter::GetLabel(int id) const {
 
 const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index)) {
     const gfx::FontList* font_list = model->GetLabelFontListAt(index);
     if (font_list)
@@ -217,7 +217,7 @@ const gfx::FontList* MenuModelAdapter::GetLabelFontList(int id) const {
 
 bool MenuModelAdapter::IsCommandEnabled(int id) const {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->IsEnabledAt(index);
 
@@ -227,7 +227,7 @@ bool MenuModelAdapter::IsCommandEnabled(int id) const {
 
 bool MenuModelAdapter::IsCommandVisible(int id) const {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->IsVisibleAt(index);
 
@@ -237,7 +237,7 @@ bool MenuModelAdapter::IsCommandVisible(int id) const {
 
 bool MenuModelAdapter::IsItemChecked(int id) const {
   ui::MenuModel* model = menu_model_;
-  int index = 0;
+  size_t index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->IsItemCheckedAt(index);
 
@@ -290,8 +290,8 @@ void MenuModelAdapter::BuildMenuImpl(MenuItemView* menu, ui::MenuModel* model) {
   DCHECK(menu);
   DCHECK(model);
   bool has_icons = model->HasIcons();
-  const int item_count = model->GetItemCount();
-  for (int i = 0; i < item_count; ++i) {
+  const size_t item_count = model->GetItemCount();
+  for (size_t i = 0; i < item_count; ++i) {
     MenuItemView* item = AppendMenuItem(menu, model, i);
     if (item) {
       // Enabled state should be ignored for titles as they are non-interactive.

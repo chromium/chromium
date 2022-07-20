@@ -390,7 +390,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
         }));
     run_loop.Run();
     ui::MenuModel* menu_ptr = menu.get();
-    int index = 0;
+    size_t index = 0;
     return ui::MenuModel::GetModelAndIndexForCommandId(command_id, &menu_ptr,
                                                        &index);
   }
@@ -3056,7 +3056,7 @@ IN_PROC_BROWSER_TEST_P(PerDeskShelfAppBrowserTest, AppMenus) {
   // per-desk shelf feature is enabled or not.
   auto* model_adapter = ClickBrowserShelfButtonAndGetMenu();
   const bool is_per_desk_shelf_enabled = GetParam();
-  constexpr int kTitleAndSeparatorCount = 2;
+  constexpr size_t kTitleAndSeparatorCount = 2;
   if (is_per_desk_shelf_enabled) {
     EXPECT_EQ(2 + kTitleAndSeparatorCount,
               model_adapter->model()->GetItemCount());

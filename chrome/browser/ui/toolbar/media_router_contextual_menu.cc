@@ -63,9 +63,9 @@ MediaRouterContextualMenu::CreateMenuModel() {
   if (shown_by_policy_) {
     menu_model->AddItemWithStringId(IDC_MEDIA_ROUTER_SHOWN_BY_POLICY,
                                     IDS_MEDIA_ROUTER_SHOWN_BY_POLICY);
-    // TODO (kylixrd): Review the use of the hard-coded color constant.
     menu_model->SetIcon(
-        menu_model->GetIndexOfCommandId(IDC_MEDIA_ROUTER_SHOWN_BY_POLICY),
+        menu_model->GetIndexOfCommandId(IDC_MEDIA_ROUTER_SHOWN_BY_POLICY)
+            .value(),
         ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
                                        ui::kColorIcon, 16));
   } else {

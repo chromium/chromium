@@ -80,7 +80,7 @@ void ContextMenuWaiter::Cancel(RenderViewContextMenu* context_menu) {
 
   const ui::SimpleMenuModel& menu_model = context_menu->menu_model();
   captured_command_ids_.reserve(menu_model.GetItemCount());
-  for (int i = 0; i < menu_model.GetItemCount(); ++i)
+  for (size_t i = 0; i < menu_model.GetItemCount(); ++i)
     captured_command_ids_.push_back(menu_model.GetCommandIdAt(i));
 
   if (maybe_command_to_execute_)

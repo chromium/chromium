@@ -160,8 +160,8 @@ constexpr DbusAppmenuCommand kHelpMenu[] = {
 void FindMenuItemsForCommandAux(
     ui::MenuModel* menu,
     int command,
-    std::vector<std::pair<ui::MenuModel*, int>>* menu_items) {
-  for (int i = 0; i < menu->GetItemCount(); i++) {
+    std::vector<std::pair<ui::MenuModel*, size_t>>* menu_items) {
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     if (menu->GetCommandIdAt(i) == command)
       menu_items->push_back({menu, i});
     if (menu->GetTypeAt(i) == ui::SimpleMenuModel::ItemType::TYPE_SUBMENU) {
@@ -171,10 +171,10 @@ void FindMenuItemsForCommandAux(
   }
 }
 
-std::vector<std::pair<ui::MenuModel*, int>> FindMenuItemsForCommand(
+std::vector<std::pair<ui::MenuModel*, size_t>> FindMenuItemsForCommand(
     ui::MenuModel* menu,
     int command) {
-  std::vector<std::pair<ui::MenuModel*, int>> menu_items;
+  std::vector<std::pair<ui::MenuModel*, size_t>> menu_items;
   FindMenuItemsForCommandAux(menu, command, &menu_items);
   return menu_items;
 }
@@ -297,7 +297,7 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
     if (command_id == kSeparator) {
       // Use InsertSeparatorAt() instead of AddSeparator() because the latter
       // refuses to add a separator to an empty menu.
-      int old_item_count = menu->GetItemCount();
+      size_t old_item_count = menu->GetItemCount();
       menu->InsertSeparatorAt(old_item_count,
                               ui::MenuSeparatorType::SPACING_SEPARATOR);
 
