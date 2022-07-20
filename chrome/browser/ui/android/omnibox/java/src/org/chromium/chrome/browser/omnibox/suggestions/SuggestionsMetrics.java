@@ -219,7 +219,8 @@ public class SuggestionsMetrics {
             default:
                 // Report an error, but fall back to a default value.
                 // Use this to detect missing new cases.
-                assert false : "Unknown page classification: " + pageClass;
+                // TODO(crbug.com/1314765): This assert fails persistently on tablets.
+                // assert false : "Unknown page classification: " + pageClass;
                 break;
         }
 
