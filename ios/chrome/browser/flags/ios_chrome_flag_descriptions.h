@@ -372,10 +372,6 @@ extern const char kIOSSharedHighlightingAmpDescription[];
 extern const char kIOSSharedHighlightingV2Name[];
 extern const char kIOSSharedHighlightingV2Description[];
 
-// Title and description for the flag to enable unrealized WebStates.
-extern const char kLazilyCreateWebStateOnRestorationName[];
-extern const char kLazilyCreateWebStateOnRestorationDescription[];
-
 // Title and description for the flag to enable leak detection for signed out
 // users.
 extern const char kLeakDetectionUnauthenticatedName[];

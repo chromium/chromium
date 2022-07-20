@@ -56,10 +56,6 @@ extern const base::Feature kIOSSharedHighlightingColorChange;
 // interaction state.
 extern const base::Feature kSynthesizedRestoreSession;
 
-// Enable support for unrealized WebState upon session restoration.
-// See //docs/ios/unrealized_web_state.md for more information.
-extern const base::Feature kEnableUnrealizedWebStates;
-
 // Enables user control for camera and/or microphone access for a specific site
 // through site settings during its lifespan. When enabled, each web state will
 // keep track of whether camera and/or microphone access is granted by the user

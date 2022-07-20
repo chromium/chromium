@@ -49,9 +49,6 @@ const base::Feature kIOSSharedHighlightingColorChange{
 const base::Feature kSynthesizedRestoreSession{
     "SynthesizedRestoreSession", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnableUnrealizedWebStates{
-    "EnableUnrealizedWebStates", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kMediaPermissionsControl{"MediaPermissionsControl",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
