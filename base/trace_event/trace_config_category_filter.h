@@ -48,7 +48,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   // category is enabled from the tracing runtime's perspective.
   bool IsCategoryEnabled(const StringPiece& category_name) const;
 
-  void ToDict(Value* dict) const;
+  void ToDict(Value::Dict& dict) const;
 
   std::string ToFilterString() const;
 
@@ -65,7 +65,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
 
   void AddCategoriesToDict(const StringList& categories,
                            const char* param,
-                           Value* dict) const;
+                           Value::Dict& dict) const;
 
   void WriteCategoryFilterString(const StringList& values,
                                  std::string* out,

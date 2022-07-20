@@ -102,7 +102,7 @@ class BASE_EXPORT TraceConfig {
     void Merge(const ProcessFilterConfig&);
 
     void InitializeFromConfigDict(const Value&);
-    void ToDict(Value*) const;
+    void ToDict(Value::Dict& dict) const;
 
     bool IsEnabled(base::ProcessId) const;
     const std::unordered_set<base::ProcessId>& included_process_ids() const {
@@ -130,7 +130,7 @@ class BASE_EXPORT TraceConfig {
 
     void SetCategoryFilter(const TraceConfigCategoryFilter& category_filter);
 
-    void ToDict(Value* filter_dict) const;
+    void ToDict(Value::Dict& filter_dict) const;
 
     bool GetArgAsSet(const char* key, std::unordered_set<std::string>*) const;
 
