@@ -605,7 +605,8 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
       return base::EscapeQueryParamValue(v, /*use_plus=*/true);
     };
     std::string settings_profile_param;
-    if (settings_profile && !settings_profile->empty()) {
+    if (settings_profile && !settings_profile->empty() &&
+        *settings_profile != kSettingsProfileDefault) {
       settings_profile_param = base::StrCat(
           {"?", kSettingsProfileUrlParam, "=", escape(*settings_profile)});
     }
