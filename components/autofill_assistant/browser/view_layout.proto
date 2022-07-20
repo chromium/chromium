@@ -288,6 +288,8 @@ message TextInputViewProto {
   // Both input and output. The model identifier containing this view's text.
   // Should point to a single string value.
   optional string model_identifier = 3;
+  // A flag to autofocus the input text box and show keyboard.
+  optional bool focus_and_show_keyboard = 4;
 }
 
 // A generic read-only popup message.

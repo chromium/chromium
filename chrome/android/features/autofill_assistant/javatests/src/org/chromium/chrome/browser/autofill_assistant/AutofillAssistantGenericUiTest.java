@@ -11,6 +11,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.assertion.PositionAssertions.isLeftAlignedWith;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -1693,7 +1694,8 @@ public class AutofillAssistantGenericUiTest {
                                                         .setHint("Type here")
                                                         .setType(TextInputViewProto.InputTypeHint
                                                                          .NONE)
-                                                        .setModelIdentifier("text_value")))
+                                                        .setModelIdentifier("text_value")
+                                                        .setFocusAndShowKeyboard(true)))
                         .setInteractions(
                                 InteractionsProto.newBuilder().addAllInteractions(interactions))
                         .setModel(ModelProto.newBuilder().addAllValues(modelValues))
@@ -1717,7 +1719,10 @@ public class AutofillAssistantGenericUiTest {
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withContentDescription("Type here"), isCompletelyDisplayed());
-        onView(withContentDescription("Type here")).perform(typeText("test 1"));
+        // Verify that the text input view is focused.
+        // Ideally, we should also check for keyboard being open but Espresso does not show keyboard
+        // on focus or click.
+        onView(withContentDescription("Type here")).perform(typeTextIntoFocusedView("test 1"));
         waitUntilViewMatchesCondition(withText("test 1"), isDisplayed());
         onView(withContentDescription("Type here")).perform(clearText());
         onView(withContentDescription("Type here")).perform(typeText("test 2"));

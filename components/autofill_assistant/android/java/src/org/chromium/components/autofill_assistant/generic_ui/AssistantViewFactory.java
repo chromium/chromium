@@ -158,7 +158,8 @@ public class AssistantViewFactory {
     /** Creates a {@code EditorTextField} view. */
     @CalledByNative
     public static View createTextInputView(Context context, AssistantGenericUiDelegate delegate,
-            String viewIdentifier, int type, String hint, String modelIdentifier) {
+            String viewIdentifier, int type, String hint, String modelIdentifier,
+            boolean focusAndShowKeyboard) {
         View view = new EditorTextField(context,
                 EditorFieldModel.createTextInput(type, hint, /* suggestions = */ null,
                         /* formatter = */ null, /* validator = */ null,
@@ -180,7 +181,7 @@ public class AssistantViewFactory {
                         delegate.onValueChanged(modelIdentifier,
                                 AssistantValue.createForStrings(new String[] {value.toString()}));
                     }
-                }, /* focusAndShowKeyboard= */ false);
+                }, focusAndShowKeyboard);
         view.setTag(viewIdentifier);
         return view;
     }

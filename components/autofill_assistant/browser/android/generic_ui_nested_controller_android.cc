@@ -267,7 +267,8 @@ base::android::ScopedJavaGlobalRef<jobject> CreateJavaView(
           base::android::ConvertUTF8ToJavaString(
               env, proto.text_input_view().hint()),
           base::android::ConvertUTF8ToJavaString(
-              env, proto.text_input_view().model_identifier()));
+              env, proto.text_input_view().model_identifier()),
+          proto.text_input_view().focus_and_show_keyboard());
       break;
     }
     case ViewProto::kToggleButtonView:
