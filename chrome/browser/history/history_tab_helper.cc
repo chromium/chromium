@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "components/history/content/browser/history_context_helper.h"

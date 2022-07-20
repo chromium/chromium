@@ -8,7 +8,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "content/public/browser/browser_thread.h"

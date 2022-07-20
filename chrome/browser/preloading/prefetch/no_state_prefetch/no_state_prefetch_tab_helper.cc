@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"

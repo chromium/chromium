@@ -15,7 +15,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"

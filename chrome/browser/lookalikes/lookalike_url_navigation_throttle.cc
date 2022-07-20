@@ -22,7 +22,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "components/lookalikes/core/features.h"

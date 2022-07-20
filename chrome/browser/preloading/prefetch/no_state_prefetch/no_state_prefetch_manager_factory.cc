@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"

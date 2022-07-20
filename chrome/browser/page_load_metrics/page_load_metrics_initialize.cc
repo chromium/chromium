@@ -41,7 +41,7 @@
 #include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"

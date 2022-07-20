@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
+#include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"

@@ -16,7 +16,7 @@
 #include "chrome/browser/media/media_engagement_contents_observer.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

@@ -6,10 +6,10 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_controller.h"

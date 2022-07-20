@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"

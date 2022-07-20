@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"

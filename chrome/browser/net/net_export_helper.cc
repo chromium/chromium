@@ -9,7 +9,7 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "extensions/buildflags/buildflags.h"

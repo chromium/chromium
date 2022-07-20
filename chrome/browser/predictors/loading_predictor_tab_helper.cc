@@ -17,7 +17,7 @@
 #include "chrome/browser/predictors/predictors_enums.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"

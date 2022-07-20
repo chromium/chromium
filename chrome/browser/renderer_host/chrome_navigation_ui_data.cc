@@ -4,7 +4,7 @@
 
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "content/public/browser/navigation_handle.h"
