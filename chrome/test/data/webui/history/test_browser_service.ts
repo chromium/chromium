@@ -32,7 +32,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       'recordHistogram',
       'recordLongTime',
       'removeVisits',
-      'startSignInFlow',
+      'startTurnOnSyncFlow',
     ]);
 
     this.queryResult_ = {info: createHistoryInfo(), value: []};
@@ -166,5 +166,5 @@ export class TestBrowserService extends TestBrowserProxy implements
   }
 
   removeBookmark() {}
-  startSignInFlow() {}
+  startTurnOnSyncFlow() {}
 }

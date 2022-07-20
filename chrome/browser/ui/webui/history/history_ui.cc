@@ -99,9 +99,9 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
       {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
       {"searchResult", IDS_HISTORY_SEARCH_RESULT},
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
-      {"signInButton", IDS_HISTORY_SIGN_IN_BUTTON},
-      {"signInPromo", IDS_HISTORY_SIGN_IN_PROMO},
-      {"signInPromoDesc", IDS_HISTORY_SIGN_IN_PROMO_DESC},
+      {"turnOnSyncButton", IDS_HISTORY_TURN_ON_SYNC_BUTTON},
+      {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
+      {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"title", IDS_HISTORY_TITLE},
   };
   source->AddLocalizedStrings(kStrings);

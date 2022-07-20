@@ -38,7 +38,7 @@ export interface BrowserService {
   otherDevicesInitialized(): void;
   queryHistoryContinuation(): Promise<QueryResult>;
   queryHistory(searchTerm: string): Promise<QueryResult>;
-  startSignInFlow(): void;
+  startTurnOnSyncFlow(): void;
 }
 
 export class BrowserServiceImpl implements BrowserService {
@@ -128,8 +128,8 @@ export class BrowserServiceImpl implements BrowserService {
     return sendWithPromise('queryHistory', searchTerm, RESULTS_PER_PAGE);
   }
 
-  startSignInFlow() {
-    chrome.send('startSignInFlow');
+  startTurnOnSyncFlow() {
+    chrome.send('startTurnOnSyncFlow');
   }
 
   static getInstance(): BrowserService {

@@ -465,14 +465,14 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_HISTORY_OPEN_TABS_MENU_ITEM" desc="Label displayed in history sidebar button to display synced tabs from other devices.">
         Tabs from other devices
       </message>
-      <message name="IDS_HISTORY_SIGN_IN_BUTTON" desc="Label displayed on a button to let user sign in to Chrome to get synced tab history.">
-        Sign in to Chrome
+      <message name="IDS_HISTORY_TURN_ON_SYNC_BUTTON" desc="Label displayed on a button to let user turn on sync or sign in to Chrome to get synced tab history.">
+        Turn on sync
       </message>
-      <message name="IDS_HISTORY_SIGN_IN_PROMO" desc="Text of the sign-in promo. This will show up if a user is not logged in and has no synced tabs.">
+      <message name="IDS_HISTORY_TURN_ON_SYNC_PROMO" desc="Text of the turn on sync/sign-in promo. This will show up if a user is not logged in and has no synced tabs.">
         Continue from another device
       </message>
-      <message name="IDS_HISTORY_SIGN_IN_PROMO_DESC" desc="Description of the sign-in promo. Further tells users to sign in to Chrome to see synced tabs from other devices.">
-        To get your tabs from your other devices, sign in to Chrome.
+      <message name="IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC" desc="Description of the turn on sync/sign-in promo. Further tells users to turn o sync/sign in to Chrome to see synced tabs from other devices.">
+        To get your tabs from your other devices, turn on sync
       </message>
 
       <!-- Generic terms -->

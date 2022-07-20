@@ -31,8 +31,8 @@ void HistoryLoginHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "startSignInFlow",
-      base::BindRepeating(&HistoryLoginHandler::HandleStartSignInFlow,
+      "startTurnOnSyncFlow",
+      base::BindRepeating(&HistoryLoginHandler::HandleTurnOnSyncFlow,
                           base::Unretained(this)));
 }
 
@@ -61,7 +61,7 @@ void HistoryLoginHandler::ProfileInfoChanged() {
   FireWebUIListener("sign-in-state-changed", base::Value(signed_in));
 }
 
-void HistoryLoginHandler::HandleStartSignInFlow(
+void HistoryLoginHandler::HandleTurnOnSyncFlow(
     const base::Value::List& /*args*/) {
   Profile* profile = Profile::FromWebUI(web_ui());
   signin_ui_util::EnableSyncFromSingleAccountPromo(

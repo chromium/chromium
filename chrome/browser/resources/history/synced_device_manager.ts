@@ -188,8 +188,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     };
   }
 
-  private onSignInTap_() {
-    BrowserServiceImpl.getInstance().startSignInFlow();
+  private onTurnOnSyncTap_() {
+    BrowserServiceImpl.getInstance().startTurnOnSyncFlow();
   }
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {

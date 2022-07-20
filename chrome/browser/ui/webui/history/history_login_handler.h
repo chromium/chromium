@@ -31,8 +31,8 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // Handler for the "otherDevicesInitialized" message. No args.
   void HandleOtherDevicesInitialized(const base::Value::List& args);
 
-  // Handler for the "startSignInFlow" message. No args.
-  void HandleStartSignInFlow(const base::Value::List& args);
+  // Handler for the "startTurnOnSyncFlow" message. No args.
+  void HandleTurnOnSyncFlow(const base::Value::List& args);
 
   // Called by |profile_info_watcher_| on desktop if profile info changes.
   void ProfileInfoChanged();
