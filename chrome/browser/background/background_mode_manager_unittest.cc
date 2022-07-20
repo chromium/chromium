@@ -282,9 +282,11 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
  protected:
   // From views::MenuModelAdapter::IsCommandEnabled with modification.
   bool IsCommandEnabled(ui::MenuModel* model, int id) const {
-    size_t index = 0;
-    return ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index) &&
-           model->IsEnabledAt(index);
+    int index = 0;
+    if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
+      return model->IsEnabledAt(index);
+
+    return false;
   }
 
   std::unique_ptr<TestBackgroundModeManager> manager_;

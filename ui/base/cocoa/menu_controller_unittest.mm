@@ -61,14 +61,13 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
       const TestSimpleMenuModelVisibility&) = delete;
 
   // SimpleMenuModel:
-  bool IsVisibleAt(size_t index) const override {
+  bool IsVisibleAt(int index) const override {
     return items_[ValidateItemIndex(index)].visible;
   }
 
   void SetVisibility(int command_id, bool visible) {
-    absl::optional<size_t> index =
-        SimpleMenuModel::GetIndexOfCommandId(command_id);
-    items_[ValidateItemIndex(index.value())].visible = visible;
+    int index = SimpleMenuModel::GetIndexOfCommandId(command_id);
+    items_[ValidateItemIndex(index)].visible = visible;
   }
 
   void AddItem(int command_id, const std::u16string& label) {
@@ -89,8 +88,9 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
 
   typedef std::vector<Item> ItemVector;
 
-  int ValidateItemIndex(size_t index) const {
-    CHECK_LT(index, items_.size());
+  int ValidateItemIndex(int index) const {
+    CHECK_GE(index, 0);
+    CHECK_LT(static_cast<size_t>(index), items_.size());
     return index;
   }
 
@@ -215,16 +215,16 @@ class FontListMenuModel : public SimpleMenuModel {
  public:
   FontListMenuModel(SimpleMenuModel::Delegate* delegate,
                     const gfx::FontList* font_list,
-                    size_t index)
+                    int index)
       : SimpleMenuModel(delegate), font_list_(font_list), index_(index) {}
   ~FontListMenuModel() override {}
-  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
+  const gfx::FontList* GetLabelFontListAt(int index) const override {
     return (index == index_) ? font_list_.get() : nullptr;
   }
 
  private:
   raw_ptr<const gfx::FontList> font_list_;
-  const size_t index_;
+  const int index_;
 };
 
 TEST_F(MenuControllerTest, EmptyMenu) {

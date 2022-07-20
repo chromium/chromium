@@ -69,9 +69,9 @@ void NativeMenuWin::Rebuild(MenuInsertionDelegateWin* delegate) {
 
   owner_draw_ = model_->HasIcons() || owner_draw_;
   first_item_index_ = delegate ? delegate->GetInsertionIndex(menu_) : 0;
-  for (size_t model_index = 0; model_index < model_->GetItemCount();
+  for (int model_index = 0; model_index < model_->GetItemCount();
        ++model_index) {
-    size_t menu_index = model_index + first_item_index_;
+    int menu_index = model_index + first_item_index_;
     if (model_->GetTypeAt(model_index) == ui::MenuModel::TYPE_SEPARATOR)
       AddSeparatorItemAt(menu_index, model_index);
     else
@@ -83,7 +83,7 @@ void NativeMenuWin::UpdateStates() {
   // A depth-first walk of the menu items, updating states.
   int model_index = 0;
   for (const auto& item : items_) {
-    size_t menu_index = model_index + first_item_index_;
+    int menu_index = model_index + first_item_index_;
     SetMenuItemState(menu_index, model_->IsEnabledAt(model_index),
                      model_->IsItemCheckedAt(model_index), false);
     if (model_->IsItemDynamicAt(model_index)) {

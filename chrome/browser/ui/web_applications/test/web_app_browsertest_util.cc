@@ -321,7 +321,7 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
   auto app_menu_model = std::make_unique<AppMenuModel>(nullptr, browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
-  size_t index = 0;
+  int index = -1;
   if (!app_menu_model->GetModelAndIndexForCommandId(command_id, &model,
                                                     &index)) {
     return kNotPresent;

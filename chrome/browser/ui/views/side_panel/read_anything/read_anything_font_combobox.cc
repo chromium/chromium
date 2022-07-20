@@ -28,7 +28,7 @@ class ReadAnythingFontCombobox::MenuModel : public ComboboxMenuModel {
 
   // The Read Anything font combobox will use a different FontList for each
   // item in the menu. This will give a preview of the font to the user.
-  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
+  const gfx::FontList* GetLabelFontListAt(int index) const override {
     return new gfx::FontList(static_cast<ReadAnythingFontModel*>(GetModel())
                                  ->GetLabelFontListAt(index));
   }

@@ -27,7 +27,7 @@ TEST_F(TabMenuModelTest, Basics) {
 
   // Verify it has items. The number varies by platform, so we don't check
   // the exact number.
-  EXPECT_GT(model.GetItemCount(), 5u);
+  EXPECT_GT(model.GetItemCount(), 5);
 
   int item_count = 0;
   CountEnabledExecutable(&model, &item_count);
@@ -42,9 +42,8 @@ TEST_F(TabMenuModelTest, MoveToNewWindow) {
                      browser()->tab_strip_model(), 0);
 
   // Verify that CommandMoveTabsToNewWindow is in the menu.
-  EXPECT_TRUE(
-      model.GetIndexOfCommandId(TabStripModel::CommandMoveTabsToNewWindow)
-          .has_value());
+  EXPECT_GT(
+      model.GetIndexOfCommandId(TabStripModel::CommandMoveTabsToNewWindow), -1);
 }
 
 TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
@@ -62,13 +61,12 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
   TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                     tab_strip_model, 3);
 
-  size_t submenu_index =
-      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup)
-          .value();
+  int submenu_index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup);
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(submenu_index);
 
   EXPECT_TRUE(submenu->HasIcons());
-  EXPECT_EQ(submenu->GetItemCount(), 5u);
+  EXPECT_EQ(submenu->GetItemCount(), 5);
   EXPECT_EQ(submenu->GetCommandIdAt(0),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId);
   EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
@@ -95,13 +93,12 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
   TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                     tab_strip_model, 1);
 
-  size_t submenu_index =
-      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup)
-          .value();
+  int submenu_index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup);
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(submenu_index);
 
   EXPECT_TRUE(submenu->HasIcons());
-  EXPECT_EQ(submenu->GetItemCount(), 4u);
+  EXPECT_EQ(submenu->GetItemCount(), 4);
   EXPECT_EQ(submenu->GetCommandIdAt(0),
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId);
   EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
@@ -126,12 +123,11 @@ TEST_F(TabMenuModelTest, AddToExistingGroupAfterGroupDestroyed) {
   TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                     tab_strip_model, 1);
 
-  size_t submenu_index =
-      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup)
-          .value();
+  int submenu_index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup);
   ui::MenuModel* submenu = menu.GetSubmenuModelAt(submenu_index);
 
-  EXPECT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(submenu->GetItemCount(), 3);
 
   // Ungroup the tab at 0 to make the group in the menu dangle.
   tab_strip_model->RemoveFromGroup({0});
@@ -187,10 +183,8 @@ TEST_F(TabMenuModelTest, FollowOrUnfollow) {
         std::string());
     TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                       tab_strip, 0);
-    EXPECT_FALSE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_FALSE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                     .has_value());
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite));
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite));
   }
 
   // "Unfollow site" should be added when all sites are in kFollowed state.
@@ -206,10 +200,8 @@ TEST_F(TabMenuModelTest, FollowOrUnfollow) {
         std::string());
     TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                       tab_strip, 0);
-    EXPECT_FALSE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_TRUE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                    .has_value());
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite));
+    EXPECT_NE(-1, menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite));
   }
 
   // "Follow site" should be added when not all sites are in kFollowed state.
@@ -225,10 +217,8 @@ TEST_F(TabMenuModelTest, FollowOrUnfollow) {
         TabWebFeedFollowState::kNotFollowed, std::string());
     TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                       tab_strip, 0);
-    EXPECT_TRUE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_FALSE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                     .has_value());
+    EXPECT_NE(-1, menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite));
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite));
   }
 
   // Neither "Follow site" nor "Unfollow site" should be added when the recorded
@@ -246,9 +236,7 @@ TEST_F(TabMenuModelTest, FollowOrUnfollow) {
         std::string());
     TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
                       tab_strip, 0);
-    EXPECT_FALSE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_FALSE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                     .has_value());
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite));
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite));
   }
 }

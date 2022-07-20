@@ -232,7 +232,7 @@ TEST_F(CastDialogViewTest, ShowSourcesMenu) {
   views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
   // The items should be "tab" (includes tab mirroring and presentation) and
   // "desktop".
-  EXPECT_EQ(2u, sources_menu_model()->GetItemCount());
+  EXPECT_EQ(2, sources_menu_model()->GetItemCount());
   EXPECT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
   EXPECT_EQ(CastDialogView::kDesktop, sources_menu_model()->GetCommandIdAt(1));
 
@@ -250,7 +250,7 @@ TEST_F(CastDialogViewTest, CastAlternativeSources) {
   // Press the button to show the sources menu.
   views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
   // There should be two sources: tab and desktop.
-  ASSERT_EQ(2u, sources_menu_model()->GetItemCount());
+  ASSERT_EQ(2, sources_menu_model()->GetItemCount());
 
   EXPECT_CALL(controller_, StartCasting(model.media_sinks()[0].id, TAB_MIRROR));
   sources_menu_model()->ActivatedAt(0);

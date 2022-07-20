@@ -1809,11 +1809,10 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   MaybeAddSendTabToSelfItem(menu_contents);
 
-  absl::optional<size_t> paste_position =
-      menu_contents->GetIndexOfCommandId(Textfield::kPaste);
-  DCHECK(paste_position.has_value());
-  menu_contents->InsertItemWithStringIdAt(paste_position.value() + 1,
-                                          IDC_PASTE_AND_GO, IDS_PASTE_AND_GO);
+  int paste_position = menu_contents->GetIndexOfCommandId(Textfield::kPaste);
+  DCHECK_GE(paste_position, 0);
+  menu_contents->InsertItemWithStringIdAt(paste_position + 1, IDC_PASTE_AND_GO,
+                                          IDS_PASTE_AND_GO);
 
   menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -1919,7 +1918,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
     return;
   }
 
-  size_t index = menu_contents->GetIndexOfCommandId(Textfield::kUndo).value();
+  int index = menu_contents->GetIndexOfCommandId(Textfield::kUndo);
   // Add a separator if this is not the first item.
   if (index) {
     menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);

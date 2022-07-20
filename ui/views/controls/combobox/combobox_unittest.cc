@@ -828,7 +828,8 @@ TEST_F(ComboboxTest, MenuModel) {
 
   ui::MenuModel* menu_model = test_api_->menu_model();
 
-  EXPECT_EQ(TestComboboxModel::kItemCount, menu_model->GetItemCount());
+  EXPECT_EQ(TestComboboxModel::kItemCount,
+            static_cast<size_t>(menu_model->GetItemCount()));
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
             menu_model->GetTypeAt(kSeparatorIndex));
 

@@ -120,10 +120,12 @@ class WebAppFrameToolbarBrowserTest : public InProcessBrowserTest {
         /*provider=*/nullptr, helper()->app_browser());
     app_menu_model->Init();
     ui::MenuModel* model = app_menu_model.get();
-    size_t index = 0;
-    return app_menu_model->GetModelAndIndexForCommandId(command_id, &model,
-                                                        &index) &&
-           model->IsEnabledAt(index);
+    int index = -1;
+    if (!app_menu_model->GetModelAndIndexForCommandId(command_id, &model,
+                                                      &index)) {
+      return false;
+    }
+    return model->IsEnabledAt(index);
   }
 
  private:

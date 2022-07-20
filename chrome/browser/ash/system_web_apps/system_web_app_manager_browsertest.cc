@@ -1606,7 +1606,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
     run_loop.Run();
   }
 
-  auto check_shortcut = [&menu_model](size_t index, int shortcut_index,
+  auto check_shortcut = [&menu_model](int index, int shortcut_index,
                                       const std::u16string& label) {
     EXPECT_EQ(menu_model->GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
     EXPECT_EQ(menu_model->GetCommandIdAt(index),
@@ -1623,7 +1623,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
   ui_test_utils::UrlLoadObserver url_observer(
       GURL("chrome://test-system-app/pwa.html#two"),
       content::NotificationService::AllSources());
-  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id).value(),
+  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id),
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();
 }

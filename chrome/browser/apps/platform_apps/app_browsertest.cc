@@ -101,7 +101,7 @@ class PlatformAppContextMenu : public RenderViewContextMenu {
       : RenderViewContextMenu(render_frame_host, params) {}
 
   bool HasCommandWithId(int command_id) {
-    return menu_model_.GetIndexOfCommandId(command_id).has_value();
+    return menu_model_.GetIndexOfCommandId(command_id) != -1;
   }
 
   void Show() override {}

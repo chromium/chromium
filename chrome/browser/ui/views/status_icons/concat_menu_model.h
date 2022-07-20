@@ -23,37 +23,36 @@ class ConcatMenuModel : public ui::MenuModel {
 
   // MenuModel:
   bool HasIcons() const override;
-  size_t GetItemCount() const override;
-  ItemType GetTypeAt(size_t index) const override;
-  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
-  int GetCommandIdAt(size_t index) const override;
-  std::u16string GetLabelAt(size_t index) const override;
-  std::u16string GetMinorTextAt(size_t index) const override;
-  ui::ImageModel GetMinorIconAt(size_t index) const override;
-  bool IsItemDynamicAt(size_t index) const override;
-  bool GetAcceleratorAt(size_t index,
-                        ui::Accelerator* accelerator) const override;
+  int GetItemCount() const override;
+  ItemType GetTypeAt(int index) const override;
+  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override;
+  int GetCommandIdAt(int index) const override;
+  std::u16string GetLabelAt(int index) const override;
+  std::u16string GetMinorTextAt(int index) const override;
+  ui::ImageModel GetMinorIconAt(int index) const override;
+  bool IsItemDynamicAt(int index) const override;
+  bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
   bool IsItemCheckedAt(size_t index) const override;
-  int GetGroupIdAt(size_t index) const override;
-  ui::ImageModel GetIconAt(size_t index) const override;
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override;
-  bool IsEnabledAt(size_t index) const override;
-  bool IsVisibleAt(size_t index) const override;
-  void ActivatedAt(size_t index) override;
-  void ActivatedAt(size_t index, int event_flags) override;
-  MenuModel* GetSubmenuModelAt(size_t index) const override;
+  int GetGroupIdAt(int index) const override;
+  ui::ImageModel GetIconAt(int index) const override;
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override;
+  bool IsEnabledAt(int index) const override;
+  bool IsVisibleAt(int index) const override;
+  void ActivatedAt(int index) override;
+  void ActivatedAt(int index, int event_flags) override;
+  MenuModel* GetSubmenuModelAt(int index) const override;
   void MenuWillShow() override;
   void MenuWillClose() override;
 
  private:
   template <typename F, typename... Ts>
-  auto GetterImpl(F&& f, size_t index, Ts&&... args) const {
+  auto GetterImpl(F&& f, int index, Ts&&... args) const {
     return (GetMenuAndIndex(&index)->*f)(index, args...);
   }
 
   // Returns either |m1_| or |m2_| for the input |index|.  |index| will be
   // adjusted for the returned menu.
-  ui::MenuModel* GetMenuAndIndex(size_t* index) const;
+  ui::MenuModel* GetMenuAndIndex(int* index) const;
 
   const raw_ptr<ui::MenuModel> m1_;
   const raw_ptr<ui::MenuModel> m2_;

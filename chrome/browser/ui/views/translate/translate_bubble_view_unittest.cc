@@ -259,10 +259,8 @@ TEST_F(TranslateBubbleViewTest, OptionsMenuNeverTranslateLanguage) {
   EXPECT_FALSE(denial_button_clicked());
   TriggerOptionsMenu();
 
-  const size_t index =
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::NEVER_TRANSLATE_LANGUAGE)
-          .value();
+  const int index = bubble_->options_menu_model_->GetIndexOfCommandId(
+      TranslateBubbleView::NEVER_TRANSLATE_LANGUAGE);
   bubble_->options_menu_model_->ActivatedAt(index);
 
   EXPECT_TRUE(denial_button_clicked());
@@ -285,10 +283,8 @@ TEST_F(TranslateBubbleViewTest, OptionsMenuNeverTranslateSite) {
   EXPECT_FALSE(bubble_->GetWidget()->IsClosed());
 
   TriggerOptionsMenu();
-  const size_t index =
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::NEVER_TRANSLATE_SITE)
-          .value();
+  const int index = bubble_->options_menu_model_->GetIndexOfCommandId(
+      TranslateBubbleView::NEVER_TRANSLATE_SITE);
   bubble_->options_menu_model_->ActivatedAt(index);
 
   EXPECT_TRUE(denial_button_clicked());
@@ -320,7 +316,8 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxShortcut) {
   EXPECT_TRUE(mock_model_->translate_called_);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_TRANSLATING,
             bubble_->GetViewState());
-  EXPECT_EQ(bubble_->tabbed_pane_->GetSelectedTabIndex(), size_t{1});
+  EXPECT_EQ(bubble_->tabbed_pane_->GetSelectedTabIndex(),
+            static_cast<size_t>(1));
   histogram_tester.ExpectBucketCount(
       translate::kTranslateBubbleUiEventHistogramName,
       translate::TranslateBubbleUiEvent::ALWAYS_TRANSLATE_CHECKED, 1);
@@ -509,15 +506,12 @@ TEST_F(TranslateBubbleViewTest, OptionsMenuRespectsBlocklistSite) {
 
   TriggerOptionsMenu();
   // NEVER_TRANSLATE_SITE shouldn't show up for sites that can't be blocklisted.
-  EXPECT_FALSE(
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::NEVER_TRANSLATE_SITE)
-          .has_value());
+  EXPECT_EQ(-1, bubble_->options_menu_model_->GetIndexOfCommandId(
+                    TranslateBubbleView::NEVER_TRANSLATE_SITE));
   // Verify that the menu is populated so previous check makes sense.
-  EXPECT_TRUE(
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::NEVER_TRANSLATE_LANGUAGE)
-          .has_value());
+  EXPECT_GE(bubble_->options_menu_model_->GetIndexOfCommandId(
+                TranslateBubbleView::NEVER_TRANSLATE_LANGUAGE),
+            0);
 }
 
 TEST_F(TranslateBubbleViewTest, MenuOptionsHiddenOnUnknownSource) {
@@ -528,29 +522,22 @@ TEST_F(TranslateBubbleViewTest, MenuOptionsHiddenOnUnknownSource) {
   TriggerOptionsMenu();
   // NEVER_TRANSLATE_LANGUAGE and ALWAYS_TRANSLATE_LANGUAGE shouldn't show when
   // the source language is "Unknown".
-  EXPECT_FALSE(
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::NEVER_TRANSLATE_LANGUAGE)
-          .has_value());
-  EXPECT_FALSE(
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::ALWAYS_TRANSLATE_LANGUAGE)
-          .has_value());
+  EXPECT_EQ(-1, bubble_->options_menu_model_->GetIndexOfCommandId(
+                    TranslateBubbleView::NEVER_TRANSLATE_LANGUAGE));
+  EXPECT_EQ(-1, bubble_->options_menu_model_->GetIndexOfCommandId(
+                    TranslateBubbleView::ALWAYS_TRANSLATE_LANGUAGE));
   // Verify that the menu is populated so previous checks make sense.
-  EXPECT_TRUE(
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::CHANGE_TARGET_LANGUAGE)
-          .has_value());
+  EXPECT_GE(bubble_->options_menu_model_->GetIndexOfCommandId(
+                TranslateBubbleView::CHANGE_TARGET_LANGUAGE),
+            0);
 }
 
 TEST_F(TranslateBubbleViewTest, AlwaysTranslateLanguageMenuItem) {
   CreateAndShowBubble();
 
   TriggerOptionsMenu();
-  const size_t index =
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::ALWAYS_TRANSLATE_LANGUAGE)
-          .value();
+  const int index = bubble_->options_menu_model_->GetIndexOfCommandId(
+      TranslateBubbleView::ALWAYS_TRANSLATE_LANGUAGE);
 
   EXPECT_FALSE(mock_model_->ShouldAlwaysTranslate());
   EXPECT_FALSE(bubble_->options_menu_model_->IsItemCheckedAt(index));
@@ -595,10 +582,8 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateTriggerTranslation) {
   CreateAndShowBubble();
 
   TriggerOptionsMenu();
-  const size_t index =
-      bubble_->options_menu_model_
-          ->GetIndexOfCommandId(TranslateBubbleView::ALWAYS_TRANSLATE_LANGUAGE)
-          .value();
+  const int index = bubble_->options_menu_model_->GetIndexOfCommandId(
+      TranslateBubbleView::ALWAYS_TRANSLATE_LANGUAGE);
 
   EXPECT_FALSE(mock_model_->ShouldAlwaysTranslate());
   EXPECT_FALSE(bubble_->options_menu_model_->IsItemCheckedAt(index));

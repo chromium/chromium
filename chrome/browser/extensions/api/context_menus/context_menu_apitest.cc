@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
 class ExtensionContextMenuVisibilityApiTest
     : public ExtensionContextMenuApiTest {
  public:
-  ExtensionContextMenuVisibilityApiTest() = default;
+  ExtensionContextMenuVisibilityApiTest()
+      : top_level_model_(nullptr), menu_(nullptr), top_level_index_(-1) {}
 
   ExtensionContextMenuVisibilityApiTest(
       const ExtensionContextMenuVisibilityApiTest&) = delete;
@@ -154,7 +155,7 @@ class ExtensionContextMenuVisibilityApiTest
         menu_->extension_items().ConvertToExtensionsCustomCommandId(0),
         &top_level_model_, &top_level_index_);
 
-    EXPECT_GT(top_level_index(), 0u);
+    EXPECT_GT(top_level_index(), 0);
 
     return valid_setup;
   }
@@ -174,14 +175,14 @@ class ExtensionContextMenuVisibilityApiTest
   void VerifyNumExtensionItemsInMenuModel(int num_items,
                                           ui::MenuModel::ItemType type) {
     int num_found = 0;
-    for (size_t i = 0; i < top_level_model_->GetItemCount(); ++i) {
+    for (int i = 0; i < top_level_model_->GetItemCount(); i++) {
       int command_id = top_level_model_->GetCommandIdAt(i);
       if (ContextMenuMatcher::IsExtensionsCustomCommandId(command_id) &&
           top_level_model_->GetTypeAt(i) == type) {
-        ++num_found;
+        num_found++;
       }
     }
-    ASSERT_EQ(num_found, num_items);
+    ASSERT_TRUE(num_found == num_items);
   }
 
   // Verifies that the context menu is valid and contains the given number of
@@ -195,7 +196,7 @@ class ExtensionContextMenuVisibilityApiTest
   // Verifies a context menu item's visibility, title, and item type.
   void VerifyMenuItem(const std::string& title,
                       ui::MenuModel* model,
-                      size_t index,
+                      int index,
                       ui::MenuModel::ItemType type,
                       bool visible) {
     EXPECT_EQ(base::ASCIIToUTF16(title), model->GetLabelAt(index));
@@ -203,13 +204,13 @@ class ExtensionContextMenuVisibilityApiTest
     EXPECT_EQ(visible, model->IsVisibleAt(index));
   }
 
-  size_t top_level_index() const { return top_level_index_; }
+  int top_level_index() { return top_level_index_; }
 
   TestRenderViewContextMenu* menu() { return menu_.get(); }
 
   const Extension* extension() { return extension_; }
 
-  ui::MenuModel* top_level_model_ = nullptr;
+  ui::MenuModel* top_level_model_;
 
  private:
   content::WebContents* GetBackgroundPage(const std::string& extension_id) {
@@ -220,9 +221,9 @@ class ExtensionContextMenuVisibilityApiTest
 
   ProcessManager* process_manager() { return ProcessManager::Get(profile()); }
 
-  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension> extension_;
   std::unique_ptr<TestRenderViewContextMenu> menu_;
-  size_t top_level_index_ = 0;
+  int top_level_index_;
 };
 
 // Tests showing a single visible menu item in the top-level menu model, which
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
+  EXPECT_EQ(2, submodel->GetItemCount());
 
   VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
   VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
@@ -316,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
+  EXPECT_EQ(2, submodel->GetItemCount());
 
   // Though the children's internal visibility state remains unchanged, the ui
   // code will hide the children if the parent is hidden.
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
+  EXPECT_EQ(2, submodel->GetItemCount());
 
   VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
   VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
@@ -374,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
+  EXPECT_EQ(2, submodel->GetItemCount());
 
   VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, true);
   VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
@@ -406,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(1u, submodel->GetItemCount());
+  EXPECT_EQ(1, submodel->GetItemCount());
 
   // When a parent item is specified by the developer (as opposed to generated),
   // its visibility is determined by the specified state.
@@ -414,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(
 
   submodel = submodel->GetSubmenuModelAt(0);
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
+  EXPECT_EQ(2, submodel->GetItemCount());
 
   VerifyMenuItem("child2", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
   VerifyMenuItem("child3", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
@@ -442,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(3u, submodel->GetItemCount());
+  EXPECT_EQ(3, submodel->GetItemCount());
 
   VerifyMenuItem("item1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
   VerifyMenuItem("item2", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
@@ -471,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(1u, submodel->GetItemCount());
+  EXPECT_EQ(1, submodel->GetItemCount());
   VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
 
   // Update child1 to visible.
@@ -525,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   ui::MenuModel* submodel =
       top_level_model_->GetSubmenuModelAt(top_level_index());
   ASSERT_TRUE(submodel);
-  EXPECT_EQ(3u, submodel->GetItemCount());
+  EXPECT_EQ(3, submodel->GetItemCount());
 
   VerifyMenuItem("item1", submodel, 0, ui::MenuModel::TYPE_COMMAND, true);
   VerifyMenuItem("item2", submodel, 1, ui::MenuModel::TYPE_COMMAND, true);
@@ -533,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
 
   ui::MenuModel* item3_submodel = submodel->GetSubmenuModelAt(2);
   ASSERT_TRUE(item3_submodel);
-  EXPECT_EQ(2u, item3_submodel->GetItemCount());
+  EXPECT_EQ(2, item3_submodel->GetItemCount());
 
   // Though the children's internal visibility state remains unchanged, the ui
   // code will hide the children if the parent is hidden.

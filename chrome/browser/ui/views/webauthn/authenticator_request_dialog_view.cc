@@ -320,7 +320,7 @@ void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
   auto* other_mechanisms_menu_model =
       sheet_->model()->GetOtherMechanismsMenuModel();
   DCHECK(other_mechanisms_menu_model);
-  DCHECK_GE(other_mechanisms_menu_model->GetItemCount(), 1u);
+  DCHECK_GE(other_mechanisms_menu_model->GetItemCount(), 1);
 
   other_mechanisms_menu_runner_ = std::make_unique<views::MenuRunner>(
       other_mechanisms_menu_model, views::MenuRunner::COMBOBOX);

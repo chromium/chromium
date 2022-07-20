@@ -199,10 +199,8 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest, PinAndUnpinToolbarIcon) {
   EXPECT_TRUE(ToolbarIconExists());
   // Pin the icon via its context menu.
   ui::SimpleMenuModel* context_menu = GetIconContextMenu();
-  const size_t command_index =
-      context_menu
-          ->GetIndexOfCommandId(IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION)
-          .value();
+  const int command_index = context_menu->GetIndexOfCommandId(
+      IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION);
   context_menu->ActivatedAt(command_index);
 
   views::test::WidgetDestroyedWaiter waiter(GetDialogWidget());

@@ -55,7 +55,7 @@ std::vector<DbusString> GetDbusMenuShortcut(ui::Accelerator accelerator) {
 }  // namespace
 
 MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
-                                                    size_t i) {
+                                                    int i) {
   // Properties should only be set if they differ from the default values.
   MenuItemProperties properties;
 

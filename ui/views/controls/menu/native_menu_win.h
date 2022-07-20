@@ -99,7 +99,7 @@ class VIEWS_EXPORT NativeMenuWin {
   HWND system_menu_for_;
 
   // The index of the first item in the model in the menu.
-  size_t first_item_index_;
+  int first_item_index_;
 
   // If we're a submenu, this is our parent.
   raw_ptr<NativeMenuWin> parent_;

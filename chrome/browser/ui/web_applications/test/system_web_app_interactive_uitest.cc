@@ -1096,7 +1096,7 @@ class SystemWebAppNewWindowMenuItemTest
     ASSERT_TRUE(menu);
     ui::MenuModel* model = menu.get();
 
-    size_t command_index;
+    int command_index;
     ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
                                                 &command_index);
     EXPECT_TRUE(menu->IsEnabledAt(command_index));

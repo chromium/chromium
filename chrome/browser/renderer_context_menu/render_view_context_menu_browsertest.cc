@@ -1440,11 +1440,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
     // As soon as at least three profiles exist, we show all profiles in a
     // submenu.
-    ui::MenuModel* model = nullptr;
-    size_t index = 0;
+    ui::MenuModel* model = NULL;
+    int index = -1;
     ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                                &model, &index));
-    ASSERT_EQ(2u, model->GetItemCount());
+    ASSERT_EQ(2, model->GetItemCount());
     ASSERT_FALSE(menu->IsItemInRangePresent(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                             IDC_OPEN_LINK_IN_PROFILE_LAST));
   }
@@ -1508,11 +1508,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       CreateContextMenuMediaTypeNone(url, url));
 
   // Verify that the size of the menu is correct.
-  ui::MenuModel* model = nullptr;
-  size_t index = 0;
+  ui::MenuModel* model = NULL;
+  int index = -1;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                              &model, &index));
-  ASSERT_EQ(profiles_in_menu.size(), model->GetItemCount());
+  ASSERT_EQ(static_cast<int>(profiles_in_menu.size()), model->GetItemCount());
 
   // Open the menu items. They should match their corresponding profiles in
   // |profiles_in_menu|.
@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
 
   // Verify that the Open in Profile option is shown.
   ui::MenuModel* model = nullptr;
-  size_t index = 0;
+  int index;
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                             &model, &index));
 
@@ -2641,10 +2641,10 @@ IN_PROC_BROWSER_TEST_F(ContextMenuWithProfileLinksBrowserTest,
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
     // With at least two secondary profiles, they are displayed in a submenu.
     ui::MenuModel* model = nullptr;
-    size_t index = 0;
+    int index = -1;
     ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                                &model, &index));
-    ASSERT_EQ(2u, model->GetItemCount());
+    ASSERT_EQ(2, model->GetItemCount());
     ASSERT_FALSE(menu->IsItemInRangePresent(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                             IDC_OPEN_LINK_IN_PROFILE_LAST));
   }

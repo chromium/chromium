@@ -76,14 +76,14 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 
 bool IsItemPresentInMenu(ui::MenuModel* menu, int command_id) {
   ui::MenuModel* model = menu;
-  size_t index = 0;
+  int index = 0;
   return ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
                                                      &index);
 }
 
 bool IsItemEnabledInMenu(ui::MenuModel* menu, int command_id) {
   ui::MenuModel* model = menu;
-  size_t index = 0;
+  int index = 0;
   return ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
                                                      &index) &&
          menu->IsEnabledAt(index);
@@ -578,7 +578,7 @@ TEST_F(ShelfContextMenuTest, ArcContextMenuOptions) {
       GetContextMenu(item_delegate, primary_id);
 
   // Test that there are 9 items in an ARC app context menu.
-  EXPECT_EQ(9u, menu->GetItemCount());
+  EXPECT_EQ(9, menu->GetItemCount());
 }
 
 // Tests that the context menu of internal app  is correct.
@@ -632,7 +632,7 @@ TEST_F(ShelfContextMenuTest, InternalAppShelfContextMenuOptionsNumber) {
     std::unique_ptr<ui::MenuModel> menu =
         GetContextMenu(item_delegate, primary_id);
 
-    const size_t expected_options_num = internal_app.show_in_launcher ? 2 : 1;
+    const int expected_options_num = internal_app.show_in_launcher ? 2 : 1;
     EXPECT_EQ(expected_options_num, menu->GetItemCount());
   }
 }
@@ -666,7 +666,7 @@ TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
       GetContextMenu(item_delegate, primary_id);
 
   // Check that every menu item has an icon
-  for (size_t i = 0; i < menu->GetItemCount(); ++i)
+  for (int i = 0; i < menu->GetItemCount(); ++i)
     EXPECT_FALSE(menu->GetIconAt(i).IsEmpty());
 
   // Precisely which density option is shown is not important to us, we only
@@ -695,7 +695,7 @@ TEST_F(ShelfContextMenuTest, CrostiniUnregisteredApps) {
   std::unique_ptr<ui::MenuModel> menu =
       GetContextMenu(item_delegate, primary_id);
 
-  EXPECT_EQ(menu->GetItemCount(), 1u);
+  EXPECT_EQ(menu->GetItemCount(), 1);
   EXPECT_FALSE(
       IsItemEnabledInMenu(menu.get(), ash::APP_CONTEXT_MENU_NEW_WINDOW));
 }
@@ -720,7 +720,7 @@ TEST_F(ShelfContextMenuTest, WebApp) {
       GetContextMenu(item_delegate, primary_id);
 
   // Check that every menu item has an icon
-  for (size_t i = 0; i < menu->GetItemCount(); ++i)
+  for (int i = 0; i < menu->GetItemCount(); ++i)
     EXPECT_FALSE(menu->GetIconAt(i).IsEmpty());
 
   EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));

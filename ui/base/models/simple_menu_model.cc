@@ -225,19 +225,18 @@ void SimpleMenuModel::AddActionableSubmenuWithStringIdAndIcon(
   AppendItem(std::move(item));
 }
 
-void SimpleMenuModel::InsertItemAt(size_t index,
+void SimpleMenuModel::InsertItemAt(int index,
                                    int command_id,
                                    const std::u16string& label) {
   InsertItemAtIndex(Item(command_id, TYPE_COMMAND, label), index);
 }
 
-void SimpleMenuModel::InsertItemWithStringIdAt(size_t index,
-                                               int command_id,
-                                               int string_id) {
+void SimpleMenuModel::InsertItemWithStringIdAt(
+    int index, int command_id, int string_id) {
   InsertItemAt(index, command_id, l10n_util::GetStringUTF16(string_id));
 }
 
-void SimpleMenuModel::InsertSeparatorAt(size_t index,
+void SimpleMenuModel::InsertSeparatorAt(int index,
                                         MenuSeparatorType separator_type) {
 #if !defined(USE_AURA)
   if (separator_type != NORMAL_SEPARATOR) {
@@ -249,19 +248,18 @@ void SimpleMenuModel::InsertSeparatorAt(size_t index,
   InsertItemAtIndex(std::move(item), index);
 }
 
-void SimpleMenuModel::InsertCheckItemAt(size_t index,
+void SimpleMenuModel::InsertCheckItemAt(int index,
                                         int command_id,
                                         const std::u16string& label) {
   InsertItemAtIndex(Item(command_id, TYPE_CHECK, label), index);
 }
 
-void SimpleMenuModel::InsertCheckItemWithStringIdAt(size_t index,
-                                                    int command_id,
-                                                    int string_id) {
+void SimpleMenuModel::InsertCheckItemWithStringIdAt(
+    int index, int command_id, int string_id) {
   InsertCheckItemAt(index, command_id, l10n_util::GetStringUTF16(string_id));
 }
 
-void SimpleMenuModel::InsertRadioItemAt(size_t index,
+void SimpleMenuModel::InsertRadioItemAt(int index,
                                         int command_id,
                                         const std::u16string& label,
                                         int group_id) {
@@ -270,15 +268,13 @@ void SimpleMenuModel::InsertRadioItemAt(size_t index,
   InsertItemAtIndex(std::move(item), index);
 }
 
-void SimpleMenuModel::InsertRadioItemWithStringIdAt(size_t index,
-                                                    int command_id,
-                                                    int string_id,
-                                                    int group_id) {
+void SimpleMenuModel::InsertRadioItemWithStringIdAt(
+    int index, int command_id, int string_id, int group_id) {
   InsertRadioItemAt(
       index, command_id, l10n_util::GetStringUTF16(string_id), group_id);
 }
 
-void SimpleMenuModel::InsertSubMenuAt(size_t index,
+void SimpleMenuModel::InsertSubMenuAt(int index,
                                       int command_id,
                                       const std::u16string& label,
                                       MenuModel* model) {
@@ -287,70 +283,68 @@ void SimpleMenuModel::InsertSubMenuAt(size_t index,
   InsertItemAtIndex(std::move(item), index);
 }
 
-void SimpleMenuModel::InsertSubMenuWithStringIdAt(size_t index,
-                                                  int command_id,
-                                                  int string_id,
-                                                  MenuModel* model) {
+void SimpleMenuModel::InsertSubMenuWithStringIdAt(
+    int index, int command_id, int string_id, MenuModel* model) {
   InsertSubMenuAt(index, command_id, l10n_util::GetStringUTF16(string_id),
                   model);
 }
 
-void SimpleMenuModel::RemoveItemAt(size_t index) {
+void SimpleMenuModel::RemoveItemAt(int index) {
   items_.erase(items_.begin() + ValidateItemIndex(index));
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::SetIcon(size_t index, const ui::ImageModel& icon) {
+void SimpleMenuModel::SetIcon(int index, const ui::ImageModel& icon) {
   items_[ValidateItemIndex(index)].icon = icon;
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::SetLabel(size_t index, const std::u16string& label) {
+void SimpleMenuModel::SetLabel(int index, const std::u16string& label) {
   items_[ValidateItemIndex(index)].label = label;
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::SetMinorText(size_t index,
+void SimpleMenuModel::SetMinorText(int index,
                                    const std::u16string& minor_text) {
   items_[ValidateItemIndex(index)].minor_text = minor_text;
 }
 
-void SimpleMenuModel::SetMinorIcon(size_t index,
+void SimpleMenuModel::SetMinorIcon(int index,
                                    const ui::ImageModel& minor_icon) {
   items_[ValidateItemIndex(index)].minor_icon = minor_icon;
 }
 
-void SimpleMenuModel::SetEnabledAt(size_t index, bool enabled) {
+void SimpleMenuModel::SetEnabledAt(int index, bool enabled) {
   if (items_[ValidateItemIndex(index)].enabled == enabled)
     return;
 
-  items_[index].enabled = enabled;
+  items_[ValidateItemIndex(index)].enabled = enabled;
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::SetVisibleAt(size_t index, bool visible) {
+void SimpleMenuModel::SetVisibleAt(int index, bool visible) {
   if (items_[ValidateItemIndex(index)].visible == visible)
     return;
 
-  items_[index].visible = visible;
+  items_[ValidateItemIndex(index)].visible = visible;
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::SetIsNewFeatureAt(size_t index, bool is_new_feature) {
+void SimpleMenuModel::SetIsNewFeatureAt(int index, bool is_new_feature) {
   items_[ValidateItemIndex(index)].is_new_feature = is_new_feature;
 }
 
-void SimpleMenuModel::SetMayHaveMnemonicsAt(size_t index,
+void SimpleMenuModel::SetMayHaveMnemonicsAt(int index,
                                             bool may_have_mnemonics) {
   items_[ValidateItemIndex(index)].may_have_mnemonics = may_have_mnemonics;
 }
 
-void SimpleMenuModel::SetAccessibleNameAt(size_t index,
+void SimpleMenuModel::SetAccessibleNameAt(int index,
                                           std::u16string accessible_name) {
   items_[ValidateItemIndex(index)].accessible_name = std::move(accessible_name);
 }
 
-void SimpleMenuModel::SetElementIdentifierAt(size_t index,
+void SimpleMenuModel::SetElementIdentifierAt(int index,
                                              ElementIdentifier unique_id) {
   items_[ValidateItemIndex(index)].unique_id = unique_id;
 }
@@ -360,20 +354,19 @@ void SimpleMenuModel::Clear() {
   MenuItemsChanged();
 }
 
-absl::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
-    int command_id) const {
+int SimpleMenuModel::GetIndexOfCommandId(int command_id) const {
   for (auto i = items_.begin(); i != items_.end(); ++i) {
     if (i->command_id == command_id)
-      return static_cast<size_t>(std::distance(items_.begin(), i));
+      return static_cast<int>(std::distance(items_.begin(), i));
   }
-  return absl::nullopt;
+  return -1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, MenuModel implementation:
 
 bool SimpleMenuModel::HasIcons() const {
-  for (size_t i = 0; i < GetItemCount(); ++i) {
+  for (int i = 0; i < GetItemCount(); ++i) {
     if (!GetIconAt(i).IsEmpty())
       return true;
   }
@@ -381,70 +374,76 @@ bool SimpleMenuModel::HasIcons() const {
   return false;
 }
 
-size_t SimpleMenuModel::GetItemCount() const {
-  return items_.size();
+int SimpleMenuModel::GetItemCount() const {
+  return static_cast<int>(items_.size());
 }
 
-MenuModel::ItemType SimpleMenuModel::GetTypeAt(size_t index) const {
+MenuModel::ItemType SimpleMenuModel::GetTypeAt(int index) const {
   return items_[ValidateItemIndex(index)].type;
 }
 
-ui::MenuSeparatorType SimpleMenuModel::GetSeparatorTypeAt(size_t index) const {
+ui::MenuSeparatorType SimpleMenuModel::GetSeparatorTypeAt(int index) const {
   return items_[ValidateItemIndex(index)].separator_type;
 }
 
-int SimpleMenuModel::GetCommandIdAt(size_t index) const {
+int SimpleMenuModel::GetCommandIdAt(int index) const {
   return items_[ValidateItemIndex(index)].command_id;
 }
 
-std::u16string SimpleMenuModel::GetLabelAt(size_t index) const {
+std::u16string SimpleMenuModel::GetLabelAt(int index) const {
   if (IsItemDynamicAt(index))
     return delegate_->GetLabelForCommandId(GetCommandIdAt(index));
   return items_[ValidateItemIndex(index)].label;
 }
 
-std::u16string SimpleMenuModel::GetMinorTextAt(size_t index) const {
+std::u16string SimpleMenuModel::GetMinorTextAt(int index) const {
   return items_[ValidateItemIndex(index)].minor_text;
 }
 
-ImageModel SimpleMenuModel::GetMinorIconAt(size_t index) const {
+ImageModel SimpleMenuModel::GetMinorIconAt(int index) const {
   return items_[ValidateItemIndex(index)].minor_icon;
 }
 
-bool SimpleMenuModel::IsItemDynamicAt(size_t index) const {
-  return delegate_ &&
-         delegate_->IsItemForCommandIdDynamic(GetCommandIdAt(index));
+bool SimpleMenuModel::IsItemDynamicAt(int index) const {
+  if (delegate_)
+    return delegate_->IsItemForCommandIdDynamic(GetCommandIdAt(index));
+  return false;
 }
 
-bool SimpleMenuModel::GetAcceleratorAt(size_t index,
+bool SimpleMenuModel::GetAcceleratorAt(int index,
                                        ui::Accelerator* accelerator) const {
-  return delegate_ && delegate_->GetAcceleratorForCommandId(
-                          GetCommandIdAt(index), accelerator);
+  if (delegate_) {
+    return delegate_->GetAcceleratorForCommandId(GetCommandIdAt(index),
+                                                 accelerator);
+  }
+  return false;
 }
 
 bool SimpleMenuModel::IsItemCheckedAt(size_t index) const {
   if (!delegate_)
     return false;
   MenuModel::ItemType item_type = GetTypeAt(index);
-  return (item_type == TYPE_CHECK || item_type == TYPE_RADIO) &&
-         delegate_->IsCommandIdChecked(GetCommandIdAt(index));
+  return (item_type == TYPE_CHECK || item_type == TYPE_RADIO) ?
+      delegate_->IsCommandIdChecked(GetCommandIdAt(index)) : false;
 }
 
-int SimpleMenuModel::GetGroupIdAt(size_t index) const {
+int SimpleMenuModel::GetGroupIdAt(int index) const {
   return items_[ValidateItemIndex(index)].group_id;
 }
 
-ImageModel SimpleMenuModel::GetIconAt(size_t index) const {
+ImageModel SimpleMenuModel::GetIconAt(int index) const {
   if (IsItemDynamicAt(index))
     return delegate_->GetIconForCommandId(GetCommandIdAt(index));
-  return items_[ValidateItemIndex(index)].icon;
+
+  ValidateItemIndex(index);
+  return items_[index].icon;
 }
 
-ButtonMenuItemModel* SimpleMenuModel::GetButtonMenuItemAt(size_t index) const {
+ButtonMenuItemModel* SimpleMenuModel::GetButtonMenuItemAt(int index) const {
   return items_[ValidateItemIndex(index)].button_model;
 }
 
-bool SimpleMenuModel::IsEnabledAt(size_t index) const {
+bool SimpleMenuModel::IsEnabledAt(int index) const {
   int command_id = GetCommandIdAt(index);
 
   if (!delegate_ || command_id == kSeparatorId || GetButtonMenuItemAt(index))
@@ -454,7 +453,7 @@ bool SimpleMenuModel::IsEnabledAt(size_t index) const {
          items_[ValidateItemIndex(index)].enabled;
 }
 
-bool SimpleMenuModel::IsVisibleAt(size_t index) const {
+bool SimpleMenuModel::IsVisibleAt(int index) const {
   int command_id = GetCommandIdAt(index);
   if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId ||
       GetButtonMenuItemAt(index)) {
@@ -465,7 +464,7 @@ bool SimpleMenuModel::IsVisibleAt(size_t index) const {
          items_[ValidateItemIndex(index)].visible;
 }
 
-bool SimpleMenuModel::IsAlertedAt(size_t index) const {
+bool SimpleMenuModel::IsAlertedAt(int index) const {
   const int command_id = GetCommandIdAt(index);
   if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId)
     return false;
@@ -473,7 +472,7 @@ bool SimpleMenuModel::IsAlertedAt(size_t index) const {
   // This method needs to be recursive, because if the highlighted command is
   // in a submenu then the submenu item should also be highlighted.
   if (auto* const submenu = GetSubmenuModelAt(index)) {
-    for (size_t i = 0; i < submenu->GetItemCount(); ++i) {
+    for (int i = 0; i < submenu->GetItemCount(); ++i) {
       if (submenu->IsAlertedAt(i))
         return true;
     }
@@ -482,32 +481,32 @@ bool SimpleMenuModel::IsAlertedAt(size_t index) const {
   return delegate_->IsCommandIdAlerted(command_id);
 }
 
-bool SimpleMenuModel::IsNewFeatureAt(size_t index) const {
+bool SimpleMenuModel::IsNewFeatureAt(int index) const {
   return items_[ValidateItemIndex(index)].is_new_feature;
 }
 
-bool SimpleMenuModel::MayHaveMnemonicsAt(size_t index) const {
+bool SimpleMenuModel::MayHaveMnemonicsAt(int index) const {
   return items_[ValidateItemIndex(index)].may_have_mnemonics;
 }
 
-std::u16string SimpleMenuModel::GetAccessibleNameAt(size_t index) const {
+std::u16string SimpleMenuModel::GetAccessibleNameAt(int index) const {
   return items_[ValidateItemIndex(index)].accessible_name;
 }
 
-ElementIdentifier SimpleMenuModel::GetElementIdentifierAt(size_t index) const {
+ElementIdentifier SimpleMenuModel::GetElementIdentifierAt(int index) const {
   return items_[ValidateItemIndex(index)].unique_id;
 }
 
-void SimpleMenuModel::ActivatedAt(size_t index) {
+void SimpleMenuModel::ActivatedAt(int index) {
   ActivatedAt(index, 0);
 }
 
-void SimpleMenuModel::ActivatedAt(size_t index, int event_flags) {
+void SimpleMenuModel::ActivatedAt(int index, int event_flags) {
   if (delegate_)
     delegate_->ExecuteCommand(GetCommandIdAt(index), event_flags);
 }
 
-MenuModel* SimpleMenuModel::GetSubmenuModelAt(size_t index) const {
+MenuModel* SimpleMenuModel::GetSubmenuModelAt(int index) const {
   return items_[ValidateItemIndex(index)].submenu;
 }
 
@@ -545,8 +544,9 @@ SimpleMenuModel::Item::Item(int command_id, ItemType type, std::u16string label)
 SimpleMenuModel::Item& SimpleMenuModel::Item::operator=(Item&&) = default;
 SimpleMenuModel::Item::~Item() = default;
 
-size_t SimpleMenuModel::ValidateItemIndex(size_t index) const {
-  CHECK_LT(index, items_.size());
+int SimpleMenuModel::ValidateItemIndex(int index) const {
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), items_.size());
   return index;
 }
 
@@ -556,7 +556,7 @@ void SimpleMenuModel::AppendItem(Item item) {
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::InsertItemAtIndex(Item item, size_t index) {
+void SimpleMenuModel::InsertItemAtIndex(Item item, int index) {
   ValidateItem(item);
   items_.insert(items_.begin() + index, std::move(item));
   MenuItemsChanged();

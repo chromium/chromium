@@ -560,11 +560,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions_container->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
-  absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
+  int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
-  ASSERT_TRUE(visibility_index.has_value());
-  std::u16string visibility_label =
-      context_menu->GetLabelAt(visibility_index.value());
+  ASSERT_GE(visibility_index, 0);
+  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
   EXPECT_EQ(visibility_label, u"Unpin");
 }
 
@@ -593,11 +592,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions_container->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
-  absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
+  int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
-  ASSERT_TRUE(visibility_index.has_value());
-  std::u16string visibility_label =
-      context_menu->GetLabelAt(visibility_index.value());
+  ASSERT_GE(visibility_index, 0);
+  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
   EXPECT_EQ(visibility_label, u"Pin");
 }
 

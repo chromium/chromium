@@ -340,11 +340,11 @@ TEST_F(ExtensionActionViewControllerUnitTest,
     ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
         action->GetContextMenu(extensions::ExtensionContextMenuModel::
                                    ContextMenuSource::kToolbarAction));
-    absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
+    int visibility_index = context_menu->GetIndexOfCommandId(
         extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
-    ASSERT_TRUE(visibility_index.has_value());
+    ASSERT_GE(visibility_index, 0);
     std::u16string visibility_label =
-        context_menu->GetLabelAt(visibility_index.value());
+        context_menu->GetLabelAt(visibility_index);
     EXPECT_EQ(l10n_util::GetStringUTF16(expected_visibility_string),
               visibility_label);
   };

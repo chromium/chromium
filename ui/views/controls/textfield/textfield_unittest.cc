@@ -3879,7 +3879,7 @@ TEST_F(TextfieldTest, EmojiItem_EmptyField) {
   // A normal empty field may show the Emoji option (if supported).
   ui::MenuModel* context_menu = GetContextMenuModel();
   EXPECT_TRUE(context_menu);
-  EXPECT_GT(context_menu->GetItemCount(), 0u);
+  EXPECT_GT(context_menu->GetItemCount(), 0);
   // Not all OS/versions support the emoji menu.
   EXPECT_EQ(ui::IsEmojiPanelSupported(),
             context_menu->GetLabelAt(0) ==
@@ -3894,7 +3894,7 @@ TEST_F(TextfieldTest, EmojiItem_ReadonlyField) {
   // In no case is the emoji option showing on a read-only field.
   ui::MenuModel* context_menu = GetContextMenuModel();
   EXPECT_TRUE(context_menu);
-  EXPECT_GT(context_menu->GetItemCount(), 0u);
+  EXPECT_GT(context_menu->GetItemCount(), 0);
   EXPECT_NE(context_menu->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_EMOJI));
 }
@@ -3916,7 +3916,7 @@ TEST_F(TextfieldTest, EmojiItem_FieldWithText) {
   textfield_->SelectAll(false);
   ui::MenuModel* context_menu = GetContextMenuModel();
   EXPECT_TRUE(context_menu);
-  EXPECT_GT(context_menu->GetItemCount(), 0u);
+  EXPECT_GT(context_menu->GetItemCount(), 0);
   // Not all OS/versions support the emoji menu.
   EXPECT_EQ(ui::IsEmojiPanelSupported(),
             context_menu->GetLabelAt(kExpectedEmojiIndex) ==
@@ -3967,7 +3967,7 @@ TEST_F(TextfieldTest, LookUpPassword) {
 
   ui::MenuModel* context_menu = GetContextMenuModel();
   EXPECT_TRUE(context_menu);
-  EXPECT_GT(context_menu->GetItemCount(), 0u);
+  EXPECT_GT(context_menu->GetItemCount(), 0);
   EXPECT_NE(context_menu->GetCommandIdAt(0), IDS_CONTENT_CONTEXT_LOOK_UP);
   EXPECT_NE(context_menu->GetLabelAt(0),
             l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP, kText));

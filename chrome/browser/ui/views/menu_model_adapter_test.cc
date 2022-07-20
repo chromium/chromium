@@ -50,36 +50,34 @@ class CommonMenuModel : public ui::MenuModel {
   // ui::MenuModel implementation.
   bool HasIcons() const override { return false; }
 
-  bool IsItemDynamicAt(size_t index) const override { return false; }
+  bool IsItemDynamicAt(int index) const override { return false; }
 
-  bool GetAcceleratorAt(size_t index,
+  bool GetAcceleratorAt(int index,
                         ui::Accelerator* accelerator) const override {
     return false;
   }
 
-  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override {
+  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
     return ui::NORMAL_SEPARATOR;
   }
 
   bool IsItemCheckedAt(size_t index) const override { return false; }
 
-  int GetGroupIdAt(size_t index) const override { return 0; }
+  int GetGroupIdAt(int index) const override { return 0; }
 
-  ui::ImageModel GetIconAt(size_t index) const override {
+  ui::ImageModel GetIconAt(int index) const override {
     return ui::ImageModel();
   }
 
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override {
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
     return nullptr;
   }
 
-  bool IsEnabledAt(size_t index) const override { return true; }
+  bool IsEnabledAt(int index) const override { return true; }
 
-  ui::MenuModel* GetSubmenuModelAt(size_t index) const override {
-    return nullptr;
-  }
+  ui::MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
 
-  void ActivatedAt(size_t index) override {}
+  void ActivatedAt(int index) override {}
 };
 
 class SubMenuModel : public CommonMenuModel {
@@ -99,15 +97,15 @@ class SubMenuModel : public CommonMenuModel {
 
  private:
   // ui::MenuModel implementation.
-  size_t GetItemCount() const override { return 1; }
+  int GetItemCount() const override { return 1; }
 
-  ItemType GetTypeAt(size_t index) const override { return TYPE_COMMAND; }
+  ItemType GetTypeAt(int index) const override { return TYPE_COMMAND; }
 
-  int GetCommandIdAt(size_t index) const override {
-    return static_cast<int>(index) + kSubMenuBaseId;
+  int GetCommandIdAt(int index) const override {
+    return index + kSubMenuBaseId;
   }
 
-  std::u16string GetLabelAt(size_t index) const override { return u"Item"; }
+  std::u16string GetLabelAt(int index) const override { return u"Item"; }
 
   void MenuWillShow() override { showing_ = true; }
 
@@ -133,17 +131,17 @@ class TopMenuModel : public CommonMenuModel {
 
  private:
   // ui::MenuModel implementation.
-  size_t GetItemCount() const override { return 1; }
+  int GetItemCount() const override { return 1; }
 
-  ItemType GetTypeAt(size_t index) const override { return TYPE_SUBMENU; }
+  ItemType GetTypeAt(int index) const override { return TYPE_SUBMENU; }
 
-  int GetCommandIdAt(size_t index) const override {
-    return static_cast<int>(index) + kTopMenuBaseId;
+  int GetCommandIdAt(int index) const override {
+    return index + kTopMenuBaseId;
   }
 
-  std::u16string GetLabelAt(size_t index) const override { return u"submenu"; }
+  std::u16string GetLabelAt(int index) const override { return u"submenu"; }
 
-  MenuModel* GetSubmenuModelAt(size_t index) const override {
+  MenuModel* GetSubmenuModelAt(int index) const override {
     return &sub_menu_model_;
   }
 

@@ -33,7 +33,7 @@
 namespace {
 
 void CheckShortcut(const ui::SimpleMenuModel& model,
-                   size_t index,
+                   int index,
                    int shortcut_index,
                    const std::u16string& label,
                    absl::optional<SkColor> color) {
@@ -51,7 +51,7 @@ void CheckShortcut(const ui::SimpleMenuModel& model,
   }
 }
 
-void CheckSeparator(const ui::SimpleMenuModel& model, size_t index) {
+void CheckSeparator(const ui::SimpleMenuModel& model, int index) {
   EXPECT_EQ(model.GetTypeAt(index), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(model.GetCommandIdAt(index), -1);
 }
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
 
   // Shortcuts appear last in the context menu.
   // See /web_app_shortcuts/shortcuts.json for shortcut icon definitions.
-  size_t index = menu_model->GetItemCount() - 11;
+  int index = menu_model->GetItemCount() - 11;
 
   // Purpose |any| by default.
   CheckShortcut(*menu_model, index++, 0, u"One", SK_ColorGREEN);
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   ui_test_utils::UrlLoadObserver url_observer(
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html#four"),
       content::NotificationService::AllSources());
-  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id).value(),
+  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id),
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();
 }

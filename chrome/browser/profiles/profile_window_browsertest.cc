@@ -296,14 +296,12 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
   // Verify the normal browser has a bookmark menu.
   AppMenuModel model_normal_profile(&accelerator_handler, browser());
   model_normal_profile.Init();
-  EXPECT_TRUE(
-      model_normal_profile.GetIndexOfCommandId(IDC_BOOKMARKS_MENU).has_value());
+  EXPECT_NE(-1, model_normal_profile.GetIndexOfCommandId(IDC_BOOKMARKS_MENU));
 
   // Guest browser has no bookmark menu.
   Browser* guest_browser = CreateGuestBrowser();
   AppMenuModel model_guest_profile(&accelerator_handler, guest_browser);
-  EXPECT_FALSE(
-      model_guest_profile.GetIndexOfCommandId(IDC_BOOKMARKS_MENU).has_value());
+  EXPECT_EQ(-1, model_guest_profile.GetIndexOfCommandId(IDC_BOOKMARKS_MENU));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {

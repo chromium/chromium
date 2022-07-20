@@ -16,35 +16,34 @@ bool ComboboxMenuModel::UseCheckmarks() const {
 
 // Overridden from MenuModel:
 bool ComboboxMenuModel::HasIcons() const {
-  for (size_t i = 0; i < GetItemCount(); ++i) {
+  for (int i = 0; i < GetItemCount(); ++i) {
     if (!GetIconAt(i).IsEmpty())
       return true;
   }
   return false;
 }
 
-size_t ComboboxMenuModel::GetItemCount() const {
+int ComboboxMenuModel::GetItemCount() const {
   return model_->GetItemCount();
 }
 
-ui::MenuModel::ItemType ComboboxMenuModel::GetTypeAt(size_t index) const {
+ui::MenuModel::ItemType ComboboxMenuModel::GetTypeAt(int index) const {
   if (model_->IsItemSeparatorAt(index))
     return TYPE_SEPARATOR;
   return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
 }
 
-ui::MenuSeparatorType ComboboxMenuModel::GetSeparatorTypeAt(
-    size_t index) const {
+ui::MenuSeparatorType ComboboxMenuModel::GetSeparatorTypeAt(int index) const {
   return ui::NORMAL_SEPARATOR;
 }
 
-int ComboboxMenuModel::GetCommandIdAt(size_t index) const {
+int ComboboxMenuModel::GetCommandIdAt(int index) const {
   // Define the id of the first item in the menu (since it needs to be > 0)
   constexpr int kFirstMenuItemId = 1000;
-  return static_cast<int>(index) + kFirstMenuItemId;
+  return index + kFirstMenuItemId;
 }
 
-std::u16string ComboboxMenuModel::GetLabelAt(size_t index) const {
+std::u16string ComboboxMenuModel::GetLabelAt(int index) const {
   // Inserting the Unicode formatting characters if necessary so that the
   // text is displayed correctly in right-to-left UIs.
   std::u16string text = model_->GetDropDownTextAt(index);
@@ -52,21 +51,21 @@ std::u16string ComboboxMenuModel::GetLabelAt(size_t index) const {
   return text;
 }
 
-std::u16string ComboboxMenuModel::GetSecondaryLabelAt(size_t index) const {
+std::u16string ComboboxMenuModel::GetSecondaryLabelAt(int index) const {
   std::u16string text = model_->GetDropDownSecondaryTextAt(index);
   base::i18n::AdjustStringForLocaleDirection(&text);
   return text;
 }
 
-bool ComboboxMenuModel::IsItemDynamicAt(size_t index) const {
+bool ComboboxMenuModel::IsItemDynamicAt(int index) const {
   return true;
 }
 
-const gfx::FontList* ComboboxMenuModel::GetLabelFontListAt(size_t index) const {
+const gfx::FontList* ComboboxMenuModel::GetLabelFontListAt(int index) const {
   return &owner_->GetFontList();
 }
 
-bool ComboboxMenuModel::GetAcceleratorAt(size_t index,
+bool ComboboxMenuModel::GetAcceleratorAt(int index,
                                          ui::Accelerator* accelerator) const {
   return false;
 }
@@ -75,31 +74,31 @@ bool ComboboxMenuModel::IsItemCheckedAt(size_t index) const {
   return UseCheckmarks() && index == owner_->GetSelectedIndex();
 }
 
-int ComboboxMenuModel::GetGroupIdAt(size_t index) const {
+int ComboboxMenuModel::GetGroupIdAt(int index) const {
   return -1;
 }
 
-ui::ImageModel ComboboxMenuModel::GetIconAt(size_t index) const {
+ui::ImageModel ComboboxMenuModel::GetIconAt(int index) const {
   return model_->GetDropDownIconAt(index);
 }
 
 ui::ButtonMenuItemModel* ComboboxMenuModel::GetButtonMenuItemAt(
-    size_t index) const {
+    int index) const {
   return nullptr;
 }
 
-bool ComboboxMenuModel::IsEnabledAt(size_t index) const {
+bool ComboboxMenuModel::IsEnabledAt(int index) const {
   return model_->IsItemEnabledAt(index);
 }
 
-void ComboboxMenuModel::ActivatedAt(size_t index) {
+void ComboboxMenuModel::ActivatedAt(int index) {
   owner_->MenuSelectionAt(index);
 }
 
-void ComboboxMenuModel::ActivatedAt(size_t index, int event_flags) {
+void ComboboxMenuModel::ActivatedAt(int index, int event_flags) {
   ActivatedAt(index);
 }
 
-ui::MenuModel* ComboboxMenuModel::GetSubmenuModelAt(size_t index) const {
+ui::MenuModel* ComboboxMenuModel::GetSubmenuModelAt(int index) const {
   return nullptr;
 }

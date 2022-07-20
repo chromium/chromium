@@ -36,38 +36,38 @@ bool DialogModelMenuModelAdapter::HasIcons() const {
   return false;
 }
 
-size_t DialogModelMenuModelAdapter::GetItemCount() const {
-  return model_->fields(GetPassKey()).size();
+int DialogModelMenuModelAdapter::GetItemCount() const {
+  return static_cast<int>(model_->fields(GetPassKey()).size());
 }
 
-MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(size_t index) const {
+MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(int index) const {
   return GetField(index)->type(GetPassKey()) == DialogModelField::kSeparator
              ? TYPE_SEPARATOR
              : TYPE_COMMAND;
 }
 
 MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
-    size_t index) const {
+    int index) const {
   NOTREACHED();
   return MenuSeparatorType::NORMAL_SEPARATOR;
 }
 
-int DialogModelMenuModelAdapter::GetCommandIdAt(size_t index) const {
+int DialogModelMenuModelAdapter::GetCommandIdAt(int index) const {
   // TODO(pbos): Figure out what this should be. Combobox seems to offset by
   // 1000. Dunno why.
   return index + 1234;
 }
 
-std::u16string DialogModelMenuModelAdapter::GetLabelAt(size_t index) const {
+std::u16string DialogModelMenuModelAdapter::GetLabelAt(int index) const {
   return GetField(index)->AsMenuItem(GetPassKey())->label(GetPassKey());
 }
 
-bool DialogModelMenuModelAdapter::IsItemDynamicAt(size_t index) const {
+bool DialogModelMenuModelAdapter::IsItemDynamicAt(int index) const {
   return false;
 }
 
 bool DialogModelMenuModelAdapter::GetAcceleratorAt(
-    size_t index,
+    int index,
     ui::Accelerator* accelerator) const {
   // TODO(pbos): Add support for accelerators.
   return false;
@@ -78,52 +78,54 @@ bool DialogModelMenuModelAdapter::IsItemCheckedAt(size_t index) const {
   return false;
 }
 
-int DialogModelMenuModelAdapter::GetGroupIdAt(size_t index) const {
+int DialogModelMenuModelAdapter::GetGroupIdAt(int index) const {
   NOTREACHED();
   return -1;
 }
 
-ImageModel DialogModelMenuModelAdapter::GetIconAt(size_t index) const {
+ImageModel DialogModelMenuModelAdapter::GetIconAt(int index) const {
   return GetField(index)->AsMenuItem(GetPassKey())->icon(GetPassKey());
 }
 
 ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
-    size_t index) const {
+    int index) const {
   NOTREACHED();
   return nullptr;
 }
 
-bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
+bool DialogModelMenuModelAdapter::IsEnabledAt(int index) const {
   DCHECK_LT(index, GetItemCount());
 
   const DialogModelField* const field = GetField(index);
-  return field->type(GetPassKey()) != DialogModelField::kSeparator &&
-         field->AsMenuItem(GetPassKey())->is_enabled(GetPassKey());
+  if (field->type(GetPassKey()) == DialogModelField::kSeparator)
+    return false;
+
+  return field->AsMenuItem(GetPassKey())->is_enabled(GetPassKey());
 }
 
-MenuModel* DialogModelMenuModelAdapter::GetSubmenuModelAt(size_t index) const {
+MenuModel* DialogModelMenuModelAdapter::GetSubmenuModelAt(int index) const {
   NOTREACHED();
   return nullptr;
 }
 
-void DialogModelMenuModelAdapter::ActivatedAt(size_t index) {
+void DialogModelMenuModelAdapter::ActivatedAt(int index) {
   // If this flags investigate why the ActivatedAt(index, event_flags) isn't
   // being called.
   NOTREACHED();
 }
 
-void DialogModelMenuModelAdapter::ActivatedAt(size_t index, int event_flags) {
+void DialogModelMenuModelAdapter::ActivatedAt(int index, int event_flags) {
   DialogModelMenuItem* menu_item = GetField(index)->AsMenuItem(GetPassKey());
   menu_item->OnActivated(GetPassKey(), event_flags);
 }
 
-const DialogModelField* DialogModelMenuModelAdapter::GetField(
-    size_t index) const {
+const DialogModelField* DialogModelMenuModelAdapter::GetField(int index) const {
+  DCHECK_GE(index, 0);
   DCHECK_LT(index, GetItemCount());
   return model_->fields(GetPassKey())[index].get();
 }
 
-DialogModelField* DialogModelMenuModelAdapter::GetField(size_t index) {
+DialogModelField* DialogModelMenuModelAdapter::GetField(int index) {
   return const_cast<DialogModelField*>(
       const_cast<const DialogModelMenuModelAdapter*>(this)->GetField(index));
 }

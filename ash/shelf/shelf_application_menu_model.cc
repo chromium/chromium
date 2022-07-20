@@ -38,7 +38,8 @@ ShelfApplicationMenuModel::ShelfApplicationMenuModel(
                     ui::ImageModel::FromImageSkia(item.icon));
   }
   AddSeparator(ui::SPACING_SEPARATOR);
-  DCHECK_EQ(GetItemCount(), items.size() + 2) << "Update metrics |- 2|";
+  DCHECK_EQ(GetItemCount(), static_cast<int>(items.size() + 2))
+      << "Update metrics |- 2|";
 }
 
 ShelfApplicationMenuModel::~ShelfApplicationMenuModel() = default;
@@ -62,8 +63,7 @@ void ShelfApplicationMenuModel::ExecuteCommand(int command_id,
                               event_flags, display::kInvalidDisplayId);
   }
   // Subtract two to avoid counting the title and separator.
-  RecordMenuItemSelectedMetrics(command_id,
-                                std::max(GetItemCount(), size_t{2}) - 2);
+  RecordMenuItemSelectedMetrics(command_id, std::max(GetItemCount() - 2, 0));
 }
 
 void ShelfApplicationMenuModel::RecordMenuItemSelectedMetrics(

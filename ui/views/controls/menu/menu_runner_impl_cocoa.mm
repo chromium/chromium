@@ -242,12 +242,12 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 }
 
 - (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model {
-  absl::optional<size_t> alerted_index;
+  int alerted_index = -1;
   IdentifierContainer* const element_ids =
       [[[IdentifierContainer alloc] init] autorelease];
-  for (size_t i = 0; i < model->GetItemCount(); ++i) {
+  for (int i = 0; i < model->GetItemCount(); ++i) {
     if (model->IsAlertedAt(i)) {
-      DCHECK(!alerted_index.has_value());
+      DCHECK_LT(alerted_index, 0);
       alerted_index = i;
     }
     const ui::ElementIdentifier identifier = model->GetElementIdentifierAt(i);
@@ -255,14 +255,14 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
       [element_ids ids].push_back(identifier);
   }
 
-  if (alerted_index.has_value() || ![element_ids ids].empty()) {
+  if (alerted_index >= 0 || ![element_ids ids].empty()) {
     auto shown_callback = ^(NSNotification* note) {
       NSMenu* const menu_obj = note.object;
-      if (alerted_index.has_value()) {
+      if (alerted_index >= 0) {
         if ([menu respondsToSelector:@selector(_menuImpl)]) {
           NSCarbonMenuImpl* menuImpl = [menu_obj _menuImpl];
           if ([menuImpl respondsToSelector:@selector(highlightItemAtIndex:)]) {
-            [menuImpl highlightItemAtIndex:alerted_index.value()];
+            [menuImpl highlightItemAtIndex:alerted_index];
           }
         }
       }
