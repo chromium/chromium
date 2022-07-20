@@ -2244,18 +2244,7 @@ void AppsGridView::OnHideContinueSectionAnimationEnded() {
 
 bool AppsGridView::IsAnimationRunningForTest() {
   return bounds_animator_->IsAnimating() ||
-         bounds_animation_for_cardified_state_in_progress_ > 0;
-}
-
-void AppsGridView::CancelAnimationsForTest() {
-  bounds_animator_->Cancel();
-  drag_icon_proxy_.reset();
-
-  const size_t total_views = view_model_.view_size();
-  for (size_t i = 0; i < total_views; ++i) {
-    if (view_model_.view_at(i)->layer())
-      view_model_.view_at(i)->layer()->CompleteAllAnimations();
-  }
+         bounds_animation_for_cardified_state_in_progress_;
 }
 
 bool AppsGridView::FireFolderItemReparentTimerForTest() {

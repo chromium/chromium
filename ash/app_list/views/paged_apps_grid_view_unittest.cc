@@ -775,9 +775,8 @@ TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
   for (size_t i = 0; i < view_model->view_size(); i++)
     EXPECT_FALSE(view_model->view_at(i)->layer());
 
-  EXPECT_EQ(0,
-            GetPagedAppsGridView()
-                ->GetBoundsAnimationForCardifiedStateInProgressCountForTest());
+  EXPECT_FALSE(GetPagedAppsGridView()
+                   ->GetBoundsAnimationForCardifiedStateInProgressForTest());
 }
 
 // Test the case of beginning an item drag and then immediately ending the drag.
@@ -825,9 +824,8 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
   // removed.
   for (size_t i = 0; i < view_model->view_size(); i++)
     EXPECT_FALSE(view_model->view_at(i)->layer());
-  EXPECT_EQ(0,
-            GetPagedAppsGridView()
-                ->GetBoundsAnimationForCardifiedStateInProgressCountForTest());
+  EXPECT_FALSE(GetPagedAppsGridView()
+                   ->GetBoundsAnimationForCardifiedStateInProgressForTest());
 
   // Now that cardified item animations are complete, make sure that
   // `OnCardifiedStateEnded()` is only called once.
@@ -888,9 +886,8 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
   // removed.
   for (size_t i = 0; i < view_model->view_size(); i++)
     EXPECT_FALSE(view_model->view_at(i)->layer());
-  EXPECT_EQ(0,
-            GetPagedAppsGridView()
-                ->GetBoundsAnimationForCardifiedStateInProgressCountForTest());
+  EXPECT_FALSE(GetPagedAppsGridView()
+                   ->GetBoundsAnimationForCardifiedStateInProgressForTest());
   EXPECT_FALSE(IsRowChangeAnimatorAnimating());
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
 

@@ -313,8 +313,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns true if any animation is running within the view.
   bool IsAnimationRunningForTest();
-  // Cancel any animations currently running within the view.
-  void CancelAnimationsForTest();
 
   AppsGridViewFolderDelegate* folder_delegate() const {
     return folder_delegate_;
@@ -577,7 +575,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
   bool cardified_state_ = false;
 
-  int bounds_animation_for_cardified_state_in_progress_ = 0;
+  bool bounds_animation_for_cardified_state_in_progress_ = false;
 
   // Tile spacing between the tile views.
   int horizontal_tile_padding_ = 0;

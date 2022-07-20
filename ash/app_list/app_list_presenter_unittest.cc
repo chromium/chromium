@@ -2751,8 +2751,14 @@ TEST_P(PopulatedAppListTest,
     EXPECT_TRUE(item_view->layer()) << "at " << i;
   }
 
-  // Layers should be destroyed once the bounds animation completes.
-  apps_grid_view_->CancelAnimationsForTest();
+  // Wait for each item's layer animation to complete.
+  LayerAnimationStoppedWaiter animation_waiter;
+  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); i++) {
+    if (apps_grid_view_->view_model()->view_at(i)->layer())
+      animation_waiter.Wait(apps_grid_view_->view_model()->view_at(i)->layer());
+  }
+
+  // Layers should be destroyed once the item animations complete.
   for (int i = 0; i < kItemCount; ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
