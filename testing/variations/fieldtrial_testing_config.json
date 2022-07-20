@@ -6181,24 +6181,6 @@
             ]
         }
     ],
-    "OmniboxPedalsActionsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Variation2",
-                    "params": {
-                        "PopupUIVariant": "variant-two"
-                    },
-                    "enable_features": [
-                        "IOSOmniboxUpdatedPopupUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPostTaskFocusTabAndroid": [
         {
             "platforms": [
