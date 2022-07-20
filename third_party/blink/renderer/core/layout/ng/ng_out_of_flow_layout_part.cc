@@ -1468,13 +1468,6 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   offset_info.disable_first_tier_cache |= anchor_evaluator.has_anchor_functions;
   offset_info.block_estimate = offset_info.node_dimensions.size.block_size;
 
-  // In some cases we will need the fragment size in order to calculate the
-  // offset. We may have to lay out to get the fragment size. For block
-  // fragmentation, we *need* to know the block-offset before layout. In other
-  // words, in that case, we may have to lay out, calculate the offset, and
-  // then lay out again at the correct block-offset.
-  offset_info.block_size_depends_on_layout = offset_info.initial_layout_result;
-
   // Calculate the offsets.
   NGBoxStrut inset = offset_info.node_dimensions.inset
                          .ConvertToPhysical(candidate_writing_direction)
@@ -1521,9 +1514,15 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
   // Skip this step if we produced a fragment that can be reused when
   // estimating the block-size.
   if (!layout_result) {
-    bool should_use_fixed_block_size = !!offset_info.block_estimate;
-    if (fragmentainer_constraint_space)
-      should_use_fixed_block_size &= !offset_info.block_size_depends_on_layout;
+    bool should_use_fixed_block_size = offset_info.block_estimate.has_value();
+
+    // In some cases we will need the fragment size in order to calculate the
+    // offset. We may have to lay out to get the fragment size. For block
+    // fragmentation, we *need* to know the block-offset before layout. In other
+    // words, in that case, we may have to lay out, calculate the offset, and
+    // then lay out again at the correct block-offset.
+    if (fragmentainer_constraint_space && offset_info.initial_layout_result)
+      should_use_fixed_block_size = false;
 
     layout_result = GenerateFragment(
         node_info.node, container_content_size_in_candidate_writing_mode,

@@ -227,7 +227,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     NGLogicalOutOfFlowDimensions node_dimensions;
 
     bool inline_size_depends_on_min_max_sizes = false;
-    bool block_size_depends_on_layout = false;
 
     // If true, a cached layout result was found. See the comment for
     // |initial_layout_result| for more details.
