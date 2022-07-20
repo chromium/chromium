@@ -116,7 +116,9 @@ constexpr int kMaxAutoHideShowShelfRegionSize = 10;
 constexpr int kShelfPalmRejectionSwipeOffset = 80;
 
 const constexpr char* const kStylusAppIds[] = {
-    "fhapgmpiiiigioilnjmkiohjhlegnceb",  // Cursive/A4
+    "fhapgmpiiiigioilnjmkiohjhlegnceb",  // Cursive/A4 Dogfood
+    "apignacaigpffemhdbhmnajajaccbckh",  // Cursive/A4 Live
+    "ieailfmhaghpphfffooibmlghaeopach",  // Canvas
     "eilembjdkfgodjkcjnpgpaenohkicgjd",  // Google Keep Web
     "ifeodkfobgahmoofeclbhkdacaaopkek",  // Google Keep ARC
     "gjcfgmjegppjhimhlldbhhkfgkdjngcc",  // Squid
