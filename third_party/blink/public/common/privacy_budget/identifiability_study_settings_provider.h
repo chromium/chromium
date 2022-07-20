@@ -38,6 +38,11 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettingsProvider {
 
   // Returns true if surfaces should be actively sampled.
   virtual bool ShouldActivelySample() const = 0;
+
+  // Returns the list of font families which should be actively sampled.
+  virtual std::vector<std::string> FontFamiliesToActivelySample() const {
+    return std::vector<std::string>();
+  };
 };
 
 }  // namespace blink

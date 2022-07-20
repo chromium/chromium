@@ -45,6 +45,7 @@ class PrivacyBudgetSettingsProvider final
   bool IsSurfaceAllowed(blink::IdentifiableSurface surface) const override;
   bool IsTypeAllowed(blink::IdentifiableSurface::Type type) const override;
   bool ShouldActivelySample() const override;
+  std::vector<std::string> FontFamiliesToActivelySample() const override;
 
  private:
   // Set of identifiable surfaces for which we will NOT collect metrics. This

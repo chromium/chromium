@@ -33,6 +33,7 @@
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/common/privacy_budget/types.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/fake_server/fake_server.h"
@@ -649,6 +650,8 @@ class PrivacyBudgetBrowserTestActiveSampling : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestActiveSampling,
                        ActiveSamplingIsPerformed) {
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      chrome_test_utils::GetActiveWebContents(this), GURL("about:blank"), 1);
   content::RunAllTasksUntilIdle();
   auto merged_entries = ukm_recorder().GetMergedEntriesByName(
       ukm::builders::Identifiability::kEntryName);

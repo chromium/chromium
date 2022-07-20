@@ -37,6 +37,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/simple_thread.h"
@@ -66,6 +67,7 @@
 #include "content/child/runtime_features.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/content_switches_internal.h"
 #include "content/common/partition_alloc_support.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/pseudonymization_salt.h"
@@ -123,12 +125,15 @@
 #include "net/base/url_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/privacy_budget/active_sampling.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -686,6 +691,32 @@ void RenderThreadImpl::Init() {
   if (base::FeatureList::IsEnabled(features::kFontManagerEarlyInit)) {
     base::ThreadPool::PostTask(FROM_HERE,
                                base::BindOnce([] { SkFontMgr::RefDefault(); }));
+  }
+
+  bool should_actively_sample_fonts =
+      command_line.HasSwitch(kFirstRendererProcess) &&
+      blink::IdentifiabilityStudySettings::Get()->ShouldActivelySample() &&
+      !blink::IdentifiabilityStudySettings::Get()
+           ->FontFamiliesToActivelySample()
+           .empty();
+  if (should_actively_sample_fonts) {
+    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+    RenderThread::Get()->BindHostReceiver(
+        recorder.InitWithNewPipeAndPassReceiver());
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    sequenced_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder) {
+              auto ukm_recorder =
+                  std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+              blink::IdentifiabilityActiveSampler::ActivelySampleAvailableFonts(
+                  ukm_recorder.get());
+            },
+            std::move(recorder)));
   }
 }
 

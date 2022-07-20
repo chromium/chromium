@@ -4,14 +4,12 @@
 
 #include "chrome/browser/privacy_budget/active_sampling.h"
 
-#include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 
@@ -43,15 +41,13 @@ class PrivacyBudgetActiveSamplingTest : public ::testing::Test {
 
 TEST_F(PrivacyBudgetActiveSamplingTest, ActivelySampledSurfaces) {
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
-  parameters.actively_sampled_fonts = {"Arial", "Helvetica"};
   parameters.enable_active_sampling = true;
   test::ScopedPrivacyBudgetConfig config(parameters);
   ScopedIdentifiabilityStudySettings scoped_settings;
 
   base::RunLoop run_loop;
   ukm_recorder().SetOnAddEntryCallback(
-      ukm::builders::Identifiability::kEntryName,
-      BarrierClosure(2u, run_loop.QuitClosure()));
+      ukm::builders::Identifiability::kEntryName, run_loop.QuitClosure());
   ActivelySampleIdentifiableSurfaces();
 
   // Wait for the metrics to come down the pipe.
@@ -66,10 +62,6 @@ TEST_F(PrivacyBudgetActiveSamplingTest, ActivelySampledSurfaces) {
       reported_surface_keys.push_back(metric.first);
     }
   }
-  EXPECT_THAT(reported_surface_keys,
-              testing::IsSupersetOf({
-                  18009598079355128088u,  // model
-                  9223784233214641190u,   // Arial
-                  10735872651981970214u,  // Helvetica
-              }));
+  EXPECT_EQ(reported_surface_keys,
+            std::vector<uint64_t>({18009598079355128088u}));
 }

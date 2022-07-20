@@ -151,4 +151,9 @@ bool IdentifiabilityStudySettings::ShouldActivelySample() const {
   return provider_->ShouldActivelySample();
 }
 
+std::vector<std::string>
+IdentifiabilityStudySettings::FontFamiliesToActivelySample() const {
+  return provider_->FontFamiliesToActivelySample();
+}
+
 }  // namespace blink

@@ -51,3 +51,9 @@ bool PrivacyBudgetSettingsProvider::IsTypeAllowed(
 bool PrivacyBudgetSettingsProvider::ShouldActivelySample() const {
   return active_sampling_enabled_;
 }
+
+std::vector<std::string>
+PrivacyBudgetSettingsProvider::FontFamiliesToActivelySample() const {
+  return DecodeIdentifiabilityFieldTrialParam<std::vector<std::string>>(
+      features::kIdentifiabilityStudyActivelySampledFonts.Get());
+}

@@ -14,6 +14,7 @@ component("privacy_budget") {
   configs += [ "//third_party/blink/common:blink_common_implementation" ]
 
   sources = [
+    "active_sampling.cc",
     "aggregating_sample_collector.cc",
     "aggregating_sample_collector.h",
     "identifiability_metric_builder.cc",
@@ -30,6 +31,7 @@ component("privacy_budget") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
+    "//skia",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",
@@ -40,6 +42,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "active_sampling_unittest.cc",
     "aggregating_sample_collector_unittest.cc",
     "identifiability_internal_templates_unittest.cc",
     "identifiability_metric_builder_unittest.cc",
