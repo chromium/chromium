@@ -886,7 +886,6 @@ void WorkspaceWindowResizer::CompleteDrag() {
     // TODO(oshima): Add event source type to WMEvent and move
     // metrics recording inside WindowState::OnWMEvent.
     WMEventType type;
-    // bool is_snap_event = false;
     switch (snap_type_) {
       case SnapType::kPrimary: {
         window_state()->set_snap_action_source(

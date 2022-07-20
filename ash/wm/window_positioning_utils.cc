@@ -108,12 +108,18 @@ void AdjustBoundsToEnsureMinimumWindowVisibility(const gfx::Rect& visible_area,
                                        kMinimumOnScreenArea, bounds);
 }
 
-gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
-                                                SnapViewType type) {
+gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
+                                         SnapViewType type,
+                                         float snap_ratio) {
   return GetSnappedWindowBounds(
       screen_util::GetDisplayWorkAreaBoundsInParent(window),
       display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,
-      type, kDefaultSnapRatio);
+      type, snap_ratio);
+}
+
+gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
+                                                SnapViewType type) {
+  return GetSnappedWindowBoundsInParent(window, type, kDefaultPositionRatio);
 }
 
 gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,

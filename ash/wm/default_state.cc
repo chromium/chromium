@@ -40,6 +40,19 @@
 namespace ash {
 namespace {
 
+float GetFloatValueForSnapRatio(WindowSnapWMEvent::SnapRatio snap_ratio) {
+  switch (snap_ratio) {
+    case WindowSnapWMEvent::SnapRatio::kOneThirdSnapRatio:
+      return kOneThirdPositionRatio;
+    case WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio:
+      return kDefaultPositionRatio;
+    case WindowSnapWMEvent::SnapRatio::kTwoThirdSnapRatio:
+      return kTwoThirdPositionRatio;
+    default:
+      return kDefaultPositionRatio;
+  }
+}
+
 using ::chromeos::WindowStateType;
 
 // This specifies how much percent (30%) of a window rect
@@ -359,10 +372,16 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     HandleWindowSnapping(window_state, type);
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
-    gfx::Rect snapped_bounds = GetSnappedWindowBoundsInParent(
-        window_state->window(), event->type() == WM_EVENT_SNAP_PRIMARY
-                                    ? WindowStateType::kPrimarySnapped
-                                    : WindowStateType::kSecondarySnapped);
+    float snap_ratio = GetFloatValueForSnapRatio(
+        event->IsSnapInfoAvailable()
+            ? static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()
+            : WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio);
+    gfx::Rect snapped_bounds =
+        GetSnappedWindowBoundsInParent(window_state->window(),
+                                       event->type() == WM_EVENT_SNAP_PRIMARY
+                                           ? WindowStateType::kPrimarySnapped
+                                           : WindowStateType::kSecondarySnapped,
+                                       snap_ratio);
     window_state->SetBoundsDirectAnimated(snapped_bounds);
     return;
   }
@@ -375,9 +394,19 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     }
     window_state->RecordAndResetWindowSnapActionSource(current_state_type,
                                                        next_state_type);
+
+    // TODO(crbug.com/1345508: Restore back to a snapped window with its
+    // previous snap ratio.)
+    EnterToNextState(
+        window_state, next_state_type,
+        absl::make_optional(
+            event->IsSnapInfoAvailable()
+                ? static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()
+                : WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio));
+    return;
   }
 
-  EnterToNextState(window_state, next_state_type);
+  EnterToNextState(window_state, next_state_type, absl::nullopt);
 }
 
 // static
@@ -425,8 +454,10 @@ void DefaultState::SetBounds(WindowState* window_state,
   }
 }
 
-void DefaultState::EnterToNextState(WindowState* window_state,
-                                    WindowStateType next_state_type) {
+void DefaultState::EnterToNextState(
+    WindowState* window_state,
+    WindowStateType next_state_type,
+    absl::optional<WindowSnapWMEvent::SnapRatio> snap_ratio) {
   // Do nothing if  we're already in the same state.
   if (state_type_ == next_state_type)
     return;
@@ -477,7 +508,11 @@ void DefaultState::EnterToNextState(WindowState* window_state,
     if (window_state->IsMaximizedOrFullscreenOrPinned())
       MoveToDisplayForRestore(window_state);
 
-    UpdateBoundsFromState(window_state, previous_state_type);
+    UpdateBoundsFromState(
+        window_state, previous_state_type,
+        snap_ratio.has_value()
+            ? absl::make_optional(GetFloatValueForSnapRatio(snap_ratio.value()))
+            : absl::nullopt);
     UpdateMinimizedState(window_state, previous_state_type);
 
     // Normal state should have no restore bounds unless it's
@@ -520,7 +555,9 @@ void DefaultState::ReenterToCurrentState(
     window_state->SetRestoreBoundsInParent(stored_bounds_);
   }
 
-  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType());
+  // When reentering a state, use the saved `snap_ratio_`.
+  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
+                        window_state->snap_ratio());
   UpdateMinimizedState(window_state, state_in_previous_mode->GetType());
 
   // Then restore the restore bounds to their previous value.
@@ -533,14 +570,20 @@ void DefaultState::ReenterToCurrentState(
 }
 
 void DefaultState::UpdateBoundsFromState(WindowState* window_state,
-                                         WindowStateType previous_state_type) {
+                                         WindowStateType previous_state_type,
+                                         absl::optional<float> snap_ratio) {
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
+
   switch (state_type_) {
+    // TODO(crbug.com/1335500): Refactor snap state type handling. Since only
+    // snap state types define `snap_ratio`, it makes sense to handle them
+    // separately.
     case WindowStateType::kPrimarySnapped:
     case WindowStateType::kSecondarySnapped:
-      bounds_in_parent =
-          GetSnappedWindowBoundsInParent(window_state->window(), state_type_);
+      DCHECK(snap_ratio.has_value());
+      bounds_in_parent = GetSnappedWindowBoundsInParent(
+          window_state->window(), state_type_, snap_ratio.value());
       base::UmaHistogramEnumeration(
           kSnapWindowDeviceOrientationHistogramName,
           chromeos::IsDisplayLayoutHorizontal(
