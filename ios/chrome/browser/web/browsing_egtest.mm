@@ -183,6 +183,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
   [ChromeEarlGrey waitForMainTabCount:2];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify the new tab was opened with the expected URL.
   [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
