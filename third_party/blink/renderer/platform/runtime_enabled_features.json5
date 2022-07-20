@@ -952,10 +952,6 @@
       status: "experimental",
     },
     {
-      name: "EncryptedMediaSessionClosedReason",
-      status: "stable",
-    },
-    {
       // Non-standard API Event.path. Should be replaced by Event.composedPath.
       // TODO(1277431): This flag should be eventually disabled.
       name: "EventPath",

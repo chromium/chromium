@@ -41,9 +41,6 @@ enum MediaKeySessionClosedReason {
     // session properties
     readonly attribute DOMString sessionId;
     readonly attribute unrestricted double expiration;
-    // When runtime feature EncryptedMediaSessionClosedReason is enabled, the
-    // promise is resolved with "MediaKeySessionClosedReason". Otherwise, it's
-    // resolved with "undefined".
     [CallWith=ScriptState] readonly attribute Promise<MediaKeySessionClosedReason> closed;
     readonly attribute MediaKeyStatusMap keyStatuses;
     attribute EventHandler onkeystatuseschange;

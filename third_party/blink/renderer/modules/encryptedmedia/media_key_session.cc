@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
@@ -995,12 +994,8 @@ void MediaKeySession::OnSessionClosed(media::CdmSessionClosedReason reason) {
   OnSessionExpirationUpdate(std::numeric_limits<double>::quiet_NaN());
 
   // 7. Resolve promise.
-  if (RuntimeEnabledFeatures::EncryptedMediaSessionClosedReasonEnabled()) {
-    closed_promise_->Resolve(
-        V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason)));
-  } else {
-    closed_promise_->ResolveWithUndefined();
-  }
+  closed_promise_->Resolve(
+      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason)));
 
   // Fail any pending events, except if it's a close request.
   action_timer_.Stop();
