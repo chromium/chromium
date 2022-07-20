@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-NOTRUN Page with <embed type=undefined src=/media/white.mp4> Should be BFCached but actually wasn't
-NOTRUN Page with <object type=undefined data=/media/white.mp4> Should be BFCached but actually wasn't
-Harness: the test ran to completion.
-

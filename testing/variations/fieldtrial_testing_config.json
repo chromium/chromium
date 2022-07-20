@@ -1736,6 +1736,25 @@
             ]
         }
     ],
+    "BackForwardCacheEnabledForNonPluginEmbed": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackForwardCacheEnabledForNonPluginEmbed"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheExtendTimeToLive": [
         {
             "platforms": [

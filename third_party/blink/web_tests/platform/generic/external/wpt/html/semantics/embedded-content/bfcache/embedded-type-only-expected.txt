@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-NOTRUN Page with <embed type=text/html src=undefined> Should be BFCached but actually wasn't
-NOTRUN Page with <object type=text/html data=undefined> Should be BFCached but actually wasn't
-Harness: the test ran to completion.
-

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-NOTRUN Page with <embed type=application/javascript src=/resources/test-only-api.js> Should be BFCached but actually wasn't
-NOTRUN Page with <object type=application/javascript data=/resources/test-only-api.js> Should be BFCached but actually wasn't
-Harness: the test ran to completion.
-
