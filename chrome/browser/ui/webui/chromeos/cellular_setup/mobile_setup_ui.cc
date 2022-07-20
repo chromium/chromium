@@ -184,7 +184,7 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string&) override { return "text/html"; }
+  std::string GetMimeType(const GURL&) override { return "text/html"; }
   bool ShouldAddContentSecurityPolicy() override { return false; }
   bool AllowCaching() override {
     // Should not be cached to reflect dynamically-generated contents that may

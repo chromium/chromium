@@ -720,7 +720,8 @@ void AboutUIHTMLSource::FinishDataRequest(
       base::RefCountedString::TakeString(std::move(html_copy)));
 }
 
-std::string AboutUIHTMLSource::GetMimeType(const std::string& path) {
+std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
+  const base::StringPiece path = url.path_piece().substr(1);
   if (path == kCreditsJsPath ||
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       path == kKeyboardUtilsPath ||

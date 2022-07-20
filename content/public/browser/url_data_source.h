@@ -69,7 +69,12 @@ class CONTENT_EXPORT URLDataSource {
 
   // Return the mimetype that should be sent with this response, or empty
   // string to specify no mime type.
-  virtual std::string GetMimeType(const std::string& path) = 0;
+  virtual std::string GetMimeType(const GURL& url);
+
+  // Deprecated. Prefer method above.
+  // TODO(crbug.com/1344742): Remove after migrating to
+  // `GetMimeType(const GURL& url)`.
+  virtual std::string GetMimeType(const std::string& path);
 
   // Returns true if the URLDataSource should replace an existing URLDataSource
   // with the same name that has already been registered. The default is true.

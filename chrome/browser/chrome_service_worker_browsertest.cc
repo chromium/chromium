@@ -842,8 +842,8 @@ class StaticURLDataSource : public content::URLDataSource {
     std::string data;
     std::move(callback).Run(base::RefCountedString::TakeString(&data));
   }
-  std::string GetMimeType(const std::string& path) override {
-    if (path == "sw.js")
+  std::string GetMimeType(const GURL& url) override {
+    if (url.ExtractFileName() == "sw.js")
       return "application/javascript";
     return "text/html";
   }

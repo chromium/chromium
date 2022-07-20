@@ -58,9 +58,7 @@ class TestWebUIDataSource final : public URLDataSource {
     std::move(callback).Run(std::move(resource));
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "video/webm";
-  }
+  std::string GetMimeType(const GURL& url) override { return "video/webm"; }
 
  private:
   const size_t resource_size_;
@@ -83,9 +81,7 @@ class OversizedWebUIDataSource final : public URLDataSource {
     std::move(callback).Run(std::move(resource));
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "video/webm";
-  }
+  std::string GetMimeType(const GURL& url) override { return "video/webm"; }
 
  private:
   // An implementation of RefCountedMemory representing a very large "virtual"

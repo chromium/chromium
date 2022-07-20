@@ -230,7 +230,7 @@ void StartURLLoader(
   request.headers.GetHeader(net::HttpRequestHeaders::kOrigin, &origin_header);
 
   scoped_refptr<net::HttpResponseHeaders> headers =
-      URLDataManagerBackend::GetHeaders(source, path, origin_header);
+      URLDataManagerBackend::GetHeaders(source, request.url, origin_header);
 
   auto resource_response = network::mojom::URLResponseHead::New();
 
@@ -239,7 +239,7 @@ void StartURLLoader(
   // process.
   resource_response->parsed_headers = network::PopulateParsedHeaders(
       resource_response->headers.get(), request.url);
-  resource_response->mime_type = source->source()->GetMimeType(path);
+  resource_response->mime_type = source->source()->GetMimeType(request.url);
   // TODO: fill all the time related field i.e. request_time response_time
   // request_start response_start
 
@@ -255,10 +255,10 @@ void StartURLLoader(
 
   bool replace_in_js =
       source->source()->ShouldReplaceI18nInJS() &&
-      source->source()->GetMimeType(path) == "application/javascript";
+      source->source()->GetMimeType(request.url) == "application/javascript";
 
   const ui::TemplateReplacements* replacements = nullptr;
-  const std::string mime_type = source->source()->GetMimeType(path);
+  const std::string mime_type = source->source()->GetMimeType(request.url);
   if (mime_type == "text/html" || mime_type == "text/css" || replace_in_js)
     replacements = source->source()->GetReplacements();
 

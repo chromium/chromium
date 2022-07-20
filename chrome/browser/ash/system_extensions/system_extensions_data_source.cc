@@ -81,9 +81,9 @@ void SystemExtensionsDataSource::StartDataRequest(
       base::BindOnce(&ReadFile, path, std::move(callback)));
 }
 
-std::string SystemExtensionsDataSource::GetMimeType(const std::string& path) {
+std::string SystemExtensionsDataSource::GetMimeType(const GURL& url) {
   std::string mime_type(kDefaultMime);
-  std::string ext = base::FilePath(path).Extension();
+  std::string ext = base::FilePath(url.path_piece()).Extension();
   if (!ext.empty())
     net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
   return mime_type;

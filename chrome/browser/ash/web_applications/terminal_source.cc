@@ -180,9 +180,9 @@ void TerminalSource::StartDataRequest(
       base::BindOnce(&ReadFile, downloads_, path, std::move(callback)));
 }
 
-std::string TerminalSource::GetMimeType(const std::string& path) {
+std::string TerminalSource::GetMimeType(const GURL& url) {
   std::string mime_type(kDefaultMime);
-  std::string ext = base::FilePath(path).Extension();
+  std::string ext = base::FilePath(url.path_piece()).Extension();
   if (!ext.empty())
     net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
   return mime_type;

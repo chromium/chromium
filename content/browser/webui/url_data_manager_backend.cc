@@ -147,7 +147,7 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
 
 scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
     URLDataSourceImpl* source_impl,
-    const std::string& path,
+    const GURL& url,
     const std::string& origin) {
   // Set the headers so that requests serviced by ChromeURLDataManager return a
   // status code of 200. Without this they return a 0, which makes the status
@@ -211,7 +211,7 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
   if (!source->AllowCaching())
     headers->SetHeader("Cache-Control", "no-cache");
 
-  std::string mime_type = source->GetMimeType(path);
+  std::string mime_type = source->GetMimeType(url);
   if (source->ShouldServeMimeTypeAsContentTypeHeader() && !mime_type.empty())
     headers->SetHeader(net::HttpRequestHeaders::kContentType, mime_type);
 

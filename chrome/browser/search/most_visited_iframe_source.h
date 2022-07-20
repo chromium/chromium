@@ -29,7 +29,7 @@ class MostVisitedIframeSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path_and_query) override;
+  std::string GetMimeType(const GURL& url) override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
 
   bool AllowCaching() override;
