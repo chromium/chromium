@@ -103,7 +103,7 @@ class InterstitialHTMLSource : public content::URLDataSource {
   ~InterstitialHTMLSource() override = default;
 
   // content::URLDataSource:
-  std::string GetMimeType(const std::string& mime_type) override;
+  std::string GetMimeType(const GURL& url) override;
   std::string GetSource() override;
   std::string GetContentSecurityPolicy(
       const network::mojom::CSPDirectiveName directive) override;
@@ -442,7 +442,7 @@ InterstitialUI::~InterstitialUI() = default;
 
 // InterstitialHTMLSource
 
-std::string InterstitialHTMLSource::GetMimeType(const std::string& mime_type) {
+std::string InterstitialHTMLSource::GetMimeType(const GURL&) {
   return "text/html";
 }
 
