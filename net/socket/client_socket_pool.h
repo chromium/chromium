@@ -329,6 +329,10 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   virtual base::Value GetInfoAsValue(const std::string& name,
                                      const std::string& type) const = 0;
 
+  // Returns whether a connected (idle or handed out) or connecting socket
+  // exists for the group. This method is not supported for WebSockets.
+  virtual bool HasActiveSocket(const GroupId& group_id) const = 0;
+
   // Returns the maximum amount of time to wait before retrying a connect.
   static const int kMaxConnectRetryIntervalMs = 250;
 

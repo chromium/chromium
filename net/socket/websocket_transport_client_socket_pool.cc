@@ -250,6 +250,13 @@ base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
   return base::Value(std::move(dict));
 }
 
+bool WebSocketTransportClientSocketPool::HasActiveSocket(
+    const GroupId& group_id) const {
+  // This method is not supported for WebSocket.
+  NOTREACHED();
+  return false;
+}
+
 bool WebSocketTransportClientSocketPool::IsStalled() const {
   return !stalled_request_queue_.empty();
 }

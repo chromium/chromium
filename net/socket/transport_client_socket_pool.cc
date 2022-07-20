@@ -744,6 +744,10 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
   return base::Value(std::move(dict));
 }
 
+bool TransportClientSocketPool::HasActiveSocket(const GroupId& group_id) const {
+  return HasGroup(group_id);
+}
+
 bool TransportClientSocketPool::IdleSocket::IsUsable(
     const char** net_log_reason_utf8) const {
   DCHECK(net_log_reason_utf8);

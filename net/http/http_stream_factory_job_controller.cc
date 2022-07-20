@@ -909,18 +909,13 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
   ClearInappropriateJobs();
 
-  if (alternative_job_ || dns_alpn_h3_job_) {
-    // TODO(crbug.com/1317943): Consider not to block the main job when an
-    // active session is available for the main job and |alternative_job_|
-    // doesn't exists and |dns_alpn_h3_job_| exists. This may make the fallback
-    // logic faster when QUIC connection is unstable on the network. But we need
-    // to support DNS alpn job for preconnect before doing so. Currently
-    // preconnect job is triggered for all navigations by
-    // features::kNavigationRequestPreconnect. And the preconnect job doesn't
-    // support DNS HTTPS alpn and establishes non-HTTP/3 connection for the
-    // first connection. So when this method is called after the preconnect
-    // request, an active session may be available for the main job, and the
-    // DNS alpn job may be unintentionally disturbed.
+  if (main_job_ && (alternative_job_ ||
+                    (dns_alpn_h3_job_ &&
+                     (!main_job_->TargettedSocketGroupHasActiveSocket() &&
+                      !main_job_->HasAvailableSpdySession())))) {
+    // We don't block |main_job_| when |alternative_job_| doesn't exists and
+    // |dns_alpn_h3_job_| exists and an active socket is available for
+    // |main_job_|. This is intended to make the fallback logic faster.
     main_job_is_blocked_ = true;
   }
 

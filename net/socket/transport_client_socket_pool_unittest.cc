@@ -2063,6 +2063,73 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
             session_deps_.host_resolver->request_network_isolation_key(2));
 }
 
+TEST_F(TransportClientSocketPoolTest, HasActiveSocket) {
+  const url::SchemeHostPort kEndpoint1(url::kHttpScheme, "host1.test", 80);
+  const url::SchemeHostPort kEndpoint2(url::kHttpScheme, "host2.test", 80);
+
+  ClientSocketHandle handle;
+  ClientSocketPool::GroupId group_id1(
+      kEndpoint1, PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+      SecureDnsPolicy::kAllow);
+  ClientSocketPool::GroupId group_id2(
+      kEndpoint2, PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+      SecureDnsPolicy::kAllow);
+
+  // HasActiveSocket() must return false before creating a socket.
+  EXPECT_FALSE(pool_->HasActiveSocket(group_id1));
+
+  TestCompletionCallback callback1;
+  int rv1 =
+      handle.Init(group_id1, params_, absl::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback1.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  pool_.get(), NetLogWithSource());
+  EXPECT_THAT(rv1, IsError(ERR_IO_PENDING));
+
+  // HasActiveSocket() must return true while connecting.
+  EXPECT_TRUE(pool_->HasActiveSocket(group_id1));
+  EXPECT_FALSE(handle.is_initialized());
+  EXPECT_FALSE(handle.socket());
+
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+
+  // HasActiveSocket() must return true after handed out.
+  EXPECT_TRUE(pool_->HasActiveSocket(group_id1));
+  EXPECT_TRUE(handle.is_initialized());
+  EXPECT_TRUE(handle.socket());
+
+  handle.Reset();
+
+  // HasActiveSocket returns true for the idle socket.
+  EXPECT_TRUE(pool_->HasActiveSocket(group_id1));
+  // Now we should have 1 idle socket.
+  EXPECT_EQ(1, pool_->IdleSocketCount());
+
+  // HasActiveSocket() for group_id2 must still return false.
+  EXPECT_FALSE(pool_->HasActiveSocket(group_id2));
+
+  TestCompletionCallback callback2;
+  int rv2 =
+      handle.Init(group_id2, params_, absl::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  pool_.get(), NetLogWithSource());
+  EXPECT_THAT(rv2, IsError(ERR_IO_PENDING));
+
+  // HasActiveSocket(group_id2) must return true while connecting.
+  EXPECT_TRUE(pool_->HasActiveSocket(group_id2));
+
+  // HasActiveSocket(group_id1) must still return true.
+  EXPECT_TRUE(pool_->HasActiveSocket(group_id2));
+
+  // Close the sockets.
+  pool_->FlushWithError(ERR_NETWORK_CHANGED, "Network changed");
+
+  // HasActiveSocket() must return false after closing the socket.
+  EXPECT_FALSE(pool_->HasActiveSocket(group_id1));
+  EXPECT_FALSE(pool_->HasActiveSocket(group_id2));
+}
+
 // Test that SocketTag passed into TransportClientSocketPool is applied to
 // returned sockets.
 #if BUILDFLAG(IS_ANDROID)

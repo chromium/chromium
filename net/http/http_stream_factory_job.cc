@@ -335,6 +335,18 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
       require_dns_https_alpn, destination_);
 }
 
+bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
+  DCHECK(!using_quic_);
+  DCHECK(!is_websocket_);
+  ClientSocketPool* pool = session_->GetSocketPool(
+      HttpNetworkSession::NORMAL_SOCKET_POOL, proxy_info_.proxy_server());
+  DCHECK(pool);
+  ClientSocketPool::GroupId connection_group(
+      destination_, request_info_.privacy_mode,
+      request_info_.network_isolation_key, request_info_.secure_dns_policy);
+  return pool->HasActiveSocket(connection_group);
+}
+
 bool HttpStreamFactory::Job::was_alpn_negotiated() const {
   return was_alpn_negotiated_;
 }

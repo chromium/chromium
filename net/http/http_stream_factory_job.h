@@ -199,6 +199,10 @@ class HttpStreamFactory::Job
   // QUIC session.
   bool HasAvailableQuicSession() const;
 
+  // Returns true if a connected (idle or handed out) or connecting socket
+  // exists for the job. This method is not supported for WebSocket and QUIC.
+  bool TargettedSocketGroupHasActiveSocket() const;
+
   const GURL& origin_url() const { return origin_url_; }
   RequestPriority priority() const { return priority_; }
   bool was_alpn_negotiated() const;
