@@ -31,8 +31,7 @@ void ExtensionsTabbedMenuCoordinator::Show(
       extensions_features::kExtensionsMenuAccessControl));
   auto menu = std::make_unique<ExtensionsTabbedMenuView>(
       anchor_view, browser_, extensions_container_, button_type, allow_pining_);
-  extensions_tabbed_menu_view_tracker_ =
-      std::make_unique<views::ViewTracker>(menu.get());
+  extensions_tabbed_menu_view_tracker_.SetView(menu.get());
   views::BubbleDialogDelegateView::CreateBubble(std::move(menu))->Show();
 }
 
@@ -40,21 +39,20 @@ void ExtensionsTabbedMenuCoordinator::Hide() {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   if (IsShowing()) {
-    extensions_tabbed_menu_view_tracker_->view()->GetWidget()->Close();
-    // Immediately set tracker to nullptr. Widget will be destroyed
+    extensions_tabbed_menu_view_tracker_.view()->GetWidget()->Close();
+    // Immediately stop tracking the view. Widget will be destroyed
     // asynchronously.
-    extensions_tabbed_menu_view_tracker_ = nullptr;
+    extensions_tabbed_menu_view_tracker_.SetView(nullptr);
   }
 }
 
 bool ExtensionsTabbedMenuCoordinator::IsShowing() const {
-  return extensions_tabbed_menu_view_tracker_ &&
-         extensions_tabbed_menu_view_tracker_->view() != nullptr;
+  return !!extensions_tabbed_menu_view_tracker_.view();
 }
 
 ExtensionsTabbedMenuView*
 ExtensionsTabbedMenuCoordinator::GetExtensionsTabbedMenuView() {
   return IsShowing() ? static_cast<ExtensionsTabbedMenuView*>(
-                           extensions_tabbed_menu_view_tracker_->view())
+                           extensions_tabbed_menu_view_tracker_.view())
                      : nullptr;
 }

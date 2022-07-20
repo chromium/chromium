@@ -7,10 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "ui/views/view_tracker.h"
 
 namespace views {
 class View;
-class ViewTracker;
 }  // namespace views
 
 class Browser;
@@ -46,7 +46,7 @@ class ExtensionsTabbedMenuCoordinator {
   raw_ptr<Browser> browser_;
   raw_ptr<ExtensionsContainer> extensions_container_;
   bool allow_pining_;
-  std::unique_ptr<views::ViewTracker> extensions_tabbed_menu_view_tracker_;
+  views::ViewTracker extensions_tabbed_menu_view_tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_COORDINATOR_H_
