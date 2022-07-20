@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/metrics/field_trial_params.h"
+#import "ios/chrome/browser/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,12 +32,17 @@ const base::Feature kEnableFeedBackgroundRefresh{
 NSString* const kEnableFeedBackgroundRefreshForNextColdStart =
     @"EnableFeedBackgroundRefreshForNextColdStart";
 
+const char kEnableFollowingFeedBackgroundRefresh[] =
+    "EnableFollowingFeedBackgroundRefresh";
+
 const char kEnableServerDrivenBackgroundRefreshSchedule[] =
-    "server_driven_schedule";
+    "EnableServerDrivenBackgroundRefreshSchedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
-    "recurring_refresh_schedule";
+    "EnableRecurringBackgroundRefreshSchedule";
 const char kBackgroundRefreshIntervalInSeconds[] =
-    "refresh_interval_in_seconds";
+    "BackgroundRefreshIntervalInSeconds";
+const char kBackgroundRefreshMaxAgeInSeconds[] =
+    "BackgroundRefreshMaxAgeInSeconds";
 
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -56,6 +62,15 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
        forKey:kEnableFeedBackgroundRefreshForNextColdStart];
 }
 
+bool IsFollowingFeedBackgroundRefreshEnabled() {
+  if (experimental_flags::IsForceBackgroundRefreshForFollowingFeedEnabled()) {
+    return YES;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedBackgroundRefresh, kEnableFollowingFeedBackgroundRefresh,
+      /*default=*/false);
+}
+
 bool IsServerDrivenBackgroundRefreshScheduleEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedBackgroundRefresh,
@@ -72,4 +87,13 @@ double GetBackgroundRefreshIntervalInSeconds() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedBackgroundRefresh, kBackgroundRefreshIntervalInSeconds,
       /*default=*/60 * 60);
+}
+
+double GetBackgroundRefreshMaxAgeInSeconds() {
+  if (experimental_flags::GetBackgroundRefreshMaxAgeInSeconds() > 0) {
+    return experimental_flags::GetBackgroundRefreshMaxAgeInSeconds();
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedBackgroundRefresh, kBackgroundRefreshMaxAgeInSeconds,
+      /*default=*/0);
 }

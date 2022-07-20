@@ -18,6 +18,10 @@ extern const base::Feature kEnableFeedBackgroundRefresh;
 // Use IsWebChannelsEnabled() instead of this constant directly.
 extern const base::Feature kEnableWebChannels;
 
+// Feature param under `kEnableFeedBackgroundRefresh` to also enable background
+// refresh for the Following feed.
+extern const char kEnableFollowingFeedBackgroundRefresh[];
+
 // Feature param under `kEnableFeedBackgroundRefresh` to enable server driven
 // background refresh schedule.
 extern const char kEnableServerDrivenBackgroundRefreshSchedule[];
@@ -30,6 +34,11 @@ extern const char kEnableRecurringBackgroundRefreshSchedule[];
 // interval in seconds.
 extern const char kBackgroundRefreshIntervalInSeconds[];
 
+// Feature param under `kEnableFeedBackgroundRefresh` for the background refresh
+// max age in seconds. This value is compared against the age of the feed when
+// performing a background refresh. A zero value means the age check is ignored.
+extern const char kBackgroundRefreshMaxAgeInSeconds[];
+
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
@@ -41,6 +50,9 @@ bool IsFeedBackgroundRefreshEnabled();
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();
 
+// Whether the Following feed should also be refreshed in the background.
+bool IsFollowingFeedBackgroundRefreshEnabled();
+
 // Whether the background refresh schedule should be driven by server values.
 bool IsServerDrivenBackgroundRefreshScheduleEnabled();
 
@@ -50,5 +62,8 @@ bool IsRecurringBackgroundRefreshScheduleEnabled();
 
 // The earliest interval to refresh if server value is not used.
 double GetBackgroundRefreshIntervalInSeconds();
+
+// Returns the background refresh max age in seconds.
+double GetBackgroundRefreshMaxAgeInSeconds();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

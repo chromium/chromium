@@ -34,7 +34,10 @@ source_set("features") {
     "features.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser:utils",
+  ]
 }
 
 source_set("unit_tests") {
