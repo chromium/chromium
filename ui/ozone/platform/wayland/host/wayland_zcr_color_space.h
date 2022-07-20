@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_SPACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_SPACE_H_
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -36,6 +37,16 @@ class WaylandZcrColorSpace {
   }
 
  private:
+  // InformationType is an enumeration of the possible events following a
+  // get_information request in order of their priority (0 is highest).
+  enum class InformationType : uint8_t {
+    kNames = 0,
+    kIccFile = 1,
+    kParams = 2,
+    kMaxValue = kParams,
+  };
+
+  gfx::ColorSpace GetPriorityInformationType();
   // zcr_color_space_v1_listener
   static void OnIccFile(void* data,
                         struct zcr_color_space_v1* cs,
@@ -59,6 +70,12 @@ class WaylandZcrColorSpace {
                        uint32_t whitepoint_x,
                        uint32_t whitepoint_y);
 
+  // Information events should store color space info at their enum index in
+  // this array. Cleared on the OnDone event. Choosing the highest priority
+  // InformationType available is simple with forward iteration.
+  std::array<absl::optional<gfx::ColorSpace>,
+             static_cast<uint8_t>(InformationType::kMaxValue) + 1>
+      gathered_information;
   wl::Object<zcr_color_space_v1> zcr_color_space_;
   WaylandZcrColorSpaceDoneCallback color_space_done_callback_;
 };

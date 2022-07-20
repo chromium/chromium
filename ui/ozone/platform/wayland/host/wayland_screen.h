@@ -127,6 +127,7 @@ class WaylandScreen : public PlatformScreen {
 
   absl::optional<gfx::BufferFormat> image_format_alpha_;
   absl::optional<gfx::BufferFormat> image_format_no_alpha_;
+  absl::optional<gfx::BufferFormat> image_format_hdr_;
 
 #if defined(USE_DBUS)
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>

@@ -11,7 +11,7 @@
 
 namespace ui {
 
-// ZcrColorManagementOutput tracks the color space of its associated
+// WaylandZcrColorManagementOutput tracks the color space of its associated
 // Wayland Output.
 class WaylandZcrColorManagementOutput {
  public:
@@ -22,6 +22,9 @@ class WaylandZcrColorManagementOutput {
   WaylandZcrColorManagementOutput& operator=(
       const WaylandZcrColorManagementOutput&) = delete;
   ~WaylandZcrColorManagementOutput();
+
+  gfx::ColorSpace* gfx_color_space() const { return gfx_color_space_.get(); }
+  WaylandZcrColorSpace* color_space() const { return color_space_.get(); }
 
  private:
   // zcr_color_management_output_v1_listener
@@ -34,6 +37,8 @@ class WaylandZcrColorManagementOutput {
   void OnColorSpaceDone(const gfx::ColorSpace& color_space);
 
   wl::Object<zcr_color_management_output_v1> zcr_color_management_output_;
+  std::unique_ptr<gfx::ColorSpace> gfx_color_space_;
+  std::unique_ptr<WaylandZcrColorSpace> color_space_;
   base::WeakPtrFactory<WaylandZcrColorManagementOutput> weak_factory_{this};
 };
 

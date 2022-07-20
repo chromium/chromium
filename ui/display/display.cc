@@ -218,6 +218,17 @@ int Display::RotationAsDegree() const {
   return 0;
 }
 
+void Display::set_color_spaces(const gfx::DisplayColorSpaces& color_spaces) {
+  color_spaces_ = color_spaces;
+  if (color_spaces.SupportsHDR()) {
+    color_depth_ = kHDR10BitsPerPixel;
+    depth_per_component_ = kHDR10BitsPerComponent;
+  } else {
+    color_depth_ = kDefaultBitsPerPixel;
+    depth_per_component_ = kDefaultBitsPerComponent;
+  }
+}
+
 void Display::SetRotationAsDegree(int rotation) {
   switch (rotation) {
     case 0:
