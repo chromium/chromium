@@ -33,8 +33,13 @@ extern const char kBackgroundRefreshIntervalInSeconds[];
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
-// Whether feed background refresh is enabled.
+// Whether feed background refresh is enabled. Returns the value in
+// NSUserDefaults set by `SaveFeedBackgroundRefreshEnabledForNextColdStart()`.
 bool IsFeedBackgroundRefreshEnabled();
+
+// Saves the current value for feature `kEnableFeedBackgroundRefresh`. This call
+// DCHECKs on the availability of `base::FeatureList`.
+void SaveFeedBackgroundRefreshEnabledForNextColdStart();
 
 // Whether the background refresh schedule should be driven by server values.
 bool IsServerDrivenBackgroundRefreshScheduleEnabled();

@@ -21,6 +21,16 @@ const base::Feature kEnableWebChannels{"EnableWebChannels",
 const base::Feature kEnableFeedBackgroundRefresh{
     "EnableFeedBackgroundRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Key for NSUserDefaults containing a bool indicating whether the next run
+// should enable feed backround refresh. This is used because registering for
+// background refreshes must happen early in app initialization and FeatureList
+// is not yet available. Changing the `kEnableFeedBackgroundRefresh` feature
+// will always take effect after two cold starts after the feature has been
+// changed on the server (once for the finch configuration, and another for
+// reading the stored value from NSUserDefaults).
+NSString* const kEnableFeedBackgroundRefreshForNextColdStart =
+    @"EnableFeedBackgroundRefreshForNextColdStart";
+
 const char kEnableServerDrivenBackgroundRefreshSchedule[] =
     "server_driven_schedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
@@ -33,7 +43,17 @@ bool IsWebChannelsEnabled() {
 }
 
 bool IsFeedBackgroundRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
+  static bool feedBackgroundRefreshEnabled =
+      [[NSUserDefaults standardUserDefaults]
+          boolForKey:kEnableFeedBackgroundRefreshForNextColdStart];
+  return feedBackgroundRefreshEnabled;
+}
+
+void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
+  DCHECK(base::FeatureList::GetInstance());
+  [[NSUserDefaults standardUserDefaults]
+      setBool:base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh)
+       forKey:kEnableFeedBackgroundRefreshForNextColdStart];
 }
 
 bool IsServerDrivenBackgroundRefreshScheduleEnabled() {
