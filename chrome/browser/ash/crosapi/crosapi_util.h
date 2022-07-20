@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/token.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "url/gurl.h"
@@ -53,14 +54,16 @@ struct InitialBrowserAction {
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled);
+    bool is_keep_alive_enabled,
+    absl::optional<browser_util::LacrosSelection> lacros_selection);
 
 // Creates a memory backed file containing the serialized |params|,
 // and returns its FD.
 base::ScopedFD CreateStartupData(
     ::crosapi::EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled);
+    bool is_keep_alive_enabled,
+    absl::optional<browser_util::LacrosSelection> lacros_selection);
 
 // Returns the device settings needed for Lacros.
 mojom::DeviceSettingsPtr GetDeviceSettings();

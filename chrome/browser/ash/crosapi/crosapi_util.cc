@@ -364,6 +364,19 @@ crosapi::mojom::BrowserInitParams::DeviceType ConvertDeviceType(
   }
 }
 
+crosapi::mojom::BrowserInitParams::LacrosSelection GetLacrosSelection(
+    absl::optional<browser_util::LacrosSelection> selection) {
+  if (!selection.has_value())
+    return crosapi::mojom::BrowserInitParams::LacrosSelection::kUnspecified;
+
+  switch (selection.value()) {
+    case browser_util::LacrosSelection::kRootfs:
+      return crosapi::mojom::BrowserInitParams::LacrosSelection::kRootfs;
+    case browser_util::LacrosSelection::kStateful:
+      return crosapi::mojom::BrowserInitParams::LacrosSelection::kStateful;
+  }
+}
+
 }  // namespace
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
@@ -399,7 +412,8 @@ InitialBrowserAction::~InitialBrowserAction() = default;
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled) {
+    bool is_keep_alive_enabled,
+    absl::optional<browser_util::LacrosSelection> lacros_selection) {
   auto params = mojom::BrowserInitParams::New();
   params->crosapi_version = crosapi::mojom::Crosapi::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
@@ -527,6 +541,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
                                kSharedStoragePrefsCapability,
                                kExtensionControlledPrefObserversCapability}};
 
+  params->lacros_selection = GetLacrosSelection(lacros_selection);
+
   params->is_device_enterprised_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
@@ -548,12 +564,14 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   return params;
 }
 
-base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider,
-                                 InitialBrowserAction initial_browser_action,
-                                 bool is_keep_alive_enabled) {
-  const auto& data = GetBrowserInitParams(environment_provider,
-                                          std::move(initial_browser_action),
-                                          is_keep_alive_enabled);
+base::ScopedFD CreateStartupData(
+    EnvironmentProvider* environment_provider,
+    InitialBrowserAction initial_browser_action,
+    bool is_keep_alive_enabled,
+    absl::optional<LacrosSelection> lacros_selection) {
+  const auto& data = GetBrowserInitParams(
+      environment_provider, std::move(initial_browser_action),
+      is_keep_alive_enabled, lacros_selection);
 
   return chromeos::CreateMemFDFromBrowserInitParams(data);
 }

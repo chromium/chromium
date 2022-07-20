@@ -23,8 +23,8 @@ interface BrowserVersionService {
   AddBrowserVersionObserver@0(
       pending_remote<BrowserVersionObserver> observer);
 
-  // Returns the latest installed browser version or empty if no browser is
-  // installed.
+  // Returns the latest installed stateful browser version or empty if none is
+  // installed, regardless of the currently running browser version.
   [MinVersion=1]
   GetInstalledBrowserVersion@1() => (string version);
 };

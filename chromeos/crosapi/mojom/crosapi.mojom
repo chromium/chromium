@@ -836,8 +836,9 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 50
-// Next id: 50
+
+// Next version: 51
+// Next id: 51
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1143,6 +1144,20 @@ struct BrowserInitParams {
   // When this flag is set to true, Lacros tts support feature will be enabled.
   [MinVersion=49]
   bool enable_lacros_tts_support@49;
+
+  [Stable, Extensible]
+  enum LacrosSelection {
+    [Default] kUnspecified,
+    // Instance residing in the rootfs partition.
+    kRootfs,
+    // Instance residing in the stateful partition.
+    kStateful,
+  };
+
+  // The partition from which the lacros instance has been launched, which is
+  // either rootfs or stateful.
+  [MinVersion=50]
+  LacrosSelection lacros_selection@50;
 };
 
 // Parameters to specify OpenUrl behavior.

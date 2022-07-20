@@ -1141,7 +1141,7 @@ void BrowserManager::StartWithLogFile(
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
       environment_provider_.get(), std::move(initial_browser_action),
-      !keep_alive_features_.empty());
+      !keep_alive_features_.empty(), lacros_selection_);
   if (startup_fd.is_valid()) {
     // Hardcoded to use FD 3 to make the ash-chrome's behavior more predictable.
     // Lacros-chrome should not depend on the hardcoded value though. Instead

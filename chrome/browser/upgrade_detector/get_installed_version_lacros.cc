@@ -4,6 +4,7 @@
 
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -16,48 +17,39 @@
 #include "chromeos/startup/browser_init_params.h"
 #include "components/version_info/version_info.h"
 
-namespace {
-
-// The presence of this capability constant in the ash capabilities array
-// indicates that Ash supports reloading and starting updated browser images on
-// subsequent starts.
-constexpr char kBrowserManagerReloadBrowserCapability[] = "crbug/1237235";
-
-}  // namespace
-
 void GetInstalledVersion(InstalledVersionCallback callback) {
   // In addition to checking that Ash supports the browser version API, we also
   // check that Ash supports loading the latest browser image on subsequent
   // starts by inspecting the ash capabilities entries.
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service &&
-      lacros_service->IsAvailable<crosapi::mojom::BrowserVersionService>() &&
-      chromeos::BrowserInitParams::Get()->ash_capabilities.has_value() &&
-      base::Contains(
-          chromeos::BrowserInitParams::Get()->ash_capabilities.value(),
-          kBrowserManagerReloadBrowserCapability)) {
+      lacros_service->IsAvailable<crosapi::mojom::BrowserVersionService>()) {
     lacros_service->GetRemote<crosapi::mojom::BrowserVersionService>()
         ->GetInstalledBrowserVersion(base::BindOnce(
             [](InstalledVersionCallback callback,
                const std::string& version_str) {
-              // We must return the current version if we obtain an invalid
-              // version, so that the InstalledVersionPoller can interpret that
-              // no update is available. This scenario can happen when rootfs
-              // LaCrOS was launched and no stateful LaCrOS component is
-              // currently available.
-              std::move(callback).Run(InstalledAndCriticalVersion(
-                  version_str.empty() ? version_info::GetVersion()
-                                      : base::Version(version_str)));
+              // Report the currently running version to indicate that no update
+              // is available if crosapi returns an invalid version or an older
+              // version and rootfs LaCrOS is running.
+              base::Version version(version_str);
+              if (!version.IsValid() ||
+                  (version < version_info::GetVersion() &&
+                   chromeos::BrowserInitParams::Get()->lacros_selection ==
+                       crosapi::mojom::BrowserInitParams::LacrosSelection::
+                           kRootfs)) {
+                version = version_info::GetVersion();
+              }
+
+              std::move(callback).Run(InstalledAndCriticalVersion(version));
             },
             std::move(callback)));
     return;
   }
 
   // Invoking an Ash-Chrome version that predates the introduction of the
-  // GetInstalledBrowserVersion API or browser relaunch capability will result
-  // in this failure.
+  // GetInstalledBrowserVersion API will result in this failure.
   DLOG(ERROR) << "Current lacros service does not support the browser version "
-                 "api or relaunch capability.";
+                 "api.";
 
   // We must return the current version as opposed to an invalid version so
   // that the InstalledVersionPoller can interpret that no update is

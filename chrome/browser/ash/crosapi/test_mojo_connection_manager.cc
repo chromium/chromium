@@ -90,7 +90,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       environment_provider_,
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kUseStartupPreference),
-      /*is_keep_alive_enabled=*/false);
+      /*is_keep_alive_enabled=*/false, absl::nullopt);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
     return;
