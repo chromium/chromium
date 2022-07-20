@@ -12,6 +12,14 @@ namespace {
 constexpr char kFamilyLinkUserLogSegmentHistogramName[] =
     "FamilyLinkUser.LogSegment";
 
+bool AreParentalSupervisionCapabilitiesKnown(
+    const AccountCapabilities& capabilities) {
+  return capabilities.can_stop_parental_supervision() !=
+             signin::Tribool::kUnknown &&
+         capabilities.is_subject_to_parental_controls() !=
+             signin::Tribool::kUnknown;
+}
+
 }  // namespace
 
 FamilyLinkUserMetricsProvider::FamilyLinkUserMetricsProvider() {
@@ -54,30 +62,30 @@ void FamilyLinkUserMetricsProvider::OnIdentityManagerShutdown(
 
 void FamilyLinkUserMetricsProvider::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
+  if (!AreParentalSupervisionCapabilitiesKnown(account_info.capabilities)) {
+    // Because account info is fetched asynchronously it is possible for a
+    // subset of the info to be updated that does not include account
+    // capabilities. Only log metrics after the capability fetch completes.
+    return;
+  }
   auto is_subject_to_parental_controls =
       account_info.capabilities.is_subject_to_parental_controls();
-  switch (is_subject_to_parental_controls) {
-    case signin::Tribool::kFalse:
-    case signin::Tribool::kUnknown: {
-      // Log as unsupervised user if the account is not subject to parental
-      // controls or if the capability is not known.
-      SetLogSegment(LogSegment::kUnsupervised);
-      return;
+  if (is_subject_to_parental_controls == signin::Tribool::kTrue) {
+    auto can_stop_supervision =
+        account_info.capabilities.can_stop_parental_supervision();
+    if (can_stop_supervision == signin::Tribool::kTrue) {
+      // Log as a supervised user that has chosen to enable parental
+      // supervision on their account, e.g. Geller accounts.
+      SetLogSegment(LogSegment::kSupervisionEnabledByUser);
+    } else {
+      // Log as a supervised user that has parental supervision enabled
+      // by a policy applied to their account, e.g. Unicorn accounts.
+      SetLogSegment(LogSegment::kSupervisionEnabledByPolicy);
     }
-    case signin::Tribool::kTrue: {
-      auto can_stop_supervision =
-          account_info.capabilities.can_stop_parental_supervision();
-      if (can_stop_supervision == signin::Tribool::kTrue) {
-        // Log as a supervised user that has chosen to enable parental
-        // supervision on their account, e.g. Geller accounts.
-        SetLogSegment(LogSegment::kSupervisionEnabledByUser);
-      } else {
-        // Log as a supervised user that has parental supervision enabled
-        // by a policy applied to their account, e.g. Unicorn accounts.
-        SetLogSegment(LogSegment::kSupervisionEnabledByPolicy);
-      }
-      return;
-    }
+  } else {
+    // Log as unsupervised user if the account is not subject to parental
+    // controls.
+    SetLogSegment(LogSegment::kUnsupervised);
   }
 }
 

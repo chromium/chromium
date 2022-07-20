@@ -59,13 +59,13 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::RunLoop().RunUntilIdle();
 
+  // Does not set account capabilities, default is unknown.
   base::HistogramTester histogram_tester;
   metrics_provider()->ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kUnsupervised,
-      /*expected_bucket_count=*/1);
+      /*count=*/0);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
@@ -75,6 +75,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
 
   AccountCapabilitiesTestMutator mutator(&account.capabilities);
   mutator.set_is_subject_to_parental_controls(false);
+  mutator.set_can_stop_parental_supervision(false);
   signin::UpdateAccountInfoForAccount(identity_manager(), account);
 
   AccountInfo updated_account =
@@ -147,6 +148,27 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
        MetricsProviderInitAfterPrimaryAccountAdded) {
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
+
+  // Identity manager observer set after primary account is made available.
+  metrics_provider()->IdentityManagerCreated(identity_manager());
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
+
+  histogram_tester.ExpectTotalCount(
+      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
+      /*count=*/0);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       MetricsProviderInitAfterPrimaryAccountWithCapabilitiesAdded) {
+  AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_is_subject_to_parental_controls(false);
+  mutator.set_can_stop_parental_supervision(false);
+  signin::UpdateAccountInfoForAccount(identity_manager(), account);
 
   // Identity manager observer set after primary account is made available.
   metrics_provider()->IdentityManagerCreated(identity_manager());
