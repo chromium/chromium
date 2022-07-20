@@ -384,7 +384,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   raw_ptr<Browser> active_browser_ = nullptr;
   raw_ptr<Profile> active_profile_ = nullptr;
   AppId active_app_id_;
-  raw_ptr<Browser> app_browser_ = nullptr;
+  // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<Browser, DegradeToNoOpWhenMTE> app_browser_ = nullptr;
 
   std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
   base::ScopedObservation<web_app::WebAppInstallManager,
