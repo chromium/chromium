@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
 #define CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
@@ -22,6 +22,13 @@ using ParseTrashInfoCallback = base::OnceCallback<
 // TODO(b/238943248): This should not launch an individual service every time
 // but should re-use one if it's already running.
 mojo::PendingRemote<mojom::TrashService> LaunchTrashService();
+
+// Overrides the logic used by |LaunchTrashService()| to produce a remote
+// service, allowing tests to set up an in-process instance to be used instead
+// of an out-of-process instance.
+using LaunchCallback =
+    base::RepeatingCallback<mojo::PendingRemote<mojom::TrashService>()>;
+void SetTrashServiceLaunchOverrideForTesting(LaunchCallback callback);
 
 }  // namespace chromeos::trash_service
 
