@@ -516,6 +516,61 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
   CFRelease(list);
 }
 
+// Tests that ModifierMaskForKeyEvent() works correctly for "flags changed"
+// events.
+TEST(NSMenuItemAdditionsTest, MMFKEHandlesFlagsChangedEvents) {
+  NSEventModifierFlags modifiers = NSEventModifierFlagCommand;
+  NSEvent* flags_changed_event =
+      [NSEvent keyEventWithType:NSEventTypeFlagsChanged
+                             location:NSZeroPoint
+                        modifierFlags:modifiers
+                            timestamp:0.0
+                         windowNumber:0
+                              context:nil
+                           characters:@""
+          charactersIgnoringModifiers:@""
+                            isARepeat:NO
+                              keyCode:0];
+
+  NSEventModifierFlags expected_flags =
+      NSEventModifierFlagCommand | NSEventModifierFlagControl |
+      NSEventModifierFlagOption | NSEventModifierFlagShift;
+  // Flags changed events don't have characters. Make sure we don't make the
+  // mistake of of assuming the event contains characters.
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(flags_changed_event));
+
+  modifiers = NSEventModifierFlagFunction;
+  flags_changed_event = [NSEvent keyEventWithType:NSEventTypeFlagsChanged
+                                         location:NSZeroPoint
+                                    modifierFlags:modifiers
+                                        timestamp:0.0
+                                     windowNumber:0
+                                          context:nil
+                                       characters:@""
+                      charactersIgnoringModifiers:@""
+                                        isARepeat:NO
+                                          keyCode:0];
+
+  // Make sure, in particular, we handle flags changed for the function key.
+  // See https://crbug.com/1340934 .
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(flags_changed_event));
+
+  modifiers = NSEventModifierFlagOption;
+  NSEvent* key_up_event = [NSEvent keyEventWithType:NSEventTypeKeyUp
+                                           location:NSZeroPoint
+                                      modifierFlags:modifiers
+                                          timestamp:0.0
+                                       windowNumber:0
+                                            context:nil
+                                         characters:@"a"
+                        charactersIgnoringModifiers:@"a"
+                                          isARepeat:NO
+                                            keyCode:0];
+
+  // Check that there are no issues with key up events.
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(key_up_event));
+}
+
 }  // namespace
 }  // namespace cocoa
 }  // namespace ui
