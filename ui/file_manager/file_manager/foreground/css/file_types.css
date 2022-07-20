@@ -88,6 +88,8 @@ body.check-select #list-container li[selected] [file-type-icon],
 
 [file-type-icon='gdoc'] {
   -webkit-mask-image: url(../images/filetype/filetype_gdoc.svg);
+  /* TODO(crbug.com/1345818) Revert the first CL on that bug when it's fixed. */
+  background-color: var(--cros-icon-color-blue);
 }
 
 [file-type-icon='gdraw'] {
@@ -259,7 +261,6 @@ body.check-select #list-container li[selected] [file-type-icon],
 }
 
 /* File type icon and thumbnail colors. */
-[file-type-icon='gdoc'],
 [file-type-icon='script'],
 [file-type-icon='tini'],
 .no-thumbnail[generic-thumbnail='gdoc'],
