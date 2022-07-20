@@ -3,7 +3,7 @@
 async function openTcp(address, port, options = {}) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
-    let { remoteAddress, remotePort } = await tcpSocket.connection;
+    let { remoteAddress, remotePort } = await tcpSocket.opened;
     return ('openTcp succeeded: ' +
             '{remoteAddress: "' + remoteAddress +
             '", remotePort: ' + remotePort + '}');
@@ -15,7 +15,7 @@ async function openTcp(address, port, options = {}) {
 async function openUdp(address, port, options = {}) {
   try {
     let udpSocket = new UDPSocket(address, port, options);
-    let { remoteAddress, remotePort } = await udpSocket.connection;
+    let { remoteAddress, remotePort } = await udpSocket.opened;
     return ('openUdp succeeded: ' +
             '{remoteAddress: "' + remoteAddress +
             '", remotePort: ' + remotePort + '}');

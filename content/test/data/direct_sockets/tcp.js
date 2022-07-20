@@ -22,7 +22,7 @@ async function writeLoop(writer, requiredBytes) {
 async function writeTcp(address, port, options, requiredBytes) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
-    let { writable } = await tcpSocket.connection;
+    let { writable } = await tcpSocket.opened;
     let writer = writable.getWriter();
     return await writeLoop(writer, requiredBytes);
   } catch(error) {
@@ -53,7 +53,7 @@ async function readLoop(reader, requiredBytes) {
 async function readTcp(address, port, options, requiredBytes) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
-    let { readable } = await tcpSocket.connection;
+    let { readable } = await tcpSocket.opened;
     let reader = readable.getReader();
     return await readLoop(reader, requiredBytes);
   } catch(error) {
@@ -64,7 +64,7 @@ async function readTcp(address, port, options, requiredBytes) {
 async function readWriteTcp(address, port, options, requiredBytes) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
-    let { readable, writable } = await tcpSocket.connection;
+    let { readable, writable } = await tcpSocket.opened;
     let reader = readable.getReader();
     let writer = writable.getWriter();
     let [readResult, writeResult] =
@@ -83,7 +83,7 @@ async function readWriteTcp(address, port, options, requiredBytes) {
 async function closeTcp(address, port, options) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
-    let { readable, writable } = await tcpSocket.connection;
+    let { readable, writable } = await tcpSocket.opened;
 
     let reader = readable.getReader();
     let writer = writable.getWriter();
@@ -113,7 +113,7 @@ async function write(writer, value) {
 
 async function readTcpOnError(socket, expected_read_success) {
   try {
-    let { readable } = await socket.connection;
+    let { readable } = await socket.opened;
 
     let reader = readable.getReader();
 
@@ -130,7 +130,7 @@ async function readTcpOnError(socket, expected_read_success) {
 
 async function writeTcpOnError(socket) {
   try {
-    let { writable } = await socket.connection;
+    let { writable } = await socket.opened;
 
     let writer = writable.getWriter();
 
@@ -147,7 +147,7 @@ async function writeTcpOnError(socket) {
 
 async function readWriteTcpOnError(socket) {
   try {
-    let { readable, writable } = await socket.connection;
+    let { readable, writable } = await socket.opened;
 
     let reader = readable.getReader();
     let writer = writable.getWriter();
@@ -165,7 +165,7 @@ async function readWriteTcpOnError(socket) {
 
 async function waitForClosedPromise(socket, expected_closed_result, cancel_reader = false, close_writer = false) {
   try {
-    let { readable, writable } = await socket.connection;
+    let { readable, writable } = await socket.opened;
 
     let reader = readable.getReader();
     let writer = writable.getWriter();

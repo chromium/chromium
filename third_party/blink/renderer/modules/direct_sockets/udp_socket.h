@@ -67,8 +67,8 @@ class MODULES_EXPORT UDPSocket final
             const UDPSocketOptions*,
             ExceptionState&);
 
-  // On net::OK initializes readable/writable streams and resolves connection
-  // promise. Otherwise rejects the connection promise. Serves as callback for
+  // On net::OK initializes readable/writable streams and resolves opened
+  // promise. Otherwise rejects the opened promise. Serves as callback for
   // Open(...).
   void Init(int32_t result,
             const absl::optional<net::IPEndPoint>& local_addr,

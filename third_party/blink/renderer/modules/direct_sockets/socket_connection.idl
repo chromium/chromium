@@ -1,4 +1,4 @@
-dictionary SocketConnection {
+dictionary SocketOpenInfo {
   ReadableStream readable;
   WritableStream writable;
 
@@ -9,6 +9,6 @@ dictionary SocketConnection {
   unsigned short localPort;
 };
 
-dictionary TCPSocketConnection : SocketConnection {};
+dictionary TCPSocketOpenInfo : SocketOpenInfo {};
 
-dictionary UDPSocketConnection : SocketConnection {};
+dictionary UDPSocketOpenInfo : SocketOpenInfo {};

@@ -67,7 +67,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     const std::string open_socket = JsReplace(
         R"(
           socket = new UDPSocket($1, $2);
-          await socket.connection;
+          await socket.opened;
         )",
         kLocalhostAddress, port);
 
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
   const std::string open_socket = JsReplace(
       R"((async () => {
         socket = new UDPSocket($1, $2);
-        let { localPort } = await socket.connection;
+        let { localPort } = await socket.opened;
         return localPort;
       })())",
       server_address.ToStringWithoutPort(), server_address.port());
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
 
   const std::string async_read = content::test::WrapAsync(JsReplace(
       R"(
-        let { readable } = await socket.connection;
+        let { readable } = await socket.opened;
         let reader = readable.getReader();
         return await readLoop(reader, $1);
       )",

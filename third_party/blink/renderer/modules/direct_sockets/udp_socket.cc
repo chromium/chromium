@@ -6,28 +6,21 @@
 
 #include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_connection.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -150,30 +143,30 @@ void UDPSocket::Init(int32_t result,
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         script_state_, close_callback, udp_socket_);
 
-    auto* connection = UDPSocketConnection::Create();
+    auto* open_info = UDPSocketOpenInfo::Create();
 
-    connection->setReadable(readable_stream_wrapper_->Readable());
-    connection->setWritable(writable_stream_wrapper_->Writable());
+    open_info->setReadable(readable_stream_wrapper_->Readable());
+    open_info->setWritable(writable_stream_wrapper_->Writable());
 
-    connection->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
-    connection->setRemotePort(peer_addr->port());
+    open_info->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
+    open_info->setRemotePort(peer_addr->port());
 
-    connection->setLocalAddress(String{local_addr->ToStringWithoutPort()});
-    connection->setLocalPort(local_addr->port());
+    open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    open_info->setLocalPort(local_addr->port());
 
-    connection_resolver_->Resolve(connection);
+    opened_resolver_->Resolve(open_info);
   } else {
     if (result != net::OK) {
       // Error codes are negative.
       base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -result);
     }
-    connection_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
+    opened_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
     CloseServiceAndResetFeatureHandle();
 
     closed_resolver_->Reject();
   }
 
-  connection_resolver_ = nullptr;
+  opened_resolver_ = nullptr;
 }
 
 mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
@@ -235,7 +228,7 @@ void UDPSocket::Trace(Visitor* visitor) const {
 }
 
 void UDPSocket::OnServiceConnectionError() {
-  if (connection_resolver_) {
+  if (opened_resolver_) {
     Init(net::ERR_UNEXPECTED, absl::nullopt, absl::nullopt);
   }
 }

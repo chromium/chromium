@@ -57,15 +57,15 @@ TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
   auto* script_state = scope.GetScriptState();
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
-  auto connection_promise = tcp_socket->connection(script_state);
-  ScriptPromiseTester connection_tester(script_state, connection_promise);
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
 
   tcp_socket->Init(net::ERR_FAILED, net::IPEndPoint(), net::IPEndPoint(),
                    mojo::ScopedDataPipeConsumerHandle(),
                    mojo::ScopedDataPipeProducerHandle());
 
-  connection_tester.WaitUntilSettled();
-  ASSERT_TRUE(connection_tester.IsRejected());
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsRejected());
 
   auto close_promise =
       tcp_socket->close(script_state, scope.GetExceptionState());
@@ -81,8 +81,8 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   auto* script_state = scope.GetScriptState();
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
-  auto connection_promise = tcp_socket->connection(script_state);
-  ScriptPromiseTester connection_tester(script_state, connection_promise);
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
 
   auto [consumer_complement, consumer] = CreateDataPipe();
   auto [producer, producer_complement] = CreateDataPipe();
@@ -90,8 +90,8 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
                    net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
                    std::move(consumer), std::move(producer));
 
-  connection_tester.WaitUntilSettled();
-  ASSERT_TRUE(connection_tester.IsFulfilled());
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsFulfilled());
 
   auto close_promise =
       tcp_socket->close(script_state, scope.GetExceptionState());
@@ -105,8 +105,8 @@ TEST(TCPSocketTest, OnSocketObserverConnectionError) {
   auto* script_state = scope.GetScriptState();
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
-  auto connection_promise = tcp_socket->connection(script_state);
-  ScriptPromiseTester connection_tester(script_state, connection_promise);
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
 
   auto [consumer_complement, consumer] = CreateDataPipe();
   auto [producer, producer_complement] = CreateDataPipe();
@@ -114,8 +114,8 @@ TEST(TCPSocketTest, OnSocketObserverConnectionError) {
                    net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
                    std::move(consumer), std::move(producer));
 
-  connection_tester.WaitUntilSettled();
-  ASSERT_TRUE(connection_tester.IsFulfilled());
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsFulfilled());
 
   ScriptPromiseTester closed_tester(script_state,
                                     tcp_socket->closed(script_state));
@@ -141,8 +141,8 @@ TEST_P(TCPSocketCloseTest, OnErrorOrClose) {
   auto* script_state = scope.GetScriptState();
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
-  auto connection_promise = tcp_socket->connection(script_state);
-  ScriptPromiseTester connection_tester(script_state, connection_promise);
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
 
   auto [consumer_complement, consumer] = CreateDataPipe();
   auto [producer, producer_complement] = CreateDataPipe();
@@ -150,8 +150,8 @@ TEST_P(TCPSocketCloseTest, OnErrorOrClose) {
                    net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
                    std::move(consumer), std::move(producer));
 
-  connection_tester.WaitUntilSettled();
-  ASSERT_TRUE(connection_tester.IsFulfilled());
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsFulfilled());
 
   ScriptPromiseTester closed_tester(script_state,
                                     tcp_socket->closed(script_state));

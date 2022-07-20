@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -20,7 +19,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -52,9 +50,8 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
 
 }  // namespace
 
-ScriptPromise Socket::connection(ScriptState* script_state) const {
-  return ScriptPromise(script_state,
-                       connection_.Get(script_state->GetIsolate()));
+ScriptPromise Socket::opened(ScriptState* script_state) const {
+  return ScriptPromise(script_state, opened_.Get(script_state->GetIsolate()));
 }
 
 ScriptPromise Socket::closed(ScriptState* script_state) const {
@@ -103,10 +100,10 @@ Socket::Socket(ScriptState* script_state)
           GetExecutionContext()->GetScheduler()->RegisterFeature(
               SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
               {SchedulingPolicy::DisableBackForwardCache()})),
-      connection_resolver_(
+      opened_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      connection_(script_state->GetIsolate(),
-                  connection_resolver_->Promise().V8Promise()),
+      opened_(script_state->GetIsolate(),
+              opened_resolver_->Promise().V8Promise()),
       closed_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
       closed_(script_state->GetIsolate(),
@@ -154,7 +151,7 @@ void Socket::ContextDestroyed() {}
 void Socket::ContextLifecycleStateChanged(
     mojom::blink::FrameLifecycleState state) {
   if (state == mojom::blink::FrameLifecycleState::kFrozen) {
-    // Clear service_remote_ and pending connections.
+    // Clear service_remote_ and fail pending connection.
     OnServiceConnectionError();
   }
 }
@@ -198,8 +195,8 @@ void Socket::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(service_);
 
-  visitor->Trace(connection_resolver_);
-  visitor->Trace(connection_);
+  visitor->Trace(opened_resolver_);
+  visitor->Trace(opened_);
 
   visitor->Trace(closed_resolver_);
   visitor->Trace(closed_);

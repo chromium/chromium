@@ -13,7 +13,7 @@
   [CallWith=ScriptState, RaisesException]
   constructor(DOMString remoteAddress, unsigned short remotePort, optional TCPSocketOptions options = {});
 
-  [CallWith=ScriptState] readonly attribute Promise<TCPSocketConnection> connection;
+  [CallWith=ScriptState] readonly attribute Promise<TCPSocketOpenInfo> opened;
   [CallWith=ScriptState] readonly attribute Promise<void> closed;
 
   [CallWith=ScriptState, RaisesException, Measure]

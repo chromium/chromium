@@ -274,7 +274,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     const std::string open_socket = JsReplace(
         R"(
           socket = new TCPSocket($1, $2);
-          await socket.connection;
+          await socket.opened;
         )",
         kLocalhostAddress, port);
 

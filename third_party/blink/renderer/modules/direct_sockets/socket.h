@@ -26,7 +26,7 @@ class ExceptionState;
 class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
  public:
   // IDL definitions
-  virtual ScriptPromise connection(ScriptState*) const;
+  virtual ScriptPromise opened(ScriptState*) const;
   virtual ScriptPromise closed(ScriptState*) const;
   // Calls readable.cancel() and writable.abort() given that they're not locked
   // or rejects otherwise.
@@ -72,8 +72,8 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
-  Member<ScriptPromiseResolver> connection_resolver_;
-  const TraceWrapperV8Reference<v8::Promise> connection_;
+  Member<ScriptPromiseResolver> opened_resolver_;
+  const TraceWrapperV8Reference<v8::Promise> opened_;
 
   Member<ScriptPromiseResolver> closed_resolver_;
   const TraceWrapperV8Reference<v8::Promise> closed_;

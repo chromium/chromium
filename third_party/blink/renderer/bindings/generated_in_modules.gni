@@ -2685,16 +2685,16 @@ generated_union_sources_in_modules = [
 # we need to compile in the same way as would happen when current_os="android".
 if (target_os != "android") {
   generated_dictionary_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_connection.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_connection.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_open_info.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_open_info.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_connection.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_connection.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_connection.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_connection.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_open_info.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_open_info.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h",
