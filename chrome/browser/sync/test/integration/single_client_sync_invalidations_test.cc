@@ -49,6 +49,10 @@ using testing::UnorderedElementsAre;
 const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
 const char kSyncedBookmarkTitle[] = "Title";
 
+syncer::ModelTypeSet DefaultInterestedDataTypes() {
+  return Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes());
+}
+
 // Injects a new bookmark into the |fake_server| and returns a GUID of a created
 // entity. Note that this trigges an invalidations from the server.
 base::GUID InjectSyncedBookmark(fake_server::FakeServer* fake_server) {
@@ -165,6 +169,7 @@ class GetUpdatesTriggeredObserver : public fake_server::FakeServer::Observer {
 
 sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
     const std::string& cache_guid,
+    syncer::ModelTypeSet interested_data_types,
     const std::string& fcm_registration_token) {
   sync_pb::DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(cache_guid);
@@ -177,6 +182,12 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
       syncer::TimeToProtoTime(base::Time::Now()));
   specifics.mutable_invalidation_fields()->set_instance_id_token(
       fcm_registration_token);
+  sync_pb::InvalidationSpecificFields* mutable_invalidation_fields =
+      specifics.mutable_invalidation_fields();
+  for (syncer::ModelType type : interested_data_types) {
+    mutable_invalidation_fields->add_interested_data_type_ids(
+        syncer::GetSpecificsFieldNumberFromModelType(type));
+  }
   return specifics;
 }
 
@@ -250,10 +261,11 @@ class SingleClientWithUseSyncInvalidationsTest
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
       const std::string& cache_guid,
+      syncer::ModelTypeSet interested_data_types,
       const std::string& fcm_registration_token) {
     sync_pb::EntitySpecifics specifics;
-    *specifics.mutable_device_info() =
-        CreateDeviceInfoSpecifics(cache_guid, fcm_registration_token);
+    *specifics.mutable_device_info() = CreateDeviceInfoSpecifics(
+        cache_guid, interested_data_types, fcm_registration_token);
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"",
@@ -347,8 +359,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
   const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
 
-  // Simulate the case when the server already knows one other device.
+  // Simulate the case when the server already knows another device which is
+  // subscribed to all data types.
   InjectDeviceInfoEntityToServer(kRemoteDeviceCacheGuid,
+                                 DefaultInterestedDataTypes(),
                                  kRemoteFCMRegistrationToken);
   ASSERT_TRUE(SetupSync());
 
@@ -365,6 +379,46 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   EXPECT_THAT(
       message.commit().config_params().devices_fcm_registration_tokens(),
       ElementsAre(kRemoteFCMRegistrationToken));
+  EXPECT_THAT(message.commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients(),
+              ElementsAre(kRemoteFCMRegistrationToken));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWithUseSyncInvalidationsTest,
+    ShouldNotPopulateFCMRegistrationTokensForInterestedDataTypes) {
+  const std::string kTitle = "title";
+  const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
+  const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
+
+  // Simulate the case when the server already knows another device which is
+  // not subscribed to BOOKMARKS.
+  InjectDeviceInfoEntityToServer(
+      kRemoteDeviceCacheGuid,
+      Difference(DefaultInterestedDataTypes(), {syncer::BOOKMARKS}),
+      kRemoteFCMRegistrationToken);
+  ASSERT_TRUE(SetupSync());
+
+  // Commit a new bookmark to check if the next commit message has FCM
+  // registration tokens.
+  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle);
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle, GURL()}},
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  GetFakeServer()->GetLastCommitMessage(&message);
+
+  // |devices_fcm_registration_tokens| still contains remote FCM registration
+  // token because it's set regardless interested data type list.
+  EXPECT_THAT(
+      message.commit().config_params().devices_fcm_registration_tokens(),
+      ElementsAre(kRemoteFCMRegistrationToken));
+  EXPECT_THAT(message.commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients(),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,

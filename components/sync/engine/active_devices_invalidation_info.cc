@@ -8,6 +8,14 @@
 
 namespace syncer {
 
+namespace {
+
+// The maximum number of FCM registration tokens to be returned for a commit
+// message.
+constexpr size_t kMaxFcmRegistrationTokens = 5;
+
+}  // namespace
+
 // static
 ActiveDevicesInvalidationInfo
 ActiveDevicesInvalidationInfo::CreateUninitialized() {
@@ -16,14 +24,14 @@ ActiveDevicesInvalidationInfo::CreateUninitialized() {
 
 // static
 ActiveDevicesInvalidationInfo ActiveDevicesInvalidationInfo::Create(
-    std::vector<std::string> fcm_registration_tokens,
+    std::vector<std::string> all_fcm_registration_tokens,
     ModelTypeSet all_interested_data_types,
-    ModelTypeSet standalone_invalidations_interested_data_types) {
+    std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types) {
   ActiveDevicesInvalidationInfo result(/*initialized=*/true);
-  result.fcm_registration_tokens_ = std::move(fcm_registration_tokens);
+  result.all_fcm_registration_tokens_ = std::move(all_fcm_registration_tokens);
   result.all_interested_data_types_ = all_interested_data_types;
-  result.standalone_invalidations_interested_data_types_ =
-      standalone_invalidations_interested_data_types;
+  result.fcm_token_and_interested_data_types_ =
+      std::move(fcm_token_and_interested_data_types);
   return result;
 }
 
@@ -57,8 +65,40 @@ bool ActiveDevicesInvalidationInfo::
     return false;
   }
 
-  return Intersection(types, standalone_invalidations_interested_data_types_)
+  return Intersection(types,
+                      GetAllInterestedDataTypesForStandaloneInvalidations())
       .Empty();
+}
+
+std::vector<std::string>
+ActiveDevicesInvalidationInfo::GetFcmRegistrationTokensForInterestedClients(
+    ModelTypeSet types) const {
+  std::vector<std::string> fcm_tokens;
+  for (const auto& fcm_token_with_data_types :
+       fcm_token_and_interested_data_types_) {
+    if (Intersection(types, fcm_token_with_data_types.second).Empty()) {
+      continue;
+    }
+    if (fcm_tokens.size() >= kMaxFcmRegistrationTokens) {
+      fcm_tokens.clear();
+      // Single client is used to determine if there are devices with standalone
+      // invalidations enabled.
+      DCHECK(!IsSingleClientWithStandaloneInvalidationsForTypes(types));
+      break;
+    }
+    fcm_tokens.push_back(fcm_token_with_data_types.first);
+  }
+  return fcm_tokens;
+}
+
+ModelTypeSet ActiveDevicesInvalidationInfo::
+    GetAllInterestedDataTypesForStandaloneInvalidations() const {
+  ModelTypeSet result;
+  for (const auto& fcm_token_with_data_types :
+       fcm_token_and_interested_data_types_) {
+    result.PutAll(fcm_token_with_data_types.second);
+  }
+  return result;
 }
 
 }  // namespace syncer

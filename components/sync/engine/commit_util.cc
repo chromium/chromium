@@ -38,7 +38,9 @@ void AddClientConfigParamsToMessage(
     bool cookie_jar_mismatch,
     bool single_client,
     bool single_client_with_standalone_invalidations,
-    const std::vector<std::string>& fcm_registration_tokens,
+    const std::vector<std::string>& all_fcm_registration_tokens,
+    const std::vector<std::string>&
+        fcm_registration_tokens_for_interested_clients,
     sync_pb::CommitMessage* message) {
   sync_pb::ClientConfigParams* config_params = message->mutable_config_params();
   DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
@@ -51,8 +53,12 @@ void AddClientConfigParamsToMessage(
   config_params->set_single_client(single_client);
   config_params->set_single_client_with_standalone_invalidations(
       single_client_with_standalone_invalidations);
-  for (const std::string& token : fcm_registration_tokens) {
+  for (const std::string& token : all_fcm_registration_tokens) {
     *config_params->add_devices_fcm_registration_tokens() = token;
+  }
+  for (const std::string& token :
+       fcm_registration_tokens_for_interested_clients) {
+    config_params->add_fcm_registration_tokens_for_interested_clients(token);
   }
 }
 

@@ -31,7 +31,9 @@ void AddClientConfigParamsToMessage(
     bool cookie_jar_mismatch,
     bool single_client,
     bool single_client_with_standalone_invalidations,
-    const std::vector<std::string>& fcm_registration_tokens,
+    const std::vector<std::string>& all_fcm_registration_tokens,
+    const std::vector<std::string>&
+        fcm_registration_tokens_for_interested_clients,
     sync_pb::CommitMessage* message);
 
 }  // namespace syncer::commit_util

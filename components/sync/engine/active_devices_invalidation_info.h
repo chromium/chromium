@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_ACTIVE_DEVICES_INVALIDATION_INFO_H_
 #define COMPONENTS_SYNC_ENGINE_ACTIVE_DEVICES_INVALIDATION_INFO_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -21,12 +22,14 @@ class ActiveDevicesInvalidationInfo {
   static ActiveDevicesInvalidationInfo CreateUninitialized();
 
   // Creates and initializes the object with all collected
-  // |fcm_registration_tokens| and |interested_data_types| from all other
+  // |all_fcm_registration_tokens| and |interested_data_types| from all other
   // devices (and the local device if the client waits for self-invalidations).
+  // |fcm_token_and_interested_data_types| contains FCM registration tokens and
+  // a corresponding interested data type list.
   static ActiveDevicesInvalidationInfo Create(
-      std::vector<std::string> fcm_registration_tokens,
+      std::vector<std::string> all_fcm_registration_tokens,
       ModelTypeSet all_interested_data_types,
-      ModelTypeSet standalone_invalidations_interested_data_types);
+      std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types);
 
   ~ActiveDevicesInvalidationInfo();
 
@@ -56,17 +59,25 @@ class ActiveDevicesInvalidationInfo {
   // Returns a list with all remote FCM registration tokens known to the current
   // device. The list may contain the local device's token if a reflection
   // should be sent from the server.
-  const std::vector<std::string>& fcm_registration_tokens() const {
-    return fcm_registration_tokens_;
+  const std::vector<std::string>& all_fcm_registration_tokens() const {
+    return all_fcm_registration_tokens_;
   }
+
+  // Returns a list of all remote FCM registration tokens known to current
+  // device which are interested in at least one of the given |types|. This is a
+  // subset of the list returned by all_fcm_registration_tokens().
+  std::vector<std::string> GetFcmRegistrationTokensForInterestedClients(
+      ModelTypeSet types) const;
 
  private:
   explicit ActiveDevicesInvalidationInfo(bool initialized);
 
+  ModelTypeSet GetAllInterestedDataTypesForStandaloneInvalidations() const;
+
   bool initialized_ = false;
-  std::vector<std::string> fcm_registration_tokens_;
+  std::vector<std::string> all_fcm_registration_tokens_;
   ModelTypeSet all_interested_data_types_;
-  ModelTypeSet standalone_invalidations_interested_data_types_;
+  std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types_;
 };
 
 }  // namespace syncer

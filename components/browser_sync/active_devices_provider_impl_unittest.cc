@@ -98,7 +98,13 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldFilterInactiveDevices) {
       active_devices_provider_.CalculateInvalidationInfo(
           /*local_cache_guid=*/std::string());
   EXPECT_FALSE(result_no_guid.IsSingleClientForTypes({syncer::BOOKMARKS}));
-  EXPECT_THAT(result_no_guid.fcm_registration_tokens(), Contains("token_1"));
+  EXPECT_THAT(result_no_guid.all_fcm_registration_tokens(),
+              Contains("token_1"));
+  EXPECT_FALSE(result_no_guid.IsSingleClientWithStandaloneInvalidationsForTypes(
+      {syncer::BOOKMARKS}));
+  EXPECT_THAT(result_no_guid.GetFcmRegistrationTokensForInterestedClients(
+                  {syncer::BOOKMARKS}),
+              Contains("token_1"));
 
   // Should ignore the local device and ignore the old device even if it's
   // interested in bookmarks.
@@ -107,6 +113,9 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldFilterInactiveDevices) {
       active_devices_provider_.CalculateInvalidationInfo(
           device_list_.front()->guid());
   EXPECT_TRUE(result_local_guid.IsSingleClientForTypes({syncer::BOOKMARKS}));
+  EXPECT_TRUE(
+      result_local_guid.IsSingleClientWithStandaloneInvalidationsForTypes(
+          {syncer::BOOKMARKS}));
 }
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldReturnIfSingleDeviceByDataType) {
@@ -183,10 +192,13 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnZeroDevices) {
   // If there are no devices at all (including the local device), that means we
   // just don't have the device information yet, so we should *not* consider
   // this a single-client situation.
-  EXPECT_THAT(result.fcm_registration_tokens(), IsEmpty());
+  EXPECT_THAT(result.all_fcm_registration_tokens(), IsEmpty());
   EXPECT_FALSE(result.IsSingleClientForTypes({syncer::BOOKMARKS}));
   EXPECT_FALSE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
       {syncer::BOOKMARKS}));
+  EXPECT_THAT(
+      result.GetFcmRegistrationTokensForInterestedClients({syncer::BOOKMARKS}),
+      IsEmpty());
 }
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldInvokeCallback) {
@@ -215,14 +227,17 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnActiveFCMRegistrationTokens) {
   const ActiveDevicesInvalidationInfo result_no_guid =
       active_devices_provider_.CalculateInvalidationInfo(
           /*local_cache_guid=*/std::string());
-  EXPECT_THAT(result_no_guid.fcm_registration_tokens(),
+  EXPECT_THAT(result_no_guid.all_fcm_registration_tokens(),
               UnorderedElementsAre(device_list_[0]->fcm_registration_token(),
                                    device_list_[1]->fcm_registration_token()));
 
   const ActiveDevicesInvalidationInfo result_local_guid =
       active_devices_provider_.CalculateInvalidationInfo(
           device_list_[0]->guid());
-  EXPECT_THAT(result_local_guid.fcm_registration_tokens(),
+  EXPECT_THAT(result_local_guid.all_fcm_registration_tokens(),
+              UnorderedElementsAre(device_list_[1]->fcm_registration_token()));
+  EXPECT_THAT(result_local_guid.GetFcmRegistrationTokensForInterestedClients(
+                  {syncer::BOOKMARKS}),
               UnorderedElementsAre(device_list_[1]->fcm_registration_token()));
 }
 
@@ -241,9 +256,12 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnEmptyListWhenTooManyDevices) {
   ActiveDevicesInvalidationInfo result =
       active_devices_provider_.CalculateInvalidationInfo(
           /*local_cache_guid=*/std::string());
-  EXPECT_THAT(result.fcm_registration_tokens(), IsEmpty());
+  EXPECT_THAT(result.all_fcm_registration_tokens(), IsEmpty());
   EXPECT_FALSE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
       {syncer::BOOKMARKS}));
+  EXPECT_THAT(
+      result.GetFcmRegistrationTokensForInterestedClients({syncer::BOOKMARKS}),
+      IsEmpty());
 
   // Double check that all other devices will result in an empty FCM
   // registration token list.
@@ -251,9 +269,35 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnEmptyListWhenTooManyDevices) {
             clock_.Now());
   result = active_devices_provider_.CalculateInvalidationInfo(
       /*local_cache_guid=*/std::string());
-  EXPECT_THAT(result.fcm_registration_tokens(), IsEmpty());
+  EXPECT_THAT(result.all_fcm_registration_tokens(), IsEmpty());
   EXPECT_FALSE(result.IsSingleClientWithStandaloneInvalidationsForTypes(
       {syncer::BOOKMARKS}));
+  EXPECT_THAT(
+      result.GetFcmRegistrationTokensForInterestedClients({syncer::BOOKMARKS}),
+      IsEmpty());
+}
+
+TEST_F(ActiveDevicesProviderImplTest,
+       ShouldReturnFCMRegistrationTokensFromLatestDeviceInfo) {
+  AddDevice("device_1", "fcm_token", DefaultInterestedDataTypes(),
+            clock_.Now() - base::Minutes(2));
+  // A newer device with the same FCM registration token but different
+  // interested data types.
+  AddDevice("device_2", "fcm_token",
+            Difference(DefaultInterestedDataTypes(), {syncer::BOOKMARKS}),
+            clock_.Now() - base::Minutes(1));
+
+  ASSERT_EQ(2u, device_list_.size());
+
+  const ActiveDevicesInvalidationInfo result_no_guid =
+      active_devices_provider_.CalculateInvalidationInfo(
+          /*local_cache_guid=*/std::string());
+  EXPECT_THAT(result_no_guid.GetFcmRegistrationTokensForInterestedClients(
+                  {syncer::SESSIONS}),
+              UnorderedElementsAre(device_list_[1]->fcm_registration_token()));
+  EXPECT_THAT(result_no_guid.GetFcmRegistrationTokensForInterestedClients(
+                  {syncer::BOOKMARKS}),
+              IsEmpty());
 }
 
 }  // namespace

@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/default_clock.h"
+#include "base/time/clock.h"
 #include "components/sync/driver/active_devices_provider.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
@@ -39,7 +39,8 @@ class ActiveDevicesProviderImpl : public syncer::ActiveDevicesProvider,
   void OnDeviceInfoChange() override;
 
  private:
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> GetActiveDevices() const;
+  std::vector<std::unique_ptr<syncer::DeviceInfo>>
+  GetActiveDevicesSortedByUpdateTime() const;
 
   const raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
   const raw_ptr<const base::Clock> clock_;

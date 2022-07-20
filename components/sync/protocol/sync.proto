@@ -79,8 +79,6 @@ message ClientConfigParams {
   // could be mixed up with older clients). The server doesn't have to use this
   // field and can ignore it. Note that this list does not take into account
   // interested data types from the other clients.
-  // TODO(crbug.com/1344803): use interested data types to narrow down the list
-  // of FCM tokens.
   repeated string devices_fcm_registration_tokens = 5;
 
   // Similar to |single_client| but takes into account only clients with enabled
@@ -91,6 +89,25 @@ message ClientConfigParams {
   // |single_client| instead).
   // Introduced in M105.
   optional bool single_client_with_standalone_invalidations = 6;
+
+  // Similar to |devices_fcm_registration_tokens| but takes into account clients
+  // which are subscribed to the data types which are committed in current
+  // commit request.
+  // A list of FCM registration tokens which are obtained from other clients.
+  // This list is used by the server to send invalidations to all other clients.
+  // If the list is empty, the server should treat this as "there is no
+  // information about other clients". In practice, this happens by the next
+  // causes:
+  // 1. This is the old client which doesn't set this field.
+  // 2. There are too many active devices and the list would have too many
+  // items.
+  // 3. An empty list could also mean that the current client is the only
+  // client. This case should be covered by the
+  // |single_client_with_standalone_invalidations| field instead (otherwise it
+  // could be mixed up with older clients). The server doesn't have to use this
+  // field and can ignore it.
+  // Introduced in M105.
+  repeated string fcm_registration_tokens_for_interested_clients = 7;
 }
 
 message CommitMessage {

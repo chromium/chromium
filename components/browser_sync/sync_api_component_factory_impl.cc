@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_model_type_controller.h"

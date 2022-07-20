@@ -21,6 +21,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -797,9 +798,9 @@ TEST_F(SyncerTest, ShouldPopulateSingleClientFlag) {
   // No other devices are interested in bookmarks.
   context_->set_active_devices_invalidation_info(
       ActiveDevicesInvalidationInfo::Create(
-          /*fcm_registration_tokens=*/{},
+          /*all_fcm_registration_tokens=*/{},
           /*all_interested_data_types=*/{PREFERENCES},
-          /*standalone_invalidations_interested_data_types=*/{PREFERENCES}));
+          /*fcm_token_and_interested_data_types=*/{}));
   ASSERT_TRUE(SyncShareNudge());
   EXPECT_TRUE(
       mock_server_->last_request().commit().config_params().single_client());
@@ -818,9 +819,10 @@ TEST_F(SyncerTest,
   // No other devices with standalone invalidations are interested in bookmarks.
   context_->set_active_devices_invalidation_info(
       ActiveDevicesInvalidationInfo::Create(
-          /*fcm_registration_tokens=*/{},
+          /*all_fcm_registration_tokens=*/{"token_1"},
           /*all_interested_data_types=*/{BOOKMARKS, PREFERENCES},
-          /*standalone_invalidations_interested_data_types=*/{PREFERENCES}));
+          /*fcm_token_and_interested_data_types=*/
+          {{"token_1", {PREFERENCES}}}));
   ASSERT_TRUE(SyncShareNudge());
   EXPECT_FALSE(
       mock_server_->last_request().commit().config_params().single_client());
@@ -838,8 +840,7 @@ TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokens) {
   context_->set_active_devices_invalidation_info(
       ActiveDevicesInvalidationInfo::Create(
           {"token"}, /*all_interested_data_types=*/{BOOKMARKS},
-          /*standalone_invalidations_interested_data_types=*/
-          {BOOKMARKS}));
+          /*fcm_token_and_interested_data_types=*/{{"token", {BOOKMARKS}}}));
   ASSERT_TRUE(SyncShareNudge());
   EXPECT_FALSE(
       mock_server_->last_request().commit().config_params().single_client());
@@ -851,6 +852,68 @@ TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokens) {
                   .config_params()
                   .devices_fcm_registration_tokens(),
               ElementsAre("token"));
+  EXPECT_THAT(mock_server_->last_sent_commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients(),
+              ElementsAre("token"));
+}
+
+TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokensForInterestedTypesOnly) {
+  GetProcessor(BOOKMARKS)->AppendCommitRequest(
+      ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
+      "id1");
+
+  context_->set_active_devices_invalidation_info(
+      ActiveDevicesInvalidationInfo::Create(
+          {"token_1", "token_2"}, /*all_interested_data_types=*/{BOOKMARKS},
+          /*fcm_token_and_interested_data_types=*/
+          {{"token_1", {BOOKMARKS}}, {"token_2", {PREFERENCES}}}));
+  ASSERT_TRUE(SyncShareNudge());
+  EXPECT_FALSE(
+      mock_server_->last_request().commit().config_params().single_client());
+  EXPECT_FALSE(mock_server_->last_request()
+                   .commit()
+                   .config_params()
+                   .single_client_with_standalone_invalidations());
+  EXPECT_THAT(mock_server_->last_sent_commit()
+                  .config_params()
+                  .devices_fcm_registration_tokens(),
+              ElementsAre("token_1", "token_2"));
+  EXPECT_THAT(mock_server_->last_sent_commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients(),
+              ElementsAre("token_1"));
+}
+
+TEST_F(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
+  std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types;
+  for (size_t i = 0; i < 7; ++i) {
+    fcm_token_and_interested_data_types["token_" + base::NumberToString(i)] = {
+        BOOKMARKS};
+  }
+  GetProcessor(BOOKMARKS)->AppendCommitRequest(
+      ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
+      "id1");
+
+  context_->set_active_devices_invalidation_info(
+      ActiveDevicesInvalidationInfo::Create(
+          {}, /*all_interested_data_types=*/{BOOKMARKS},
+          std::move(fcm_token_and_interested_data_types)));
+  ASSERT_TRUE(SyncShareNudge());
+  EXPECT_FALSE(
+      mock_server_->last_request().commit().config_params().single_client());
+  EXPECT_FALSE(mock_server_->last_request()
+                   .commit()
+                   .config_params()
+                   .single_client_with_standalone_invalidations());
+  EXPECT_THAT(mock_server_->last_sent_commit()
+                  .config_params()
+                  .devices_fcm_registration_tokens(),
+              IsEmpty());
+  EXPECT_THAT(mock_server_->last_sent_commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients(),
+              IsEmpty());
 }
 
 TEST_F(SyncerTest,
@@ -872,8 +935,7 @@ TEST_F(SyncerTest,
   context_->set_active_devices_invalidation_info(
       ActiveDevicesInvalidationInfo::Create(
           {"token"}, /*all_interested_data_types=*/{PREFERENCES},
-          /*standalone_invalidations_interested_data_types=*/
-          {PREFERENCES}));
+          /*fcm_token_and_interested_data_types=*/{{"token", {PREFERENCES}}}));
   ASSERT_TRUE(SyncShareNudge());
 
   // All invalidation info should be ignored due to DeviceInfo update.
@@ -886,6 +948,10 @@ TEST_F(SyncerTest,
   EXPECT_TRUE(mock_server_->last_sent_commit()
                   .config_params()
                   .devices_fcm_registration_tokens()
+                  .empty());
+  EXPECT_TRUE(mock_server_->last_sent_commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients()
                   .empty());
 }
 
