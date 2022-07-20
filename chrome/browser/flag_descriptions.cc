@@ -1993,12 +1993,6 @@ const char kOmniboxShortcutExpandingDescription[] =
     "Expand the last word in the shortcut text to be a complete word from the "
     "suggestion text.";
 
-const char kOmniboxSpareRendererName[] =
-    "Start spare renderer on omnibox focus";
-const char kOmniboxSpareRendererDescription[] =
-    "When the omnibox is focused, start an empty spare renderer. This can "
-    "speed up the load of the navigation from the omnibox.";
-
 const char kOmniboxRetainSuggestionsWithHeadersName[] =
     "Retain complete set of suggestions with headers";
 const char kOmniboxRetainSuggestionsWithHeadersDescription[] =

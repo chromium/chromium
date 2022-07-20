@@ -241,18 +241,13 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   // next navigation if the delay is too long, but the spare renderer will
   // probably get used anyways by a later navigation.
   if (!profile_->IsOffTheRecord() &&
-      base::FeatureList::IsEnabled(omnibox::kOmniboxSpareRenderer) &&
       page_class != OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
       !BaseSearchProvider::IsNTPPage(page_class)) {
-    auto renderer_delay_ms = base::GetFieldTrialParamByFeatureAsInt(
-        omnibox::kOmniboxSpareRenderer, "omnibox_spare_renderer_delay_ms",
-        OMNIBOX_SPARE_RENDERER_DELAY_MS);
-
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Milliseconds(renderer_delay_ms));
+        base::Milliseconds(OMNIBOX_SPARE_RENDERER_DELAY_MS));
   }
 
   input_ = AutocompleteInput(omnibox_text, page_class,

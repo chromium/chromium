@@ -337,10 +337,6 @@ const base::Feature kDefaultTypedNavigationsToHttps{
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
-// Spare renderer warmup for faster website loading.
-const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, Omnibox reports the Assisted Query Stats in the aqs= param in the
 // Search Results Page URL.
 const base::Feature kReportAssistedQueryStats{"OmniboxReportAssistedQueryStats",
