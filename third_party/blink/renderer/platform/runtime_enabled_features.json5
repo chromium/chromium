@@ -373,7 +373,7 @@
     },
     {
       name: "ClientHintsMetaNameAcceptCH",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "ClientHintThirdPartyDelegation",

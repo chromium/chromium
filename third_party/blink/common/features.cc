@@ -1352,7 +1352,7 @@ const base::Feature kClientHintsMetaHTTPEquivAcceptCH{
 
 // Allow use of a named meta tag to set and delegate client hints.
 const base::Feature kClientHintsMetaNameAcceptCH{
-    "ClientHintsMetaNameAcceptCH", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ClientHintsMetaNameAcceptCH", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allow use of a http-equiv meta tag to set and delegate client hints.
 const base::Feature kClientHintsMetaEquivDelegateCH{
