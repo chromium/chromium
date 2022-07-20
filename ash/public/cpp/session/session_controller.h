@@ -69,7 +69,10 @@ class ASH_PUBLIC_EXPORT SessionController {
   // Runs the pre-unlock animation. Invoked by the screen locker before
   // dismissing. When the mojo call returns, screen locker takes that as a
   // signal of finished unlock animation and dismisses itself.
-  using RunUnlockAnimationCallback = base::OnceClosure;
+  // The boolean parameter will be `true` if the unlock animation was aborted,
+  // resulting in the lock screen being reshown. It will be false otherwise and
+  // the unlock will proceed as normal.
+  using RunUnlockAnimationCallback = base::OnceCallback<void(bool)>;
   virtual void RunUnlockAnimation(RunUnlockAnimationCallback callback) = 0;
 
   // Notifies that chrome is terminating.

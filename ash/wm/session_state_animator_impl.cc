@@ -459,6 +459,16 @@ SessionStateAnimatorImpl::BeginAnimationSequence(AnimationCallback callback) {
   return new AnimationSequence(this, std::move(callback));
 }
 
+void SessionStateAnimatorImpl::AbortAllAnimations(int container_mask) {
+  aura::Window::Windows containers;
+  GetContainers(container_mask, &containers);
+
+  for (aura::Window::Windows::const_iterator it = containers.begin();
+       it != containers.end(); ++it) {
+    (*it)->layer()->GetAnimator()->AbortAllAnimations();
+  }
+}
+
 bool SessionStateAnimatorImpl::IsWallpaperHidden() const {
   return !GetWallpaper()->IsVisible();
 }

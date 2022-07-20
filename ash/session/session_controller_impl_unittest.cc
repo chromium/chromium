@@ -21,6 +21,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -447,7 +448,8 @@ TEST_F(SessionControllerImplWithShellTest,
 
     // Mark a running unlock animation.
     base::RunLoop run_loop;
-    controller()->RunUnlockAnimation(run_loop.QuitClosure());
+    controller()->RunUnlockAnimation(base::BindLambdaForTesting(
+        [&run_loop](bool aborted) { run_loop.Quit(); }));
     run_loop.Run();
     EXPECT_EQ(test_case.expect_blocked_after_unlock_animation,
               controller()->IsUserSessionBlocked())

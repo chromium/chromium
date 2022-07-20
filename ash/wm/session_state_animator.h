@@ -194,7 +194,9 @@ class ASH_EXPORT SessionStateAnimator {
   virtual AnimationSequence* BeginAnimationSequence(
       AnimationCallback callback) = 0;
 
-  // Retruns true if the wallpaper is hidden.
+  virtual void AbortAllAnimations(int container_mask) = 0;
+
+  // Returns true if the wallpaper is hidden.
   virtual bool IsWallpaperHidden() const = 0;
 
   // Shows the wallpaper immediately.

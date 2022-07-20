@@ -71,7 +71,8 @@ class SessionControllerClientImpl
 
   // Calls ash SessionController to run unlock animation.
   // |animation_finished_callback| will be invoked when the animation finishes.
-  void RunUnlockAnimation(base::OnceClosure animation_finished_callback);
+  void RunUnlockAnimation(ash::SessionController::RunUnlockAnimationCallback
+                              animation_finished_callback);
 
   // Asks the session controller to show the window teleportation dialog.
   void ShowTeleportWarningDialog(

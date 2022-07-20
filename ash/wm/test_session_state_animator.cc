@@ -248,7 +248,7 @@ void TestSessionStateAnimator::HideWallpaper() {
   is_wallpaper_hidden_ = true;
 }
 
-void TestSessionStateAnimator::AbortAnimations(int container_mask) {
+void TestSessionStateAnimator::AbortAllAnimations(int container_mask) {
   for (size_t i = 0; i < std::size(kAllContainers); ++i) {
     if (container_mask & kAllContainers[i])
       AbortAnimation(kAllContainers[i]);

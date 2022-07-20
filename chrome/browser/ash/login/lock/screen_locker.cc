@@ -650,11 +650,28 @@ void ScreenLocker::Hide() {
   }
 
   DCHECK(screen_locker_);
-  SessionControllerClientImpl::Get()->RunUnlockAnimation(base::BindOnce([]() {
-    session_manager::SessionManager::Get()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
-    ScreenLocker::ScheduleDeletion();
-  }));
+  SessionControllerClientImpl::Get()->RunUnlockAnimation(
+      base::BindOnce(&ScreenLocker::OnUnlockAnimationFinished));
+}
+
+void ScreenLocker::ResetToLockedState() {
+  LoginScreen::Get()->GetModel()->SetFingerprintState(
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      FingerprintState::AVAILABLE_DEFAULT);
+  screen_locker_->unlock_started_ = false;
+}
+
+// static
+void ScreenLocker::OnUnlockAnimationFinished(bool aborted) {
+  if (aborted) {
+    // Reset state that was impacted by successful auth.
+    screen_locker_->ResetToLockedState();
+    return;
+  }
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  ScreenLocker::ScheduleDeletion();
 }
 
 void ScreenLocker::RefreshPinAndFingerprintTimeout() {

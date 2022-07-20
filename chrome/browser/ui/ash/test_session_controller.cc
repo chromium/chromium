@@ -49,7 +49,7 @@ void TestSessionController::NotifyChromeLockAnimationsComplete() {
 
 void TestSessionController::RunUnlockAnimation(
     RunUnlockAnimationCallback callback) {
-  std::move(callback).Run();
+  std::move(callback).Run(false);
 }
 
 void TestSessionController::NotifyChromeTerminating() {}

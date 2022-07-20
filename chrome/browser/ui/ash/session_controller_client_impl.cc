@@ -205,7 +205,8 @@ void SessionControllerClientImpl::NotifyChromeLockAnimationsComplete() {
 }
 
 void SessionControllerClientImpl::RunUnlockAnimation(
-    base::OnceClosure animation_finished_callback) {
+    ash::SessionController::RunUnlockAnimationCallback
+        animation_finished_callback) {
   session_controller_->RunUnlockAnimation(
       std::move(animation_finished_callback));
 }

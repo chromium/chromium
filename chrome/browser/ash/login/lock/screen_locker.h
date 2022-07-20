@@ -157,6 +157,17 @@ class ScreenLocker
   // Hide the screen locker.
   static void Hide();
 
+  // If the unlock animation was aborted (for instance, as a result of
+  // pressing the power button during the unlock animatoin), we  reset
+  // the state of UI elements (such as LoginAuthUserView::FingerprintView)
+  // which might have been altered as a result of a successful authentication
+  // attempt.
+  void ResetToLockedState();
+
+  // If the unlock animation was not aborted, changes session state to
+  // active and schedules `ScreenLocker` deletion.
+  static void OnUnlockAnimationFinished(bool aborted);
+
   // we should probably not call it anymore
   void RefreshPinAndFingerprintTimeout();
 
@@ -286,8 +297,8 @@ class ScreenLocker
   bool locked_ = false;
 
   // True if the unlock process has started, or false otherwise.  This changes
-  // from false to true, but will never change from true to false. Instead,
-  // ScreenLocker object gets deleted when unlocked.
+  // from false to true, but will only change from true to false when unlock is
+  // aborted. Otherwise, ScreenLocker object gets deleted when unlocked.
   bool unlock_started_ = false;
 
   // Reference to the single instance of the screen locker object.
