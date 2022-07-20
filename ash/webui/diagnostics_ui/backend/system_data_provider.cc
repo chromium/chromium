@@ -56,14 +56,21 @@ void PopulateMarketingName(const healthd::SystemInfo& system_info,
 void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
                      mojom::SystemInfo& out_system_info) {
   const PhysicalCpuInfos& physical_cpus = cpu_info.physical_cpus;
-  DCHECK_GE(physical_cpus.size(), 1u);
-
   out_system_info.cpu_threads_count = cpu_info.num_total_threads;
+
+  if (physical_cpus.empty()) {
+    LOG(ERROR) << "No physical cpus in SystemInfo response.";
+    return;
+  }
 
   // If there is more than one physical cpu on the device, use the name of the
   // first CPU.
   out_system_info.cpu_model_name = physical_cpus[0]->model_name.value_or("");
 
+  if (physical_cpus[0]->logical_cpus.empty()) {
+    LOG(ERROR) << "Device reported having 0 logical CPUs.";
+    return;
+  }
   // Calculate `max_clock_speed_khz` as the average of all logical core clock
   // speeds until we decide the best way to consume the information in the UI.
   uint32_t total_max_ghz = 0;
@@ -204,6 +211,11 @@ void PopulateCpuUsagePercentages(const CpuUsageData& new_usage,
 
 void PopulateAverageCpuTemperature(const healthd::CpuInfo& cpu_info,
                                    mojom::CpuUsage& out_cpu_usage) {
+  if (cpu_info.temperature_channels.empty()) {
+    LOG(ERROR) << "Device reported having 0 temperature channels.";
+    return;
+  }
+
   uint32_t cumulative_total = 0;
   for (const auto& temp_channel_ptr : cpu_info.temperature_channels) {
     cumulative_total += temp_channel_ptr->temperature_celsius;
@@ -216,6 +228,12 @@ void PopulateAverageCpuTemperature(const healthd::CpuInfo& cpu_info,
 
 void PopulateAverageScaledClockSpeed(const healthd::CpuInfo& cpu_info,
                                      mojom::CpuUsage& out_cpu_usage) {
+  if (cpu_info.physical_cpus.empty() ||
+      cpu_info.physical_cpus[0]->logical_cpus.empty()) {
+    LOG(ERROR) << "Device reported having 0 logical CPUs.";
+    return;
+  }
+
   uint32_t total_scaled_ghz = 0;
   for (const auto& logical_cpu_ptr : cpu_info.physical_cpus[0]->logical_cpus) {
     total_scaled_ghz += logical_cpu_ptr->scaling_current_frequency_khz;
@@ -564,6 +582,8 @@ void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
     return;
   }
 
+  // TODO(ashleydp): Add metrics to track the occurrence of invalid cros_healthd
+  // CpuInfo responses.
   const healthd::CpuInfo* cpu_info = GetCpuInfo(*info_ptr);
   if (cpu_info == nullptr) {
     LOG(ERROR) << "No CpuInfo in response from cros_healthd.";
@@ -581,6 +601,16 @@ void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
 void SystemDataProvider::ComputeAndPopulateCpuUsage(
     const healthd::CpuInfo& cpu_info,
     mojom::CpuUsage& out_cpu_usage) {
+  if (cpu_info.physical_cpus.empty()) {
+    LOG(ERROR) << "Device reported having zero physical CPUs";
+    return;
+  }
+
+  if (cpu_info.physical_cpus[0]->logical_cpus.empty()) {
+    LOG(ERROR) << "Device reported having zero logical CPUs";
+    return;
+  }
+
   // For simplicity, assume that all devices have just one physical CPU, made
   // up of one or more virtual CPUs.
 

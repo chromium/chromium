@@ -1095,5 +1095,64 @@ TEST_F(SystemDataProviderTest, BatteryInfoPtrDataValidation) {
   EXPECT_FALSE(isnan(battery_health_three->charge_full_design_milliamp_hours));
 }
 
+TEST_F(SystemDataProviderTest, CpuUsagePtrDataValidation) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  FakeCpuUsageObserver cpu_usage_observer;
+  system_data_provider_->ObserveCpuUsage(
+      cpu_usage_observer.receiver.BindNewPipeAndPassRemote());
+
+  // Simulate receiving a nullptr for CpuInfo.
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr, nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, cpu_usage_observer.updates.size());
+  EXPECT_EQ(0u, cpu_usage_observer.updates[0]->average_cpu_temp_celsius);
+  EXPECT_EQ(0u, cpu_usage_observer.updates[0]->scaling_current_frequency_khz);
+
+  // Simulate receiving a CpuInfo with no data set.
+  healthd_mojom::CpuInfoPtr cpu_info_no_data = healthd_mojom::CpuInfo::New();
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
+                                std::move(cpu_info_no_data),
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  // Trigger timer to update data.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, cpu_usage_observer.updates.size());
+  EXPECT_EQ(0u, cpu_usage_observer.updates[1]->average_cpu_temp_celsius);
+  EXPECT_EQ(0u, cpu_usage_observer.updates[1]->scaling_current_frequency_khz);
+
+  // Simulate receiving a CpuInfo with and empty temperature channel and empty
+  // logical cpu.
+  std::vector<healthd_mojom::PhysicalCpuInfoPtr> physical_cpus;
+  physical_cpus.emplace_back(healthd_mojom::PhysicalCpuInfo::New());
+  std::vector<healthd_mojom::CpuTemperatureChannelPtr> temperature_channels;
+  healthd_mojom::CpuInfoPtr cpu_info_no_temperatures =
+      healthd_mojom::CpuInfo::New(/*num_total_threads=*/0u,
+                                  healthd_mojom::CpuArchitectureEnum::kUnknown,
+                                  std::move(physical_cpus),
+                                  std::move(temperature_channels), nullptr);
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
+                                std::move(cpu_info_no_temperatures),
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  // Trigger timer to update data.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, cpu_usage_observer.updates.size());
+  EXPECT_EQ(0u, cpu_usage_observer.updates[2]->average_cpu_temp_celsius);
+  EXPECT_EQ(0u, cpu_usage_observer.updates[2]->scaling_current_frequency_khz);
+}
+
 }  // namespace diagnostics
 }  // namespace ash
