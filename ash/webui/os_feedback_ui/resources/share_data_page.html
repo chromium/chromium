@@ -191,7 +191,7 @@
     <div id="shareDiagnosticData">
       <h2 id="shareDiagnosticDataLabel">[[i18n('shareDiagnosticDataLabel')]]</h2>
       <!-- URL -->
-      <div id="pageUrl" class="checkbox-field-container">
+      <div id="pageUrl" class="checkbox-field-container" hidden="[[!feedbackContext.pageUrl.url]]">
         <cr-checkbox id="pageUrlCheckbox" aria-labelledby="pageUrlLabel" checked></cr-checkbox>
         <label id="pageUrlLabel">[[i18n('sharePageUrlLabel')]]&nbsp;</label>
         <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">

@@ -201,6 +201,21 @@ export function shareDataPageTestSuite() {
     assertEquals('chrome://tab/', getElementContent('#pageUrlText'));
   });
 
+  // Test that the pageUrl section is hidden when the url is empty string.
+  test('pageUrlHidden', async () => {
+    await initializePage();
+    fakeFeedbackContext.pageUrl.url = '';
+    page.feedbackContext = fakeFeedbackContext;
+
+    // The pageUrl section should be hidden
+    const pageUrl = getElement('#pageUrl');
+    assertTrue(!!pageUrl);
+    assertFalse(isVisible(pageUrl));
+
+    // Change it back otherwise it will effect other tests.
+    fakeFeedbackContext.pageUrl.url = 'chrome://tab/';
+  });
+
   /**
    * Test that when when the send button is clicked, an on-continue is fired.
    * Case 1: Share pageUrl, do not share system logs.
