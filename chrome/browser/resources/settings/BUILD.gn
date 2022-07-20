@@ -63,19 +63,15 @@ if (optimize_webui) {
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
+  in_files = ts_files + html_files + icons_html_files + css_files
 }
 
 preprocess_if_expr("preprocess_generated") {
   defines = chrome_grit_defines
-  deps = [
-    ":css_wrapper_files",
-    ":css_wrapper_files_old",
-    ":html_wrapper_files",
-  ]
+  deps = [ ":css_wrapper_files_old" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files + css_wrapper_files_old
+  in_files = css_wrapper_files_old
 }
 
 grit("resources") {
@@ -123,11 +119,19 @@ html_to_js("css_wrapper_files_old") {
 }
 
 html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = "$target_gen_dir/$preprocess_folder"
+  out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = html_files + icons_html_files
+  minify = optimize_webui
 }
 
 css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = "$target_gen_dir/$preprocess_folder"
+  out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = css_files
+  minify = optimize_webui
 }
 
 ts_library("build_ts") {
@@ -166,6 +170,8 @@ ts_library("build_ts") {
   }
 
   extra_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
     ":preprocess",
     ":preprocess_generated",
   ]
