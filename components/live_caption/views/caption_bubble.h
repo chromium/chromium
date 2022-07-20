@@ -54,6 +54,8 @@ enum class SessionEvent {
   kMaxValue = kCloseButtonClicked,
 };
 
+using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
+
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble
 //
@@ -169,6 +171,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // as transcription received from the speech service or user interacting with
   // the bubble through focus, pressing buttons, or dragging.
   void OnInactivityTimeout();
+
+  void ResetInactivityTimer();
 
   void MediaFoundationErrorCheckboxPressed();
   bool HasMediaFoundationError();
