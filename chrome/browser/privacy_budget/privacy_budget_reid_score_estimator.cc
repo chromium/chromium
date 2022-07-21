@@ -5,11 +5,13 @@
 #include "chrome/browser/privacy_budget/privacy_budget_reid_score_estimator.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/rand_util.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
@@ -30,46 +32,109 @@ void ReportHashForReidScore(blink::IdentifiableSurface surface,
 }
 }  // namespace
 
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage::ReidBlockStorage(
+    const IdentifiableSurfaceList& surface_list,
+    uint64_t salt_range,
+    int number_of_bits,
+    double noise_probability)
+    : salt_range_(salt_range),
+      number_of_bits_(number_of_bits),
+      noise_probability_(noise_probability) {
+  std::vector<uint64_t> surface_hashes;
+  for (const auto& surface : surface_list) {
+    surface_hashes.emplace_back(surface.ToUkmMetricHash());
+  }
+  reid_surface_key_ = blink::IdentifiableSurface::FromTypeAndToken(
+      blink::IdentifiableSurface::Type::kReidScoreEstimator,
+      base::make_span(surface_hashes));
+  std::vector<std::pair<blink::IdentifiableSurface,
+                        absl::optional<blink::IdentifiableToken>>>
+      surfaces_vector;
+  surfaces_vector.reserve(surface_list.size());
+  for (blink::IdentifiableSurface surface : surface_list) {
+    surfaces_vector.emplace_back(surface, absl::nullopt);
+  }
+  // Use the constructor which takes an unsorted vector, because inserting the
+  // items one by one runs in O(n^2) time.
+  surfaces_ = base::flat_map<blink::IdentifiableSurface,
+                             absl::optional<blink::IdentifiableToken>>(
+      std::move(surfaces_vector));
+}
+
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage::~ReidBlockStorage() =
+    default;
+
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage::ReidBlockStorage(
+    ReidBlockStorage&&) = default;
+
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage&
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage::operator=(
+    ReidBlockStorage&&) = default;
+
+bool PrivacyBudgetReidScoreEstimator::ReidBlockStorage::Full() const {
+  DCHECK_LE(recorded_values_count_, surfaces_.size());
+  return recorded_values_count_ == surfaces_.size();
+}
+
+void PrivacyBudgetReidScoreEstimator::ReidBlockStorage::Record(
+    blink::IdentifiableSurface surface,
+    blink::IdentifiableToken value) {
+  auto surface_itr = surfaces_.find(surface);
+  if (surface_itr != surfaces_.end()) {
+    if (!surface_itr->second.has_value()) {
+      ++recorded_values_count_;
+    }
+    surface_itr->second = value;
+  }
+}
+
+std::vector<blink::IdentifiableToken>
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage::GetValues() const {
+  DCHECK(Full());
+  std::vector<blink::IdentifiableToken> values;
+  for (auto& [key, value] : surfaces_) {
+    DCHECK(value.has_value());
+    values.emplace_back(value.value());
+  }
+  return values;
+}
+
+uint64_t PrivacyBudgetReidScoreEstimator::ReidBlockStorage::salt_range() const {
+  DCHECK(Full());
+  return salt_range_;
+}
+
+int PrivacyBudgetReidScoreEstimator::ReidBlockStorage::number_of_bits() const {
+  DCHECK(Full());
+  return number_of_bits_;
+}
+
+double PrivacyBudgetReidScoreEstimator::ReidBlockStorage::noise_probability()
+    const {
+  DCHECK(Full());
+  return noise_probability_;
+}
+
+blink::IdentifiableSurface
+PrivacyBudgetReidScoreEstimator::ReidBlockStorage::reid_surface_key() const {
+  DCHECK(Full());
+  return reid_surface_key_;
+}
+
 PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
     const IdentifiabilityStudyGroupSettings& state_settings) {
   if (!state_settings.IsUsingReidScoreEstimator())
     return;
 
-  // Initialize the Reid map with the surfaces from study settings:
-  // Step 1: Get the list of blocks of surfaces from state settings.
-  IdentifiableSurfaceBlocks reid_blocks = state_settings.reid_blocks();
-  reid_blocks_salts_ranges_ = state_settings.reid_blocks_salts_ranges();
-  reid_blocks_bits_ = state_settings.reid_blocks_bits();
-  reid_blocks_noise_probabilities_ =
-      state_settings.reid_blocks_noise_probabilities();
-
-  // Step 2: Get the type of the Reid surface.
-  constexpr auto kReidScoreType =
-      blink::IdentifiableSurface::Type::kReidScoreEstimator;
-
-  // Step 3: Create an IdentifiableSurface key from every block and add to
-  // storage.
-  for (const IdentifiableSurfaceList& surface_list : reid_blocks) {
-    // For every list of surfaces, create a map and add it to storage.
-    SurfacesAndOptionalValues surface_map;
-    count_flag_.push_back(0);
-
-    // Used to construct the Reid Surface Key.
-    std::vector<uint64_t> surface_hashes;
-
-    // Add the list of surfaces to the map and add the surface value to token
-    // vector to prepare for the Reid key generation.
-    for (const blink::IdentifiableSurface& surface : surface_list) {
-      surface_map.insert_or_assign(surface,
-                                   absl::optional<blink::IdentifiableToken>());
-      surface_hashes.emplace_back(surface.GetInputHash());
-    }
-    // Create surface key of Reid score type corresponding to this block.
-    blink::IdentifiableSurface reid_key =
-        blink::IdentifiableSurface::FromTypeAndToken(
-            kReidScoreType, base::make_span(surface_hashes));
-    // Add the map surfaces to the storage under the new Reid key.
-    surfaces_and_values_.insert_or_assign(reid_key, surface_map);
+  for (size_t i = 0; i < state_settings.reid_blocks().size(); ++i) {
+    // All the vectors below have the same size. This is enforced by
+    // `IdentifiabilityStudyGroupSettings`.
+    surface_blocks_.emplace_back(
+        /*surface_list=*/state_settings.reid_blocks()[i],
+        /*salt_range=*/state_settings.reid_blocks_salts_ranges()[i],
+        /*number_of_bits=*/state_settings.reid_blocks_bits()[i],
+        /*noise_probability=*/
+        state_settings.reid_blocks_noise_probabilities()[i]);
   }
 }
 
@@ -78,60 +143,52 @@ PrivacyBudgetReidScoreEstimator::~PrivacyBudgetReidScoreEstimator() = default;
 void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
     blink::IdentifiableSurface surface,
     blink::IdentifiableToken token) {
-  // Assign the token value to the surface if found in the list of surface maps.
-  int i = 0;
-  for (auto& map_itr : surfaces_and_values_) {
-    SurfacesAndOptionalValues* surface_map = &map_itr.second;
-    // Skip if the surface map is full and has all its values.
-    if (count_flag_[i] < surface_map->size()) {
-      auto surface_itr = surface_map->find(surface);
-      if (surface_itr != surface_map->end()) {
-        if (!surface_itr->second.has_value()) {
-          ++count_flag_[i];
-        }
-        surface_itr->second = token;
-        // Report new Reid surface if the map is full.
-        if (count_flag_[i] == surface_map->size()) {
-          // Compute the Reid hash for the needed Reid block.
-          uint64_t reid_hash = ComputeHashForReidScore(
-              *surface_map, reid_blocks_salts_ranges_.at(i),
-              reid_blocks_bits_.at(i), reid_blocks_noise_probabilities_.at(i));
-          // Report to UKM in a separate task in order to avoid re-entrancy.
-          base::SequencedTaskRunnerHandle::Get()->PostTask(
-              FROM_HERE, base::BindOnce(&ReportHashForReidScore, map_itr.first,
-                                        reid_hash));
-        }
-      }
+  for (auto block_itr = surface_blocks_.begin();
+       block_itr != surface_blocks_.end();) {
+    block_itr->Record(surface, token);
+    if (block_itr->Full()) {
+      // Report new Reid surface if the map is full.
+
+      // Compute the Reid hash for the needed Reid block.
+      uint64_t reid_hash = ComputeHashForReidScore(*block_itr);
+
+      // Report to UKM in a separate task in order to avoid re-entrancy.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&ReportHashForReidScore,
+                                    block_itr->reid_surface_key(), reid_hash));
+
+      // Remove this block from the list, since we want to report a hash for a
+      // block only once.
+      // Note: The returned `block_itr` points to the next element in the
+      // vector.
+      block_itr = surface_blocks_.erase(block_itr);
+    } else {
+      ++block_itr;
     }
-    ++i;
   }
 }
 
 uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
-    const SurfacesAndOptionalValues& surface_map,
-    uint64_t max_num_salt,
-    int reid_bits,
-    double reid_noise_probability) {
+    const ReidBlockStorage& reid_block) {
   std::vector<uint64_t> tokens;
-  uint64_t salt = base::RandGenerator(max_num_salt);
+  uint64_t salt = base::RandGenerator(reid_block.salt_range());
 
   tokens.emplace_back(salt);
-  for (auto& surface_itr : surface_map) {
-    tokens.emplace_back(
-        static_cast<uint64_t>(surface_itr.second->ToUkmMetricValue()));
+  for (blink::IdentifiableToken value : reid_block.GetValues()) {
+    tokens.emplace_back(static_cast<uint64_t>(value.ToUkmMetricValue()));
   }
   // Initialize Reid hash with random noise.
   uint64_t reid_hash = base::RandUint64();
   // Calculate the real hash if the random number is greater than the Reid noise
   // probability.
-  if (base::RandDouble() >= reid_noise_probability) {
+  if (base::RandDouble() >= reid_block.noise_probability()) {
     // Use the hash function embedded in IdentifiableToken.
     reid_hash = blink::IdentifiabilityDigestOfBytes(
         base::as_bytes(base::make_span(tokens)));
   }
   // Create mask based on reid_bits required.
   constexpr uint64_t kTypedOne = 1;
-  uint64_t mask = (kTypedOne << reid_bits) - 1;
+  uint64_t mask = (kTypedOne << reid_block.number_of_bits()) - 1;
   uint64_t needed_bits = reid_hash & mask;
   // Return salt in the left 32 bits and Reid b-bits hash in the right 32 bits.
   return ((salt << 32) | needed_bits);

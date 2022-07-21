@@ -109,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTestWithTestRecorder,
   auto surface_2 = blink::IdentifiableSurface::FromTypeAndToken(
       blink::IdentifiableSurface::Type::kWebFeature,
       blink::mojom::WebFeature::kNavigatorLanguage);
-  std::vector<uint64_t> tokens{surface_1.GetInputHash(),
-                               surface_2.GetInputHash()};
+  std::vector<uint64_t> tokens{surface_1.ToUkmMetricHash(),
+                               surface_2.ToUkmMetricHash()};
   auto expected_surface = blink::IdentifiableSurface::FromTypeAndToken(
       kReidScoreType, base::make_span(tokens));
 

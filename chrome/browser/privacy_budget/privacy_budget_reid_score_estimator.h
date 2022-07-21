@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_REID_SCORE_ESTIMATOR_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_REID_SCORE_ESTIMATOR_H_
 
+#include <list>
+
 #include "base/containers/flat_map.h"
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/common/privacy_budget/types.h"
@@ -31,32 +33,81 @@ class PrivacyBudgetReidScoreEstimator {
                            blink::IdentifiableToken token);
 
  private:
-  // Keeps track of the set of surfaces for which the Reid scorre is calculated.
-  base::flat_map<blink::IdentifiableSurface, SurfacesAndOptionalValues>
-      surfaces_and_values_;
+  // ReidBlockStorage is a helper class which stores a list of surfaces
+  // for which we want to estimate the Reid score, i.e. corresponding to a Reid
+  // block.
+  class ReidBlockStorage {
+   public:
+    ReidBlockStorage(const IdentifiableSurfaceList& surface_list,
+                     uint64_t salt_range,
+                     int number_of_bits,
+                     double noise_probability);
+    ~ReidBlockStorage();
 
-  // Keeps track of the set of max of salt ranges to calculate the Reid hash for
-  // every surface block.
-  std::vector<uint64_t> reid_blocks_salts_ranges_;
+    ReidBlockStorage(const ReidBlockStorage&) = delete;
+    ReidBlockStorage& operator=(const ReidBlockStorage&) = delete;
 
-  // Keeps track of the number of bits that should be reported for every Reid
-  // surface block.
-  std::vector<int> reid_blocks_bits_;
+    ReidBlockStorage(ReidBlockStorage&&);
+    ReidBlockStorage& operator=(ReidBlockStorage&&);
 
-  // Keeps track of the probability of noise that should be reported for every
-  // Reid surface block.
-  std::vector<double> reid_blocks_noise_probabilities_;
+    // Returns whether we know the values of all the surfaces in the block.
+    bool Full() const;
 
-  // Keeps track of the number of reported surfaces in every Reid surface block.
-  // The Reid surface map at index i is full when the count_flag_ at i is equal
-  // to the number of surfaces in that map i.e. size of the map.
-  std::vector<uint64_t> count_flag_;
+    // If `surface` is one of the surfaces of this block, stores `value`
+    // for `surface`. If we already have a value for `surface`, the old value
+    // will be discarded. Does nothing if `surface` does not belong to this
+    // block.
+    void Record(blink::IdentifiableSurface surface,
+                blink::IdentifiableToken value);
+
+    // Returns the values of the surfaces. Can be called only if full.
+    std::vector<blink::IdentifiableToken> GetValues() const;
+
+    // Returns the key to be used for reporting the synthetic surface
+    // corresponding to this Reid block. Can be called only if full.
+    blink::IdentifiableSurface reid_surface_key() const;
+
+    // Can be called only if full.
+    uint64_t salt_range() const;
+
+    // Can be called only if full.
+    int number_of_bits() const;
+
+    // Can be called only if full.
+    double noise_probability() const;
+
+   private:
+    // The surfaces which we want to track in this block, together with their
+    // values (if we recorded them already).
+    base::flat_map<blink::IdentifiableSurface,
+                   absl::optional<blink::IdentifiableToken>>
+        surfaces_;
+
+    // Keeps track of the number of surfaces for which we have recorded a value
+    // in this block.
+    size_t recorded_values_count_ = 0;
+
+    // A random salt for this block will be chosen in the interval
+    // [0,`salt_range_`].
+    uint64_t salt_range_;
+
+    // The number of bits that will be reported for this block.
+    int number_of_bits_;
+
+    // The probability of reporting a random value, instead of the real hash,
+    // for this block.
+    double noise_probability_;
+
+    // The surface key under which the hash for this Reid block should be
+    // reported.
+    blink::IdentifiableSurface reid_surface_key_;
+  };
+
+  // Keeps track of the blocks for which we want to compute the Reid score.
+  std::list<ReidBlockStorage> surface_blocks_;
 
   // Compute the hash for estimating the REID score.
-  uint64_t ComputeHashForReidScore(const SurfacesAndOptionalValues& surface_map,
-                                   uint64_t max_num_salt,
-                                   int reid_bits,
-                                   double reid_noise_probability);
+  uint64_t ComputeHashForReidScore(const ReidBlockStorage& reid_block);
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_

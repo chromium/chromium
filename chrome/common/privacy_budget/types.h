@@ -37,10 +37,6 @@ using IdentifiableSurfaceList = std::vector<blink::IdentifiableSurface>;
 using IdentifiableSurfaceTypeList =
     std::vector<blink::IdentifiableSurface::Type>;
 
-using SurfacesAndOptionalValues =
-    base::flat_map<blink::IdentifiableSurface,
-                   absl::optional<blink::IdentifiableToken>>;
-
 // Sampling rates are represented as the denominator of a quotient 1/R. I.e.
 // A sampling rate of 1 in 100 is represented using the integer 100.
 using IdentifiableSurfaceSampleRateMap =

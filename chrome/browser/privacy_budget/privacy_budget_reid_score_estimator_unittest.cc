@@ -18,7 +18,16 @@
 TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
      ReportReidFixedTokenRandomSalt) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "2077075229;1122849309", "1000000", "1", "0");
+      /*enabled=*/true,
+      /*expected_surface_count=*/0,
+      /*surface_budget=*/0,
+      /*blocks=*/"",
+      /*blocks_weights=*/"",
+      /*allowed_random_types=*/"",
+      /*reid_blocks=*/"2077075229;1122849309",
+      /*reid_blocks_salts_ranges=*/"1000000",
+      /*reid_blocks_bits=*/"1",
+      /*reid_blocks_noise_probabilities=*/"0");
 
   constexpr auto surface_1 =
       blink::IdentifiableSurface::FromMetricHash(2077075229u);
@@ -55,7 +64,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
       auto surface = metric.surface;
       if (surface.GetType() ==
           blink::IdentifiableSurface::Type::kReidScoreEstimator) {
-        EXPECT_EQ(metric.surface.ToUkmMetricHash(), 7415899889871487013u);
+        EXPECT_EQ(metric.surface.ToUkmMetricHash(), 11332616172707669541u);
         ++count;
         uint64_t hash = static_cast<uint64_t>(metric.value.ToUkmMetricValue());
         uint32_t reid_bits = hash & 0xFFFFFFFF;
@@ -79,7 +88,17 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
 TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
      ReportReidRandomTokenFixedSalt) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "2077075229;1122849309", "1", "1", "0");
+      /*enabled=*/true,
+      /*expected_surface_count=*/0,
+      /*surface_budget=*/0,
+      /*blocks=*/"",
+      /*blocks_weights=*/"",
+      /*allowed_random_types=*/"",
+      /*reid_blocks=*/"2077075229;1122849309",
+      /*reid_blocks_salts_ranges=*/"1",
+      /*reid_blocks_bits=*/"1",
+      /*reid_blocks_noise_probabilities=*/"0");
+
   constexpr auto surface_1 =
       blink::IdentifiableSurface::FromMetricHash(2077075229u);
   constexpr auto surface_2 =
@@ -115,7 +134,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
       auto surface = metric.surface;
       if (surface.GetType() ==
           blink::IdentifiableSurface::Type::kReidScoreEstimator) {
-        EXPECT_EQ(metric.surface.ToUkmMetricHash(), 7415899889871487013u);
+        EXPECT_EQ(metric.surface.ToUkmMetricHash(), 11332616172707669541u);
         ++count;
         uint64_t hash = static_cast<uint64_t>(metric.value.ToUkmMetricValue());
         uint32_t reid_bits = hash & 0xFFFFFFFF;
@@ -139,7 +158,16 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
 TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
      ReportReidFixedTokenFixedSaltAllNoise) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "2077075229;1122849309", "1", "32", "1");
+      /*enabled=*/true,
+      /*expected_surface_count=*/0,
+      /*surface_budget=*/0,
+      /*blocks=*/"",
+      /*blocks_weights=*/"",
+      /*allowed_random_types=*/"",
+      /*reid_blocks=*/"2077075229;1122849309",
+      /*reid_blocks_salts_ranges=*/"1",
+      /*reid_blocks_bits=*/"32",
+      /*reid_blocks_noise_probabilities=*/"1");
 
   constexpr auto surface_1 =
       blink::IdentifiableSurface::FromMetricHash(2077075229u);
@@ -175,7 +203,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
       auto surface = metric.surface;
       if (surface.GetType() ==
           blink::IdentifiableSurface::Type::kReidScoreEstimator) {
-        EXPECT_EQ(metric.surface.ToUkmMetricHash(), 7415899889871487013u);
+        EXPECT_EQ(metric.surface.ToUkmMetricHash(), 11332616172707669541u);
         ++count;
         uint64_t hash = static_cast<uint64_t>(metric.value.ToUkmMetricValue());
         uint32_t reid_bits = hash & 0xFFFFFFFF;
