@@ -32,6 +32,10 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
+#endif
+
 namespace safe_browsing {
 
 namespace {
@@ -73,11 +77,33 @@ void LogUnconsentedOutcome(TailoredSecurityOutcome outcome) {
       outcome);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+message_center::NotifierId GetDisabledNotifierId() {
+  return message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kTailoredSecurityNotifierId,
+      ash::NotificationCatalogName::kTailoredSecurityDisabled);
+}
+message_center::NotifierId GetEnabledNotifierId() {
+  return message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kTailoredSecurityNotifierId,
+      ash::NotificationCatalogName::kTailoredSecurityEnabled);
+}
+message_center::NotifierId GetPromotionNotifierId() {
+  return message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kTailoredSecurityNotifierId,
+      ash::NotificationCatalogName::kTailoredSecurityPromotion);
+}
+#else
 message_center::NotifierId GetNotifierId() {
   return message_center::NotifierId(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kTailoredSecurityNotifierId);
 }
+#endif
 
 }  // namespace
 
@@ -152,6 +178,12 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
   std::u16string title, description, primary_button, secondary_button;
   ui::ImageModel icon;
   std::string notification_id;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const message_center::NotifierId notifier_id =
+      enable ? GetEnabledNotifierId() : GetDisabledNotifierId();
+#else
+  const message_center::NotifierId notifier_id = GetNotifierId();
+#endif
   if (enable) {
     notification_id = kTailoredSecurityEnableNotificationId;
     title = l10n_util::GetStringUTF16(
@@ -184,7 +216,7 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
       description, icon,
       l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_DISPLAY_SOURCE),
-      GURL(kTailoredSecurityNotificationOrigin), GetNotifierId(),
+      GURL(kTailoredSecurityNotificationOrigin), notifier_id,
       message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   notification.set_buttons({message_center::ButtonInfo(primary_button),
@@ -205,6 +237,12 @@ void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
       IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT);
   const std::u16string& secondary_button =
       l10n_util::GetStringUTF16(IDS_NO_THANKS);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const message_center::NotifierId notifier_id = GetPromotionNotifierId();
+#else
+  const message_center::NotifierId notifier_id = GetNotifierId();
+#endif
+
   // TODO(crbug/1257622): Confirm with UX that it's appropriate to use the
   // blue color here.
   auto icon =
@@ -215,7 +253,7 @@ void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
       description, icon,
       l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_DISPLAY_SOURCE),
-      GURL(kTailoredSecurityNotificationOrigin), GetNotifierId(),
+      GURL(kTailoredSecurityNotificationOrigin), notifier_id,
       message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   notification.set_buttons({message_center::ButtonInfo(primary_button),

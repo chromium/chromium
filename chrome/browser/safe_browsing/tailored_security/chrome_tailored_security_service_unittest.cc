@@ -39,7 +39,7 @@ class Profile;
 
 namespace safe_browsing {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID)
 // Names for Tailored Security status to make the test cases clearer.
 const bool kTailoredSecurityEnabled = true;
 const bool kTailoredSecurityDisabled = false;
@@ -203,10 +203,7 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       chrome_tailored_security_service_;
 };
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug/1344604): Tests will fail until we add `catalog_name` to notifier
-// id creation.
-
+#if !BUILDFLAG(IS_ANDROID)
 // Some of the test names are shorted using "Ts" for Tailored Security, "Ep"
 // for Enhanced Protection and "Sb" for Safe Browsing.
 

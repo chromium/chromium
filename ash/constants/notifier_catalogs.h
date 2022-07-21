@@ -159,7 +159,10 @@ enum class NotificationCatalogName {
   kTPMAutoUpdatePlanned = 145,
   kTPMAutoUpdateOnReboot = 146,
   kPrivacyIndicators = 147,
-  kMaxValue = kPrivacyIndicators
+  kTailoredSecurityDisabled = 148,
+  kTailoredSecurityEnabled = 149,
+  kTailoredSecurityPromotion = 150,
+  kMaxValue = kTailoredSecurityPromotion
 };
 
 // A living catalog that registers toasts.
