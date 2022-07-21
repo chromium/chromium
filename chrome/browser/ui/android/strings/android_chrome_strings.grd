@@ -1249,22 +1249,22 @@ Your Google account may have other forms of browsing history like searches and a
         Privacy guide
       </message>
       <message name="IDS_PREFS_PRIVACY_REVIEW_SUMMARY" desc="The summary of the privacy menu item.">
-        Review privacy and security settings
+        Review key privacy and security controls
       </message>
       <message name="IDS_PRIVACY_REVIEW_WELCOME_TITLE" desc="Title on the welcome page of the privacy review.">
-        The most important privacy and security controls in one place
+        A guide of your privacy choices
       </message>
       <message name="IDS_PRIVACY_REVIEW_WELCOME_DESCRIPTION" desc="Description on the welcome page of the privacy review.">
-        Chrome provides reasonable defaults, but you can customize it to best fit your browsing habit
+        Take a guided tour of key privacy and security controls. For more options, go to individual settings.
       </message>
       <message name="IDS_PRIVACY_REVIEW_START_BUTTON" desc="Text on the privacy review start button on the welcome screen.">
         Let’s go
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WHAT_YOU_GET" desc="Section header text describing what the user gets out of the feature.">
-        What you get
+      <message name="IDS_PRIVACY_REVIEW_WHEN_ON" desc="Header of a description text that describes the behavior of a particular feature. This description is shown to users alongside the feature itself." meaning="Privacy Guide - feature benefits">
+        When on
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WHAT_YOU_SHARE" desc="Section header text describing what data the user shares when using the feature.">
-        What you share with Google
+      <message name="IDS_PRIVACY_REVIEW_THINGS_TO_CONSIDER" desc="Header of a text column that describes things users should consider about a feature. This description is shown to users alongside the feature itself." meaning="Privacy Guide - feature considerations">
+        Things to consider
       </message>
       <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_ONE" desc="First bullet point that describes the details of the MSBB toggle.">
         You’ll browse faster because content is proactively loaded based on your current webpage visit
@@ -1273,7 +1273,7 @@ Your Google account may have other forms of browsing history like searches and a
         You’ll get improved suggestions in the address bar
       </message>
       <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_THREE" desc="Third bullet point that describes the details of the MSBB toggle.">
-        URLs you visit are sent to Google
+        URLs you visit are sent to Google to predict what sites you might visit next
       </message>
       <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
         If you also share Chrome usage reports, those reports include the URLs you visit
@@ -1282,13 +1282,13 @@ Your Google account may have other forms of browsing history like searches and a
         History sync
       </message>
       <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_ONE" desc="First bullet point that describes the details of the history sync toggle.">
-        You’ll have your history on all your synced devices, so you can continue what you were doing
+        You’ll have your history on all your synced devices so you can continue what you were doing
       </message>
       <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_TWO" desc="Second bullet point that describes the details of the history sync toggle.">
         If Google is also your default search engine, you’ll see better, contextually relevant suggestions
       </message>
       <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_THREE" desc="Third bullet point that describes the details of the history sync toggle.">
-        The URLs you visit are saved to your Google account
+        The URLs you visit are saved to your Google Account
       </message>
       <message name="IDS_PRIVACY_REVIEW_COOKIES_INTRO" desc="Text introducing the cookies control.">
         Choose when to block third-party cookies
@@ -1363,22 +1363,22 @@ Your Google account may have other forms of browsing history like searches and a
         If a site tries to steal your password, or when you download a harmful file, Chrome may send URLs including bits of page content to Safe Browsing
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_ONE" desc="First bullet point that describes the details of the Safe Browsing control.">
-        Warns you about dangerous events before they happen
+        Predicts and warns you about dangerous events before they happen
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_TWO" desc="Second bullet point that describes the details of the Safe Browsing control.">
         Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_THREE" desc="Third bullet point that describes the details of the Safe Browsing control.">
-        Warns you if passwords are exposed in a data breach
+        Improves security for you and everyone on the web
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_FOUR" desc="Fourth bullet point that describes the details of the Safe Browsing control.">
-        Improves security for you and everyone on the web
+        Warns you if passwords are exposed in a data breach
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_FIVE" desc="Fifth bullet point that describes the details of the Safe Browsing control.">
         Sends URLs to Safe Browsing to check them
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_SIX" desc="Sixth bullet point that describes the details of the Safe Browsing control.">
-        Sends a small sample of pages, downloads, extension activity, and system information to help discover new threats
+        Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats
       </message>
       <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_SEVEN" desc="Seventh bullet point that describes the details of the Safe Browsing control.">
         Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps

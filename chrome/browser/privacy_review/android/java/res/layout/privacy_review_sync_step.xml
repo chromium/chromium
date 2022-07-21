@@ -37,24 +37,24 @@
         <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/privacy_review_what_you_get" />
+            app:titleText="@string/privacy_review_when_on" />
 
         <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_flash_on_24dp"
+            app:iconImage="@drawable/ic_history_24dp"
             app:summaryText="@string/privacy_review_sync_item_one" />
 
         <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_lightbulb_24dp"
+            app:iconImage="@drawable/ic_dns_24dp"
             app:summaryText="@string/privacy_review_sync_item_two" />
 
         <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/privacy_review_what_you_share" />
+            app:titleText="@string/privacy_review_things_to_consider" />
 
         <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
             android:layout_width="match_parent"
