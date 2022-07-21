@@ -414,6 +414,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 const gfx::ColorSpace& color_space,
                 viz::ResourceFormat,
                 GLuint texture_id,
+                bool has_usage_scanout,
                 std::unique_ptr<gfx::GpuMemoryBuffer>,
                 gpu::Mailbox mailbox);
     ColorBuffer(const ColorBuffer&) = delete;
@@ -432,6 +433,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const gfx::ColorSpace color_space;
     const viz::ResourceFormat format;
     const GLuint texture_id = 0;
+    const bool has_usage_scanout;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
 
     // If we're emulating an RGB back buffer using an RGBA Chromium
