@@ -102,7 +102,10 @@ class ClientCertBrowserTest : public ContentBrowserTest {
     https_test_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   }
 
-  ~ClientCertBrowserTest() override = default;
+  ~ClientCertBrowserTest() override {
+    // This is to avoid having a dangling pointer in `ContentClient`.
+    content::SetBrowserClientForTesting(nullptr);
+  }
 
  protected:
   void SetUpOnMainThread() override {
