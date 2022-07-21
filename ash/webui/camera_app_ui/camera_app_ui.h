@@ -70,6 +70,8 @@ class CameraAppUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
+bool CameraAppUIShouldEnableLocalOverride(const std::string& url);
+
 }  // namespace ash
 
 #endif  // ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_H_

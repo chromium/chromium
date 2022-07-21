@@ -14,13 +14,13 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/media_device_id.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -28,7 +28,6 @@
 #include "media/capture/video/chromeos/camera_app_device_provider_impl.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/aura/window.h"
@@ -42,6 +41,30 @@ const base::Feature kCCALocalOverride{"CCALocalOverride",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FilePath::CharType kCCALocalOverrideDirectoryPath[] =
     FILE_PATH_LITERAL("/etc/camera/cca");
+
+void HandleLocalOverrideRequest(
+    const std::string& url,
+    content::WebUIDataSource::GotDataCallback callback) {
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](const std::string& url,
+                 content::WebUIDataSource::GotDataCallback callback) {
+                base::FilePath path =
+                    base::FilePath(kCCALocalOverrideDirectoryPath).Append(url);
+                std::string result;
+                if (base::ReadFileToString(path, &result)) {
+                  std::move(callback).Run(
+                      base::RefCountedString::TakeString(&result));
+                } else {
+                  std::move(callback).Run(nullptr);
+                }
+              },
+              url, std::move(callback)));
+}
 
 content::WebUIDataSource* CreateCameraAppUIHTMLSource(
     CameraAppUIDelegate* delegate) {
@@ -64,37 +87,8 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
 
   if (base::FeatureList::IsEnabled(kCCALocalOverride)) {
     source->SetRequestFilter(
-        base::BindRepeating([](const std::string& url) {
-          // Only override files that are copied locally with cca.py deploy.
-          if (!(base::StartsWith(url, "js/") || base::StartsWith(url, "css/") ||
-                base::StartsWith(url, "images/") ||
-                base::StartsWith(url, "views/") ||
-                base::StartsWith(url, "sounds/"))) {
-            return false;
-          }
-          // This file is written by `cca.py deploy` and contains version
-          // information of deployed file.
-          base::FilePath version_path =
-              base::FilePath(kCCALocalOverrideDirectoryPath)
-                  .Append("js/deployed_version.js");
-          if (!base::PathExists(version_path)) {
-            return false;
-          }
-          return true;
-        }),
-        base::BindRepeating(
-            [](const std::string& url,
-               content::WebUIDataSource::GotDataCallback callback) {
-              base::FilePath path =
-                  base::FilePath(kCCALocalOverrideDirectoryPath).Append(url);
-              std::string result;
-              if (base::ReadFileToString(path, &result)) {
-                std::move(callback).Run(
-                    base::RefCountedString::TakeString(&result));
-              } else {
-                std::move(callback).Run(nullptr);
-              }
-            }));
+        base::BindRepeating(CameraAppUIShouldEnableLocalOverride),
+        base::BindRepeating(HandleLocalOverrideRequest));
   }
 
   source->OverrideContentSecurityPolicy(
@@ -189,6 +183,24 @@ std::unique_ptr<CameraAppHelperImpl> CreateCameraAppHelper(
 }
 
 }  // namespace
+
+bool CameraAppUIShouldEnableLocalOverride(const std::string& url) {
+  // Only override files that are copied locally with cca.py deploy.
+  if (!(base::StartsWith(url, "js/") || base::StartsWith(url, "css/") ||
+        base::StartsWith(url, "images/") || base::StartsWith(url, "views/") ||
+        base::StartsWith(url, "sounds/"))) {
+    return false;
+  }
+  // This file is written by `cca.py deploy` and contains version
+  // information of deployed file.
+  base::FilePath version_path = base::FilePath(kCCALocalOverrideDirectoryPath)
+                                    .Append("js/deployed_version.js");
+  base::ScopedAllowBlocking allow_blocking;
+  if (!base::PathExists(version_path)) {
+    return false;
+  }
+  return true;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
