@@ -4175,11 +4175,11 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
       net::COOKIE_PRIORITY_LOW, false);
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr, true));
+          *request, *cookie, nullptr));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr, true));
+          *request, *cookie, nullptr));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
@@ -4197,7 +4197,7 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, nullptr, true));
+          *request, *cookie, nullptr));
 }
 
 TEST_F(NetworkContextTest,
@@ -4212,15 +4212,15 @@ TEST_F(NetworkContextTest,
   net::CookieAccessResultList included;
   net::CookieAccessResultList excluded;
 
-  EXPECT_TRUE(network_context->url_request_context()
-                  ->network_delegate()
-                  ->AnnotateAndMoveUserBlockedCookies(*request, included,
-                                                      excluded, true));
+  EXPECT_TRUE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
-  EXPECT_FALSE(network_context->url_request_context()
-                   ->network_delegate()
-                   ->AnnotateAndMoveUserBlockedCookies(*request, included,
-                                                       excluded, true));
+  EXPECT_FALSE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
 }
 
 TEST_F(NetworkContextTest,
@@ -4235,10 +4235,10 @@ TEST_F(NetworkContextTest,
   net::CookieAccessResultList excluded;
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
-  EXPECT_TRUE(network_context->url_request_context()
-                  ->network_delegate()
-                  ->AnnotateAndMoveUserBlockedCookies(*request, included,
-                                                      excluded, true));
+  EXPECT_TRUE(
+      network_context->url_request_context()
+          ->network_delegate()
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
 }
 
 // Gets notified by the EmbeddedTestServer on incoming connections being

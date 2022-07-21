@@ -800,8 +800,7 @@ void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
   if (request()->network_delegate()) {
     can_get_cookies =
         request()->network_delegate()->AnnotateAndMoveUserBlockedCookies(
-            *request(), maybe_included_cookies, excluded_cookies,
-            /*allowed_from_caller=*/true);
+            *request(), maybe_included_cookies, excluded_cookies);
   }
 
   if (!can_get_cookies) {

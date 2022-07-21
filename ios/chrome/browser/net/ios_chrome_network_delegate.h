@@ -55,12 +55,10 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
       net::CookieAccessResultList& maybe_included_cookies,
-      net::CookieAccessResultList& excluded_cookies,
-      bool allowed_from_caller) override;
+      net::CookieAccessResultList& excluded_cookies) override;
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options,
-                      bool allowed_from_caller) override;
+                      net::CookieOptions* options) override;
   net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,

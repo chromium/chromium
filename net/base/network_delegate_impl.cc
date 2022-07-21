@@ -51,19 +51,14 @@ void NetworkDelegateImpl::OnPACScriptError(int line_number,
 bool NetworkDelegateImpl::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
     net::CookieAccessResultList& maybe_included_cookies,
-    net::CookieAccessResultList& excluded_cookies,
-    bool allowed_from_caller) {
-  if (!allowed_from_caller)
-    ExcludeAllCookies(CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
-  return allowed_from_caller;
+    net::CookieAccessResultList& excluded_cookies) {
+  return true;
 }
 
 bool NetworkDelegateImpl::OnCanSetCookie(const URLRequest& request,
                                          const net::CanonicalCookie& cookie,
-                                         CookieOptions* options,
-                                         bool allowed_from_caller) {
-  return allowed_from_caller;
+                                         CookieOptions* options) {
+  return true;
 }
 
 NetworkDelegate::PrivacySetting NetworkDelegateImpl::OnForcePrivacyMode(

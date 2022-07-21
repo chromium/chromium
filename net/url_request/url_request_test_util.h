@@ -311,8 +311,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       net::CookieAccessResultList& maybe_included_cookies,
-      net::CookieAccessResultList& excluded_cookies,
-      bool allowed_from_caller) override;
+      net::CookieAccessResultList& excluded_cookies) override;
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
@@ -320,8 +319,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       SamePartyContext::Type same_party_context_type) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      bool allowed_from_caller) override;
+                      CookieOptions* options) override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
       const GURL& target_url,
@@ -380,8 +378,7 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      bool allowed_from_caller) override;
+                      CookieOptions* options) override;
 
   void SetCookieFilter(std::string filter) {
     cookie_name_filter_ = std::move(filter);
@@ -398,8 +395,7 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       net::CookieAccessResultList& maybe_included_cookies,
-      net::CookieAccessResultList& excluded_cookies,
-      bool allowed_from_caller) override;
+      net::CookieAccessResultList& excluded_cookies) override;
 
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,

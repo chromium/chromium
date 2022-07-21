@@ -502,9 +502,8 @@ void TestNetworkDelegate::OnURLRequestDestroyed(URLRequest* request) {
 bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
     net::CookieAccessResultList& maybe_included_cookies,
-    net::CookieAccessResultList& excluded_cookies,
-    bool allowed_from_caller) {
-  bool allow = allowed_from_caller;
+    net::CookieAccessResultList& excluded_cookies) {
+  bool allow = true;
   if (cookie_options_bit_mask_ & NO_GET_COOKIES)
     allow = false;
 
@@ -527,9 +526,8 @@ NetworkDelegate::PrivacySetting TestNetworkDelegate::OnForcePrivacyMode(
 
 bool TestNetworkDelegate::OnCanSetCookie(const URLRequest& request,
                                          const net::CanonicalCookie& cookie,
-                                         CookieOptions* options,
-                                         bool allowed_from_caller) {
-  bool allow = allowed_from_caller;
+                                         CookieOptions* options) {
+  bool allow = true;
   if (cookie_options_bit_mask_ & NO_SET_COOKIE)
     allow = false;
 
@@ -566,18 +564,19 @@ FilteringTestNetworkDelegate::~FilteringTestNetworkDelegate() = default;
 bool FilteringTestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
-    CookieOptions* options,
-    bool allowed_from_caller) {
+    CookieOptions* options) {
   // Filter out cookies with the same name as |cookie_name_filter_| and
   // combine with |allowed_from_caller|.
-  bool allowed = allowed_from_caller && !(cookie.Name() == cookie_name_filter_);
+  bool allowed = cookie.Name() != cookie_name_filter_;
 
   ++set_cookie_called_count_;
 
   if (!allowed)
     ++blocked_set_cookie_count_;
 
-  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options, allowed);
+  // Call the nested delegate's method first to avoid a short circuit.
+  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options) &&
+         allowed;
 }
 
 NetworkDelegate::PrivacySetting
@@ -599,11 +598,10 @@ FilteringTestNetworkDelegate::OnForcePrivacyMode(
 bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
     net::CookieAccessResultList& maybe_included_cookies,
-    net::CookieAccessResultList& excluded_cookies,
-    bool allowed_from_caller) {
+    net::CookieAccessResultList& excluded_cookies) {
   // Filter out cookies if |block_annotate_cookies_| is set and
   // combine with |allowed_from_caller|.
-  bool allowed = allowed_from_caller && !block_annotate_cookies_;
+  bool allowed = !block_annotate_cookies_;
 
   ++annotate_cookies_called_count_;
 
@@ -630,8 +628,10 @@ bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     MoveExcludedCookies(maybe_included_cookies, excluded_cookies);
   }
 
+  // Call the nested delegate's method first to avoid a short circuit.
   return TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
-      request, maybe_included_cookies, excluded_cookies, allowed);
+             request, maybe_included_cookies, excluded_cookies) &&
+         allowed;
 }
 
 // URLRequestInterceptor that intercepts only the first request it sees,

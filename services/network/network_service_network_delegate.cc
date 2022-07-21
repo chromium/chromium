@@ -187,14 +187,7 @@ void NetworkServiceNetworkDelegate::OnPACScriptError(
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
     net::CookieAccessResultList& maybe_included_cookies,
-    net::CookieAccessResultList& excluded_cookies,
-    bool allowed_from_caller) {
-  if (!allowed_from_caller) {
-    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
-    return false;
-  }
-
+    net::CookieAccessResultList& excluded_cookies) {
   if (!network_context_->cookie_manager()
            ->cookie_settings()
            .AnnotateAndMoveUserBlockedCookies(
@@ -229,10 +222,8 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool NetworkServiceNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options,
-    bool allowed_from_caller) {
+    net::CookieOptions* options) {
   bool allowed =
-      allowed_from_caller &&
       network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
           cookie, request.url(), request.site_for_cookies(),
           request.isolation_info().top_frame_origin());

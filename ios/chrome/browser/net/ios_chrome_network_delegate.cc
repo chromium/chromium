@@ -72,16 +72,13 @@ int IOSChromeNetworkDelegate::OnBeforeURLRequest(
 bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
     net::CookieAccessResultList& maybe_included_cookies,
-    net::CookieAccessResultList& excluded_cookies,
-    bool allowed_from_caller) {
+    net::CookieAccessResultList& excluded_cookies) {
   // `cookie_settings_` is null during tests, or when we're running in the
   // system context.
-  bool allowed = allowed_from_caller;
-  if (cookie_settings_) {
-    allowed = allowed && cookie_settings_->IsFullCookieAccessAllowed(
-                             request.url(),
-                             request.site_for_cookies().RepresentativeUrl());
-  }
+  bool allowed =
+      !cookie_settings_ ||
+      cookie_settings_->IsFullCookieAccessAllowed(
+          request.url(), request.site_for_cookies().RepresentativeUrl());
 
   if (!allowed) {
     ExcludeAllCookies(
@@ -95,15 +92,13 @@ bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool IOSChromeNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options,
-    bool allowed_from_caller) {
+    net::CookieOptions* options) {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_)
-    return allowed_from_caller;
+    return true;
 
-  return allowed_from_caller &&
-         cookie_settings_->IsFullCookieAccessAllowed(
-             request.url(), request.site_for_cookies().RepresentativeUrl());
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      request.url(), request.site_for_cookies().RepresentativeUrl());
 }
 
 net::NetworkDelegate::PrivacySetting

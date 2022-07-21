@@ -69,13 +69,11 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       net::CookieAccessResultList& maybe_included_cookies,
-      net::CookieAccessResultList& excluded_cookies,
-      bool allowed_from_caller) override;
+      net::CookieAccessResultList& excluded_cookies) override;
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      bool allowed_from_caller) override;
+                      CookieOptions* options) override;
 
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
