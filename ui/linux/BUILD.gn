@@ -29,7 +29,6 @@ component("linux_ui") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//ui/gfx",
     "//ui/gfx/animation",
   ]
   public_deps = [
@@ -46,6 +45,7 @@ source_set("linux_ui_impl") {
     "//base",
     "//ui/gfx",
     "//ui/native_theme",
+    "//ui/shell_dialogs",
   ]
 }
 

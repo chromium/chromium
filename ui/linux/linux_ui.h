@@ -19,8 +19,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_font_delegate.h"
 
 // The main entrypoint into Linux toolkit specific code. GTK/QT code should only
 // be executed behind this interface.
@@ -34,6 +32,7 @@ class TimeDelta;
 }
 
 namespace gfx {
+struct FontRenderParams;
 class Image;
 class Size;
 }  // namespace gfx
@@ -61,8 +60,7 @@ class WindowFrameProvider;
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi
-    : public gfx::SkiaFontDelegate,
-      public gfx::AnimationSettingsProviderLinux {
+    : public gfx::AnimationSettingsProviderLinux {
  public:
   using UseSystemThemeCallback =
       base::RepeatingCallback<bool(aura::Window* window)>;
@@ -217,6 +215,18 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   virtual bool GetTextEditCommandsForEvent(
       const ui::Event& event,
       std::vector<TextEditCommandAuraLinux>* commands) = 0;
+
+  // Returns the default font rendering settings.
+  virtual gfx::FontRenderParams GetDefaultFontRenderParams() const = 0;
+
+  // Returns details about the default UI font. |style_out| holds a bitfield of
+  // gfx::Font::Style values.
+  virtual void GetDefaultFontDescription(
+      std::string* family_out,
+      int* size_pixels_out,
+      int* style_out,
+      int* weight_out,
+      gfx::FontRenderParams* params_out) const = 0;
 
  protected:
   struct CmdLineArgs {

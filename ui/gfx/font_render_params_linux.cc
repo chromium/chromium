@@ -23,8 +23,11 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/linux/fontconfig_util.h"
-#include "ui/gfx/skia_font_delegate.h"
 #include "ui/gfx/switches.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
 
 namespace gfx {
 
@@ -209,9 +212,10 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
 
   // Start with the delegate's settings, but let Fontconfig have the final say.
   FontRenderParams params;
-  const SkiaFontDelegate* delegate = SkiaFontDelegate::instance();
-  if (delegate)
-    params = delegate->GetDefaultFontRenderParams();
+#if BUILDFLAG(IS_LINUX)
+  if (const auto* linux_ui = ui::LinuxUi::instance())
+    params = linux_ui->GetDefaultFontRenderParams();
+#endif
   QueryFontconfig(actual_query, &params, family_out);
   if (!params.antialiasing) {
     // Cairo forces full hinting when antialiasing is disabled, since anything

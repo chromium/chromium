@@ -14,6 +14,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/linux/linux_ui_base.h"
 #include "ui/linux/window_frame_provider.h"
@@ -66,7 +67,7 @@ class GtkUi : public ui::LinuxUiBase {
       std::string* family_out,
       int* size_pixels_out,
       int* style_out,
-      gfx::Font::Weight* weight_out,
+      int* weight_out,
       gfx::FontRenderParams* params_out) const override;
 
   // ui::ShellDialogLinux:

@@ -137,7 +137,7 @@ gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() const {
 void QtUi::GetDefaultFontDescription(std::string* family_out,
                                      int* size_pixels_out,
                                      int* style_out,
-                                     gfx::Font::Weight* weight_out,
+                                     int* weight_out,
                                      gfx::FontRenderParams* params_out) const {
   if (family_out)
     *family_out = font_family_;
@@ -335,15 +335,14 @@ void QtUi::FontChanged() {
     font_size_pixels_ = font_size_points_ * GetDeviceScaleFactor();
   }
   font_style_ = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
-  font_weight_ =
-      static_cast<gfx::Font::Weight>(QtWeightToCssWeight(desc.weight));
+  font_weight_ = QtWeightToCssWeight(desc.weight);
 
   gfx::FontRenderParamsQuery query;
   query.families = {font_family_};
   query.pixel_size = font_size_pixels_;
   query.point_size = font_size_points_;
   query.style = font_style_;
-  query.weight = font_weight_;
+  query.weight = static_cast<gfx::Font::Weight>(font_weight_);
 
   gfx::FontRenderParams fc_params;
   gfx::QueryFontconfig(query, &fc_params, nullptr);

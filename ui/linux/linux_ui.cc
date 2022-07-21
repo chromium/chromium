@@ -28,7 +28,6 @@ namespace ui {
 // static
 std::unique_ptr<LinuxUi> LinuxUi::SetInstance(
     std::unique_ptr<LinuxUi> instance) {
-  SkiaFontDelegate::SetInstance(instance.get());
   gfx::AnimationSettingsProviderLinux::SetInstance(instance.get());
 
   return std::exchange(GetLinuxUiInstance(), std::move(instance));

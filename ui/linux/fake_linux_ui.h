@@ -24,7 +24,7 @@ class FakeLinuxUi : public LinuxUiBase {
       std::string* family_out,
       int* size_pixels_out,
       int* style_out,
-      gfx::Font::Weight* weight_out,
+      int* weight_out,
       gfx::FontRenderParams* params_out) const override;
   ui::SelectFileDialog* CreateSelectFileDialog(
       void* listener,

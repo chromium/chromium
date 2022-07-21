@@ -8,6 +8,7 @@ include_rules = [
   "+third_party/skia",
   "+third_party/test_fonts",
   "+ui/ios",
+  "+ui/linux",
   "+ui/ozone/buildflags.h",
 
   "-testing/gmock",

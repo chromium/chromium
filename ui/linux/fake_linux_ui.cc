@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -30,7 +31,7 @@ void FakeLinuxUi::GetDefaultFontDescription(
     std::string* family_out,
     int* size_pixels_out,
     int* style_out,
-    gfx::Font::Weight* weight_out,
+    int* weight_out,
     gfx::FontRenderParams* params_out) const {}
 
 ui::SelectFileDialog* FakeLinuxUi::CreateSelectFileDialog(

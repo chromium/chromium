@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/linux/linux_ui_base.h"
 #include "ui/qt/qt_interface.h"
 
@@ -43,7 +44,7 @@ class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
       std::string* family_out,
       int* size_pixels_out,
       int* style_out,
-      gfx::Font::Weight* weight_out,
+      int* weight_out,
       gfx::FontRenderParams* params_out) const override;
 
   // ui::ShellDialogLinux:
@@ -111,7 +112,7 @@ class QtUi : public ui::LinuxUiBase, QtInterface::Delegate {
   int font_size_pixels_ = 0;
   int font_size_points_ = 0;
   gfx::Font::FontStyle font_style_ = gfx::Font::NORMAL;
-  gfx::Font::Weight font_weight_;
+  int font_weight_;
   gfx::FontRenderParams font_params_;
 
   std::unique_ptr<QtInterface> shim_;

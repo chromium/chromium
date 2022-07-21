@@ -306,8 +306,6 @@ component("gfx") {
     sources += [
       "platform_font_skia.cc",
       "platform_font_skia.h",
-      "skia_font_delegate.cc",
-      "skia_font_delegate.h",
     ]
   }
 
@@ -382,6 +380,9 @@ component("gfx") {
   }
 
   # Linux.
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
+  }
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/fontconfig" ]
   }
@@ -690,11 +691,11 @@ test("gfx_unittests") {
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
   ]
+  if (is_linux) {
+    sources += [ "font_render_params_linux_unittest.cc" ]
+  }
   if (is_linux || is_chromeos) {
-    sources += [
-      "font_fallback_linux_unittest.cc",
-      "font_render_params_linux_unittest.cc",
-    ]
+    sources += [ "font_fallback_linux_unittest.cc" ]
   }
   if (is_mac) {
     sources += [
@@ -877,6 +878,10 @@ test("gfx_unittests") {
       "//ui/gfx/mojom:test_interfaces",
       "//ui/gfx/range/mojom:unit_test",
     ]
+  }
+
+  if (is_linux) {
+    deps += [ "//ui/linux:test_support" ]
   }
 
   if (is_linux || is_chromeos) {
