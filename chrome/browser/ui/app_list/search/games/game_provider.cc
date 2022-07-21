@@ -60,13 +60,16 @@ void LogUpdateStatus(apps::DiscoveryError status) {
                                 status);
 }
 
-bool DisabledByPolicy(Profile* profile) {
-  bool suggested_content_enabled =
-      profile->GetPrefs()->GetBoolean(ash::prefs::kSuggestedContentEnabled);
+bool EnabledByPolicy(Profile* profile) {
   bool enabled_override = base::GetFieldTrialParamByFeatureAsBool(
       search_features::kLauncherGameSearch, "enabled_override",
       /*default_value=*/false);
-  return !suggested_content_enabled && !enabled_override;
+  if (enabled_override)
+    return true;
+
+  bool suggested_content_enabled =
+      profile->GetPrefs()->GetBoolean(ash::prefs::kSuggestedContentEnabled);
+  return suggested_content_enabled;
 }
 
 double CalculateTitleRelevance(const TokenizedString& tokenized_query,
@@ -155,7 +158,7 @@ void GameProvider::OnIndexUpdatedBySubscription(const GameIndex& index) {
 void GameProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (DisabledByPolicy(profile_)) {
+  if (!EnabledByPolicy(profile_)) {
     LogStatus(Status::kDisabledByPolicy);
     return;
   } else if (game_index_.empty()) {
