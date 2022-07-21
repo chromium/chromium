@@ -18,4 +18,5 @@ Local changes:
 * add workaround to ignore some int-overflows when fuzzing (see crbug/1146174)
 
 Opus' own unit tests are located in ./src/tests
-Additional chromium tests are located in ./tests
+Additional chromium tests are located in ./tests, and require chromium
+checkout to run the tests.

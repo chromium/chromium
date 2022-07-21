@@ -610,20 +610,23 @@ test("test_opus_padding") {
   deps = [ ":opus" ]
 }
 
-# Compilation fails on windows due to wstring/string mistmatch.
-# This is not worth looking at it since the benchmark is tailored for android.
-# It is ok to run it on linux though, for experimentation purpose.
-if (is_android || is_linux || is_chromeos) {
-  test("opus_tests") {
-    sources = [ "tests/opus_benchmark.cc" ]
+# Not all checkouts have a //base directory.
+if (build_with_chromium) {
+  # Compilation fails on windows due to wstring/string mistmatch.
+  # This is not worth looking at it since the benchmark is tailored for android.
+  # It is ok to run it on linux though, for experimentation purpose.
+  if (is_android || is_linux || is_chromeos) {
+    test("opus_tests") {
+      sources = [ "tests/opus_benchmark.cc" ]
 
-    data = [ "tests/resources/speech_mono_32_48kHz.pcm" ]
+      data = [ "tests/resources/speech_mono_32_48kHz.pcm" ]
 
-    deps = [
-      ":opus",
-      "//base",
-      "//testing/gtest",
-      "//testing/gtest:gtest_main",
-    ]
+      deps = [
+        ":opus",
+        "//base",
+        "//testing/gtest",
+        "//testing/gtest:gtest_main",
+      ]
+    }
   }
 }
