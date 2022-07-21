@@ -912,12 +912,11 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   }
 }
 
-// TODO(crbug.com/1170667): Fix flakes and re-enable.
 // Tests that holding space item's image representation gets updated when the
 // backing file is changed using move operation. Furthermore, verifies that
 // conflicts caused by moving a holding space item file to another path present
 // in the holding space get resolved.
-TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
+TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
