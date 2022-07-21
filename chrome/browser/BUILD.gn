@@ -2470,6 +2470,8 @@ static_library("browser") {
   # to the stub which is not implemented.
   if (is_chromeos_ash) {
     sources += [ "net/net_error_diagnostics_dialog_chromeos.cc" ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "net/net_error_diagnostics_dialog_lacros.cc" ]
   } else if (is_win) {
     sources += [ "net/net_error_diagnostics_dialog_win.cc" ]
   } else {
