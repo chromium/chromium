@@ -200,6 +200,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // If true, video capture is enabled for this frame.
   virtual void SetIsVideoCaptureEnabled(bool enabled) {}
 
+  // If true, video fullscreen mode is enabled for this frame.
+  virtual void SetIsVideoFullscreen(bool enabled) {}
+
   virtual gfx::CALayerResult GetCALayerErrorCode() const;
 
  protected:

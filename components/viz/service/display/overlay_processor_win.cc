@@ -72,7 +72,7 @@ void OverlayProcessorWin::ProcessForOverlays(
       resource_provider, gfx::RectF(root_render_pass->output_rect),
       render_pass_filters, render_pass_backdrop_filters, root_render_pass,
       damage_rect, std::move(surface_damage_rect_list), candidates,
-      is_video_capture_enabled_);
+      is_video_capture_enabled_, is_video_fullscreen_mode_);
 
   bool was_using_dc_layers = using_dc_layers_;
   if (!candidates->empty()) {
@@ -98,6 +98,10 @@ bool OverlayProcessorWin::NeedsSurfaceDamageRectList() const {
 
 void OverlayProcessorWin::SetIsVideoCaptureEnabled(bool enabled) {
   is_video_capture_enabled_ = enabled;
+}
+
+void OverlayProcessorWin::SetIsVideoFullscreen(bool enabled) {
+  is_video_fullscreen_mode_ = enabled;
 }
 
 }  // namespace viz

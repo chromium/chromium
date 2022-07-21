@@ -681,7 +681,8 @@ void DCLayerOverlayProcessor::Process(
     gfx::Rect* damage_rect,
     SurfaceDamageRectList surface_damage_rect_list,
     DCLayerOverlayList* dc_layer_overlays,
-    bool is_video_capture_enabled) {
+    bool is_video_capture_enabled,
+    bool is_video_fullscreen_mode) {
   bool this_frame_has_occluding_damage_rect = false;
   processed_yuv_overlay_count_ = 0;
   surface_damage_rect_list_ = std::move(surface_damage_rect_list);
@@ -897,7 +898,7 @@ void DCLayerOverlayProcessor::Process(
     UpdateDCLayerOverlays(display_rect, render_pass, it,
                           quad_rectangle_in_target_space, occluding_damage_rect,
                           is_overlay, &prev_it, &prev_index, damage_rect,
-                          dc_layer_overlays);
+                          dc_layer_overlays, is_video_fullscreen_mode);
   }
 
   // Update previous frame state after processing root pass. If there is no
@@ -979,11 +980,13 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     QuadList::Iterator* new_it,
     size_t* new_index,
     gfx::Rect* damage_rect,
-    DCLayerOverlayList* dc_layer_overlays) {
+    DCLayerOverlayList* dc_layer_overlays,
+    bool is_video_fullscreen_mode) {
   // Record the result first before ProcessForOverlay().
   RecordDCLayerResult(DC_LAYER_SUCCESS, it);
 
   DCLayerOverlay dc_layer;
+  dc_layer.is_video_fullscreen_mode = is_video_fullscreen_mode;
   switch (it->material) {
     case DrawQuad::Material::kYuvVideoContent:
       FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),

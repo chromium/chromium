@@ -56,6 +56,8 @@ struct GL_EXPORT DCRendererLayerParams {
       gfx::ProtectedVideoType::kClear;
 
   gfx::HDRMetadata hdr_metadata;
+
+  bool is_video_fullscreen_mode;
 };
 
 }  // namespace ui
