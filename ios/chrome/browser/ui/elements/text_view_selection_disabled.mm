@@ -8,16 +8,22 @@
 #error "This file requires ARC support."
 #endif
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_16_0
+@interface UITextView (TextKit)
+// Forward declare iOS 16 `+textViewUsingTextLayoutManager` on iOS 15 SDK
+// builds.
++ (instancetype)textViewUsingTextLayoutManager:(BOOL)usingTextLayoutManager;
+@end
+#endif
+
 @implementation TextViewSelectionDisabled
 
 + (TextViewSelectionDisabled*)textView {
-// TODO(crbug.com/1335912): On iOS 16, EG is unable to tap links in
-// TextKit2-based UITextViews. Fall back to TextKit1 until this issue
-// is resolved.
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  // TODO(crbug.com/1335912): On iOS 16, EG is unable to tap links in
+  // TextKit2-based UITextViews. Fall back to TextKit1 until this issue
+  // is resolved.
   if (@available(iOS 16, *))
     return [TextViewSelectionDisabled textViewUsingTextLayoutManager:NO];
-#endif
   return [[TextViewSelectionDisabled alloc] init];
 }
 
