@@ -2686,10 +2686,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
       if (PaintLayer* layer = EnclosingLayer())
         layer->DirtyVisibleContentStatus();
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        if (GetNode())
-          cache->ChildrenChanged(GetNode()->parentNode());
-        else
-          cache->ChildrenChanged(Parent());
+        cache->ChildrenChanged(Parent());
         cache->ChildrenChanged(this);
       }
       GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
