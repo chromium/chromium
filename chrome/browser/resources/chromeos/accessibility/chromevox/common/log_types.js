@@ -14,6 +14,7 @@ goog.provide('TextLog');
 goog.provide('TreeLog');
 
 goog.require('QueueMode');
+goog.require('TreeDumper');
 
 /**
  * List of all types of logs supported.

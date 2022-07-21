@@ -21,8 +21,6 @@ goog.require('ChromeVox');
 goog.require('EventLog');
 goog.require('JaPhoneticData');
 goog.require('KeyCode');
-goog.require('LibLouis');
-goog.require('LibLouis.FormType');
 goog.require('LogType');
 goog.require('NavBraille');
 goog.require('PanelNodeMenuData');

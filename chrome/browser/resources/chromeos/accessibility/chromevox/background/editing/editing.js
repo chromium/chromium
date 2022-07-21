@@ -12,6 +12,7 @@ import {AbstractTts} from '../../common/abstract_tts.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
 import {BrailleBackground} from '../braille/braille_background.js';
+import {LibLouis} from '../braille/liblouis.js';
 import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Color} from '../color.js';

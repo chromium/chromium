@@ -8,6 +8,7 @@
 import {BrailleTable} from '../../common/braille/braille_table.js';
 
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
+import {LibLouis} from './liblouis.js';
 
 export class BrailleTranslatorManager {
   /**

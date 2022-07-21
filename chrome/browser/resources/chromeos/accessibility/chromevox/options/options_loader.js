@@ -10,8 +10,6 @@ goog.require('BackgroundBridge');
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
 goog.require('ChromeVox');
-goog.require('LibLouis');
-goog.require('LibLouis.FormType');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TtsInterface');

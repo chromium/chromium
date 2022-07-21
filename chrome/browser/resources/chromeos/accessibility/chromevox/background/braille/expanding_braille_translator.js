@@ -6,6 +6,7 @@
  * @fileoverview Translates text to braille, optionally with some parts
  * uncontracted.
  */
+import {LibLouis} from './liblouis.js';
 import {BrailleTextStyleSpan, ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 /**

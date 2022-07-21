@@ -13,6 +13,7 @@ import {StringUtil} from '../../../common/string_util.js';
 
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
+import {LibLouis} from './liblouis.js';
 import {ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 export class BrailleInputHandler {

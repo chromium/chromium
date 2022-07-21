@@ -6,11 +6,8 @@
  * @fileoverview JavaScript shim for the liblouis Web Assembly wrapper.
  */
 
-goog.provide('LibLouis');
-goog.provide('LibLouis.FormType');
-
 /** Encapsulates a liblouis Web Assembly instance in the page. */
-LibLouis = class {
+export class LibLouis {
   /**
    * @param {string} wasmPath Path to .wasm file for the module.
    * @param {string=} opt_tablesDir Path to tables directory.
@@ -162,7 +159,7 @@ LibLouis = class {
       this.onInstanceLoad_();
     });
   }
-};
+}
 
 
 /**
