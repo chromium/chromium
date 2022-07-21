@@ -147,16 +147,28 @@ gpu_linux_builder(
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-amd-rel",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (AMD RX 5500 XT)",
+    ],
     pool = "luci.chromium.gpu.linux.amd.try",
 )
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-exp",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (Intel HD 630)",
+    ],
     pool = "luci.chromium.gpu.linux.intel.try",
 )
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-rel",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (Intel HD 630)",
+    ],
     pool = "luci.chromium.gpu.linux.intel.try",
 )
 
@@ -167,11 +179,19 @@ gpu_linux_builder(
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-exp",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (NVIDIA)",
+    ],
     pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-rel",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (NVIDIA)",
+    ],
     pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
