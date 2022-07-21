@@ -361,6 +361,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   text_field.SetValue(text_value);
   text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
                                  {15});
@@ -719,6 +720,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
   combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   combo_box.SetName(base::UTF16ToUTF8(combo_box_name));
   combo_box.SetValue(base::UTF16ToUTF8(combo_box_value));
 
@@ -1026,6 +1028,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   tree1_2.role = ax::mojom::Role::kTextField;
   tree1_2.AddState(ax::mojom::State::kEditable);
   tree1_2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  tree1_2.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
 
   // Process a load complete.
   AXEventNotificationDetails event_bundle;
@@ -1182,6 +1185,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   combo_box.SetValue("Combo box text");
   combo_box_text.SetName("Combo box text");
   combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   combo_box.AddState(ax::mojom::State::kEditable);
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box_text.AddState(ax::mojom::State::kEditable);
@@ -1203,6 +1207,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   search_box_text.SetName("Search box text");
   new_line.SetName("\n");
   search_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  search_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   search_box.AddState(ax::mojom::State::kEditable);
   search_box.AddState(ax::mojom::State::kFocusable);
   search_box_text.AddState(ax::mojom::State::kEditable);
@@ -1214,6 +1219,7 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   text_field.id = 9;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddState(ax::mojom::State::kFocusable);
   // Exposes a placeholder. The text container is otherwise empty.
@@ -1390,13 +1396,14 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   text_field_text.role = ax::mojom::Role::kStaticText;
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   text_field.AddState(ax::mojom::State::kFocusable);
   text_field_div.AddState(ax::mojom::State::kEditable);
   text_field_text.AddState(ax::mojom::State::kEditable);
   text_field.SetValue(line1);
   text_field_text.SetName(line1);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
-  text_field.html_attributes.push_back(std::make_pair("type", "text"));
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   text_field.child_ids.push_back(text_field_div.id);
   text_field_div.child_ids.push_back(text_field_text.id);
 
@@ -1885,6 +1892,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
   combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue("Test1");
   // Place the caret between 't' and 'e'.
@@ -1896,6 +1904,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   text_field.AddState(ax::mojom::State::kFocusable);
   text_field.SetValue("Test2");
   // Select the letter 'e'.
@@ -2677,6 +2686,7 @@ TEST_F(BrowserAccessibilityWinTest,
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
   combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue(value1 + value2);
 
@@ -2791,6 +2801,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
   combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue(value1 + value2);
 

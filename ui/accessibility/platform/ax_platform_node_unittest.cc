@@ -88,6 +88,8 @@ AXTreeUpdate AXPlatformNodeTest::BuildTextField() {
   text_field_node.AddState(ax::mojom::State::kEditable);
   text_field_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                      "input");
+  text_field_node.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                     "text");
   text_field_node.SetValue("How now brown cow.");
 
   AXTreeUpdate update;
@@ -105,6 +107,8 @@ AXTreeUpdate AXPlatformNodeTest::BuildTextFieldWithSelectionRange(
   text_field_node.AddState(ax::mojom::State::kEditable);
   text_field_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                      "input");
+  text_field_node.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                     "text");
   text_field_node.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   text_field_node.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                                   start);

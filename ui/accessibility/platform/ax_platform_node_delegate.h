@@ -620,7 +620,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   std::string SubtreeToString() { return SubtreeToStringHelper(0u); }
 
   friend std::ostream& operator<<(std::ostream& stream,
-                                  AXPlatformNodeDelegate& delegate) {
+                                  const AXPlatformNodeDelegate& delegate) {
     return stream << delegate.ToString();
   }
 

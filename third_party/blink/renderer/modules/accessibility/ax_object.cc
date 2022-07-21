@@ -1732,11 +1732,12 @@ void AXObject::SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) {
   if (Node* node = GetNode()) {
     if (node->IsElementNode()) {
       Element* element = To<Element>(node);
-      if (element->IsHTMLWithTagName("input") &&
-          element->hasAttribute("type")) {
+      if (element->IsHTMLWithTagName("input")) {
+        String type = element->getAttribute("type");
+        if (type.IsEmpty())
+          type = "text";
         TruncateAndAddStringAttribute(
-            node_data, ax::mojom::blink::StringAttribute::kInputType,
-            element->getAttribute("type"));
+            node_data, ax::mojom::blink::StringAttribute::kInputType, type);
       }
     }
   }

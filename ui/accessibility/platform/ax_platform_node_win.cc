@@ -1227,7 +1227,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"document"};
 
     case ax::mojom::Role::kPopUpButton: {
-      const std::string html_tag =
+      const std::string& html_tag =
           GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
       if (html_tag == "select") {
         return {UIALocalizationStrategy::kDeferToControlType,
@@ -5238,7 +5238,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
           // Localized Control Type of "output" whereas the Core-AAM states
           // the Localized Control Type of the ARIA status role should be
           // "status".
-          const std::string html_tag =
+          const std::string& html_tag =
               GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
           std::u16string localized_control_type =
               html_tag == "output"

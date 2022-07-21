@@ -444,6 +444,8 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     text_field.AddState(ax::mojom::State::kEditable);
     text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                   "input");
+    text_field.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                  "text");
     text_field.SetValue(ALL_TEXT);
     text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
                                    std::vector<int32_t>{0, 7});
@@ -2993,6 +2995,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   text_input_data.AddState(ax::mojom::State::kEditable);
   text_input_data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                      "input");
+  text_input_data.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                     "text");
 
   ui::AXNodeData group2_data;
   group2_data.id = 5;
@@ -3376,6 +3380,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   search_box.role = ax::mojom::Role::kSearchBox;
   search_box.AddState(ax::mojom::State::kEditable);
   search_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
+  search_box.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                "search");
   paragraph_data.child_ids.push_back(search_box.id);
 
   ui::AXNodeData search_text;
@@ -4021,6 +4027,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   input_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   input_text_data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                      "input");
+  input_text_data.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                     "text");
   input_text_data.SetName("placeholder");
   input_text_data.child_ids = {13};
 
@@ -4046,6 +4054,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                                    0xFFADC0DEU);
   input_text_data2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
                                       "input");
+  input_text_data2.AddStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                      "text");
   input_text_data2.SetName("foo");
   input_text_data2.child_ids = {15};
 

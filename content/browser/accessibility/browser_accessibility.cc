@@ -82,7 +82,13 @@ bool BrowserAccessibility::IsValid() const {
   // a datetime input. We don't try to enforce a special structure for those.
   const std::string& input_type =
       GetStringAttribute(ax::mojom::StringAttribute::kInputType);
-  if (!input_type.empty() && input_type != "text")
+  DCHECK(IsIgnored() ||
+         GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) != "input" ||
+         !input_type.empty())
+      << "By design, all non-hidden <input> elements in the accessibility "
+         "tree, should have an input type: "
+      << *this;
+  if (input_type != "text" && input_type != "search")
     return true;  // Not a plain text field, just consider it valid.
 
   if (InternalChildCount()) {

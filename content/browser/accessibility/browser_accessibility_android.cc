@@ -1239,7 +1239,7 @@ bool BrowserAccessibilityAndroid::CanScrollForward() const {
   if (IsSlider()) {
     // If it's not a native INPUT element, then increment and decrement
     // won't work.
-    std::string html_tag =
+    const std::string& html_tag =
         GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
     if (html_tag != "input")
       return false;
@@ -1256,7 +1256,7 @@ bool BrowserAccessibilityAndroid::CanScrollBackward() const {
   if (IsSlider()) {
     // If it's not a native INPUT element, then increment and decrement
     // won't work.
-    std::string html_tag =
+    const std::string& html_tag =
         GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
     if (html_tag != "input")
       return false;
@@ -1513,7 +1513,7 @@ int BrowserAccessibilityAndroid::GetEditableTextLength() const {
 }
 
 int BrowserAccessibilityAndroid::AndroidInputType() const {
-  std::string html_tag =
+  const std::string& html_tag =
       GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   if (html_tag != "input")
     return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
