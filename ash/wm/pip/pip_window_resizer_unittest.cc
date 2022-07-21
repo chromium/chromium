@@ -21,6 +21,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/aura/client/aura_constants.h"
@@ -190,8 +191,10 @@ class PipWindowResizerTest : public AshTestBase,
 
   void UpdateWorkArea(const std::string& bounds) {
     UpdateDisplay(bounds);
-    for (aura::Window* root : Shell::GetAllRootWindows())
-      Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+          root, gfx::Rect(), gfx::Insets(), gfx::Insets());
+    }
   }
 };
 

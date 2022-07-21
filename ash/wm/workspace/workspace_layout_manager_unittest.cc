@@ -677,8 +677,10 @@ TEST_F(WorkspaceLayoutManagerTest,
   window2->Show();
 
   gfx::Rect expected_bounds = window2->bounds();
-  Shell::Get()->SetDisplayWorkAreaInsets(window.get(),
-                                         gfx::Insets::TLBR(50, 0, 0, 0));
+  WorkAreaInsets::ForWindow(window.get())
+      ->UpdateWorkAreaInsetsForTest(window.get(), gfx::Rect(),
+                                    gfx::Insets::TLBR(50, 0, 0, 0),
+                                    gfx::Insets::TLBR(50, 0, 0, 0));
   EXPECT_EQ(expected_bounds.ToString(), window2->bounds().ToString());
 }
 

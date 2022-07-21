@@ -48,7 +48,6 @@ class DisplayManager;
 }  // namespace display
 
 namespace gfx {
-class Insets;
 class Point;
 }  // namespace gfx
 
@@ -314,13 +313,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Ash environment.
   std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
       views::Widget* widget);
-
-  // Please note: this is deprecated. Please use
-  // `WorkAreaInsets::UpdateWorkAreaInsetsForTest()` for test purpose.
-  // Sets work area insets of the display containing |window|, pings observers.
-  // TODO(yongshun): Get rid of this API and update existing test cases.
-  void SetDisplayWorkAreaInsets(aura::Window* window,
-                                const gfx::Insets& insets);
 
   // Called when a casting session is started or stopped.
   void OnCastingSessionStartedOrStopped(bool started);

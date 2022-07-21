@@ -167,8 +167,10 @@ void WorkAreaInsets::OnKeyboardVisibilityChanged(const bool is_visible) {
   // but ignore work area insets since shelf overlaps with login window.
   if (Shell::Get()->session_controller()->IsUserSessionBlocked() &&
       !is_visible) {
-    Shell::Get()->SetDisplayWorkAreaInsets(
-        root_window_controller_->GetRootWindow(), gfx::Insets());
+    Shell::Get()
+        ->window_tree_host_manager()
+        ->UpdateWorkAreaOfDisplayNearestWindow(
+            root_window_controller_->GetRootWindow(), gfx::Insets());
   }
 }
 

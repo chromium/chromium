@@ -423,12 +423,6 @@ Shell::CreateDefaultNonClientFrameView(views::Widget* widget) {
   return std::make_unique<NonClientFrameViewAsh>(widget);
 }
 
-void Shell::SetDisplayWorkAreaInsets(Window* contains,
-                                     const gfx::Insets& insets) {
-  window_tree_host_manager_->UpdateWorkAreaOfDisplayNearestWindow(contains,
-                                                                  insets);
-}
-
 void Shell::OnCastingSessionStartedOrStopped(bool started) {
   for (auto& observer : shell_observers_)
     observer.OnCastingSessionStartedOrStopped(started);
