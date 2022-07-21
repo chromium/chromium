@@ -56,6 +56,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"noMatchedResults", IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS},
       {"attachFilesLabel", IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL},
       {"attachScreenshotLabel", IDS_FEEDBACK_TOOL_SCREENSHOT_LABEL},
+      {"attachScreenshotCheckboxAriaLabel",
+       IDS_FEEDBACK_TOOL_ATTACH_SCREENSHOT_CHECKBOX_ARIA_LABEL},
       {"addFileLabel", IDS_FEEDBACK_TOOL_ADD_FILE_LABEL},
       {"replaceFileLabel", IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL},
       {"userEmailLabel", IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL},

@@ -127,9 +127,13 @@ export function shareDataPageTestSuite() {
         getElementContent('#shareDiagnosticDataLabel'));
 
     // Screenshot elements.
-    assertTrue(!!getElement('#screenshotCheckbox'));
-    assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
+    const screenshotCheckbox = getElement('#screenshotCheckbox');
+    assertTrue(!!screenshotCheckbox);
+    assertTrue(page.i18nExists('attachScreenshotCheckboxAriaLabel'));
+    assertEquals('Attach screenshot', screenshotCheckbox.ariaLabel);
+
     assertTrue(page.i18nExists('attachScreenshotLabel'));
+    assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
     assertTrue(!!getElement('#screenshotImage'));
 
     // Add file attachment element.

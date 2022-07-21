@@ -80,6 +80,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     super.ready();
     this.setPrivacyNote_();
     this.setSysInfoCheckboxLabelAndAttributes_();
+    this.$.screenshotCheckbox.ariaLabel =
+        this.i18n('attachScreenshotCheckboxAriaLabel');
 
     // Set up event listener for email change to retarget |this| to be the
     // ShareDataPageElement's context.
