@@ -16,10 +16,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace chromeos {
-class Uri;
-}
+#include "url/gurl.h"
 
 namespace syncer {
 struct EntityData;
@@ -47,8 +44,8 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
     //  * `added` - the set of URIs added to the list of trusted servers; and
     //  * `deleted` - the set of URIs removed from the list.
     virtual void OnProfileAuthorizationServersUpdate(
-        std::set<chromeos::Uri> added,
-        std::set<chromeos::Uri> deleted) = 0;
+        std::set<GURL> added,
+        std::set<GURL> deleted) = 0;
 
    protected:
     virtual ~Observer() = default;
@@ -80,7 +77,7 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // to OnProfileAuthorizationServersUpdate() on this client. This method MUST
   // NOT be called before the Observer receives the call to
   // OnProfileAuthorizationServersInitialized().
-  void AddAuthorizationServer(const chromeos::Uri& server);
+  void AddAuthorizationServer(const GURL& server);
 
   // Implementation of ModelTypeSyncBridge interface. For internal use only.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

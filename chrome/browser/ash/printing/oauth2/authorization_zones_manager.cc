@@ -137,9 +137,8 @@ class AuthorizationZonesManagerImpl
     NOTIMPLEMENTED();
   }
 
-  void OnProfileAuthorizationServersUpdate(
-      std::set<chromeos::Uri> removed,
-      std::set<chromeos::Uri> added) override {
+  void OnProfileAuthorizationServersUpdate(std::set<GURL> removed,
+                                           std::set<GURL> added) override {
     // TODO(pawliczek)
     NOTIMPLEMENTED();
   }

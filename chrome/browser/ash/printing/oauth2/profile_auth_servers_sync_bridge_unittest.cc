@@ -14,7 +14,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chromeos/printing/uri.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -24,6 +23,7 @@
 #include "components/sync/test/model/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
 namespace {
@@ -41,21 +41,17 @@ class MockProfileAuthServersSyncBridgeObserver
   MOCK_METHOD(void, OnProfileAuthorizationServersInitialized, (), (override));
   MOCK_METHOD(void,
               OnProfileAuthorizationServersUpdate,
-              (std::set<chromeos::Uri>, std::set<chromeos::Uri>),
+              (std::set<GURL>, std::set<GURL>),
               (override));
 };
 
 class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
  protected:
   PrintingOAuth2ProfileAuthServersSyncBridgeTest() {
-    DCHECK_EQ(uri_1u_.GetLastParsingError().status,
-              chromeos::Uri::ParserStatus::kNoErrors);
-    DCHECK_EQ(uri_2u_.GetLastParsingError().status,
-              chromeos::Uri::ParserStatus::kNoErrors);
-    DCHECK_EQ(uri_3u_.GetLastParsingError().status,
-              chromeos::Uri::ParserStatus::kNoErrors);
-    DCHECK_EQ(uri_4u_.GetLastParsingError().status,
-              chromeos::Uri::ParserStatus::kNoErrors);
+    DCHECK(uri_1u_.is_valid());
+    DCHECK(uri_2u_.is_valid());
+    DCHECK(uri_3u_.is_valid());
+    DCHECK(uri_4u_.is_valid());
   }
 
   void CreateBridge(const std::vector<std::string>& uris = {}) {
@@ -123,10 +119,10 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
   const std::string uri_2_ = "https://def:123/gh";
   const std::string uri_3_ = "https://xyz/ab";
   const std::string uri_4_ = "https://ala.ma.kota/psa?moze";
-  const chromeos::Uri uri_1u_ = chromeos::Uri(uri_1_);
-  const chromeos::Uri uri_2u_ = chromeos::Uri(uri_2_);
-  const chromeos::Uri uri_3u_ = chromeos::Uri(uri_3_);
-  const chromeos::Uri uri_4u_ = chromeos::Uri(uri_4_);
+  const GURL uri_1u_ = GURL(uri_1_);
+  const GURL uri_2u_ = GURL(uri_2_);
+  const GURL uri_3u_ = GURL(uri_3_);
+  const GURL uri_4u_ = GURL(uri_4_);
 
   testing::StrictMock<MockProfileAuthServersSyncBridgeObserver> mock_observer_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
@@ -167,13 +163,12 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, Initialization) {
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, MergeSyncData) {
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_3u_},
-                                                  std::set<chromeos::Uri>{}));
+                                                  std::set<GURL>{}));
   CreateBridge({uri_1_, uri_3_});
 
   EXPECT_CALL(mock_processor_, Put(uri_3_, testing::_, testing::_));
-  EXPECT_CALL(mock_observer_,
-              OnProfileAuthorizationServersUpdate(std::set{uri_2u_},
-                                                  std::set<chromeos::Uri>{}));
+  EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
+                                  std::set{uri_2u_}, std::set<GURL>{}));
   DoInitialMerge({uri_1_, uri_2_});
 
   const std::vector<std::string> uris = GetAllData();
@@ -192,9 +187,8 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
        ServersAddedAfterInitialMerge) {
   CreateBridge();
-  EXPECT_CALL(mock_observer_,
-              OnProfileAuthorizationServersUpdate(std::set{uri_2u_},
-                                                  std::set<chromeos::Uri>{}));
+  EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
+                                  std::set{uri_2u_}, std::set<GURL>{}));
   DoInitialMerge({uri_2_});
   EXPECT_CALL(mock_processor_, Put(uri_1_, testing::_, testing::_));
   bridge_->AddAuthorizationServer(uri_1u_);
@@ -208,9 +202,8 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
   CreateBridge();
   bridge_->AddAuthorizationServer(uri_1u_);
   EXPECT_CALL(mock_processor_, Put(uri_1_, testing::_, testing::_));
-  EXPECT_CALL(mock_observer_,
-              OnProfileAuthorizationServersUpdate(std::set{uri_2u_},
-                                                  std::set<chromeos::Uri>{}));
+  EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
+                                  std::set{uri_2u_}, std::set<GURL>{}));
   DoInitialMerge({uri_2_});
 
   const std::vector<std::string> uris = GetAllData();
@@ -223,7 +216,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, ApplySyncChanges) {
 
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
-                                                  std::set<chromeos::Uri>{}));
+                                                  std::set<GURL>{}));
   DoApplySyncChanges(/*added=*/{uri_1_, uri_2_}, /*deleted=*/{});
   std::vector<std::string> uris = GetAllData();
   EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_}));
@@ -239,7 +232,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetData) {
   CreateBridge();
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
-                                                  std::set<chromeos::Uri>{}));
+                                                  std::set<GURL>{}));
   DoInitialMerge({uri_1_, uri_2_});
 
   std::unique_ptr<syncer::DataBatch> output;
@@ -266,7 +259,7 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
   CreateBridge();
   EXPECT_CALL(mock_observer_,
               OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
-                                                  std::set<chromeos::Uri>{}));
+                                                  std::set<GURL>{}));
   DoInitialMerge({uri_1_, uri_2_});
 
   EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(

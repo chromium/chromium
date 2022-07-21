@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/printing/uri.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/entity_change.h"
@@ -30,6 +29,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/printers_authorization_server_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
 
@@ -50,12 +50,11 @@ std::unique_ptr<syncer::EntityData> ToEntityDataPtr(const std::string& uri) {
   return entity_data;
 }
 
-std::set<chromeos::Uri> ToSetOfUris(const std::set<std::string>& strs) {
-  std::set<chromeos::Uri> uris;
+std::set<GURL> ToSetOfUris(const std::set<std::string>& strs) {
+  std::set<GURL> uris;
   for (const std::string& str : strs) {
-    chromeos::Uri uri(str);
-    if (uri.GetLastParsingError().status !=
-        chromeos::Uri::ParserStatus::kNoErrors) {
+    GURL uri(str);
+    if (!uri.is_valid()) {
       LOG(WARNING) << "Failed to parse URI in ProfileAuthServersSyncBridge";
       continue;
     }
@@ -93,9 +92,10 @@ ProfileAuthServersSyncBridge::CreateForTesting(
 ProfileAuthServersSyncBridge::~ProfileAuthServersSyncBridge() = default;
 
 void ProfileAuthServersSyncBridge::AddAuthorizationServer(
-    const chromeos::Uri& server_uri) {
+    const GURL& server_uri) {
   DCHECK(initialization_completed_);
-  const std::string key = server_uri.GetNormalized(/*always_print_port=*/false);
+  const std::string key = server_uri.spec();
+  DCHECK(!key.empty());
   servers_uris_.insert(key);
   auto batch = store_->CreateWriteBatch();
   batch->WriteData(key, ToSpecifics(key).SerializeAsString());
@@ -293,9 +293,9 @@ void ProfileAuthServersSyncBridge::OnCommit(
 void ProfileAuthServersSyncBridge::NotifyObserver(
     const std::set<std::string>& added,
     const std::set<std::string>& deleted) {
-  // Convert std::set<std::string> to std::set<chromeos::Uri>.
-  std::set<chromeos::Uri> added_uris = ToSetOfUris(added);
-  std::set<chromeos::Uri> deleted_uris = ToSetOfUris(deleted);
+  // Convert std::set<std::string> to std::set<GURL>.
+  std::set<GURL> added_uris = ToSetOfUris(added);
+  std::set<GURL> deleted_uris = ToSetOfUris(deleted);
   // Call the observer.
   if (!added_uris.empty() || !deleted_uris.empty()) {
     observer_->OnProfileAuthorizationServersUpdate(std::move(added_uris),
