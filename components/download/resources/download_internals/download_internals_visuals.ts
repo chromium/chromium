@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DriverEntryState, ServiceEntryResult, ServiceEntryState, ServiceRequestResult} from './download_internals_browser_proxy.js';
+import {DriverEntryState, ServiceEntry, ServiceEntryResult, ServiceEntryState, ServiceRequest, ServiceRequestResult} from './download_internals_browser_proxy.js';
 
-// Expose these on |window| because they need to be accessed by jstemplate code
-// in download_internals.html
-window.downloadInternalsVisuals = {};
-
-function getOngoingServiceEntryClass(entry) {
+function getOngoingServiceEntryClass(entry: ServiceEntry) {
   switch (entry.state) {
     case ServiceEntryState.NEW:
       return 'service-entry-new';
@@ -29,10 +25,8 @@ function getOngoingServiceEntryClass(entry) {
       return '';
   }
 }
-window.downloadInternalsVisuals.getOngoingServiceEntryClass =
-    getOngoingServiceEntryClass;
 
-function getFinishedServiceEntryClass(entry) {
+function getFinishedServiceEntryClass(entry: ServiceEntry) {
   switch (entry.result) {
     case ServiceEntryResult.SUCCEED:
       return 'service-entry-success';
@@ -40,10 +34,8 @@ function getFinishedServiceEntryClass(entry) {
       return 'service-entry-fail';
   }
 }
-window.downloadInternalsVisuals.getFinishedServiceEntryClass =
-    getFinishedServiceEntryClass;
 
-function getServiceRequestClass(request) {
+function getServiceRequestClass(request: ServiceRequest) {
   switch (request.result) {
     case ServiceRequestResult.ACCEPTED:
       return 'service-entry-success';
@@ -54,4 +46,13 @@ function getServiceRequestClass(request) {
       return 'service-entry-fail';
   }
 }
-window.downloadInternalsVisuals.getServiceRequestClass = getServiceRequestClass;
+
+// Expose these on |window| because they need to be accessed by jstemplate code
+// in download_internals.html
+Object.assign(window, {
+  downloadInternalsVisuals: {
+    getServiceRequestClass,
+    getFinishedServiceEntryClass,
+    getOngoingServiceEntryClass,
+  },
+});

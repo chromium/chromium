@@ -11,23 +11,26 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 import {DownloadInternalsBrowserProxy, DownloadInternalsBrowserProxyImpl, ServiceEntry, ServiceEntryState, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
 
-/** @type {!DownloadInternalsBrowserProxy} */
-const browserProxy = DownloadInternalsBrowserProxyImpl.getInstance();
+declare global {
+  class JsEvalContext {
+    constructor(data: any);
+  }
 
-/** @type {!Array<ServiceEntry>} */
-const ongoingServiceEntries = [];
+  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
+}
 
-/** @type {!Array<ServiceEntry>} */
-const finishedServiceEntries = [];
+const browserProxy: DownloadInternalsBrowserProxy =
+    DownloadInternalsBrowserProxyImpl.getInstance();
 
-/** @type {!Array<ServiceRequest>} */
-const serviceRequests = [];
+const ongoingServiceEntries: ServiceEntry[] = [];
+const finishedServiceEntries: ServiceEntry[] = [];
+const serviceRequests: ServiceRequest[] = [];
 
 /**
- * @param {!Array<ServiceEntry>} list A list to remove the entry from.
- * @param {string} guid The guid to remove from the list.
+ * @param list A list to remove the entry from.
+ * @param guid The guid to remove from the list.
  */
-function removeGuidFromList(list, guid) {
+function removeGuidFromList(list: ServiceEntry[], guid: string) {
   const index = list.findIndex(entry => entry.guid == guid);
   if (index != -1) {
     list.splice(index, 1);
@@ -37,10 +40,9 @@ function removeGuidFromList(list, guid) {
 /**
  * Replaces the ServiceEntry specified by guid in the list or, if it's not
  * found, adds a new entry.
- * @param {!Array<ServiceEntry>} list A list to update.
- * @param {!ServiceEntry} newEntry The new entry.
+ * @param list A list to update.
  */
-function addOrUpdateEntryByGuid(list, newEntry) {
+function addOrUpdateEntryByGuid(list: ServiceEntry[], newEntry: ServiceEntry) {
   const index = list.findIndex(entry => entry.guid == newEntry.guid);
   if (index != -1) {
     list[index] = newEntry;
@@ -58,9 +60,9 @@ function updateEntryTables() {
 }
 
 /**
- * @param {!ServiceStatus} state The current status of the download service.
+ * @param state The current status of the download service.
  */
-function onServiceStatusChanged(state) {
+function onServiceStatusChanged(state: ServiceStatus) {
   $('service-state').textContent = state.serviceState;
   $('service-status-model').textContent = state.modelStatus;
   $('service-status-driver').textContent = state.driverStatus;
@@ -68,12 +70,11 @@ function onServiceStatusChanged(state) {
 }
 
 /**
- * @param {!Array<!ServiceEntry>} entries A list entries currently tracked by
- *     the download service.
+ * @param entries A list entries currently tracked by the download service.
  */
-function onServiceDownloadsAvailable(entries) {
+function onServiceDownloadsAvailable(entries: ServiceEntry[]) {
   for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
+    const entry = entries[i]!;
     if (entry.state == ServiceEntryState.COMPLETE) {
       finishedServiceEntries.unshift(entry);
     } else {
@@ -85,10 +86,9 @@ function onServiceDownloadsAvailable(entries) {
 }
 
 /**
- * @param {!ServiceEntry} entry The new state for a particular download
- *     service entry.
+ * @param entry The new state for a particular download service entry.
  */
-function onServiceDownloadChanged(entry) {
+function onServiceDownloadChanged(entry: ServiceEntry) {
   if (entry.state == ServiceEntryState.COMPLETE) {
     removeGuidFromList(ongoingServiceEntries, entry.guid);
     addOrUpdateEntryByGuid(finishedServiceEntries, entry);
@@ -100,10 +100,9 @@ function onServiceDownloadChanged(entry) {
 }
 
 /**
- * @param {!ServiceEntry} entry The new state for a failed download service
- *     entry.
+ * @param entry The new state for a failed download service entry.
  */
-function onServiceDownloadFailed(entry) {
+function onServiceDownloadFailed(entry: ServiceEntry) {
   removeGuidFromList(ongoingServiceEntries, entry.guid);
   addOrUpdateEntryByGuid(finishedServiceEntries, entry);
 
@@ -111,10 +110,9 @@ function onServiceDownloadFailed(entry) {
 }
 
 /**
- * @param {!ServiceRequest} request The state for a newly issued download
- *     service request.
+ * @param request The state for a newly issued download service request.
  */
-function onServiceRequestMade(request) {
+function onServiceRequestMade(request: ServiceRequest) {
   serviceRequests.unshift(request);
   const input = new JsEvalContext({requests: serviceRequests});
   jstProcess(input, $('download-service-request-info'));
@@ -129,7 +127,7 @@ function initialize() {
   addWebUIListener('service-request-made', onServiceRequestMade);
 
   $('start-download').onclick = function() {
-    browserProxy.startDownload($('download-url').value);
+    browserProxy.startDownload(($('download-url') as HTMLInputElement).value);
   };
 
   // Kick off requests for the current system state.
