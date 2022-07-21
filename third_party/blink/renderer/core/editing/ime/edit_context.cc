@@ -8,7 +8,9 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_range.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_enter_key_hint.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_input_mode.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
@@ -338,10 +340,8 @@ void EditContext::setSelectionEnd(uint32_t selection_end,
   selection_end_ = std::min(selection_end, text_.length());
 }
 
-String EditContext::inputPanelPolicy() const {
-  if (input_panel_policy_ == EditContextInputPanelPolicy::kAuto)
-    return "auto";
-  return "manual";
+V8EditContextInputPanelPolicy EditContext::inputPanelPolicy() const {
+  return V8EditContextInputPanelPolicy(input_panel_policy_);
 }
 
 const HeapVector<Member<Element>>& EditContext::attachedElements() {
@@ -360,94 +360,112 @@ const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
   return dom_rects;
 }
 
-void EditContext::setInputPanelPolicy(const String& input_policy) {
-  if (input_policy == "auto")
-    input_panel_policy_ = EditContextInputPanelPolicy::kAuto;
-  else if (input_policy == "manual")
-    input_panel_policy_ = EditContextInputPanelPolicy::kManual;
+void EditContext::setInputPanelPolicy(
+    const V8EditContextInputPanelPolicy& input_policy) {
+  input_panel_policy_ = input_policy.AsEnum();
 }
 
-void EditContext::setInputMode(const String& input_mode) {
+void EditContext::setInputMode(const V8EditContextInputMode& input_mode) {
   // inputMode password is not supported by browsers yet:
   // https://github.com/whatwg/html/issues/4875
 
-  if (input_mode == "text")
-    input_mode_ = WebTextInputMode::kWebTextInputModeText;
-  else if (input_mode == "tel")
-    input_mode_ = WebTextInputMode::kWebTextInputModeTel;
-  else if (input_mode == "email")
-    input_mode_ = WebTextInputMode::kWebTextInputModeEmail;
-  else if (input_mode == "search")
-    input_mode_ = WebTextInputMode::kWebTextInputModeSearch;
-  else if (input_mode == "decimal")
-    input_mode_ = WebTextInputMode::kWebTextInputModeDecimal;
-  else if (input_mode == "numeric")
-    input_mode_ = WebTextInputMode::kWebTextInputModeNumeric;
-  else if (input_mode == "url")
-    input_mode_ = WebTextInputMode::kWebTextInputModeUrl;
-  else
-    input_mode_ = WebTextInputMode::kWebTextInputModeNone;
-}
-
-String EditContext::inputMode() const {
-  switch (input_mode_) {
-    case WebTextInputMode::kWebTextInputModeText:
-      return "text";
-    case WebTextInputMode::kWebTextInputModeSearch:
-      return "search";
-    case WebTextInputMode::kWebTextInputModeEmail:
-      return "email";
-    case WebTextInputMode::kWebTextInputModeDecimal:
-      return "decimal";
-    case WebTextInputMode::kWebTextInputModeNumeric:
-      return "numeric";
-    case WebTextInputMode::kWebTextInputModeTel:
-      return "tel";
-    case WebTextInputMode::kWebTextInputModeUrl:
-      return "url";
-    default:
-      return "none";  // Defaulting to none.
+  switch (input_mode.AsEnum()) {
+    case V8EditContextInputMode::Enum::kText:
+      input_mode_ = WebTextInputMode::kWebTextInputModeText;
+      break;
+    case V8EditContextInputMode::Enum::kTel:
+      input_mode_ = WebTextInputMode::kWebTextInputModeTel;
+      break;
+    case V8EditContextInputMode::Enum::kEmail:
+      input_mode_ = WebTextInputMode::kWebTextInputModeEmail;
+      break;
+    case V8EditContextInputMode::Enum::kSearch:
+      input_mode_ = WebTextInputMode::kWebTextInputModeSearch;
+      break;
+    case V8EditContextInputMode::Enum::kDecimal:
+      input_mode_ = WebTextInputMode::kWebTextInputModeDecimal;
+      break;
+    case V8EditContextInputMode::Enum::kNumeric:
+      input_mode_ = WebTextInputMode::kWebTextInputModeNumeric;
+      break;
+    case V8EditContextInputMode::Enum::kUrl:
+      input_mode_ = WebTextInputMode::kWebTextInputModeUrl;
+      break;
+    case V8EditContextInputMode::Enum::kPassword:
+    case V8EditContextInputMode::Enum::kNone:
+      input_mode_ = WebTextInputMode::kWebTextInputModeNone;
   }
 }
 
-void EditContext::setEnterKeyHint(const String& enter_key_hint) {
-  if (enter_key_hint == "enter")
-    enter_key_hint_ = ui::TextInputAction::kEnter;
-  else if (enter_key_hint == "done")
-    enter_key_hint_ = ui::TextInputAction::kDone;
-  else if (enter_key_hint == "go")
-    enter_key_hint_ = ui::TextInputAction::kGo;
-  else if (enter_key_hint == "next")
-    enter_key_hint_ = ui::TextInputAction::kNext;
-  else if (enter_key_hint == "previous")
-    enter_key_hint_ = ui::TextInputAction::kPrevious;
-  else if (enter_key_hint == "search")
-    enter_key_hint_ = ui::TextInputAction::kSearch;
-  else if (enter_key_hint == "send")
-    enter_key_hint_ = ui::TextInputAction::kSend;
-  else
-    enter_key_hint_ = ui::TextInputAction::kEnter;
+V8EditContextInputMode EditContext::inputMode() const {
+  switch (input_mode_) {
+    case WebTextInputMode::kWebTextInputModeText:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kText);
+    case WebTextInputMode::kWebTextInputModeSearch:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kSearch);
+    case WebTextInputMode::kWebTextInputModeEmail:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kEmail);
+    case WebTextInputMode::kWebTextInputModeDecimal:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kDecimal);
+    case WebTextInputMode::kWebTextInputModeNumeric:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kNumeric);
+    case WebTextInputMode::kWebTextInputModeTel:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kTel);
+    case WebTextInputMode::kWebTextInputModeUrl:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kUrl);
+    default:
+      return V8EditContextInputMode(V8EditContextInputMode::Enum::kNone);
+  }
 }
 
-String EditContext::enterKeyHint() const {
+void EditContext::setEnterKeyHint(
+    const V8EditContextEnterKeyHint& enter_key_hint) {
+  switch (enter_key_hint.AsEnum()) {
+    case V8EditContextEnterKeyHint::Enum::kEnter:
+      enter_key_hint_ = ui::TextInputAction::kEnter;
+      break;
+    case V8EditContextEnterKeyHint::Enum::kDone:
+      enter_key_hint_ = ui::TextInputAction::kDone;
+      break;
+    case V8EditContextEnterKeyHint::Enum::kGo:
+      enter_key_hint_ = ui::TextInputAction::kGo;
+      break;
+    case V8EditContextEnterKeyHint::Enum::kNext:
+      enter_key_hint_ = ui::TextInputAction::kNext;
+      break;
+    case V8EditContextEnterKeyHint::Enum::kPrevious:
+      enter_key_hint_ = ui::TextInputAction::kPrevious;
+      break;
+    case V8EditContextEnterKeyHint::Enum::kSearch:
+      enter_key_hint_ = ui::TextInputAction::kSearch;
+      break;
+    case V8EditContextEnterKeyHint::Enum::kSend:
+      enter_key_hint_ = ui::TextInputAction::kSend;
+      break;
+  }
+}
+
+V8EditContextEnterKeyHint EditContext::enterKeyHint() const {
   switch (enter_key_hint_) {
     case ui::TextInputAction::kEnter:
-      return "enter";
+      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kEnter);
     case ui::TextInputAction::kDone:
-      return "done";
+      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kDone);
     case ui::TextInputAction::kGo:
-      return "go";
+      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kGo);
     case ui::TextInputAction::kNext:
-      return "next";
+      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kNext);
     case ui::TextInputAction::kPrevious:
-      return "previous";
+      return V8EditContextEnterKeyHint(
+          V8EditContextEnterKeyHint::Enum::kPrevious);
     case ui::TextInputAction::kSearch:
-      return "search";
+      return V8EditContextEnterKeyHint(
+          V8EditContextEnterKeyHint::Enum::kSearch);
     case ui::TextInputAction::kSend:
-      return "send";
+      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kSend);
     default:
       // Defaulting to enter.
-      return "enter";
+      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kEnter);
   }
 }
 
