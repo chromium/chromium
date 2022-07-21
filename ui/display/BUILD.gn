@@ -184,6 +184,8 @@ static_library("test_support") {
     sources += [
       "mac/test/test_screen_mac.h",
       "mac/test/test_screen_mac.mm",
+      "mac/test/virtual_display_mac_util.h",
+      "mac/test/virtual_display_mac_util.mm",
     ]
   }
 
@@ -276,6 +278,22 @@ test("display_unittests") {
       ":display_manager_test_api",
       "//ash/constants",
       "//ui/display/manager",
+    ]
+  }
+}
+
+# This target is added as a dependency of browser interactive_ui_tests. It must
+# be source_set, otherwise the linker will drop the tests as dead code.
+source_set("display_interactive_ui_tests") {
+  testonly = true
+  if (is_mac) {
+    sources = [ "mac/test/virtual_display_mac_util_interactive_uitest.mm" ]
+
+    deps = [
+      ":display",
+      ":test_support",
+      "//base/test:test_support",
+      "//testing/gtest",
     ]
   }
 }
