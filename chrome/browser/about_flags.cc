@@ -8971,10 +8971,16 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAssistantNonPersonalizedVoiceSearch)},
 #endif
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
+
+#if BUILDFLAG(IS_ANDROID)
+    {"stylus-input", flag_descriptions::kStylusWritingToInputName,
+     flag_descriptions::kStylusWritingToInputDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kStylusWritingToInput)},
+#endif  // BUILDFLAG(IS_ANDROID)
+        // NOTE: Adding a new flag requires adding a corresponding entry to enum
+        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+        // Histograms" in tools/metrics/histograms/README.md (run the
+        // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

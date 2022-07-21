@@ -60574,6 +60574,7 @@ from previous Chrome versions.
   <int value="1154790184" label="ScanAppMultiPageScan:enabled"/>
   <int value="1155905651" label="DrawVerticallyEdgeToEdge:disabled"/>
   <int value="1155923106" label="NTPOfflinePages:enabled"/>
+  <int value="1156107561" label="StylusWritingToInput:disabled"/>
   <int value="1158333871" label="QueryTilesEnableQueryEditing:enabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
@@ -61610,6 +61611,7 @@ from previous Chrome versions.
   <int value="1839005510" label="MutingCompromisedCredentials:enabled"/>
   <int value="1839740266" label="LocationHardReload:disabled"/>
   <int value="1840087820" label="NtpRealboxMatchSearchboxTheme:enabled"/>
+  <int value="1840892133" label="StylusWritingToInput:enabled"/>
   <int value="1841051176" label="WindowsScrollingPersonality:disabled"/>
   <int value="1841793150" label="TwoPanesStartSurfaceAndroid:enabled"/>
   <int value="1841976850" label="FeedLoadingPlaceholder:enabled"/>

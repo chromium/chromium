@@ -3789,6 +3789,13 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kStylusWritingToInputName[] = "Stylus input";
+const char kStylusWritingToInputDescription[] =
+    "If enabled, and on an appropriate platform, this feature will allow the "
+    "user to input text using a stylus. This is available on Samsung devices "
+    "that come with an S Pen, and on Android T+ devices. The stylus writing "
+    "feature will have to be enabled in Android settings as well.";
+
 const char kSyncAndroidPromosWithAlternativeTitleName[] =
     "Enable the sync promos with alternative titles on Android";
 const char kSyncAndroidPromosWithAlternativeTitleDescription[] =

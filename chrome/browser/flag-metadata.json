@@ -5885,6 +5885,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "stylus-input",
+    "owners": ["peconn"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "subframe-shutdown-delay",
     "owners": [ "jessemckenna@google.com", "olivierli" ],
     "expiry_milestone": 106

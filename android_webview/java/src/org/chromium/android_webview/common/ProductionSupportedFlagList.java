@@ -329,6 +329,10 @@ public final class ProductionSupportedFlagList {
                             + " rather than token count."),
             Flag.baseFeature(AwFeatures.WEBVIEW_HIT_TEST_IN_BLINK_ON_TOUCH_START,
                     "Hit test on touch start in blink"),
+            Flag.baseFeature(BlinkFeatures.STYLUS_WRITING_TO_INPUT,
+                    "Allows using a stylus for text input. This requires "
+                            + "either a Samsung device with Direct Writing enabled, or an "
+                            + "Android T device with stylus handwriting enabled."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

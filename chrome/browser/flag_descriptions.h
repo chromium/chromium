@@ -2156,6 +2156,9 @@ extern const char kStartSurfaceRefactorDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kStylusWritingToInputName[];
+extern const char kStylusWritingToInputDescription[];
+
 extern const char kSyncAndroidPromosWithAlternativeTitleName[];
 extern const char kSyncAndroidPromosWithAlternativeTitleDescription[];
 
