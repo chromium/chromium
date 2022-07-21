@@ -707,13 +707,13 @@ const base::Feature kSearchEnginePromoExistingDevice{
     "SearchEnginePromo.ExistingDevice", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSearchEnginePromoExistingDeviceV2{
-    "SearchEnginePromo.ExistingDeviceVer2", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SearchEnginePromo.ExistingDeviceVer2", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSearchEnginePromoNewDevice{
     "SearchEnginePromo.NewDevice", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSearchEnginePromoNewDeviceV2{
-    "SearchEnginePromo.NewDeviceVer2", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SearchEnginePromo.NewDeviceVer2", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMostRecentTabOnBackgroundCloseTab{
     "MostRecentTabOnBackgroundCloseTab", base::FEATURE_DISABLED_BY_DEFAULT};
