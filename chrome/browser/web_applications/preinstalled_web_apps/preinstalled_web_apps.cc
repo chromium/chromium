@@ -22,14 +22,18 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -40,21 +44,18 @@ namespace {
 std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
     nullptr;
 
-}  // namespace
-
-bool PreinstalledWebAppsDisabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kDisableDefaultApps);
-}
-
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
-  if (g_preinstalled_app_data_for_testing)
-    return *g_preinstalled_app_data_for_testing;
-
-  if (PreinstalledWebAppsDisabled())
-    return {};
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsGoogleInternalAccount() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile)
+    return false;
+  return gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+std::vector<ExternalInstallOptions> GetChromeBrandedApps() {
   // TODO(crbug.com/1104692): Replace these C++ configs with JSON configs like
   // those seen in: chrome/test/data/web_app_default_apps/good_json
   // This requires:
@@ -80,6 +81,34 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
       // clang-format on
   };
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+}  // namespace
+
+bool PreinstalledWebAppsDisabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kDisableDefaultApps);
+}
+
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
+  if (g_preinstalled_app_data_for_testing)
+    return *g_preinstalled_app_data_for_testing;
+
+  if (PreinstalledWebAppsDisabled())
+    return {};
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug/1346167): replace with config in admin console.
+  if (IsGoogleInternalAccount()) {
+    std::vector<ExternalInstallOptions> apps = GetChromeBrandedApps();
+    apps.push_back(GetConfigForMessagesDogfood());
+    return apps;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return GetChromeBrandedApps();
 #else
   return {};
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

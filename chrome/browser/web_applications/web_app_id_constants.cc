@@ -104,6 +104,11 @@ const char kMediaAppId[] = "jhdjimmaggjajfjphpljagpgkidjilnj";
 const char kMessagesAppId[] = "hpfldicfbfomlpcikngkocigghgafkph";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://messages-web.sandbox.google.com/web/"))
+const char kMessagesDogfoodDeprecatedAppId[] =
+    "gkgiochgbaoelfjibmnaomdepldjceib";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome://test-system-app/pwa.html"))
 const char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
 

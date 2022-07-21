@@ -32,6 +32,7 @@ extern const char kGoogleSlidesAppId[];
 extern const char kHelpAppId[];
 extern const char kMediaAppId[];
 extern const char kMessagesAppId[];
+extern const char kMessagesDogfoodDeprecatedAppId[];
 extern const char kMockSystemAppId[];
 extern const char kOsFeedbackAppId[];
 extern const char kOsSettingsAppId[];
