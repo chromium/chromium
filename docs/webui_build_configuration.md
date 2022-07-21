@@ -396,7 +396,7 @@ html_to_wrapper("html_wrapper_files")
 css_to_wrapper("css_wrapper_files")
 copy("copy_mojo")
 ts_library("build_ts")
-optimize_webui("build")
+optimize_webui("build_bundle")
 generate_grd("build_grd")
 grit("resources")
 

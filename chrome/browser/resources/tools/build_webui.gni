@@ -154,7 +154,7 @@ template("build_webui") {
 
     if (!composite) {
       visibility = [
-        ":build",
+        ":build_bundle",
         ":build_grd",
       ]
     }
@@ -203,15 +203,15 @@ template("build_webui") {
   }
 
   if (optimize) {
-    build_manifest = "build_manifest.json"
+    bundle_manifest = "bundle_manifest.json"
 
-    optimize_webui("build") {
+    optimize_webui("build_bundle") {
       visibility = [ ":build_grd" ]
       host = invoker.optimize_webui_host
       input = rebase_path(tsc_dir, root_build_dir)
       js_out_files = invoker.optimize_webui_out_files
       js_module_in_files = invoker.optimize_webui_in_files
-      out_manifest = "$target_gen_dir/$build_manifest"
+      out_manifest = "$target_gen_dir/$bundle_manifest"
       excludes = invoker.optimize_webui_excludes
 
       deps = [
@@ -230,8 +230,8 @@ template("build_webui") {
     input_files_base_dir = rebase_path(".", "//")
 
     if (optimize) {
-      deps = [ ":build" ]
-      manifest_files = [ "$target_gen_dir/$build_manifest" ]
+      deps = [ ":build_bundle" ]
+      manifest_files = [ "$target_gen_dir/$bundle_manifest" ]
       resource_path_rewrites = invoker.optimize_webui_resource_paths_rewrites
     } else {
       deps = [ ":build_ts" ]
