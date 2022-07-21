@@ -455,22 +455,6 @@ void ShelfView::Init() {
   // We'll layout when our bounds change.
 }
 
-gfx::Rect ShelfView::GetIdealBoundsOfItemIcon(const ShelfID& id) {
-  int index = model_->ItemIndexByID(id);
-  if (index < 0 ||
-      !base::Contains(visible_views_indices_, static_cast<size_t>(index)))
-    return gfx::Rect();
-
-  const gfx::Rect& ideal_bounds(
-      view_model_->ideal_bounds(static_cast<size_t>(index)));
-  ShelfAppButton* button = GetShelfAppButton(id);
-  gfx::Rect icon_bounds = button->GetIconBounds();
-  return gfx::Rect(GetMirroredXWithWidthInView(
-                       ideal_bounds.x() + icon_bounds.x(), icon_bounds.width()),
-                   ideal_bounds.y() + icon_bounds.y(), icon_bounds.width(),
-                   icon_bounds.height());
-}
-
 bool ShelfView::IsShowingMenu() const {
   return shelf_menu_model_adapter_ &&
          shelf_menu_model_adapter_->IsShowingMenu();

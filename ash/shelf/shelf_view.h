@@ -128,11 +128,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Initializes shelf view elements.
   void Init();
 
-  // Returns the ideal bounds of the specified item, or an empty rect if id
-  // isn't know. If the item is in an overflow shelf, the overflow icon location
-  // will be returned.
-  gfx::Rect GetIdealBoundsOfItemIcon(const ShelfID& id);
-
   // Returns true if we're showing a menu. Note the menu could be either the
   // context menu or the application select menu.
   bool IsShowingMenu() const;
