@@ -26,8 +26,11 @@ public abstract class PasswordCheckupClientHelperFactory {
      * Returns the downstream implementation provided by subclasses.
      *
      * @return An implementation of the {@link PasswordCheckupClientHelper} if one exists.
+     *
+     * TODO(crbug.com/1346239): Check if backend could be instantiated and throw error
      */
-    public PasswordCheckupClientHelper createHelper() {
+    public PasswordCheckupClientHelper createHelper()
+            throws PasswordCheckupClientHelper.PasswordCheckBackendException {
         return null;
     }
 

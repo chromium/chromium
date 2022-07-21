@@ -31,8 +31,11 @@ public abstract class CredentialManagerLauncherFactory {
      * Returns the downstream implementation provided by subclasses.
      *
      * @return An implementation of the {@link CredentialManagerLauncher} if one exists.
+     *
+     * TODO(crbug.com/1346239): Check if backend could be instantiated and throw error
      */
-    public CredentialManagerLauncher createLauncher() {
+    public CredentialManagerLauncher createLauncher()
+            throws CredentialManagerLauncher.CredentialManagerBackendException {
         return null;
     }
 

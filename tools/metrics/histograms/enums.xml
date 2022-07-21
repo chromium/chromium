@@ -21212,6 +21212,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Provided account is empty"/>
   <int value="2" label="API error"/>
   <int value="3" label="Uncategorized error"/>
+  <int value="4" label="Backend version is not supported"/>
+  <int value="5" label="Backend downstream implementation is not available"/>
 </enum>
 
 <enum name="CredentialManagerGetResult">
