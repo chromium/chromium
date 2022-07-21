@@ -664,6 +664,15 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
       confirmed_paste_count = 0;
     }
 
+    if (copy) {
+      // Record copy actions once they are confirmed, rather than when clipboard
+      // data first changes, to allow multiple data changes to be debounced into
+      // a single copy operation. This ensures that each user-initiated copy is
+      // recorded only once. See `ClipboardHistory::OnDataChanged()` for further
+      // explanation.
+      base::RecordAction(base::UserMetricsAction("Ash_Clipboard_CopiedItem"));
+    }
+
     // Verify that this operation did not interleave with a clipboard history
     // paste.
     DCHECK_EQ(pastes_to_be_confirmed_, 0);

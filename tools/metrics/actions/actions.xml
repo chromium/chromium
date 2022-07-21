@@ -3715,6 +3715,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Ash_Clipboard_CopiedItem">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <description>Emitted when a user copies data to their clipboard.</description>
+</action>
+
 <action name="Ash_ClipboardHistory_PastedItem1">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
