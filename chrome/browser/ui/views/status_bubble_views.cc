@@ -706,7 +706,11 @@ void StatusBubbleViews::InitPopup() {
     DCHECK(!expand_view_);
     popup_ = std::make_unique<views::Widget>();
 
+#if BUILDFLAG(IS_MAC)
+    views::Widget::InitParams params(views::Widget::InitParams::TYPE_TOOLTIP);
+#else
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+#endif
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread blocking issue during command buffer creation. We can

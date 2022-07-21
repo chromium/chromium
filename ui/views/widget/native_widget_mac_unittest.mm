@@ -2082,6 +2082,31 @@ TEST_F(NativeWidgetMacTest, SetSizeDoesntChangeOrigin) {
   parent->CloseNow();
 }
 
+// Tests that tooltip widgets get the correct accessibilty role so that they're
+// not announced as windows by VoiceOver.
+TEST_F(NativeWidgetMacTest, AccessibilityRole) {
+  {
+    NativeWidgetMacTestWindow* window;
+
+    Widget::InitParams init_params =
+        CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget* widget =
+        CreateWidgetWithTestWindow(std::move(init_params), &window);
+    ASSERT_EQ([window accessibilityRole], NSAccessibilityWindowRole);
+    widget->CloseNow();
+  }
+  {
+    NativeWidgetMacTestWindow* window;
+
+    Widget::InitParams init_params =
+        CreateParams(Widget::InitParams::TYPE_TOOLTIP);
+    Widget* widget =
+        CreateWidgetWithTestWindow(std::move(init_params), &window);
+    ASSERT_EQ([window accessibilityRole], NSAccessibilityHelpTagRole);
+    widget->CloseNow();
+  }
+}
+
 // Test that updateFullKeyboardAccess method on BridgedContentView correctly
 // sets the keyboard accessibility mode on the associated focus manager.
 TEST_F(NativeWidgetMacFullKeyboardAccessTest, FullKeyboardToggle) {

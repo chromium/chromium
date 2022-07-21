@@ -373,11 +373,10 @@ void NativeWidgetMacNSWindowHost::InitWindow(
           in_process_ns_window_bridge_.get(), GetNSWindowMojo());
 
   Widget* widget = native_widget_mac_->GetWidget();
-  // Tooltip Widgets shouldn't have their own tooltip manager, but tooltips are
-  // native on Mac, so nothing should ever want one in Widget form.
-  DCHECK_NE(params.type, Widget::InitParams::TYPE_TOOLTIP);
   widget_type_ = params.type;
-  tooltip_manager_ = std::make_unique<TooltipManagerMac>(GetNSWindowMojo());
+  bool is_tooltip = params.type == Widget::InitParams::TYPE_TOOLTIP;
+  if (!is_tooltip)
+    tooltip_manager_ = std::make_unique<TooltipManagerMac>(GetNSWindowMojo());
 
   if (params.workspace.length()) {
     std::string restoration_data;
@@ -396,6 +395,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->is_translucent =
         params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
     window_params->is_headless_mode_window = params.headless_mode;
+    window_params->is_tooltip = is_tooltip;
     is_headless_mode_window_ = params.headless_mode;
 
     // OSX likes to put shadows on most things. However, frameless windows (with

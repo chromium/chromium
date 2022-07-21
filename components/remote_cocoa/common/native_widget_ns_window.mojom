@@ -81,6 +81,9 @@ struct NativeWidgetNSWindowInitParams {
   // window's workspace and fullscreen state, and can be retrieved from or
   // applied to a window.
   array<uint8> state_restoration_data;
+  // If true, this window is functionally a tooltip, and shouldn't be presented
+  // as a new window to the accessibility system.
+  bool is_tooltip;
 };
 
 enum WindowControlsOverlayNSViewType {

@@ -146,9 +146,11 @@ void OrderChildWindow(NSWindow* child_window,
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _preventKeyWindow;
   BOOL _isAddingChildWindow;
+  BOOL _isTooltip;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
+@synthesize isTooltip = _isTooltip;
 
 - (instancetype)initWithContentRect:(NSRect)contentRect
                           styleMask:(NSUInteger)windowStyle
@@ -277,6 +279,10 @@ void OrderChildWindow(NSWindow* child_window,
   // does not conform.
   // TODO(https://crbug.com/944698): Create a sub-class that does.
   return obj;
+}
+
+- (NSAccessibilityRole)accessibilityRole {
+  return _isTooltip ? NSAccessibilityHelpTagRole : [super accessibilityRole];
 }
 
 // NSWindow overrides.

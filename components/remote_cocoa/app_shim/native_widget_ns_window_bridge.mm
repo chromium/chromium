@@ -482,6 +482,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
   // Don't allow dragging sheets.
   if (params->modal_type == ui::MODAL_TYPE_WINDOW)
     [window_ setMovable:NO];
+  [window_ setIsTooltip:params->is_tooltip];
 }
 
 void NativeWidgetNSWindowBridge::SetInitialBounds(

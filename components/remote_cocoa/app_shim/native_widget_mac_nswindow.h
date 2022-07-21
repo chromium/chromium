@@ -69,6 +69,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // The NativeWidgetNSWindowBridge that this will use to call back to the host.
 @property(assign, nonatomic) remote_cocoa::NativeWidgetNSWindowBridge* bridge;
+
+// Whether this window functions as a tooltip.
+@property(assign, nonatomic) BOOL isTooltip;
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_MAC_NSWINDOW_H_
