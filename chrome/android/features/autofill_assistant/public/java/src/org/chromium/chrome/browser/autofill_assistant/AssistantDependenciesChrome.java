@@ -53,8 +53,6 @@ public class AssistantDependenciesChrome
         if (!(activity instanceof ChromeActivity)) return false;
         ChromeActivity chromeActivity = (ChromeActivity) activity;
 
-        Supplier<View> rootView = chromeActivity.getCompositorViewHolderSupplier();
-
         mActivity = chromeActivity;
         mWindowAndroid = chromeActivity.getWindowAndroid();
         mBottomSheetController = BottomSheetControllerProvider.from(mWindowAndroid);
@@ -62,7 +60,7 @@ public class AssistantDependenciesChrome
         mKeyboardVisibilityDelegate = mWindowAndroid.getKeyboardDelegate();
         mBottomInsetProvider = mWindowAndroid.getApplicationBottomInsetProvider();
         mActivityTabProvider = chromeActivity.getActivityTabProvider();
-        mRootView = rootView.get();
+        mRootView = chromeActivity.getCompositorViewHolder();
         mSnackbarFactory =
                 new AssistantSnackbarFactoryChrome(mActivity, chromeActivity.getSnackbarManager());
         return true;

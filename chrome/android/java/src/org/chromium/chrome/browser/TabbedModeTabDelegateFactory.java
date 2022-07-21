@@ -10,7 +10,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
@@ -28,7 +27,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -37,7 +35,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  */
 public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Activity mActivity;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final FullscreenManager mFullscreenManager;
@@ -48,7 +45,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
 
     public TabbedModeTabDelegateFactory(Activity activity,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager, TabCreatorManager tabCreatorManager,
@@ -57,7 +53,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier) {
         mActivity = activity;
-        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mFullscreenManager = fullscreenManager;
@@ -86,10 +81,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
         return new ChromeContextMenuPopulatorFactory(
                 new TabContextMenuItemDelegate(tab, mTabModelSelectorSupplier.get(),
-                        mEphemeralTabCoordinatorSupplier,
                         mSnackbarManagerSupplier),
-                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
-                ExternalAuthUtils.getInstance());
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
     }
 
     @Override

@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /**
  * Factory for creating {@link ContextMenuPopulator}s.
@@ -18,14 +17,11 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private final ContextMenuItemDelegate mItemDelegate;
     private final @ContextMenuMode int mContextMenuMode;
-    private final ExternalAuthUtils mExternalAuthUtils;
 
     public ChromeContextMenuPopulatorFactory(@NonNull ContextMenuItemDelegate itemDelegate,
-            @ContextMenuMode int contextMenuMode,
-            ExternalAuthUtils externalAuthUtils) {
+            @ContextMenuMode int contextMenuMode) {
         mItemDelegate = itemDelegate;
         mContextMenuMode = contextMenuMode;
-        mExternalAuthUtils = externalAuthUtils;
     }
 
     @Override
@@ -37,6 +33,6 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
     public ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new ChromeContextMenuPopulator(mItemDelegate,
-                mContextMenuMode, mExternalAuthUtils, context, params, nativeDelegate);
+                mContextMenuMode, context, params, nativeDelegate);
     }
 }

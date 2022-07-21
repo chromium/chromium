@@ -21,7 +21,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.Process;
-import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 
@@ -34,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
 
 import java.io.IOException;

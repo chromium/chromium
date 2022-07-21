@@ -1,6 +1,5 @@
 include_rules = [
   "+components/cbor",
-  "+components/externalauth/android/java",
   "+content/public/android/java",
   "+content/public/browser",
   "+device/fido",

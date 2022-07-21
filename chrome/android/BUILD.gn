@@ -258,7 +258,6 @@ java_group("delegate_public_impl_java") {
     "//chrome/browser/policy/android:delegate_public_impl_java",
     "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
     "//components/autofill_assistant/android:autofill_assistant_public_impl_java",
-    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/language/android:ulp_delegate_public_java",
   ]
 }
@@ -286,7 +285,6 @@ android_library("chrome_java") {
     "//chrome/android/features/start_surface:public_java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
-    "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/messages:java",
@@ -404,7 +402,6 @@ android_library("chrome_java") {
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/external_intents/android:java",
-    "//components/externalauth/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/feed/core/proto:proto_java_v2",
@@ -678,7 +675,6 @@ group("jni_headers") {
     "//chrome/android/features/autofill_assistant:jni_headers_public",
     "//chrome/android/features/keyboard_accessory:jni_headers",
     "//chrome/android/features/start_surface:jni_headers",
-    "//chrome/browser/android/browserservices/verification:jni_headers",
     "//chrome/browser/contextmenu:jni_headers",
     "//chrome/browser/download/android:jni_headers",
     "//chrome/browser/enterprise/util:jni_headers",
@@ -830,7 +826,6 @@ android_library("chrome_unit_test_java") {
     "//chrome/browser/flags:java",
     "//components/browser_ui/settings/android:java",
     "//components/embedder_support/android:context_menu_java",
-    "//components/externalauth/android:java",
     "//components/search_engines/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
@@ -1526,7 +1521,6 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
-    "java/src/org/chromium/chrome/browser/prerender/ChromePrerenderService.java",
     "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProvider.java",
   ]
   deps = [

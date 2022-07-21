@@ -2683,8 +2683,6 @@ static_library("browser") {
       "android/customtabs/client_data_header_web_contents_observer.h",
       "android/customtabs/detached_resource_request.cc",
       "android/customtabs/detached_resource_request.h",
-      "android/customtabs/origin_verifier.cc",
-      "android/customtabs/origin_verifier.h",
       "android/devtools_manager_delegate_android.cc",
       "android/devtools_manager_delegate_android.h",
       "android/devtools_server.cc",

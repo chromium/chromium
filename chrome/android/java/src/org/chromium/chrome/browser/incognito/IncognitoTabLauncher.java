@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -22,7 +21,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.version_info.VersionInfo;
@@ -84,27 +82,6 @@ public class IncognitoTabLauncher extends Activity {
     public static boolean didCreateIntent(Intent intent) {
         return IntentHandler.wasIntentSenderChrome(intent) && IntentUtils.safeGetBooleanExtra(
                 intent, IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
-    }
-
-    /**
-     * Returns whether the omnibox should be focused after launching the incognito tab.
-     */
-    public static boolean shouldFocusOmnibox(Intent intent) {
-        assert didCreateIntent(intent);
-        return isVerifiedFirstPartyIntent(intent)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS);
-    }
-
-    /**
-     * Returns if the intent is from a verified first party app.
-     */
-    private static boolean isVerifiedFirstPartyIntent(Intent intent) {
-        String sendersPackageName =
-                intent.getStringExtra(IncognitoTabLauncher.EXTRA_SENDERS_PACKAGE_NAME);
-        return !TextUtils.isEmpty(sendersPackageName)
-                && ChromeApplicationImpl.getComponent().resolveExternalAuthUtils().isGoogleSigned(
-                        sendersPackageName);
     }
 
     /**

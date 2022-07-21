@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -48,7 +47,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -995,16 +993,7 @@ public class IntentHandler {
     public static boolean notSecureIsIntentChromeOrFirstParty(Intent intent) {
         if (intent == null) return false;
 
-        if (IntentUtils.isTrustedIntentFromSelf(intent)) return true;
-
-        // First-party Google apps re-use the secure application code extra for historical reasons.
-        PendingIntent token = IntentUtils.safeGetParcelableExtra(
-                intent, IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
-        if (token == null) return false;
-        if (ExternalAuthUtils.getInstance().isGoogleSigned(token.getCreatorPackage())) {
-            return true;
-        }
-        return false;
+        return IntentUtils.isTrustedIntentFromSelf(intent);
     }
 
     @VisibleForTesting

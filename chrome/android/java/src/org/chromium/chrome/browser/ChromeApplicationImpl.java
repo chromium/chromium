@@ -8,18 +8,12 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermissionRequesterImpl;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
-import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent;
-import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -38,10 +32,6 @@ import org.chromium.url.GURL;
  * called from the superclass. See {@link SplitCompatApplication} for more info.
  */
 public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
-    /** Lock on creation of sComponent. */
-    private static final Object sLock = new Object();
-    @Nullable
-    private static volatile ChromeAppComponent sComponent;
 
     public ChromeApplicationImpl() {}
 
@@ -106,32 +96,4 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                 || level >= Application.TRIM_MEMORY_MODERATE;
     }
 
-    /** Returns the application-scoped component. */
-    public static ChromeAppComponent getComponent() {
-        if (sComponent == null) {
-            synchronized (sLock) {
-                if (sComponent == null) {
-                    sComponent = createComponent();
-                }
-            }
-        }
-        return sComponent;
-    }
-
-    private static ChromeAppComponent createComponent() {
-        ChromeAppModule.Factory overriddenFactory =
-                ModuleFactoryOverrides.getOverrideFor(ChromeAppModule.Factory.class);
-        ChromeAppModule module =
-                overriddenFactory == null ? new ChromeAppModule() : overriddenFactory.create();
-
-        AppHooksModule.Factory appHooksFactory =
-                ModuleFactoryOverrides.getOverrideFor(AppHooksModule.Factory.class);
-        AppHooksModule appHooksModule =
-                appHooksFactory == null ? new AppHooksModule() : appHooksFactory.create();
-
-        return DaggerChromeAppComponent.builder()
-                .chromeAppModule(module)
-                .appHooksModule(appHooksModule)
-                .build();
-    }
 }

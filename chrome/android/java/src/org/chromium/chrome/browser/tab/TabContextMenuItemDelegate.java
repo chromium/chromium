@@ -11,6 +11,7 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.provider.Browser;
 import android.provider.ContactsContract;
+import android.widget.Toast;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -21,7 +22,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuItemDelegate;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.download.ChromeDownloadDelegate;
@@ -39,7 +39,6 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 
 /**
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
@@ -47,18 +46,15 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Supplier<SnackbarManager> mSnackbarManager;
 
     /**
      * Builds a {@link TabContextMenuItemDelegate} instance.
      */
     public TabContextMenuItemDelegate(Tab tab, TabModelSelector tabModelSelector,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Supplier<SnackbarManager> snackbarManager) {
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
-        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mSnackbarManager = snackbarManager;
     }
 
@@ -242,11 +238,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenInEphemeralTab(GURL url, String title) {
-        if (mEphemeralTabCoordinatorSupplier == null
-                || mEphemeralTabCoordinatorSupplier.get() == null) {
-            return;
-        }
-        mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.isIncognito());
+        Toast.makeText(ContextUtils.getApplicationContext(),
+                "onOpenInEphemeralTab title=" + title, Toast.LENGTH_SHORT).show();
     }
 
     @Override

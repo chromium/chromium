@@ -141,7 +141,6 @@
 #include "net/net_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/customtabs/origin_verifier.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -498,13 +497,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                 GetWebRtcLogDirectoryForBrowserContextPath(profile_->GetPath()),
             delete_begin_),
         CreateTaskCompletionClosure(TracingDataType::kWebrtcLogs));
-
-#if BUILDFLAG(IS_ANDROID)
-
-    // The OriginVerifier caches origins for Trusted Web Activities that have
-    // been verified and stores them in Android Preferences.
-    customtabs::OriginVerifier::ClearBrowsingData();
-#endif
 
     heavy_ad_intervention::HeavyAdService* heavy_ad_service =
         HeavyAdServiceFactory::GetForBrowserContext(profile_);

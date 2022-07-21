@@ -563,9 +563,6 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
             android:exported="false" />
 
-        <service android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
-            android:exported="true"
-            tools:ignore="ExportedService" />
         <service android:name="androidx.browser.customtabs.PostMessageService" />
 
         <!-- Crash reporting services. -->

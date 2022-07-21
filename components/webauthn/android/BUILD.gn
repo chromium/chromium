@@ -34,7 +34,6 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
-    "//components/externalauth/android:java",
     "//components/payments/content/android:feature_list_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",

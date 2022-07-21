@@ -53,7 +53,6 @@ android_library("java") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/embedder_support/android:util_java",
-    "//components/externalauth/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/image_fetcher:java",

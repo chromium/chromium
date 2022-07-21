@@ -86,10 +86,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="tools/android/audio_focus_grabber/java/res/layout/audio_focus_grabber_activity.xml"/>
   </issue>
   <issue id="Overdraw" severity="ignore"/>
-  <issue id="PackageManagerGetSignatures">
-    <ignore regexp="chrome/browser/android/browserservices/verification/java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculator.java"/>
-    <ignore regexp="chrome/android/webapk/libs/client/src/org/chromium/webapk/lib/client/WebApkValidator.java"/>
-  </issue>
   <issue id="PluralsCandidate">
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-en-rGB/android_chrome_strings.xml"/>
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values/android_chrome_strings.xml"/>

@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -32,7 +31,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -64,7 +62,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
     private final @ContextMenuMode int mMode;
-    private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
     private final @Nullable Origin mInitiatingOrigin;
     private @Nullable UkmRecorder.Bridge mUkmRecorderBridge;
@@ -264,18 +261,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param itemDelegate The {@link ContextMenuItemDelegate} that will be notified with actions
      *                 to perform when menu items are selected.
      * @param mode Defines the context menu mode
-     * @param externalAuthUtils {@link ExternalAuthUtils} instance.
      * @param context The {@link Context} used to retrieve the strings.
      * @param params The {@link ContextMenuParams} to populate the menu items.
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} used to interact with native.
      */
     public ChromeContextMenuPopulator(ContextMenuItemDelegate itemDelegate,
-            @ContextMenuMode int mode,
-            ExternalAuthUtils externalAuthUtils, Context context, ContextMenuParams params,
+            @ContextMenuMode int mode, Context context, ContextMenuParams params,
             ContextMenuNativeDelegate nativeDelegate) {
         mItemDelegate = itemDelegate;
         mMode = mode;
-        mExternalAuthUtils = externalAuthUtils;
         mContext = context;
         mParams = params;
         if (itemDelegate.getWebContents() != null
@@ -333,8 +327,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
                 }
-                if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
-                        && EphemeralTabCoordinator.isSupported()) {
+                if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
                     mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
                     linkGroup.add(
                             createListItem(Item.OPEN_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
@@ -392,8 +385,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (mMode == ContextMenuMode.NORMAL) {
                 imageGroup.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
             }
-            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
-                    && EphemeralTabCoordinator.isSupported()) {
+            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
                 if (mShowEphemeralTabNewLabel == null) {
                     mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
                 }
