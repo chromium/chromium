@@ -213,8 +213,14 @@ const base::Feature kVulkan {
 #endif
 };
 
-const base::Feature kEnableDrDc{"EnableDrDc",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableDrDc {
+  "EnableDrDc",
+#if BUILDFLAG(IS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 const base::Feature kForceGpuMainThreadToNormalPriorityDrDc{
     "ForceGpuMainThreadToNormalPriorityDrDc",
