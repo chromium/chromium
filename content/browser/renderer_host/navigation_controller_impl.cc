@@ -354,7 +354,8 @@ blink::mojom::NavigationType GetNavigationType(
     const FrameNavigationEntry& frame_entry,
     bool has_pending_cross_document_commit,
     bool is_currently_error_page,
-    bool is_same_document_history_load) {
+    bool is_same_document_history_load,
+    bool is_unfenced_top_navigation) {
   // Reload navigations
   switch (reload_type) {
     case ReloadType::NORMAL:
@@ -381,7 +382,11 @@ blink::mojom::NavigationType GetNavigationType(
       // If the current document is an error page, we should always treat it as
       // a different-document navigation so that we'll attempt to load the
       // document we're navigating to (and not stay in the current error page).
-      !is_currently_error_page;
+      !is_currently_error_page &&
+      // If the navigation is to _unfencedTop (i.e. escapes a fenced frame),
+      // same-document navigations should be disabled because we want to force
+      // the creation of a new browsing context group.
+      !is_unfenced_top_navigation;
 
   // History navigations.
   if (frame_entry.page_state().IsValid()) {
@@ -2633,7 +2638,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     bool is_form_submission,
     const absl::optional<blink::Impression>& impression,
     base::TimeTicks navigation_start_time,
-    bool is_embedder_initiated_fenced_frame_navigation) {
+    bool is_embedder_initiated_fenced_frame_navigation,
+    bool is_unfenced_top_navigation) {
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
 
@@ -2769,7 +2775,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           node, params, override_user_agent, should_replace_current_entry,
           false /* has_user_gesture */, std::move(source_location),
           ReloadType::NONE, entry.get(), frame_entry.get(),
-          navigation_start_time, is_embedder_initiated_fenced_frame_navigation);
+          navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
+          is_unfenced_top_navigation);
 
   if (!request)
     return;
@@ -3659,7 +3666,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     NavigationEntryImpl* entry,
     FrameNavigationEntry* frame_entry,
     base::TimeTicks navigation_start_time,
-    bool is_embedder_initiated_fenced_frame_navigation) {
+    bool is_embedder_initiated_fenced_frame_navigation,
+    bool is_unfenced_top_navigation) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
   DCHECK(frame_entry);
   // All renderer-initiated navigations must have an initiator_origin.
@@ -3735,7 +3743,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       /*old_url=*/node->current_url(),
       /*new_url=*/url_to_load, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
-      /*is_same_document_history_load=*/false);
+      /*is_same_document_history_load=*/false, is_unfenced_top_navigation);
 
   // Create the NavigationParams based on |params|.
 
@@ -3912,7 +3920,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       /*old_url=*/frame_tree_node->current_url(),
       /*new_url=*/dest_url, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
-      is_same_document_history_load);
+      is_same_document_history_load,
+      /*is_unfenced_top_navigation=*/false);
 
   // A form submission may happen here if the navigation is a
   // back/forward/reload navigation that does a form resubmission.

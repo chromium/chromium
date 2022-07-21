@@ -250,6 +250,30 @@ promise_test(async() => {
   await new_window.execute(() => {});
 }, '_unfencedTop :blob URL failure');
 
+// Test that fragment navigations out of a fenced frame using _unfencedTop
+// do not act as same-document navigations.
+promise_test(async() => {
+  // Create a new window.
+  const new_window = await createAndValidateWindow();
+
+  await new_window.execute(async () => {
+    // Save some state in the document.
+    window.foo = "foo";
+
+    // Navigate _unfencedTop using a fragment URL.
+    window.executor.suspend(() => {
+      window.fenced_frame.execute((parent_url) => {
+        const result = window.open(parent_url+'#foo', '_unfencedTop');
+      }, [location.href]);
+    });
+  });
+
+  // Observe that there is a new document (the old state is lost).
+  await new_window.execute(async () => {
+    assert_equals(window.foo, undefined);
+  });
+}, '_unfencedTop fragment navigation');
+
 async function click(frame) {
   var actions = new test_driver.Actions();
   await actions.pointerMove(0, 0, {origin: frame})
