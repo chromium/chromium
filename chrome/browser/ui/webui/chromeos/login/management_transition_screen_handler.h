@@ -5,36 +5,32 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MANAGEMENT_TRANSITION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MANAGEMENT_TRANSITION_SCREEN_HANDLER_H_
 
-#include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "chrome/browser/profiles/profile.h"
+#include "ash/components/arc/session/arc_management_transition.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "components/prefs/pref_change_registrar.h"
-
-namespace ash {
-class ManagementTransitionScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between ManagementTransitionScreen
 // and its WebUI representation.
-class ManagementTransitionScreenView {
+class ManagementTransitionScreenView
+    : public base::SupportsWeakPtr<ManagementTransitionScreenView> {
  public:
   // Renamed from "supervision-transition".
-  constexpr static StaticOobeScreenId kScreenId{"management-transition"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "management-transition", "ManagementTransitionScreen"};
 
   ManagementTransitionScreenView(const ManagementTransitionScreenView&) =
       delete;
   ManagementTransitionScreenView& operator=(
       const ManagementTransitionScreenView&) = delete;
 
-  virtual ~ManagementTransitionScreenView() {}
+  virtual ~ManagementTransitionScreenView() = default;
 
-  virtual void Bind(ash::ManagementTransitionScreen* screen) = 0;
-  virtual void Unbind() = 0;
-  virtual void Show() = 0;
-  virtual void Hide() = 0;
+  virtual void Show(arc::ArcManagementTransition arc_management_transition,
+                    std::string management_entity) = 0;
+
+  virtual void ShowError() = 0;
 
  protected:
   ManagementTransitionScreenView() = default;
@@ -58,46 +54,11 @@ class ManagementTransitionScreenHandler
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void RegisterMessages() override;
 
-  // ManagementTransitionScreenView:
-  void Bind(ash::ManagementTransitionScreen* screen) override;
-  void Unbind() override;
-  void Show() override;
-  void Hide() override;
+  void Show(arc::ArcManagementTransition arc_management_transition,
+            std::string management_entity) override;
 
-  base::OneShotTimer* GetTimerForTesting();
-
- private:
-  // BaseScreenHandler:
-  void InitializeDeprecated() override;
-
-  // Shows a given step.
-  void ShowStep(const char* step);
-
-  // Called when the max wait timeout is reached.
-  void OnManagementTransitionFailed();
-
-  void OnManagementTransitionFinished();
-
-  ash::ManagementTransitionScreen* screen_ = nullptr;
-
-  // Whether the screen should be shown right after initialization.
-  bool show_on_init_ = false;
-
-  // Whether screen timed out waiting for transition to occur and displayed the
-  // error screen.
-  bool timed_out_ = false;
-
-  base::TimeTicks screen_shown_time_;
-
-  // Timer used to exit the page when timeout reaches.
-  base::OneShotTimer timer_;
-
-  // Listens to pref changes.
-  PrefChangeRegistrar registrar_;
-
-  base::WeakPtrFactory<ManagementTransitionScreenHandler> weak_factory_{this};
+  void ShowError() override;
 };
 
 }  // namespace chromeos

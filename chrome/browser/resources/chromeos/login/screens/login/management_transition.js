@@ -148,7 +148,7 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
    * @private
    */
   onAcceptAndContinue_() {
-    chrome.send('finishManagementTransition');
+    this.userActed(['finish-management-transition']);
   }
 }
 

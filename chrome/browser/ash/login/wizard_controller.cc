@@ -673,7 +673,7 @@ WizardController::CreateScreens() {
   append(std::make_unique<EncryptionMigrationScreen>(
       oobe_ui->GetView<EncryptionMigrationScreenHandler>()));
   append(std::make_unique<ManagementTransitionScreen>(
-      oobe_ui->GetView<ManagementTransitionScreenHandler>(),
+      oobe_ui->GetView<ManagementTransitionScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnManagementTransitionScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateRequiredScreen>(

@@ -18,10 +18,12 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/screens/management_transition_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
@@ -66,6 +68,11 @@ class ManagementTransitionScreenTest
   ManagementTransitionScreenTest() {
     feature_list_.InitAndEnableFeature(
         arc::kEnableUnmanagedToManagedTransitionFeature);
+  }
+
+  ManagementTransitionScreen* GetScreen() {
+    return WizardController::default_controller()
+        ->GetScreen<ManagementTransitionScreen>();
   }
 
   ~ManagementTransitionScreenTest() override = default;
@@ -185,11 +192,7 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
-  base::OneShotTimer* timer =
-      LoginDisplayHost::default_host()
-          ->GetOobeUI()
-          ->GetHandler<ManagementTransitionScreenHandler>()
-          ->GetTimerForTesting();
+  base::OneShotTimer* timer = GetScreen()->GetTimerForTesting();
   ASSERT_TRUE(timer->IsRunning());
   timer->FireNow();
 
