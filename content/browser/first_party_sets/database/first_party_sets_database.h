@@ -60,18 +60,20 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FirstPartySetsDatabase& operator=(const FirstPartySetsDatabase&&) = delete;
   ~FirstPartySetsDatabase();
 
-  // Stores the `sites` to be cleared into database, and returns true on
+  // Stores the `sites` into sites_to_clear table, and returns true on
   // success.
   [[nodiscard]] bool InsertSitesToClear(
       const std::vector<net::SchemefulSite>& sites);
 
-  // Stores the `profile` into database, and returns true on success.
-  [[nodiscard]] bool InsertProfileCleared(const std::string& profile);
+  // Stores the `browser_context_id` that has performed clearing into
+  // browser_contexts_cleared table, and returns true on success.
+  [[nodiscard]] bool InsertBrowserContextCleared(
+      const std::string& browser_context_id);
 
-  // Gets the list of sites to clear for `profile`. Returns an empty vector if
-  // `profile` does not exist in the database before.
+  // Gets the list of sites to clear for the `browser_context_id`. Returns an
+  // empty vector if `browser_context_id` does not exist in the database before.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
-      const std::string& profile);
+      const std::string& browser_context_id);
 
  private:
   // Called at the start of each public operation, and initializes the database
@@ -95,8 +97,8 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // never be negative.
   void IncreaseRunCount() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Returns whether an entry exists for `profile`.
-  [[nodiscard]] bool HasEntryFor(const std::string& profile) const
+  // Returns whether an entry exists for the `browser_context_id`.
+  [[nodiscard]] bool HasEntryFor(const std::string& browser_context_id) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes the database and returns whether the operation was successful.

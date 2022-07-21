@@ -66,9 +66,10 @@ class FirstPartySetsDatabaseTest : public testing::Test {
     return size;
   }
 
-  size_t CountProfilesClearedEntries(sql::Database* db) {
+  size_t CountBrowserContextsClearedEntries(sql::Database* db) {
     size_t size = 0;
-    EXPECT_TRUE(sql::test::CountTableRows(db, "profiles_cleared", &size));
+    EXPECT_TRUE(
+        sql::test::CountTableRows(db, "browser_contexts_cleared", &size));
     return size;
   }
 
@@ -105,18 +106,18 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // Create a db handle to the existing db file to verify schemas.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  // [sites_to_clear], [profiles_cleared], and [meta].
+  // [sites_to_clear], [browser_contexts_cleared], and [meta].
   EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
   EXPECT_EQ(1, VersionFromMetaTable(db));
-  // [idx_marked_at_run_sites], [idx_cleared_at_run_profiles], and
+  // [idx_marked_at_run_sites], [idx_cleared_at_run_browser_contexts], and
   // [sqlite_autoindex_meta_1].
   EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
   // `site`, `marked_at_run`.
   EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "sites_to_clear"));
-  // `profile`, `cleared_at_run`.
-  EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "profiles_cleared"));
+  // `browser_context_id`, `cleared_at_run`.
+  EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "browser_contexts_cleared"));
   EXPECT_EQ(0u, CountSitesToClearEntries(&db));
-  EXPECT_EQ(0u, CountProfilesClearedEntries(&db));
+  EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
 }
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
@@ -134,7 +135,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
   EXPECT_EQ(1, VersionFromMetaTable(db));
   EXPECT_EQ(1u, CountSitesToClearEntries(&db));
-  EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+  EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kSuccess,
@@ -158,7 +159,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_TooOld_Fail) {
   EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
   EXPECT_EQ(0, VersionFromMetaTable(db));
   EXPECT_EQ(1u, CountSitesToClearEntries(&db));
-  EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+  EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kTooOld, 1);
@@ -181,7 +182,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_TooNew_Fail) {
   EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
   EXPECT_EQ(2, VersionFromMetaTable(db));
   EXPECT_EQ(1u, CountSitesToClearEntries(&db));
-  EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+  EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
                                 FirstPartySetsDatabase::InitStatus::kTooNew, 1);
@@ -290,29 +291,30 @@ TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_PreExistingDB) {
   EXPECT_FALSE(s.Step());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, InsertProfileCleared_NoPreExistingDB) {
-  const std::string profile = "p";
+TEST_F(FirstPartySetsDatabaseTest,
+       InsertBrowserContextCleared_NoPreExistingDB) {
+  const std::string browser_context_id = "p";
   int64_t expected_run_count = 1;
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->InsertProfileCleared(profile));
+  EXPECT_TRUE(db()->InsertBrowserContextCleared(browser_context_id));
   CloseDatabase();
 
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+  EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
   const char kSelectSql[] =
-      "SELECT profile, cleared_at_run FROM profiles_cleared";
+      "SELECT browser_context_id, cleared_at_run FROM browser_contexts_cleared";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
   EXPECT_TRUE(s.Step());
-  EXPECT_EQ(profile, s.ColumnString(0));
+  EXPECT_EQ(browser_context_id, s.ColumnString(0));
   EXPECT_EQ(expected_run_count, s.ColumnInt64(1));
   EXPECT_FALSE(s.Step());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, InsertProfileCleared_PreExistingDB) {
+TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
@@ -322,10 +324,11 @@ TEST_F(FirstPartySetsDatabaseTest, InsertProfileCleared_PreExistingDB) {
     sql::Database db;
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
-    EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
     const char kSelectSql[] =
-        "SELECT profile, cleared_at_run FROM profiles_cleared";
+        "SELECT browser_context_id, cleared_at_run FROM "
+        "browser_contexts_cleared";
     sql::Statement s(db.GetUniqueStatement(kSelectSql));
     EXPECT_TRUE(s.Step());
     EXPECT_EQ("p", s.ColumnString(0));
@@ -333,36 +336,35 @@ TEST_F(FirstPartySetsDatabaseTest, InsertProfileCleared_PreExistingDB) {
     pre_run_count = s.ColumnInt64(1);
   }
 
-  std::string profile = "p1";
+  std::string browser_context_id = "p1";
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->InsertProfileCleared(profile));
+  EXPECT_TRUE(db()->InsertBrowserContextCleared(browser_context_id));
   CloseDatabase();
 
   // Verify the inserted data.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_EQ(2u, CountProfilesClearedEntries(&db));
+  EXPECT_EQ(2u, CountBrowserContextsClearedEntries(&db));
 
   const char kSelectSql[] =
-      "SELECT profile FROM profiles_cleared "
+      "SELECT browser_context_id FROM browser_contexts_cleared "
       "WHERE cleared_at_run>?";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
   s.BindInt64(0, pre_run_count);
 
   EXPECT_TRUE(s.Step());
-  EXPECT_EQ(profile, s.ColumnString(0));
+  EXPECT_EQ(browser_context_id, s.ColumnString(0));
   EXPECT_FALSE(s.Step());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_EQ(std::vector<net::SchemefulSite>(),
-            db()->FetchSitesToClear("profile"));
+  EXPECT_EQ(std::vector<net::SchemefulSite>(), db()->FetchSitesToClear("id"));
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_ProfileNotExist) {
+TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_BrowserContextNotExist) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
@@ -372,9 +374,10 @@ TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_ProfileNotExist) {
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
     EXPECT_EQ(1u, CountSitesToClearEntries(&db));
-    EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
-    const char kSelectSql[] = "SELECT profile FROM profiles_cleared";
+    const char kSelectSql[] =
+        "SELECT browser_context_id FROM browser_contexts_cleared";
     sql::Statement s(db.GetUniqueStatement(kSelectSql));
     EXPECT_TRUE(s.Step());
     EXPECT_EQ("p", s.ColumnString(0));
@@ -395,9 +398,10 @@ TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear) {
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
     EXPECT_EQ(1u, CountSitesToClearEntries(&db));
-    EXPECT_EQ(1u, CountProfilesClearedEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
-    const char kSelectSql[] = "SELECT profile FROM profiles_cleared";
+    const char kSelectSql[] =
+        "SELECT browser_context_id FROM browser_contexts_cleared";
     sql::Statement s(db.GetUniqueStatement(kSelectSql));
     EXPECT_TRUE(s.Step());
     EXPECT_EQ("p", s.ColumnString(0));

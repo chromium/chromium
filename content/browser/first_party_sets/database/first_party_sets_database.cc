@@ -48,18 +48,18 @@ const char kRunCountKey[] = "run_count";
   if (!db.Execute(kMarkedAtRunSitesSql))
     return false;
 
-  static constexpr char kProfilesClearedSql[] =
-      "CREATE TABLE IF NOT EXISTS profiles_cleared("
-      "profile TEXT PRIMARY KEY NOT NULL,"
+  static constexpr char kBrowserContextsClearedSql[] =
+      "CREATE TABLE IF NOT EXISTS browser_contexts_cleared("
+      "browser_context_id TEXT PRIMARY KEY NOT NULL,"
       "cleared_at_run INTEGER NOT NULL"
       ")WITHOUT ROWID";
-  if (!db.Execute(kProfilesClearedSql))
+  if (!db.Execute(kBrowserContextsClearedSql))
     return false;
 
-  static constexpr char kClearedAtRunProfilesSql[] =
-      "CREATE INDEX IF NOT EXISTS idx_cleared_at_run_profiles "
-      "ON profiles_cleared(cleared_at_run)";
-  if (!db.Execute(kClearedAtRunProfilesSql))
+  static constexpr char kClearedAtRunBrowserContextsSql[] =
+      "CREATE INDEX IF NOT EXISTS idx_cleared_at_run_browser_contexts "
+      "ON browser_contexts_cleared(cleared_at_run)";
+  if (!db.Execute(kClearedAtRunBrowserContextsSql))
     return false;
 
   return true;
@@ -94,8 +94,10 @@ bool FirstPartySetsDatabase::InsertSitesToClear(
   for (const auto& site : sites) {
     DCHECK(!site.opaque());
     static constexpr char kInsertSitesToClearSql[] =
+        // clang-format off
         "INSERT OR REPLACE INTO sites_to_clear(site,marked_at_run) "
         "VALUES(?,?)";
+    // clang-format on
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertSitesToClearSql));
     statement.BindString(0, site.Serialize());
@@ -107,34 +109,37 @@ bool FirstPartySetsDatabase::InsertSitesToClear(
   return transaction.Commit();
 }
 
-bool FirstPartySetsDatabase::InsertProfileCleared(const std::string& profile) {
+bool FirstPartySetsDatabase::InsertBrowserContextCleared(
+    const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!profile.empty());
+  DCHECK(!browser_context_id.empty());
 
   if (!LazyInit())
     return false;
 
-  static constexpr char kInsertProfilesClearedSql[] =
-      "INSERT OR REPLACE INTO profiles_cleared(profile,cleared_at_run) "
+  static constexpr char kInsertBrowserContextsClearedSql[] =
+      // clang-format off
+      "INSERT OR REPLACE INTO browser_contexts_cleared(browser_context_id,cleared_at_run) "
       "VALUES(?,?)";
+  // clang-format on
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertProfilesClearedSql));
-  statement.BindString(0, profile);
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertBrowserContextsClearedSql));
+  statement.BindString(0, browser_context_id);
   statement.BindInt64(1, run_count_);
 
   return statement.Run();
 }
 
 std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
-    const std::string& profile) {
+    const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!profile.empty());
+  DCHECK(!browser_context_id.empty());
 
   if (!LazyInit())
     return {};
 
-  // No-op if the `profile` does not exist before.
-  if (!HasEntryFor(profile))
+  // No-op if the `browser_context_id` does not exist before.
+  if (!HasEntryFor(browser_context_id))
     return {};
 
   std::vector<net::SchemefulSite> results;
@@ -142,13 +147,13 @@ std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
       // clang-format off
       "SELECT site FROM sites_to_clear "
       "WHERE marked_at_run>"
-        "(SELECT cleared_at_run FROM profiles_cleared "
-         "WHERE profile=?)";
+        "(SELECT cleared_at_run FROM browser_contexts_cleared "
+         "WHERE browser_context_id=?)";
   // clang-format on
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectSitesToClearSql));
-  statement.BindString(0, profile);
+  statement.BindString(0, browser_context_id);
 
   while (statement.Step()) {
     absl::optional<net::SchemefulSite> site =
@@ -299,18 +304,19 @@ void FirstPartySetsDatabase::IncreaseRunCount() {
   }
 }
 
-bool FirstPartySetsDatabase::HasEntryFor(const std::string& profile) const {
+bool FirstPartySetsDatabase::HasEntryFor(
+    const std::string& browser_context_id) const {
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
-  DCHECK(!profile.empty());
+  DCHECK(!browser_context_id.empty());
 
-  static constexpr char kSelectProfileSql[] =
-      "SELECT 1 FROM profiles_cleared "
-      "WHERE profile=?"
+  static constexpr char kSelectBrowserContextSql[] =
+      "SELECT 1 FROM browser_contexts_cleared "
+      "WHERE browser_context_id=?"
       "LIMIT 1";
 
   sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSelectProfileSql));
-  statement.BindString(0, profile);
+      db_->GetCachedStatement(SQL_FROM_HERE, kSelectBrowserContextSql));
+  statement.BindString(0, browser_context_id);
 
   return statement.Step();
 }
