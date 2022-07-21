@@ -108,7 +108,8 @@ class BluetoothGattDescriptorClientImpl
 
     // Append empty option dict
     dbus::MessageWriter writer(&method_call);
-    dbus::AppendValueData(&writer, base::Value::Dict());
+    base::DictionaryValue dict;
+    dbus::AppendValueData(&writer, dict);
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -138,7 +139,8 @@ class BluetoothGattDescriptorClientImpl
     writer.AppendArrayOfBytes(value.data(), value.size());
 
     // Append empty option dict
-    dbus::AppendValueData(&writer, base::Value::Dict());
+    base::DictionaryValue dict;
+    dbus::AppendValueData(&writer, dict);
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

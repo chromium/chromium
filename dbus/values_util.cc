@@ -68,28 +68,26 @@ bool PopDictionaryEntries(MessageReader* reader,
 }
 
 // Gets the D-Bus type signature for the value.
-std::string GetTypeSignature(base::ValueView value) {
-  struct Visitor {
-    std::string operator()(absl::monostate) {
-      DLOG(ERROR) << "Unexpected type " << base::Value::Type::NONE;
+std::string GetTypeSignature(const base::Value& value) {
+  switch (value.type()) {
+    case base::Value::Type::BOOLEAN:
+      return "b";
+    case base::Value::Type::INTEGER:
+      return "i";
+    case base::Value::Type::DOUBLE:
+      return "d";
+    case base::Value::Type::STRING:
+      return "s";
+    case base::Value::Type::BINARY:
+      return "ay";
+    case base::Value::Type::DICTIONARY:
+      return "a{sv}";
+    case base::Value::Type::LIST:
+      return "av";
+    default:
+      DLOG(ERROR) << "Unexpected type " << value.type();
       return std::string();
-    }
-
-    std::string operator()(bool) { return "b"; }
-
-    std::string operator()(int) { return "i"; }
-
-    std::string operator()(double) { return "d"; }
-
-    std::string operator()(base::StringPiece) { return "s"; }
-
-    std::string operator()(const base::Value::BlobStorage&) { return "ay"; }
-
-    std::string operator()(const base::Value::Dict&) { return "a{sv}"; }
-
-    std::string operator()(const base::Value::List&) { return "av"; }
-  };
-  return value.Visit(Visitor());
+  }
 }
 
 }  // namespace
@@ -219,78 +217,44 @@ base::Value PopDataAsValue(MessageReader* reader) {
   return result;
 }
 
-void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
-  struct Visitor {
-    MessageWriter* writer;
-
-    void operator()(absl::monostate) {
-      DLOG(ERROR) << "Unexpected type: " << base::Value::Type::NONE;
+void AppendBasicTypeValueData(MessageWriter* writer, const base::Value& value) {
+  switch (value.type()) {
+    case base::Value::Type::BOOLEAN: {
+      writer->AppendBool(value.GetBool());
+      break;
     }
-
-    void operator()(bool value) { writer->AppendBool(value); }
-
-    void operator()(int value) { writer->AppendInt32(value); }
-
-    void operator()(double value) { writer->AppendDouble(value); }
-
-    void operator()(base::StringPiece value) { writer->AppendString(value); }
-
-    void operator()(const base::Value::BlobStorage&) {
-      DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;
+    case base::Value::Type::INTEGER: {
+      writer->AppendInt32(value.GetInt());
+      break;
     }
-
-    void operator()(const base::Value::Dict&) {
-      DLOG(ERROR) << "Unexpected type: " << base::Value::Type::DICT;
+    case base::Value::Type::DOUBLE: {
+      writer->AppendDouble(value.GetDouble());
+      break;
     }
-
-    void operator()(const base::Value::List&) {
-      DLOG(ERROR) << "Unexpected type: " << base::Value::Type::LIST;
+    case base::Value::Type::STRING: {
+      writer->AppendString(value.GetString());
+      break;
     }
-  };
-
-  value.Visit(Visitor{.writer = writer});
+    default:
+      DLOG(ERROR) << "Unexpected type " << value.type();
+      break;
+  }
 }
 
 void AppendBasicTypeValueDataAsVariant(MessageWriter* writer,
-                                       base::ValueView value) {
+                                       const base::Value& value) {
   MessageWriter sub_writer(nullptr);
   writer->OpenVariant(GetTypeSignature(value), &sub_writer);
   AppendBasicTypeValueData(&sub_writer, value);
   writer->CloseContainer(&sub_writer);
 }
 
-void AppendValueData(MessageWriter* writer, base::ValueView value) {
-  struct Visitor {
-    MessageWriter* writer;
-
-    void operator()(absl::monostate) {
-      DLOG(ERROR) << "Unexpected type: " << base::Value::Type::NONE;
-    }
-
-    void operator()(bool value) {
-      return AppendBasicTypeValueData(writer, value);
-    }
-
-    void operator()(int value) {
-      return AppendBasicTypeValueData(writer, value);
-    }
-
-    void operator()(double value) {
-      return AppendBasicTypeValueData(writer, value);
-    }
-
-    void operator()(base::StringPiece value) {
-      return AppendBasicTypeValueData(writer, value);
-    }
-
-    void operator()(const base::Value::BlobStorage& value) {
-      DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;
-    }
-
-    void operator()(const base::Value::Dict& value) {
+void AppendValueData(MessageWriter* writer, const base::Value& value) {
+  switch (value.type()) {
+    case base::Value::Type::DICTIONARY: {
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("{sv}", &array_writer);
-      for (auto item : value) {
+      for (auto item : value.DictItems()) {
         dbus::MessageWriter dict_entry_writer(nullptr);
         array_writer.OpenDictEntry(&dict_entry_writer);
         dict_entry_writer.AppendString(item.first);
@@ -298,22 +262,29 @@ void AppendValueData(MessageWriter* writer, base::ValueView value) {
         array_writer.CloseContainer(&dict_entry_writer);
       }
       writer->CloseContainer(&array_writer);
+      break;
     }
-
-    void operator()(const base::Value::List& value) {
+    case base::Value::Type::LIST: {
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("v", &array_writer);
-      for (const auto& value_in_list : value) {
+      for (const auto& value_in_list : value.GetListDeprecated()) {
         AppendValueDataAsVariant(&array_writer, value_in_list);
       }
       writer->CloseContainer(&array_writer);
+      break;
     }
-  };
-
-  value.Visit(Visitor{.writer = writer});
+    case base::Value::Type::BOOLEAN:
+    case base::Value::Type::INTEGER:
+    case base::Value::Type::DOUBLE:
+    case base::Value::Type::STRING:
+      AppendBasicTypeValueData(writer, value);
+      break;
+    default:
+      DLOG(ERROR) << "Unexpected type: " << value.type();
+  }
 }
 
-void AppendValueDataAsVariant(MessageWriter* writer, base::ValueView value) {
+void AppendValueDataAsVariant(MessageWriter* writer, const base::Value& value) {
   MessageWriter variant_writer(nullptr);
   writer->OpenVariant(GetTypeSignature(value), &variant_writer);
   AppendValueData(&variant_writer, value);
