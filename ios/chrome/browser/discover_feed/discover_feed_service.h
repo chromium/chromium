@@ -73,18 +73,16 @@ class DiscoverFeedService : public KeyedService {
   // Performs a background refresh for the feed. `completion` is called
   // after success, failure, or timeout. The BOOL argument indicates whether the
   // refresh was successful or a failure.
-  // TODO(crbug.com/1343695): Make this a pure virtual function.
-  virtual void PerformBackgroundRefreshes(ProceduralBlockWithBool completion);
+  virtual void PerformBackgroundRefreshes(
+      ProceduralBlockWithBool completion) = 0;
 
   // Stops the background refresh task and cleans up any temporary objects. This
   // is called by the OS when the task is taking too long.
-  // TODO(crbug.com/1343695): Make this a pure virtual function.
-  virtual void HandleBackgroundRefreshTaskExpiration();
+  virtual void HandleBackgroundRefreshTaskExpiration() = 0;
 
   // The earliest datetime at which the next background refresh should be
   // scheduled.
-  // TODO(crbug.com/1343695): Make this a pure virtual function.
-  virtual NSDate* GetEarliestBackgroundRefreshBeginDate();
+  virtual NSDate* GetEarliestBackgroundRefreshBeginDate() = 0;
 
   // Returns whether the Following feed model has unseen content.
   virtual BOOL GetFollowingFeedHasUnseenContent() = 0;
