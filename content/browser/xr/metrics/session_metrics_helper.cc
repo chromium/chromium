@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/xr/metrics/session_timer.h"
@@ -34,18 +37,18 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
   SessionMetricsHelperData() = delete;
 
   explicit SessionMetricsHelperData(
-      SessionMetricsHelper* session_metrics_helper)
-      : session_metrics_helper_(session_metrics_helper) {}
+      std::unique_ptr<SessionMetricsHelper> session_metrics_helper)
+      : session_metrics_helper_(std::move(session_metrics_helper)) {}
 
   SessionMetricsHelperData(const SessionMetricsHelperData&) = delete;
   SessionMetricsHelperData& operator=(const SessionMetricsHelperData&) = delete;
 
-  ~SessionMetricsHelperData() override { delete session_metrics_helper_; }
+  ~SessionMetricsHelperData() override = default;
 
-  SessionMetricsHelper* get() const { return session_metrics_helper_; }
+  SessionMetricsHelper* get() const { return session_metrics_helper_.get(); }
 
  private:
-  raw_ptr<SessionMetricsHelper, DanglingUntriaged> session_metrics_helper_;
+  std::unique_ptr<SessionMetricsHelper> session_metrics_helper_;
 };
 
 // Helper method to log out both the mode and the initially requested features
@@ -83,7 +86,12 @@ SessionMetricsHelper* SessionMetricsHelper::CreateForWebContents(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // This is not leaked as the SessionMetricsHelperData will clean it up.
-  return new SessionMetricsHelper(contents);
+  std::unique_ptr<SessionMetricsHelper> helper =
+      base::WrapUnique(new SessionMetricsHelper(contents));
+  contents->SetUserData(
+      kSessionMetricsHelperDataKey,
+      std::make_unique<SessionMetricsHelperData>(std::move(helper)));
+  return FromWebContents(contents);
 }
 
 SessionMetricsHelper::SessionMetricsHelper(content::WebContents* contents) {
@@ -94,8 +102,6 @@ SessionMetricsHelper::SessionMetricsHelper(content::WebContents* contents) {
   num_videos_playing_ = contents->GetCurrentlyPlayingVideoCount();
 
   Observe(contents);
-  contents->SetUserData(kSessionMetricsHelperDataKey,
-                        std::make_unique<SessionMetricsHelperData>(this));
 }
 
 SessionMetricsHelper::~SessionMetricsHelper() {
