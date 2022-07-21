@@ -65,7 +65,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace metrics {
@@ -173,7 +173,6 @@ std::wstring GetRegistryBackupKey() {
 }
 
 }  // namespace
-
 
 class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
     : public metrics::EnabledStateProvider {
@@ -303,9 +302,9 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     std::string client_id;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Read metrics service client id from ash chrome if it's present.
-    auto* init_params = chromeos::BrowserInitParams::Get();
-    if (init_params->metrics_service_client_id.has_value())
-      client_id = init_params->metrics_service_client_id.value();
+    auto* init_params = chromeos::BrowserParamsProxy::Get();
+    if (init_params->MetricsServiceClientId().has_value())
+      client_id = init_params->MetricsServiceClientId().value();
 #endif
 
     metrics_state_manager_ = metrics::MetricsStateManager::Create(

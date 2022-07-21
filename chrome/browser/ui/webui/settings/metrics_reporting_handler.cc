@@ -22,7 +22,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace settings {
@@ -73,7 +73,7 @@ std::unique_ptr<base::DictionaryValue>
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // To match the pre-Lacros settings UX, we show the managed icon if the ash
   // device-level metrics reporting pref is managed. https://crbug.com/1148604
-  bool managed = chromeos::BrowserInitParams::Get()->ash_metrics_managed ==
+  bool managed = chromeos::BrowserParamsProxy::Get()->AshMetricsManaged() ==
                  crosapi::mojom::MetricsReportingManaged::kManaged;
   dict->SetBoolKey("managed", managed);
 #else

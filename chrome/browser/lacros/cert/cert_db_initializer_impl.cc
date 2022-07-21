@@ -20,7 +20,7 @@
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/scoped_nss_types.h"
@@ -116,11 +116,11 @@ void CertDbInitializerImpl::InitializeForMainProfile() {
       base::BindOnce(&CertDbInitializerImpl::DidLoadSoftwareNssDb,
                      weak_factory_.GetWeakPtr()));
 
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
   base::FilePath nss_db_path;
-  if (init_params->default_paths->user_nss_database) {
-    nss_db_path = init_params->default_paths->user_nss_database.value();
+  if (init_params->DefaultPaths()->user_nss_database) {
+    nss_db_path = init_params->DefaultPaths()->user_nss_database.value();
   }
 
   content::GetIOThreadTaskRunner({})->PostTask(

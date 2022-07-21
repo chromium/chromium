@@ -96,6 +96,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_id/account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -203,7 +204,7 @@ void CreatePrefsFileInDirectory(const base::FilePath& directory_path) {
   ASSERT_TRUE(base::WriteFile(pref_path, data));
 }
 
-void CheckChromeVersion(Profile *profile, bool is_new) {
+void CheckChromeVersion(Profile* profile, bool is_new) {
   std::string created_by_version;
   if (is_new) {
     created_by_version = version_info::GetVersionNumber();
@@ -1071,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
-    EXPECT_EQ(chromeos::BrowserInitParams::Get()->session_type,
+    EXPECT_EQ(chromeos::BrowserParamsProxy::Get()->SessionType(),
               crosapi::mojom::SessionType::kPublicSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
@@ -1101,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
-    EXPECT_EQ(chromeos::BrowserInitParams::Get()->session_type,
+    EXPECT_EQ(chromeos::BrowserParamsProxy::Get()->SessionType(),
               crosapi::mojom::SessionType::kWebKioskSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
@@ -1134,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(
         crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
-    EXPECT_EQ(chromeos::BrowserInitParams::Get()->session_type,
+    EXPECT_EQ(chromeos::BrowserParamsProxy::Get()->SessionType(),
               crosapi::mojom::SessionType::kRegularSession);
     EXPECT_TRUE(profile->IsMainProfile());
 

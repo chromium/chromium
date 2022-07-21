@@ -36,7 +36,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -74,7 +74,7 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-                      chromeos::BrowserInitParams::Get()->session_type ==
+                      chromeos::BrowserParamsProxy::Get()->SessionType() ==
                               crosapi::mojom::SessionType::kPublicSession ||
                           profile->IsGuestSession()
 #else

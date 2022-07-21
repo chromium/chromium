@@ -8,11 +8,11 @@
 
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 
 DeviceSettingsLacros::DeviceSettingsLacros() {
   device_settings_ =
-      chromeos::BrowserInitParams::Get()->device_settings.Clone();
+      chromeos::BrowserParamsProxy::Get()->DeviceSettings().Clone();
 
   // DeviceSettingsService is not available yet at the time when this is
   // constructed. So, we post it as a task to be executed later.

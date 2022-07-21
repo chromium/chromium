@@ -47,6 +47,11 @@ BrowserInitParams::BrowserInitParams()
 }
 
 // static
+const crosapi::mojom::BrowserInitParams* BrowserInitParams::GetForTests() {
+  return Get();
+}
+
+// static
 const crosapi::mojom::BrowserInitParams* BrowserInitParams::Get() {
   return GetInstance()->init_params_.get();
 }

@@ -57,7 +57,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -190,12 +190,12 @@ std::string GetOSUsername() {
     return std::string();
   return user->GetAccountId().GetUserEmail();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (init_params && init_params->device_account) {
-    return init_params->device_account->raw_email;
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  if (init_params->DeviceAccount()) {
+    return init_params->DeviceAccount()->raw_email;
   }
-  // Fallback if init_params are missing.
+  // Fallback if init params are missing.
   struct passwd* creds = getpwuid(getuid());
   if (!creds || !creds->pw_name)
     return std::string();
@@ -231,11 +231,11 @@ std::string GetDeviceName() {
   return chromeos::system::StatisticsProvider::GetInstance()
       ->GetEnterpriseMachineID();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (init_params && init_params->device_properties &&
-      init_params->device_properties->serial_number.has_value()) {
-    return init_params->device_properties->serial_number.value();
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  if (init_params->DeviceProperties() &&
+      init_params->DeviceProperties()->serial_number.has_value()) {
+    return init_params->DeviceProperties()->serial_number.value();
   }
   return GetMachineName();
 #else

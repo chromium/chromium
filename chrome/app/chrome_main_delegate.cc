@@ -202,11 +202,11 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"    // nogncheck
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_paths.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"  // nogncheck
+#include "chromeos/startup/browser_params_proxy.h"  // nogncheck
 #include "media/base/media_switches.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
 #include "ui/base/ui_base_switches.h"
@@ -244,8 +244,7 @@ bool HasDeprecatedArguments(const std::wstring& command_line) {
 // If we try to access a path that is not currently available, we want the call
 // to fail rather than show an error dialog.
 void SuppressWindowsErrorDialogs() {
-  UINT new_flags = SEM_FAILCRITICALERRORS |
-                   SEM_NOOPENFILEERRORBOX;
+  UINT new_flags = SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX;
 
   // Preserve existing error mode.
   UINT existing_flags = SetErrorMode(new_flags);
@@ -528,8 +527,7 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
 
 #if !BUILDFLAG(IS_ANDROID)
 void InitLogging(const std::string& process_type) {
-  logging::OldFileDeletionState file_state =
-      logging::APPEND_TO_OLD_LOG_FILE;
+  logging::OldFileDeletionState file_state = logging::APPEND_TO_OLD_LOG_FILE;
   if (process_type.empty()) {
     file_state = logging::DELETE_OLD_LOG_FILE;
   }
@@ -581,8 +579,7 @@ ChromeMainDelegate::ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks) {
   RecordMainStartupMetrics(exe_entry_point_ticks);
 }
 
-ChromeMainDelegate::~ChromeMainDelegate() {
-}
+ChromeMainDelegate::~ChromeMainDelegate() = default;
 
 absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
@@ -630,13 +627,13 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // sequences later.
   lacros_service_ = std::make_unique<chromeos::LacrosService>();
   {
-    const crosapi::mojom::BrowserInitParams* init_params =
-        chromeos::BrowserInitParams::Get();
+    const chromeos::BrowserParamsProxy* init_params =
+        chromeos::BrowserParamsProxy::Get();
     // This lives here rather than in ChromeBrowserMainExtraPartsLacros due to
     // timing constraints. If we relocate it, then the flags aren't propagated
     // to the GPU process.
-    if (init_params->build_flags.has_value()) {
-      for (auto flag : init_params->build_flags.value()) {
+    if (init_params->BuildFlags().has_value()) {
+      for (auto flag : init_params->BuildFlags().value()) {
         switch (flag) {
           case crosapi::mojom::BuildFlag::kUnknown:
             break;
@@ -971,7 +968,9 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
        command_line.HasSwitch(ash::switches::kLoginUser)) ||
       command_line.HasSwitch(switches::kDiagnosticsRecovery)) {
     base::CommandLine interim_command_line(command_line.GetProgram());
-    const char* const kSwitchNames[] = {switches::kUserDataDir, };
+    const char* const kSwitchNames[] = {
+        switches::kUserDataDir,
+    };
     interim_command_line.CopySwitchesFrom(command_line, kSwitchNames,
                                           std::size(kSwitchNames));
     interim_command_line.AppendSwitch(switches::kDiagnostics);
@@ -1121,9 +1120,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // Initialize BrowserInitParams before generating and loading shared
     // resource file since the path required for the feature is set by
     // BrowserInitParams initialization.
-    const crosapi::mojom::BrowserInitParams* init_params =
-        chromeos::BrowserInitParams::Get();
-    chrome::SetLacrosDefaultPathsFromInitParams(init_params);
+    const chromeos::BrowserParamsProxy* init_params =
+        chromeos::BrowserParamsProxy::Get();
+    chrome::SetLacrosDefaultPathsFromInitParams(
+        init_params->DefaultPaths().get());
   }
 
   // Generate shared resource file only on browser process. This is to avoid
@@ -1234,16 +1234,16 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // Load secondary locale .pak file if it exists.
     pak_fd = global_descriptors->MaybeGet(kAndroidSecondaryLocalePakDescriptor);
     if (pak_fd != -1) {
-      pak_region = global_descriptors->GetRegion(
-          kAndroidSecondaryLocalePakDescriptor);
+      pak_region =
+          global_descriptors->GetRegion(kAndroidSecondaryLocalePakDescriptor);
       ui::ResourceBundle::GetSharedInstance()
           .LoadSecondaryLocaleDataWithPakFileRegion(base::File(pak_fd),
                                                     pak_region);
     }
 
     int extra_pak_keys[] = {
-      kAndroidChrome100PercentPakDescriptor,
-      kAndroidUIResourcesPakDescriptor,
+        kAndroidChrome100PercentPakDescriptor,
+        kAndroidUIResourcesPakDescriptor,
     };
     for (int extra_pak_key : extra_pak_keys) {
       pak_fd = global_descriptors->Get(extra_pak_key);
@@ -1288,8 +1288,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
         resources_pack_path, ui::kScaleFactorNone);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_ANDROID)
-    CHECK(!loaded_locale.empty()) << "Locale could not be found for " <<
-        locale;
+    CHECK(!loaded_locale.empty()) << "Locale could not be found for " << locale;
   }
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -1349,10 +1348,9 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
-  ChromeContentClient::SetNaClEntryFunctions(
-      nacl_plugin::PPP_GetInterface,
-      nacl_plugin::PPP_InitializeModule,
-      nacl_plugin::PPP_ShutdownModule);
+  ChromeContentClient::SetNaClEntryFunctions(nacl_plugin::PPP_GetInterface,
+                                             nacl_plugin::PPP_InitializeModule,
+                                             nacl_plugin::PPP_ShutdownModule);
 #endif
 }
 
@@ -1367,8 +1365,8 @@ absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     {switches::kRelauncherProcess, mac_relauncher::internal::RelauncherMain},
 #endif
 
-    // This entry is not needed on Linux, where the NaCl loader
-    // process is launched via nacl_helper instead.
+  // This entry is not needed on Linux, where the NaCl loader
+  // process is launched via nacl_helper instead.
 #if BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     {switches::kNaClLoaderProcess, NaClMain},
 #else
@@ -1405,7 +1403,7 @@ void ChromeMainDelegate::ZygoteStarting(
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
-    nacl::AddNaClZygoteForkDelegates(delegates);
+  nacl::AddNaClZygoteForkDelegates(delegates);
 #endif
 }
 

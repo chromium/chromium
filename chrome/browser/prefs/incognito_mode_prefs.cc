@@ -25,7 +25,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // static
@@ -81,9 +81,9 @@ bool IncognitoModePrefs::ShouldLaunchIncognito(
       GetAvailabilityInternal(prefs, DONT_CHECK_PARENTAL_CONTROLS) ==
           IncognitoModePrefs::Availability::kForced;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::BrowserInitParams::Get();
+  auto* init_params = chromeos::BrowserParamsProxy::Get();
   should_use_incognito |=
-      init_params->initial_browser_action ==
+      init_params->InitialBrowserAction() ==
       crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
 #endif
   return should_use_incognito &&

@@ -16,7 +16,7 @@
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -105,9 +105,9 @@ class ExtensionPreferenceApiLacrosBrowserTest
     // writing to the ash standalone browser prefstore.
     constexpr char kExtensionControlledPrefObserversCapability[] =
         "crbug/1334964";
-    return chromeos::BrowserInitParams::Get()->ash_capabilities.has_value() &&
+    return chromeos::BrowserParamsProxy::Get()->AshCapabilities().has_value() &&
            base::Contains(
-               chromeos::BrowserInitParams::Get()->ash_capabilities.value(),
+               chromeos::BrowserParamsProxy::Get()->AshCapabilities().value(),
                kExtensionControlledPrefObserversCapability);
   }
 

@@ -73,7 +73,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -137,7 +137,7 @@ ChromeBrowserPolicyConnector::GetDeviceSettings() const {
 
 bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserInitParams::Get()->is_device_enterprised_managed;
+  return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
 #else
   NOTREACHED() << "This method is only defined for ChromeOS";
   return false;

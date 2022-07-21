@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -38,7 +38,7 @@ bool ShouldHostedAppsRunInLacros() {
   if (g_enable_hosted_apps_in_lacros_for_testing)
     return true;
 
-  return chromeos::BrowserInitParams::Get()->publish_hosted_apps;
+  return chromeos::BrowserParamsProxy::Get()->PublishHostedApps();
 }
 
 void EnableHostedAppsInLacrosForTesting() {
@@ -50,7 +50,7 @@ void EnableHostedAppsInLacrosForTesting() {
 bool ShouldMuxExtensionIds() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lacros uses the value passed from ash.
-  return !chromeos::BrowserInitParams::Get()->do_not_mux_extension_app_ids;
+  return !chromeos::BrowserParamsProxy::Get()->DoNotMuxExtensionAppIds();
 #else
   bool keeplist_enabled =
       crosapi::browser_util::IsLacrosPrimaryBrowser() &&

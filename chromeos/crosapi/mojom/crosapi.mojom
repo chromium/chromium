@@ -841,7 +841,9 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-
+// NOTE: These parameters are accessed via the BrowserParamsProxy wrapper class.
+// Please update the methods of that class when adding new parameters here.
+//
 // Next version: 51
 // Next id: 51
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]

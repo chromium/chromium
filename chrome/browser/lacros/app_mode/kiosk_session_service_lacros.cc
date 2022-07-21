@@ -10,7 +10,7 @@
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace {
@@ -88,7 +88,7 @@ bool KioskSessionServiceLacros::RestartDevice(const std::string& description) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   CHECK(service);
 
-  if (IsKioskSession(chromeos::BrowserInitParams::Get()->session_type) &&
+  if (IsKioskSession(chromeos::BrowserParamsProxy::Get()->SessionType()) &&
       service->IsAvailable<crosapi::mojom::KioskSessionService>()) {
     int remote_version = service->GetInterfaceVersion(
         crosapi::mojom::KioskSessionService::Uuid_);

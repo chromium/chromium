@@ -58,7 +58,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -119,10 +119,10 @@ bool IsURLExemptFromAnalysis(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS)
 absl::optional<std::string> GetDeviceDMToken() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (init_params && init_params->device_properties) {
-    return init_params->device_properties->device_dm_token;
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  if (init_params->DeviceProperties()) {
+    return init_params->DeviceProperties()->device_dm_token;
   }
   return absl::nullopt;
 #else

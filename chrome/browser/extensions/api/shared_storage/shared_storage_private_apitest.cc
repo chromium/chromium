@@ -9,7 +9,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/containers/contains.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
@@ -18,7 +18,7 @@ using SharedStoragePrivateApiTest = ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateApiTest, Test) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto capabilities = chromeos::BrowserInitParams::Get()->ash_capabilities;
+  auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
   if (!capabilities || !base::Contains(*capabilities, "b/231890240")) {
     LOG(WARNING) << "Unsupported ash version for shared storage.";
     return;

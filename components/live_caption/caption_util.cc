@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -136,7 +136,7 @@ bool IsLiveCaptionFeatureSupported() {
   if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
     return false;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserInitParams::Get()->is_ondevice_speech_supported)
+  if (!chromeos::BrowserParamsProxy::Get()->IsOndeviceSpeechSupported())
     return false;
 #endif
 

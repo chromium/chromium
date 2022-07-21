@@ -48,7 +48,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace profiles {
@@ -277,7 +277,7 @@ bool IsPublicSession() {
   return chromeos::LoginState::IsInitialized() &&
          chromeos::LoginState::Get()->IsPublicSessionUser();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserInitParams::Get()->session_type ==
+  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kPublicSession;
 #else
   return false;
@@ -299,7 +299,7 @@ bool IsKioskSession() {
          chromeos::LoginState::Get()->IsKioskSession();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::SessionType session_type =
-      chromeos::BrowserInitParams::Get()->session_type;
+      chromeos::BrowserParamsProxy::Get()->SessionType();
   return session_type == crosapi::mojom::SessionType::kWebKioskSession ||
          session_type == crosapi::mojom::SessionType::kAppKioskSession;
 #else
@@ -312,7 +312,7 @@ bool IsChromeAppKioskSession() {
   return user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::SessionType session_type =
-      chromeos::BrowserInitParams::Get()->session_type;
+      chromeos::BrowserParamsProxy::Get()->SessionType();
   return session_type == crosapi::mojom::SessionType::kAppKioskSession;
 #else
   return false;
@@ -322,7 +322,7 @@ bool IsChromeAppKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool IsWebKioskSession() {
   crosapi::mojom::SessionType session_type =
-      chromeos::BrowserInitParams::Get()->session_type;
+      chromeos::BrowserParamsProxy::Get()->SessionType();
   return session_type == crosapi::mojom::SessionType::kWebKioskSession;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -331,7 +331,7 @@ bool IsWebKioskSession() {
 // Implemented to have the same logic as user_manager::User::HasGaiaAccount()
 bool SessionHasGaiaAccount() {
   crosapi::mojom::SessionType session_type =
-      chromeos::BrowserInitParams::Get()->session_type;
+      chromeos::BrowserParamsProxy::Get()->SessionType();
   return session_type == crosapi::mojom::SessionType::kRegularSession ||
          session_type == crosapi::mojom::SessionType::kChildSession;
 }

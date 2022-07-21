@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The `DeviceEphemeralUsersEnabled` is read through DeviceSettings provided
   // on startup.
-  auto init_params = chromeos::BrowserInitParams::Get()->Clone();
+  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
   init_params->device_settings->device_ephemeral_users_enabled =
       crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
   auto device_settings = init_params->device_settings.Clone();

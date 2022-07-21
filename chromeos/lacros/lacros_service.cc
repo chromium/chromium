@@ -90,7 +90,7 @@
 #include "chromeos/lacros/native_theme_cache.h"
 #include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/crash/core/common/crash_key.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -179,12 +179,12 @@ LacrosService::LacrosService()
       weak_sequenced_state_(sequenced_state_->GetWeakPtr()),
       observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
-  if (BrowserInitParams::Get()->idle_info) {
+  if (BrowserParamsProxy::Get()->IdleInfo()) {
     // Presence of initial |idle_info| indicates that ash-chrome can stream
     // idle info updates, so instantiate under Streaming mode, using
     // |idle_info| as initial cached values.
-    system_idle_cache_ =
-        std::make_unique<SystemIdleCache>(*BrowserInitParams::Get()->idle_info);
+    system_idle_cache_ = std::make_unique<SystemIdleCache>(
+        *BrowserParamsProxy::Get()->IdleInfo());
 
     // After construction finishes, start caching.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -195,10 +195,10 @@ LacrosService::LacrosService()
     system_idle_cache_ = std::make_unique<SystemIdleCache>();
   }
 
-  if (BrowserInitParams::Get()->native_theme_info) {
+  if (BrowserParamsProxy::Get()->NativeThemeInfo()) {
     // Start Lacros' native theme caching, since it is available in Ash.
     native_theme_cache_ = std::make_unique<NativeThemeCache>(
-        *BrowserInitParams::Get()->native_theme_info);
+        *BrowserParamsProxy::Get()->NativeThemeInfo());
 
     // After construction finishes, start caching.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -207,7 +207,8 @@ LacrosService::LacrosService()
   }
 
   static crash_reporter::CrashKeyString<32> session_type("session-type");
-  session_type.Set(SessionTypeToString(BrowserInitParams::Get()->session_type));
+  session_type.Set(
+      SessionTypeToString(BrowserParamsProxy::Get()->SessionType()));
 
   // Short term workaround: if --crosapi-mojo-platform-channel-handle is
   // available, close --mojo-platform-channel-handle, and remove it
@@ -386,7 +387,7 @@ LacrosService::LacrosService()
 
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
-  if (BrowserInitParams::Get()->use_cups_for_printing) {
+  if (BrowserParamsProxy::Get()->UseCupsForPrinting()) {
     ConstructRemote<
         crosapi::mojom::PrintingMetrics,
         &crosapi::mojom::Crosapi::BindPrintingMetrics,
@@ -723,12 +724,12 @@ void LacrosService::BindStableVideoDecoderFactory(
 }
 
 int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
-  if (BrowserInitParams::disable_crosapi_for_testing())
+  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting())
     return -1;
-  if (!BrowserInitParams::Get()->interface_versions)
+  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions())
     return -1;
   const base::flat_map<base::Token, uint32_t>& versions =
-      BrowserInitParams::Get()->interface_versions.value();
+      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
   auto it = versions.find(interface_uuid);
   if (it == versions.end())
     return -1;
@@ -736,10 +737,10 @@ int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
 }
 
 absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
-  if (BrowserInitParams::disable_crosapi_for_testing())
+  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting())
     return absl::nullopt;
   DCHECK(did_bind_receiver_);
-  return BrowserInitParams::Get()->crosapi_version;
+  return chromeos::BrowserParamsProxy::Get()->CrosapiVersion();
 }
 
 void LacrosService::StartSystemIdleCache() {

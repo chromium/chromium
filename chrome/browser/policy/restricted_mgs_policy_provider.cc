@@ -22,7 +22,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -35,11 +35,9 @@ bool IsDeviceRestrictedManagedGuestSessionEnabled() {
       &device_restricted_managed_guest_session_enabled);
   return device_restricted_managed_guest_session_enabled;
 #else
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (!init_params)
-    return false;
-  return init_params->device_settings
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  return init_params->DeviceSettings()
              ->device_restricted_managed_guest_session_enabled ==
          crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
 #endif

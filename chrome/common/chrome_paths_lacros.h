@@ -31,7 +31,7 @@ void SetLacrosDefaultPaths(
 
 // Sets the default paths from BrowserInitParams received from ash on startup.
 void SetLacrosDefaultPathsFromInitParams(
-    const crosapi::mojom::BrowserInitParams* init_params);
+    const crosapi::mojom::DefaultPaths* default_paths);
 
 // The drive fs mount point path is sent by ash-chrome, `drivefs` may be empty
 // in case drive is disabled in Ash. `SetDriveFsMountPointPath()` is triggered

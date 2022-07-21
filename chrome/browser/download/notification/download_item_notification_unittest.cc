@@ -45,6 +45,7 @@
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 using testing::_;
@@ -65,8 +66,8 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
   return ash::features::
       IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserInitParams::Get()
-      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
+  return chromeos::BrowserParamsProxy::Get()
+      ->IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 #else
   return false;
 #endif
@@ -126,8 +127,9 @@ class DownloadItemNotificationTest : public testing::Test {
     ON_CALL(*download_item_, GetDangerType())
         .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     ON_CALL(*download_item_, IsDone()).WillByDefault(Return(false));
-    ON_CALL(*download_item_, GetURL()).WillByDefault(ReturnRefOfCopy(
-        GURL("http://www.example.com/download.bin")));
+    ON_CALL(*download_item_, GetURL())
+        .WillByDefault(
+            ReturnRefOfCopy(GURL("http://www.example.com/download.bin")));
     content::DownloadItemUtils::AttachInfoForTesting(download_item_.get(),
                                                      profile_, nullptr);
   }

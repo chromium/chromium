@@ -5,7 +5,7 @@
 #include "device/bluetooth/floss/floss_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace floss {
@@ -20,7 +20,7 @@ bool IsFlossEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(floss::features::kFlossEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserInitParams::Get()->use_floss_bluetooth;
+  return chromeos::BrowserParamsProxy::Get()->UseFlossBluetooth();
 #else
   return false;
 #endif

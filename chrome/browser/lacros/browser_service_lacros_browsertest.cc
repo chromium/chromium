@@ -37,6 +37,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
@@ -85,7 +86,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     // Verify `AppSession` object is created when `NewFullscreenWindow` is
     // called in the Web Kiosk session. Then, disable the `AttemptUserExit`
     // method to do nothing.
-    if (chromeos::BrowserInitParams::Get()->session_type ==
+    if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
         SessionType::kWebKioskSession) {
       chromeos::AppSession* app_session =
           KioskSessionServiceLacros::Get()->GetAppSessionForTesting();

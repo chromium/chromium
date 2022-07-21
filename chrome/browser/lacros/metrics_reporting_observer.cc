@@ -10,7 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -75,7 +75,7 @@ void MetricsReportingObserver::InitSettingsFromAsh() {
 
   // Set the initial state.
   ChangeMetricsReportingState(
-      chromeos::BrowserInitParams::Get()->ash_metrics_enabled);
+      chromeos::BrowserParamsProxy::Get()->AshMetricsEnabled());
 }
 
 void MetricsReportingObserver::OnMetricsReportingChanged(

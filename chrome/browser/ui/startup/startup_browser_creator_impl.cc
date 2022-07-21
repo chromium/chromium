@@ -92,7 +92,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -248,11 +248,11 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::BrowserInitParams::Get();
+  auto* init_params = chromeos::BrowserParamsProxy::Get();
   bool from_arc =
-      init_params->initial_browser_action ==
+      init_params->InitialBrowserAction() ==
           crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls &&
-      init_params->startup_urls_from == crosapi::mojom::OpenUrlFrom::kArc;
+      init_params->StartupUrlsFrom() == crosapi::mojom::OpenUrlFrom::kArc;
 #endif
 
   bool first_tab = true;
@@ -264,7 +264,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // This avoids us getting into an infinite loop asking ourselves to open
     // a URL, should the handler be (incorrectly) configured to be us. Anyone
     // asking us to open such a URL should really ask the handler directly.
-    bool handled_by_chrome = ProfileIOData::IsHandledURL(tabs[i].url) ||
+    bool handled_by_chrome =
+        ProfileIOData::IsHandledURL(tabs[i].url) ||
         (registry && registry->IsHandledProtocol(tabs[i].url.scheme()));
     if (process_startup == chrome::startup::IsProcessStartup::kNo &&
         !handled_by_chrome) {
@@ -280,8 +281,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       continue;
     }
 
-    int add_types = first_tab ? TabStripModel::ADD_ACTIVE :
-                                TabStripModel::ADD_NONE;
+    int add_types =
+        first_tab ? TabStripModel::ADD_ACTIVE : TabStripModel::ADD_NONE;
     add_types |= TabStripModel::ADD_FORCE_INDEX;
     if (tabs[i].type == StartupTab::Type::kPinned)
       add_types |= TabStripModel::ADD_PINNED;

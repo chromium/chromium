@@ -166,7 +166,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
@@ -381,8 +381,7 @@ size_t GetEnabledAppCount(Profile* profile) {
   const extensions::ExtensionSet& extensions =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   for (extensions::ExtensionSet::const_iterator iter = extensions.begin();
-       iter != extensions.end();
-       ++iter) {
+       iter != extensions.end(); ++iter) {
     if ((*iter)->is_app() &&
         (*iter)->location() !=
             extensions::mojom::ManifestLocation::kComponent) {
@@ -513,7 +512,7 @@ absl::optional<bool> IsUserChild(Profile* profile) {
                                     user_manager::USER_TYPE_CHILD)
               : absl::nullopt;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserInitParams::Get()->session_type ==
+  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kChildSession;
 #endif
 }
@@ -849,10 +848,8 @@ bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
 void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
                                         const CreateCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT1("browser,startup",
-               "ProfileManager::CreateProfileAsync",
-               "profile_path",
-               profile_path.AsUTF8Unsafe());
+  TRACE_EVENT1("browser,startup", "ProfileManager::CreateProfileAsync",
+               "profile_path", profile_path.AsUTF8Unsafe());
 
   if (!CanCreateProfileAtPath(profile_path)) {
     if (!callback.is_null())
@@ -1642,8 +1639,7 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
     observer.OnProfileAdded(profile);
 
   content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PROFILE_ADDED,
-      content::Source<Profile>(profile),
+      chrome::NOTIFICATION_PROFILE_ADDED, content::Source<Profile>(profile),
       content::NotificationService::NoDetails());
 
   // At this point, the user policy service and the child account service
@@ -2053,8 +2049,7 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath cur_path = entry->GetPath();
     // Make sure that this profile is not pending deletion.
-    if (cur_path != profile_dir &&
-        cur_path != guest_profile_path &&
+    if (cur_path != profile_dir && cur_path != guest_profile_path &&
         !IsProfileDirectoryMarkedForDeletion(cur_path)) {
       fallback_profile_path = cur_path;
       break;
@@ -2517,8 +2512,7 @@ void ProfileManager::BrowserListObserver::OnBrowserAdded(Browser* browser) {
   profile_manager_->OnBrowserOpened(browser);
 }
 
-void ProfileManager::BrowserListObserver::OnBrowserRemoved(
-    Browser* browser) {
+void ProfileManager::BrowserListObserver::OnBrowserRemoved(Browser* browser) {
   profile_manager_->OnBrowserClosed(browser);
 }
 
@@ -2577,6 +2571,7 @@ void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ProfileManagerWithoutInit::ProfileManagerWithoutInit(
-    const base::FilePath& user_data_dir) : ProfileManager(user_data_dir) {
+    const base::FilePath& user_data_dir)
+    : ProfileManager(user_data_dir) {
   set_do_final_services_init(false);
 }

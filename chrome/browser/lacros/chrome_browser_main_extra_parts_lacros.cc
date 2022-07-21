@@ -41,7 +41,7 @@
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/sync/base/features.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -132,7 +132,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
         monitor->CreateVoter()));
   }
 
-  if (chromeos::BrowserInitParams::Get()->publish_chrome_apps) {
+  if (chromeos::BrowserParamsProxy::Get()->PublishChromeApps()) {
     chrome_apps_publisher_ = LacrosExtensionAppsPublisher::MakeForChromeApps();
     chrome_apps_publisher_->Initialize();
     chrome_apps_controller_ =
@@ -146,7 +146,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     extensions_controller_->Initialize(extensions_publisher_->publisher());
   }
 
-  if (chromeos::BrowserInitParams::Get()->web_apps_enabled) {
+  if (chromeos::BrowserParamsProxy::Get()->WebAppsEnabled()) {
     web_app_provider_bridge_ =
         std::make_unique<crosapi::WebAppProviderBridgeLacros>();
   }
@@ -221,7 +221,7 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
           g_browser_process->shared_url_loader_factory(),
           QuickAnswersController::Get()->GetQuickAnswersDelegate()));
 
-  if (chromeos::BrowserInitParams::Get()->session_type ==
+  if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
       crosapi::mojom::SessionType::kAppKioskSession) {
     chrome_kiosk_launch_controller_ =
         std::make_unique<ChromeKioskLaunchControllerLacros>(*profile);

@@ -204,16 +204,15 @@ class PreinstalledWebAppManagerTest : public testing::Test,
         ash::switches::kExtraWebAppsDir, extra_web_apps_dir);
 #else
     base::FilePath config_dir = GetConfigDir(test_dir);
-    auto params = crosapi::mojom::BrowserInitParams::New();
-    params->default_paths = crosapi::mojom::DefaultPaths::New();
-    params->default_paths->documents =
+    auto default_paths = crosapi::mojom::DefaultPaths::New();
+    default_paths->documents =
         base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-    params->default_paths->downloads =
+    default_paths->downloads =
         base::PathService::CheckedGet(chrome::DIR_DEFAULT_DOWNLOADS);
-    params->default_paths->preinstalled_web_app_config = config_dir;
-    params->default_paths->preinstalled_web_app_extra_config =
+    default_paths->preinstalled_web_app_config = config_dir;
+    default_paths->preinstalled_web_app_extra_config =
         config_dir.AppendASCII(extra_web_apps_dir);
-    chrome::SetLacrosDefaultPathsFromInitParams(params.get());
+    chrome::SetLacrosDefaultPathsFromInitParams(default_paths.get());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

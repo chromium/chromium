@@ -58,7 +58,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 using extensions::mojom::APIPermissionID;
@@ -467,9 +467,9 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
   constexpr char kExtensionControlledPrefObserversCapability[] =
       "crbug/1334985";
   bool ash_supports_crosapi_observers =
-      chromeos::BrowserInitParams::Get()->ash_capabilities.has_value() &&
+      chromeos::BrowserParamsProxy::Get()->AshCapabilities().has_value() &&
       base::Contains(
-          chromeos::BrowserInitParams::Get()->ash_capabilities.value(),
+          chromeos::BrowserParamsProxy::Get()->AshCapabilities().value(),
           kExtensionControlledPrefObserversCapability);
 #endif
 

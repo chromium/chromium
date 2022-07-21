@@ -21,6 +21,8 @@ component("startup") {
     sources += [
       "browser_init_params.cc",
       "browser_init_params.h",
+      "browser_params_proxy.cc",
+      "browser_params_proxy.h",
     ]
   }
 }

@@ -13,7 +13,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace tts_crosapi_util {
@@ -110,7 +110,7 @@ bool ShouldEnableLacrosTtsSupport() {
       !base::FeatureList::IsEnabled(ash::features::kDisableLacrosTtsSupport);
   return lacros_tts_support_enabled;
 #else  // IS_CHROMEOS_LACROS
-  return chromeos::BrowserInitParams::Get()->enable_lacros_tts_support;
+  return chromeos::BrowserParamsProxy::Get()->EnableLacrosTtsSupport();
 #endif
 }
 

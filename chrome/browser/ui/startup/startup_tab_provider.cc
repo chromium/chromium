@@ -53,7 +53,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -285,15 +285,15 @@ CommandLineTabsPresent StartupTabProviderImpl::HasCommandLineTabs(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 StartupTabs StartupTabProviderImpl::GetCrosapiTabs() const {
-  auto* init_params = chromeos::BrowserInitParams::Get();
-  if (init_params->initial_browser_action !=
+  auto* init_params = chromeos::BrowserParamsProxy::Get();
+  if (init_params->InitialBrowserAction() !=
           crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls ||
-      !init_params->startup_urls.has_value()) {
+      !init_params->StartupUrls().has_value()) {
     return {};
   }
 
   StartupTabs result;
-  for (const GURL& url : *init_params->startup_urls) {
+  for (const GURL& url : *init_params->StartupUrls()) {
     if (ValidateUrl(url))
       result.emplace_back(url);
   }

@@ -14,7 +14,7 @@
 #include "base/version.h"
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/version_info/version_info.h"
 
 void GetInstalledVersion(InstalledVersionCallback callback) {
@@ -34,7 +34,7 @@ void GetInstalledVersion(InstalledVersionCallback callback) {
               base::Version version(version_str);
               if (!version.IsValid() ||
                   (version < version_info::GetVersion() &&
-                   chromeos::BrowserInitParams::Get()->lacros_selection ==
+                   chromeos::BrowserParamsProxy::Get()->lacros_selection() ==
                        crosapi::mojom::BrowserInitParams::LacrosSelection::
                            kRootfs)) {
                 version = version_info::GetVersion();

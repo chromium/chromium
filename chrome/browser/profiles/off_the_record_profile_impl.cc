@@ -99,7 +99,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -349,7 +349,7 @@ bool OffTheRecordProfileImpl::IsOffTheRecord() const {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool OffTheRecordProfileImpl::IsMainProfile() const {
-  return chromeos::BrowserInitParams::Get()->session_type ==
+  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
              crosapi::mojom::SessionType::kGuestSession &&
          profile_->IsMainProfile();
 }
@@ -398,7 +398,7 @@ const Profile* OffTheRecordProfileImpl::GetOriginalProfile() const {
 }
 
 ExtensionSpecialStoragePolicy*
-    OffTheRecordProfileImpl::GetExtensionSpecialStoragePolicy() {
+OffTheRecordProfileImpl::GetExtensionSpecialStoragePolicy() {
   return GetOriginalProfile()->GetExtensionSpecialStoragePolicy();
 }
 
@@ -587,11 +587,9 @@ bool OffTheRecordProfileImpl::WasCreatedByVersionOrLater(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OffTheRecordProfileImpl::ChangeAppLocale(const std::string& locale,
-                                              AppLocaleChangedVia) {
-}
+                                              AppLocaleChangedVia) {}
 
-void OffTheRecordProfileImpl::OnLogin() {
-}
+void OffTheRecordProfileImpl::OnLogin() {}
 
 void OffTheRecordProfileImpl::InitChromeOSPreferences() {
   // The incognito profile shouldn't have Chrome OS's preferences.
@@ -664,9 +662,8 @@ void OffTheRecordProfileImpl::OnParentZoomLevelChanged(
       host_zoom_map->SetZoomLevelForHost(change.host, change.zoom_level);
       return;
     case HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
-      host_zoom_map->SetZoomLevelForHostAndScheme(change.scheme,
-          change.host,
-          change.zoom_level);
+      host_zoom_map->SetZoomLevelForHostAndScheme(change.scheme, change.host,
+                                                  change.zoom_level);
       return;
   }
 }

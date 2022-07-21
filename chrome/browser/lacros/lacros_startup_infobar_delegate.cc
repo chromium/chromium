@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -66,7 +66,7 @@ bool IsManaged() {
 
 // Returns true if Lacros is the primary browser, with ash as secondary.
 bool IsPrimary() {
-  return chromeos::BrowserInitParams::Get()->standalone_browser_is_primary;
+  return chromeos::BrowserParamsProxy::Get()->StandaloneBrowserIsPrimary();
 }
 
 }  // namespace

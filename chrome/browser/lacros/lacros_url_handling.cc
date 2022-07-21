@@ -10,7 +10,7 @@
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "url/gurl.h"
 
 namespace lacros_url_handling {
@@ -52,8 +52,8 @@ bool IsUrlHandledByLacros(const GURL& url) {
 }
 
 bool IsUrlAcceptedByAsh(const GURL& requested_url) {
-  auto* init_params = chromeos::BrowserInitParams::Get();
-  if (!init_params->accepted_internal_ash_urls.has_value()) {
+  auto* init_params = chromeos::BrowserParamsProxy::Get();
+  if (!init_params->AcceptedInternalAshUrls().has_value()) {
     // For Ash backwards compatibility allow URLs to be used which were
     // allowed before crosapi passed allowed URLs.
     return requested_url == GURL(chrome::kChromeUIOSSettingsURL)
@@ -63,7 +63,7 @@ bool IsUrlAcceptedByAsh(const GURL& requested_url) {
   }
 
   return crosapi::gurl_os_handler_utils::IsUrlInList(
-      requested_url, *init_params->accepted_internal_ash_urls);
+      requested_url, *init_params->AcceptedInternalAshUrls());
 }
 
 bool NavigateInAsh(const GURL& url) {

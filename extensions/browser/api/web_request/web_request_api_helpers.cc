@@ -55,7 +55,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 // TODO(battre): move all static functions into an anonymous namespace at the
@@ -1747,7 +1747,7 @@ bool ArePublicSessionRestrictionsEnabled() {
   return chromeos::LoginState::IsInitialized() &&
          chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserInitParams::Get()->session_type ==
+  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kPublicSession;
 #else
   return false;

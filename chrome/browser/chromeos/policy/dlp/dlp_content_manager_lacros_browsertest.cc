@@ -81,7 +81,7 @@ class DlpContentManagerLacrosBrowserTest : public InProcessBrowserTest {
 
   void SetDlpInterfaceVersion(int version) {
     crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::Get()->Clone();
+        chromeos::BrowserInitParams::GetForTests()->Clone();
     init_params->interface_versions.value()[crosapi::mojom::Dlp::Uuid_] =
         version;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));

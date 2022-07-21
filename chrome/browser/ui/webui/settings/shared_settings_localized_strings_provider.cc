@@ -41,7 +41,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -78,8 +78,7 @@ bool ShouldShowLacrosSideBySideWarningInAsh() {
 bool ShouldShowLacrosSideBySideWarningInLacros() {
   return base::FeatureList::IsEnabled(
              syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
-         !chromeos::BrowserInitParams::Get()
-              ->standalone_browser_is_only_browser;
+         !chromeos::BrowserParamsProxy::Get()->StandaloneBrowserIsOnlyBrowser();
 }
 #endif
 

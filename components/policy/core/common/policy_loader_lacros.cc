@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/syslog_logging.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -43,12 +43,9 @@ bool IsManaged(const enterprise_management::PolicyData& policy_data) {
 
 // Returns whether a primary device account for this session is child.
 bool IsChildSession() {
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (!init_params) {
-    return false;
-  }
-  return init_params->session_type ==
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  return init_params->SessionType() ==
          crosapi::mojom::SessionType::kChildSession;
 }
 
@@ -61,23 +58,19 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     PolicyPerProfileFilter per_profile)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
       per_profile_(per_profile) {
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (!init_params) {
-    LOG(ERROR) << "No init params";
-    return;
-  }
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
   if (per_profile_ == PolicyPerProfileFilter::kTrue &&
-      init_params->device_account_component_policy) {
-    SetComponentPolicy(init_params->device_account_component_policy.value());
+      init_params->DeviceAccountComponentPolicy()) {
+    SetComponentPolicy(init_params->DeviceAccountComponentPolicy().value());
   }
-  if (!init_params->device_account_policy) {
+  if (!init_params->DeviceAccountPolicy().has_value()) {
     LOG(ERROR) << "No policy data";
     return;
   }
-  policy_fetch_response_ = init_params->device_account_policy.value();
+  policy_fetch_response_ = init_params->DeviceAccountPolicy().value();
   last_fetch_timestamp_ =
-      base::Time::FromTimeT(init_params->last_policy_fetch_attempt_timestamp);
+      base::Time::FromTimeT(init_params->LastPolicyFetchAttemptTimestamp());
 }
 
 PolicyLoaderLacros::~PolicyLoaderLacros() {
@@ -218,12 +211,9 @@ enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {
 
 // static
 bool PolicyLoaderLacros::IsDeviceLocalAccountUser() {
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
-  if (!init_params) {
-    return false;
-  }
-  crosapi::mojom::SessionType session_type = init_params->session_type;
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  crosapi::mojom::SessionType session_type = init_params->SessionType();
   return session_type == crosapi::mojom::SessionType::kPublicSession ||
          session_type == crosapi::mojom::SessionType::kWebKioskSession ||
          session_type == crosapi::mojom::SessionType::kAppKioskSession;
@@ -238,8 +228,8 @@ bool PolicyLoaderLacros::IsMainUserManaged() {
 bool PolicyLoaderLacros::IsMainUserAffiliated() {
   const enterprise_management::PolicyData* policy =
       policy::PolicyLoaderLacros::main_user_policy_data();
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::BrowserInitParams::Get();
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
 
   // To align with `DeviceLocalAccountUserBase::IsAffiliated()`, a device local
   // account user is always treated as affiliated.
@@ -247,12 +237,12 @@ bool PolicyLoaderLacros::IsMainUserAffiliated() {
     return true;
   }
 
-  if (policy && !policy->user_affiliation_ids().empty() && init_params &&
-      init_params->device_properties &&
-      init_params->device_properties->device_affiliation_ids.has_value()) {
+  if (policy && !policy->user_affiliation_ids().empty() &&
+      init_params->DeviceProperties() &&
+      init_params->DeviceProperties()->device_affiliation_ids.has_value()) {
     const auto& user_ids = policy->user_affiliation_ids();
     const auto& device_ids =
-        init_params->device_properties->device_affiliation_ids.value();
+        init_params->DeviceProperties()->device_affiliation_ids.value();
     return policy::IsAffiliated({user_ids.begin(), user_ids.end()},
                                 {device_ids.begin(), device_ids.end()});
   }

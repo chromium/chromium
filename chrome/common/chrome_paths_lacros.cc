@@ -72,46 +72,44 @@ void SetLacrosDefaultPaths(
 }
 
 void SetLacrosDefaultPathsFromInitParams(
-    const crosapi::mojom::BrowserInitParams* init_params) {
-  CHECK(init_params);
+    const crosapi::mojom::DefaultPaths* default_paths) {
   // default_paths may be null on browser_tests and individual components may be
   // empty due to version skew between ash and lacros.
-  if (init_params->default_paths) {
+  if (default_paths) {
     base::FilePath drivefs_dir;
-    if (init_params->default_paths->drivefs.has_value())
-      drivefs_dir = init_params->default_paths->drivefs.value();
+    if (default_paths->drivefs.has_value())
+      drivefs_dir = default_paths->drivefs.value();
     base::FilePath removable_media_dir;
-    if (init_params->default_paths->removable_media.has_value())
-      removable_media_dir = init_params->default_paths->removable_media.value();
+    if (default_paths->removable_media.has_value())
+      removable_media_dir = default_paths->removable_media.value();
     base::FilePath android_files_dir;
-    if (init_params->default_paths->android_files.has_value())
-      android_files_dir = init_params->default_paths->android_files.value();
+    if (default_paths->android_files.has_value())
+      android_files_dir = default_paths->android_files.value();
     base::FilePath linux_files_dir;
-    if (init_params->default_paths->linux_files.has_value())
-      linux_files_dir = init_params->default_paths->linux_files.value();
+    if (default_paths->linux_files.has_value())
+      linux_files_dir = default_paths->linux_files.value();
     base::FilePath ash_resources_dir;
-    if (init_params->default_paths->ash_resources.has_value())
-      ash_resources_dir = init_params->default_paths->ash_resources.value();
+    if (default_paths->ash_resources.has_value())
+      ash_resources_dir = default_paths->ash_resources.value();
     base::FilePath share_cache_dir;
-    if (init_params->default_paths->share_cache.has_value())
-      share_cache_dir = init_params->default_paths->share_cache.value();
+    if (default_paths->share_cache.has_value())
+      share_cache_dir = default_paths->share_cache.value();
     base::FilePath preinstalled_web_app_config_dir;
-    if (init_params->default_paths->preinstalled_web_app_config.has_value()) {
+    if (default_paths->preinstalled_web_app_config.has_value()) {
       preinstalled_web_app_config_dir =
-          init_params->default_paths->preinstalled_web_app_config.value();
+          default_paths->preinstalled_web_app_config.value();
     }
     base::FilePath preinstalled_web_app_extra_config_dir;
-    if (init_params->default_paths->preinstalled_web_app_extra_config
-            .has_value()) {
+    if (default_paths->preinstalled_web_app_extra_config.has_value()) {
       preinstalled_web_app_extra_config_dir =
-          init_params->default_paths->preinstalled_web_app_extra_config.value();
+          default_paths->preinstalled_web_app_extra_config.value();
     }
 
     chrome::SetLacrosDefaultPaths(
-        init_params->default_paths->documents,
-        init_params->default_paths->downloads, drivefs_dir, removable_media_dir,
-        android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir,
-        preinstalled_web_app_config_dir, preinstalled_web_app_extra_config_dir);
+        default_paths->documents, default_paths->downloads, drivefs_dir,
+        removable_media_dir, android_files_dir, linux_files_dir,
+        ash_resources_dir, share_cache_dir, preinstalled_web_app_config_dir,
+        preinstalled_web_app_extra_config_dir);
   }
 }
 

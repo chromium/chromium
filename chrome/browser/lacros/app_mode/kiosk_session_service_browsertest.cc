@@ -65,7 +65,7 @@ class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
 
   void SetSessionType(SessionType type) {
     BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::Get()->Clone();
+        chromeos::BrowserInitParams::GetForTests()->Clone();
     init_params->session_type = type;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
