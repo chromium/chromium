@@ -221,8 +221,7 @@ void MakeTestSCTAndStatus(
 }
 
 // Tests that if reporting is disabled, reports are not created.
-// crbug.com/1341847 Disable the test due to flakiness
-TEST_F(SCTAuditingHandlerTest, DISABLED_DisableReporting) {
+TEST_F(SCTAuditingHandlerTest, DisableReporting) {
   // Create a report which would normally trigger a send.
   const net::HostPortPair host_port_pair("example.com", 443);
   net::SignedCertificateTimestampAndStatusList sct_list;
