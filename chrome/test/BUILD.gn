@@ -1454,6 +1454,7 @@ if (!is_android) {
       "//components/variations/service",
       "//components/version_info",
       "//components/webapps/browser",
+      "//components/webapps/common:common",
       "//components/webrtc",
       "//components/webrtc_logging/browser",
       "//content/public/common",
