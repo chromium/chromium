@@ -110,6 +110,8 @@ public class IncognitoReauthCoordinatorFactoryTest {
 
     @After
     public void tearDown() {
+        IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHostMock);
+
         verifyNoMoreInteractions(mContextMock, mTabModelSelectorMock, mIncognitoTabModelMock,
                 mModalDialogManagerMock, mIncognitoReauthManagerMock, mSettingsLauncherMock,
                 mTabSwitcherCustomViewManagerMock, mIncognitoReauthTopToolbarDelegateMock,
