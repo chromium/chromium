@@ -1105,6 +1105,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "android",
                 "enable_reclient",
+                "chromium_no_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1147,6 +1148,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "enable_reclient",
+                "chromium_no_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1184,6 +1186,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "enable_reclient",
+                "chromium_no_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
