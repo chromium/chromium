@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
@@ -46,9 +47,22 @@ class UserRemovalManagerTest : public testing::Test {
   UserRemovalManagerTest();
   ~UserRemovalManagerTest() override;
 
+  FakeChromeUserManager* fake_user_manager() {
+    return static_cast<FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+  void SetUp() override {
+    testing::Test::SetUp();
+    fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user1", "1"));
+    fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user2", "2"));
+    fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user3", "3"));
+    fake_user_manager()->AddPublicAccountUser(
+        AccountId::FromUserEmailGaiaId("public1", "4"));
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
-  const ScopedTestingLocalState local_state_;
+  ScopedTestingLocalState local_state_;
   const user_manager::ScopedUserManager scoped_user_manager_;
 };
 
@@ -65,17 +79,22 @@ UserRemovalManagerTest::~UserRemovalManagerTest() = default;
 // Test that the InitiateUserRemoval/RemoveUsersIfNeeded sequence results in
 // users being removed from the device.
 TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
-  FakeChromeUserManager* fake_user_manager =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  fake_user_manager->AddUser(AccountId::FromUserEmailGaiaId("user1", "1"));
-  fake_user_manager->AddUser(AccountId::FromUserEmailGaiaId("user2", "2"));
-  fake_user_manager->AddUser(AccountId::FromUserEmailGaiaId("user3", "3"));
-  fake_user_manager->AddPublicAccountUser(
-      AccountId::FromUserEmailGaiaId("public1", "4"));
-
   user_removal_manager::InitiateUserRemoval(base::OnceClosure());
   EXPECT_TRUE(user_removal_manager::RemoveUsersIfNeeded());
-  EXPECT_TRUE(fake_user_manager->GetUsers().empty());
+  EXPECT_TRUE(fake_user_manager()->GetUsers().empty());
+  EXPECT_TRUE(local_state_.Get()
+                  ->FindPreference(prefs::kRemoveUsersRemoteCommand)
+                  ->IsDefaultValue());
+}
+
+// Test that if Chrome crashes in the middle of the users removal - it does not
+// try again.
+TEST_F(UserRemovalManagerTest, TestUserRemovingDoNotRetryOnFailure) {
+  // If explicitly set to false - it means chrome might've crashed during the
+  // previous removal.
+  local_state_.Get()->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
+  EXPECT_FALSE(user_removal_manager::RemoveUsersIfNeeded());
+  EXPECT_FALSE(fake_user_manager()->GetUsers().empty());
 }
 
 // Test that the failsafe timer runs LogOut after 60 seconds.

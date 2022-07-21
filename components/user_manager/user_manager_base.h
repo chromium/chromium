@@ -221,7 +221,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Implementation for RemoveUser method. It is synchronous. It is called from
   // RemoveUserInternal after owner check.
-  virtual void RemoveNonOwnerUserInternal(const AccountId& account_id,
+  // Pass |account_id| by value here to avoid use-after-free. Original
+  // |account_id| could be destroyed during the user removal.
+  virtual void RemoveNonOwnerUserInternal(AccountId account_id,
                                           UserRemovalReason reason,
                                           RemoveUserDelegate* delegate);
 

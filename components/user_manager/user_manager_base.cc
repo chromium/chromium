@@ -345,14 +345,9 @@ void UserManagerBase::RemoveUserInternal(const AccountId& account_id,
   RemoveNonOwnerUserInternal(account_id, reason, delegate);
 }
 
-void UserManagerBase::RemoveNonOwnerUserInternal(const AccountId& account_id,
+void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
                                                  UserRemovalReason reason,
                                                  RemoveUserDelegate* delegate) {
-  // If account_id points to AccountId in User object, it will become deleted
-  // after RemoveUserFromList(), which could lead to use-after-free in observer.
-  // TODO(https://crbug.com/928534): Update user removal flow to prevent this.
-  const AccountId account_id_copy(account_id);
-
   if (delegate)
     delegate->OnBeforeUserRemoved(account_id);
   NotifyUserToBeRemoved(account_id);
@@ -361,10 +356,10 @@ void UserManagerBase::RemoveNonOwnerUserInternal(const AccountId& account_id,
   // |account_id| cannot be used after the |RemoveUserFromList| call, use
   // |account_id_copy| instead if needed.
 
-  NotifyUserRemoved(account_id_copy, reason);
+  NotifyUserRemoved(account_id, reason);
 
   if (delegate)
-    delegate->OnUserRemoved(account_id_copy);
+    delegate->OnUserRemoved(account_id);
 }
 
 void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
