@@ -37,7 +37,13 @@ class SyncExponentialBackoffTest : public SyncTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
+// TODO(crbug.com/1346194): Test fails on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OfflineToOnline DISABLED_OfflineToOnline
+#else
+#define MAYBE_OfflineToOnline OfflineToOnline
+#endif
+IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
   const std::string kFolderTitle1 = "folder1";
   const std::string kFolderTitle2 = "folder2";
 
