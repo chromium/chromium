@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 
@@ -18,12 +19,14 @@ namespace password_manager {
 // performed using a utility SandBox process.
 class PasswordImporter {
  public:
-  enum Result {
+  enum Status {
+    NONE,
     SUCCESS,
     IO_ERROR,
     SYNTAX_ERROR,
     SEMANTIC_ERROR,
-    NUM_IMPORT_RESULTS
+    LARGE_FILE,
+    MAX_STATUS
   };
 
   // CompletionCallback is the type of the processing function for parsed
@@ -49,15 +52,23 @@ class PasswordImporter {
   void SetServiceForTesting(
       mojo::PendingRemote<mojom::CSVPasswordParser> parser);
 
+  // Returns the import status.
+  Status GetStatus() const;
+
  private:
   // Parses passwords from |input| using a mojo sandbox process and
   // asynchronously calls |completion| with the results.
-  void ParseCSVPasswordsInSandbox(CompletionCallback completion,
-                                  absl::optional<std::string> input);
+  void ParseCSVPasswordsInSandbox(
+      CompletionCallback completion,
+      base::expected<std::string, PasswordImporter::Status> result);
+
+  void ConsumePasswords(password_manager::mojom::CSVPasswordSequencePtr seq);
 
   const mojo::Remote<mojom::CSVPasswordParser>& GetParser();
 
   mojo::Remote<mojom::CSVPasswordParser> parser_;
+
+  Status status_{Status::NONE};
 
   base::WeakPtrFactory<PasswordImporter> weak_ptr_factory_{this};
 };
