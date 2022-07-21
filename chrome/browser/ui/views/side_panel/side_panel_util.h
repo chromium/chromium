@@ -45,6 +45,9 @@ class SidePanelUtil {
   static void RecordEntryShownMetrics(SidePanelEntry::Id id);
   static void RecordEntryHiddenMetrics(SidePanelEntry::Id id,
                                        base::TimeTicks shown_timestamp);
+  static void RecordEntryShowTriggeredMetrics(
+      SidePanelEntry::Id id,
+      absl::optional<SidePanelOpenTrigger> trigger);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

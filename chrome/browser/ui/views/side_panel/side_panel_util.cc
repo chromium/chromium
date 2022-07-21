@@ -118,3 +118,14 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
       base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
 }
+
+void SidePanelUtil::RecordEntryShowTriggeredMetrics(
+    SidePanelEntry::Id id,
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+  if (trigger.has_value()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"SidePanel.", GetHistogramNameForId(id), ".ShowTriggered"}),
+        trigger.value());
+  }
+}

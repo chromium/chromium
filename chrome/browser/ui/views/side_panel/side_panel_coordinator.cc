@@ -216,6 +216,8 @@ void SidePanelCoordinator::Show(
     return;
   }
 
+  SidePanelUtil::RecordEntryShowTriggeredMetrics(entry->id(), open_trigger);
+
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
                             base::Unretained(this)));
