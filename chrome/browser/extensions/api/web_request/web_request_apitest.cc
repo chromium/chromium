@@ -30,6 +30,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
@@ -484,6 +485,188 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestSimple) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestComplex) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_complex")) << message_;
+}
+
+class ExtensionDevToolsProtocolTest
+    : public ExtensionWebRequestApiTest,
+      public content::TestDevToolsProtocolClient {
+ protected:
+  void Attach() { AttachToWebContents(web_contents()); }
+
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    ExtensionWebRequestApiTest::TearDownOnMainThread();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetWebContentsAt(0);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionDevToolsProtocolTest,
+                       HeaderOverriddenByExtension) {
+  Attach();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Header Override Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"], "persistent": true },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+        chrome.webRequest.onHeadersReceived.addListener(function(details) {
+            var headers = details.responseHeaders;
+            headers.push({name: "extensionHeaderName",
+                value: "extensionHeaderValue"});
+            return {responseHeaders: headers};
+          },
+          {urls: ['<all_urls>']},
+          ['responseHeaders', 'extraHeaders', 'blocking']);
+        chrome.test.sendMessage('ready');
+      )");
+
+  ExtensionTestMessageListener listener("ready");
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  SendCommand("Network.enable", base::Value::Dict(), true);
+  const GURL url(
+      embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+
+  // Check that `Network.responseReceived` contains the response header added
+  // by the extension
+  base::Value::Dict response_received_result =
+      WaitForNotification("Network.responseReceived", false);
+  auto* extension_header = response_received_result.FindByDottedPath(
+      "response.headers.extensionHeaderName");
+  ASSERT_TRUE(extension_header);
+  ASSERT_EQ(*extension_header, "extensionHeaderValue");
+
+  // Check that the cookie as specified in the original headers has been set
+  auto* get_all_cookies_result =
+      SendCommand("Network.getAllCookies", base::Value::Dict(), true);
+  const base::Value::List* cookies =
+      get_all_cookies_result->FindList("cookies");
+  ASSERT_TRUE(cookies);
+  ASSERT_EQ(cookies->size(), 1u);
+  auto* cookie_name = cookies->front().FindStringKey("name");
+  ASSERT_TRUE(cookie_name);
+  ASSERT_EQ(*cookie_name, "cookieName");
+  auto* cookie_value = cookies->front().FindStringKey("value");
+  ASSERT_TRUE(cookie_value);
+  ASSERT_EQ(*cookie_value, "cookieValue");
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionDevToolsProtocolTest,
+                       HeaderOverrideViaProtocolAllowedByExtension) {
+  Attach();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Header Override Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"], "persistent": true },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+        chrome.webRequest.onHeadersReceived.addListener(function(details) {
+            var headers = details.responseHeaders;
+            headers.push({name: "extensionHeaderName",
+                value: "extensionHeaderValue"});
+            return {responseHeaders: headers};
+          },
+          {urls: ['<all_urls>']},
+          ['responseHeaders', 'extraHeaders', 'blocking']);
+        chrome.test.sendMessage('ready');
+      )");
+
+  ExtensionTestMessageListener listener("ready");
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  SendCommand("Network.enable", base::Value::Dict(), true);
+
+  base::Value::Dict enable_params;
+  base::Value::List patterns;
+  base::Value::Dict pattern;
+  pattern.Set("requestStage", "Response");
+  patterns.Append(std::move(pattern));
+  enable_params.Set("patterns", std::move(patterns));
+  SendCommand("Fetch.enable", std::move(enable_params), true);
+
+  const GURL url(
+      embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+  base::Value::Dict request_paused_result =
+      WaitForNotification("Fetch.requestPaused", true);
+  std::string* request_id = request_paused_result.FindString("requestId");
+
+  // Checks that `Fetch.requestPaused` contains the response headers added by
+  // the extension
+  base::Value::List* response_headers =
+      request_paused_result.FindListByDottedPath("responseHeaders");
+  auto* header_name = response_headers->back().FindStringKey("name");
+  ASSERT_TRUE(header_name);
+  ASSERT_EQ(*header_name, "extensionHeaderName");
+  auto* header_value = response_headers->back().FindStringKey("value");
+  ASSERT_TRUE(header_value);
+  ASSERT_EQ(*header_value, "extensionHeaderValue");
+
+  // Response headers are replaced by new overrides
+  base::Value::Dict params;
+  params.Set("requestId", *request_id);
+  base::Value::Dict header_1;
+  header_1.Set("name", "firstName");
+  header_1.Set("value", "firstValue");
+  base::Value::Dict header_2;
+  header_2.Set("name", "secondName");
+  header_2.Set("value", "secondValue");
+  base::Value::List headers;
+  headers.Append(std::move(header_1));
+  headers.Append(std::move(header_2));
+  params.Set("responseHeaders", std::move(headers));
+  params.Set("responseCode", 200);
+  params.Set("body", "");
+  SendCommand("Fetch.fulfillRequest", std::move(params), false);
+
+  // Check that `Network.responseReceived` contains the response headers as
+  // specified via `Fetch.fulfillRequest`
+  base::Value::Dict response_received_result =
+      WaitForNotification("Network.responseReceived", false);
+  auto* first_header =
+      response_received_result.FindByDottedPath("response.headers.firstName");
+  ASSERT_TRUE(first_header);
+  ASSERT_EQ(*first_header, "firstValue");
+  auto* second_header =
+      response_received_result.FindByDottedPath("response.headers.secondName");
+  ASSERT_TRUE(second_header);
+  ASSERT_EQ(*second_header, "secondValue");
+  ASSERT_EQ(response_received_result.FindByDottedPath("response.headers")
+                ->GetDict()
+                .size(),
+            2u);
+
+  // Check that the cookie as specified in the original headers has been set
+  auto* get_all_cookies_result =
+      SendCommand("Network.getAllCookies", base::Value::Dict(), true);
+  const base::Value::List* cookies =
+      get_all_cookies_result->FindList("cookies");
+  ASSERT_TRUE(cookies);
+  ASSERT_EQ(cookies->size(), 1u);
+  auto* cookie_name = cookies->front().FindStringKey("name");
+  ASSERT_TRUE(cookie_name);
+  ASSERT_EQ(*cookie_name, "cookieName");
+  auto* cookie_value = cookies->front().FindStringKey("value");
+  ASSERT_TRUE(cookie_value);
+  ASSERT_EQ(*cookie_value, "cookieValue");
 }
 
 // This test times out regularly on ASAN/MSAN trybots. See

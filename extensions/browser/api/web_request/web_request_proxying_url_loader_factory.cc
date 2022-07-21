@@ -412,11 +412,21 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
 
   current_body_ = std::move(body);
   if (current_request_uses_header_client_) {
-    // Use the headers we got from OnHeadersReceived as that'll contain
-    // Set-Cookie if it existed.
+    // Use the cookie headers we got from OnHeadersReceived as that'll contain
+    // Set-Cookie if it existed. Re-adding cookie headers here does not
+    // duplicate any headers, because the headers we received via Mojo have been
+    // stripped of any cookie response headers.
     auto saved_headers = current_response_->headers;
     current_response_ = std::move(head);
-    current_response_->headers = saved_headers;
+    size_t headers_iterator = 0;
+    std::string header_name, header_value;
+    while (saved_headers != nullptr &&
+           saved_headers->EnumerateHeaderLines(&headers_iterator, &header_name,
+                                               &header_value)) {
+      if (net::HttpResponseHeaders::IsCookieResponseHeader(header_name)) {
+        current_response_->headers->AddHeader(header_name, header_value);
+      }
+    }
     ContinueToResponseStarted();
   } else {
     current_response_ = std::move(head);
