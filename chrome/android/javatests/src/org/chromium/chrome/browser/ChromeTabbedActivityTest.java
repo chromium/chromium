@@ -76,6 +76,7 @@ public class ChromeTabbedActivityTest {
     public void testTabVisibility() {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
         final TabImpl[] tabs = new TabImpl[2];
+        sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Foreground tab.
             ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
