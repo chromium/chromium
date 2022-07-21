@@ -22,8 +22,8 @@ public class SearchResumptionModuleCoordinator {
 
     public SearchResumptionModuleCoordinator(ViewGroup parent, Tab tabToTrack, Tab currentTab,
             Profile profile, int moduleContainerStbuId) {
-        OnSuggestionClickCallback callback = tile -> {
-            currentTab.loadUrl(new LoadUrlParams(tile.getUrl()));
+        OnSuggestionClickCallback callback = (gurl) -> {
+            currentTab.loadUrl(new LoadUrlParams(gurl));
             RecordUserAction.record(SearchResumptionModuleMediator.ACTION_CLICK);
         };
         mTileBuilder = new SearchResumptionTileBuilder(callback);

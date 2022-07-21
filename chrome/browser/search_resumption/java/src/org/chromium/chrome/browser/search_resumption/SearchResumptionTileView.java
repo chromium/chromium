@@ -13,13 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
-import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.url.GURL;
 
 /**
  * The view for a search suggestion tile.
  */
 public class SearchResumptionTileView extends RelativeLayout {
-    private AutocompleteMatch mSearchTile;
+    private GURL mGurl;
     private TextView mTileContent;
 
     public SearchResumptionTileView(Context context, @Nullable AttributeSet attrs) {
@@ -35,14 +35,14 @@ public class SearchResumptionTileView extends RelativeLayout {
     /**
      * Updates the content of the tile.
      */
-    void updateSuggestionData(AutocompleteMatch suggestion) {
-        mSearchTile = suggestion;
-        mTileContent.setText(suggestion.getDisplayText());
+    void updateSuggestionData(GURL gUrl, String displayText) {
+        mGurl = gUrl;
+        mTileContent.setText(displayText);
         setContentDescription(mTileContent.getText());
     }
 
     void addOnSuggestionClickCallback(OnSuggestionClickCallback callback) {
-        setOnClickListener(v -> callback.onSuggestionClick(mSearchTile));
+        setOnClickListener(v -> callback.onSuggestionClick(mGurl));
     }
 
     /**

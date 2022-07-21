@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -29,9 +28,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
-import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link SearchResumptionModuleView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -138,10 +138,9 @@ public class SearchResumptionModuleViewUnitTest {
     public void testTileView() {
         SearchResumptionTileView tileView = inflateTileView();
         String text = "foo";
-        AutocompleteMatch match = Mockito.mock(AutocompleteMatch.class);
-        doReturn(text).when(match).getDisplayText();
+        GURL gUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
-        tileView.updateSuggestionData(match);
+        tileView.updateSuggestionData(gUrl, text);
         Assert.assertEquals(text, tileView.getTextForTesting());
         Assert.assertEquals(text, tileView.getContentDescription());
 

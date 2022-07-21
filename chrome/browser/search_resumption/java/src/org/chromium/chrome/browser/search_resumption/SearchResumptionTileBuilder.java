@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class SearchResumptionTileBuilder {
      *  The callback when a {@link SearchResumptionTileView} is clicked.
      */
     interface OnSuggestionClickCallback {
-        void onSuggestionClick(AutocompleteMatch tile);
+        void onSuggestionClick(GURL gurl);
     }
 
     public SearchResumptionTileBuilder(OnSuggestionClickCallback callback) {
@@ -38,8 +39,15 @@ public class SearchResumptionTileBuilder {
      * OmniboxSuggestionType.SEARCH_SUGGEST}.
      */
     static boolean isSearchSuggestion(AutocompleteMatch suggestion) {
-        return !TextUtils.isEmpty(suggestion.getDisplayText())
+        return isSuggestionValid(suggestion.getDisplayText())
                 && suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST;
+    }
+
+    /**
+     * Returns Whether the given suggestion is a qualified suggestion.
+     */
+    static boolean isSuggestionValid(String text) {
+        return !TextUtils.isEmpty(text);
     }
 
     /**
@@ -75,12 +83,52 @@ public class SearchResumptionTileBuilder {
     }
 
     /**
+     * Iterators the suggestions and chooses the top MAX_TILES_NUMBER ones or less depending on the
+     * number of available suggestions to build on the parent ViewGroup.
+     */
+    void buildSuggestionTile(
+            String[] texts, GURL[] urls, SearchResumptionTileContainerView parent) {
+        try (TraceEvent e = TraceEvent.scoped("SearchSuggestionTileProvider.addTileSection")) {
+            assert parent.getChildCount() == 0;
+
+            int suggestionCount = urls.length;
+            int visibleTilesCount = Math.min(suggestionCount, MAX_TILES_NUMBER);
+            int tileIndex = 0;
+            int suggestionIndex = 0;
+            while (tileIndex < visibleTilesCount && suggestionIndex < urls.length) {
+                if (!isSuggestionValid(texts[suggestionIndex])) {
+                    suggestionIndex++;
+                    continue;
+                }
+                SearchResumptionTileView tileView =
+                        buildTileView(texts[suggestionIndex], urls[suggestionIndex], parent);
+                parent.addView(tileView);
+                tileIndex++;
+                suggestionIndex++;
+            }
+
+            int childSize = parent.getChildCount();
+            for (int i = 0; i < childSize; i++) {
+                ((SearchResumptionTileView) parent.getChildAt(i)).mayUpdateBackground(i, childSize);
+            }
+        }
+    }
+
+    /**
      * Builds a {@link SearchResumptionTileView} based on the given suggestion.
      */
     SearchResumptionTileView buildTileView(
             AutocompleteMatch suggestion, SearchResumptionTileContainerView parent) {
+        return buildTileView(suggestion.getDisplayText(), suggestion.getUrl(), parent);
+    }
+
+    /**
+     * Builds a {@link SearchResumptionTileView} based on the given suggestion.
+     */
+    SearchResumptionTileView buildTileView(
+            String text, GURL url, SearchResumptionTileContainerView parent) {
         SearchResumptionTileView tileView = parent.buildTileView();
-        tileView.updateSuggestionData(suggestion);
+        tileView.updateSuggestionData(url, text);
         tileView.addOnSuggestionClickCallback(mCallback);
         return tileView;
     }

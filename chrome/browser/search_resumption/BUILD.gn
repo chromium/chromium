@@ -97,5 +97,6 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

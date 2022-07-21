@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class SearchResumptionModuleMediator
     private PropertyModel mModel;
 
     private @Nullable SearchResumptionModuleView mModuleLayoutView;
+    private @Nullable SearchResumptionModuleBridge mSearchResumptionModuleBridge;
 
     SearchResumptionModuleMediator(ViewStub moduleStub, Tab tabToTrack, Profile profile,
             SearchResumptionTileBuilder tileBuilder) {
@@ -78,22 +80,34 @@ public class SearchResumptionModuleMediator
     }
 
     /**
+     * Called when the search suggestions are available using the new service API.
+     * @param suggestionTexts The display texts of the suggestions.
+     * @param suggestionUrls The URLs of the suggestions.
+     */
+    void onSuggestionsAvailable(String[] suggestionTexts, GURL[] suggestionUrls) {
+        if (mModel != null || !shouldShowSuggestionModule(suggestionUrls, suggestionTexts)) {
+            return;
+        }
+        showSearchSuggestionModule(suggestionTexts, suggestionUrls);
+    }
+
+    /**
      * Inflates the search_resumption_layout and shows the suggestions on the module.
      * @param autocompleteResult The suggestions to show on the module.
      */
     void showSearchSuggestionModule(AutocompleteResult autocompleteResult) {
-        if (mModel != null) return;
-
-        mModuleLayoutView = (SearchResumptionModuleView) mStub.inflate();
-        mModel = new PropertyModel(SearchResumptionModuleProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                mModel, mModuleLayoutView, new SearchResumptionModuleViewBinder());
-
+        if (!initializeModule()) return;
         mTileBuilder.buildSuggestionTile(autocompleteResult.getSuggestionsList(),
                 mModuleLayoutView.findViewById(R.id.search_resumption_module_tiles_container));
-        mModel.set(SearchResumptionModuleProperties.EXPAND_COLLAPSE_CLICK_CALLBACK,
-                this::onExpandedOrCollapsed);
-        RecordUserAction.record(ACTION_SHOW);
+    }
+
+    /**
+     * Inflates the search_resumption_layout and shows the suggestions on the module.
+     */
+    void showSearchSuggestionModule(String[] texts, GURL[] urls) {
+        if (!initializeModule()) return;
+        mTileBuilder.buildSuggestionTile(texts, urls,
+                mModuleLayoutView.findViewById(R.id.search_resumption_module_tiles_container));
     }
 
     void destroy() {
@@ -102,6 +116,9 @@ public class SearchResumptionModuleMediator
         }
         if (mModuleLayoutView != null) {
             mModuleLayoutView.destroy();
+        }
+        if (mSearchResumptionModuleBridge != null) {
+            mSearchResumptionModuleBridge.destroy();
         }
         TemplateUrlServiceFactory.get().removeObserver(this::onTemplateURLServiceChanged);
         mSignInManager.removeSignInStateObserver(this);
@@ -120,7 +137,9 @@ public class SearchResumptionModuleMediator
             mAutoComplete.startZeroSuggest("", mTabToTrackSuggestion.getUrl().getSpec(),
                     pageClassification, mTabToTrackSuggestion.getTitle());
         } else {
-            // TODO(hanxi): Switches to use a new KeyedService instead of Autocomplete API.
+            mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
+            mSearchResumptionModuleBridge.fetchSuggestions(
+                    mTabToTrackSuggestion.getUrl().getSpec(), this::onSuggestionsAvailable);
         }
     }
 
@@ -154,6 +173,45 @@ public class SearchResumptionModuleMediator
             }
         }
         return false;
+    }
+
+    /**
+     * Returns whether to show the search resumption module. Only showing the module if at least
+     * {@link SearchResumptionTileBuilder#MAX_TILES_NUMBER} -1 suggestions are given.
+     */
+    private boolean shouldShowSuggestionModule(GURL[] urls, String[] texts) {
+        if (urls.length != texts.length
+                || urls.length < SearchResumptionTileBuilder.MAX_TILES_NUMBER - 1) {
+            return false;
+        }
+
+        int count = 0;
+        for (int i = 0; i < urls.length; i++) {
+            if (SearchResumptionTileBuilder.isSuggestionValid(texts[i])) {
+                count++;
+            }
+            if (count >= SearchResumptionTileBuilder.MAX_TILES_NUMBER - 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Inflates the module and initializes the property model.
+     * @return Whether the module is inflated.
+     */
+    private boolean initializeModule() {
+        if (mModel != null) return false;
+
+        mModuleLayoutView = (SearchResumptionModuleView) mStub.inflate();
+        mModel = new PropertyModel(SearchResumptionModuleProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mModel, mModuleLayoutView, new SearchResumptionModuleViewBinder());
+        mModel.set(SearchResumptionModuleProperties.EXPAND_COLLAPSE_CLICK_CALLBACK,
+                this::onExpandedOrCollapsed);
+        RecordUserAction.record(ACTION_SHOW);
+        return true;
     }
 
     private void setVisibility(boolean isVisible) {

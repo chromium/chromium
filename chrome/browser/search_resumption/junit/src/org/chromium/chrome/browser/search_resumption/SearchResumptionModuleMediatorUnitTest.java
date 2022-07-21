@@ -197,6 +197,26 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    public void testDoNotBuildModuleWithoutEnoughSuggestions_newServiceAPI() {
+        String[] texts = {"suggestion 1"};
+        GURL[] gUrls = {createMockGurl("foo.com")};
+
+        mMediator.onSuggestionsAvailable(texts, gUrls);
+        verify(mParent, times(0)).inflate();
+    }
+    @Test
+    @MediumTest
+    public void testShowModuleWithEnoughResults_newServiceAPI() {
+        String[] texts = {"suggestion 1", "suggestion2"};
+        GURL[] gUrls = {createMockGurl("foo.com"), createMockGurl("bar.com")};
+
+        mMediator.onSuggestionsAvailable(texts, gUrls);
+        verify(mParent, times(1)).inflate();
+        Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
+    }
+
+    @Test
+    @MediumTest
     public void testModuleVisibility() {
         testShowModuleWithEnoughResults();
         mMediator.onSignedOut();

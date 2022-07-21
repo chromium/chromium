@@ -118,8 +118,8 @@ public class SearchResumptionTileBuilderUnitTest {
     }
 
     private void createTileBuilder() {
-        OnSuggestionClickCallback callback = tile -> {
-            mTab.loadUrl(new LoadUrlParams(tile.getUrl()));
+        OnSuggestionClickCallback callback = (gUrl) -> {
+            mTab.loadUrl(new LoadUrlParams(gUrl));
             RecordUserAction.record(SearchResumptionModuleMediator.ACTION_CLICK);
         };
         mTileBuilder = new SearchResumptionTileBuilder(callback);
