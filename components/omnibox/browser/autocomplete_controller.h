@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/open_tab_provider.h"
 
 class ClipboardProvider;
 class DocumentProvider;
@@ -196,6 +197,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   VoiceSuggestProvider* voice_suggest_provider() const {
     return voice_suggest_provider_;
   }
+  OpenTabProvider* open_tab_provider() const { return open_tab_provider_; }
 
   const AutocompleteInput& input() const { return input_; }
   const AutocompleteResult& result() const { return result_; }
@@ -352,6 +354,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<ClipboardProvider> clipboard_provider_;
 
   raw_ptr<VoiceSuggestProvider> voice_suggest_provider_;
+
+  raw_ptr<OpenTabProvider> open_tab_provider_;
 
   // Input passed to Start.
   AutocompleteInput input_;

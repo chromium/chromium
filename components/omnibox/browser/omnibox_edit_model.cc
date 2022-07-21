@@ -802,6 +802,18 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                  const std::u16string& pasted_text,
                                  size_t index,
                                  base::TimeTicks match_selection_timestamp) {
+  // Switch the window disposition to SWITCH_TO_TAB for open tab matches that
+  // originated while in keyword mode.  This is to support the keyword mode
+  // starter pack's tab search (@tabs) feature, which should open all
+  // suggestions in the existing open tab.
+  bool is_open_tab_match =
+      OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      match.from_keyword &&
+      match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
+  if (is_open_tab_match) {
+    disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  }
+
   TRACE_EVENT("omnibox", "OmniboxEditModel::OpenMatch", "match", match,
               "disposition", disposition, "altenate_nav_url", alternate_nav_url,
               "pasted_text", pasted_text);

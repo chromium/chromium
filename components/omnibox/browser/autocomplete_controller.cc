@@ -396,7 +396,8 @@ AutocompleteController::AutocompleteController(
         provider_client_.get(), history_quick_provider_, bookmark_provider_));
   }
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
-    providers_.push_back(new OpenTabProvider(provider_client_.get()));
+    open_tab_provider_ = new OpenTabProvider(provider_client_.get());
+    providers_.push_back(open_tab_provider_.get());
   }
   // Ideally, we'd check `IsApplicationLocaleSupportedByJourneys()` when
   // constructing `provider_types`. But that's usually constructed in

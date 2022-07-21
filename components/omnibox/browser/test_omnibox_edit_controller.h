@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "ui/base/window_open_disposition.h"
 
 class TestOmniboxEditController : public OmniboxEditController {
  public:
@@ -35,11 +36,14 @@ class TestOmniboxEditController : public OmniboxEditController {
     return alternate_nav_match_;
   }
 
+  const WindowOpenDisposition& disposition() const { return disposition_; }
+
   using OmniboxEditController::destination_url;
 
  private:
   TestLocationBarModel location_bar_model_;
   AutocompleteMatch alternate_nav_match_;
+  WindowOpenDisposition disposition_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_CONTROLLER_H_

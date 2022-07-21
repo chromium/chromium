@@ -34,6 +34,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
 using metrics::OmniboxEventProto;
@@ -57,6 +58,12 @@ class TestOmniboxPopupView : public OmniboxPopupView {
 class OmniboxEditModelTest : public testing::Test {
  public:
   void SetUp() override {
+    // The #omnibox-site-search-starter-pack feature flag has to be enabled
+    // before set up in order for the OpenTabProvider to be initialized (needed
+    // for OpenTabMatch test).
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
     controller_ = std::make_unique<TestOmniboxEditController>();
     view_ = std::make_unique<TestOmniboxView>(controller_.get());
     view_->SetModel(std::make_unique<TestOmniboxEditModel>(
@@ -1177,3 +1184,38 @@ TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
     }
   }
 }
+
+#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+// The keyword mode feature is only available on Desktop. Do not test on mobile.
+TEST_F(OmniboxEditModelTest, OpenTabMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
+  // When the match comes from the Open Tab Provider while in keyword mode,
+  // the disposition should be set to SWITCH_TO_TAB.
+  AutocompleteMatch match(
+      model()->autocomplete_controller()->open_tab_provider(), 0, false,
+      AutocompleteMatchType::OPEN_TAB);
+  match.destination_url = GURL("https://foo/");
+  match.from_keyword = true;
+
+  model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
+  model()->SetUserText(u"http://abcd");
+  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                     std::u16string(), 0);
+  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::SWITCH_TO_TAB);
+
+  // Suggestions not from the Open Tab Provider or not from keyword mode should
+  // not change the disposition.
+  match.from_keyword = false;
+  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                     std::u16string(), 0);
+  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::CURRENT_TAB);
+
+  match.provider = model()->autocomplete_controller()->search_provider();
+  match.from_keyword = true;
+  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                     std::u16string(), 0);
+  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::CURRENT_TAB);
+}
+#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))

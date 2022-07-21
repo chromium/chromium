@@ -30,4 +30,5 @@ void TestOmniboxEditController::OnAutocompleteAccept(
       match, alternative_nav_match);
 
   alternate_nav_match_ = alternative_nav_match;
+  disposition_ = disposition;
 }
