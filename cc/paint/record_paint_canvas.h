@@ -63,9 +63,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   bool getLocalClipBounds(SkRect* bounds) const override;
   SkIRect getDeviceClipBounds() const override;
   bool getDeviceClipBounds(SkIRect* bounds) const override;
-  void drawColor(SkColor color, SkBlendMode mode) override;
   void drawColor(SkColor4f color, SkBlendMode mode) override;
-  void clear(SkColor color) override;
   void clear(SkColor4f color) override;
 
   void drawLine(SkScalar x0,

@@ -251,7 +251,7 @@ static bool ExtractImageData(Image* image,
   gfx::RectF image_source_rect(gfx::SizeF(image->Size()));
   gfx::Rect image_dest_rect(image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = respect_orientation;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;

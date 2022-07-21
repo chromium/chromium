@@ -162,7 +162,7 @@ void Canvas::DrawColor(SkColor color) {
 }
 
 void Canvas::DrawColor(SkColor color, SkBlendMode mode) {
-  canvas_->drawColor(color, mode);
+  canvas_->drawColor(SkColor4f::FromColor(color), mode);
 }
 
 void Canvas::FillRect(const Rect& rect, SkColor color) {

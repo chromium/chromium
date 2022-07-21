@@ -5338,7 +5338,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   }
 
   if (!image->CurrentFrameKnownToBeOpaque())
-    resource_provider->Canvas()->clear(SK_ColorTRANSPARENT);
+    resource_provider->Canvas()->clear(SkColors::kTransparent);
 
   gfx::Rect src_rect(image->Size());
   gfx::Rect dest_rect(0, 0, width, height);

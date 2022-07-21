@@ -81,21 +81,21 @@ TEST_F(SolidColorAnalyzerTest, Empty) {
 TEST_F(SolidColorAnalyzerTest, ClearTransparent) {
   Initialize();
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(0, 12, 34, 56));
-  canvas()->clear(color.toSkColor());
+  canvas()->clear(color);
   EXPECT_EQ(SkColors::kTransparent, GetColor());
 }
 
 TEST_F(SolidColorAnalyzerTest, ClearSolid) {
   Initialize();
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 65, 43, 21));
-  canvas()->clear(color.toSkColor());
+  canvas()->clear(color);
   EXPECT_EQ(color, GetColor());
 }
 
 TEST_F(SolidColorAnalyzerTest, ClearTranslucent) {
   Initialize();
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(128, 11, 22, 33));
-  canvas()->clear(color.toSkColor());
+  canvas()->clear(color);
 #if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
@@ -108,7 +108,7 @@ TEST_F(SolidColorAnalyzerTest, ClearTranslucent) {
 TEST_F(SolidColorAnalyzerTest, DrawColor) {
   Initialize();
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
-  canvas()->drawColor(color.toSkColor());
+  canvas()->drawColor(color);
   EXPECT_EQ(color, GetColor());
 }
 
@@ -197,8 +197,8 @@ TEST_F(SolidColorAnalyzerTest, DrawRectWithTranslateSolid) {
 TEST_F(SolidColorAnalyzerTest, TwoOpsNotSolid) {
   Initialize();
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 65, 43, 21));
-  canvas()->clear(color.toSkColor());
-  canvas()->clear(color.toSkColor());
+  canvas()->clear(color);
+  canvas()->clear(color);
   EXPECT_FALSE(IsSolidColor());
 }
 

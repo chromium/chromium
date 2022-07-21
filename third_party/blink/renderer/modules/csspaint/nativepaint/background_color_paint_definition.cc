@@ -249,7 +249,8 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
           animated_colors[result_index + 1]);
   from->Interpolate(*to, adjusted_progress, *result);
   Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
-  SkColor current_color = static_cast<SkColor>(rgba);
+  // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
+  SkColor4f current_color = rgba.toSkColor4f();
 
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.

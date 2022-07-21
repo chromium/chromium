@@ -52,9 +52,8 @@ class MockPaintCanvas : public cc::PaintCanvas {
   MOCK_CONST_METHOD1(getLocalClipBounds, bool(SkRect* bounds));
   MOCK_CONST_METHOD0(getDeviceClipBounds, SkIRect());
   MOCK_CONST_METHOD1(getDeviceClipBounds, bool(SkIRect* bounds));
-  MOCK_METHOD2(drawColor, void(SkColor color, SkBlendMode mode));
   MOCK_METHOD2(drawColor, void(SkColor4f color, SkBlendMode mode));
-  MOCK_METHOD1(clear, void(SkColor color));
+  MOCK_METHOD1(clearInt, void(SkColor color));
   MOCK_METHOD1(clear, void(SkColor4f color));
   MOCK_METHOD5(drawLine,
                void(SkScalar x0,

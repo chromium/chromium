@@ -914,7 +914,7 @@ TEST_F(Canvas2DLayerBridgeTest,
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(size, RasterMode::kGPU, kNonOpaque);
 
-  bridge->GetPaintCanvas()->clear(SK_ColorRED);
+  bridge->GetPaintCanvas()->clear(SkColors::kRed);
   DrawSomething(bridge.get());
   ASSERT_TRUE(bridge->layer_for_testing());
 

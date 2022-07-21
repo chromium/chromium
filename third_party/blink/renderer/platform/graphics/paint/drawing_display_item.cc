@@ -28,7 +28,7 @@ static SkBitmap RecordToBitmap(sk_sp<const PaintRecord> record,
     return bitmap;
 
   SkiaPaintCanvas canvas(bitmap);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
   canvas.translate(-bounds.x(), -bounds.y());
   canvas.drawPicture(std::move(record));
   return bitmap;

@@ -160,16 +160,8 @@ bool SkiaPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
   return canvas_->getDeviceClipBounds(bounds);
 }
 
-void SkiaPaintCanvas::drawColor(SkColor color, SkBlendMode mode) {
-  canvas_->drawColor(color, mode);
-}
-
 void SkiaPaintCanvas::drawColor(SkColor4f color, SkBlendMode mode) {
   canvas_->drawColor(color, mode);
-}
-
-void SkiaPaintCanvas::clear(SkColor color) {
-  canvas_->clear(color);
 }
 
 void SkiaPaintCanvas::clear(SkColor4f color) {

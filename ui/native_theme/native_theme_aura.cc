@@ -121,7 +121,9 @@ void NativeThemeAura::PaintMenuPopupBackground(
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
   DCHECK(color_provider);
-  SkColor color = color_provider->GetColor(kColorMenuBackground);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  SkColor4f color =
+      SkColor4f::FromColor(color_provider->GetColor(kColorMenuBackground));
   if (menu_background.corner_radius > 0) {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);

@@ -179,7 +179,7 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     return;
   {
     SkiaPaintCanvas canvas(old_bitmap);
-    canvas.clear(SK_ColorTRANSPARENT);
+    canvas.clear(SkColors::kTransparent);
     canvas.translate(-rect.x(), -rect.y());
     canvas.drawPicture(std::move(old_record));
   }
@@ -190,7 +190,7 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     return;
   {
     SkiaPaintCanvas canvas(new_bitmap);
-    canvas.clear(SK_ColorTRANSPARENT);
+    canvas.clear(SkColors::kTransparent);
     canvas.translate(-rect.x(), -rect.y());
     canvas.drawPicture(std::move(new_record));
   }

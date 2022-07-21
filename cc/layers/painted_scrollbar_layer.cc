@@ -256,7 +256,7 @@ UIResourceBitmap PaintedScrollbarLayer::RasterizeScrollbarPart(
       << "Failed to allocate memory for scrollbar at dimension : " << dimension;
 
   SkiaPaintCanvas canvas(skbitmap);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
 
   float scale_x = content_size.width() / static_cast<float>(size.width());
   float scale_y = content_size.height() / static_cast<float>(size.height());

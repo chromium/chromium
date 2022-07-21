@@ -126,7 +126,7 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
       bitmap.allocPixels(SkImageInfo::MakeN32Premul(
           mask_bounds_rounded.width(), mask_bounds_rounded.height()));
       SkiaPaintCanvas canvas(bitmap);
-      canvas.clear(SK_ColorTRANSPARENT);
+      canvas.clear(SkColors::kTransparent);
       canvas.translate(-mask_record_bounds.x(), -mask_record_bounds.y());
       canvas.drawPicture(mask_record);
       PaintImage image = PaintImageBuilder::WithDefault()

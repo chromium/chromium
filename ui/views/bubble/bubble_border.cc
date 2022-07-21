@@ -667,7 +667,7 @@ void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   canvas->sk_canvas()->clipRRect(GetClientRect(view), SkClipOp::kDifference,
                                  true /*doAntiAlias*/);
-  canvas->sk_canvas()->drawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
+  canvas->sk_canvas()->drawColor(SkColors::kTransparent, SkBlendMode::kSrc);
 }
 
 void BubbleBorder::PaintNoShadowLegacy(const View& view, gfx::Canvas* canvas) {

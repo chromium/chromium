@@ -588,7 +588,7 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   const LayerTreeDebugState& debug_state = layer_tree_impl()->debug_state();
 
   TRACE_EVENT0("cc", "DrawHudContents");
-  canvas->clear(SkColorSetARGB(0, 0, 0, 0));
+  canvas->clear(SkColors::kTransparent);
   canvas->save();
   canvas->scale(internal_contents_scale_);
 
@@ -704,8 +704,7 @@ void HeadsUpDisplayLayerImpl::DrawSeparatorLine(PaintCanvas* canvas,
                                                 PaintFlags* flags,
                                                 const SkRect& bounds) const {
   // Draw separator line as transparent white.
-  constexpr auto kSeparatorLineColor = SkColorSetARGB(64, 255, 255, 255);
-  flags->setColor(kSeparatorLineColor);
+  flags->setColor({1.0f, 1.0f, 1.0f, 0.25f});
   canvas->drawLine(bounds.left(), bounds.top(), bounds.right(), bounds.top(),
                    *flags);
 }
@@ -822,13 +821,11 @@ SkRect HeadsUpDisplayLayerImpl::DrawMemoryDisplay(PaintCanvas* canvas,
   SkPoint stat2_pos = SkPoint::Make(left + width - kPadding - 1,
                                     top + 2 * kPadding + 3 * kFontHeight);
 
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags.setColor(DebugColors::HUDTitleColor().toSkColor());
+  flags.setColor(DebugColors::HUDTitleColor());
   DrawText(canvas, flags, "GPU memory", TextAlign::kLeft, kTitleFontHeight,
            title_pos);
 
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  flags.setColor(DebugColors::MemoryDisplayTextColor().toSkColor());
+  flags.setColor(DebugColors::MemoryDisplayTextColor());
   std::string text = base::StringPrintf(
       "%6.1f MB used", memory_entry_.total_bytes_used / kMegabyte);
   DrawText(canvas, flags, text, TextAlign::kRight, kFontHeight, stat1_pos);

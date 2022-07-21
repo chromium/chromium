@@ -1512,9 +1512,9 @@ void CanvasResourceProvider::Clear() {
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
   if (info_.alphaType() == kOpaque_SkAlphaType)
-    Canvas()->clear(SK_ColorBLACK);
+    Canvas()->clear(SkColors::kBlack);
   else
-    Canvas()->clear(SK_ColorTRANSPARENT);
+    Canvas()->clear(SkColors::kTransparent);
 
   FlushCanvas();
   ClearFrame();

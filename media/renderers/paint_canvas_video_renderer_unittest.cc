@@ -316,13 +316,13 @@ void PaintCanvasVideoRendererTest::Copy(scoped_refptr<VideoFrame> video_frame,
 
 TEST_F(PaintCanvasVideoRendererTest, NoFrame) {
   // Test that black gets painted over canvas.
-  target_canvas()->clear(SK_ColorRED);
+  target_canvas()->clear(SkColors::kRed);
   PaintWithoutFrame(target_canvas());
   EXPECT_EQ(SK_ColorBLACK, bitmap()->getColor(0, 0));
 }
 
 TEST_F(PaintCanvasVideoRendererTest, TransparentFrame) {
-  target_canvas()->clear(SK_ColorRED);
+  target_canvas()->clear(SkColors::kRed);
   PaintRotated(
       VideoFrame::CreateTransparentFrame(gfx::Size(kWidth, kHeight)).get(),
       target_canvas(), kNaturalRect, kNone, SkBlendMode::kSrcOver,
@@ -331,7 +331,7 @@ TEST_F(PaintCanvasVideoRendererTest, TransparentFrame) {
 }
 
 TEST_F(PaintCanvasVideoRendererTest, TransparentFrameSrcMode) {
-  target_canvas()->clear(SK_ColorRED);
+  target_canvas()->clear(SkColors::kRed);
   // SRC mode completely overwrites the buffer.
   PaintRotated(
       VideoFrame::CreateTransparentFrame(gfx::Size(kWidth, kHeight)).get(),
@@ -342,7 +342,7 @@ TEST_F(PaintCanvasVideoRendererTest, TransparentFrameSrcMode) {
 }
 
 TEST_F(PaintCanvasVideoRendererTest, TransparentFrameSrcMode1x1) {
-  target_canvas()->clear(SK_ColorRED);
+  target_canvas()->clear(SkColors::kRed);
   // SRC mode completely overwrites the buffer.
   auto frame = VideoFrame::CreateTransparentFrame(gfx::Size(1, 1));
   PaintRotated(frame.get(), target_canvas(), gfx::RectF(1, 1), kNone,
@@ -352,7 +352,7 @@ TEST_F(PaintCanvasVideoRendererTest, TransparentFrameSrcMode1x1) {
 }
 
 TEST_F(PaintCanvasVideoRendererTest, CopyTransparentFrame) {
-  target_canvas()->clear(SK_ColorRED);
+  target_canvas()->clear(SkColors::kRed);
   Copy(VideoFrame::CreateTransparentFrame(gfx::Size(kWidth, kHeight)).get(),
        target_canvas());
   EXPECT_EQ(static_cast<SkColor>(SK_ColorTRANSPARENT),
@@ -525,7 +525,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_270) {
 TEST_F(PaintCanvasVideoRendererTest, Video_Translate) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
-  canvas.clear(SK_ColorMAGENTA);
+  canvas.clear(SkColors::kMagenta);
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
@@ -545,7 +545,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate) {
 TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_90) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
-  canvas.clear(SK_ColorMAGENTA);
+  canvas.clear(SkColors::kMagenta);
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
@@ -566,7 +566,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_90) {
 TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_180) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
-  canvas.clear(SK_ColorMAGENTA);
+  canvas.clear(SkColors::kMagenta);
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
@@ -587,7 +587,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_180) {
 TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_270) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
-  canvas.clear(SK_ColorMAGENTA);
+  canvas.clear(SkColors::kMagenta);
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
@@ -1119,7 +1119,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     SkBitmap bitmap =
         AllocBitmap(expected_size.width(), expected_size.height());
     cc::SkiaPaintCanvas canvas(bitmap);
-    canvas.clear(SK_ColorGRAY);
+    canvas.clear(SkColors::kGray);
     renderer_.Copy(frame, &canvas, media_context_.get());
 
     auto get_color = base::BindRepeating(

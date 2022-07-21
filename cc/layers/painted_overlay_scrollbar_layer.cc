@@ -155,7 +155,7 @@ bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
   SkBitmap skbitmap;
   skbitmap.allocN32Pixels(paint_size.width(), paint_size.height());
   SkiaPaintCanvas canvas(skbitmap);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
 
   scrollbar->PaintPart(&canvas, ScrollbarPart::THUMB, gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
@@ -188,7 +188,7 @@ bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
   SkBitmap skbitmap;
   skbitmap.allocN32Pixels(paint_size.width(), paint_size.height());
   SkiaPaintCanvas canvas(skbitmap);
-  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.clear(SkColors::kTransparent);
 
   scrollbar_.Write(*this)->PaintPart(
       &canvas, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, gfx::Rect(paint_size));

@@ -24,8 +24,8 @@ PaintRenderingContext2D::PaintRenderingContext2D(
   clip_antialiasing_ = kAntiAliased;
   GetState().SetShouldAntialias(true);
 
-  GetPaintCanvas()->clear(context_settings->alpha() ? SK_ColorTRANSPARENT
-                                                    : SK_ColorBLACK);
+  GetPaintCanvas()->clear(context_settings->alpha() ? SkColors::kTransparent
+                                                    : SkColors::kBlack);
   did_record_draw_commands_in_paint_recorder_ = true;
 }
 

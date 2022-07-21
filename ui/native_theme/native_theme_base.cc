@@ -940,8 +940,11 @@ void NativeThemeBase::PaintMenuPopupBackground(
   // scheme. If that changes, we need to add an appropriate dark scheme color to
   // kMenuPopupBackgroundColor.
   DCHECK(color_scheme == ColorScheme::kDefault);
-  canvas->drawColor(GetColor(kMenuPopupBackgroundColor, color_scheme),
-                    SkBlendMode::kSrc);
+
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  canvas->drawColor(
+      SkColor4f::FromColor(GetColor(kMenuPopupBackgroundColor, color_scheme)),
+      SkBlendMode::kSrc);
 }
 
 void NativeThemeBase::PaintMenuItemBackground(
