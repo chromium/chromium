@@ -91,7 +91,7 @@ def main(args):
 
     arch_output_dir = os.path.join(fuchsia_root, 'out', 'release-' + arch)
 
-    sdk_tarballs = ['core.tar.gz']
+    sdk_tarballs = ['core.tar.gz', 'core_testing.tar.gz']
 
     for sdk_tar in sdk_tarballs:
       sdk_tar_path = os.path.join(arch_output_dir, 'sdk', 'archive', sdk_tar)
