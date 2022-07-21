@@ -175,6 +175,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                                   NetExportTabHelperDelegate,
                                   NewTabPageCommands,
                                   PageInfoCommands,
+                                  PageInfoPresentation,
                                   PasswordBreachCommands,
                                   PasswordProtectionCommands,
                                   PasswordSuggestionCommands,
@@ -1385,7 +1386,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   PageInfoCoordinator* pageInfoCoordinator = [[PageInfoCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  pageInfoCoordinator.presentationProvider = self.viewController;
+  pageInfoCoordinator.presentationProvider = self;
   self.pageInfoCoordinator = pageInfoCoordinator;
   [self.pageInfoCoordinator start];
 }
@@ -2162,6 +2163,24 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
   [_ntpCoordinator reload];
+}
+
+#pragma mark - PageInfoPresentation
+
+- (void)presentPageInfoView:(UIView*)pageInfoView {
+  [pageInfoView setFrame:self.viewController.view.bounds];
+  [self.viewController.view addSubview:pageInfoView];
+}
+
+- (void)prepareForPageInfoPresentation {
+  // Dismiss the omnibox (if open).
+  id<OmniboxCommands> omniboxHandler =
+      HandlerForProtocol(_dispatcher, OmniboxCommands);
+  [omniboxHandler cancelOmniboxEdit];
+}
+
+- (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {
+  return [self.viewController.view convertPoint:origin fromView:nil];
 }
 
 @end

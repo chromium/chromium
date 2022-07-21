@@ -83,7 +83,6 @@ typedef struct {
                         IncognitoReauthConsumer,
                         LogoAnimationControllerOwnerOwner,
                         OmniboxPopupPresenterDelegate,
-                        PageInfoPresentation,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
                         WebStateContainerViewProvider,

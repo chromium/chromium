@@ -3711,22 +3711,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return nil;
 }
 
-#pragma mark - PageInfoPresentation
-
-- (void)presentPageInfoView:(UIView*)pageInfoView {
-  [pageInfoView setFrame:self.view.bounds];
-  [self.view addSubview:pageInfoView];
-}
-
-- (void)prepareForPageInfoPresentation {
-  // Dismiss the omnibox (if open).
-  [self.omniboxHandler cancelOmniboxEdit];
-}
-
-- (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {
-  return [self.view convertPoint:origin fromView:nil];
-}
-
 #pragma mark - TabStripPresentation
 
 - (BOOL)isTabStripFullyVisible {
