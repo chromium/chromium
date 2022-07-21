@@ -607,10 +607,11 @@ gboolean DoAction(AtkAction* atk_action, gint index) {
   if (!obj)
     return FALSE;
 
-  const std::vector<ax::mojom::Action> actions = obj->GetSupportedActions();
+  const std::vector<ax::mojom::Action> actions =
+      obj->GetDelegate()->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), FALSE);
 
-  if (index == 0 && obj->HasDefaultActionVerb()) {
+  if (index == 0 && obj->GetDelegate()->HasDefaultActionVerb()) {
     // If there is a default action, it will always be at index 0.
     return obj->DoDefaultAction();
   }
@@ -628,7 +629,7 @@ gint GetNActions(AtkAction* atk_action) {
   if (!obj)
     return 0;
 
-  return static_cast<gint>(obj->GetSupportedActions().size());
+  return static_cast<gint>(obj->GetDelegate()->GetSupportedActions().size());
 }
 
 const gchar* GetDescription(AtkAction*, gint) {
@@ -646,10 +647,11 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
   if (!obj)
     return nullptr;
 
-  const std::vector<ax::mojom::Action> actions = obj->GetSupportedActions();
+  const std::vector<ax::mojom::Action> actions =
+      obj->GetDelegate()->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), nullptr);
 
-  if (index == 0 && obj->HasDefaultActionVerb()) {
+  if (index == 0 && obj->GetDelegate()->HasDefaultActionVerb()) {
     // If there is a default action, it will always be at index 0.
     return obj->GetDefaultActionName();
   }
@@ -665,10 +667,11 @@ const gchar* GetKeybinding(AtkAction* atk_action, gint index) {
   if (!obj)
     return nullptr;
 
-  const std::vector<ax::mojom::Action> actions = obj->GetSupportedActions();
+  const std::vector<ax::mojom::Action> actions =
+      obj->GetDelegate()->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), nullptr);
 
-  if (index == 0 && obj->HasDefaultActionVerb()) {
+  if (index == 0 && obj->GetDelegate()->HasDefaultActionVerb()) {
     // If there is a default action, it will always be at index 0. Only the
     // default action has a key binding.
     return obj->GetStringAttribute(ax::mojom::StringAttribute::kAccessKey)
@@ -5221,39 +5224,6 @@ std::pair<int, int> AXPlatformNodeAuraLinux::GetSelectionOffsetsForAtk() {
     GetSelectionOffsets(&selection.first, &selection.second);
   }
   return selection;
-}
-
-bool AXPlatformNodeAuraLinux::HasDefaultActionVerb() const {
-  return GetData().GetDefaultActionVerb() !=
-         ax::mojom::DefaultActionVerb::kNone;
-}
-
-std::vector<ax::mojom::Action> AXPlatformNodeAuraLinux::GetSupportedActions()
-    const {
-  static const base::NoDestructor<std::vector<ax::mojom::Action>>
-      kActionsThatCanBeExposedViaAtkAction{
-          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement,
-           ax::mojom::Action::kScrollUp, ax::mojom::Action::kScrollDown,
-           ax::mojom::Action::kScrollLeft, ax::mojom::Action::kScrollRight,
-           ax::mojom::Action::kScrollForward,
-           ax::mojom::Action::kScrollBackward}};
-  std::vector<ax::mojom::Action> supported_actions;
-
-  // The default action, if it exists, must be listed at index 0.
-  if (HasDefaultActionVerb())
-    supported_actions.push_back(ax::mojom::Action::kDoDefault);
-
-  // Users expect to be able to bring a context menu on any object via e.g.
-  // right click, so we make the context menu action available to any object
-  // unconditionally.
-  supported_actions.push_back(ax::mojom::Action::kShowContextMenu);
-
-  for (const auto& item : *kActionsThatCanBeExposedViaAtkAction) {
-    if (HasAction(item))
-      supported_actions.push_back(item);
-  }
-
-  return supported_actions;
 }
 
 }  // namespace ui

@@ -293,9 +293,6 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   // nullopt.
   absl::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
 
-  std::vector<ax::mojom::Action> GetSupportedActions() const;
-  bool HasDefaultActionVerb() const;
-
   std::string accessible_name_;
   
  protected:

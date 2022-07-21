@@ -168,6 +168,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool HasState(ax::mojom::State state) const = 0;
   virtual ax::mojom::State GetState() const = 0;
   virtual bool HasAction(ax::mojom::Action action) const = 0;
+  bool HasDefaultActionVerb() const;
+  std::vector<ax::mojom::Action> GetSupportedActions() const;
   virtual bool HasTextStyle(ax::mojom::TextStyle text_style) const = 0;
   virtual ax::mojom::NameFrom GetNameFrom() const = 0;
   virtual ax::mojom::DescriptionFrom GetDescriptionFrom() const = 0;
