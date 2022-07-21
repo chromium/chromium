@@ -7151,3 +7151,4 @@ crbug.com/1345745 virtual/async-script-scheduling-first-paint-or-finished-parsin
 
 # Sheriff 2022-07-21
 crbug.com/1346043 crbug.com/626703 [ Win10.20h2 ] external/wpt/credential-management/fedcm-network-requests.sub.https.html [ Skip ]
+crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Pass Failure ]
