@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("follow") {
   sources = [
@@ -70,9 +70,9 @@ source_set("tab_helper") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("rss_link_js") {
+optimize_ts("rss_link_js") {
   visibility = [ ":follow" ]
 
-  primary_script = "resources/rss_link.js"
-  sources = [ "resources/rss_link.js" ]
+  sources = [ "resources/rss_link.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }

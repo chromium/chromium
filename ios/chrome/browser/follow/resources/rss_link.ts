@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {gCrWeb} from "//ios/web/public/js_messaging/resources/gcrweb.js";
+
 /**
  * @fileoverview Functions used to parse RSS links from a web page.
  */
 
-__gCrWeb['rssLink'] = {};
 
 /* Gets RSS links. */
-__gCrWeb.rssLink.getRSSLinks = function() {
+gCrWeb.rssLink.getRSSLinks = function(): string[] {
   const linkTags = document.head.getElementsByTagName('link');
-  const rssLinks = [];
+  const rssLinks: string[] = [];
+
   for (const linkTag of linkTags) {
       if (linkTag.rel === 'alternate' ||
           linkTag.rel === 'service.feed') {
