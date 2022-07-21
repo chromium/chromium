@@ -1613,6 +1613,7 @@ source_set("ash") {
     "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/debug_daemon",
     "//chromeos/dbus/dlcservice",
+    "//chromeos/dbus/fwupd",
     "//chromeos/dbus/missive",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

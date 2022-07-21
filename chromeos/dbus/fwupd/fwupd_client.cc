@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chromeos/dbus/fwupd/dbus_constants.h"
+#include "chromeos/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -84,16 +85,13 @@ std::string ParseCheckSum(const std::string& raw_sum) {
   return raw_sum;
 }
 
-}  // namespace
-
 class FwupdClientImpl : public FwupdClient {
  public:
-  FwupdClientImpl();
+  FwupdClientImpl() = default;
   FwupdClientImpl(const FwupdClientImpl&) = delete;
   FwupdClientImpl& operator=(const FwupdClientImpl&) = delete;
-  ~FwupdClientImpl() override;
+  ~FwupdClientImpl() override = default;
 
- protected:
   void Init(dbus::Bus* bus) override {
     DCHECK(bus);
 
@@ -417,6 +415,8 @@ class FwupdClientImpl : public FwupdClient {
   base::WeakPtrFactory<FwupdClientImpl> weak_ptr_factory_{this};
 };
 
+}  // namespace
+
 void FwupdClient::AddObserver(FwupdClient::Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -435,18 +435,26 @@ FwupdClient::~FwupdClient() {
   g_instance = nullptr;
 }
 
-FwupdClientImpl::FwupdClientImpl() = default;
-
-FwupdClientImpl::~FwupdClientImpl() = default;
-
-// static
-std::unique_ptr<FwupdClient> FwupdClient::Create() {
-  return std::make_unique<FwupdClientImpl>();
-}
-
 // static
 FwupdClient* FwupdClient::Get() {
   return g_instance;
+}
+
+// static
+void FwupdClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new FwupdClientImpl())->Init(bus);
+}
+
+// static
+void FwupdClient::InitializeFake() {
+  (new FakeFwupdClient())->Init(nullptr);
+}
+
+// static
+void FwupdClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
 }
 
 }  // namespace chromeos

@@ -36,20 +36,20 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Create() should be used instead.
-  FwupdClient();
   FwupdClient(const FwupdClient&) = delete;
   FwupdClient& operator=(const FwupdClient&) = delete;
-  ~FwupdClient() override;
-
-  // Factory function.
-  static std::unique_ptr<FwupdClient> Create();
 
   // Returns the global instance if initialized. May return null.
   static FwupdClient* Get();
 
-  // Used to call the protected initialization in unit tests.
-  void InitForTesting(dbus::Bus* bus) { Init(bus); }
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
 
   void SetPropertiesForTesting(uint32_t percentage, uint32_t status) {
     properties_->percentage.ReplaceValue(percentage);
@@ -68,6 +68,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
 
  protected:
   friend class FwupdClientTest;
+
+  // Initialize() should be used instead.
+  FwupdClient();
+  ~FwupdClient() override;
 
   // Auxiliary variables for testing.
   // TODO(swifton): Replace this with an observer.

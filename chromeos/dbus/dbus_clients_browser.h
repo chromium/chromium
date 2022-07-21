@@ -16,7 +16,6 @@ class Bus;
 namespace chromeos {
 
 class EasyUnlockClient;
-class FwupdClient;
 
 // Owns D-Bus clients.
 // TODO(jamescook): Rename this class. "Browser" refers to the browser process
@@ -39,7 +38,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   friend class DBusThreadManager;
 
   std::unique_ptr<EasyUnlockClient> easy_unlock_client_;
-  std::unique_ptr<FwupdClient> fwupd_client_;
 };
 
 }  // namespace chromeos

@@ -95,14 +95,14 @@ class FwupdClientTest : public testing::Test {
         bus_->GetObjectProxy(kFwupdServiceName, fwupd_service_path),
         base::DoNothing());
 
-    fwupd_client_ = FwupdClient::Create();
-    fwupd_client_->InitForTesting(bus_.get());
+    FwupdClient::Initialize(bus_.get());
+    fwupd_client_ = FwupdClient::Get();
     fwupd_client_->client_is_in_testing_mode_ = true;
   }
 
   FwupdClientTest(const FwupdClientTest&) = delete;
   FwupdClientTest& operator=(const FwupdClientTest&) = delete;
-  ~FwupdClientTest() override = default;
+  ~FwupdClientTest() override { FwupdClient::Shutdown(); }
 
   int GetDeviceSignalCallCount() {
     return fwupd_client_->device_signal_call_count_for_testing_;
@@ -279,7 +279,7 @@ class FwupdClientTest : public testing::Test {
   }
 
   scoped_refptr<dbus::MockObjectProxy> proxy_;
-  std::unique_ptr<FwupdClient> fwupd_client_;
+  FwupdClient* fwupd_client_ = nullptr;
   std::unique_ptr<chromeos::FwupdProperties> expected_properties_;
 
  private:

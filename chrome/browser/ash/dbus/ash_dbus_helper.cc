@@ -77,6 +77,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -158,6 +159,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<FuseBoxReverseClient>(bus);
+  InitializeDBusClient<chromeos::FwupdClient>(bus);
   InitializeDBusClient<GnubbyClient>(bus);
   hermes_clients::Initialize(bus);
 #if BUILDFLAG(ENABLE_HIBERNATE)
@@ -291,6 +293,7 @@ void ShutdownDBus() {
 #endif
   hermes_clients::Shutdown();
   GnubbyClient::Shutdown();
+  chromeos::FwupdClient::Shutdown();
   FuseBoxReverseClient::Shutdown();
   FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
