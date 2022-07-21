@@ -16,7 +16,6 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,16 +29,15 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/clipboard_image_model_request.h"
+#include "chrome/browser/ui/ash/clipboard_history_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/dns/mock_host_resolver.h"
+#include "ui/aura/client/capture_client_observer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -56,6 +54,10 @@
 namespace {
 
 using ImageModelRequestTestParams = ClipboardImageModelRequest::TestParams;
+using ScopedClipboardHistoryListUpdateWaiter =
+    clipboard_history::ScopedClipboardHistoryListUpdateWaiter;
+using ClipboardImageModelRequestWaiter =
+    clipboard_history::ClipboardImageModelRequestWaiter;
 
 constexpr char kUrlString[] = "https://www.example.com";
 
@@ -100,63 +102,6 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
 
   const ui::ClipboardData* clipboard_data_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-// The helper class to wait for an update to the clipboard history item list.
-class ScopedClipboardHistoryListUpdateWaiter
-    : public ash::ClipboardHistoryController::Observer {
- public:
-  ScopedClipboardHistoryListUpdateWaiter() {
-    controller_observation_.Observe(ash::ClipboardHistoryController::Get());
-  }
-  ScopedClipboardHistoryListUpdateWaiter(
-      const ScopedClipboardHistoryListUpdateWaiter&) = delete;
-  ScopedClipboardHistoryListUpdateWaiter& operator=(
-      const ScopedClipboardHistoryListUpdateWaiter&) = delete;
-  ~ScopedClipboardHistoryListUpdateWaiter() override { run_loop_.Run(); }
-
-  // ash::ClipboardHistoryController::Observer:
-  void OnClipboardHistoryItemListAddedOrRemoved() override { run_loop_.Quit(); }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<ash::ClipboardHistoryController,
-                          ash::ClipboardHistoryController::Observer>
-      controller_observation_{this};
-};
-
-// The helper class to wait for the completion of the image model request.
-class ClipboardImageModelRequestWaiter {
- public:
-  ClipboardImageModelRequestWaiter(ImageModelRequestTestParams* test_params,
-                                   bool expect_auto_resize)
-      : test_params_(test_params), expect_auto_resize_(expect_auto_resize) {
-    test_params_->callback =
-        base::BindRepeating(&ClipboardImageModelRequestWaiter::OnRequestStop,
-                            base::Unretained(this));
-    ClipboardImageModelRequest::SetTestParams(test_params_);
-  }
-  ClipboardImageModelRequestWaiter(const ClipboardImageModelRequestWaiter&) =
-      delete;
-  ClipboardImageModelRequestWaiter& operator=(
-      const ClipboardImageModelRequestWaiter&) = delete;
-  ~ClipboardImageModelRequestWaiter() {
-    test_params_->callback = base::NullCallback();
-    ClipboardImageModelRequest::SetTestParams(nullptr);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  void OnRequestStop(bool use_auto_resize_mode) {
-    EXPECT_EQ(expect_auto_resize_, use_auto_resize_mode);
-    run_loop_.Quit();
-  }
-
- private:
-  ImageModelRequestTestParams* const test_params_;
-  const bool expect_auto_resize_;
-
-  base::RunLoop run_loop_;
 };
 
 // The helper class to wait for the observed view's bounds update.
@@ -1200,115 +1145,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryMultiProfileBrowserTest,
     std::advance(it, 1u);
     EXPECT_EQ(copypaste_data1, it->data().text());
   }
-}
-
-// TODO(crbug.com/1304484): Make this class inherit from
-// `ClipboardHistoryBrowserTest` instead if possible.
-class ClipboardHistoryWebContentsBrowserTest : public InProcessBrowserTest {
- public:
-  ClipboardHistoryWebContentsBrowserTest() = default;
-  ~ClipboardHistoryWebContentsBrowserTest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromDirectory(
-        test_data_dir.AppendASCII("chrome/test/data/ash/clipboard_history"));
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-};
-
-// Verifies that the images rendered from the copied web contents should
-// show in the clipboard history menu. Switching the auto resize mode is covered
-// in this test case.
-// Flaky: crbug/1224777
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
-                       DISABLED_VerifyHTMLRendering) {
-  // Load the web page which contains images and text.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/image-and-text.html")));
-
-  // Select one part of the web page. Wait until the selection region updates.
-  // Then copy the selected part to clipboard.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  content::BoundingBoxUpdateWaiter select_part_one(web_contents);
-  ASSERT_TRUE(ExecuteScript(web_contents, "selectPart1();"));
-  select_part_one.Wait();
-
-  const auto& item_lists = GetClipboardItems();
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
-  }
-  ASSERT_EQ(1u, item_lists.size());
-
-  base::HistogramTester histogram_tester;
-
-  // Show the clipboard history menu through the acclerator. When the clipboard
-  // history shows, the process of HTML rendering starts.
-  auto event_generator = std::make_unique<ui::test::EventGenerator>(
-      ash::Shell::GetPrimaryRootWindow());
-  event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-
-  // Render HTML with auto-resize mode enabled. Wait until the rendering
-  // finishes.
-  ImageModelRequestTestParams test_params(/*callback=*/base::NullCallback(),
-                                          /*enforce_auto_resize=*/true);
-  {
-    ClipboardImageModelRequestWaiter image_request_waiter(
-        &test_params, /*expect_auto_resize=*/true);
-    image_request_waiter.Wait();
-  }
-
-  // Verify that the rendering ends normally.
-  histogram_tester.ExpectUniqueSample(
-      "Ash.ClipboardHistory.ImageModelRequest.StopReason",
-      static_cast<int>(
-          ClipboardImageModelRequest::RequestStopReason::kFulfilled),
-      1);
-
-  // Verify that the clipboard history menu shows. Then close the menu.
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Select another part. Wait until the selection region updates. Then copy
-  // the selected html code to clipboard.
-  content::BoundingBoxUpdateWaiter select_part_two(web_contents);
-  ASSERT_TRUE(ExecuteScript(web_contents, "selectPart2();"));
-  select_part_two.Wait();
-
-  {
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
-  }
-  ASSERT_EQ(2u, item_lists.size());
-
-  // Show the clipboard history menu.
-  event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-
-  // Render HTML with auto-resize mode disabled. Wait until the rendering
-  // finishes.
-  test_params.enforce_auto_resize = false;
-  {
-    ClipboardImageModelRequestWaiter image_request_waiter(
-        &test_params, /*expect_auto_resize=*/false);
-    image_request_waiter.Wait();
-  }
-
-  // Verify that the rendering ends normally.
-  histogram_tester.ExpectUniqueSample(
-      "Ash.ClipboardHistory.ImageModelRequest.StopReason",
-      static_cast<int>(
-          ClipboardImageModelRequest::RequestStopReason::kFulfilled),
-      2);
-
-  // Verify that the clipboard history menu's status.
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  ASSERT_EQ(2, GetContextMenu()->GetMenuItemsCount());
 }
 
 // The browser test which creates a widget with a textfield during setting-up
