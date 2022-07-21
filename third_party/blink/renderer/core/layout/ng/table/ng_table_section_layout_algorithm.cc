@@ -162,7 +162,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(
-        Node(), ConstraintSpace(), BorderPadding().block_end,
+        Node(), ConstraintSpace(), /* trailing_border_padding */ LayoutUnit(),
         FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
     DCHECK_EQ(status, NGBreakStatus::kContinue);
   }

@@ -1782,6 +1782,7 @@ virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/table-cell-mult
 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/table-cell-multicol-nested-003.html [ Pass ]
 virtual/layout_ng_table_frag/fragmentation/repeating-thead-under-repeating-thead.html [ Pass ]
 virtual/layout_ng_table_frag/fragmentation/single-line-cells-repeating-thead-cell-straddles-page-unsplittable-div.html [ Pass ]
+virtual/layout_ng_table_frag/fragmentation/table-row-page-break-collapsed-border.html [ Pass ]
 
 ### Tests failing with LayoutNGTableFragmentation enabled:
 crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
@@ -1813,7 +1814,6 @@ crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/single-line-cells-r
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/table-overlapping-rowspan.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/table-row-dimensions-break-freely.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/table-row-dimensions-with-thead.html [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/table-row-page-break-collapsed-border.html [ Crash Failure ]
 
 ### With LayoutNGPrinting enabled:
 
@@ -4050,6 +4050,7 @@ crbug.com/1078927 external/wpt/css/css-multicol/table/table-cell-multicol-nested
 crbug.com/1078927 external/wpt/css/css-multicol/table/table-cell-multicol-nested-003.html [ Failure ]
 crbug.com/849459 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]
 crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-cell-straddles-page-unsplittable-div.html [ Failure ]
+crbug.com/1078927 fragmentation/table-row-page-break-collapsed-border.html [ Failure ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
