@@ -87,6 +87,8 @@ bool NavigatorBeacon::SendBeaconImpl(
     switch (data->GetContentType()) {
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
           kArrayBuffer: {
+        UseCounter::Count(execution_context,
+                          WebFeature::kSendBeaconWithArrayBuffer);
         auto* data_buffer = data->GetAsArrayBuffer();
         if (!base::CheckedNumeric<wtf_size_t>(data_buffer->ByteLength())
                  .IsValid()) {
@@ -103,6 +105,8 @@ bool NavigatorBeacon::SendBeaconImpl(
       }
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
           kArrayBufferView: {
+        UseCounter::Count(execution_context,
+                          WebFeature::kSendBeaconWithArrayBufferView);
         auto* data_view = data->GetAsArrayBufferView().Get();
         if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLength())
                  .IsValid()) {
@@ -117,11 +121,14 @@ bool NavigatorBeacon::SendBeaconImpl(
         break;
       }
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::kBlob:
+        UseCounter::Count(execution_context, WebFeature::kSendBeaconWithBlob);
         allowed = PingLoader::SendBeacon(*script_state, frame, url,
                                          data->GetAsBlob());
         break;
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
           kFormData:
+        UseCounter::Count(execution_context,
+                          WebFeature::kSendBeaconWithFormData);
         allowed = PingLoader::SendBeacon(*script_state, frame, url,
                                          data->GetAsFormData());
         break;
@@ -132,11 +139,15 @@ bool NavigatorBeacon::SendBeaconImpl(
         return false;
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
           kURLSearchParams:
+        UseCounter::Count(execution_context,
+                          WebFeature::kSendBeaconWithURLSearchParams);
         allowed = PingLoader::SendBeacon(*script_state, frame, url,
                                          data->GetAsURLSearchParams());
         break;
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
           kUSVString:
+        UseCounter::Count(execution_context,
+                          WebFeature::kSendBeaconWithUSVString);
         allowed = PingLoader::SendBeacon(*script_state, frame, url,
                                          data->GetAsUSVString());
         break;

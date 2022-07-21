@@ -40862,6 +40862,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4302" label="ExpectCTHeader"/>
   <int value="4303" label="NavigateEventTransitionWhile"/>
   <int value="4304" label="NavigateEventRestoreScroll"/>
+  <int value="4305" label="SendBeaconWithArrayBuffer"/>
+  <int value="4306" label="SendBeaconWithArrayBufferView"/>
+  <int value="4307" label="SendBeaconWithBlob"/>
+  <int value="4308" label="SendBeaconWithFormData"/>
+  <int value="4309" label="SendBeaconWithURLSearchParams"/>
+  <int value="4310" label="SendBeaconWithUSVString"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -3623,6 +3623,12 @@ enum WebFeature {
   kExpectCTHeader = 4302,
   kNavigateEventTransitionWhile = 4303,
   kNavigateEventRestoreScroll = 4304,
+  kSendBeaconWithArrayBuffer = 4305,
+  kSendBeaconWithArrayBufferView = 4306,
+  kSendBeaconWithBlob = 4307,
+  kSendBeaconWithFormData = 4308,
+  kSendBeaconWithURLSearchParams = 4309,
+  kSendBeaconWithUSVString = 4310,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
