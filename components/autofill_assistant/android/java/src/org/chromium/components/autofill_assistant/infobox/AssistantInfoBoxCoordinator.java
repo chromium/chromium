@@ -62,6 +62,6 @@ public class AssistantInfoBoxCoordinator {
 
     private boolean isEmpty(AssistantInfoBox infoBox) {
         return infoBox == null
-                || (infoBox.getImagePath().isEmpty() && infoBox.getExplanation().isEmpty());
+                || (infoBox.getDrawable() == null && infoBox.getExplanation().isEmpty());
     }
 }
