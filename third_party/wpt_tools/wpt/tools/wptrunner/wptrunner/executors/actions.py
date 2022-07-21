@@ -70,9 +70,13 @@ class ActionSequenceAction:
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
+        self.requires_state_reset = False
 
     def __call__(self, payload):
         # TODO: some sort of shallow error checking
+        if self.requires_state_reset:
+            self.reset()
+        self.requires_state_reset = True
         actions = payload["actions"]
         for actionSequence in actions:
             if actionSequence["type"] == "pointer":
@@ -84,6 +88,10 @@ class ActionSequenceAction:
 
     def get_element(self, element_selector):
         return self.protocol.select.element_by_selector(element_selector)
+
+    def reset(self):
+        self.protocol.action_sequence.release()
+        self.requires_state_reset = False
 
 
 class GenerateTestReportAction:

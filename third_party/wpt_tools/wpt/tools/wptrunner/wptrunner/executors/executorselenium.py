@@ -222,6 +222,9 @@ class SeleniumActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def send_actions(self, actions):
         self.webdriver.execute(Command.W3C_ACTIONS, {"actions": actions})
 
+    def release(self):
+        self.webdriver.execute(Command.W3C_CLEAR_ACTIONS, {})
+
 
 class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):

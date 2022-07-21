@@ -6,7 +6,6 @@ import shutil
 import stat
 import subprocess
 import tempfile
-import xml.etree.ElementTree as etree  # noqa: N813
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
 from distutils.spawn import find_executable
@@ -1452,8 +1451,26 @@ class Safari(Browser):
     requirements = "requirements_safari.txt"
 
     def _find_downloads(self):
-        def text_content(e):
-            return etree.tostring(e, encoding="unicode", method="text")
+        def text_content(e, __output=None):
+            # this doesn't use etree.tostring so that we can add spaces for p and br
+            if __output is None:
+                __output = []
+
+            if e.tag == "p":
+                __output.append("\n\n")
+
+            if e.tag == "br":
+                __output.append("\n")
+
+            if e.text is not None:
+                __output.append(e.text)
+
+            for child in e:
+                text_content(child, __output)
+                if child.tail is not None:
+                    __output.append(child.tail)
+
+            return "".join(__output)
 
         self.logger.info("Finding STP download URLs")
         resp = get("https://developer.apple.com/safari/download/")
@@ -1472,38 +1489,50 @@ class Safari(Browser):
             if {"download", "dmg", "zip"} & class_names:
                 downloads.append(candidate)
 
-        """
-        When converting to string with text_content, it converts <br> to no space.
-        For example:
-        Input: Safari Technology Preview<br>for macOS&nbsp;Ventura
-        Output: Safari Technology Previewfor macOS Ventura
-        """
-        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s*(?:[0-9]+\s+)?for\s+macOS")
+        # Note we use \s throughout for space as we don't care what form the whitespace takes
+        stp_link_text = re.compile(
+            r"^\s*Safari\s+Technology\s+Preview\s+(?:[0-9]+\s+)?for\s+macOS"
+        )
         requirement = re.compile(
-            r"Requires\s+macOS\s+([0-9\.]+)\s+(?:or\s+later|beta)."
+            r"""(?x)  # (extended regexp syntax for comments)
+            ^\s*Requires\s+macOS\s+  # Starting with the magic string
+            ([0-9\.]+)  # A macOS version number of numbers and dots
+            (?:\s+beta(?:\s+[0-9]+)?)?  # Optionally a beta, itself optionally with a number (no dots!)
+            (?:\s+or\s+later)?  # Optionally an 'or later'
+            \.\s*$  # Ending with a literal dot
+            """
         )
 
         stp_downloads = []
         for download in downloads:
             for link in download.iterfind(".//a[@href]"):
-                if stp_link_text.match(text_content(link)):
+                if stp_link_text.search(text_content(link)):
                     break
+                else:
+                    self.logger.debug("non-matching anchor: " + text_content(link))
             else:
                 continue
 
-            m = requirement.search(text_content(download))
-            if m:
-                version = m.group(1)
+            for el in download.iter():
+                # avoid assuming any given element here, just assume it is a single element
+                m = requirement.search(text_content(el))
+                if m:
+                    version = m.group(1)
 
-                # This assumes the current macOS numbering, whereby X.Y is compatible
-                # with X.(Y+1), e.g. 12.4 is compatible with 12.3, but 13.0 isn't
-                # compatible with 12.3. This doesn't handle the former 10.* numbering.
-                if "." in version:
-                    spec = SpecifierSet(f"~={version}")
-                else:
-                    spec = SpecifierSet(f"=={version}.*")
+                    # This assumes the current macOS numbering, whereby X.Y is compatible
+                    # with X.(Y+1), e.g. 12.4 is compatible with 12.3, but 13.0 isn't
+                    # compatible with 12.3.
+                    if version.count(".") >= (2 if version.startswith("10.") else 1):
+                        spec = SpecifierSet(f"~={version}")
+                    else:
+                        spec = SpecifierSet(f"=={version}.*")
 
-                stp_downloads.append((spec, link.attrib["href"]))
+                    stp_downloads.append((spec, link.attrib["href"]))
+                    break
+            else:
+                self.logger.debug(
+                    "Found a link but no requirement: " + text_content(download)
+                )
 
         if stp_downloads:
             self.logger.info(

@@ -384,6 +384,9 @@ class ActionSequenceProtocolPart(ProtocolPart):
         :param actions: A protocol-specific handle to an array of actions."""
         pass
 
+    def release(self):
+        pass
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

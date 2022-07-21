@@ -237,6 +237,9 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def send_actions(self, actions):
         self.webdriver.actions.perform(actions['actions'])
 
+    def release(self):
+        self.webdriver.actions.release()
+
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
@@ -627,6 +630,8 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         self.protocol.base.execute_script(self.wait_script, True)
 
         screenshot = self.protocol.webdriver.screenshot()
+        if screenshot is None:
+            raise ValueError('screenshot is None')
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):
