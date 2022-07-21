@@ -197,7 +197,9 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
             mButtonData.setButtonSpec(new ButtonSpec(receivedButtonSpec.getDrawable(),
                     wrapClickListener(receivedButtonSpec.getOnClickListener(),
                             receivedButtonSpec.getButtonVariant()),
-                    mMenuHandler, receivedButtonSpec.getContentDescriptionResId(),
+                    // Use menu handler only with static actions.
+                    receivedButtonSpec.isDynamicAction() ? null : mMenuHandler,
+                    receivedButtonSpec.getContentDescriptionResId(),
                     receivedButtonSpec.getSupportsTinting(),
                     receivedButtonSpec.getIPHCommandBuilder(),
                     receivedButtonSpec.getButtonVariant(),

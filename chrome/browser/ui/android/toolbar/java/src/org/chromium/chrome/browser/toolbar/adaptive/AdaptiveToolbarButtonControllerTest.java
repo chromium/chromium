@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -102,6 +103,8 @@ public class AdaptiveToolbarButtonControllerTest {
     private ButtonDataProvider mVoiceToolbarButtonController;
     @Mock
     private ButtonDataProvider mNewTabButtonController;
+    @Mock
+    private ButtonDataProvider mPriceTrackingButtonController;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock
@@ -268,6 +271,65 @@ public class AdaptiveToolbarButtonControllerTest {
 
         verify(settingsLauncher)
                 .launchSettingsActivity(activity, AdaptiveToolbarPreferenceFragment.class);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    public void testShowDynamicAction() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        SettingsLauncher settingsLauncher = mock(SettingsLauncher.class);
+
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
+
+        AdaptiveButtonActionMenuCoordinator menuCoordinator =
+                mock(AdaptiveButtonActionMenuCoordinator.class);
+
+        doReturn(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Assert.fail("This long click listener shouldn't be invoked.");
+                return false;
+            }
+        })
+                .when(menuCoordinator)
+                .createOnLongClickListener(any());
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController =
+                new AdaptiveToolbarButtonController(activity, settingsLauncher,
+                        mActivityLifecycleDispatcher, menuCoordinator, mAndroidPermissionDelegate,
+                        SharedPreferencesManager.getInstance());
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        adaptiveToolbarButtonController.onFinishNativeInitialization();
+
+        mButtonData.setCanShow(true);
+        mButtonData.setEnabled(true);
+        mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
+        when(mPriceTrackingButtonController.get(any())).thenReturn(mButtonData);
+        View view = mock(View.class);
+        when(view.getContext()).thenReturn(activity);
+
+        adaptiveToolbarButtonController.showDynamicAction(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING);
+
+        // Button data should have change twice, first on native initialization and then after
+        // showing the dynamic action.
+        verify(observer, times(2)).buttonDataChanged(true);
+        Assert.assertEquals(mPriceTrackingButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        ButtonSpec buttonSpec = adaptiveToolbarButtonController.get(mTab).getButtonSpec();
+        Assert.assertEquals(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING, buttonSpec.getButtonVariant());
+        Assert.assertTrue(buttonSpec.isDynamicAction());
+        // Dynamic actions should have no long click handlers.
+        Assert.assertNull(buttonSpec.getOnLongClickListener());
+        adaptiveToolbarButtonController.destroy();
     }
 
     private AdaptiveToolbarButtonController buildController() {
