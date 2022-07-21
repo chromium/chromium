@@ -59,7 +59,7 @@
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3822383571486410024">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'కి ముందు ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
-<translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
+<translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
 <translation id="4103419683916926126">మిల్లీసెకన్లు</translation>
 <translation id="4201051445878709314">మునుపటి నెలను చూపుతుంది</translation>
 <translation id="4360991593054037559">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE_LOW" /> మరియు <ph name="VALID_VALUE_HIGHER" /> అనేవి రెండు సమీప చెల్లుబాటు విలువలు.</translation>
@@ -91,7 +91,7 @@
 <translation id="5378437566635403538">విస్తరించబడింది, డైలాగ్ తెరవబడింది.</translation>
 <translation id="5425179576310518467">ప్రస్తుత తేదీ</translation>
 <translation id="5466621249238537318">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి.</translation>
-<translation id="5468998798572797635">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
+<translation id="5468998798572797635">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">అన్‌మ్యూట్ చేయి</translation>
@@ -112,7 +112,7 @@
 <translation id="6165053282446038410">విస్తరించబడింది, <ph name="COUNT" /> ఆటోకంప్లీట్ ఆప్షన్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="6212595056017402527">ప్రస్తుత పేజీ</translation>
 <translation id="6281588256137006900">కాంట్రాస్ట్</translation>
-<translation id="6310801910862476708">చిత్రంలో చిత్రం మోడ్ నుండి నిష్క్రమించు</translation>
+<translation id="6310801910862476708">చిత్రంలో చిత్రం మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6398862346408813489">నెల ఎంపిక ప్యానెల్‌ను చూపుతుంది</translation>
 <translation id="6404546809543547843">ఆడియో సమయ స్క్రబ్బర్</translation>
 <translation id="6443871981718447451">ఉపశీర్షికల మెనూని చూపు</translation>
@@ -120,7 +120,7 @@
 <translation id="6572309429103589720">చెల్లని వ్యాకరణం</translation>
 <translation id="658823671542763450">పూర్తి స్క్రీన్‌లోకి ప్రవేశించు</translation>
 <translation id="6606094904835912297">సిస్టమ్ రంగులు</translation>
-<translation id="6643016212128521049">క్లియర్ చేయి</translation>
+<translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="668171684555832681">ఇతర...</translation>
 <translation id="6709093583001123835">విలువ ఖచ్చితంగా <ph name="VALUE" /> అయ్యి ఉండాలి.</translation>
 <translation id="6709570249143506788">ప్లేబ్యాక్ క్వాలిటీ బాగాలేదు</translation>

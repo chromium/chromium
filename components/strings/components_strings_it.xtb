@@ -1127,7 +1127,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4089152113577680600">Vassoio 14</translation>
 <translation id="4098354747657067197">Sito ingannevole in vista</translation>
 <translation id="4099048595830172239">Il criterio dell'amministratore sconsiglia la condivisione dello schermo con <ph name="APPLICATION_TITLE" /> quando sono visibili contenuti riservati:</translation>
-<translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per personalizzare le dimensioni dei caratteri e i caratteri alternativi in Chrome</translation>
+<translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per personalizzare le dimensioni dei caratteri e i caratteri tipografici in Chrome</translation>
 <translation id="4101413244023615925">Testo e grafica</translation>
 <translation id="410148943680000050">Desktop publishing</translation>
 <translation id="4103249731201008433">Il numero di serie del dispositivo non è valido</translation>
@@ -1616,7 +1616,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
-<translation id="5347645913823149105">Pulsante Personalizza caratteri in Chrome, premi Invio per personalizzare dimensioni dei caratteri e caratteri alternativi in Chrome.</translation>
+<translation id="5347645913823149105">Pulsante Personalizza caratteri in Chrome, premi Invio per personalizzare dimensioni dei caratteri e caratteri tipografici in Chrome.</translation>
 <translation id="5355557959165512791">Al momento non puoi visitare il sito <ph name="SITE" /> perché il relativo certificato è stato revocato. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="5356837363448394805">Faccina con guance rosse</translation>
 <translation id="5357848622083956825">Design e arti visive</translation>
@@ -2458,7 +2458,7 @@ Ulteriori dettagli:
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">Questo sito mostra annunci invasivi o fuorvianti. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Contenuti pericolosi bloccati.</translation>
-<translation id="7751971323486164747">Personalizza le dimensioni dei caratteri e i caratteri alternativi in Chrome</translation>
+<translation id="7751971323486164747">Personalizza le dimensioni dei caratteri e i caratteri tipografici in Chrome</translation>
 <translation id="7752995774971033316">Non gestito</translation>
 <translation id="7755624218968747854">Rullo principale</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
