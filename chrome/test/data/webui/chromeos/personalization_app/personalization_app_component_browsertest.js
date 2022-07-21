@@ -11,6 +11,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
+GEN('#include "ash/webui/personalization_app/test/personalization_app_mojom_banned_browsertest_fixture.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -29,6 +30,11 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
       GEN('ash::DarkLightModeController::Get()');
       GEN('->SetDarkModeEnabledForTest(false);');
     };
+  }
+
+  get typedefCppFixture() {
+    return 'ash::personalization_app::' +
+        'PersonalizationAppMojomBannedBrowserTestFixture';
   }
 };
 

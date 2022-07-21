@@ -17,12 +17,12 @@ import '../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {getLocalStorageAttribution, isNonEmptyArray} from '../../common/utils.js';
-import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
-import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
 export class WallpaperPreview extends WithPersonalizationStore {
@@ -48,15 +48,10 @@ export class WallpaperPreview extends WithPersonalizationStore {
 
   private image_: CurrentWallpaper|null;
   private imageLoading_: boolean;
-  private wallpaperProvider_: WallpaperProviderInterface;
-
-  constructor() {
-    super();
-    this.wallpaperProvider_ = getWallpaperProvider();
-  }
 
   override connectedCallback() {
     super.connectedCallback();
+    WallpaperObserver.initWallpaperObserverIfNeeded();
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(
         'imageLoading_',

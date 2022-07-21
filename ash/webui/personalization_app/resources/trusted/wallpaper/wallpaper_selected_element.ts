@@ -17,13 +17,14 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getLocalStorageAttribution, isNonEmptyArray} from '../../common/utils.js';
-import {CurrentWallpaper, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperLayout, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum, hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_selected_element.html.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
@@ -163,15 +164,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private error_: string;
   private showPreviewButton_: boolean;
 
-  private wallpaperProvider_: WallpaperProviderInterface;
-
-  constructor() {
-    super();
-    this.wallpaperProvider_ = getWallpaperProvider();
-  }
-
   override connectedCallback() {
     super.connectedCallback();
+    WallpaperObserver.initWallpaperObserverIfNeeded();
     this.watch('error_', state => state.error);
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(
@@ -181,7 +176,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
             state.wallpaper.loading.refreshWallpaper);
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
     this.updateFromStore();
-    getDailyRefreshState(this.wallpaperProvider_, this.getStore());
+    getDailyRefreshState(getWallpaperProvider(), this.getStore());
   }
 
 
@@ -298,7 +293,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private onClickLayoutIcon_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const layout = getWallpaperLayoutEnum(eventTarget.dataset['layout']!);
-    setCurrentWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
+    setCurrentWallpaperLayout(layout, getWallpaperProvider(), this.getStore());
   }
 
   private computeDailyRefreshIcon_(
@@ -328,14 +323,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
       assert(!this.collectionId);
       selectGooglePhotosAlbum(
           isDailyRefreshId ? '' : this.googlePhotosAlbumId,
-          this.wallpaperProvider_, this.getStore());
+          getWallpaperProvider(), this.getStore());
     } else {
       setDailyRefreshCollectionId(
-          isDailyRefreshId ? '' : this.collectionId!, this.wallpaperProvider_,
+          isDailyRefreshId ? '' : this.collectionId!, getWallpaperProvider(),
           this.getStore());
       // Only refresh the wallpaper if daily refresh is toggled on.
       if (!isDailyRefreshId) {
-        updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
+        updateDailyRefreshWallpaper(getWallpaperProvider(), this.getStore());
       }
     }
   }
@@ -358,7 +353,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   private onClickUpdateDailyRefreshWallpaper_() {
-    updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
+    updateDailyRefreshWallpaper(getWallpaperProvider(), this.getStore());
   }
 
   /**

@@ -71,6 +71,8 @@ source_set("browser_test_support") {
     "test/fake_personalization_app_wallpaper_provider.h",
     "test/personalization_app_browsertest_fixture.cc",
     "test/personalization_app_browsertest_fixture.h",
+    "test/personalization_app_mojom_banned_browsertest_fixture.cc",
+    "test/personalization_app_mojom_banned_browsertest_fixture.h",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
