@@ -1328,7 +1328,8 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1367,7 +1368,44 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   task_environment()->AdvanceClock(base::Hours(1));
   base::RunLoop().RunUntilIdle();
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+  std::vector<download::DownloadItem*> items;
+  auto safe_item = CreateActiveDownloadItem(0);
+  EXPECT_CALL(*safe_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+  auto dangerous_item = CreateActiveDownloadItem(0);
+  EXPECT_CALL(*dangerous_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  auto canceled_item = CreateActiveDownloadItem(0);
+  EXPECT_CALL(*canceled_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  EXPECT_CALL(*canceled_item, GetState())
+      .WillRepeatedly(Return(DownloadItem::CANCELLED));
+  items.push_back(safe_item.get());
+  items.push_back(dangerous_item.get());
+  items.push_back(canceled_item.get());
+  EXPECT_CALL(*download_manager(), GetAllDownloads(_))
+      .WillRepeatedly(SetArgPointee<0>(items));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // No cancels should go through for Ash.
+  EXPECT_CALL(*safe_item, Cancel(false)).Times(0);
+  EXPECT_CALL(*dangerous_item, Cancel(false)).Times(0);
+  EXPECT_CALL(*canceled_item, Cancel(false)).Times(0);
+#else
+  EXPECT_CALL(*safe_item, Cancel(false)).Times(0);
+  EXPECT_CALL(*dangerous_item, Cancel(false)).Times(1);
+  EXPECT_CALL(*canceled_item, Cancel(false)).Times(0);
+#endif
+
+  delegate()->CancelAllEphemeralWarnings();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 namespace {

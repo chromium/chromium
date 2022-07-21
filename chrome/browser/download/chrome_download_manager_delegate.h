@@ -27,6 +27,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/safe_browsing/buildflags.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -53,7 +54,8 @@ class CrxInstaller;
 class ChromeDownloadManagerDelegate
     : public content::DownloadManagerDelegate,
       public content::NotificationObserver,
-      public DownloadTargetDeterminerDelegate {
+      public DownloadTargetDeterminerDelegate,
+      public content::DownloadManager::Observer {
  public:
   explicit ChromeDownloadManagerDelegate(Profile* profile);
 
@@ -246,12 +248,14 @@ class ChromeDownloadManagerDelegate
 
   // So that test classes that inherit from this for override purposes
   // can call back into the DownloadManager.
-  raw_ptr<content::DownloadManager> download_manager_;
+  raw_ptr<content::DownloadManager> download_manager_ = nullptr;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeDownloadManagerDelegate>;
   FRIEND_TEST_ALL_PREFIXES(ChromeDownloadManagerDelegateTest,
                            RequestConfirmation_Android);
+  FRIEND_TEST_ALL_PREFIXES(ChromeDownloadManagerDelegateTest,
+                           CancelAllEphemeralWarnings);
   FRIEND_TEST_ALL_PREFIXES(DownloadLaterTriggerTest, DownloadLaterTrigger);
 
   using IdCallbackVector = std::vector<content::DownloadIdCallback>;
@@ -305,7 +309,14 @@ class ChromeDownloadManagerDelegate
   // Cancels a download if it's still an ephemeral warning (and has not been
   // acted on by the user).
   void CancelForEphemeralWarning(const std::string& guid);
+  // If the browser doesn't shut down cleanly, there can be ephemeral warnings
+  // that were not cleaned up. This function cleans them up on startup, when the
+  // download manager is initialized.
+  void CancelAllEphemeralWarnings();
 #endif
+
+  // content::DownloadManager::Observer
+  void OnManagerInitialized() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // Called after a unique file name is generated in the case that there is a

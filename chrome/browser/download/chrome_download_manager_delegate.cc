@@ -445,6 +445,10 @@ ChromeDownloadManagerDelegate::~ChromeDownloadManagerDelegate() {
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {
+  if (download_manager_) {
+    download_manager_->RemoveObserver(this);
+  }
+
   download_manager_ = dm;
 
   safe_browsing::SafeBrowsingService* sb_service =
@@ -452,6 +456,10 @@ void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {
   if (sb_service && !profile_->IsOffTheRecord()) {
     // Include this download manager in the set monitored by safe browsing.
     sb_service->AddDownloadManager(dm);
+  }
+
+  if (download_manager_) {
+    download_manager_->AddObserver(this);
   }
 }
 
@@ -480,7 +488,10 @@ void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(
 void ChromeDownloadManagerDelegate::Shutdown() {
   download_prefs_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  download_manager_ = nullptr;
+  if (download_manager_) {
+    download_manager_->RemoveObserver(this);
+    download_manager_ = nullptr;
+  }
 }
 
 content::DownloadIdCallback
@@ -1797,6 +1808,12 @@ void ChromeDownloadManagerDelegate::ConnectToQuarantineService(
 #endif  // !BUILDFLAG(IS_WIN)
 }
 
+void ChromeDownloadManagerDelegate::OnManagerInitialized() {
+#if !BUILDFLAG(IS_ANDROID)
+  CancelAllEphemeralWarnings();
+#endif
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
     const std::string& guid) {
@@ -1819,6 +1836,18 @@ void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
   // Confirm that the user has not already acted on the warning.
   if (std::make_unique<DownloadItemModel>(download)->IsEphemeralWarning()) {
     download->Cancel(/*user_cancel=*/false);
+  }
+}
+
+void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
+  content::DownloadManager::DownloadVector downloads;
+  download_manager_->GetAllDownloads(&downloads);
+  for (auto* download : downloads) {
+    auto model = std::make_unique<DownloadItemModel>(download);
+    if (model->IsEphemeralWarning() &&
+        model->GetState() != download::DownloadItem::CANCELLED) {
+      download->Cancel(/*user_cancel=*/false);
+    }
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
