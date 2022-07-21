@@ -10,15 +10,15 @@
 using testing::ElementsAre;
 using testing::StrEq;
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_ZeroWindow) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_ZeroWindow) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 0;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".ZeroWindow")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kZeroWindow);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_AllTabsHidden_VideoCapture) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_AllTabsHidden_VideoCapture) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
@@ -31,11 +31,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_AllTabsHidden_VideoCapture) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".AllTabsHidden_VideoCapture")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kAllTabsHiddenVideoCapture);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_AllTabsHidden_Audio) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_AllTabsHidden_Audio) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
@@ -48,12 +48,12 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_AllTabsHidden_Audio) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".AllTabsHidden_Audio")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kAllTabsHiddenAudio);
 }
 
 TEST(UsageScenarioTest,
-     GetLongIntervalSuffixes_AllTabsHidden_NoVideoCaptureOrAudio) {
+     GetLongIntervalScenario_AllTabsHidden_NoVideoCaptureOrAudio) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
@@ -66,12 +66,11 @@ TEST(UsageScenarioTest,
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(
-      GetLongIntervalSuffixes(interval_data),
-      ElementsAre(StrEq(""), StrEq(".AllTabsHidden_NoVideoCaptureOrAudio")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kAllTabsHiddenNoVideoCaptureOrAudio);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_VideoCapture) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_VideoCapture) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -84,11 +83,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_VideoCapture) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".VideoCapture")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kVideoCapture);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_FullscreenVideo) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_FullscreenVideo) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -101,11 +100,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_FullscreenVideo) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".FullscreenVideo")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kFullscreenVideo);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_EmbeddedVideo_NoNavigation) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_EmbeddedVideo_NoNavigation) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -118,11 +117,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_EmbeddedVideo_NoNavigation) {
   interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".EmbeddedVideo_NoNavigation")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kEmbeddedVideoNoNavigation);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_EmbeddedVideo_WithNavigation) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_EmbeddedVideo_WithNavigation) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -135,11 +134,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_EmbeddedVideo_WithNavigation) {
   interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".EmbeddedVideo_WithNavigation")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kEmbeddedVideoWithNavigation);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_Audio) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_Audio) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -152,11 +151,10 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_Audio) {
   interval_data.user_interaction_count = 1;
   interval_data.top_level_navigation_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".Audio")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario, Scenario::kAudio);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_Navigation) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_Navigation) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -169,11 +167,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_Navigation) {
   // Values below should be ignored.
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".Navigation")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kNavigation);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_Interaction) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_Interaction) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -185,11 +183,11 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_Interaction) {
   interval_data.top_level_navigation_count = 0;
   interval_data.user_interaction_count = 1;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".Interaction")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kInteraction);
 }
 
-TEST(UsageScenarioTest, GetLongIntervalSuffixes_Passive) {
+TEST(UsageScenarioTest, GetLongIntervalScenario_Passive) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -201,8 +199,8 @@ TEST(UsageScenarioTest, GetLongIntervalSuffixes_Passive) {
   interval_data.top_level_navigation_count = 0;
   interval_data.user_interaction_count = 0;
 
-  EXPECT_THAT(GetLongIntervalSuffixes(interval_data),
-              ElementsAre(StrEq(""), StrEq(".Passive")));
+  EXPECT_EQ(GetLongIntervalScenario(interval_data).scenario,
+            Scenario::kPassive);
 }
 
 #if BUILDFLAG(IS_MAC)

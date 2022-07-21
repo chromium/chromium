@@ -496,6 +496,36 @@ chromium-metrics-reviews@google.com.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
+<histogram name="PerformanceMonitor.UsageScenario.LongInterval"
+    enum="PerformanceMonitor.UsageScenario.LongInterval"
+    expires_after="2023-06-18">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Record the usage scenario that applies to the last 2 mins of Chrome use.
+    Recorded every two minutes on a timer. For more information on user
+    scenarios see go/chrome_power_use_per_scenario.
+
+    Values in the enum match the variants present in the
+    &quot;UsageScenario&quot; variants.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceMonitor.UsageScenario.ShortInterval"
+    enum="PerformanceMonitor.UsageScenario.ShortInterval"
+    expires_after="2023-06-18">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Record the usage scenario that applies to the last 10 seconds of Chrome use.
+    Recorded every two minutes on a timer. For more information on user
+    scenarios see go/chrome_power_use_per_scenario.
+
+    Values in the enum match the variants present in the
+    &quot;UsageScenario10Sec&quot; variants.
+  </summary>
+</histogram>
+
 <histogram name="Power.AdaptiveChargingBatteryPercentageOnUnplug" units="%"
     expires_after="2023-03-19">
   <owner>dbasehore@chromium.org</owner>

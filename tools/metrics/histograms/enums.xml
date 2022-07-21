@@ -76368,6 +76368,38 @@ Called by update_net_trust_anchors.py.-->
   <int value="25" label="DOM_LOADING"/>
 </enum>
 
+<enum name="PerformanceMonitor.UsageScenario.LongInterval">
+  <int value="1" label="All Tabs Hidden Audio"/>
+  <int value="2" label="All Tabs Hidden No Video Capture or Audio"/>
+  <int value="4" label="All Tabs Hidden Video Capture"/>
+  <int value="5" label="Audio"/>
+  <int value="6" label="Embedded Video No Navigation"/>
+  <int value="7" label="Embedded Video With Navigation"/>
+  <int value="8" label="Fullscreen Video"/>
+  <int value="9" label="Interaction"/>
+  <int value="10" label="Navigation"/>
+  <int value="11" label="Passive"/>
+  <int value="12" label="Video capture"/>
+  <int value="13" label="Zero Window"/>
+</enum>
+
+<enum name="PerformanceMonitor.UsageScenario.ShortInterval">
+  <int value="1" label="All Tabs Hidden Audio"/>
+  <int value="2" label="All Tabs Hidden No Video Capture or Audio"/>
+  <int value="3" label="All Tabs Hidden No Video Capture or Audio (Recent)"/>
+  <int value="4" label="All Tabs Hidden Video Capture"/>
+  <int value="5" label="Audio"/>
+  <int value="6" label="Embedded Video No Navigation"/>
+  <int value="7" label="Embedded Video With Navigation"/>
+  <int value="8" label="Fullscreen Video"/>
+  <int value="9" label="Interaction"/>
+  <int value="10" label="Navigation"/>
+  <int value="11" label="Passive"/>
+  <int value="12" label="Video capture"/>
+  <int value="13" label="Zero Window"/>
+  <int value="14" label="Zero Window (Recent)"/>
+</enum>
+
 <enum name="PeripheralConnectivityResult">
 <!-- This must be kept current with PeripheralConnectivityResults located in
     ash/components/peripheral_notification/peripheral_notification_manager.h -->

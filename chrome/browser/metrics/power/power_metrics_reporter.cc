@@ -262,10 +262,19 @@ void PowerMetricsReporter::ReportMetrics(
   auto long_interval_data =
       long_usage_scenario_data_store_->ResetIntervalData();
 
-  // Report histograms.
-  auto long_interval_suffixes = GetLongIntervalSuffixes(long_interval_data);
+  // Get scenario data.
+  const auto long_interval_scenario_params =
+      GetLongIntervalScenario(long_interval_data);
+  // Histograms are recorded without suffix and with a scenario-specific
+  // suffix.
+  const std::vector<const char*> long_interval_suffixes{
+      "", long_interval_scenario_params.histogram_suffix};
+
+  // Report process metrics histograms.
   ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
                                            long_interval_suffixes);
+  base::UmaHistogramEnumeration("PerformanceMonitor.UsageScenario.LongInterval",
+                                long_interval_scenario_params.scenario);
 
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   // Report UKMs.
@@ -308,6 +317,10 @@ void PowerMetricsReporter::ReportMetrics(
         short_usage_scenario_data_store_->ResetIntervalData();
     const ScenarioParams short_interval_scenario_params =
         GetShortIntervalScenarioParams(short_interval_data, long_interval_data);
+
+    base::UmaHistogramEnumeration(
+        "PerformanceMonitor.UsageScenario.ShortInterval",
+        short_interval_scenario_params.scenario);
 
     ReportShortIntervalHistograms(
         short_interval_scenario_params.histogram_suffix,

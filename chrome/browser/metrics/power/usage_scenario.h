@@ -5,23 +5,40 @@
 #ifndef CHROME_BROWSER_METRICS_POWER_USAGE_SCENARIO_H_
 #define CHROME_BROWSER_METRICS_POWER_USAGE_SCENARIO_H_
 
-#include <vector>
-
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+// Describes the different usaage scenarios in Chrome.
+enum class Scenario {
+  kAllTabsHiddenAudio = 1,
+  kAllTabsHiddenNoVideoCaptureOrAudio = 2,
+  kAllTabsHiddenNoVideoCaptureOrAudioRecent = 3,  // Short scenario only.
+  kAllTabsHiddenVideoCapture = 4,
+  kAudio = 5,
+  kEmbeddedVideoNoNavigation = 6,
+  kEmbeddedVideoWithNavigation = 7,
+  kFullscreenVideo = 8,
+  kInteraction = 9,
+  kNavigation = 10,
+  kPassive = 11,
+  kVideoCapture = 12,
+  kZeroWindow = 13,
+  kZeroWindowRecent = 14,  // Short scenario only.
+  kMaxValue = kZeroWindowRecent
+};
 
 // Contains data to determine when and how to generate histograms and trace
 // events for a usage scenario.
 struct ScenarioParams {
+  Scenario scenario;
   const char* histogram_suffix;
   // CPU usage threshold to emit a "high CPU" trace event.
   double short_interval_cpu_threshold;
   const char* trace_event_title;
 };
 
-// Returns the suffixes to use for histograms and UKMs related to a long
-// interval described by `interval_data`.
-std::vector<const char*> GetLongIntervalSuffixes(
+// Returns the scenario params associated with `interval_data`.
+ScenarioParams GetLongIntervalScenario(
     const UsageScenarioDataStore::IntervalData& interval_data);
 
 #if BUILDFLAG(IS_MAC)
