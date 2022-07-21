@@ -11,6 +11,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/rgb_keyboard/histogram_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
@@ -113,6 +114,42 @@ TEST_P(KeyboardCapabilityHistogramEmittedTest,
   EXPECT_EQ(capability_, client_->get_rgb_keyboard_capabilities());
   histogram_tester.ExpectBucketCount(
       rgb_keyboard::metrics::kRgbKeyboardCapabilityTypeHistogramName, metric_,
+      1);
+}
+
+class RgbChangeTypeHistogramEmittedTest
+    : public RgbKeyboardManagerTest,
+      public testing::WithParamInterface<rgbkbd::RgbKeyboardCapabilities> {
+ public:
+  RgbChangeTypeHistogramEmittedTest() = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RgbChangeTypeHistogramEmittedTest,
+    testing::Values(rgbkbd::RgbKeyboardCapabilities::kIndividualKey,
+                    rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed,
+                    rgbkbd::RgbKeyboardCapabilities::kFourZoneTwelveLed,
+                    rgbkbd::RgbKeyboardCapabilities::kFourZoneFifteenLed));
+
+TEST_P(RgbChangeTypeHistogramEmittedTest, RgbChangeTypeHistogramEmitted) {
+  base::HistogramTester histogram_tester;
+  const auto capability = GetParam();
+  const auto name =
+      std::string(ash::rgb_keyboard::metrics::kRgbKeyboardHistogramPrefix +
+                  ash::rgb_keyboard::metrics::GetCapabilityTypeStr(capability));
+  InitializeManagerWithCapability(capability);
+  manager_->SetStaticBackgroundColor(/*r=*/1, /*g=*/2, /*b=*/3);
+  histogram_tester.ExpectBucketCount(
+      name,
+      ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
+          kStaticBackgroundColorChanged,
+      1);
+  manager_->SetRainbowMode();
+  histogram_tester.ExpectBucketCount(
+      name,
+      ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
+          kRainbowModeSelected,
       1);
 }
 

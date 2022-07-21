@@ -69,6 +69,10 @@ void RgbKeyboardManager::SetStaticBackgroundColor(uint8_t r,
 
   VLOG(1) << "Setting RGB keyboard color to R:" << static_cast<int>(r)
           << " G:" << static_cast<int>(g) << " B:" << static_cast<int>(b);
+  ash::rgb_keyboard::metrics::EmitRgbBacklightChangeType(
+      ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
+          kStaticBackgroundColorChanged,
+      capabilities_);
   RgbkbdClient::Get()->SetStaticBackgroundColor(r, g, b);
 }
 
@@ -80,6 +84,10 @@ void RgbKeyboardManager::SetRainbowMode() {
   }
 
   VLOG(1) << "Setting RGB keyboard to rainbow mode";
+  ash::rgb_keyboard::metrics::EmitRgbBacklightChangeType(
+      ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
+          kRainbowModeSelected,
+      capabilities_);
   RgbkbdClient::Get()->SetRainbowMode();
 }
 

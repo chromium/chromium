@@ -5,16 +5,20 @@
 #ifndef ASH_RGB_KEYBOARD_HISTOGRAM_UTIL_H_
 #define ASH_RGB_KEYBOARD_HISTOGRAM_UTIL_H_
 
+#include <string>
+
+#include "ash/ash_export.h"
 #include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
 
 namespace ash::rgb_keyboard::metrics {
-
+constexpr char kRgbKeyboardHistogramPrefix[] = "ChromeOS.RgbKeyboard.";
 constexpr char kRgbKeyboardCapabilityTypeHistogramName[] =
     "ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType";
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
-// tools/metrics/histograms/enums.xml: RgbKeyboardCapabilityType.
+// tools/metrics/histograms/enums.xml:
+// RgbKeyboardCapabilityType/RgbKeyboardBacklightChangeType.
 // RgbKeyboardCapabilityType gets its values from RgbKeyboardCapabilities
 // defined in: third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h.
 enum class RgbKeyboardCapabilityType {
@@ -26,8 +30,20 @@ enum class RgbKeyboardCapabilityType {
   kMaxValue = kFourZoneFifteenLed,
 };
 
+enum class RgbKeyboardBacklightChangeType {
+  kStaticBackgroundColorChanged = 0,
+  kRainbowModeSelected = 1,
+  kMaxValue = kRainbowModeSelected,
+};
+
+ASH_EXPORT std::string GetCapabilityTypeStr(
+    rgbkbd::RgbKeyboardCapabilities capabilities);
+
 void EmitRgbKeyboardCapabilityType(
     rgbkbd::RgbKeyboardCapabilities capabilities);
+
+void EmitRgbBacklightChangeType(RgbKeyboardBacklightChangeType type,
+                                rgbkbd::RgbKeyboardCapabilities capabilities);
 
 }  // namespace ash::rgb_keyboard::metrics
 
