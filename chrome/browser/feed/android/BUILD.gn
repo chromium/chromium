@@ -61,6 +61,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooks.java",
     "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooksImpl.java",
     "java/src/org/chromium/chrome/browser/feed/sections/OnSectionHeaderSelectedListener.java",
+    "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderBadgeDrawable.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderListProperties.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderProperties.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java",
@@ -203,7 +204,6 @@ android_resources("feed_java_resources") {
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/feed_autoplay_preferences.xml",
-    "java/res/xml/tab_layout_badge.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

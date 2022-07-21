@@ -21,8 +21,6 @@ import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.feed.FeedUma;
@@ -82,21 +80,17 @@ public class SectionHeaderView extends LinearLayout {
 
     private class UnreadIndicator implements ViewTreeObserver.OnGlobalLayoutListener {
         private View mAnchor;
-        private BadgeDrawable mBadge;
+        private SectionHeaderBadgeDrawable mNewBadge;
 
         UnreadIndicator(View anchor) {
             mAnchor = anchor;
-            mBadge = BadgeDrawable.createFromResource(
-                    SectionHeaderView.this.getContext(), R.xml.tab_layout_badge);
-
-            mBadge.setVisible(true);
+            mNewBadge = new SectionHeaderBadgeDrawable(SectionHeaderView.this.getContext());
             mAnchor.getViewTreeObserver().addOnGlobalLayoutListener(this);
         }
 
         void destroy() {
             mAnchor.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            mBadge.setVisible(false);
-            BadgeUtils.detachBadgeDrawable(mBadge, mAnchor);
+            mNewBadge.detach(mAnchor);
         }
 
         @Override
@@ -104,7 +98,7 @@ public class SectionHeaderView extends LinearLayout {
             // attachBadgeDrawable() will crash if mAnchor has no parent. This can happen after the
             // views are detached from the window.
             if (mAnchor.getParent() != null) {
-                BadgeUtils.attachBadgeDrawable(mBadge, mAnchor);
+                mNewBadge.attach(mAnchor);
             }
         }
     }
