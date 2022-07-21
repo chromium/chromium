@@ -8,6 +8,7 @@ assert(is_chromeos_ash)
 
 source_set("system_web_apps") {
   sources = [
+    "chrome_system_web_app_ui_config.cc",
     "system_web_app_background_task.cc",
     "system_web_app_background_task.h",
     "system_web_app_manager.cc",
@@ -31,6 +32,7 @@ source_set("system_web_apps") {
     "//ash/webui/personalization_app",
     "//ash/webui/shimless_rma",
     "//ash/webui/shortcut_customization_ui",
+    "//ash/webui/system_apps/public:system_web_app_config",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/types",

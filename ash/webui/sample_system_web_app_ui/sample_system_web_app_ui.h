@@ -13,6 +13,8 @@
 
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_page_handler.h"
+#include "ash/webui/sample_system_web_app_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,14 +23,15 @@
 
 namespace ash {
 
-// The WebUIConfig for chrome://sample-system-web-app/.
-class SampleSystemWebAppUIConfig : public content::WebUIConfig {
- public:
-  SampleSystemWebAppUIConfig();
-  ~SampleSystemWebAppUIConfig() override;
+class SampleSystemWebAppUI;
 
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+// The WebUIConfig for chrome://sample-system-web-app/.
+class SampleSystemWebAppUIConfig
+    : public SystemWebAppUIConfig<SampleSystemWebAppUI> {
+ public:
+  SampleSystemWebAppUIConfig()
+      : SystemWebAppUIConfig(kChromeUISampleSystemWebAppHost,
+                             SystemWebAppType::SAMPLE) {}
 };
 
 class SampleSystemWebAppUI : public ui::MojoWebUIController,

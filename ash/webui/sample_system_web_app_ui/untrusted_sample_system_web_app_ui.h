@@ -6,6 +6,8 @@
 #define ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
 
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_untrusted_ui.mojom.h"
+#include "ash/webui/sample_system_web_app_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
@@ -19,15 +21,17 @@ class WebUI;
 
 namespace ash {
 
-class UntrustedSampleSystemWebAppUIConfig : public content::WebUIConfig {
- public:
-  UntrustedSampleSystemWebAppUIConfig();
-  ~UntrustedSampleSystemWebAppUIConfig() override;
+class UntrustedSampleSystemWebAppUI;
 
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+class SampleSystemWebAppUntrustedUIConfig
+    : public SystemWebAppUntrustedUIConfig<UntrustedSampleSystemWebAppUI> {
+ public:
+  SampleSystemWebAppUntrustedUIConfig()
+      : SystemWebAppUntrustedUIConfig(kChromeUIUntrustedSampleSystemWebAppHost,
+                                      SystemWebAppType::SAMPLE) {}
 };
 
+// TODO(crbug.com/1345846): Rename to SampleSystemWebAppUntrustedUI.
 class UntrustedSampleSystemWebAppUI
     : public ui::UntrustedWebUIController,
       public mojom::sample_swa::UntrustedPageInterfacesFactory {

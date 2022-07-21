@@ -15,19 +15,6 @@
 
 namespace ash {
 
-UntrustedSampleSystemWebAppUIConfig::UntrustedSampleSystemWebAppUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  kChromeUIUntrustedSampleSystemWebAppHost) {}
-
-UntrustedSampleSystemWebAppUIConfig::~UntrustedSampleSystemWebAppUIConfig() =
-    default;
-
-std::unique_ptr<content::WebUIController>
-UntrustedSampleSystemWebAppUIConfig::CreateWebUIController(
-    content::WebUI* web_ui) {
-  return std::make_unique<UntrustedSampleSystemWebAppUI>(web_ui);
-}
-
 UntrustedSampleSystemWebAppUI::UntrustedSampleSystemWebAppUI(
     content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {

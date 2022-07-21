@@ -20,16 +20,6 @@
 
 namespace ash {
 
-SampleSystemWebAppUIConfig::SampleSystemWebAppUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, kChromeUISampleSystemWebAppHost) {}
-
-SampleSystemWebAppUIConfig::~SampleSystemWebAppUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-SampleSystemWebAppUIConfig::CreateWebUIController(content::WebUI* web_ui) {
-  return std::make_unique<SampleSystemWebAppUI>(web_ui);
-}
-
 SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();

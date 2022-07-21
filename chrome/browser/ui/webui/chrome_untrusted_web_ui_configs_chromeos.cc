@@ -59,7 +59,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   }
 #if !defined(OFFICIAL_BUILD)
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
+      std::make_unique<ash::SampleSystemWebAppUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ash::DemoModeAppUntrustedUIConfig>(base::BindRepeating(
           [] { return ash::DemoSession::Get()->DemoAppComponentPath(); })));
