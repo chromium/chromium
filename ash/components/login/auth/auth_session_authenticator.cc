@@ -85,7 +85,7 @@ void AuthSessionAuthenticator::StartAuthSessionWithChecks(
   // case we need to go through stale data removal.
   auto original_context = std::make_unique<UserContext>(*context);
   auth_performer_->StartAuthSession(
-      std::move(context), is_ephemeral_mount_enforced_,
+      std::move(context), ephemeral,
       base::BindOnce(&AuthSessionAuthenticator::OnStartAuthSession,
                      weak_factory_.GetWeakPtr(), std::move(original_context),
                      ephemeral, std::move(callback)));
