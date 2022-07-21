@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -53,10 +54,6 @@ using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 
 namespace {
-
-// Identifier for the main scroll view covering all the screen content.
-NSString* const kScrollViewIdentifier =
-    @"kPromoStyleScrollViewAccessibilityIdentifier";
 
 // Returns a matcher for the sign-in screen "Continue as <identity>" button.
 id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
@@ -93,7 +90,8 @@ void VerifyForcedSigninFullyDismissed() {
 // Scrolls down to `elementMatcher` in the scrollable content of the first run
 // screen.
 void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
-  id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
+  id<GREYMatcher> scrollView =
+      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(elementMatcher,

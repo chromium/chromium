@@ -10,18 +10,20 @@
 #endif
 
 NSString* const kPromoStyleTitleAccessibilityIdentifier =
-    @"kPromoStyleTitleAccessibilityIdentifier";
+    @"PromoStyleTitleAccessibilityIdentifier";
 NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
-    @"kPromoStyleSubtitleAccessibilityIdentifier";
+    @"PromoStyleSubtitleAccessibilityIdentifier";
+NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier =
+    @"PromoStyleReadMoreActionAccessibilityIdentifier";
 NSString* const kPromoStylePrimaryActionAccessibilityIdentifier =
-    @"kPromoStylePrimaryActionAccessibilityIdentifier";
+    @"PromoStylePrimaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
-    @"kPromoStyleSecondaryActionAccessibilityIdentifier";
+    @"PromoStyleSecondaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
-    @"kPromoStyleTertiaryActionAccessibilityIdentifier";
+    @"PromoStyleTertiaryActionAccessibilityIdentifier";
 NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
-    @"kPromoStyleLearnMoreActionAccessibilityIdentifier";
+    @"PromoStyleLearnMoreActionAccessibilityIdentifier";
 NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
-    @"kPromoStyleDisclaimerViewAccessibilityIdentifier";
+    @"PromoStyleDisclaimerViewAccessibilityIdentifier";
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
-    @"kPromoStyleScrollViewAccessibilityIdentifier";
+    @"PromoStyleScrollViewAccessibilityIdentifier";

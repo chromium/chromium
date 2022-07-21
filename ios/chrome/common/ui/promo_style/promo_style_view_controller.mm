@@ -739,6 +739,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   [attributedString
       appendAttributedString:[NSAttributedString
                                  attributedStringWithAttachment:attachment]];
+  self.primaryActionButton.accessibilityIdentifier =
+      kPromoStyleReadMoreActionAccessibilityIdentifier;
 
   // Make the title change without animation, as the UIButton's default
   // animation when using setTitle:forState: doesn't handle adding a
@@ -811,6 +813,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
                                       forState:UIControlStateNormal];
   [self.primaryActionButton setTitle:self.primaryActionString
                             forState:UIControlStateNormal];
+  self.primaryActionButton.accessibilityIdentifier =
+      kPromoStylePrimaryActionAccessibilityIdentifier;
   // Reset the font to make sure it is properly scaled.
   [self setPrimaryActionButtonFont:self.primaryActionButton];
 

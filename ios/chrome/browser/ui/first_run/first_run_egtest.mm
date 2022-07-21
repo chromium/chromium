@@ -48,9 +48,6 @@ using chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher;
 
 namespace {
 
-NSString* const kScrollViewIdentifier =
-    @"kPromoStyleScrollViewAccessibilityIdentifier";
-
 NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
     @"kMetricsConsentCheckboxAccessibilityIdentifier";
 
@@ -215,7 +212,8 @@ GREYLayoutConstraint* BelowConstraint() {
 // Scrolls down to `elementMatcher` in the scrollable content of the first run
 // screen.
 - (void)scrollToElementAndAssertVisibility:(id<GREYMatcher>)elementMatcher {
-  id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
+  id<GREYMatcher> scrollView =
+      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(elementMatcher,
@@ -491,7 +489,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Scroll to ensure that the third instruction is visible.
   id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kScrollViewIdentifier);
+      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:thirdInstruction]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
       onElementWithMatcher:scrollViewMatcher];

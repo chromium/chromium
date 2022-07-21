@@ -13,6 +13,9 @@ extern NSString* const kPromoStyleTitleAccessibilityIdentifier;
 // A11y Identifier for subtitle label.
 extern NSString* const kPromoStyleSubtitleAccessibilityIdentifier;
 
+// A11y Identifier for the read more action button.
+extern NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier;
+
 // A11y Identifier for the primary action button.
 extern NSString* const kPromoStylePrimaryActionAccessibilityIdentifier;
 
