@@ -247,46 +247,67 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
   const base::Time current_time = clock()->Now();
   // The delay from now until the next highest notification stage is reached, or
   // zero if the highest notification stage has been reached.
-  base::TimeDelta next_delay;
+  base::TimeDelta next_notify_call;
 
   const auto last_stage = upgrade_notification_stage();
   // These if statements must be sorted (highest interval first).
+  // Update notifications are pinned. These levels are used to either show the
+  // notification for the first time, or upgrade it if it already exists.
+  // The stages of notification for regular updates go as follows:
+  // Upgrade time -> quiet period -> notifications should start appearing
+  // (elevated deadline) -> the highest is almost reached (grace deadline) ->
+  // highest stage (high deadline). No more new notifications from this point.
+  // Rollback and other powerwashing updates should ignore the "quiet period"
+  // and start notifying since the moment the update is available.
+  // If RelaunchNotification policy is not set, the user should also be notified
+  // immediately without waiting to reach "elevated deadline".
   if (update_in_progress_) {
     // Cancel any notification of a previous update (if there was one) while a
     // new update is being downloaded.
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
   } else if (upgrade_detected_time().is_null()) {
+    // There is no update.
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
   } else if (current_time >= high_deadline_) {
+    // The highest notification stage is reached.
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_HIGH);
   } else if (current_time >= grace_deadline_) {
+    // The notification stage is increased and almost reached the highest stage.
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_GRACE);
-    next_delay = high_deadline_ - current_time;
+    next_notify_call = high_deadline_ - current_time;
   } else if (current_time >= elevated_deadline_) {
+    // The notification stage is increased from quiet time. Notifications will
+    // start appearing for regular updates.
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_ELEVATED);
-    next_delay = grace_deadline_ - current_time;
+    next_notify_call = grace_deadline_ - current_time;
   } else {
-    // If the relaunch notification policy is enabled, the user will be notified
-    // at a later time, so set the level to UPGRADE_ANNOYANCE_NONE. Otherwise,
-    // the user should be notified now, so set the level to
-    // UPGRADE_ANNOYANCE_LOW.
-    set_upgrade_notification_stage(IsRelaunchNotificationPolicyEnabled()
-                                       ? UPGRADE_ANNOYANCE_NONE
-                                       : UPGRADE_ANNOYANCE_LOW);
-    next_delay = elevated_deadline_ - current_time;
+    // We are in "quiet period".
+    // The user should not be notified if the policy is set unless the update is
+    // a rollback or a powerwash update.
+    // Rollback and powerwash updates should always be notified immediately.
+    if (!IsRelaunchNotificationPolicyEnabled() || is_rollback() ||
+        is_factory_reset_required()) {
+      // UPGRADE_ANNOYANCE_LOW allows to show a notification immediately without
+      // interfering with the rest of the logic related to the policy.
+      set_upgrade_notification_stage(UPGRADE_ANNOYANCE_LOW);
+    } else {
+      // Notifications are delayed.
+      set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
+    }
+    // The stage will change when "elevated deadline" is reached.
+    next_notify_call = elevated_deadline_ - current_time;
   }
   const auto new_stage = upgrade_notification_stage();
 
-  if (!next_delay.is_zero()) {
+  if (!next_notify_call.is_zero()) {
     // Schedule the next wakeup in 20 minutes or when the next change to the
     // notification stage should take place.
     upgrade_notification_timer_.Start(
-        FROM_HERE, std::min(next_delay, kNotifyCycleDelta), this,
+        FROM_HERE, std::min(next_notify_call, kNotifyCycleDelta), this,
         &UpgradeDetectorChromeos::NotifyOnUpgrade);
   } else if (upgrade_notification_timer_.IsRunning()) {
-    // Explicitly stop the timer in case this call is due to a
-    // RelaunchNotificationPeriod change that brought the instance up to the
-    // "high" annoyance level.
+    // Explicitly stop the timer in case this call is due to a stage change that
+    // brought the instance up to the "high" annoyance level.
     upgrade_notification_timer_.Stop();
   }
 
