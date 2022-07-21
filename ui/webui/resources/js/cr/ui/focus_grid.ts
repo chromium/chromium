@@ -4,6 +4,7 @@
 
 // clang-format off
 import {assert} from '../../assert.m.js';
+
 import {FocusRow, FocusRowDelegate} from './focus_row.m.js';
 // clang-format on
 
@@ -27,24 +28,13 @@ import {FocusRow, FocusRowDelegate} from './focus_row.m.js';
  *   focusable  focusable  focusable
  *   focusable  focusable  [focused]  (row: 1, col: 2)
  *   focusable  focusable  focusable
- *
- * @implements {FocusRowDelegate}
  */
-export class FocusGrid {
-  constructor() {
-    /** @type {!Array<!FocusRow>} */
-    this.rows = [];
+export class FocusGrid implements FocusRowDelegate {
+  rows: FocusRow[] = [];
+  private ignoreFocusChange_: boolean = false;
+  private lastFocused_: EventTarget|null = null;
 
-    /** @private {boolean} */
-    this.ignoreFocusChange_ = false;
-
-    /** @private {?EventTarget} */
-    this.lastFocused_ = null;
-  }
-
-  // override
-  // Note: Not using @override because it breaks TypeScript.
-  onFocus(row, e) {
+  onFocus(row: FocusRow, e: Event) {
     if (this.ignoreFocusChange_) {
       this.ignoreFocusChange_ = false;
     } else {
@@ -56,8 +46,7 @@ export class FocusGrid {
     });
   }
 
-  // override
-  onKeydown(row, e) {
+  onKeydown(row: FocusRow, e: KeyboardEvent) {
     const rowIndex = this.rows.indexOf(row);
     assert(rowIndex >= 0);
 
@@ -76,10 +65,7 @@ export class FocusGrid {
     const rowToFocus = this.rows[newRow];
     if (rowToFocus) {
       this.ignoreFocusChange_ = true;
-      rowToFocus
-          .getEquivalentElement(
-              /** @type {!Element} */ (this.lastFocused_))
-          .focus();
+      rowToFocus.getEquivalentElement(this.lastFocused_ as HTMLElement).focus();
       e.preventDefault();
       return true;
     }
@@ -87,8 +73,7 @@ export class FocusGrid {
     return false;
   }
 
-  // override
-  getCustomEquivalent(sampleElement) {
+  getCustomEquivalent(_sampleElement: HTMLElement) {
     return null;
   }
 
@@ -103,12 +88,12 @@ export class FocusGrid {
   }
 
   /**
-   * @param {!Element} target A target item to find in this grid.
-   * @return {number} The row index. -1 if not found.
+   * @param target A target item to find in this grid.
+   * @return The row index. -1 if not found.
    */
-  getRowIndexForTarget(target) {
+  getRowIndexForTarget(target: HTMLElement): number {
     for (let i = 0; i < this.rows.length; ++i) {
-      if (this.rows[i].getElements().indexOf(target) >= 0) {
+      if (this.rows[i]!.getElements().indexOf(target) >= 0) {
         return i;
       }
     }
@@ -116,13 +101,13 @@ export class FocusGrid {
   }
 
   /**
-   * @param {Element} root An element to search for.
-   * @return {?FocusRow} The row with root of |root| or null.
+   * @param root An element to search for.
+   * @return The row with root of |root| or null.
    */
-  getRowForRoot(root) {
+  getRowForRoot(root: HTMLElement): FocusRow|null {
     for (let i = 0; i < this.rows.length; ++i) {
-      if (this.rows[i].root === root) {
-        return this.rows[i];
+      if (this.rows[i]!.root === root) {
+        return this.rows[i]!;
       }
     }
     return null;
@@ -130,19 +115,19 @@ export class FocusGrid {
 
   /**
    * Adds |row| to the end of this list.
-   * @param {!FocusRow} row The row that needs to be added to this grid.
+   * @param row The row that needs to be added to this grid.
    */
-  addRow(row) {
+  addRow(row: FocusRow) {
     this.addRowBefore(row, null);
   }
 
   /**
    * Adds |row| before |nextRow|. If |nextRow| is not in the list or it's
    * null, |row| is added to the end.
-   * @param {!FocusRow} row The row that needs to be added to this grid.
-   * @param {FocusRow} nextRow The row that should follow |row|.
+   * @param row The row that needs to be added to this grid.
+   * @param nextRow The row that should follow |row|.
    */
-  addRowBefore(row, nextRow) {
+  addRowBefore(row: FocusRow, nextRow: FocusRow|null) {
     row.delegate = row.delegate || this;
 
     const nextRowIndex = nextRow ? this.rows.indexOf(nextRow) : -1;
@@ -155,9 +140,9 @@ export class FocusGrid {
 
   /**
    * Removes a row from the focus row. No-op if row is not in the grid.
-   * @param {FocusRow} row The row that needs to be removed.
+   * @param row The row that needs to be removed.
    */
-  removeRow(row) {
+  removeRow(row: FocusRow|null) {
     const nextRowIndex = row ? this.rows.indexOf(row) : -1;
     if (nextRowIndex > -1) {
       this.rows.splice(nextRowIndex, 1);
@@ -167,21 +152,21 @@ export class FocusGrid {
   /**
    * Makes sure that at least one row is active. Should be called once, after
    * adding all rows to FocusGrid.
-   * @param {number=} preferredRow The row to select if no other row is
+   * @param preferredRow The row to select if no other row is
    *     active. Selects the first item if this is beyond the range of the
    *     grid.
    */
-  ensureRowActive(preferredRow) {
+  ensureRowActive(preferredRow?: number) {
     if (this.rows.length === 0) {
       return;
     }
 
     for (let i = 0; i < this.rows.length; ++i) {
-      if (this.rows[i].isActive()) {
+      if (this.rows[i]!.isActive()) {
         return;
       }
     }
 
-    (this.rows[preferredRow || 0] || this.rows[0]).makeActive(true);
+    (this.rows[preferredRow || 0] || this.rows[0]!).makeActive(true);
   }
 }

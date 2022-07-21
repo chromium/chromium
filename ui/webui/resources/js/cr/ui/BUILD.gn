@@ -28,6 +28,18 @@ group("preprocess") {
   public_deps = [
     ":preprocess_generated",
     ":preprocess_src",
+    ":preprocess_src_ts",
+  ]
+}
+
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = [
+    "drag_wrapper.ts",
+    "focus_grid.ts",
   ]
 }
 
@@ -35,11 +47,7 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [
-    "drag_wrapper.js",
-    "focus_grid.js",
-    "store.js",
-  ]
+  in_files = [ "store.js" ]
 
   if (is_chromeos_ash) {
     in_files += [
@@ -304,8 +312,6 @@ js_modulizer("modulize") {
 js_type_check("ui_resources_modules") {
   is_polymer3 = true
   deps = [
-    ":drag_wrapper",
-    ":focus_grid",
     ":focus_outline_manager.m",
     ":focus_row.m",
     ":focus_row_behavior.m",
@@ -375,16 +381,6 @@ if (is_chromeos_ash) {
 
     extra_deps = [ ":modulize" ]
   }
-}
-
-js_library("drag_wrapper") {
-}
-
-js_library("focus_grid") {
-  deps = [
-    ":focus_row.m",
-    "../..:assert.m",
-  ]
 }
 
 js_library("focus_outline_manager.m") {

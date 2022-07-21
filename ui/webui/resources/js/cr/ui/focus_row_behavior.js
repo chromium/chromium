@@ -30,7 +30,7 @@ cr.define('cr.ui', function() {
      * @param {!Event} e
      */
     onFocus(row, e) {
-      const element = /** @type {!Element} */ (e.composedPath()[0]);
+      const element = /** @type {!HTMLElement} */ (e.composedPath()[0]);
       const focusableElement = cr.ui.FocusRow.getFocusableElement(element);
       if (element !== focusableElement) {
         focusableElement.focus();
@@ -119,7 +119,7 @@ cr.define('cr.ui', function() {
         observer: 'focusRowIndexChanged',
       },
 
-      /** @type {Element} */
+      /** @type {HTMLElement} */
       lastFocused: {
         type: Object,
         notify: true,
@@ -394,7 +394,7 @@ cr.define('cr.ui', function() {
       /** @type {number} */
       this.focusRowIndex;
 
-      /** @type {?Element} */
+      /** @type {?HTMLElement} */
       this.lastFocused;
 
       /** @type {number} */

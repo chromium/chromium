@@ -85,8 +85,8 @@ cr.define('cr.ui', function() {
      * that can gain focus is in a shadow DOM. Allowing an override via a
      * function leaves the details of how the element is retrieved to the
      * component.
-     * @param {!Element} element
-     * @return {!Element}
+     * @param {!HTMLElement} element
+     * @return {!HTMLElement}
      */
     static getFocusableElement(element) {
       if (element.getFocusableElement) {
@@ -141,16 +141,18 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * @param {!Element} sampleElement An element for to find an equivalent for.
-     * @return {!Element} An equivalent element to focus for |sampleElement|.
+     * @param {!HTMLElement} sampleElement An element for to find an equivalent
+     *     for.
+     * @return {!HTMLElement} An equivalent element to focus for
+     *     |sampleElement|.
      * @protected
      */
     getCustomEquivalent(sampleElement) {
-      return /** @type {!Element} */ (assert(this.getFirstFocusable()));
+      return /** @type {!HTMLElement} */ (assert(this.getFirstFocusable()));
     }
 
     /**
-     * @return {!Array<!Element>} All registered elements (regardless of
+     * @return {!Array<!HTMLElement>} All registered elements (regardless of
      *     focusability).
      */
     getElements() {
@@ -160,9 +162,9 @@ cr.define('cr.ui', function() {
 
     /**
      * Find the element that best matches |sampleElement|.
-     * @param {!Element} sampleElement An element from a row of the same type
-     *     which previously held focus.
-     * @return {!Element} The element that best matches sampleElement.
+     * @param {!HTMLElement} sampleElement An element from a row of the same
+     *     type which previously held focus.
+     * @return {!HTMLElement} The element that best matches sampleElement.
      */
     getEquivalentElement(sampleElement) {
       if (this.getFocusableElements().indexOf(sampleElement) >= 0) {
@@ -182,7 +184,7 @@ cr.define('cr.ui', function() {
 
     /**
      * @param {string=} opt_type An optional type to search for.
-     * @return {?Element} The first focusable element with |type|.
+     * @return {?HTMLElement} The first focusable element with |type|.
      */
     getFirstFocusable(opt_type) {
       const element = this.getFocusableElements().find(
@@ -190,7 +192,7 @@ cr.define('cr.ui', function() {
       return element || null;
     }
 
-    /** @return {!Array<!Element>} Registered, focusable elements. */
+    /** @return {!Array<!HTMLElement>} Registered, focusable elements. */
     getFocusableElements() {
       return this.getElements().filter(cr.ui.FocusRow.isFocusable);
     }
@@ -234,7 +236,7 @@ cr.define('cr.ui', function() {
         return;
       }
 
-      const currentTarget = /** @type {!Element} */ (e.currentTarget);
+      const currentTarget = /** @type {!HTMLElement} */ (e.currentTarget);
       if (this.getFocusableElements().indexOf(currentTarget) >= 0) {
         this.makeActive(false);
       }
@@ -273,7 +275,7 @@ cr.define('cr.ui', function() {
     onKeydown_(e) {
       const elements = this.getFocusableElements();
       const currentElement = cr.ui.FocusRow.getFocusableElement(
-          /** @type {!Element} */ (e.currentTarget));
+          /** @type {!HTMLElement} */ (e.currentTarget));
       const elementIndex = elements.indexOf(currentElement);
       assert(elementIndex >= 0);
 
@@ -343,8 +345,8 @@ cr.define('cr.ui', function() {
     onFocus(row, e) {}
 
     /**
-     * @param {!Element} sampleElement An element to find an equivalent for.
-     * @return {?Element} An equivalent element to focus, or null to use the
+     * @param {!HTMLElement} sampleElement An element to find an equivalent for.
+     * @return {?HTMLElement} An equivalent element to focus, or null to use the
      *     default FocusRow element.
      */
     getCustomEquivalent(sampleElement) {}

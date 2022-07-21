@@ -232,8 +232,6 @@ generate_definitions_js_files = [
   "js/cr/event_target.m.js",
   "js/cr.m.js",
   "js/cr/ui.m.js",
-  "js/cr/ui/drag_wrapper.js",
-  "js/cr/ui/focus_grid.js",
   "js/cr/ui/focus_outline_manager.m.js",
   "js/cr/ui/focus_row.m.js",
   "js/cr/ui/keyboard_shortcut_list.m.js",
@@ -334,6 +332,8 @@ ts_library("library") {
     "cr_elements/cr_tree/cr_tree_item.html.ts",
     "js/assert_ts.ts",
     "js/custom_element.ts",
+    "js/cr/ui/focus_grid.ts",
+    "js/cr/ui/drag_wrapper.ts",
   ]
 
   if (include_polymer) {

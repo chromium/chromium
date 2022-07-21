@@ -7,81 +7,62 @@
  * A class for simplifying HTML5 drag and drop. Classes should use this to
  * handle the details of nested drag enters and leaves.
  */
-/** @interface */
-export class DragWrapperDelegate {
+export interface DragWrapperDelegate {
   // TODO(devlin): The only method this "delegate" actually needs is
   // shouldAcceptDrag(); the rest can be events emitted by the DragWrapper.
   /**
-   * @param {MouseEvent} e The event for the drag.
-   * @return {boolean} Whether the drag should be accepted. If false,
+   * @return Whether the drag should be accepted. If false,
    *     subsequent methods (doDrag*) will not be called.
    */
-  shouldAcceptDrag(e) {}
+  shouldAcceptDrag(e: MouseEvent): boolean;
 
-  /** @param {MouseEvent} e */
-  doDragEnter(e) {}
+  doDragEnter(e: MouseEvent): void;
 
-  /** @param {MouseEvent} e */
-  doDragLeave(e) {}
+  doDragLeave(e: MouseEvent): void;
 
-  /** @param {MouseEvent} e */
-  doDragOver(e) {}
+  doDragOver(e: MouseEvent): void;
 
-  /** @param {MouseEvent} e */
-  doDrop(e) {}
+  doDrop(e: MouseEvent): void;
 }
 
-  /**
-   * Creates a DragWrapper which listens for drag target events on |target| and
-   * delegates event handling to |delegate|.
-   */
+/**
+ * Creates a DragWrapper which listens for drag target events on |target| and
+ * delegates event handling to |delegate|.
+ */
 export class DragWrapper {
   /**
-   * @param {!Element} target
-   * @param {!DragWrapperDelegate} delegate
+   * The number of un-paired dragenter events that have fired on |this|.
+   * This is incremented by |onDragEnter_| and decremented by
+   * |onDragLeave_|. This is necessary because dragging over child widgets
+   * will fire additional enter and leave events on |this|. A non-zero value
+   * does not necessarily indicate that |isCurrentDragTarget()| is true.
    */
-  constructor(target, delegate) {
-    /**
-     * The number of un-paired dragenter events that have fired on |this|.
-     * This is incremented by |onDragEnter_| and decremented by
-     * |onDragLeave_|. This is necessary because dragging over child widgets
-     * will fire additional enter and leave events on |this|. A non-zero value
-     * does not necessarily indicate that |isCurrentDragTarget()| is true.
-     * @private {number}
-     */
-    this.dragEnters_ = 0;
+  private dragEnters_: number = 0;
+  private target_: HTMLElement;
+  private delegate_: DragWrapperDelegate;
 
-    /** @private {!Element} */
+  constructor(target: HTMLElement, delegate: DragWrapperDelegate) {
     this.target_ = target;
-
-    /** @private {!DragWrapperDelegate} */
     this.delegate_ = delegate;
 
-    target.addEventListener(
-        'dragenter', e => this.onDragEnter_(/** @type {!MouseEvent} */ (e)));
-    target.addEventListener(
-        'dragover', e => this.onDragOver_(/** @type {!MouseEvent} */ (e)));
-    target.addEventListener(
-        'drop', e => this.onDrop_(/** @type {!MouseEvent} */ (e)));
-    target.addEventListener(
-        'dragleave', e => this.onDragLeave_(/** @type {!MouseEvent} */ (e)));
+    target.addEventListener('dragenter', e => this.onDragEnter_(e));
+    target.addEventListener('dragover', e => this.onDragOver_(e));
+    target.addEventListener('drop', e => this.onDrop_(e));
+    target.addEventListener('dragleave', e => this.onDragLeave_(e));
   }
 
   /**
    * Whether the tile page is currently being dragged over with data it can
    * accept.
-   * @return {boolean}
    */
-  get isCurrentDragTarget() {
+  get isCurrentDragTarget(): boolean {
     return this.target_.classList.contains('drag-target');
   }
 
   /**
    * Delegate for dragenter events fired on |target_|.
-   * @param {!MouseEvent} e A MouseEvent for the drag.
-   * @private
    */
-  onDragEnter_(e) {
+  private onDragEnter_(e: MouseEvent) {
     if (++this.dragEnters_ === 1) {
       if (this.delegate_.shouldAcceptDrag(e)) {
         this.target_.classList.add('drag-target');
@@ -99,10 +80,8 @@ export class DragWrapper {
 
   /**
    * Thunk for dragover events fired on |target_|.
-   * @param {!MouseEvent} e A MouseEvent for the drag.
-   * @private
    */
-  onDragOver_(e) {
+  private onDragOver_(e: MouseEvent) {
     if (!this.target_.classList.contains('drag-target')) {
       return;
     }
@@ -111,10 +90,8 @@ export class DragWrapper {
 
   /**
    * Thunk for drop events fired on |target_|.
-   * @param {!MouseEvent} e A MouseEvent for the drag.
-   * @private
    */
-  onDrop_(e) {
+  private onDrop_(e: MouseEvent) {
     this.dragEnters_ = 0;
     if (!this.target_.classList.contains('drag-target')) {
       return;
@@ -125,10 +102,8 @@ export class DragWrapper {
 
   /**
    * Thunk for dragleave events fired on |target_|.
-   * @param {!MouseEvent} e A MouseEvent for the drag.
-   * @private
    */
-  onDragLeave_(e) {
+  private onDragLeave_(e: MouseEvent) {
     if (--this.dragEnters_ > 0) {
       return;
     }
