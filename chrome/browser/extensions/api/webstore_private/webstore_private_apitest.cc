@@ -598,7 +598,13 @@ class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
 };
 
 // Tests getWebGLStatus function when WebGL is allowed.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstoreGetWebGLStatusTest, Allowed) {
+// Flaky on Mac. https://crbug.com/1346413.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Allowed DISABLED_Allowed
+#else
+#define MAYBE_Allowed Allowed
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionWebstoreGetWebGLStatusTest, MAYBE_Allowed) {
   bool webgl_allowed = true;
   RunTest(webgl_allowed);
 }
