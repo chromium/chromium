@@ -41,7 +41,7 @@ const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 constexpr base::TimeDelta kFakeConnectionLatencyTime(base::Seconds(3u));
 constexpr base::TimeDelta kFakeConnectionDurationTime(base::Seconds(10u));
 
-constexpr base::TimeDelta kExpectedTimeoutSeconds(base::Seconds(15u));
+constexpr base::TimeDelta kExpectedTimeout(base::Minutes(1u));
 
 class FakeObserver : public ConnectionManager::Observer {
  public:
@@ -147,7 +147,7 @@ class ConnectionManagerImplTest : public testing::Test {
 
   void VerifyTimerSet() {
     EXPECT_TRUE(mock_timer_->IsRunning());
-    EXPECT_EQ(kExpectedTimeoutSeconds, mock_timer_->GetCurrentDelay());
+    EXPECT_EQ(kExpectedTimeout, mock_timer_->GetCurrentDelay());
   }
 
   void VerifyTimerStopped() { EXPECT_FALSE(mock_timer_->IsRunning()); }

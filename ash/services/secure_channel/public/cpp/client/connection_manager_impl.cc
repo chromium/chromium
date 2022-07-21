@@ -23,7 +23,7 @@ namespace ash::secure_channel {
 
 namespace {
 
-constexpr base::TimeDelta kConnectionTimeoutSeconds(base::Seconds(15u));
+constexpr base::TimeDelta kConnectionTimeout(base::Minutes(1u));
 
 }  // namespace
 
@@ -113,7 +113,7 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
   PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
   OnStatusChanged();
 
-  timer_->Start(FROM_HERE, kConnectionTimeoutSeconds,
+  timer_->Start(FROM_HERE, kConnectionTimeout,
                 base::BindOnce(&ConnectionManagerImpl::OnConnectionTimeout,
                                weak_ptr_factory_.GetWeakPtr()));
 }
