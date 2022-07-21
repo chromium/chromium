@@ -69,8 +69,11 @@ extension_harness_additional_script = r"""
 SERIAL_TESTS = {}
 
 SERIAL_TEST_GLOBS = {
-    # crbug.com/1345466.
+    # crbug.com/1345466. Can be removed once OpenGL is no longer used on Mac.
     'deqp/functional/gles3/transformfeedback/*',
+    # crbug.com/1345782. Can be removed once OpenGL is no longer used on Mac.
+    'deqp/functional/gles3/texturefiltering/*',
+    'deqp/functional/gles3/texturespecification/*',
 }
 
 
