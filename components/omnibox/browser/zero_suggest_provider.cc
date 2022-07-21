@@ -212,6 +212,10 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
     if (focus_type == OmniboxFocusType::ON_FOCUS &&
         input.type() == OmniboxInputType::EMPTY) {
       return ZeroSuggestProvider::REMOTE_NO_URL;
+    } else if (page_class == OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET &&
+               focus_type == OmniboxFocusType::ON_FOCUS &&
+               input.type() == OmniboxInputType::URL) {
+      return ZeroSuggestProvider::REMOTE_NO_URL;
     }
   }
 
