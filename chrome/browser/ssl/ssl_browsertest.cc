@@ -1770,6 +1770,10 @@ class CertificateTransparencySSLUITest : public CertVerifierBrowserTest {
 // Chrome CT Policy should be being enforced.
 IN_PROC_BROWSER_TEST_F(CertificateTransparencySSLUITest,
                        EnforcedAfterApril2018) {
+  content::StoragePartition* partition =
+      browser()->profile()->GetDefaultStoragePartition();
+  partition->GetNetworkContext()->SetCTLogListAlwaysTimelyForTesting();
+
   ASSERT_TRUE(https_server()->Start());
 
   net::CertVerifyResult verify_result;
