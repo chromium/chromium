@@ -421,41 +421,6 @@ base::Time CalendarModel::GetEndTimeMidnightAdjusted(
   return GetEndTimeAdjusted(event).UTCMidnight();
 }
 
-// TODO(crbug/1330004): Remove function in favor of calling `OnEventsFetched`
-// directly from tests.
-void CalendarModel::InsertEventsForTesting(
-    const google_apis::calendar::EventList* events) {
-  if (!events)
-    return;
-
-  // Make sure the cache is empty.
-  event_months_.clear();
-
-  // Insert, and collect the set of months inserted.
-  std::set<base::Time> months_inserted;
-  for (const auto& event : events->items()) {
-    base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event.get());
-    base::Time start_of_month =
-        calendar_utils::GetStartOfMonthUTC(start_time_midnight);
-    if (IsMultiDayEvent(event.get())) {
-      const base::Time end_time_midnight =
-          GetEndTimeMidnightAdjusted(event.get());
-      // If we have multi-day events, we insert the event to every month map the
-      // event exists in. This to reproduce Google Calendar API requests, which
-      // are fetched by month, so multi-day events get inserted for every month
-      // they are active.
-      while (end_time_midnight >= start_of_month) {
-        InsertMultiDayEvent(event.get(), start_of_month);
-        start_of_month = calendar_utils::GetStartOfNextMonthUTC(start_of_month);
-        months_inserted.emplace(start_of_month);
-      }
-    } else {
-      InsertEventInMonth(event.get(), start_of_month, start_time_midnight);
-      months_inserted.emplace(start_of_month);
-    }
-  }
-}
-
 SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
   SingleDayEventList event_list;
 

@@ -169,10 +169,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   base::Time GetEndTimeMidnightAdjusted(
       const google_apis::calendar::CalendarEvent* event) const;
 
-  // Inserts EventList `events` in the EventCache. For testing only, it clears
-  // out the entire cache and inserts the `events`.
-  void InsertEventsForTesting(const google_apis::calendar::EventList* events);
-
   // Frees up months of events as needed to keep us within storage limits.
   void PruneEventCache();
 

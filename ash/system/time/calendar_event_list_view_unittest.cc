@@ -74,8 +74,9 @@ class CalendarViewEventListViewTest : public AshTestBase {
   void CreateEventListView(base::Time date) {
     event_list_view_.reset();
     controller_->UpdateMonth(date);
-    Shell::Get()->system_tray_model()->calendar_model()->InsertEventsForTesting(
-        CreateMockEventList().get());
+    Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
+        calendar_utils::GetStartOfMonthUTC(date),
+        google_apis::ApiErrorCode::HTTP_SUCCESS, CreateMockEventList().get());
     controller_->selected_date_ = date;
     event_list_view_ =
         std::make_unique<CalendarEventListView>(controller_.get());
