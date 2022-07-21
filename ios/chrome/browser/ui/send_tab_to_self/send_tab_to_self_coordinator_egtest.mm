@@ -189,9 +189,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
                                    IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_SEND_TAB_TO_SELF_PROMO_LABEL))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

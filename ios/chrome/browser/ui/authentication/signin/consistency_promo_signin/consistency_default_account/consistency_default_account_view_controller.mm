@@ -158,14 +158,14 @@ constexpr CGFloat kContentSpacing = 16.;
   ]];
   // Add the label.
   UILabel* label = [[UILabel alloc] init];
-  BOOL showRestrictionsText =
-      self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts;
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
-    label.text = l10n_util::GetNSString(
-        showRestrictionsText ? IDS_SEND_TAB_TO_SELF_PROMO_LABEL_RESTRICTIONS
-                             : IDS_SEND_TAB_TO_SELF_PROMO_LABEL);
+    label.text =
+        l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
   } else {
+    // If there are enterprise restrictions, the string omits "Google Account".
+    BOOL showRestrictionsText =
+        self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts;
     label.text = l10n_util::GetNSString(
         showRestrictionsText
             ? IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL
