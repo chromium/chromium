@@ -2154,7 +2154,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
         (field->section != kDefaultSection);
 
     // Boolean flag that is set to true when the |field| has
-    // autocomplete-section attribute defined and is different that the
+    // autocomplete-section attribute defined and is different than the
     // previous field.
     bool different_autocomplete_section_than_previous =
         (autocomplete_section_attribute_present &&
@@ -2162,7 +2162,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
 
     // Start a new section if the |current_type| was already seen or the
     // autocomplete-section attribute is defined for the |field| which is
-    // different than the previous field.
+    // different than the previous field's.
     if (current_type != UNKNOWN_TYPE &&
         (already_saw_current_type ||
          different_autocomplete_section_than_previous)) {
@@ -2316,9 +2316,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       if (current_type == previous_type)
         already_saw_current_type = false;
 
-      // Start a new section if the |current_type| was already seen or the
-      // autocomplete-section attribute is defined for the |field| which is
-      // different than the previous field.
+      // Start a new section if the |current_type| was already seen.
       if (current_type != UNKNOWN_TYPE && already_saw_current_type) {
         // Keep track of seen_types if the new section is hidden. The next
         // visible section might be the continuation of the previous visible
