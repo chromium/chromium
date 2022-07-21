@@ -12,6 +12,8 @@ component("dbus") {
   public_deps = [
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
+
+    # TODO(jamescook): Remove this and fix all build targets that need it.
     "//chromeos/dbus/debug_daemon",
     "//chromeos/dbus/init",
     "//chromeos/dbus/shill",
@@ -19,18 +21,9 @@ component("dbus") {
   ]
   deps = [
     "//base",
-    "//chromeos/dbus/easy_unlock",
-    "//chromeos/dbus/fwupd",
     "//chromeos/dbus/util",
-    "//components/account_id",
-    "//components/device_event_log",
-    "//components/policy/proto",
-    "//net",
-    "//url",
   ]
   sources = [
-    "dbus_clients_browser.cc",
-    "dbus_clients_browser.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
   ]

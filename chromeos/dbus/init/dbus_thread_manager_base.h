@@ -41,6 +41,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_INIT) DBusThreadManagerBase {
   const DBusThreadManagerBase& operator=(const DBusThreadManagerBase&) = delete;
   virtual ~DBusThreadManagerBase();
 
+ private:
   // Whether to use real or fake dbus clients.
   const bool use_real_clients_;
 

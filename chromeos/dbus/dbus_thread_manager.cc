@@ -8,24 +8,16 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/message_loop/message_pump_type.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/dbus_clients_browser.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
 namespace chromeos {
 
 static DBusThreadManager* g_dbus_thread_manager = nullptr;
 
-DBusThreadManager::DBusThreadManager()
-    : clients_browser_(
-          std::make_unique<DBusClientsBrowser>(use_real_clients_)) {}
+DBusThreadManager::DBusThreadManager() = default;
 
-DBusThreadManager::~DBusThreadManager() {
-  // Delete all D-Bus clients before shutting down the system bus.
-  clients_browser_.reset();
-}
+DBusThreadManager::~DBusThreadManager() = default;
 
 void DBusThreadManager::InitializeClients() {
   // Some clients call DBusThreadManager::Get() during initialization.
@@ -35,10 +27,7 @@ void DBusThreadManager::InitializeClients() {
   // that require Shill clients. https://crbug.com/948390.
   shill_clients::Initialize(GetSystemBus());
 
-  if (clients_browser_)
-    clients_browser_->Initialize(GetSystemBus());
-
-  if (use_real_clients_)
+  if (!IsUsingFakes())
     VLOG(1) << "DBusThreadManager initialized for ChromeOS";
   else
     VLOG(1) << "DBusThreadManager created for testing";
