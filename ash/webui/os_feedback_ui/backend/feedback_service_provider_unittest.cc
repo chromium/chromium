@@ -63,6 +63,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
   void OpenExploreApp() override {}
 
   void OpenMetricsDialog() override {}
+
+  void OpenSystemInfoDialog() override {}
 };
 
 class FeedbackServiceProviderTest : public testing::Test {

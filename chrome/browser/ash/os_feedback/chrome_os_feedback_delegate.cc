@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
@@ -239,6 +240,18 @@ void ChromeOsFeedbackDelegate::OpenExploreApp() {
 }
 
 void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
+  OpenWebDialog(GURL(chrome::kChromeUIHistogramsURL));
+}
+
+void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
+  // TODO(http://b/239701119): Make the sys_info.html page a separate WebUI.
+  // For now, use the old Feedback tool's sys_info.html.
+  GURL systemInfoUrl =
+      GURL(base::StrCat({chrome::kChromeUIFeedbackURL, "html/sys_info.html"}));
+  OpenWebDialog(systemInfoUrl);
+}
+
+void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
   Browser* feedback_browser = ash::FindSystemWebAppBrowser(
       profile_, ash::SystemWebAppType::OS_FEEDBACK);
 
@@ -247,7 +260,7 @@ void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
 
   ChildWebDialog* child_dialog = new ChildWebDialog(
-      profile_, widget, GURL(chrome::kChromeUIHistogramsURL),
+      profile_, widget, url,
       /*title=*/std::u16string(),
       /*modal_type=*/ui::MODAL_TYPE_NONE, /*dialog_width=*/640,
       /*dialog_height=*/400, /*can_resize=*/true,

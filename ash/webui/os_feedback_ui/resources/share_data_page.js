@@ -151,12 +151,14 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    * @param {!Event} e
    * @protected
    */
-  handleOpenSysInfoDialog_(e) {
+  handleOpenSystemInfoDialog_(e) {
     // The default behavior of clicking on an anchor tag
     // with href="#" is a scroll to the top of the page.
     // This link opens a dialog, so we want to prevent
     // this default behavior.
     e.preventDefault();
+
+    this.feedbackServiceProvider_.openSystemInfoDialog();
   }
 
   /**
@@ -284,7 +286,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     // Setting href causes <a> tag to display as link.
     sysInfoLink.setAttribute('href', '#');
     sysInfoLink.addEventListener(
-        'click', (e) => void this.handleOpenSysInfoDialog_(e));
+        'click', (e) => void this.handleOpenSystemInfoDialog_(e));
 
     const histogramsLink = this.shadowRoot.querySelector('#histogramsLink');
     histogramsLink.setAttribute('href', '#');

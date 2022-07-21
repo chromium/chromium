@@ -58,6 +58,10 @@ void FeedbackServiceProvider::OpenMetricsDialog() {
   feedback_delegate_->OpenMetricsDialog();
 }
 
+void FeedbackServiceProvider::OpenSystemInfoDialog() {
+  feedback_delegate_->OpenSystemInfoDialog();
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {

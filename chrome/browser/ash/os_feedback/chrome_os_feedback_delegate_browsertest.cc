@@ -122,6 +122,34 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     EXPECT_EQ(SendReportStatus::kSuccess, future.Get());
   }
 
+  Browser* LaunchFeedbackAppAndGetBrowser() {
+    // Install system apps, namely the Feedback App.
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
+
+    GURL feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
+
+    // Initialize NavigationObserver to start watching for navigation events.
+    // NavigationObserver is necessary to avoid crash on opening dialog,
+    // because we need to wait for the Feedback app to finish launching
+    // before opening the metrics dialog.
+    content::TestNavigationObserver navigation_observer(feedback_url_);
+    navigation_observer.StartWatchingNewWebContents();
+
+    // Launch the feedback app.
+    ui_test_utils::SendToOmniboxAndSubmit(browser(), feedback_url_.spec());
+
+    // Wait for the Feedback app to launch.
+    navigation_observer.Wait();
+
+    Browser* feedback_browser = ash::FindSystemWebAppBrowser(
+        browser()->profile(), ash::SystemWebAppType::OS_FEEDBACK);
+
+    EXPECT_NE(feedback_browser, nullptr);
+
+    return feedback_browser;
+  }
+
   scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
     const unsigned char kData[] = {12, 11, 99};
     return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
@@ -320,29 +348,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
 // Test that the Metrics (Histograms) dialog opens
 // when OpenMetricsDialog is invoked.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
-  // Install system apps, namely the Feedback App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
-      ->InstallSystemAppsForTesting();
-
-  GURL feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
-
-  // Initialize NavigationObserver to start watching for navigation events.
-  // NavigationObserver is necessary to avoid crash on opening dialog,
-  // because we need to wait for the Feedback app to finish launching
-  // before opening the metrics dialog.
-  content::TestNavigationObserver navigation_observer(feedback_url_);
-  navigation_observer.StartWatchingNewWebContents();
-
-  // Launch the feedback app.
-  ui_test_utils::SendToOmniboxAndSubmit(browser(), feedback_url_.spec());
-
-  // Wait for the Feedback app to launch.
-  navigation_observer.Wait();
-
-  Browser* feedback_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::OS_FEEDBACK);
-
-  EXPECT_NE(feedback_browser, nullptr);
+  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
 
   gfx::NativeWindow feedback_window =
       feedback_browser->window()->GetNativeWindow();
@@ -356,6 +362,31 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
 
   feedback_delegate_.OpenMetricsDialog();
+
+  std::set<views::Widget*> owned_widgets_post_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window,
+                                    &owned_widgets_post_dialog);
+
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1);
+}
+
+// Test that the SystemInfo (Histograms) dialog opens
+// when OpenSystemInfoDialog is invoked.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenSystemInfoDialog) {
+  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+
+  gfx::NativeWindow feedback_window =
+      feedback_browser->window()->GetNativeWindow();
+
+  std::set<views::Widget*> owned_widgets_pre_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0);
+
+  // Initialize the delegate.
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+
+  feedback_delegate_.OpenSystemInfoDialog();
 
   std::set<views::Widget*> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,

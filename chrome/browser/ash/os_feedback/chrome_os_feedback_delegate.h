@@ -44,9 +44,11 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   void OpenDiagnosticsApp() override;
   void OpenExploreApp() override;
   void OpenMetricsDialog() override;
+  void OpenSystemInfoDialog() override;
 
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);
+  void OpenWebDialog(GURL url);
 
   // TODO(xiangdongkong): make sure the profile_ cannot be destroyed while
   // operations are pending.

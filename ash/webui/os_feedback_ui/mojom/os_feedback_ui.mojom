@@ -143,4 +143,7 @@ interface FeedbackServiceProvider {
   OpenExploreApp();
   // Open metrics dialog (which displays chrome://histograms).
   OpenMetricsDialog();
+  // Open system info dialog (which displays the system logs
+  // to be sent with the report if the user has opted in).
+  OpenSystemInfoDialog();
 };

@@ -578,4 +578,18 @@ export function shareDataPageTestSuite() {
 
     assertEquals(1, feedbackServiceProvider.getOpenMetricsDialogCallCount());
   });
+
+  /**
+   * Test that feedbackServiceProvider.openSystemInfoDialog is called
+   * when #sysInfoLink ("system and app info") link is clicked.
+   */
+  test('openSystemInfoDialog', async () => {
+    await initializePage();
+
+    assertEquals(0, feedbackServiceProvider.getOpenSystemInfoDialogCallCount());
+
+    getElement('#sysInfoLink').click();
+
+    assertEquals(1, feedbackServiceProvider.getOpenSystemInfoDialogCallCount());
+  });
 }
