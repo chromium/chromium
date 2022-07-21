@@ -69,6 +69,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -365,8 +366,13 @@ void ChromeNewWindowClient::OpenCalculator() {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   DCHECK(proxy);
-  proxy->Launch(ash::calculator_app::GetInstalledCalculatorAppId(profile),
-                ui::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    proxy->Launch(ash::calculator_app::GetInstalledCalculatorAppId(profile),
+                  ui::EF_NONE, apps::LaunchSource::kFromKeyboard);
+  } else {
+    proxy->Launch(ash::calculator_app::GetInstalledCalculatorAppId(profile),
+                  ui::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard);
+  }
 }
 
 void ChromeNewWindowClient::OpenFileManager() {
@@ -387,10 +393,19 @@ void ChromeNewWindowClient::OpenFileManager() {
       return;
     }
 
-    proxy->Launch(update.AppId(),
-                  apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                      /*prefer_container=*/true),
-                  apps::mojom::LaunchSource::kFromKeyboard);
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      proxy->Launch(
+          update.AppId(),
+          apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              /*prefer_container=*/true),
+          apps::LaunchSource::kFromKeyboard);
+    } else {
+      proxy->Launch(
+          update.AppId(),
+          apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              /*prefer_container=*/true),
+          apps::mojom::LaunchSource::kFromKeyboard);
+    }
   };
 
   bool result = proxy->AppRegistryCache().ForOneApp(

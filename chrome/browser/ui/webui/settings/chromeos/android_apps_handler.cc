@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"  // kSettingsAppId
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
@@ -112,10 +114,16 @@ void AndroidAppsHandler::ShowAndroidAppsSettings(
     activated_from_keyboard = args[0].GetBool();
   int flags = activated_from_keyboard ? ui::EF_NONE : ui::EF_LEFT_MOUSE_BUTTON;
 
-  app_service_proxy_->Launch(
-      arc::kSettingsAppId, flags,
-      apps::mojom::LaunchSource::kFromParentalControls,
-      apps::MakeWindowInfo(GetDisplayIdForCurrentProfile()));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    app_service_proxy_->Launch(
+        arc::kSettingsAppId, flags, apps::LaunchSource::kFromParentalControls,
+        std::make_unique<apps::WindowInfo>(GetDisplayIdForCurrentProfile()));
+  } else {
+    app_service_proxy_->Launch(
+        arc::kSettingsAppId, flags,
+        apps::mojom::LaunchSource::kFromParentalControls,
+        apps::MakeWindowInfo(GetDisplayIdForCurrentProfile()));
+  }
 }
 
 int64_t AndroidAppsHandler::GetDisplayIdForCurrentProfile() {

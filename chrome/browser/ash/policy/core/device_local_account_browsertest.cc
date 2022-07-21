@@ -1530,14 +1530,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Start the platform app, causing it to open a window.
   run_loop_ = std::make_unique<base::RunLoop>();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->FlushMojoCallsForTesting();
   proxy->Launch(app->id(),
                 apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                                     false /* preferred_containner */),
-                apps::mojom::LaunchSource::kFromChromeInternal,
-                apps::MakeWindowInfo(
+                apps::LaunchSource::kFromChromeInternal,
+                std::make_unique<apps::WindowInfo>(
                     display::Screen::GetScreen()->GetPrimaryDisplay().id()));
-  proxy->FlushMojoCallsForTesting();
   run_loop_->Run();
   EXPECT_EQ(1U, app_window_registry->app_windows().size());
 

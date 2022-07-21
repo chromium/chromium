@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "ui/events/event_constants.h"
 
 ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
@@ -18,7 +19,7 @@ ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
                                apps::mojom::IntentPtr launch_intent,
                                bool deferred_launch_allowed,
                                int64_t display_id,
-                               apps::mojom::LaunchSource launch_source)
+                               apps::LaunchSource launch_source)
     : context_(context),
       app_id_(app_id),
       launch_intent_(std::move(launch_intent)),
@@ -122,12 +123,20 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   Observe(nullptr);
 
   if (launch_intent_) {
-    proxy->LaunchAppWithIntent(app_id_, ui::EF_NONE, std::move(launch_intent_),
-                               launch_source_,
-                               apps::MakeWindowInfo(display_id_));
+    proxy->LaunchAppWithIntent(
+        app_id_, ui::EF_NONE, std::move(launch_intent_),
+        apps::ConvertLaunchSourceToMojomLaunchSource(launch_source_),
+        apps::MakeWindowInfo(display_id_));
   } else {
-    proxy->Launch(app_id_, ui::EF_NONE, launch_source_,
-                  apps::MakeWindowInfo(display_id_));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      proxy->Launch(app_id_, ui::EF_NONE, launch_source_,
+                    std::make_unique<apps::WindowInfo>(display_id_));
+    } else {
+      proxy->Launch(
+          app_id_, ui::EF_NONE,
+          apps::ConvertLaunchSourceToMojomLaunchSource(launch_source_),
+          apps::MakeWindowInfo(display_id_));
+    }
   }
 
   app_launched_ = true;

@@ -79,6 +79,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -3110,13 +3111,13 @@ TEST_P(ArcAppModelBuilderTest, AppLauncher) {
   {
     ArcAppLauncher launcher1(profile(), id1, nullptr, false,
                              display::kInvalidDisplayId,
-                             apps::mojom::LaunchSource::kFromChromeInternal);
+                             apps::LaunchSource::kFromChromeInternal);
     EXPECT_FALSE(launcher1.app_launched());
     EXPECT_TRUE(prefs->HasObserver(&launcher1));
 
     ArcAppLauncher launcher3(profile(), id3, nullptr, false,
                              display::kInvalidDisplayId,
-                             apps::mojom::LaunchSource::kFromChromeInternal);
+                             apps::LaunchSource::kFromChromeInternal);
     EXPECT_FALSE(launcher1.app_launched());
     EXPECT_TRUE(prefs->HasObserver(&launcher1));
     EXPECT_FALSE(launcher3.app_launched());
@@ -3146,7 +3147,7 @@ TEST_P(ArcAppModelBuilderTest, AppLauncher) {
         app2.activity, arc::kInitialStartParam, arc::kCategoryLauncher);
     ArcAppLauncher launcher2(profile(), id2, std::move(launch_intent2), false,
                              display::kInvalidDisplayId,
-                             apps::mojom::LaunchSource::kFromChromeInternal);
+                             apps::LaunchSource::kFromChromeInternal);
     EXPECT_TRUE(launcher2.app_launched());
     EXPECT_FALSE(prefs->HasObserver(&launcher2));
   }
@@ -3168,7 +3169,7 @@ TEST_P(ArcAppModelBuilderTest, AppLauncherForSuspendedApp) {
 
   ArcAppLauncher launcher(profile(), app_id, nullptr, false,
                           display::kInvalidDisplayId,
-                          apps::mojom::LaunchSource::kFromChromeInternal);
+                          apps::LaunchSource::kFromChromeInternal);
   EXPECT_FALSE(launcher.app_launched());
 
   // Register app, however it is suspended.
@@ -3574,12 +3575,12 @@ TEST_P(ArcAppLauncherForDefaultAppTest, AppLauncherForDefaultApps) {
   // Launch when app is registered and ready.
   ArcAppLauncher launcher1(profile(), id1, nullptr, false,
                            display::kInvalidDisplayId,
-                           apps::mojom::LaunchSource::kFromChromeInternal);
+                           apps::LaunchSource::kFromChromeInternal);
 
   // Launch when app is registered.
   ArcAppLauncher launcher2(profile(), id2, nullptr, true,
                            display::kInvalidDisplayId,
-                           apps::mojom::LaunchSource::kFromChromeInternal);
+                           apps::LaunchSource::kFromChromeInternal);
 
   EXPECT_FALSE(launcher1.app_launched());
 

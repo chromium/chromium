@@ -650,7 +650,7 @@ void ArcSessionManager::OnProvisioningFinished(
           apps_util::CreateIntentForActivity(
               kPlayStoreActivity, kInitialStartParam, kCategoryLauncher),
           false /* deferred_launch_allowed */, display::kInvalidDisplayId,
-          apps::mojom::LaunchSource::kFromChromeInternal);
+          apps::LaunchSource::kFromChromeInternal);
     }
 
     prefs->ClearPref(prefs::kArcProvisioningInitiatedFromOobe);

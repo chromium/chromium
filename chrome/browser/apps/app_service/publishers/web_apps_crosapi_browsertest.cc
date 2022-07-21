@@ -24,7 +24,7 @@
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
       InstallWebApp("https://example.org/", apps::WindowMode::kBrowser);
   EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
   AppServiceProxy()->Launch(app_id, /*event_flags=*/0,
-                            apps::mojom::LaunchSource::kFromAppListGrid);
+                            apps::LaunchSource::kFromAppListGrid);
   AppInstanceWaiter(AppServiceProxy()->InstanceRegistry(), app_id)
       .AwaitRunning();
   EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
   const web_app::AppId app_id =
       InstallWebApp("https://example.org/", apps::WindowMode::kBrowser);
   AppServiceProxy()->Launch(app_id, /*event_flags=*/0,
-                            apps::mojom::LaunchSource::kFromAppListGrid);
+                            apps::LaunchSource::kFromAppListGrid);
   AppInstanceWaiter(AppServiceProxy()->InstanceRegistry(), app_id)
       .AwaitRunning();
   EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
