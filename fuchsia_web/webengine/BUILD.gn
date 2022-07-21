@@ -17,6 +17,11 @@ config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
 
+source_set("web_engine_export_from_implementation") {
+  public = [ "web_engine_export.h" ]
+  public_configs = [ ":web_engine_implementation" ]
+}
+
 fidl_library("fidl") {
   library_name = "chromium.internal"
   sources = [ "fidl/dev_tools.fidl" ]
@@ -79,8 +84,10 @@ foreach(locale, locales_with_pseudolocales) {
 
 component("web_engine_core") {
   deps = [
+    ":context_provider",
     ":fidl",
     ":switches",
+    ":web_engine_export_from_implementation",
     "//base",
     "//base:base_static",
     "//components/cast/message_port:message_port_fuchsia",
@@ -120,10 +127,6 @@ component("web_engine_core") {
     "//content/public/renderer",
     "//fuchsia_web/common",
     "//fuchsia_web/webengine/mojom",
-
-    # TODO(crbug.com/1081525): Move context_provider to its own target and move
-    # this deps there.
-    "//fuchsia_web/webinstance_host",
     "//google_apis",
     "//gpu/command_buffer/service",
     "//media",
@@ -234,8 +237,6 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/pkg/inspect",
   ]
 
-  configs += [ ":web_engine_implementation" ]
-
   sources = [
     "browser/accessibility_bridge.cc",
     "browser/accessibility_bridge.h",
@@ -301,10 +302,6 @@ component("web_engine_core") {
     "common/cors_exempt_headers.h",
     "common/web_engine_content_client.cc",
     "common/web_engine_content_client.h",
-    "context_provider_impl.cc",
-    "context_provider_impl.h",
-    "context_provider_main.cc",
-    "context_provider_main.h",
     "renderer/web_engine_audio_device_factory.cc",
     "renderer/web_engine_audio_device_factory.h",
     "renderer/web_engine_audio_renderer.cc",
@@ -317,9 +314,27 @@ component("web_engine_core") {
     "renderer/web_engine_render_frame_observer.h",
     "renderer/web_engine_url_loader_throttle_provider.cc",
     "renderer/web_engine_url_loader_throttle_provider.h",
-    "web_engine_export.h",
     "web_engine_main_delegate.cc",
     "web_engine_main_delegate.h",
+  ]
+}
+
+source_set("context_provider") {
+  sources = [
+    "context_provider_impl.cc",
+    "context_provider_impl.h",
+    "context_provider_main.cc",
+    "context_provider_main.h",
+  ]
+  deps = [
+    ":fidl",
+    ":web_engine_export_from_implementation",
+    "//base",
+    "//components/fuchsia_component_support",
+    "//fuchsia_web/common",
+    "//fuchsia_web/webinstance_host",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 }
 
@@ -338,6 +353,7 @@ source_set("switches") {
 
 executable("web_engine_exe") {
   deps = [
+    ":context_provider",
     ":switches",
     ":web_engine_core",
     "//base",
@@ -589,6 +605,7 @@ test("web_engine_unittests") {
     "test/run_all_unittests.cc",
   ]
   deps = [
+    ":context_provider",
     ":switches",
     ":web_engine_core",
     ":web_engine_unittests_fake_instance_manifest",

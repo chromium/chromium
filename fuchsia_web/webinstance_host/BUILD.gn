@@ -12,9 +12,7 @@ source_set("webinstance_host") {
     # WebEngine clients that instantiate WebInstances directly.
     "//fuchsia_web/runners/*",
     "//fuchsia_web/shell:web_engine_shell_exec",
-
-    # TODO(crbug.com/1081525): Change to the context_provider target when created.
-    "//fuchsia_web/webengine:web_engine_core",
+    "//fuchsia_web/webengine:context_provider",
 
     # TODO(crbug.com/1081525): Move dependent tests into this directory and
     # source_sets that have these deps.
