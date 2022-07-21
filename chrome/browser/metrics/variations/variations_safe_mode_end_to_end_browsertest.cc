@@ -185,7 +185,13 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
   base::FilePath local_state_file_;
 };
 
-TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeModeEndToEnd) {
+// TODO(crbug.com/1344852): test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ExtendedSafeModeEndToEnd DISABLED_ExtendedSafeModeEndToEnd
+#else
+#define MAYBE_ExtendedSafeModeEndToEnd ExtendedSafeModeEndToEnd
+#endif
+TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeModeEndToEnd) {
   // Reuse the browser_tests binary (i.e., that this test code is in), to
   // manually run the sub-test.
   base::CommandLine sub_test =
