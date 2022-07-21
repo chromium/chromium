@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/common/password_manager_features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace password_manager::features {
@@ -201,9 +202,7 @@ const base::Feature kSyncUndecryptablePasswordsLinux = {
 // TouchToFill
 const base::Feature kTouchToFillPasswordSubmission = {
     "TouchToFillPasswordSubmission", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.
 const base::Feature kUnifiedCredentialManagerDryRun = {
@@ -224,6 +223,9 @@ const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly{
 
 const base::Feature kPasswordEditDialogWithDetails{
     "PasswordEditDialogWithDetails", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kShowUPMErrorNotification{
+    "ShowUpmErrorNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kUnifiedPasswordManagerDesktop = {

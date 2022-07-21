@@ -93188,6 +93188,7 @@ would be helpful to identify which type is being sent.
   <int value="34" label="Chrome Tips"/>
   <int value="35" label="Bluetooth"/>
   <int value="36" label="USB"/>
+  <int value="37" label="Unified password manager error"/>
 </enum>
 
 <enum name="TabActivationTypes">

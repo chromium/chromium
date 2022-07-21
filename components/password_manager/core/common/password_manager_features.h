@@ -66,12 +66,11 @@ extern const base::Feature kSyncUndecryptablePasswordsLinux;
 #endif
 #if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kTouchToFillPasswordSubmission;
-#endif
-#if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kUnifiedCredentialManagerDryRun;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly;
 extern const base::Feature kPasswordEditDialogWithDetails;
+extern const base::Feature kShowUPMErrorNotification;
 #endif
 extern const base::Feature kUnifiedPasswordManagerDesktop;
 extern const base::Feature kUsernameFirstFlow;

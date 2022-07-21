@@ -140,6 +140,12 @@ public class NotificationConstants {
     public static final int NOTIFICATION_ID_SECURITY_KEY = 16;
 
     /**
+     * Unique identifier for notifications announcing that the unified password manager has
+     * encountered an error.
+     */
+    public static final int NOTIFICATION_ID_UPM = 17;
+
+    /**
      * Separator used to separate the notification origin from additional data such as the
      * developer specified tag. This and the prefix following it need to be the same as the one
      * specified in notification_id_generator.cc.

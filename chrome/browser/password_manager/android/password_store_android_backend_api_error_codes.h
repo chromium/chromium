@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_API_ERROR_CODES_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_API_ERROR_CODES_H_
 
-namespace password_manager {
-
 // This enum mirrors enum PasswordStoreAndroidBackendAPIError in
 // tools/metrcis/histograms/enums.xml. Do not reassign values and modify both
 // files at the same time.
@@ -34,7 +32,5 @@ enum class AndroidBackendAPIErrorCode {
   kLeakCheckServiceResourceExhausted = 43509,
   kMaxValue = kLeakCheckServiceResourceExhausted,
 };
-
-}  // namespace password_manager
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_API_ERROR_CODES_H_

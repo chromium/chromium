@@ -68,6 +68,8 @@ class PasswordStoreAndroidBackendBridgeImpl
 
   [[nodiscard]] JobId GetNextJobId();
 
+  void ShowErrorNotification() override;
+
   // This member stores the unique ID last used for an API request.
   JobId last_job_id_{0};
 

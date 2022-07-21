@@ -65,7 +65,7 @@ public class NotificationUmaTracker {
             SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED,
             SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED,
             SystemNotificationType.CHROME_TIPS, SystemNotificationType.BLUETOOTH,
-            SystemNotificationType.USB})
+            SystemNotificationType.USB, SystemNotificationType.UPM_ERROR})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
         int UNKNOWN = -1;
@@ -106,8 +106,9 @@ public class NotificationUmaTracker {
         int CHROME_TIPS = 34;
         int BLUETOOTH = 35;
         int USB = 36;
+        int UPM_ERROR = 37;
 
-        int NUM_ENTRIES = 37;
+        int NUM_ENTRIES = 38;
     }
 
     /*

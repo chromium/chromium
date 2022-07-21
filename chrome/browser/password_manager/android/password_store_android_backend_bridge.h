@@ -123,6 +123,11 @@ class PasswordStoreAndroidBackendBridge {
   [[nodiscard]] virtual JobId RemoveLogin(const PasswordForm& form,
                                           Account account) = 0;
 
+  // Displays a notification when a store backend request finishes with an
+  // unrecoverable error. TODO(crbug.com/1344576) Remove when not required
+  // anymore.
+  virtual void ShowErrorNotification() = 0;
+
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
   // Ensure `CanCreateBackend` returns true before calling this method.

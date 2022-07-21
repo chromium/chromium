@@ -10,13 +10,16 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendBridgeImpl_jni.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
 #include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 using JobId = PasswordStoreAndroidBackendBridgeImpl::JobId;
 
@@ -234,4 +237,9 @@ void PasswordStoreAndroidBackendBridgeImpl::OnLoginChanged(JNIEnv* env,
 JobId PasswordStoreAndroidBackendBridgeImpl::GetNextJobId() {
   last_job_id_ = JobId(last_job_id_.value() + 1);
   return last_job_id_;
+}
+
+void PasswordStoreAndroidBackendBridgeImpl::ShowErrorNotification() {
+  Java_PasswordStoreAndroidBackendBridgeImpl_showErrorUi(
+      base::android::AttachCurrentThread(), java_object_);
 }

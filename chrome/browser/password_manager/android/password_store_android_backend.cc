@@ -226,7 +226,7 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
                                 UnifiedPasswordManagerActiveStatus::kActive);
 }
 
-bool IsUnrecoverableError(AndroidBackendAPIErrorCode api_error_code) {
+bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kDeveloperError:
     case AndroidBackendAPIErrorCode::kBadRequest:
@@ -246,7 +246,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
   if (!error.api_error_code.has_value())
     return PasswordStoreBackendError::kUnrecoverable;
 
-  return IsUnrecoverableError(static_cast<AndroidBackendAPIErrorCode>(
+  return IsUnrecoverableBackendError(static_cast<AndroidBackendAPIErrorCode>(
              error.api_error_code.value()))
              ? PasswordStoreBackendError::kUnrecoverable
              : PasswordStoreBackendError::kRecoverable;
@@ -689,10 +689,14 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // If the user is experiencing an error unresolvable by Chrome or by the
     // user, unenroll the user from the UPM experience.
     int api_error = error.api_error_code.value();
-    if (IsUnrecoverableError(
+    if (password_manager::IsUnrecoverableBackendError(
             static_cast<AndroidBackendAPIErrorCode>(api_error))) {
       if (!prefs_->GetBoolean(
               prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
+        if (base::FeatureList::IsEnabled(
+                password_manager::features::kShowUPMErrorNotification)) {
+          bridge_->ShowErrorNotification();
+        }
         base::UmaHistogramBoolean(
             "PasswordManager.UnenrolledFromUPMDueToErrors", true);
         prefs_->SetBoolean(
