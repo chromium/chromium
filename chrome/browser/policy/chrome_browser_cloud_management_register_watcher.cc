@@ -45,6 +45,15 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
   if (token_storage->RetrieveDMToken().is_valid())
     return RegisterResult::kEnrollmentSuccessBeforeDialogDisplayed;
 
+  // Unretained(this) is safe because `run_loop_` runs in the current scope
+  // and is not quit until after `callback` executes. Without the run loop it
+  // would NOT be safe, because `this` is deleted in PostMainMessageLoopRun. If
+  // execution returned from the current scope, potentially the browser could
+  // start shutting down and exit the main thread, destroying `this` with
+  // `callback` scheduled to run on the ThreadPool. (Which sequence runs
+  // `callback` is an implementation detail of EnterpriseStartupDialog that
+  // ChromeBrowserCloudManagementRegisterWatcher should not make assumptions
+  // about.)
   EnterpriseStartupDialog::DialogResultCallback callback = base::BindOnce(
       &ChromeBrowserCloudManagementRegisterWatcher::OnDialogClosed,
       base::Unretained(this));
