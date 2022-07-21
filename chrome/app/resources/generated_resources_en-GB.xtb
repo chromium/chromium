@@ -334,7 +334,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> sub-page back button</translation>
 <translation id="1322046419516468189">View and manage saved passwords in your <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1324106254079708331">Safeguards the personal Google Accounts of anyone at risk of targeted attacks</translation>
-<translation id="1326317727527857210">To get your tabs from your other devices, sign in to Chrome.</translation>
 <translation id="1327272175893960498">Kerberos tickets</translation>
 <translation id="1327495825214193325">To enable ADB debugging, a restart of this <ph name="DEVICE_TYPE" /> is required. Disabling it requires a reset to factory settings.</translation>
 <translation id="1327794256477341646">Features that need your location won't work</translation>
@@ -2441,7 +2440,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3280243678470289153">Stay in Chrome</translation>
 <translation id="3281892622610078515">Files and programs to be quarantined:</translation>
 <translation id="3282210178675490297">Sharing a tab to <ph name="APP_NAME" /></translation>
-<translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3285322247471302225">New &amp;Tab</translation>
 <translation id="328571385944182268">Save your passwords?</translation>
 <translation id="3288047731229977326">Extensions running in developer mode can harm your computer. If you're not a developer, you should disable these extensions running in developer mode to stay safe.</translation>
@@ -3316,7 +3314,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4101352914005291489">Hidden SSID</translation>
 <translation id="4102469565336584882">Invalid code. Your entry should have the format LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Restart to Powerwash</translation>
-<translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4107048419833779140">Identify and eject storage devices</translation>
 <translation id="4108314971463891922">Follow</translation>
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5074,6 +5071,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5860494867054883682">Updating your device to <ph name="CHANNEL_NAME" /> channel (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">Show stylus tools in the shelf</translation>
 <translation id="5862319196656206789">Set up connected devices</translation>
+<translation id="5862731021271217234">To get your tabs from your other devices, turn on sync</translation>
 <translation id="5863445608433396414">Enable debugging features</translation>
 <translation id="5864195618110239517">Use metered connection</translation>
 <translation id="5864754048328252126">Idle action while charging</translation>
@@ -5510,7 +5508,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6291949900244949761">Ask when a site wants to access USB devices (recommended)</translation>
 <translation id="6291953229176937411">&amp;Show in Finder</translation>
 <translation id="6292699686837272722">Tabs shrink to a medium width</translation>
-<translation id="6294610283659775533">You can send tabs between devices that are signed in with the same Google Account</translation>
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>

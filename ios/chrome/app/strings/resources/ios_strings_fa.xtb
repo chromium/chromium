@@ -775,6 +775,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7400418766976504921">نشانی وب</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> مقاله خوانده‌نشده.</translation>
 <translation id="7412027924265291969">ادامه</translation>
+<translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>
 <translation id="7425346204213733349">‏تغییرات در نشانک‌ها، سابقه، گذرواژه و سایر تنظیمات دیگر با حساب Google شما همگام‌سازی نخواهند شد. با این حال، داده‌های موجودتان در حساب Google شما باقی خواهند ماند.</translation>
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
@@ -814,7 +815,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7781069478569868053">صفحه برگه جدید</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="778855399387580014">‏جستجویی در برگه Chrome جدیدی شروع کنید.</translation>
-<translation id="7790892308048519147">تلاش برای استفاده از اتصال‌های امن</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
 <translation id="7839985698273989086">صفحه آفلاین</translation>

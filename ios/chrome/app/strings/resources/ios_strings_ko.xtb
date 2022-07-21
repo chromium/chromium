@@ -775,6 +775,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">읽지 않은 기사 <ph name="UNREAD_COUNT" />개 있음</translation>
 <translation id="7412027924265291969">계속</translation>
+<translation id="7419565702166471774">항상 보안 연결 사용</translation>
 <translation id="7425346204213733349">북마크, 방문 기록, 비밀번호, 기타 설정이 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장됩니다.</translation>
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
@@ -814,7 +815,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7781069478569868053">새 탭 페이지</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="778855399387580014">새 Chrome 탭에서 검색을 시작합니다.</translation>
-<translation id="7790892308048519147">안전한 연결 사용 시도</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7807060072011926525">Google 제공</translation>
 <translation id="7839985698273989086">오프라인 페이지</translation>

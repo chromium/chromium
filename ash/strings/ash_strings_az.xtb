@@ -306,6 +306,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="2814448776515246190">Qismən çəkim</translation>
 <translation id="2819276065543622893">Az sonra hesabdan çıxacaqsınız.</translation>
+<translation id="2822551631199737692">Kamera istifadə olunur</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> əksetmə qabiliyyətini dəstəkləmir. Əksetmə qabiliyyəti <ph name="FALLBACK_RESOLUTION" /> olaraq dəyişildi.</translation>
 <translation id="2825619548187458965">Rəf</translation>
 <translation id="2831035692318564937">Gün çıxanadək aktiv olacaq</translation>
@@ -807,6 +808,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5682642926269496722">Google Assistent cari istifadəçi hesabında əlçatan deyil.</translation>
 <translation id="5689633613396158040">Gecə İşığı zəif işıqda ekrana baxmağı və ya oxumağı asanlaşdırır. Gecə İşığının yandığı vaxtı dəyişmək və ya onu birdəfəlik söndürmək üçün toxunun.</translation>
 <translation id="5691772641933328258">Barmaq izi tanınmadı</translation>
+<translation id="5693255400847650006">Mikrofon istifadə olunur</translation>
 <translation id="570390244361237317">Bütün Tətbiqlər, bütün tətbiqlərə giriş üçün ox düymələri ilə hərəkət edin</translation>
 <translation id="5707775774148071965">Cihazınız kabelinizdən daha yüksək məlumat sürətini dəstəkləyir. Cihazın performansı məhdud ola bilər.</translation>
 <translation id="5710450975648804523">Narahat Etməyin rejimi aktivdir</translation>
@@ -981,6 +983,7 @@ Yeni quraşdırma</translation>
 <translation id="6723839937902243910">Enerji</translation>
 <translation id="6727969043791803658">Qoşuludur, <ph name="BATTERY_PERCENTAGE" />% batareya</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera və mikrofon istifadə olunur</translation>
 <translation id="6739144137573853180">AYARLARA KEÇİN</translation>
 <translation id="6751052314767925245">Administratorunuz tərəfindən icbari icra olunur</translation>
 <translation id="6751826523481687655">Performansın izlənməsi aktiv edildi</translation>

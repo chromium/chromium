@@ -335,7 +335,6 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ಉಪಪುಟದ ಹಿಂದೆ ಬಟನ್</translation>
 <translation id="1322046419516468189">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="SAVED_PASSWORDS_STORE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1324106254079708331">ಉದ್ದೇಶಿತ ದಾಳಿಯ ಅಪಾಯದಲ್ಲಿರುವ ಯಾವುದೇ ವೈಯಕ್ತಿಕ Google ಖಾತೆಗಳನ್ನು ರಕ್ಷಿಸುತ್ತದೆ</translation>
-<translation id="1326317727527857210">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="1327272175893960498">Kerberos ಟಿಕೆಟ್‌ಗಳು</translation>
 <translation id="1327495825214193325">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="1327794256477341646">ನಿಮ್ಮ ಸ್ಥಳಕ್ಕೆ ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
@@ -2433,7 +2432,6 @@
 <translation id="3280243678470289153">Chrome ನಲ್ಲೇ ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="3281892622610078515">ಕ್ವಾರಂಟೈನ್ ಫೋಲ್ಡರ್‌ಗೆ ಸರಿಸಲಾಗುವ ಫೈಲ್‍ಗಳು ಮತ್ತು ಪ್ರೋಗ್ರಾಂಗಳು:</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
-<translation id="3282568296779691940">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3285322247471302225">ಹೊಸ &amp;ಟ್ಯಾಬ್</translation>
 <translation id="328571385944182268">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸುವುದೇ?</translation>
 <translation id="3288047731229977326">ಡೆವಲಪರ್ ಮೋಡ್‌ನಲ್ಲಿ ಚಾಲನೆಯಾಗುವ ವಿಸ್ತರಣೆಗಳು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಹಾನಿಮಾಡಬಹುದು. ನೀವು ಡೆವಲಪರ್ ಆಗಿರದಿದ್ದರೇ, ಸುರಕ್ಷಿತವಾಗಿರಲು ಡೆವಲಪರ್ ಮೋಡ್‌ನಲ್ಲಿ ಈ ವಿಸ್ತರಣೆಗಳ ಚಾಲನೆಯನ್ನು ನೀವು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
@@ -3308,7 +3306,6 @@
 <translation id="4101352914005291489">ಮರೆಮಾಡಲಾಗಿರುವ SSID</translation>
 <translation id="4102469565336584882">ಅಮಾನ್ಯ ಕೋಡ್. ನಿಮ್ಮ ನಮೂದು LPA ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿರಬೇಕು:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ಪವರ್‌ವಾಷ್‌‌ಗೆ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="4104163789986725820">ರ&amp;ಫ್ತು...</translation>
 <translation id="4107048419833779140">ಸಂಗ್ರಹಣೆ ಸಾಧನಗಳನ್ನು ಗುರುತಿಸಿ ಮತ್ತು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4108314971463891922">ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="4109135793348361820">ವಿಂಡೋವನ್ನು <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ಗೆ ಸರಿಸಿ</translation>
@@ -5065,6 +5062,7 @@
 <translation id="5860494867054883682">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="CHANNEL_NAME" /> ಚಾನಲ್‌ಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಸ್ಟೈಲಸ್ ಪರಿಕರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5862319196656206789">ಕನೆಕ್ಟ್ ಮಾಡಿದ ಸಾಧನಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
+<translation id="5862731021271217234">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="5863445608433396414">ಡೀಬಗ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5864195618110239517">ಮಾಪನ ಮಾಡಿದ ಸಂಪರ್ಕವನ್ನು ಬಳಸಿ</translation>
 <translation id="5864754048328252126">ಚಾರ್ಜ್ ಆಗುವಾಗ ತಟಸ್ಥ ಸ್ಥಿತಿ</translation>
@@ -5501,7 +5499,6 @@
 <translation id="6291949900244949761">ಒಂದು ಸೈಟ್ USB ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸಿದಾಗ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
 <translation id="6291953229176937411">ಫೈಂಡರ್‌ನಲ್ಲಿ &amp;ತೋರಿಸಿ</translation>
 <translation id="6292699686837272722">ಟ್ಯಾಬ್‌ಗಳು ಮಧ್ಯಮ ಅಗಲಕ್ಕೆ ಕುಗ್ಗುತ್ತವೆ</translation>
-<translation id="6294610283659775533">ಒಂದೇ Google ಖಾತೆಯನ್ನು ಬಳಸಿಕೊಂಡು ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಸಾಧನಗಳ ನಡುವೆ ನೀವು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕಳುಹಿಸಬಹುದು</translation>
 <translation id="6294759976468837022">ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್ ವೇಗ</translation>
 <translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6295855836753816081">ಉಳಿಸಲಾಗುತ್ತಿದೆ...</translation>

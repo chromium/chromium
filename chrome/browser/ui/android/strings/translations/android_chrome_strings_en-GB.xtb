@@ -28,7 +28,6 @@
 <translation id="1142732900304639782">Don’t offer to translate these sites</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1146678959555564648">Enter VR</translation>
-<translation id="114825011539563458">The most important privacy and security controls in one place</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Page unavailable offline: <ph name="VIOLATED_URL" /></translation>
@@ -170,6 +169,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1894023287452300670">Track price here</translation>
 <translation id="1900260903084164610">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.</translation>
+<translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1910950723001426294">List of sharing options is closed.</translation>
 <translation id="1918175104945982129">Assistant voice search consent UI opened at half height</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
@@ -194,7 +194,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
-<translation id="2020309681647789787">You’ll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
@@ -280,7 +279,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2527779675047087889">Hide clipboard contents</translation>
 <translation id="2532336938189706096">Web View</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
-<translation id="2534582914273493287">URLs that you visit are sent to Google</translation>
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2549516196460093976">You can use this tablet to sign in on the computer that’s displaying this QR code.</translation>
@@ -372,7 +370,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996809686854298943">URL required</translation>
 <translation id="2997081575621687554">When a Google site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
-<translation id="3003733539450769656">Warns you about dangerous events before they happen</translation>
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="301080557829842765">Privacy guide</translation>
 <translation id="3016635187733453316">Make sure that this device is connected to the Internet</translation>
@@ -432,6 +429,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3284510035090979597">Proactive help</translation>
 <translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3288003805934695103">Reloading the page</translation>
+<translation id="3290249595466894471">Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
 <translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
@@ -637,7 +635,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4558311620361989323">Web page shortcuts</translation>
 <translation id="4561730552726921821">Registration succeeded</translation>
 <translation id="4561979708150884304">No connection</translation>
-<translation id="4562008740775511591">Chrome provides reasonable defaults, but you can customise it to best fit your browsing habit</translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4572422548854449519">Sign in to managed account</translation>
 <translation id="4576892426230499203">Try another verification option</translation>
@@ -919,7 +916,6 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="604996488070107836"><ph name="FILE_NAME" /> download failed due to an unknown error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
-<translation id="6069177176307973611">Review privacy and security settings</translation>
 <translation id="6070730414166672373">Contacting your bank\u2026</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6091413777268123602">With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your data. That means more privacy for you and less cross-site tracking. We’ll add new trials as they’re ready to test.</translation>
@@ -1040,6 +1036,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6641780377503683465">Remove <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645629752388991326">Control which devices can sign in by using this device as a security key.</translation>
+<translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="6649642165559792194">Preview image <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1047,7 +1044,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Copy image</translation>
-<translation id="6674044799624355221">Sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
 <translation id="6684809838922667136">Make Chrome better</translation>
@@ -1069,7 +1065,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6802555630140434547">The window will be closed</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
 <translation id="6813446258015311409">Sign in to Chrome, opened.</translation>
-<translation id="6814033694018386318">What you share with Google</translation>
 <translation id="6817747507826986771">Quickly share this page. To edit this shortcut, touch and hold.</translation>
 <translation id="6819199143469632133">To get your Google stuff across devices, sign in</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -1164,6 +1159,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Share 1 selected item}other{Share # selected items}}</translation>
 <translation id="7359002509206457351">Access payment methods</translation>
+<translation id="7363349185727752629">A guide of your privacy choices</translation>
 <translation id="7375125077091615385">Type:</translation>
 <translation id="7376560087009844242">By including more of a page’s text, you might see better results when using Touch to Search. You can always visit <ph name="BEGIN_LINK" />settings<ph name="END_LINK" /> to change this.</translation>
 <translation id="7379900596734708416">Dark theme for sites is available</translation>
@@ -1263,6 +1259,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7876243839304621966">Remove all</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> unread page}other{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> unread pages}}</translation>
 <translation id="7886917304091689118">Running in Chrome</translation>
+<translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
 <translation id="7887334752153342268">Duplicate</translation>
 <translation id="789763218334337857">How to use Chrome</translation>
 <translation id="7903184275147100332">This may take a minute</translation>
@@ -1376,6 +1373,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8445448999790540984">Can’t export passwords</translation>
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8453310803815879010">Start Dino game</translation>
+<translation id="8460448946170646641">Review key privacy and security controls</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466613982764129868">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
@@ -1421,6 +1419,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8641930654639604085">Try to block mature sites</translation>
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8645920082661222035">Predicts and warns you about dangerous events before they happen</translation>
 <translation id="8646467750715887511">Pages load only after you open them.</translation>
 <translation id="8655129584991699539">You can clear the data in Chrome Settings</translation>
 <translation id="8659579665266920523">How to search with Chrome</translation>
@@ -1433,7 +1432,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="867767487203716855">Next update</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8683081248374354009">Reset group</translation>
-<translation id="8683526617475118045">What you get</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
 <translation id="8712637175834984815">Got it</translation>
@@ -1517,7 +1515,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="9159716826369098114">Restore tab group of <ph name="TAB_COUNT" /> tabs as a new background tab group.</translation>
-<translation id="916446198114569890">The URLs that you visit are saved to your Google Account</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9187955620966010988">Reaction adjusted</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>

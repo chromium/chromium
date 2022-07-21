@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Comeza a falar</translation>
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="4306392492252714209">Quitar do portapapeis.</translation>
+<translation id="4311195029067684288">Completa</translation>
 <translation id="4491109536499578614">Imaxe</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4588090240171750605">Desprazar cara á dereita</translation>
@@ -110,8 +111,10 @@
 <translation id="4746179598275229723">Deixouse de fixar a extensión</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Queda 1 mes}other{Quedan # meses}}</translation>
 <translation id="4888938634149558681">Chamar</translation>
+<translation id="4937657825850660613">Metade</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Un segundo}other{# segundos}}</translation>
 <translation id="4971687151119236543">Pista anterior multimedia</translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="5046499563572181734">Toca aquí</translation>
 <translation id="5076340679995252485">&amp;Pegar</translation>
 <translation id="5123162024343028706">Fixar enriba</translation>

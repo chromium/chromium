@@ -306,6 +306,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Djelomično snimanje</translation>
 <translation id="2819276065543622893">Odjavit ćete se sada.</translation>
+<translation id="2822551631199737692">Upotrebljava se kamera</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" />. Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polica</translation>
 <translation id="2831035692318564937">Uključeno do izlaska sunca</translation>
@@ -807,6 +808,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5682642926269496722">Google asistent nije dostupan za trenutačni korisnički račun.</translation>
 <translation id="5689633613396158040">Noćno svjetlo olakšava gledanje zaslona ili čitanje pri slabom svjetlu. Dodirnite da biste promijenili vrijeme uključivanja noćnog svjetla ili ga potpuno isključili.</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
+<translation id="5693255400847650006">Upotrebljava se mikrofon</translation>
 <translation id="570390244361237317">Sve aplikacije, krećite se pomoću tipki sa strelicama da biste pristupili svim aplikacijama</translation>
 <translation id="5707775774148071965">Vaš uređaj podržava veću brzinu prijenosa podataka od kabela. Izvedba uređaja može biti ograničena.</translation>
 <translation id="5710450975648804523">Način Ne uznemiravaj uključen</translation>
@@ -981,6 +983,7 @@ Novo instaliranje</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6727969043791803658">Povezano, baterija <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Upotrebljavaju se kamera i mikrofon</translation>
 <translation id="6739144137573853180">OTVORI POSTAVKE</translation>
 <translation id="6751052314767925245">Provodi vaš administrator</translation>
 <translation id="6751826523481687655">Uključeno je praćenje izvedbe</translation>

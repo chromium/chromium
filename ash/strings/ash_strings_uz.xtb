@@ -306,6 +306,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2814448776515246190">Qisman tasvirga olish</translation>
 <translation id="2819276065543622893">Seans yakunlandi.</translation>
+<translation id="2822551631199737692">Kamera ishlatilmoqda</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> displeyining ekrani <ph name="SPECIFIED_RESOLUTION" /> hajmida ishlay olmaydi. Ekran <ph name="FALLBACK_RESOLUTION" /> hajmiga qaytarildi.</translation>
 <translation id="2825619548187458965">Javon</translation>
 <translation id="2831035692318564937">Quyosh botishigacha yoniq</translation>
@@ -807,6 +808,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5682642926269496722">Google Assistent bu foydalanuvchi hisobida ishlamaydi.</translation>
 <translation id="5689633613396158040">Tungi rejim xira yorugʻlikda koʻzlarni charchatmaslikka yordam beradi. Tungi rejimni rejalashtirish yoki undan butunlay chiqish uchun bu yerga bosing.</translation>
 <translation id="5691772641933328258">Barmoq izi aniqlanmadi</translation>
+<translation id="5693255400847650006">Mikrofon ishlatilmoqda</translation>
 <translation id="570390244361237317">Barcha ilovalarni koʻrish uchun strelka tugmalarini bosing</translation>
 <translation id="5707775774148071965">Qurilmangizga maʼlumot uzatish tezligi yuqoriroq kabellarni ulash mumkin. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="5710450975648804523">Bezovta qilinmasin rejimi yoniq</translation>
@@ -981,6 +983,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6723839937902243910">Quvvat</translation>
 <translation id="6727969043791803658">Ulangan, batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera va mikrofon ishlatilmoqda</translation>
 <translation id="6739144137573853180">SOZLAMALARGA OʻTISH</translation>
 <translation id="6751052314767925245">Administrator tomonidan majburiy sozlangan</translation>
 <translation id="6751826523481687655">Unumdorlik kuzatuvi yoniq</translation>

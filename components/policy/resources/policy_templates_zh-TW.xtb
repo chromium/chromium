@@ -1072,6 +1072,7 @@
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的定義功能。
       如果停用這項政策，系統會停用快速解答的定義功能。</translation>
 <translation id="209586405398070749">穩定版</translation>
+<translation id="2096932573113293941">要求使用授予權限以執行需要授權的外掛程式</translation>
 <translation id="2098658257603918882">啟用使用量和當機相關資料的報告功能</translation>
 <translation id="2104418465060359056">回報擴充功能和外掛程式資訊</translation>
 <translation id="2106627642643925514">覆寫預設的 PIN 碼列印模式。如果設定的模式不適用，系統會忽略這項政策。</translation>
@@ -1201,6 +1202,7 @@
 <translation id="2223393221350938149">禁止任何網站執行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果將這項政策設為 True，使用者無法使用鍵盤快速鍵或擴充功能 API 來擷取螢幕畫面。如果將這項政策設為 False，使用者可以擷取螢幕畫面。</translation>
 <translation id="2223598546285729819">預設通知設定</translation>
+<translation id="222673035924187991">啟用經過 TLS 加密的 ClientHello</translation>
 <translation id="2231726854197443389">這項政策可控管使用者是否能夠在設定中啟用僅限 HTTPS 模式。此模式會將所有瀏覽作業升級為採用 HTTPS。
       如果將這項政策設為允許或不設定，使用者將可啟用僅限 HTTPS 模式。
       如果將這項政策設為禁止，使用者則無法啟用僅限 HTTPS 模式。
@@ -1320,6 +1322,7 @@
 <translation id="2349117476121456297">這項政策設為 True 時，鍵盤最上排的按鍵會做為功能鍵指令使用。按下搜尋鍵即可將按鍵行為改回媒體鍵。
 
       設為 False 或不予設定時，鍵盤預設會產生媒體鍵指令。按下搜尋鍵即可將按鍵改為功能鍵。</translation>
+<translation id="2354439478396602136">在 <ph name="PRODUCT_OS_NAME" /> 啟動器中顯示推薦應用程式</translation>
 <translation id="2355876547176311490">停用遠端存取主機所使用的轉送伺服器</translation>
 <translation id="2358176879566587521">這項政策已遭到移除，因此與這個版本的 <ph name="PRODUCT_NAME" /> 不相容。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新啟動時間範圍</translation>
@@ -1548,6 +1551,7 @@
 受管理書籤的資料夾預設名稱為「受管理書籤」，但你也可以變更資料夾名稱，方法是在政策中加入一個內含「<ph name="TOPLEVEL_NAME" />」單一索引鍵的子條目，並將索引鍵值設為你想使用的資料夾名稱。受管理書籤不會同步到使用者帳戶，也無法透過擴充功能修改。</translation>
 <translation id="2552966063069741410">時區</translation>
 <translation id="2555244983262829274">在工具列上隱藏首頁按鈕</translation>
+<translation id="2562213287271514629">允許將過期的 <ph name="FLASH_PLUGIN_NAME" /> 當做一般 <ph name="FLASH_PLUGIN_NAME" /> 使用</translation>
 <translation id="2562339630163277285">指定用於提供互動智慧搜尋結果的搜尋引擎網址。網址應包含 <ph name="SEARCH_TERM_MARKER" /> 字串，使用者輸入的查詢文字會取代這個字串。
 
           這是選用政策，如果未設定，系統就不會提供互動智慧搜尋結果。
@@ -1591,6 +1595,7 @@
 <translation id="2593762551209145088">一律不啟用安全瀏覽功能。</translation>
 <translation id="26023406105317310">設定 Kerberos 帳戶</translation>
 <translation id="2604182581880595781">設定網路檔案共用功能相關政策。</translation>
+<translation id="2608039968712973520">要求使用者授予權限以執行過期的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2608535066974278204">用於指定重新啟動時間範圍長度的時間段 (分鐘)。</translation>
 <translation id="2608887839902987727">禁止網頁認證入口驗證機制忽略 Proxy 設定</translation>
 <translation id="2608985885792348429">預設剪貼簿設定</translation>
@@ -1641,6 +1646,7 @@
       這項政策已在 M77 版中移除。
       這項政策適用於登入畫面。另請查看適用於使用者工作階段的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。建議你為這兩項政策設定相同的值，如果兩者的值不相符，進入使用者工作階段時，系統可能會因為套用使用者政策指定的值而發生延遲。
       </translation>
+<translation id="2697717608663878828">啟用經過 TLS 加密的 ClientHello 實驗</translation>
 <translation id="2702023190395322609">啟用媒體推薦內容</translation>
 <translation id="270582584528242502">使用者嘗試關閉瀏覽器時，不會顯示警告對話方塊</translation>
 <translation id="2706708761587205154">只在 PIN 碼啟用時允許列印</translation>
@@ -2231,6 +2237,7 @@
 <translation id="3255762580838224124">你可以透過這項政策，在裝置每次重新啟動以及政策值變更後裝置首次連線時，將每個螢幕依指定方向旋轉。使用者可以在登入後透過設定頁面變更螢幕旋轉設定，但裝置下次重新啟動時，系統會恢復成這項政策的設定值。這項政策適用於主要螢幕和次要螢幕。
 
       如果未設定，預設值為 0 度，且使用者可自行變更。在這種情況下，系統不會在裝置重新啟動時重新套用預設值。</translation>
+<translation id="3258380413685430793">執行所有 <ph name="FLASH_PLUGIN_NAME" /> 內容</translation>
 <translation id="325883417142483505">你可以透過設定這項政策設定企業登入網址清單 (僅限 HTTP 和 HTTPS 通訊協定)。密碼保護服務會從這些網址擷取密碼的加鹽雜湊值，並用於偵測密碼重複使用情形。為了讓 <ph name="PRODUCT_NAME" /> 能正確擷取密碼的加鹽雜湊值，請確保你的登入頁面遵循以下網址所述的指南：https://www.chromium.org/developers/design-documents/create-amazing-password-forms。
 
       如果關閉這項設定或不設定，密碼保護服務只會在 https://accounts.google.com 上擷取密碼的加鹽雜湊值。
@@ -2295,6 +2302,7 @@
       注意：如要進一步瞭解程序寬鬆檢查機制政策，請前往 https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="3339271789059866414">設定系統 Proxy 服務的可用性和系統服務的 Proxy 憑證。
       如果不設定這項政策，將無法使用系統 Proxy 服務。</translation>
+<translation id="334231891933432876">在使用者帳戶驗證狀態失效時立即將使用者登出</translation>
 <translation id="3348799281602260763">如果啟用這項政策，WebRTC 對等互連可降級至傳輸層安全標準 (TLS)/DTLS 通訊協定的過時版本 (DTLS 1.0、TLS 1.0 和 TLS 1.1)。
       如果停用或不設定這項政策，系統會停用這些傳輸層安全標準 (TLS)/DTLS 版本。
 
@@ -2334,6 +2342,7 @@
       如果不設定，系統會使用 0 毫秒做為逾時時間。
 
       如果不設定 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策，則這項政策不會有任何作用。</translation>
+<translation id="3397883909301547525">不要在 <ph name="PRODUCT_OS_NAME" /> 啟動器中顯示推薦應用程式</translation>
 <translation id="3399859571630358395">強制停用快速配對功能 (快速藍牙配對)。</translation>
 <translation id="341285788698114069">這項政策可控管音訊程序在 Windows 系統上的優先順序。
       如果啟用這項政策，系統將以高於一般優先順序的次序執行音訊程序。
@@ -2410,6 +2419,7 @@
       這項功能的可用性會根據對應的使用者政策而定。</translation>
 <translation id="3495602011142234826">如果設為 True，這項擴充功能可透過企業專用的所有金鑰簽署任意資料。如果設為 False，此擴充功能就無法存取上述金鑰，使用者也無法授予這類權限。如果該金鑰是由同一個擴充功能產生，則屬例外情況，擴充功能在此情形下可以存取該金鑰一次。</translation>
 <translation id="3496296378755072552">密碼管理員</translation>
+<translation id="3496761649331792755">啟用書籤列</translation>
 <translation id="3498109920669229084">你可以透過這項政策，指定不受封鎖清單影響的擴充功能。
 
        如果將封鎖清單的值設為「<ph name="ALL_EXTENSIONS" />」，系統會封鎖所有擴充功能，使用者只能安裝許可清單中列出的擴充功能。
@@ -3232,6 +3242,7 @@
 <translation id="449423975179525290">設定 <ph name="PLUGIN_VM_NAME" /> 的相關政策。</translation>
 <translation id="449784980858429908">自動授權網站連線至所有序列埠。</translation>
 <translation id="450080746522343150">封鎖所有下載作業。</translation>
+<translation id="45036050223225148">停用經過 TLS 加密的 ClientHello 實驗</translation>
 <translation id="4508728400492074981">控管 First-Party Sets 功能的相關政策。</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
 <translation id="4512407512989846472">允許禁止在特定網址上將資料複製到剪貼簿</translation>
@@ -3268,6 +3279,7 @@
       如果不設定這項政策，使用者將可停用系統上安裝的任何外掛程式。</translation>
 <translation id="4549405078915181477">啟用網站的裝置使用時間功能</translation>
 <translation id="4554651132977135445">使用者政策回送處理模式</translation>
+<translation id="4554991346503872538">一律不提供翻譯</translation>
 <translation id="4555850956567117258">為使用者啟用遠端認證機制</translation>
 <translation id="4557134566541205630">預設搜尋引擎新分頁網址</translation>
 <translation id="4558166110367609724">自動略過《服務條款》並載入瀏覽器。</translation>
@@ -3714,6 +3726,7 @@
 <translation id="5109383437323376357">指定變化版本的可用性</translation>
 <translation id="5124368997194894978">啟用「連接 AC (交流電) 電源時啟動」功能</translation>
 <translation id="5130213897914754028">禁止網站使用 SharedArrayBuffers</translation>
+<translation id="5130935469849337738">一律提供翻譯</translation>
 <translation id="5141670636904227950">設定啟用的螢幕放大鏡在登入畫面的預設類型</translation>
 <translation id="5142301680741828703">一律算繪下列 <ph name="PRODUCT_FRAME_NAME" /> 中的網址模式</translation>
 <translation id="5143258831402123447">瀏覽歷程不會顯示在 chrome://history/journeys 頁面上。</translation>
@@ -3844,6 +3857,7 @@
 
       如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" />，該帳戶只能做為主要帳戶登入，不能做為次要帳戶登入。</translation>
 <translation id="523505283826916779">無障礙設定</translation>
+<translation id="5238275681097851753">允許封鎖特定的 <ph name="FLASH_PLUGIN_NAME" /> 內容</translation>
 <translation id="5238976843489093540">強制啟用快速配對功能 (快速藍牙配對)。</translation>
 <translation id="52393120393725840">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 就能幫使用者記住密碼，並在他們下次登入網站時提供。
 
@@ -3910,6 +3924,7 @@
 
       如果未設定這項政策，使用者無法在已註冊的 <ph name="PRODUCT_OS_NAME" />上玩恐龍復活節彩蛋遊戲，但可以在其他環境下玩這個遊戲。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
+<translation id="5297948043665200363">允許使用者在帳戶驗證狀態失效後保持登入狀態</translation>
 <translation id="5298949392804966105">不對受管理帳戶設定限制</translation>
 <translation id="530134925949808452">要在一天中的哪個時段 (以當地時間為準) 更新用量配額。</translation>
 <translation id="5303080953475303561">你可以透過這項政策，控管螢幕鎖定畫面要求使用者輸入密碼以快速解鎖的頻率。每當螢幕鎖定畫面顯示時，如果上一次輸入密碼的時間點落在所選值指定的時間範圍之前，裝置將無法快速解鎖。如果使用者停留在螢幕鎖定畫面的時間超過這個時間長度，則下次當他們輸入錯誤的解鎖碼或重新進入螢幕鎖定畫面時 (以先發生者為準)，系統就會要求輸入密碼。
@@ -4484,6 +4499,13 @@
 
       對於 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" />，這項政策需要一併啟用 <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> 才會生效。</translation>
 <translation id="5932767795525445337">這項政策也可用於固定 Android 應用程式。</translation>
+<translation id="5936193585187054065">經加密的 ClientHello (ECH) 是傳輸層安全標準 (TLS) 的擴充功能，可對 ClientHello 的機密資訊欄位進行加密，進一步保障隱私權。
+
+      如果不設定這項政策或將其設為啟用，<ph name="PRODUCT_NAME" /> 會遵循預設的 ECH 推出程序。如果停用這項政策，<ph name="PRODUCT_NAME" /> 就不會啟用 ECH。
+
+      啟用這項功能後，<ph name="PRODUCT_NAME" /> 會根據伺服器是否支援、HTTPS DNS 記錄是否可用或推出狀態，決定是否使用 ECH。
+
+      ECH 是不斷演變的通訊協定，因此 <ph name="PRODUCT_NAME" /> 的實作方式可能會有所變動。因此，這項政策是暫時性措施，用於控制初始實驗性的實作，且會在通訊協定發展完成時替換為最終控制項。</translation>
 <translation id="5939656968921014919">停用已隔離應用程式的開發人員模式</translation>
 <translation id="5945312246863177268">禁止使用者透過點選 Phone Hub 通知的方式啟動 Eche 應用程式。</translation>
 <translation id="5946082169633555022">Beta 版</translation>
@@ -5080,6 +5102,7 @@
           這項政策不會禁止企業管理員連線至受管理的 <ph name="PRODUCT_OS_NAME" /> 裝置。
 
           在啟用、留空或未設定的情況下，這項政策不會有任何作用。</translation>
+<translation id="6583249367505445969">停用書籤列</translation>
 <translation id="6584541828182430328">停用顯示全螢幕警示的功能</translation>
 <translation id="6593350713192882944">啟用快速解答功能</translation>
 <translation id="6594372503585248865">連線時，在遠端主機桌面啟用連線相關 UI</translation>
@@ -5556,6 +5579,7 @@
 <translation id="7040229947030068419">範例值：</translation>
 <translation id="7044883996351280650">控制 Android 備份與還原服務</translation>
 <translation id="7047495632846973438">指定要檢查或略過螢幕擷取權限政策。</translation>
+<translation id="7055022222176591388">禁止執行過期的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7066292150801784098">禁止遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="706669471845501145">允許網站顯示桌面通知</translation>
 <translation id="70681795425744184">不允許 CRD 執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
@@ -7128,21 +7152,6 @@
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選瀏覽記錄的核取方塊。</translation>
 <translation id="8825154502356129120">針對遠端存取主機停用 gnubby 驗證機制</translation>
 <translation id="8825782996899863372">密碼在網路詐騙網頁上遭到重複使用時，會觸發密碼保護警告</translation>
-<translation id="8826172502287946476">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的應用程式和擴充功能清單；使用者無法解除安裝或停用這些應用程式和擴充功能。系統會直接授予 enterprise.deviceAttributes 和 enterprise.platformKeys 擴充功能 API 等權限。(非強制安裝的應用程式和擴充功能無法取得這 2 個 API 的權限。)
-
-      如果未設定這項政策，系統不會自動安裝任何應用程式或擴充功能，且使用者可以在 <ph name="PRODUCT_NAME" /> 中解除安裝任何應用程式或擴充功能。
-
-          這項政策會取代 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 政策。如果從這份清單中移除先前強制安裝的應用程式或擴充功能，<ph name="PRODUCT_NAME" /> 會自動將其解除安裝。
-
-      在 <ph name="MS_WIN_NAME" /> 執行個體上，執行個體必須加入 <ph name="MS_AD_NAME" /> 網域、在 Windows 10 專業版上執行，或是已註冊 Chrome 瀏覽器雲端管理服務，系統才能強制安裝並非來自 Chrome 線上應用程式商店的應用程式和擴充功能。
-
-      在 <ph name="MAC_OS_NAME" /> 執行個體上，執行個體必須透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域，系統才能強制安裝並非來自 Chrome 線上應用程式商店的應用程式和擴充功能。
-
-      使用者可透過開發人員工具變更任何擴充功能的原始碼，但可能會導致擴充功能無法正常運作。如果你對此有所顧慮，請設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。
-
-      這項政策的每個清單項目都是一行字串，其中包含以分號 (;) 區隔的擴充功能 ID 和「更新」網址 (選用)。擴充功能 ID 為 32 個字母的字串，你可以在開發人員模式下前往 chrome://extensions 等位置查看這類字串。「更新」網址 (如有指定) 應指向更新資訊清單 XML 文件 ( https://developer.chrome.com/extensions/autoupdate )。根據預設，系統會使用 Chrome 線上應用程式商店的更新網址。這項政策設定的「更新」網址僅適用於初次安裝，後續的擴充功能更新將使用擴充功能資訊清單中的更新網址。
-
-       注意：這項政策不適用於無痕模式。請前往以下頁面，參閱有關代管擴充功能的資訊：https://developer.chrome.com/extensions/hosting。</translation>
 <translation id="8827275450034266143">User-Agent 字串會將主要版本凍結為 99，並在次要位置納入瀏覽器的主要版本。</translation>
 <translation id="8827366480126575426">通訊協定處理常式的通訊協定。</translation>
 <translation id="8827417642396462482">允許其他 DNS 查詢類型</translation>
@@ -7363,6 +7372,7 @@
 
       如果未設定這項政策，或政策值未對應至快速修復版本，則裝置不會更新為快速修復版本。如果裝置已執行快速修復版本，且你不再設定這項政策，或政策值不再對應至快速修復版本，那麼在其他政策未封鎖更新的情況下，裝置會更新為相應的一般版本。</translation>
 <translation id="9051019223077908578">設定登入畫面上的已安裝應用程式和擴充功能清單</translation>
+<translation id="9053841574218808519">一律執行未過期的外掛程式</translation>
 <translation id="9055866143096316150">將螢幕 Wake Lock 使用要求降級為系統 Wake Lock 使用要求</translation>
 <translation id="9057444687284972605">你可以設定網址模式清單，用於指定在 SAML 流程代管架構的登入畫面中，如果網站要求憑證，系統會自動選取用戶端憑證的網站。實際應用範例：設定要提供給 SAML IdP 的裝置通用憑證。
 

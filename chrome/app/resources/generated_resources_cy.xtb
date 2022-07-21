@@ -338,7 +338,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1319983966058170660">Botwm nôl yr is-dudalen <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Gweld a rheoli cyfrineiriau sydd wedi'u cadw yn eich <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1324106254079708331">Yn diogelu Cyfrifon Google personol unrhyw un sydd mewn perygl o ymosodiadau wedi'u targedu</translation>
-<translation id="1326317727527857210">I gael eich tabiau o'ch dyfeisiau eraill, mewngofnodwch i Chrome.</translation>
 <translation id="1327272175893960498">Tocynnau Kerberos</translation>
 <translation id="1327495825214193325">Er mwyn galluogi dadfygio ADB, mae angen ailgychwyn y <ph name="DEVICE_TYPE" /> hwn. Er mwyn ei analluogi mae angen ei ailosod i'r gosodiadau ffatri.</translation>
 <translation id="1327794256477341646">Ni fydd nodweddion sydd angen eich lleoliad yn gweithio</translation>
@@ -2443,7 +2442,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3280243678470289153">Aros yn Chrome</translation>
 <translation id="3281892622610078515">Ffeiliau a rhaglenni i'w rhoi mewn cwarantîn:</translation>
 <translation id="3282210178675490297">Wrthi'n rhannu tab i <ph name="APP_NAME" /></translation>
-<translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3285322247471302225">Tab &amp;Newydd</translation>
 <translation id="328571385944182268">Cadw eich cyfrineiriau?</translation>
 <translation id="3288047731229977326">Gall estyniadau sy'n rhedeg yn y modd datblygwr niweidio'ch cyfrifiadur. Os nad ydych yn ddatblygwr, dylech analluogi'r estyniadau hyn sy'n rhedeg yn y modd datblygwr i gadw'n ddiogel.</translation>
@@ -3317,7 +3315,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4101352914005291489">SSID cudd</translation>
 <translation id="4102469565336584882">Cod annilys. Rhaid i'ch cofnod gael y fformat LPA:1$&lt;cyfeiriad smdp&gt;$&lt;cod gweithredu&gt;</translation>
 <translation id="4102906002417106771">Ailgychwynnwch i ddefnyddio Powerwash</translation>
-<translation id="4104163789986725820">A&amp;llforio…</translation>
 <translation id="4107048419833779140">Nodi a chael gwared ar ddyfeisiau storfa</translation>
 <translation id="4108314971463891922">Dilyn</translation>
 <translation id="4109135793348361820">Symud y ffenestr i <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -4127,6 +4124,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4900392736118574277">Newidiwyd eich tudalen gychwyn i <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - wedi'i gydblethu</translation>
 <translation id="4900652253009739885">Methu â thynnu'r unig switsh a aseiniwyd i "Dewis". Pwyswch unrhyw fysell i <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Ehangu caewyd yn ddiweddar</translation>
 <translation id="4901309472892185668">Dewiswch gyflwr arbrofi ar gyfer yr arbrawf <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Mae'r polisi a lawrlwythwyd o'r gweinydd yn annilys: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Gosod neu reoli cyfrannau ffeiliau rhwydwaith. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
@@ -5073,6 +5071,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5860494867054883682">Yn diweddaru eich dyfais i sianel <ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">Dangos yr offer pwyntil yn y silff</translation>
 <translation id="5862319196656206789">Gosod dyfeisiau sydd wedi'u hychwanegu</translation>
+<translation id="5862731021271217234">I gael eich tabiau o'ch dyfeisiau eraill, trowch gysoni ymlaen</translation>
 <translation id="5863445608433396414">Galluogi nodweddion dadfygio</translation>
 <translation id="5864195618110239517">Defnyddio cysylltiad sydd â mesurydd</translation>
 <translation id="5864754048328252126">Segur wrth wefru</translation>
@@ -5509,7 +5508,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6291949900244949761">Gofyn pan fydd gwefan eisiau cyrchu dyfeisiau USB (argymhellir)</translation>
 <translation id="6291953229176937411">&amp;Dangos yn Finder</translation>
 <translation id="6292699686837272722">Mae tabiau yn crebachu i led ganolig</translation>
-<translation id="6294610283659775533">Gallwch anfon tabiau rhwng dyfeisiau sydd wedi'u mewngofnodi gyda'r un Cyfrif Google</translation>
 <translation id="6294759976468837022">Cyflymder awtosganio</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
@@ -7023,6 +7021,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7768526219335215384">Bydd <ph name="ORIGIN" /> yn gallu gweld ffeiliau yn <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Newid</translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
+<translation id="7769748505895274502">Crebachu caewyd yn ddiweddar</translation>
 <translation id="7770406201819593386">Rhedeg profion diagnostig ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Clic llygoden de</translation>
 <translation id="7770612696274572992">Copïwyd y llun o ddyfais arall</translation>

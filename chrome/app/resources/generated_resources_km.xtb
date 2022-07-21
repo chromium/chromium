@@ -334,7 +334,6 @@
 <translation id="1319983966058170660">ប៊ូតុង​ថយក្រោយ​ទៅទំព័ររង <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">មើល និងគ្រប់គ្រង​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង <ph name="SAVED_PASSWORDS_STORE" /> របស់អ្នក</translation>
 <translation id="1324106254079708331">ការពារ​គណនី Google ផ្ទាល់ខ្លួន​របស់​អ្នកគ្រប់គ្នា​ដែលប្រឈម​នឹងហានិភ័យ​នៃការវាយប្រហារ​តាមគោលដៅ</translation>
-<translation id="1326317727527857210">ដើម្បីទទួលបានផ្ទាំងរបស់អ្នកពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមចូលទៅកាន់ Chrome</translation>
 <translation id="1327272175893960498">សំបុត្រ Kerberos</translation>
 <translation id="1327495825214193325">តម្រូវឱ្យមាន​ការចាប់ផ្ដើម <ph name="DEVICE_TYPE" /> នេះឡើងវិញ ដើម្បីបើក​ការជួសជុល ADB។ ការបិទការជួសជុល​ ADB តម្រូវឱ្យ​កំណត់​ការកំណត់ឱ្យដូចដើមឡើងវិញ។</translation>
 <translation id="1327794256477341646">មុខងារដែលត្រូវការទីតាំងរបស់អ្នកនឹងមិនដំណើរការទេ</translation>
@@ -2441,7 +2440,6 @@
 <translation id="3280243678470289153">បន្តនៅក្នុង Chrome</translation>
 <translation id="3281892622610078515">ឯកសារ និងកម្មវិធីដែលត្រូវបានដាក់ឱ្យនៅដាច់ពីគេ៖</translation>
 <translation id="3282210178675490297">កំពុងចែក​រំលែក​ផ្ទាំងជាមួយ <ph name="APP_NAME" /></translation>
-<translation id="3282568296779691940">ចូលទៅ Chrome</translation>
 <translation id="3285322247471302225">ផ្ទាំងថ្មី</translation>
 <translation id="328571385944182268">រក្សាទុកពាក្យសម្ងាត់របស់អ្នក?</translation>
 <translation id="3288047731229977326">កម្មវិធីបន្ថែមដែលដំណើរការនៅក្នុងរបៀបអ្នកអភិវឌ្ឈន៍អាចបង្កគ្រោះថ្នាក់ដល់កុំព្យូទ័ររបស់អ្នក។ ប្រសិនបើអ្នកមិនមែនជាអ្នកអភិវឌ្ឍន៍ អ្នកគួរតែបិទដំណើរការកម្មវិធីបន្ថែមទាំងនេះដែលដំណើរការនៅក្នុងរបៀបអ្នកអភិវឌ្ឍន៍ដើម្បីឲ្យមានសុវត្ថិភាព។</translation>
@@ -3315,7 +3313,6 @@
 <translation id="4101352914005291489">SSID ដែលបានលាក់</translation>
 <translation id="4102469565336584882">លេខកូដ​មិនត្រឹមត្រូវ។ ការបញ្ចូលរបស់អ្នកគួរតែមានទម្រង់ LPA៖1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ចាប់ផ្ដើមឡើងវិញដើម្បីផៅវើរវាស់</translation>
-<translation id="4104163789986725820">នាំចេញ...</translation>
 <translation id="4107048419833779140">កំណត់​អត្តសញ្ញាណ និងដក​ឧបករណ៍ផ្ទុកចេញ។</translation>
 <translation id="4108314971463891922">តាមដាន</translation>
 <translation id="4109135793348361820">ផ្លាស់ទីផ្ទាំងទៅ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5073,6 +5070,7 @@
 <translation id="5860494867054883682">កំពុងអាប់ដេតឧបករណ៍របស់អ្នកទៅប៉ុស្តិ៍ <ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">បង្ហាញឧបករណ៍ប៊ិចនៅក្នុងធ្នើនេះ</translation>
 <translation id="5862319196656206789">រៀបចំ​ឧបករណ៍​ដែលបានភ្ជាប់</translation>
+<translation id="5862731021271217234">ដើម្បីទទួលបានផ្ទាំងរបស់អ្នកពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមបើកសមកាលកម្ម</translation>
 <translation id="5863445608433396414">បើកដំណើរការលក្ខណៈពិសេសកម្ចាត់កំហុស</translation>
 <translation id="5864195618110239517">ប្រើការតភ្ជាប់​តាមកម្រិត</translation>
 <translation id="5864754048328252126">សកម្មភាព​អសកម្ម ពេលកំពុង​សាកថ្ម</translation>
@@ -5509,7 +5507,6 @@
 <translation id="6291949900244949761">សួរ​នៅពេល​ដែល​ទំព័រ​ចង់ចូលប្រើ​ឧបករណ៍ USB (បាន​ណែនាំ)</translation>
 <translation id="6291953229176937411">បង្ហាញនៅក្នុងប្រអប់ស្វែងរក</translation>
 <translation id="6292699686837272722">ផ្ទាំងបង្រួមតាមទទឹងមធ្យម</translation>
-<translation id="6294610283659775533">អ្នកអាច​ផ្ញើផ្ទាំងបាន​រវាងឧបករណ៍ ដែលបានចូល​គណនី Google ដូចគ្នា</translation>
 <translation id="6294759976468837022">ល្បឿនស្កេនស្វ័យប្រវត្តិ</translation>
 <translation id="6295158916970320988">គេហទំព័រទាំងអស់</translation>
 <translation id="6295855836753816081">កំពុងរក្សាទុក…</translation>

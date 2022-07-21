@@ -337,7 +337,6 @@
 <translation id="1319983966058170660">Кнопка "Назад" на підсторінці "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="1322046419516468189">Переглядайте збережені паролі й керуйте ними на сторінці <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1324106254079708331">Захищає особисті облікові записи Google від цілеспрямованих атак</translation>
-<translation id="1326317727527857210">Щоб мати доступ до вкладок з інших пристроїв, увійдіть в обліковий запис Chrome.</translation>
 <translation id="1327272175893960498">Квитки Kerberos</translation>
 <translation id="1327495825214193325">Щоб увімкнути налагодження ADB, потрібно перезапустити пристрій <ph name="DEVICE_TYPE" />. Якщо вимкнути ADB, доведеться відновити заводські налаштування.</translation>
 <translation id="1327794256477341646">Функції, яким потрібен доступ до геоданих, не працюватимуть</translation>
@@ -2444,7 +2443,6 @@
 <translation id="3280243678470289153">Не виходити з Chrome</translation>
 <translation id="3281892622610078515">Файли та програми, які буде переміщено в карантин:</translation>
 <translation id="3282210178675490297">Додаток <ph name="APP_NAME" /> має доступ до цієї вкладки</translation>
-<translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3285322247471302225">Нова &amp;вкладка</translation>
 <translation id="328571385944182268">Зберігати паролі?</translation>
 <translation id="3288047731229977326">Розширення, які працюють у режимі розробника, можуть пошкодити ваш комп’ютер. Якщо ви не розробник, вимкніть їх заради безпеки.</translation>
@@ -3318,7 +3316,6 @@
 <translation id="4101352914005291489">Приховане ім'я мережі</translation>
 <translation id="4102469565336584882">Недійсний код. Введіть дані у форматі LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Перезапустити, щоб виконати Powerwash</translation>
-<translation id="4104163789986725820">Е&amp;кспортувати...</translation>
 <translation id="4107048419833779140">Виявляти й вилучати пристрої пам’яті</translation>
 <translation id="4108314971463891922">Підписатися</translation>
 <translation id="4109135793348361820">Перемістити вікно на робочий стіл користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -4128,6 +4125,7 @@
 <translation id="4900392736118574277">Стартову сторінку змінено на <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – з накладанням</translation>
 <translation id="4900652253009739885">Не вдається видалити призначення єдиного перемикача, призначеного дії "Вибрати". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
+<translation id="4901154724271753917">Розгорнути нещодавно закриті вкладки</translation>
 <translation id="4901309472892185668">Вибрати статус експерименту "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="49027928311173603">Завантажене із сервера правило недійсне: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Налаштувати мережеві файлообмінники або керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -5072,6 +5070,7 @@
 <translation id="5860494867054883682">На пристрій установлюється <ph name="CHANNEL_NAME" /> версія (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">Показувати інструменти стилуса на панелі запуску</translation>
 <translation id="5862319196656206789">Налаштувати підключені пристрої</translation>
+<translation id="5862731021271217234">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію</translation>
 <translation id="5863445608433396414">Увімкнути функції налагодження</translation>
 <translation id="5864195618110239517">Використовувати підключення з тарифікацією трафіку</translation>
 <translation id="5864754048328252126">Що робити, коли пристрій неактивний і заряджається</translation>
@@ -5507,7 +5506,6 @@
 <translation id="6291949900244949761">Запитувати, коли сайт хоче отримати доступ до пристроїв USB (рекомендовано)</translation>
 <translation id="6291953229176937411">&amp;Показати в програмі Finder</translation>
 <translation id="6292699686837272722">Вкладки зменшуються до середньої ширини</translation>
-<translation id="6294610283659775533">Ви можете надсилати вкладки між пристроями, на яких увійшли в той самий обліковий запис Google</translation>
 <translation id="6294759976468837022">Швидкість автоматичного сканування</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6295855836753816081">Зберігання…</translation>
@@ -7019,6 +7017,7 @@
 <translation id="7768526219335215384">Сайт <ph name="ORIGIN" /> зможе переглядати файли в папці <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Змінити</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
+<translation id="7769748505895274502">Згорнути нещодавно закриті вкладки</translation>
 <translation id="7770406201819593386">Виконувати діагностичні перевірки ОС Chrome Flex.</translation>
 <translation id="7770450735129978837">Клік правою кнопкою миші</translation>
 <translation id="7770612696274572992">Зображення скопійовано з іншого пристрою</translation>

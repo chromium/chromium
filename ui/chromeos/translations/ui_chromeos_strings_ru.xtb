@@ -188,6 +188,7 @@
 <translation id="2570012981255377263">Здесь будут появляться ваши недавние файлы.</translation>
 <translation id="2578394532502990878">Тамильский, фонетический</translation>
 <translation id="2579959351793446050">Ория</translation>
+<translation id="2593644851255584939">Согласно настройкам администратора, SIM-карта должна быть разблокирована.</translation>
 <translation id="2602810353103180630">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
 <translation id="2614589611416690597">Видео <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">SIM-карта заблокирована</translation>

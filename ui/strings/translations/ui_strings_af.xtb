@@ -103,6 +103,7 @@
 <translation id="4289300219472526559">Begin praat</translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4306392492252714209">Verwyder van knipbord af.</translation>
+<translation id="4311195029067684288">Vol</translation>
 <translation id="4491109536499578614">Prent</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4588090240171750605">Rollees na regs</translation>
@@ -110,8 +111,10 @@
 <translation id="4746179598275229723">Uitbreiding is ontspeld</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 maand oor}other{# maande oor}}</translation>
 <translation id="4888938634149558681">Maak oproep</translation>
+<translation id="4937657825850660613">Half</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekonde}other{# sekondes}}</translation>
 <translation id="4971687151119236543">Media vorige snit</translation>
+<translation id="4971925105143343452">Gedeeltelik</translation>
 <translation id="5046499563572181734">Tik hier</translation>
 <translation id="5076340679995252485">Plak</translation>
 <translation id="5123162024343028706">Dryf bo-op</translation>

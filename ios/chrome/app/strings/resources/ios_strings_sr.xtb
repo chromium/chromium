@@ -775,6 +775,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7400418766976504921">URL адреса</translation>
 <translation id="7409985198648820906">Непрочитаних чланака: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Настави</translation>
+<translation id="7419565702166471774">Увек користи безбедне везе</translation>
 <translation id="7425346204213733349">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће остати сачувани на Google налогу.</translation>
 <translation id="7431991332293347422">Контролишите како се историја прегледања користи за персонализовање Претраге и других услуга</translation>
 <translation id="7435356471928173109">Искључио је администратор</translation>
@@ -814,7 +815,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7781069478569868053">Страница нове картице</translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="778855399387580014">Започните претрагу на новој Chrome картици.</translation>
-<translation id="7790892308048519147">Пробај да користиш безбедне везе</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7807060072011926525">Пружа Google</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>

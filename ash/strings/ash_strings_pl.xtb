@@ -306,6 +306,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2814448776515246190">Przechwytywanie części ekranu</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
+<translation id="2822551631199737692">Aparat w użyciu</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Półka</translation>
 <translation id="2831035692318564937">Włączony do wschodu słońca</translation>
@@ -807,6 +808,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5682642926269496722">Asystent Google jest niedostępny na tym koncie użytkownika.</translation>
 <translation id="5689633613396158040">Dzięki Podświetleniu nocnemu oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu. Kliknij, by zmienić godzinę włączania Podświetlenia nocnego lub całkowicie je wyłączyć.</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
+<translation id="5693255400847650006">Mikrofon w użyciu</translation>
 <translation id="570390244361237317">Wszystkie aplikacje; aby uzyskać dostęp do wszystkich aplikacji, poruszaj się za pomocą klawiszy strzałek</translation>
 <translation id="5707775774148071965">Twoje urządzenie obsługuje większą szybkość transmisji danych niż kabel. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
@@ -980,6 +982,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6727969043791803658">Połączono, bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera i mikrofon w użyciu</translation>
 <translation id="6739144137573853180">OTWÓRZ USTAWIENIA</translation>
 <translation id="6751052314767925245">Wymusił administrator</translation>
 <translation id="6751826523481687655">Śledzenie wydajności jest włączone</translation>

@@ -335,7 +335,6 @@
 <translation id="1319983966058170660">Копче за назад на подредената страница <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1324106254079708331">Ги чува личните сметки на Google на луѓето што се во ризик од насочени напади</translation>
-<translation id="1326317727527857210">За да ги преземете картичките од другите уреди, најавете се на Chrome.</translation>
 <translation id="1327272175893960498">Билети на Kerberos</translation>
 <translation id="1327495825214193325">За да се овозможи отстранување грешки на ADB, потребно е рестартирање на <ph name="DEVICE_TYPE" />. За да се оневозможи, потребно ресетирање на фабрички поставки.</translation>
 <translation id="1327794256477341646">Функциите на коишто им треба локацијата нема да работат</translation>
@@ -2442,7 +2441,6 @@
 <translation id="3280243678470289153">Остани во Chrome</translation>
 <translation id="3281892622610078515">Датотеки и програми за ставање во карантин:</translation>
 <translation id="3282210178675490297">Картичката се споделува на <ph name="APP_NAME" /></translation>
-<translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3285322247471302225">Нова &amp;картичка</translation>
 <translation id="328571385944182268">Да се зачуваат лозинките?</translation>
 <translation id="3288047731229977326">Наставки кои работат во режим на програмер може да го оштетат компјутерот. Ако не сте програмер, треба да ги оневозможите наставките кои работат во режим на програмер за да останете безбедни.</translation>
@@ -3317,7 +3315,6 @@
 <translation id="4101352914005291489">Сокриен SSID</translation>
 <translation id="4102469565336584882">Погрешен код. Кодот треба да биде во форматот LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Рестартирајте за фабричко ресетирање</translation>
-<translation id="4104163789986725820">Из&amp;вези...</translation>
 <translation id="4107048419833779140">Идентификувај и отстранувај надворешни мемории</translation>
 <translation id="4108314971463891922">Следи</translation>
 <translation id="4109135793348361820">Помести прозорец кај <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5075,6 +5072,7 @@
 <translation id="5860494867054883682">Уредот се ажурира на каналот <ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">Прикажи ги алатките за пенкало на полицата</translation>
 <translation id="5862319196656206789">Поставете поврзани уреди</translation>
+<translation id="5862731021271217234">За да ги добиете вашите картички од другите уреди, вклучете ја синхронизацијата</translation>
 <translation id="5863445608433396414">Овозможете ги функциите за отстранување грешки</translation>
 <translation id="5864195618110239517">Користи врска со ограничен интернет</translation>
 <translation id="5864754048328252126">Дејство при неактивност додека се полни</translation>
@@ -5511,7 +5509,6 @@
 <translation id="6291949900244949761">Прашај кога некој сајт сака да пристапи до USB-уредите (препорачано)</translation>
 <translation id="6291953229176937411">&amp;Прикажи во Наоѓач</translation>
 <translation id="6292699686837272722">Картичките ќе се собираат, но ќе имаат средна ширина</translation>
-<translation id="6294610283659775533">Може да испраќате картички меѓу уредите што се најавени со истата сметка на Google</translation>
 <translation id="6294759976468837022">Брзина на автоматско скенирање</translation>
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6295855836753816081">Се зачувува…</translation>

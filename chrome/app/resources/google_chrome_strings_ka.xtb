@@ -69,6 +69,7 @@
 <translation id="2139300032719313227">გადატვირთეთ ChromeOS</translation>
 <translation id="2151406531797534936">გთხოვთ, ახლავე გადატვირთოთ Chrome</translation>
 <translation id="2174917724755363426">ინსტალაცია არ დასრულებულა. ნამდვილად გსურთ გაუქმება?</translation>
+<translation id="223889379102603431">ინფორმაცია Chrome-ის მიერ თავისი ძირეული სერტიფიკატების მართვის შესახებ</translation>
 <translation id="2258103955319320201">Chrome ბრაუზერში თქვენს კონტენტზე თქვენი ნებისმიერი მოწყობილობიდან წვდომისთვის შედით სისტემაში, შემდეგ კი ჩართეთ სინქრონიზაცია</translation>
 <translation id="2290014774651636340">Google API გასაღები გამოტოვებულია. Google Chrome-ის ზოგიერთი ფუნქცია გამორთული იქნება.</translation>
 <translation id="2290095356545025170">ნამდვილად გსურთ მოახდინოთ Google Chrome-ის დეინსტალაცია?</translation>
@@ -354,6 +355,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8129812357326543296">&amp;Google Chrome-ის შესახებ</translation>
 <translation id="813913629614996137">მიმდინარეობს ინიცირება…</translation>
 <translation id="8255190535488645436">Google Chrome იყენებს თქვენს კამერასა და მიკროფონს.</translation>
+<translation id="8270775718612349140">Chrome-ის მიერ მართული სერტიფიკატები</translation>
 <translation id="8286862437124483331">Google Chrome ცდილობს პაროლების ჩვენებას. აკრიფეთ თქვენი Windows-ის პაროლი, რათა დაუშვათ ეს.</translation>
 <translation id="828798499196665338">თქვენმა მშობელმა გამორთო „ნებართვები საიტებისთვის, აპებისა და გაფართოებებისთვის“ Chrome-ისთვის. ეს <ph name="EXTENSION_TYPE_PARAMETER" /> ვერ ჩაირთვება.</translation>
 <translation id="8290100596633877290">Google Chrome-ში შეცდომაა. გადავტვირთოთ?</translation>
