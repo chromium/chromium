@@ -234,6 +234,8 @@ def make_nested_enum_class_def(cg_context):
         TextNode("enum class Enum : enum_int_t {"),
         ListNode(enum_values, separator=", "),
         TextNode("};"),
+        TextNode("static constexpr size_t kEnumSize = {};".format(
+            len(enum_values))),
     ])
 
 

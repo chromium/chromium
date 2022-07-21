@@ -57,6 +57,16 @@
 
 namespace blink {
 
+namespace {
+
+bool ScanRun(const VTTScanner::Run& value_run,
+             AlignSetting align,
+             VTTScanner& scanner) {
+  return scanner.ScanRun(value_run, V8AlignSetting(align).AsString());
+}
+
+}  // namespace
+
 static const CSSValueID kDisplayWritingModeMap[] = {CSSValueID::kHorizontalTb,
                                                     CSSValueID::kVerticalRl,
                                                     CSSValueID::kVerticalLr};
@@ -68,34 +78,9 @@ static_assert(std::size(kDisplayWritingModeMap) ==
 static const CSSValueID kDisplayAlignmentMap[] = {
     CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
     CSSValueID::kLeft, CSSValueID::kRight};
-static_assert(std::size(kDisplayAlignmentMap) == VTTCue::kNumberOfAlignments,
+static_assert(std::size(kDisplayAlignmentMap) == V8AlignSetting::kEnumSize,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
-
-static const String& StartKeyword() {
-  DEFINE_STATIC_LOCAL(const String, start, ("start"));
-  return start;
-}
-
-static const String& CenterKeyword() {
-  DEFINE_STATIC_LOCAL(const String, center, ("center"));
-  return center;
-}
-
-static const String& EndKeyword() {
-  DEFINE_STATIC_LOCAL(const String, end, ("end"));
-  return end;
-}
-
-static const String& LeftKeyword() {
-  DEFINE_STATIC_LOCAL(const String, left, ("left"));
-  return left;
-}
-
-static const String& RightKeyword() {
-  DEFINE_STATIC_LOCAL(const String, right, ("right"));
-  return right;
-}
 
 static const String& HorizontalKeyword() {
   return g_empty_string;
@@ -159,7 +144,6 @@ VTTCue::VTTCue(Document& document,
       text_position_(std::numeric_limits<double>::quiet_NaN()),
       cue_size_(100),
       writing_direction_(kHorizontal),
-      cue_alignment_(kCenter),
       vtt_node_tree_(nullptr),
       cue_background_box_(MakeGarbageCollected<VTTCueBackgroundBox>(document)),
       snap_to_lines_(true),
@@ -320,39 +304,12 @@ void VTTCue::setSize(double size, ExceptionState& exception_state) {
   CueDidChange();
 }
 
-const String& VTTCue::align() const {
-  switch (cue_alignment_) {
-    case kStart:
-      return StartKeyword();
-    case kCenter:
-      return CenterKeyword();
-    case kEnd:
-      return EndKeyword();
-    case kLeft:
-      return LeftKeyword();
-    case kRight:
-      return RightKeyword();
-    default:
-      NOTREACHED();
-      return g_empty_string;
-  }
+V8AlignSetting VTTCue::align() const {
+  return V8AlignSetting(cue_alignment_);
 }
 
-void VTTCue::setAlign(const String& value) {
-  CueAlignment alignment = cue_alignment_;
-  if (value == StartKeyword())
-    alignment = kStart;
-  else if (value == CenterKeyword())
-    alignment = kCenter;
-  else if (value == EndKeyword())
-    alignment = kEnd;
-  else if (value == LeftKeyword())
-    alignment = kLeft;
-  else if (value == RightKeyword())
-    alignment = kRight;
-  else
-    NOTREACHED();
-
+void VTTCue::setAlign(const V8AlignSetting& value) {
+  AlignSetting alignment = value.AsEnum();
   if (alignment == cue_alignment_)
     return;
 
@@ -522,16 +479,16 @@ double VTTCue::CalculateComputedTextPosition() const {
   switch (cue_alignment_) {
     // 2. If the cue text alignment is start or left, return 0 and abort these
     // steps.
-    case kStart:
-    case kLeft:
+    case AlignSetting::kStart:
+    case AlignSetting::kLeft:
       return 0;
     // 3. If the cue text alignment is end or right, return 100 and abort these
     // steps.
-    case kEnd:
-    case kRight:
+    case AlignSetting::kEnd:
+    case AlignSetting::kRight:
       return 100;
     // 4. If the cue text alignment is center, return 50 and abort these steps.
-    case kCenter:
+    case AlignSetting::kCenter:
       return 50;
     default:
       NOTREACHED();
@@ -539,12 +496,12 @@ double VTTCue::CalculateComputedTextPosition() const {
   }
 }
 
-VTTCue::CueAlignment VTTCue::CalculateComputedCueAlignment() const {
+AlignSetting VTTCue::CalculateComputedCueAlignment() const {
   switch (cue_alignment_) {
-    case VTTCue::kLeft:
-      return VTTCue::kStart;
-    case VTTCue::kRight:
-      return VTTCue::kEnd;
+    case AlignSetting::kLeft:
+      return AlignSetting::kStart;
+    case AlignSetting::kRight:
+      return AlignSetting::kEnd;
     default:
       return cue_alignment_;
   }
@@ -570,7 +527,8 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
 
   // Note: The 'text-align' property is also determined here so that
   // VTTCueBox::applyCSSProperties need not have access to a VTTCue.
-  display_parameters.text_align = kDisplayAlignmentMap[GetCueAlignment()];
+  display_parameters.text_align =
+      kDisplayAlignmentMap[static_cast<size_t>(cue_alignment_)];
 
   // 3. If the cue writing direction is horizontal, then let block-flow be
   // 'tb'. Otherwise, if the cue writing direction is vertical growing left,
@@ -579,17 +537,17 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   display_parameters.writing_mode = kDisplayWritingModeMap[writing_direction_];
 
   // Resolve the cue alignment to one of the values {start, end, center}.
-  CueAlignment computed_cue_alignment = CalculateComputedCueAlignment();
+  AlignSetting computed_cue_alignment = CalculateComputedCueAlignment();
 
   // 4. Determine the value of maximum size for cue as per the appropriate
   // rules from the following list:
   double computed_text_position = CalculateComputedTextPosition();
   double maximum_size = computed_text_position;
-  if (computed_cue_alignment == kStart) {
+  if (computed_cue_alignment == AlignSetting::kStart) {
     maximum_size = 100 - computed_text_position;
-  } else if (computed_cue_alignment == kEnd) {
+  } else if (computed_cue_alignment == AlignSetting::kEnd) {
     maximum_size = computed_text_position;
-  } else if (computed_cue_alignment == kCenter) {
+  } else if (computed_cue_alignment == AlignSetting::kCenter) {
     maximum_size = computed_text_position <= 50
                        ? computed_text_position
                        : (100 - computed_text_position);
@@ -612,14 +570,14 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   // appropriate rules from the following list:
   if (writing_direction_ == kHorizontal) {
     switch (computed_cue_alignment) {
-      case kStart:
+      case AlignSetting::kStart:
         display_parameters.position.set_x(computed_text_position);
         break;
-      case kEnd:
+      case AlignSetting::kEnd:
         display_parameters.position.set_x(computed_text_position -
                                           display_parameters.size);
         break;
-      case kCenter:
+      case AlignSetting::kCenter:
         display_parameters.position.set_x(computed_text_position -
                                           display_parameters.size / 2);
         break;
@@ -629,14 +587,14 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   } else {
     // Cases for writing_direction_ being kVerticalGrowing{Left|Right}
     switch (computed_cue_alignment) {
-      case kStart:
+      case AlignSetting::kStart:
         display_parameters.position.set_y(computed_text_position);
         break;
-      case kEnd:
+      case AlignSetting::kEnd:
         display_parameters.position.set_y(computed_text_position -
                                           display_parameters.size);
         break;
-      case kCenter:
+      case AlignSetting::kCenter:
         display_parameters.position.set_y(computed_text_position -
                                           display_parameters.size / 2);
         break;
@@ -807,7 +765,7 @@ void VTTCue::UpdateDisplay(HTMLDivElement& container) {
   if (cue_size_ != 100)
     UseCounter::Count(GetDocument(), WebFeature::kVTTCueRenderSizeNot100);
 
-  if (cue_alignment_ != kCenter)
+  if (cue_alignment_ != AlignSetting::kCenter)
     UseCounter::Count(GetDocument(), WebFeature::kVTTCueRenderAlignNotCenter);
 
   VTTCueBox* display_box = GetDisplayTree();
@@ -1012,28 +970,28 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         // If name is a case-sensitive match for "align"
         // 1. If value is a case-sensitive match for the string "start",
         //    then let cue's WebVTT cue text alignment be start alignment.
-        if (input.ScanRun(value_run, StartKeyword()))
-          cue_alignment_ = kStart;
+        if (ScanRun(value_run, AlignSetting::kStart, input))
+          cue_alignment_ = AlignSetting::kStart;
 
         // 2. If value is a case-sensitive match for the string "center",
         //    then let cue's WebVTT cue text alignment be center alignment.
-        else if (input.ScanRun(value_run, CenterKeyword()))
-          cue_alignment_ = kCenter;
+        else if (ScanRun(value_run, AlignSetting::kCenter, input))
+          cue_alignment_ = AlignSetting::kCenter;
 
         // 3. If value is a case-sensitive match for the string "end", then
         //    let cue's WebVTT cue text alignment be end alignment.
-        else if (input.ScanRun(value_run, EndKeyword()))
-          cue_alignment_ = kEnd;
+        else if (ScanRun(value_run, AlignSetting::kEnd, input))
+          cue_alignment_ = AlignSetting::kEnd;
 
         // 4. If value is a case-sensitive match for the string "left",
         //    then let cue's WebVTT cue text alignment be left alignment.
-        else if (input.ScanRun(value_run, LeftKeyword()))
-          cue_alignment_ = kLeft;
+        else if (ScanRun(value_run, AlignSetting::kLeft, input))
+          cue_alignment_ = AlignSetting::kLeft;
 
         // 5. If value is a case-sensitive match for the string "right",
         //    then let cue's WebVTT cue text alignment be right alignment.
-        else if (input.ScanRun(value_run, RightKeyword()))
-          cue_alignment_ = kRight;
+        else if (ScanRun(value_run, AlignSetting::kRight, input))
+          cue_alignment_ = AlignSetting::kRight;
         break;
       }
       case kRegionId:

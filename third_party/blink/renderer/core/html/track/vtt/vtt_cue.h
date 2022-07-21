@@ -30,6 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -46,6 +47,7 @@ class VTTCueBox;
 class VTTRegion;
 class VTTScanner;
 
+using AlignSetting = V8AlignSetting::Enum;
 using VTTRegionMap = HeapHashMap<String, Member<VTTRegion>>;
 
 struct VTTDisplayParameters {
@@ -120,8 +122,8 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   double size() const { return cue_size_; }
   void setSize(double, ExceptionState&);
 
-  const String& align() const;
-  void setAlign(const String&);
+  V8AlignSetting align() const;
+  void setAlign(const V8AlignSetting&);
 
   const String& text() const { return text_; }
   void setText(const String&);
@@ -151,16 +153,6 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   };
   WritingDirection GetWritingDirection() const { return writing_direction_; }
 
-  enum CueAlignment {
-    kStart = 0,
-    kCenter,
-    kEnd,
-    kLeft,
-    kRight,
-    kNumberOfAlignments
-  };
-  CueAlignment GetCueAlignment() const { return cue_alignment_; }
-
   ExecutionContext* GetExecutionContext() const override;
 
 #ifndef NDEBUG
@@ -185,7 +177,7 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   VTTDisplayParameters CalculateDisplayParameters() const;
   double CalculateComputedTextPosition() const;
-  CueAlignment CalculateComputedCueAlignment() const;
+  AlignSetting CalculateComputedCueAlignment() const;
 
   enum CueSetting {
     kNone,
@@ -203,7 +195,7 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   double text_position_;
   double cue_size_;
   WritingDirection writing_direction_;
-  CueAlignment cue_alignment_;
+  AlignSetting cue_alignment_ = AlignSetting::kCenter;
 
   Member<VTTRegion> region_;
   Member<DocumentFragment> vtt_node_tree_;
