@@ -305,10 +305,7 @@ export class BannerController extends EventTarget {
       // ratio has been met.
       this.registerCustomBannerFilter_(DriveLowSpaceBanner, {
         shouldShow: () => !!this.volumeSizeStats_[this.currentVolume_.volumeId],
-        context: () => ({
-          remainingSize:
-              this.volumeSizeStats_[this.currentVolume_.volumeId].remainingSize,
-        }),
+        context: () => this.volumeSizeStats_[this.currentVolume_.volumeId],
       });
 
       // Register a custom filter that checks if the removable device has an

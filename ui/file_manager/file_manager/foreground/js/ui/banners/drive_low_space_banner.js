@@ -64,14 +64,16 @@ export class DriveLowSpaceBanner extends WarningBanner {
    * @param {!Object} context chrome.fileManagerPrivate.MountPointSizeStats
    */
   onFilteredContext(context) {
-    if (!context || !context.remainingSize) {
+    if (!context || context.remainingSize == null ||
+        context.totalSize == null) {
       console.warn('Context not supplied or missing remainingSize');
       return;
     }
     const text = this.shadowRoot.querySelector('span[slot="text"]');
     text.innerText = strf(
-        'DRIVE_SPACE_AVAILABLE_LONG',
-        util.bytesToString(context.remainingSize));
+        'DRIVE_INDIVIDUAL_QUOTA_LOW',
+        Math.ceil(context.remainingSize / context.totalSize * 100),
+        util.bytesToString(context.totalSize));
   }
 }
 
