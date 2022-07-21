@@ -177,7 +177,7 @@
 <translation id="2464089476039395325">Servidor intermediari HTTP</translation>
 <translation id="2467267713099745100">Xarxa <ph name="NETWORK_TYPE" /> (desactivada)</translation>
 <translation id="2468402215065996499">Tamagotxi</translation>
-<translation id="2470939964922472929">S'ha introduït un PIN incorrecte massa vegades. Per configurar un PIN nou, introdueix la clau de desbloqueig personal (PUK) de 8 dígits proporcionada per l'operador.</translation>
+<translation id="2470939964922472929">S'ha introduït un PIN incorrecte massa vegades. Per configurar un PIN nou, introdueix el número personal de desbloqueig (PUK) de 8 dígits proporcionat per l'operador.</translation>
 <translation id="2500392669976258912">Gujarati fonètic</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Escaneja</translation>
@@ -835,7 +835,7 @@
 <translation id="8038111231936746805">(predeterminada)</translation>
 <translation id="8042602468072383151">Àudio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Romanès</translation>
-<translation id="8049184478152619004">Introdueix la clau de desbloqueig personal (PUK)</translation>
+<translation id="8049184478152619004">Introdueix el número personal de desbloqueig (PUK)</translation>
 <translation id="807187749540895545">S'està extraient <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Repeteix</translation>
 <translation id="8087576439476816834">Baixa, <ph name="PROFILE_NAME" /></translation>
