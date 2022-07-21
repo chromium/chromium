@@ -25,88 +25,88 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-const char* kExpectedFontFamilyNames[] = {"AndroidClock",
-                                          "Roboto",
-                                          "Droid Sans Mono",
-                                          "Roboto",
-                                          "Noto Color Emoji",
-                                          "Noto Sans Bengali",
-                                          "Noto Sans Bengali UI",
-                                          "Noto Sans Devanagari",
-                                          "Noto Sans Devanagari",
-                                          "Noto Sans Devanagari UI",
-                                          "Noto Sans Devanagari UI",
-                                          "Noto Sans Kannada",
-                                          "Noto Sans Kannada",
-                                          "Noto Sans Kannada UI",
-                                          "Noto Sans Kannada UI",
-                                          "Noto Sans Lao",
-                                          "Noto Sans Lao",
-                                          "Noto Sans Lao UI",
-                                          "Noto Sans Lao UI",
-                                          "Noto Sans Malayalam",
-                                          "Noto Sans Malayalam",
-                                          "Noto Sans Malayalam UI",
-                                          "Noto Sans Malayalam UI",
-                                          "Noto Sans Tamil",
-                                          "Noto Sans Tamil",
-                                          "Noto Sans Tamil UI",
-                                          "Noto Sans Tamil UI",
-                                          "Noto Sans Telugu",
-                                          "Noto Sans Telugu",
-                                          "Noto Sans Telugu UI",
-                                          "Noto Sans Telugu UI",
-                                          "Noto Sans Thai",
-                                          "Noto Sans Thai",
-                                          "Noto Sans Thai UI",
-                                          "Noto Sans Thai UI",
-                                          "Roboto",
-                                          "Roboto Condensed",
-                                          "Roboto Condensed",
-                                          "Roboto Condensed",
-                                          "Roboto Condensed",
-                                          "Roboto"};
+const char* const kExpectedFontFamilyNames[] = {"AndroidClock",
+                                                "Roboto",
+                                                "Droid Sans Mono",
+                                                "Roboto",
+                                                "Noto Color Emoji",
+                                                "Noto Sans Bengali",
+                                                "Noto Sans Bengali UI",
+                                                "Noto Sans Devanagari",
+                                                "Noto Sans Devanagari",
+                                                "Noto Sans Devanagari UI",
+                                                "Noto Sans Devanagari UI",
+                                                "Noto Sans Kannada",
+                                                "Noto Sans Kannada",
+                                                "Noto Sans Kannada UI",
+                                                "Noto Sans Kannada UI",
+                                                "Noto Sans Lao",
+                                                "Noto Sans Lao",
+                                                "Noto Sans Lao UI",
+                                                "Noto Sans Lao UI",
+                                                "Noto Sans Malayalam",
+                                                "Noto Sans Malayalam",
+                                                "Noto Sans Malayalam UI",
+                                                "Noto Sans Malayalam UI",
+                                                "Noto Sans Tamil",
+                                                "Noto Sans Tamil",
+                                                "Noto Sans Tamil UI",
+                                                "Noto Sans Tamil UI",
+                                                "Noto Sans Telugu",
+                                                "Noto Sans Telugu",
+                                                "Noto Sans Telugu UI",
+                                                "Noto Sans Telugu UI",
+                                                "Noto Sans Thai",
+                                                "Noto Sans Thai",
+                                                "Noto Sans Thai UI",
+                                                "Noto Sans Thai UI",
+                                                "Roboto",
+                                                "Roboto Condensed",
+                                                "Roboto Condensed",
+                                                "Roboto Condensed",
+                                                "Roboto Condensed",
+                                                "Roboto"};
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const char* kExpectedFontFamilyNames[] = {"Ahem",
-                                          "Arimo",
-                                          "Arimo",
-                                          "Arimo",
-                                          "Arimo",
-                                          "Cousine",
-                                          "Cousine",
-                                          "Cousine",
-                                          "Cousine",
-                                          "DejaVu Sans",
-                                          "DejaVu Sans",
-                                          "Garuda",
-                                          "Gelasio",
-                                          "Gelasio",
-                                          "Gelasio",
-                                          "Gelasio",
-                                          "Lohit Devanagari",
-                                          "Lohit Gurmukhi",
-                                          "Lohit Tamil",
-                                          "Noto Sans Khmer",
-                                          "Tinos",
-                                          "Tinos",
-                                          "Tinos",
-                                          "Tinos",
-                                          "Mukti Narrow",
-                                          "Tinos"};
+const char* const kExpectedFontFamilyNames[] = {"Ahem",
+                                                "Arimo",
+                                                "Arimo",
+                                                "Arimo",
+                                                "Arimo",
+                                                "Cousine",
+                                                "Cousine",
+                                                "Cousine",
+                                                "Cousine",
+                                                "DejaVu Sans",
+                                                "DejaVu Sans",
+                                                "Garuda",
+                                                "Gelasio",
+                                                "Gelasio",
+                                                "Gelasio",
+                                                "Gelasio",
+                                                "Lohit Devanagari",
+                                                "Lohit Gurmukhi",
+                                                "Lohit Tamil",
+                                                "Noto Sans Khmer",
+                                                "Tinos",
+                                                "Tinos",
+                                                "Tinos",
+                                                "Tinos",
+                                                "Mukti Narrow",
+                                                "Tinos"};
 #elif BUILDFLAG(IS_MAC)
-const char* kExpectedFontFamilyNames[] = {"American Typewriter",
-                                          "Arial Narrow",
-                                          "Baskerville",
-                                          "Devanagari MT",
-                                          "DIN Alternate",
-                                          "Gill Sans",
-                                          "Iowan Old Style",
-                                          "Malayalam Sangam MN",
-                                          "Hiragino Maru Gothic Pro",
-                                          "Hiragino Kaku Gothic StdN"};
+const char* const kExpectedFontFamilyNames[] = {"American Typewriter",
+                                                "Arial Narrow",
+                                                "Baskerville",
+                                                "Devanagari MT",
+                                                "DIN Alternate",
+                                                "Gill Sans",
+                                                "Iowan Old Style",
+                                                "Malayalam Sangam MN",
+                                                "Hiragino Maru Gothic Pro",
+                                                "Hiragino Kaku Gothic StdN"};
 #elif BUILDFLAG(IS_WIN)
-const char* kExpectedFontFamilyNames[] = {"Cambria Math", "MingLiU_HKSCS-ExtB",
-                                          "NSimSun", "Calibri"};
+const char* const kExpectedFontFamilyNames[] = {
+    "Cambria Math", "MingLiU_HKSCS-ExtB", "NSimSun", "Calibri"};
 #endif
 
 }  // namespace
@@ -148,35 +148,34 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
   LoadAndWait("/font_src_local_matching.html");
   Attach();
 
-  ASSERT_TRUE(SendCommand("DOM.enable", nullptr, true));
-  ASSERT_TRUE(SendCommand("CSS.enable", nullptr, true));
+  ASSERT_TRUE(SendCommand("DOM.enable", nullptr));
+  ASSERT_TRUE(SendCommand("CSS.enable", nullptr));
 
-  unsigned num_added_nodes = static_cast<unsigned>(
-      content::EvalJs(shell(), "addTestNodes()").ExtractInt());
+  size_t num_added_nodes =
+      static_cast<size_t>(EvalJs(shell(), "addTestNodes()").ExtractInt());
   ASSERT_EQ(num_added_nodes, std::size(kExpectedFontFamilyNames));
 
-  std::unique_ptr<base::DictionaryValue> params =
-      std::make_unique<base::DictionaryValue>();
-  params->SetInteger("depth", 0);
+  base::Value::Dict get_doc_params;
+  get_doc_params.Set("depth", 0);
   const base::Value::Dict* result =
-      SendCommand("DOM.getDocument", std::move(params));
-  int nodeId = *result->FindIntByDottedPath("root.nodeId");
+      SendCommand("DOM.getDocument", std::move(get_doc_params));
+  int node_id = *result->FindIntByDottedPath("root.nodeId");
 
-  params = std::make_unique<base::DictionaryValue>();
-  params->SetInteger("nodeId", nodeId);
-  params->SetString("selector", ".testnode");
-  result = SendCommand("DOM.querySelectorAll", std::move(params));
-  // This needs a Clone() because node_list otherwise gets invalid after the
+  base::Value::Dict query_params;
+  query_params.Set("nodeId", node_id);
+  query_params.Set("selector", ".testnode");
+  result = SendCommand("DOM.querySelectorAll", std::move(query_params));
+  // This needs a Clone() because the node list otherwise gets invalid after the
   // next SendCommand call.
-  const base::Value::List nodes_view = result->FindList("nodeIds")->Clone();
-  ASSERT_EQ(nodes_view.size(), num_added_nodes);
-  ASSERT_EQ(nodes_view.size(), std::size(kExpectedFontFamilyNames));
-  for (size_t i = 0; i < nodes_view.size(); ++i) {
-    const base::Value& nodeId = nodes_view[i];
-    params = std::make_unique<base::DictionaryValue>();
-    params->SetInteger("nodeId", nodeId.GetInt());
+  const base::Value::List nodes = result->FindList("nodeIds")->Clone();
+  ASSERT_EQ(nodes.size(), num_added_nodes);
+  ASSERT_EQ(nodes.size(), std::size(kExpectedFontFamilyNames));
+  for (size_t i = 0; i < nodes.size(); ++i) {
+    const base::Value& node = nodes[i];
+    base::Value::Dict get_fonts_params;
+    get_fonts_params.Set("nodeId", node.GetInt());
     const base::Value::Dict* font_info =
-        SendCommand("CSS.getPlatformFontsForNode", std::move(params));
+        SendCommand("CSS.getPlatformFontsForNode", std::move(get_fonts_params));
     ASSERT_TRUE(font_info);
     const base::Value::List* font_list = font_info->FindList("fonts");
     ASSERT_TRUE(font_list);
