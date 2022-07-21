@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.incognito.reauth;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -32,6 +31,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
@@ -71,6 +72,8 @@ public class IncognitoReauthCoordinatorFactoryTest {
     private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
     @Mock
     private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
+    @Mock
+    private IncognitoTabHost mIncognitoTabHostMock;
 
     private final boolean mIsTabbedActivity;
 
@@ -110,7 +113,7 @@ public class IncognitoReauthCoordinatorFactoryTest {
         verifyNoMoreInteractions(mContextMock, mTabModelSelectorMock, mIncognitoTabModelMock,
                 mModalDialogManagerMock, mIncognitoReauthManagerMock, mSettingsLauncherMock,
                 mTabSwitcherCustomViewManagerMock, mIncognitoReauthTopToolbarDelegateMock,
-                mLayoutManagerMock);
+                mLayoutManagerMock, mIncognitoTabHostMock);
     }
 
     @Test
@@ -139,19 +142,10 @@ public class IncognitoReauthCoordinatorFactoryTest {
     public void testCloseAllIncognitoTabsRunnable_IsInvokedCorrectly() {
         Runnable closeAllIncognitoTabsRunnable =
                 mIncognitoReauthCoordinatorFactory.getCloseAllIncognitoTabsRunnable();
-        if (mIsTabbedActivity) {
-            doReturn(mIncognitoTabModelMock)
-                    .when(mTabModelSelectorMock)
-                    .getModel(/*incognito=*/true);
-            doNothing().when(mIncognitoTabModelMock).closeAllTabs(/*uponExit=*/eq(false));
+        IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHostMock);
+        closeAllIncognitoTabsRunnable.run();
 
-            closeAllIncognitoTabsRunnable.run();
-
-            verify(mIncognitoTabModelMock, times(1)).closeAllTabs(/*uponExit=*/eq(false));
-            verify(mTabModelSelectorMock, times(1)).getModel(/*incognito=*/eq(true));
-        } else {
-            // TODO(crbug.com/1227656): Add tests for iCCT.
-        }
+        verify(mIncognitoTabHostMock, times(1)).closeAllIncognitoTabs();
     }
 
     @Test
