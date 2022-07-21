@@ -19,6 +19,7 @@ import typescript from '@rollup/plugin-typescript';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import json from '@rollup/plugin-json';
 import { string } from 'rollup-plugin-string';
+import { terser } from 'rollup-plugin-terser';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
@@ -40,5 +41,10 @@ export default {
     }),
     nodeResolve(),
     commonjs(),
+    terser({
+      format: {
+        comments: /copyright/i,
+      },
+    }),
   ],
 };
