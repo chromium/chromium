@@ -13,8 +13,13 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
+
+namespace crosapi::mojom {
+class NetworkChangeObserver;
+}
 
 namespace net {
 class NetworkChangeNotifierPosix;
@@ -38,12 +43,19 @@ class NetworkChangeManagerClient
 
   ~NetworkChangeManagerClient() override;
 
+  // Returns NetworkChangeManagerClient instance.
+  static NetworkChangeManagerClient* GetInstance();
+
   // PowerManagerClient::Observer overrides.
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // NetworkStateHandlerObserver overrides.
   void DefaultNetworkChanged(
       const chromeos::NetworkState* default_network) override;
+
+  // Adds Lacros NetworkChangeObserver.
+  void AddLacrosNetworkChangeObserver(
+      mojo::PendingRemote<crosapi::mojom::NetworkChangeObserver> observer);
 
  private:
   friend class NetworkChangeManagerClientUpdateTest;
@@ -109,6 +121,8 @@ class NetworkChangeManagerClient
 
   net::NetworkChangeNotifierPosix* network_change_notifier_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
+  mojo::RemoteSet<crosapi::mojom::NetworkChangeObserver>
+      lacros_network_change_observers_;
 };
 
 }  // namespace ash

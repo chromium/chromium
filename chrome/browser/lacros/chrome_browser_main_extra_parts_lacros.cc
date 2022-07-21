@@ -24,6 +24,7 @@
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
+#include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/standalone_browser_test_controller.h"
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
@@ -114,6 +115,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
       std::make_unique<DownloadControllerClientLacros>();
   file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
   kiosk_session_service_ = std::make_unique<KioskSessionServiceLacros>();
+  network_change_manager_bridge_ =
+      std::make_unique<NetworkChangeManagerBridge>();
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateLacros>();
   search_controller_ = std::make_unique<crosapi::SearchControllerLacros>();
